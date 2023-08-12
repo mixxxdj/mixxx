@@ -272,7 +272,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="488"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="512"/>
         <source>Couldn&apos;t load track.</source>
         <translation>Не удалось загрузить трек.</translation>
     </message>
@@ -721,22 +721,17 @@
         <translation>Путь, в который записывается временная строка статистики отладки</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="176"/>
-        <source>Do not use OpenGL vu meter</source>
-        <translation>Не использовать измеритель громкости OpenGL</translation>
-    </message>
-    <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="186"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="182"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
         <translation>Заставляет Mixxx отображать/регистрировать все данные контроллера, которые он получает, и функции скрипта, которые он загружает</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="199"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="195"/>
         <source>The controller mapping will issue more aggressive warnings and errors when detecting misuse of controller APIs. New Controller Mappings should be developed with this option enabled!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="209"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="205"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
         <translation>Включает режим разработчика. Включает дополнительную информацию при журналировании, статистику по производительности и меню инструментов разработчика.</translation>
     </message>
@@ -746,17 +741,22 @@
         <translation>Каталог верхнего уровня, в котором Mixxx должен искать параметры. Значение по умолчанию: </translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="216"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="176"/>
+        <source>Use OpenGL vu meter</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/util/cmdlineargs.cpp" line="212"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
         <translation>Включает безопасный режим. Отключает осциллограммы OpenGL и виджеты крутящихся пластинок.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="227"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="223"/>
         <source>[auto|always|never] Use colors on the console output.</source>
         <translation>[автоматически|всегда|никогда] Использовать цвета на выводе консоли.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="235"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="231"/>
         <source>Sets the verbosity of command line logging.
 critical - Critical/Fatal only
 warning  - Above + Warnings
@@ -771,17 +771,17 @@ debug — То, что выше + сообщения отладки/разраб
 trace — То, что выше + сообщения профилирования</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="251"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="247"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. &lt;level&gt; is one of the values defined at --log-level above.</source>
         <translation>Устанавливает уровень журналирования, при котором буфер журнала сбрасывается в mixxx.log. &lt;level&gt; — это одно из значений, определённых в --log-level выше.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="265"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="261"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
         <translation>Прерывает (SIGINT) Mixxx, если DEBUG_ASSERT оценивается как false. После этого можно продолжить под отладчиком.</translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="279"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="275"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
         <translation>Загрузить определённые музыкальные файлы при запуске. Каждый указанный файл будет загружен в следующую виртуальную деку.</translation>
     </message>
@@ -963,13 +963,13 @@ trace — То, что выше + сообщения профилировани�
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="160"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1143"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1149"/>
         <source>Set to full volume</source>
         <translation>Максимальная громкость</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="164"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1149"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1155"/>
         <source>Set to zero volume</source>
         <translation>Минимальная громкость</translation>
     </message>
@@ -994,102 +994,97 @@ trace — То, что выше + сообщения профилировани�
         <translation>Кнопка обратной прокрутки (Censor)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1161"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1167"/>
         <source>Headphone listen button</source>
         <translation>Кнопка прослушивания в наушниках</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="171"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1155"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1161"/>
         <source>Mute button</source>
         <translation>Кнопка выключения громкости</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="213"/>
         <source>Toggle repeat mode</source>
         <translation>Переключить режим повтора</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
-        <source>Eject track</source>
-        <translation>Извлечь трек</translation>
-    </message>
-    <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="56"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1168"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1174"/>
         <source>Mix orientation (e.g. left, right, center)</source>
         <translation>Расположение микса (слева, справа, по центру)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="60"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1174"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1180"/>
         <source>Set mix orientation to left</source>
         <translation>Установить ориентацию микса слева</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="64"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1180"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1186"/>
         <source>Set mix orientation to center</source>
         <translation>Установить ориентацию микса по центру</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1186"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1192"/>
         <source>Set mix orientation to right</source>
         <translation>Установить ориентацию микса справа</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="214"/>
         <source>Toggle slip mode</source>
         <translation>Переключить режим скольжения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="212"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="218"/>
         <source>BPM</source>
         <translation>Кол-во ударов в минуту</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="213"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="219"/>
         <source>Increase BPM by 1</source>
         <translation>Увеличить BPM на 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="214"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>Decrease BPM by 1</source>
         <translation>Уменьшить BPM на 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="215"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
         <source>Increase BPM by 0.1</source>
         <translation>Увеличить BPM на 0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="216"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="222"/>
         <source>Decrease BPM by 0.1</source>
         <translation>Уменьшить BPM на 0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="223"/>
         <source>BPM tap button</source>
         <translation>Кнопка BPM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="232"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="238"/>
         <source>Toggle quantize mode</source>
         <translation>Переключить режим квантования</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="246"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="252"/>
         <source>One-time beat sync (tempo only)</source>
         <translation>Разовая синхронизация битов (только темп)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="250"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="256"/>
         <source>One-time beat sync (phase only)</source>
         <translation>Разовая синхронизация битов (только фаза)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="365"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
         <source>Toggle keylock mode</source>
         <translation>Переключение в режим блокировки клавиатуры</translation>
     </message>
@@ -1099,193 +1094,193 @@ trace — То, что выше + сообщения профилировани�
         <translation>Эквалайзеры</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="368"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="374"/>
         <source>Vinyl Control</source>
         <translation>Управление пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="379"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="385"/>
         <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
         <translation>Переключить метку пластинки (OFF/ONE/HOT)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="375"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="381"/>
         <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
         <translation>Переключить режим управления пластинкой (ABS/REL/CONST)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="383"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="389"/>
         <source>Pass through external audio into the internal mixer</source>
         <translation>Пропустить внешний звук во внутренний микшер</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="392"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="398"/>
         <source>Cues</source>
         <translation>Метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="393"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="399"/>
         <source>Cue button</source>
         <translation>Кнопка метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="394"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="400"/>
         <source>Set cue point</source>
         <translation>Задать точку метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="395"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="401"/>
         <source>Go to cue point</source>
         <translation>Перейти к точке метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="398"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="404"/>
         <source>Go to cue point and play</source>
         <translation>Перейти к точке метки и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="402"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="408"/>
         <source>Go to cue point and stop</source>
         <translation>Перейти к точке метки и остановить</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="404"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="410"/>
         <source>Preview from cue point</source>
         <translation>Предварительный просмотр с точки метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="405"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="411"/>
         <source>Cue button (CDJ mode)</source>
         <translation>Кнопка метки (режим CDJ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="406"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="412"/>
         <source>Stutter cue</source>
         <translation>Метка заикания</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="413"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Hotcues</source>
         <translation>Горячие метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>Set, preview from or jump to hotcue %1</source>
         <translation>Задать, просмотреть или перейти к горячей метке %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
         <source>Clear hotcue %1</source>
         <translation>Удалить горячую метку %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
         <source>Set hotcue %1</source>
         <translation>Задать горячую метку %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="430"/>
         <source>Jump to hotcue %1</source>
         <translation>Перейти к горячей метке %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="425"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
         <source>Jump to hotcue %1 and stop</source>
         <translation>Перейти к горячей метке %1 и остановить</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="426"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
         <source>Jump to hotcue %1 and play</source>
         <translation>Перейти к горячей метке %1 и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="433"/>
         <source>Preview from hotcue %1</source>
         <translation>Предварительный просмотр от горячей метки %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="414"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="462"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="468"/>
         <source>Hotcue %1</source>
         <translation>Горячая метка %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
         <source>Looping</source>
         <translation>Зацикливание</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="592"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="598"/>
         <source>Loop In button</source>
         <translation>Кнопка начала петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="594"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="600"/>
         <source>Loop Out button</source>
         <translation>Кнопка перехода к концу петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="596"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="602"/>
         <source>Loop Exit button</source>
         <translation>Кнопка выхода из цикла</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="554"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="560"/>
         <source>1/2</source>
         <translation>1/2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="555"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="561"/>
         <source>1</source>
         <translation>1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="556"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="562"/>
         <source>2</source>
         <translation>2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="557"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="563"/>
         <source>4</source>
         <translation>4</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="558"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="564"/>
         <source>8</source>
         <translation>8</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="565"/>
         <source>16</source>
         <translation>16</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="560"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="566"/>
         <source>32</source>
         <translation>32</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="561"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="567"/>
         <source>64</source>
         <translation>64</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="640"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="646"/>
         <source>Move loop forward by %1 beats</source>
         <translation>Передвинуть петлю вперёд на количество битов: %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="641"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="647"/>
         <source>Move loop backward by %1 beats</source>
         <translation>Передвинуть петлю назад на количество битов: %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="544"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="550"/>
         <source>Create %1-beat loop</source>
         <translation>Создать петлю на следующее количество битов: %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="551"/>
         <source>Create temporary %1-beat loop roll</source>
         <translation>Создать временную %1-битную петлю</translation>
     </message>
@@ -1401,20 +1396,20 @@ trace — То, что выше + сообщения профилировани�
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="157"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1135"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1136"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1141"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1142"/>
         <source>Volume Fader</source>
         <translation>Регулятор громкости</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="159"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1142"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1148"/>
         <source>Full Volume</source>
         <translation>Максимальная громкость</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="163"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1148"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1154"/>
         <source>Zero Volume</source>
         <translation>Минимальная громкость</translation>
     </message>
@@ -1430,18 +1425,18 @@ trace — То, что выше + сообщения профилировани�
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="171"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1154"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
         <source>Mute</source>
         <translation>Без звука</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
         <source>Eject</source>
         <translation>Извлечь</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="174"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1166"/>
         <source>Headphone Listen</source>
         <translation>Прослушивание в наушниках</translation>
     </message>
@@ -1451,181 +1446,181 @@ trace — То, что выше + сообщения профилировани�
         <translation>Кнопка прослушивания в наушниках (pfl)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="213"/>
         <source>Repeat Mode</source>
         <translation>Режим повтора</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="214"/>
         <source>Slip Mode</source>
         <translation>Режим Slip</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="55"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1167"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1173"/>
         <source>Orientation</source>
         <translation>Ориентация</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="59"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1173"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1179"/>
         <source>Orient Left</source>
         <translation>Расположить слева</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1179"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1185"/>
         <source>Orient Center</source>
         <translation>Расположить по центру</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1185"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1191"/>
         <source>Orient Right</source>
         <translation>Расположить справа</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="213"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="219"/>
         <source>BPM +1</source>
         <translation>BPM +1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="214"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>BPM -1</source>
         <translation>BPM -1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="215"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
         <source>BPM +0.1</source>
         <translation>BPM +0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="216"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="222"/>
         <source>BPM -0.1</source>
         <translation>BPM -0,1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="223"/>
         <source>BPM Tap</source>
         <translation>Ввод BPM вручную</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="219"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="225"/>
         <source>Adjust Beatgrid Faster +.01</source>
         <translation>Ускорить битовую сетку на +.01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="219"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="225"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
         <translation>Увеличить средний BPM трека на 0,01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="226"/>
         <source>Adjust Beatgrid Slower -.01</source>
         <translation>Замедлить битовую сетку на -.01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="226"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
         <translation>Уменьшить средний BPM трека на 0,01</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
         <source>Move Beatgrid Earlier</source>
         <translation>Переместить битовую сетку назад</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
         <source>Adjust the beatgrid to the left</source>
         <translation>Отрегулировать битовую сетку слева</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="222"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
         <source>Move Beatgrid Later</source>
         <translation>Переместить битовую сетку вперёд</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="222"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
         <source>Adjust the beatgrid to the right</source>
         <translation>Отрегулировать битовую сетку справа</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="230"/>
         <source>Adjust Beatgrid</source>
         <translation>Отрегулировать битовую сетку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="225"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="231"/>
         <source>Align beatgrid to current position</source>
         <translation>Выровнять битовую сетку по текущей позиции</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="234"/>
         <source>Adjust Beatgrid - Match Alignment</source>
         <translation>Отрегулировать битовую сетку — сопоставить выравнивание</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="229"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="235"/>
         <source>Adjust beatgrid to match another playing deck.</source>
         <translation>Подстроить битовую сетку под проигрывание другой деки.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="232"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="238"/>
         <source>Quantize Mode</source>
         <translation>Режим квантования</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="234"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="240"/>
         <source>Sync</source>
         <translation>Синхронизация</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="241"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
         <source>Beat Sync One-Shot</source>
         <translation>Синхронизация битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="245"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="251"/>
         <source>Sync Tempo One-Shot</source>
         <translation>Синхронизация темпа</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="249"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="255"/>
         <source>Sync Phase One-Shot</source>
         <translation>Синхронизация фазы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="337"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
         <source>Pitch control (does not affect tempo), center is original pitch</source>
         <translation>Настройка питча (не влияет на темп), центр — оригинальный шаг</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="358"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
         <source>Pitch Adjust</source>
         <translation>Настроить питч</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="365"/>
         <source>Adjust pitch from speed slider pitch</source>
         <translation>Настроить питч с помощью ползунка скорости</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="369"/>
         <source>Match musical key</source>
         <translation>Сопоставление тональности</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="369"/>
         <source>Match Key</source>
         <translation>Сопоставление тональности</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="370"/>
         <source>Reset Key</source>
         <translation>Сбросить тональность</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="364"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="370"/>
         <source>Resets key to original</source>
         <translation>Возвращает тон к исходному значению</translation>
     </message>
@@ -1666,456 +1661,456 @@ trace — То, что выше + сообщения профилировани�
         <translation>Эквалайзер низких частот</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="370"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
         <source>Toggle Vinyl Control</source>
         <translation>Переключить панель управления пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="377"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
         <translation>Включить/выключить панель управления пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="374"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="380"/>
         <source>Vinyl Control Mode</source>
         <translation>Режим управления пластинкой</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="378"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="384"/>
         <source>Vinyl Control Cueing Mode</source>
         <translation>Управление пластинками: режим меток</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="382"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="388"/>
         <source>Vinyl Control Passthrough</source>
         <translation>Сквозное управление пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="387"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="393"/>
         <source>Vinyl Control Next Deck</source>
         <translation>Панель управления пластинками: следующая дека</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="388"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="394"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
         <translation>Режим одной деки — перейти к пластинке на следующей деке</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="393"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="399"/>
         <source>Cue</source>
         <translation>Метка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="394"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="400"/>
         <source>Set Cue</source>
         <translation>Установить метку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="395"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="401"/>
         <source>Go-To Cue</source>
         <translation>Перейти к метке</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="397"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="403"/>
         <source>Go-To Cue And Play</source>
         <translation>Перейти к метке и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="401"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="407"/>
         <source>Go-To Cue And Stop</source>
         <translation>Перейти к метке и остановиться</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="404"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="410"/>
         <source>Preview Cue</source>
         <translation>Предварительный просмотр метки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="405"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="411"/>
         <source>Cue (CDJ Mode)</source>
         <translation>Метка (режим CDJ)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="406"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="412"/>
         <source>Stutter Cue</source>
         <translation>Метка заикания</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="409"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="415"/>
         <source>Go to cue point and play after release</source>
         <translation>Перейти к точке метки и начать воспроизведение после окончания нажатия</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="415"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
         <source>Clear Hotcue %1</source>
         <translation>Удалить горячую метку %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="416"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
         <source>Set Hotcue %1</source>
         <translation>Задать горячую метку %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="417"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Jump To Hotcue %1</source>
         <translation>Перейти к горячей метке %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="418"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
         <source>Jump To Hotcue %1 And Stop</source>
         <translation>Перейти к горячей метке %1 и остановиться</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="425"/>
         <source>Jump To Hotcue %1 And Play</source>
         <translation>Перейти к горячей метке %1 и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="426"/>
         <source>Preview Hotcue %1</source>
         <translation>Предварительный просмотр от горячей метки %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="592"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="598"/>
         <source>Loop In</source>
         <translation>Начало петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="594"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="600"/>
         <source>Loop Out</source>
         <translation>Конец петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="596"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="602"/>
         <source>Loop Exit</source>
         <translation>Выйти из петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="598"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="604"/>
         <source>Reloop/Exit Loop</source>
         <translation>Повторить петлю/выйти из петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="606"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
         <source>Loop Halve</source>
         <translation>Сократить цикл вдвое</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="607"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="613"/>
         <source>Loop Double</source>
         <translation>Двойная петля</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="550"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="556"/>
         <source>1/32</source>
         <translation>1/32</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="551"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="557"/>
         <source>1/16</source>
         <translation>1/16</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="552"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="558"/>
         <source>1/8</source>
         <translation>1/8</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="553"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="559"/>
         <source>1/4</source>
         <translation>1/4</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="638"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="644"/>
         <source>Move Loop +%1 Beats</source>
         <translation>Переместить петлю на следующее количество битов: +%1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="639"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="645"/>
         <source>Move Loop -%1 Beats</source>
         <translation>Переместить петлю на следующее количество битов: -%1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="542"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="548"/>
         <source>Loop %1 Beats</source>
         <translation>Зациклить следующее количество битов: %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="543"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="549"/>
         <source>Loop Roll %1 Beats</source>
         <translation>Скользящий циклю количество битов: %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="743"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="749"/>
         <source>Add to Auto DJ Queue (bottom)</source>
         <translation>Добавить в очередь Auto DJ (в конец)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="744"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="750"/>
         <source>Append the selected track to the Auto DJ Queue</source>
         <translation>Добавить выбранный трек в конец очереди Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="747"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="753"/>
         <source>Add to Auto DJ Queue (top)</source>
         <translation>Добавить в очередь Auto DJ (в начало)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="748"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="754"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
         <translation>Добавить выбранный трек в начало очереди Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="739"/>
         <source>Load Track</source>
         <translation>Загрузить трек</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="734"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="740"/>
         <source>Load selected track</source>
         <translation>Загрузить выбранный трек</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="738"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="744"/>
         <source>Load selected track and play</source>
         <translation>Загрузить выбранный трек и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1330"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="783"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1336"/>
         <source>Record Mix</source>
         <translation>Записать микс</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="778"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="784"/>
         <source>Toggle mix recording</source>
         <translation>Переключить запись микса</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="784"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="790"/>
         <source>Effects</source>
         <translation>Эффекты</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="787"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="793"/>
         <source>Quick Effects</source>
         <translation>Быстрые эффекты</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="791"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Deck %1 Quick Effect Super Knob</source>
         <translation>Супер ручка быстрого жффекта деки %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="792"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="798"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
         <translation>Супер ручка быстрого эффекта (управление параметрами связанных эффектов)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="796"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="803"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="802"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="809"/>
         <source>Quick Effect</source>
         <translation>Быстрый эффект</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="819"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="825"/>
         <source>Clear Unit</source>
         <translation>Удалить блок</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="820"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="826"/>
         <source>Clear effect unit</source>
         <translation>Удалить блок эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="826"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="832"/>
         <source>Toggle Unit</source>
         <translation>Переключение блока</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="833"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="839"/>
         <source>Dry/Wet</source>
         <translation>Оригинал/обработанный</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="834"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="840"/>
         <source>Adjust the balance between the original (dry) and processed (wet) signal.</source>
         <translation>Отрегулировать баланс между оригинальным и обработанным сигналом.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="841"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="847"/>
         <source>Super Knob</source>
         <translation>Супер ручка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="855"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="861"/>
         <source>Next Chain</source>
         <translation>Следующая цепочка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="883"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="889"/>
         <source>Assign </source>
         <translation>Назначить </translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="980"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="986"/>
         <source>Clear</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="981"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="987"/>
         <source>Clear the current effect</source>
         <translation>Удалить текущий эффект</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="994"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1000"/>
         <source>Toggle</source>
         <translation>Переключить</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="995"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1001"/>
         <source>Toggle the current effect</source>
         <translation>Переключить текущий эффект</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1001"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1007"/>
         <source>Next</source>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1002"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1008"/>
         <source>Switch to next effect</source>
         <translation>Перейти к следующему эффекту</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1008"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1014"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1009"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1015"/>
         <source>Switch to the previous effect</source>
         <translation>Перейти к предыдущему эффекту</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1015"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1021"/>
         <source>Next or Previous</source>
         <translation>Следующий или предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1016"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1022"/>
         <source>Switch to either next or previous effect</source>
         <translation>Перейти к следующему или предыдущему эффекту</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1044"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1045"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1050"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1051"/>
         <source>Parameter Value</source>
         <translation>Значение параметра</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1112"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1117"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1118"/>
         <source>Microphone Ducking Strength</source>
         <translation>Сила приглушения микрофона</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1117"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1123"/>
         <source>Microphone Ducking Mode</source>
         <translation>Режим приглушения микрофона</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1128"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1134"/>
         <source>Gain</source>
         <translation>Выравнивание</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1129"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1135"/>
         <source>Gain knob</source>
         <translation>Ручка выравнивания</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1196"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1202"/>
         <source>Shuffle the content of the Auto DJ queue</source>
         <translation>Перемешать содержимое очереди Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1201"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1207"/>
         <source>Skip the next track in the Auto DJ queue</source>
         <translation>Пропустить следующий трек в очереди Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1215"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1221"/>
         <source>Auto DJ Toggle</source>
         <translation>Переключение Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1216"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1222"/>
         <source>Toggle Auto DJ On/Off</source>
         <translation>Включить/выключить Auto DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1228"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1234"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
         <translation>Показать/скрыть микрофон и вспомогательные устройства</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1229"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1235"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
         <translation>Показать/скрыть микрофон и вспомогательные устройства</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1243"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1249"/>
         <source>4 Effect Units Show/Hide</source>
         <translation>Показать/скрыть 4 блока эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1244"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1250"/>
         <source>Switches between showing 2 and 4 effect units</source>
         <translation>Переключает отображение между 2мя и 4мя модулями эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1248"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1254"/>
         <source>Mixer Show/Hide</source>
         <translation>Показать/скрыть микшер</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1249"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1255"/>
         <source>Show or hide the mixer.</source>
         <translation>Показать или скрыть микшер.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1253"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1259"/>
         <source>Cover Art Show/Hide (Library)</source>
         <translation>Показать/скрыть обложку (медиатека)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1254"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1260"/>
         <source>Show/hide cover art in the library</source>
         <translation>Показать/скрыть обложку в медиатеке</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1258"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1264"/>
         <source>Library Maximize/Restore</source>
         <translation>Распахнуть/восстановить медиатеку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1259"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1265"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation>Распахнуть окно медиатеки, заняв всё пространство экрана.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1238"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1244"/>
         <source>Effect Rack Show/Hide</source>
         <translation>Показать/скрыть стойку эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1239"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1245"/>
         <source>Show/hide the effect rack</source>
         <translation>Показать/скрыть эффект стойку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1308"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1314"/>
         <source>Waveform Zoom Out</source>
         <translation>Уменьшить масштаб осциллограммы</translation>
     </message>
@@ -2130,102 +2125,102 @@ trace — То, что выше + сообщения профилировани�
         <translation>Усиления для наушников</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="237"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="243"/>
         <source>Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync</source>
         <translation>Нажмите для синхронизации (и фазировки с квантизацией), удерживайте для постоянной синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="242"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="248"/>
         <source>One-time beat sync tempo (and phase with quantize enabled)</source>
         <translation>Единоразовая битовая синхронизация (и фазировка с квантованием)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="295"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="301"/>
         <source>Playback Speed</source>
         <translation>Скорость воспроизведения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="296"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="302"/>
         <source>Playback speed control (Vinyl &quot;Pitch&quot; slider)</source>
         <translation>Управление скоростью воспроизведения (ползунок «Питч» на панели пластинок)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="336"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
         <source>Pitch (Musical key)</source>
         <translation>Питч (тональность)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="301"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="307"/>
         <source>Increase Speed</source>
         <translation>Увеличить скорость</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="302"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="308"/>
         <source>Adjust speed faster (coarse)</source>
         <translation>Увеличить скорость (грубая настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="311"/>
         <source>Increase Speed (Fine)</source>
         <translation>Увеличить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="306"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="312"/>
         <source>Adjust speed faster (fine)</source>
         <translation>Увеличить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="309"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="315"/>
         <source>Decrease Speed</source>
         <translation>Уменьшить скорость</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="310"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="316"/>
         <source>Adjust speed slower (coarse)</source>
         <translation>Замедлить скорость (грубая настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="314"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="320"/>
         <source>Adjust speed slower (fine)</source>
         <translation>Замедлить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="324"/>
         <source>Temporarily Increase Speed</source>
         <translation>Временно увеличить скорость</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Temporarily increase speed (coarse)</source>
         <translation>Временно увеличить скорость (грубая настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="328"/>
         <source>Temporarily Increase Speed (Fine)</source>
         <translation>Временно увеличить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="323"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="329"/>
         <source>Temporarily increase speed (fine)</source>
         <translation>Временно увеличить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="332"/>
         <source>Temporarily Decrease Speed</source>
         <translation>Временно уменьшить скорость</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="333"/>
         <source>Temporarily decrease speed (coarse)</source>
         <translation>Временно уменьшить скорость (грубая настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="336"/>
         <source>Temporarily Decrease Speed (Fine)</source>
         <translation>Временно уменьшить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="331"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="337"/>
         <source>Temporarily decrease speed (fine)</source>
         <translation>Временно уменьшить скорость (точная настройка)</translation>
     </message>
@@ -2287,927 +2282,932 @@ trace — То, что выше + сообщения профилировани�
         <translation>Подавление %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="211"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
+        <source>Eject or un-eject track, i.e. reload the last-ejected track (of any deck)&lt;br&gt;Double-press to reload the last replaced track. In empty decks it reloads the second-last ejected track.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
         <source>BPM / Beatgrid</source>
         <translation>BPM / Битовая сетка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="236"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="242"/>
         <source>Sync / Sync Lock</source>
         <translation>Синхронизация /блокировка синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="255"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="261"/>
         <source>Internal Sync Leader</source>
         <translation>Внутренний лидер синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="256"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="262"/>
         <source>Toggle Internal Sync Leader</source>
         <translation>Переключить внутренний лидер синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="260"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="261"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="266"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="267"/>
         <source>Internal Leader BPM</source>
         <translation>Внутренний лидер BPM</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="265"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
         <source>Internal Leader BPM +1</source>
         <translation>BPM внутреннего лидера +1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="266"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
         <source>Increase internal Leader BPM by 1</source>
         <translation>Увеличить BPM внутреннего лидера на 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Internal Leader BPM -1</source>
         <translation>BPM внутреннего лидера -1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Decrease internal Leader BPM by 1</source>
         <translation>Уменьшить BPM внутреннего лидера на 1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Internal Leader BPM +0.1</source>
         <translation>BPM внутреннего лидера +0.1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="284"/>
         <source>Increase internal Leader BPM by 0.1</source>
         <translation>Увеличить BPM внутреннего лидера на 0.1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="288"/>
         <source>Internal Leader BPM -0.1</source>
         <translation>BPM внутреннего лидера -0.1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="289"/>
         <source>Decrease internal Leader BPM by 0.1</source>
         <translation>Уменьшить BPM внутреннего лидера на 0.1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="287"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="293"/>
         <source>Sync Leader</source>
         <translation>Лидер синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="288"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="294"/>
         <source>Sync mode 3-state toggle / indicator (Off, Soft Leader, Explicit Leader)</source>
         <translation>Режим синхронизации</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="293"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="299"/>
         <source>Speed</source>
         <translation>Скорость</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="313"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
         <source>Decrease Speed (Fine)</source>
         <translation>Уменьшить скорость (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="340"/>
         <source>Pitch (Musical Key)</source>
         <translation>Питч (тональность)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
         <source>Increase Pitch</source>
         <translation>Увеличить питч</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="349"/>
         <source>Increases the pitch by one semitone</source>
         <translation>Увеличивает питч на один полутон</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="346"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Increase Pitch (Fine)</source>
         <translation>Увеличить питч (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="353"/>
         <source>Increases the pitch by 10 cents</source>
         <translation>Увеличивает питч на 10 процентов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="356"/>
         <source>Decrease Pitch</source>
         <translation>Понизить питч</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="357"/>
         <source>Decreases the pitch by one semitone</source>
         <translation>Понижает питч на один полутон</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="354"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="360"/>
         <source>Decrease Pitch (Fine)</source>
         <translation>Понизить питч (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="361"/>
         <source>Decreases the pitch by 10 cents</source>
         <translation>Уменьшает питч на 10 процентов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="365"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
         <source>Keylock</source>
         <translation>Блокировка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="408"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="414"/>
         <source>CUP (Cue + Play)</source>
         <translation>CUP (Метка + Воспроизвести)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="435"/>
         <source>Shift cue points earlier</source>
         <translation>Сдвинуть точки меток раньше</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="430"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="436"/>
         <source>Shift cue points 10 milliseconds earlier</source>
         <translation>Сдвинуть точки меток на 10 миллисекунд раньше</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="433"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Shift cue points earlier (fine)</source>
         <translation>Сдвинуть точки меток раньше (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="434"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
         <source>Shift cue points 1 millisecond earlier</source>
         <translation>Сдвинуть точки меток на 1 миллисекунду раньше</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="437"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="443"/>
         <source>Shift cue points later</source>
         <translation>Сдвинуть точки меток позднее</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="438"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="444"/>
         <source>Shift cue points 10 milliseconds later</source>
         <translation>Сдвинуть точки меток на 10 миллисекунд позднее</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="447"/>
         <source>Shift cue points later (fine)</source>
         <translation>Сдвинуть точки меток позднее (точная настройка)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="442"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="448"/>
         <source>Shift cue points 1 millisecond later</source>
         <translation>Сдвинуть точки меток на 1 миллисекунду позднее</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="455"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="461"/>
         <source>Hotcues %1-%2</source>
         <translation>Горячие метки %1-%2</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="498"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="504"/>
         <source>Intro / Outro Markers</source>
         <translation>Маркеры вступления и завершения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
         <source>Intro Start Marker</source>
         <translation>Маркер начала вступления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="507"/>
         <source>Intro End Marker</source>
         <translation>Маркер окончания вступления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="502"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="508"/>
         <source>Outro Start Marker</source>
         <translation>Маркер начала завершения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="503"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="509"/>
         <source>Outro End Marker</source>
         <translation>Маркер окончания завершения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="511"/>
         <source>intro start marker</source>
         <translation>маркер начала вступления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="512"/>
         <source>intro end marker</source>
         <translation>маркер окончания вступления</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="507"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="513"/>
         <source>outro start marker</source>
         <translation>маркер начала завершения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="508"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="514"/>
         <source>outro end marker</source>
         <translation>маркер окончания завершения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="519"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="525"/>
         <source>Activate %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Активировать %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="520"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
         <source>Jump to or set the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Перейти к или установить %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="524"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="530"/>
         <source>Set %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Установить %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="525"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="531"/>
         <source>Set or jump to the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Установить или перейти к %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="529"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="535"/>
         <source>Clear %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Удалить %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="530"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="536"/>
         <source>Clear the %1</source>
         <comment>[intro/outro marker</comment>
         <translation>Удалить %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="538"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="544"/>
         <source>Loop Selected Beats</source>
         <translation>Зациклить выбранные биты</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="539"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="545"/>
         <source>Create a beat loop of selected beat size</source>
         <translation>Создать петлю выбранного размера</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="540"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="546"/>
         <source>Loop Roll Selected Beats</source>
         <translation>Скользящий цикл выбранных битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="541"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="547"/>
         <source>Create a rolling beat loop of selected beat size</source>
         <translation>Создать скользящий цикл выбранного размера петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="568"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="574"/>
         <source>Loop Beats</source>
         <translation>Зациклить биты</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="582"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="588"/>
         <source>Loop Roll Beats</source>
         <translation>Скользящий цикл</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="593"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="599"/>
         <source>Go To Loop In</source>
         <translation>Перейти к началу петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="593"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="599"/>
         <source>Go to Loop In button</source>
         <translation>Кнопка перехода к началу петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="595"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="601"/>
         <source>Go To Loop Out</source>
         <translation>Перейти к концу петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="595"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="601"/>
         <source>Go to Loop Out button</source>
         <translation>Кнопка перехода к концу петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="599"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="605"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
         <translation>Вкл./выкл. петлю и перейти к петле в точке, если петля находится за позицией воспроизведения</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="603"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>Reloop And Stop</source>
         <translation>Повторить петлю и остановить</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="604"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="610"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
         <translation>Включить петлю, перейти к точке начала петли и остановиться</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="606"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
         <source>Halve the loop length</source>
         <translation>Сократить длину петли вдвое</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="607"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="613"/>
         <source>Double the loop length</source>
         <translation>Двойной размер петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="610"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="616"/>
         <source>Beat Jump / Loop Move</source>
         <translation>Прыжки по треку / смещение петли</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="611"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="617"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
         <translation>Перейти / Сместить петлю вперёд на %1 бит</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="612"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
         <translation>Перейти / Сместить петлю назад на %1 бит</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="613"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
         <source>Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats</source>
         <translation>Перейти на %1 бит вперёд или, если включена петля, передвинуть петлю вперёд на %1 бит</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="614"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="620"/>
         <source>Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats</source>
         <translation>Перейти на %1 бит назад или, если включена петля, передвинуть петлю назад на %1 бит</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="615"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="621"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
         <translation>Прыжки по треку / Смещение петли (в прямом порядке) на выбранное количество битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="615"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="621"/>
         <source>Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats</source>
         <translation>Перейти на выбранное количество битов вперёд или, если включена петля, передвинуть петлю вперёд на выбранное количество битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="616"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
         <translation>Прыжки по треку / Смещение петли (в обратном порядке) на выбранное количество битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="616"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="622"/>
         <source>Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats</source>
         <translation>Перейти на выбранное количество битов назад или, если включена петля, передвинуть петлю назад на выбранное количество битов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="625"/>
         <source>Beat Jump / Loop Move Forward</source>
         <translation>Прыжки по треку / Смещение петли (в прямом порядке)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="628"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="634"/>
         <source>Beat Jump / Loop Move Backward</source>
         <translation>Прыжки по треку / Смещение петли (в обратном порядке)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="643"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="649"/>
         <source>Loop Move Forward</source>
         <translation>Переместить петлю вперёд</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="652"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="658"/>
         <source>Loop Move Backward</source>
         <translation>Переместить петлю назад</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="665"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="671"/>
         <source>Navigation</source>
         <translation>Навигация</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="667"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="673"/>
         <source>Move up</source>
         <translation>Переместить вверх</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="668"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="674"/>
         <source>Equivalent to pressing the UP key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки ВВЕРХ на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="671"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="677"/>
         <source>Move down</source>
         <translation>Переместить вниз</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="678"/>
         <source>Equivalent to pressing the DOWN key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки ВНИЗ на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="675"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="681"/>
         <source>Move up/down</source>
         <translation>Переместить вверх/вниз</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="676"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="682"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
         <translation>Переместить вертикально в обоих направлениях, как при нажатии кнопок ВВЕРХ/ВНИЗ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="680"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="686"/>
         <source>Scroll Up</source>
         <translation>Пролистать вверх</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="681"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="687"/>
         <source>Equivalent to pressing the PAGE UP key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки PAGE UP на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="684"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="690"/>
         <source>Scroll Down</source>
         <translation>Пролистать вниз</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="685"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="691"/>
         <source>Equivalent to pressing the PAGE DOWN key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки PAGE DOWN на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="688"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
         <source>Scroll up/down</source>
         <translation>Пролистать вверх/вниз</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="689"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
         <translation>Переместить вертикально в обоих направлениях, как при нажатии кнопок PGUP/PGDOWN</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="693"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Move left</source>
         <translation>Переместить влево</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="694"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="700"/>
         <source>Equivalent to pressing the LEFT key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки ВЛЕВО на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="697"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
         <source>Move right</source>
         <translation>Переместить вправо</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="698"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="704"/>
         <source>Equivalent to pressing the RIGHT key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки ВПРАВО на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="701"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="707"/>
         <source>Move left/right</source>
         <translation>Переместить влево\вправо</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="702"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
         <translation>Переместить горизонтально в обоих направлениях используя ручку, как при нажатии кнопок ВЛЕВО/ВПРАВО</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="707"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="713"/>
         <source>Move focus to right pane</source>
         <translation>Переместить фокус на правую панель</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="714"/>
         <source>Equivalent to pressing the TAB key on the keyboard</source>
         <translation>Равнозначно нажатию кнопки TAB на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="711"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="717"/>
         <source>Move focus to left pane</source>
         <translation>Переместить фокус на левую панель</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="718"/>
         <source>Equivalent to pressing the SHIFT+TAB key on the keyboard</source>
         <translation>Равнозначно нажатию кнопок SHIFT+TAB на клавиатуре</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="715"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="721"/>
         <source>Move focus to right/left pane</source>
         <translation>Переместить фокус на правую/левую панель</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="722"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
         <translation>Переключать элементы управления используя ручку, как при нажатии клавиш TAB/SHIFT+TAB</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="726"/>
         <source>Sort focused column</source>
         <translation>Сортировать столбец в фокусае</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="721"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="727"/>
         <source>Sort the column of the cell that is currently focused, equivalent to clicking on its header</source>
         <translation>Сортировка столбца ячейки, которая в данный момент находится в фокусе, что эквивалентно щелчку по её заголовку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="727"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Go to the currently selected item</source>
         <translation>Перейти к выбранному пункту</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="728"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="734"/>
         <source>Choose the currently selected item and advance forward one pane if appropriate</source>
         <translation>Выбрать текущий элемент и перейти вперёд на одну панель, если это необходимо</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="737"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="743"/>
         <source>Load Track and Play</source>
         <translation>Загрузить трек и воспроизвести</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
         <source>Add to Auto DJ Queue (replace)</source>
         <translation>Добавить в очередь Auto DJ (заменить)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="752"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
         <translation>Заменить очередь Auto DJ выбранными треками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="763"/>
         <source>Select next search history</source>
         <translation>Выбрать следующую историю поиска</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="764"/>
         <source>Selects the next search history entry</source>
         <translation>Выбирает следующую запись истории поиска</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="761"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="767"/>
         <source>Select previous search history</source>
         <translation>Выбрать предыдущую историю поиска</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="762"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="768"/>
         <source>Selects the previous search history entry</source>
         <translation>Выбирает предыдущую запись истории поиска</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="765"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
         <source>Move selected search entry</source>
         <translation>Переместить выбранную запись поиска</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="766"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="772"/>
         <source>Moves the selected search history item into given direction and steps</source>
         <translation>Перемещает выбранный элемент истории поиска в заданном направлении и с заданными шагами</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="770"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="776"/>
         <source>Clear search</source>
         <translation>Очистить поиск</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
         <source>Clears the search query</source>
         <translation>Очищает поисковый запрос</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="799"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="805"/>
         <source>Deck %1 Quick Effect Enable Button</source>
         <translation>Кнопка включения быстрого эффекта на деке %1</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="800"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="806"/>
         <source>Quick Effect Enable Button</source>
         <translation>Кнопка включения быстрого эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="827"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="833"/>
         <source>Enable or disable effect processing</source>
         <translation>Включить или отключить обработку эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="842"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
         <translation>Супер ручка (мета-ручка управления эффектами)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="848"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="854"/>
         <source>Mix Mode Toggle</source>
         <translation>Переключение режима микширования</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="849"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="855"/>
         <source>Toggle effect unit between D/W and D+W modes</source>
         <translation>Переключение блока эффектов между режимами D/W и D+W</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="856"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="862"/>
         <source>Next chain preset</source>
         <translation>Следующий шаблон цепи</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="862"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="868"/>
         <source>Previous Chain</source>
         <translation>Предыдущая цепь</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="863"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="869"/>
         <source>Previous chain preset</source>
         <translation>Предыдущий шаблон цепи</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="869"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="875"/>
         <source>Next/Previous Chain</source>
         <translation>Следующая/предыдущая цепь</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="870"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="876"/>
         <source>Next or previous chain preset</source>
         <translation>Следующий или предыдущий шаблон цепи</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="876"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="877"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="882"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="883"/>
         <source>Show Effect Parameters</source>
         <translation>Показать параметры эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="882"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="888"/>
         <source>Effect Unit Assignment</source>
         <translation>Назначение блока эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="987"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="993"/>
         <source>Meta Knob</source>
         <translation>Мета ручка</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="988"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="994"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
         <translation>Мета ручка эффекта (управление связанными параметрами эффекта)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1051"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1057"/>
         <source>Meta Knob Mode</source>
         <translation>Режим мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1052"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1058"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
         <translation>Выберите, как меняется параметр эффекта при повороте мета ручки.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1059"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1065"/>
         <source>Meta Knob Mode Invert</source>
         <translation>Обратный режим мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1060"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1066"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
         <translation>Инвертировать параметр эффекта при повороте мета-ручки.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1092"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1097"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1098"/>
         <source>Button Parameter Value</source>
         <translation>Значение параметра кнопки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1101"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1107"/>
         <source>Microphone / Auxiliary</source>
         <translation>Микрофон / вспомогательные устройства</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1104"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1110"/>
         <source>Microphone On/Off</source>
         <translation>Микрофон вкл/выкл</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1105"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
         <source>Microphone on/off</source>
         <translation>Микрофон вкл/выкл</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1118"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1124"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
         <translation>Переключить режим подавления микрофона (OFF, AUTO, MANUAL)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1121"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1127"/>
         <source>Auxiliary On/Off</source>
         <translation>Включить/выключить вспомогательное устройство</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1122"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1128"/>
         <source>Auxiliary on/off</source>
         <translation>Включить/выключить вспомогательное устройство</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1192"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1198"/>
         <source>Auto DJ</source>
         <translation>Авто DJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1195"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1201"/>
         <source>Auto DJ Shuffle</source>
         <translation>Auto DJ: Перемешать</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1200"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1206"/>
         <source>Auto DJ Skip Next</source>
         <translation>Auto DJ: Переключиться на следующий трек</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1205"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1211"/>
         <source>Auto DJ Add Random Track</source>
         <translation>АвтоDJ добавить случайный трек</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1206"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1212"/>
         <source>Add a random track to the Auto DJ queue</source>
         <translation>Добавить случайный трек в очередь АвтоDJ</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1210"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1216"/>
         <source>Auto DJ Fade To Next</source>
         <translation>Auto DJ: Плавный переход к следующему треку</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1211"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1217"/>
         <source>Trigger the transition to the next track</source>
         <translation>Инициировать переход к следующей композиции</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1220"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1226"/>
         <source>User Interface</source>
         <translation>Пользовательский интерфейс</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1223"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1229"/>
         <source>Samplers Show/Hide</source>
         <translation>Показать/скрыть панель сэмплеров</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1224"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1230"/>
         <source>Show/hide the sampler section</source>
         <translation>Показать/скрыть панель сэмплеров</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1325"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1331"/>
         <source>Start/Stop Live Broadcasting</source>
         <translation>Начать/остановить прямую трансляцию</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1326"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1332"/>
         <source>Stream your mix over the Internet.</source>
         <translation>Транслируйте свой микс через Интернет.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1331"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1337"/>
         <source>Start/stop recording your mix.</source>
         <translation>Начать/прекратить записывать микс.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1461"/>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1465"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1467"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1471"/>
         <source>Samplers</source>
         <translation>Сэмплеры</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1277"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1283"/>
         <source>Vinyl Control Show/Hide</source>
         <translation>Показать/скрыть панель управления пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1278"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1284"/>
         <source>Show/hide the vinyl control section</source>
         <translation>Показать/скрыть панель управления пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1233"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1239"/>
         <source>Preview Deck Show/Hide</source>
         <translation>Показать/скрыть предпросмотр деки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1234"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1240"/>
         <source>Show/hide the preview deck</source>
         <translation>Показать/скрыть предпросмотр деки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1267"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1273"/>
         <source>Toggle 4 Decks</source>
         <translation>Включить/выключить 4 деки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1268"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1274"/>
         <source>Switches between showing 2 decks and 4 decks.</source>
         <translation>Переключение между 2 и 4 деками.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1272"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1278"/>
         <source>Cover Art Show/Hide (Decks)</source>
         <translation>Показать/скрыть обложку (деки)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1273"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1279"/>
         <source>Show/hide cover art in the main decks</source>
         <translation>Показать/скрыть обложку на основных деках</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1281"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1287"/>
         <source>Vinyl Spinner Show/Hide</source>
         <translation>Показать/скрыть ручки для прокрутки пластинок</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1282"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1288"/>
         <source>Show/hide spinning vinyl widget</source>
         <translation>Показать/скрыть виджет прокрутки пластинки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1287"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1293"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
         <translation>Показать/скрыть ручки для прокрутки пластинок (все деки)</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1288"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1294"/>
         <source>Show/Hide all spinnies</source>
         <translation>Показать/скрыть все крутящиеся ручки</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1303"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1309"/>
         <source>Toggle Waveforms</source>
         <translation>Переключить осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1304"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1310"/>
         <source>Show/hide the scrolling waveforms.</source>
         <translation>Показать/скрыть прокрутку осциллограмм.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1306"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1312"/>
         <source>Waveform zoom</source>
         <translation>Масштаб осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1306"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1312"/>
         <source>Waveform Zoom</source>
         <translation>Масштаб осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1307"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1313"/>
         <source>Zoom waveform in</source>
         <translation>Увеличить масштаб осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1307"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1313"/>
         <source>Waveform Zoom In</source>
         <translation>Увеличить масштаб осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1308"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1314"/>
         <source>Zoom waveform out</source>
         <translation>Уменьшить масштаб осциллограммы</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1314"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1320"/>
         <source>Star Rating Up</source>
         <translation>Повысить рейтинг</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1315"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1321"/>
         <source>Increase the track rating by one star</source>
         <translation>Увеличить рейтинг трека на одну звезду</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1318"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1324"/>
         <source>Star Rating Down</source>
         <translation>Понизить рейтинг</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controlpickermenu.cpp" line="1319"/>
+        <location filename="../../src/controllers/controlpickermenu.cpp" line="1325"/>
         <source>Decrease the track rating by one star</source>
         <translation>Понизить рейтинг трека на одну звезду</translation>
     </message>
@@ -4096,62 +4096,62 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>Готово</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="30"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="31"/>
         <source>Click anywhere in Mixxx or choose a control to learn</source>
         <translation>Щёлкните левой кнопкой мыши в любом месте Mixxx или выберите элемент управления, чтобы начать обучение</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="31"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="32"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
         <translation>Можно нажать на любую кнопку, ползунок или регулятор в Mixxx, чтобы обучить этот контроллер. Также можно ввести текст в поле для поиска элемента управления по имени или нажать кнопку« Выбрать контроллер», чтобы выбрать его в списке.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="42"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="43"/>
         <source>Now test it out!</source>
         <translation>Попробуйте!</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="43"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="44"/>
         <source>If you manipulate the control, you should see the Mixxx user interface respond the way you expect.</source>
         <translation>При взаимодействии с элементом управления пользовательский интерфейс Mixxx должен реагировать так как от него ожидается.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="46"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="47"/>
         <source>Not quite right?</source>
         <translation>Не совсем верно?</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="47"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="48"/>
         <source>If the mapping is not working try enabling an advanced option below and then try the control again. Or click Retry to redetect the midi control.</source>
         <translation>Если привязка не работает, попробуйте включить расширенную опцию ниже, а затем повторите попытку взаимодействия с контроллером. Или нажмите кнопку «Повторить попытку», чтобы повторно определить midi-элемент управления.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="333"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="334"/>
         <source>Didn&apos;t get any midi messages.  Please try again.</source>
         <translation>Не получено ни одного midi-сообщения. Попробуйте ещё раз.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="349"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="350"/>
         <source>Unable to detect a mapping -- please try again. Be sure to only touch one control at once.</source>
         <translation>Не удалось определить сопоставление — попробуйте снова. Взаимодействуйте с одним контроллером за раз.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="400"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="401"/>
         <source>Successfully mapped control:</source>
         <translation>Привязка элемента управления успешно выполнена:</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="475"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="476"/>
         <source>&lt;i&gt;Ready to learn %1&lt;/i&gt;</source>
         <translation>&lt;i&gt;Готово к обучению %1&lt;/i&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="476"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="477"/>
         <source>Learning: %1. Now move a control on your controller.</source>
         <translation>Обучение: %1. Теперь переместите элемент управления на контроллере.</translation>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="502"/>
+        <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="503"/>
         <source>The control you clicked in Mixxx is not learnable.
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
@@ -8294,7 +8294,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>&amp;Отмена</translation>
     </message>
     <message>
-        <location filename="../../src/library/dlgtrackinfo.cpp" line="543"/>
+        <location filename="../../src/library/dlgtrackinfo.cpp" line="551"/>
         <source>(no color)</source>
         <translation type="unfinished"/>
     </message>
@@ -8727,15 +8727,15 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1281"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1378"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1284"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1381"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Безопасный режим включён</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1291"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1386"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1294"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1389"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -8746,57 +8746,57 @@ Shown when VuMeter can not be displayed. Please keep
         <translation>Отсутствует поддержка OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2351"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2354"/>
         <source>activate</source>
         <translation>активировать</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2356"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2359"/>
         <source>toggle</source>
         <translation>переключить</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2366"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2369"/>
         <source>right</source>
         <translation>вправо</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2371"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2374"/>
         <source>left</source>
         <translation>влево</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2376"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2379"/>
         <source>right small</source>
         <translation>немного вправо</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2381"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2384"/>
         <source>left small</source>
         <translation>немного влево</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2386"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2389"/>
         <source>up</source>
         <translation>вверх</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2391"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2394"/>
         <source>down</source>
         <translation>вниз</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2396"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2399"/>
         <source>up small</source>
         <translation>немного вверх</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2401"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2404"/>
         <source>down small</source>
         <translation>немного вниз</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2429"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2432"/>
         <source>Shortcut</source>
         <translation>Комбинация клавиш</translation>
     </message>
@@ -11649,7 +11649,7 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="254"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="258"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="841"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="845"/>
         <source>Cover Art</source>
         <translation>Обложка</translation>
     </message>
@@ -12091,32 +12091,37 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
         <translation>Отображает текущий диапазон ползунка темпа.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="638"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="623"/>
+        <source>Un-ejects when no track is loaded, i.e. reloads the track that was ejected last (of any deck).</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="642"/>
         <source>Delete selected hotcue.</source>
         <translation>Удалить выбранную горячую метку.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="844"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="848"/>
         <source>Opens separate artwork viewer.</source>
         <translation>Открывает отдельный просмотрщик обложек.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="919"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="923"/>
         <source>Effect Chain Preset Settings</source>
         <translation>Параметры шаблона цепочки эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="920"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="924"/>
         <source>Show the effect chain settings menu for this unit.</source>
         <translation>Показать параметры цепочки эффектов для этого элемента.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1072"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1076"/>
         <source>Select and configure a hardware device for this input</source>
         <translation>Выбрать и настроить устройство ввода</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="647"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="651"/>
         <source>Recording Duration</source>
         <translation>Длительность записи</translation>
     </message>
@@ -12310,615 +12315,615 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
         <translation>Удерживайте или коротко щёлкните для фиксации, чтобы смешать этот ввод с основным выводом.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="648"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="652"/>
         <source>Displays the duration of the running recording.</source>
         <translation>Показывает длительность текущей записи.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="661"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="665"/>
         <source>Auto DJ is active</source>
         <translation>Auto DJ активен</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="690"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="694"/>
         <source>Hot Cue - Track will seek to nearest previous hotcue point.</source>
         <translation>Горячая метка — произойдёт переход по треку к ближайшей предыдущей точке горячей метки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="695"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="699"/>
         <source>Sets the track Loop-In Marker to the current play position.</source>
         <translation>Устанавливает маркер начала петли на текущую позицию воспроизведения трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="698"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="702"/>
         <source>Press and hold to move Loop-In Marker.</source>
         <translation>Нажмите и удерживайте, чтобы переместить маркер начала петли.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="699"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="703"/>
         <source>Jump to Loop-In Marker.</source>
         <translation>Перейти к маркеру начала петли.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="704"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="708"/>
         <source>Sets the track Loop-Out Marker to the current play position.</source>
         <translation>Устанавливает маркер выхода из петли на текущей позиции воспроизведения трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="707"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="711"/>
         <source>Press and hold to move Loop-Out Marker.</source>
         <translation>Нажмите и удерживайте, чтобы переместить маркер окончания петли.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="708"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="712"/>
         <source>Jump to Loop-Out Marker.</source>
         <translation>Перейти к маркеру конца петли.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="720"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="724"/>
         <source>Beatloop Size</source>
         <translation>Размер битовой петли</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="721"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="725"/>
         <source>Select the size of the loop in beats to set with the Beatloop button.</source>
         <translation>Выбор размера петли в битах для установки с помощью кнопки «Битовая петля».</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="722"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="726"/>
         <source>Changing this resizes the loop if the loop already matches this size.</source>
         <translation>Этот параметр изменяет размер цикла, если цикл уже соответствует этому размеру.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="725"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="729"/>
         <source>Halve the size of an existing beatloop, or halve the size of the next beatloop set with the Beatloop button.</source>
         <translation>Сократить размер существующей битовой петли вдвое, либо сократить размер следующей битовой петли с помощью кнопки «Битовая петля».</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="728"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="732"/>
         <source>Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.</source>
         <translation>Удвойте размер существующей битовой петли или удвоить размер следующей битовой петли, установленной с помощью кнопки «Битовая петля».</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="733"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="737"/>
         <source>Start a loop over the set number of beats.</source>
         <translation>Запускает цикл после указанного количества битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="735"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="739"/>
         <source>Temporarily enable a rolling loop over the set number of beats.</source>
         <translation>Временно включить повторяющийся цикл в течение заданного количества битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="739"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="743"/>
         <source>Beatjump/Loop Move Size</source>
         <translation>Размер перемещения прыжков по треку/петли</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="740"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="744"/>
         <source>Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.</source>
         <translation>Выберите количество ударов для перехода или переместите цикл с помощью кнопок перехода по битам вперёд/назад.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="743"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="747"/>
         <source>Beatjump Forward</source>
         <translation>Прыжки по треку вперёд</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="744"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="748"/>
         <source>Jump forward by the set number of beats.</source>
         <translation>Перейти вперёд на указанное количество битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="745"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="749"/>
         <source>Move the loop forward by the set number of beats.</source>
         <translation>Переместить петлю вперёд на указанное количество битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="746"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="750"/>
         <source>Jump forward by 1 beat.</source>
         <translation>Перескочить вперёд на 1 бит.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="747"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="751"/>
         <source>Move the loop forward by 1 beat.</source>
         <translation>Передвинуть петлю вперед на 1 удар.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="750"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="754"/>
         <source>Beatjump Backward</source>
         <translation>Обратные прыжки по треку</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="751"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="755"/>
         <source>Jump backward by the set number of beats.</source>
         <translation>Перейти назад на указанное количество битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="752"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="756"/>
         <source>Move the loop backward by the set number of beats.</source>
         <translation>Переместить петлю назад на указанное количество битов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="753"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="757"/>
         <source>Jump backward by 1 beat.</source>
         <translation>Перейти назад на 1 бит.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="754"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="758"/>
         <source>Move the loop backward by 1 beat.</source>
         <translation>Передвинуть петлю назад на 1 бит.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="762"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="766"/>
         <source>Reloop</source>
         <translation>Повторить петлю</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="764"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="768"/>
         <source>If the loop is ahead of the current position, looping will start when the loop is reached.</source>
         <translation>Если петля находится дальше относительно текущей позиции, она начнётся при достижении соответствующей точки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="765"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="769"/>
         <source>Works only if Loop-In and Loop-Out Marker are set.</source>
         <translation>Срабатывает только если указаны маркеры входа и выхода из петли.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="766"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="770"/>
         <source>Enable loop, jump to Loop-In Marker, and stop playback.</source>
         <translation>Включить петлю, перейти к маркеру входа в петлю и остановить воспроизведение.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="775"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="779"/>
         <source>Displays the elapsed and/or remaining time of the track loaded.</source>
         <translation>Отображает прошедшее и/или оставшееся время загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="776"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="780"/>
         <source>Click to toggle between time elapsed/remaining time/both.</source>
         <translation>Нажмите, чтобы переключаться между истёкшим/оставшимся временем.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="777"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="781"/>
         <source>Hint: Change the time format in Preferences -&gt; Decks.</source>
         <translation>Подсказка: Изменить формат времени можно в меню Параметры -&gt; Деки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="856"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="860"/>
         <source>Show/hide intro &amp; outro markers and associated buttons.</source>
         <translation>Проказать/скрыть маркеры вступления и завершения и соответствующие кнопки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="859"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="863"/>
         <source>Intro Start Marker</source>
         <translation>Маркер начала вступления</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="860"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="867"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="874"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="881"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="864"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="871"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="878"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="885"/>
         <source>If marker is set, jumps to the marker.</source>
         <translation>Если маркер указан, переходит к маркеру.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="861"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="868"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="875"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="882"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="865"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="872"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="879"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="886"/>
         <source>If marker is not set, sets the marker to the current play position.</source>
         <translation>Если маркер не указан, устанавливает маркер на текущую позицию воспроизведения.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="863"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="870"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="877"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="884"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="867"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="874"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="881"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="888"/>
         <source>If marker is set, clears the marker.</source>
         <translation>Если маркер указан, удаляет его.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="866"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="870"/>
         <source>Intro End Marker</source>
         <translation>Маркер конца вступления</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="873"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="877"/>
         <source>Outro Start Marker</source>
         <translation>Маркер начала завершения</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="880"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="884"/>
         <source>Outro End Marker</source>
         <translation>Маркер окончания завершения</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="899"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="903"/>
         <source>Mix</source>
         <translation>Микс</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="900"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="904"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
         <translation>Настройка способа смешивания оригинального сигнала с обработанным сигналом элементов эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="901"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="905"/>
         <source>D/W mode: Crossfade between dry and wet</source>
         <translation>Режим D/W: Кроссфейд между оригинальным и обработанным</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="902"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="906"/>
         <source>D+W mode: Add wet to dry</source>
         <translation>Режим D+W: Добавить к оригинальному обработанный</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="906"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="910"/>
         <source>Mix Mode</source>
         <translation>Режим микшера</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="907"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="911"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
         <translation>Настройка способа смешивания оригинального сигнала с обработанным сигналом элементов эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="908"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="912"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
         <translation>Режим «Оригинальный/обработанный сигналы» («crossed lines»): Ручка микширования переходит от оригинального к обработанному.
 Используйте эту функцию, чтобы изменить звучание трека с помощью эффектов эквалайзера и фильтра.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="910"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="914"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
         <translation>Режим «Оригинал + Обработанный сигнал (flat dry line):
 Используйте эту функцию, чтобы изменить только обработанный сигнал с помощью эффектов эквалайзера и фильтра.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="946"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="950"/>
         <source>Route the main mix through this effect unit.</source>
         <translation>Направить основной микс через этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="951"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="955"/>
         <source>Route the left crossfader bus through this effect unit.</source>
         <translation>Перенаправить левую шину кроссфейдера через этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="956"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="960"/>
         <source>Route the right crossfader bus through this effect unit.</source>
         <translation>Направить правую шину кроссфейдера через этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
         <source>Right side active: parameter moves with right half of Meta Knob turn</source>
         <translation>Активна правая сторона: параметр перемещается при повороте правой половины мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1059"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1063"/>
         <source>Skin Settings Menu</source>
         <translation>Меню параметров скина</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1060"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1064"/>
         <source>Show/hide skin settings menu</source>
         <translation>Показать/скрыть меню параметров скина</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1064"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
         <source>Save Sampler Bank</source>
         <translation>Сохранить банк сэмплера</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1065"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1069"/>
         <source>Save the collection of samples loaded in the samplers.</source>
         <translation>Сохранить коллекцию сэмплов, загруженную в сэмплеры.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1068"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1072"/>
         <source>Load Sampler Bank</source>
         <translation>Загрузить банк сэмплера</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1069"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1073"/>
         <source>Load a previously saved collection of samples into the samplers.</source>
         <translation>Загрузить предыдущую сохранённую коллекцию сэмплов в сэмплеры.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="892"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="896"/>
         <source>Show Effect Parameters</source>
         <translation>Показать параметры эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="985"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="989"/>
         <source>Enable Effect</source>
         <translation>Включить эффект</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1017"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
         <source>Meta Knob Link</source>
         <translation>Привязка мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1018"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1022"/>
         <source>Set how this parameter is linked to the effect&apos;s Meta Knob.</source>
         <translation>Позволяет указать как параметр связан с метаручкой эффекта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1026"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
         <source>Meta Knob Link Inversion</source>
         <translation>Инверсия привязки мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1027"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
         <source>Inverts the direction this parameter moves when turning the effect&apos;s Meta Knob.</source>
         <translation>Инвертирует направление, в котором двигается этот параметр, при повороте эффекта с помощью метаручки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="914"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="918"/>
         <source>Super Knob</source>
         <translation>Супер ручка</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="923"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="927"/>
         <source>Next Chain</source>
         <translation>Следующая цепочка</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="927"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="931"/>
         <source>Previous Chain</source>
         <translation>Предыдущие цепи</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="931"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="935"/>
         <source>Next/Previous Chain</source>
         <translation>Следующий/предыдущий цепь</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="981"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="985"/>
         <source>Clear</source>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="982"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="986"/>
         <source>Clear the current effect.</source>
         <translation>Удалить текущий эффект.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1042"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1046"/>
         <source>Toggle</source>
         <translation>Переключение</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1047"/>
         <source>Toggle the current effect.</source>
         <translation>Переключение текущего эффекта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="989"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="993"/>
         <source>Next</source>
         <translation>Следующая</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="888"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="892"/>
         <source>Clear Unit</source>
         <translation>Удалить блок</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="889"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="893"/>
         <source>Clear effect unit.</source>
         <translation>Удалить блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="893"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="897"/>
         <source>Show/hide parameters for effects in this unit.</source>
         <translation>Показать/скрыть параметры эффекта в этом блоке.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="896"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="900"/>
         <source>Toggle Unit</source>
         <translation>Переключение блока</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="897"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="901"/>
         <source>Enable or disable this whole effect unit.</source>
         <translation>Включить или отключить этот блок эффекта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="915"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="919"/>
         <source>Controls the Meta Knob of all effects in this unit together.</source>
         <translation>Управляет метаручкой всех эффектов этого блока.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="924"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="928"/>
         <source>Load next effect chain preset into this effect unit.</source>
         <translation>Загрузить следующую цепочку эффектов в этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="928"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="932"/>
         <source>Load previous effect chain preset into this effect unit.</source>
         <translation>Загрузить предыдущую цепочку эффектов в этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="932"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="936"/>
         <source>Load next or previous effect chain preset into this effect unit.</source>
         <translation>Загрузить следующую или предыдущую цепочку эффектов в этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="935"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="940"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="945"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="950"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="955"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="960"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="965"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="970"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="975"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="939"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="944"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="949"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="954"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="959"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="964"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="969"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="974"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="979"/>
         <source>Assign Effect Unit</source>
         <translation>Назначить модуль эффектов</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="936"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="940"/>
         <source>Assign this effect unit to the channel output.</source>
         <translation>Назначить этот блок эффектов выходному каналу.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="941"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="945"/>
         <source>Route the headphone channel through this effect unit.</source>
         <translation>Перенаправить канал наушников через этот блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="961"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="965"/>
         <source>Route this deck through the indicated effect unit.</source>
         <translation>Направить эту деку через указанный блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="966"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="970"/>
         <source>Route this sampler through the indicated effect unit.</source>
         <translation>Направить этот сэмплер через указанный блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="971"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="975"/>
         <source>Route this microphone through the indicated effect unit.</source>
         <translation>Направить этот микрофон через указанный блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="976"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="980"/>
         <source>Route this auxiliary input through the indicated effect unit.</source>
         <translation>Направить этот вспомогательный вход через указанный блок эффектов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="986"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="990"/>
         <source>The effect unit must also be assigned to a deck or other sound source to hear the effect.</source>
         <translation>Блок эффектов также должен быть подключён к деке или другому источнику звука, чтобы эффект было слышно.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="990"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="994"/>
         <source>Switch to the next effect.</source>
         <translation>Перейти к следующему эффекту.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="993"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="997"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="994"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="998"/>
         <source>Switch to the previous effect.</source>
         <translation>Перейти к предыдущему эффекту.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="997"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
         <source>Next or Previous</source>
         <translation>Следующий или предыдущий</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="998"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1002"/>
         <source>Switch to either the next or previous effect.</source>
         <translation>Перейти к следующему или предыдущему эффекту.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1001"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1005"/>
         <source>Meta Knob</source>
         <translation>Мета ручка</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1002"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1006"/>
         <source>Controls linked parameters of this effect</source>
         <translation>Позволяет настроить связанные с этим эффектом параметры</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1006"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1010"/>
         <source>Effect Focus Button</source>
         <translation>Кнопка фокуса на эффекте</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1007"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1011"/>
         <source>Focuses this effect.</source>
         <translation>Выделяет этот эффект.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1008"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1012"/>
         <source>Unfocuses this effect.</source>
         <translation>Убирает выделение с этого эффекта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1009"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1013"/>
         <source>Refer to the web page on the Mixxx wiki for your controller for more information.</source>
         <translation>Обратитесь к веб-странице вашего контроллера в Mixxx wiki для получения дополнительной информации.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1012"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1016"/>
         <source>Effect Parameter</source>
         <translation>Параметры эффекта</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1013"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1017"/>
         <source>Adjusts a parameter of the effect.</source>
         <translation>Настраивает параметр эффекта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1019"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1023"/>
         <source>Inactive: parameter not linked</source>
         <translation>Неактивно: параметр не привязан</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1020"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1024"/>
         <source>Active: parameter moves with Meta Knob</source>
         <translation>Активно: параметр перемещается с помощью метаручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1021"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1025"/>
         <source>Left side active: parameter moves with left half of Meta Knob turn</source>
         <translation>Активна левая сторона: параметр перемещается с помощью поворота правой половины мета ручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1023"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1027"/>
         <source>Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half</source>
         <translation>Активны левая и правая сторона: параметр перемещается по диапазону с половиной поворота мета ручки и обратно с другой половиной</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1030"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1054"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1034"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1058"/>
         <source>Equalizer Parameter Kill</source>
         <translation>Подавление параметра эквалайзера</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1031"/>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1035"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1059"/>
         <source>Holds the gain of the EQ to zero while active.</source>
         <translation>Удерживает нулевое значение усиления эквалайзера, когда включено.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1036"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1040"/>
         <source>Quick Effect Super Knob</source>
         <translation>Супер быстрый эффект ручки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1037"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1041"/>
         <source>Quick Effect Super Knob (control linked effect parameters).</source>
         <translation>Быстрый эффект супер ручку (контрольные параметры связанного эффекта).</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1039"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1043"/>
         <source>Hint: Change the default Quick Effect mode in Preferences -&gt; Equalizers.</source>
         <translation>Подсказка: Изменить режим быстрого эффекта по умолчанию можно в меню Параметры -&gt; Эквалайзеры.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1048"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1052"/>
         <source>Equalizer Parameter</source>
         <translation>Параметры эквалайзера</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1049"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1053"/>
         <source>Adjusts the gain of the EQ filter.</source>
         <translation>Настраивает усиление фильтра эквалайзера.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="1051"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="1055"/>
         <source>Hint: Change the default EQ mode in Preferences -&gt; Equalizers.</source>
         <translation>Подсказка: Изменить режим эквалайзера по умолчанию можно в меню Параметры -&gt; Эквалайзеры.</translation>
     </message>
@@ -13017,47 +13022,47 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Понижает питч на один полутон.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="668"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="672"/>
         <source>Enable Vinyl Control</source>
         <translation>Включить управление пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="669"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="673"/>
         <source>When disabled, the track is controlled by Mixxx playback controls.</source>
         <translation>Когда эта функция отключена, треком можно управлять с помощью контроллеров воспроизведения Mixxx.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="670"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="674"/>
         <source>When enabled, the track responds to external vinyl control.</source>
         <translation>Когда включено, треком можно управлять с внешней панели управления пластинкой.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="664"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="668"/>
         <source>Enable Passthrough</source>
         <translation>Включить передачу</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="838"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="842"/>
         <source>Indicates that the audio buffer is too small to do all audio processing.</source>
         <translation>Сигнализирует о том, что аудиобуфер слишком мал, чтобы выполнить обработку всего аудио.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="842"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="846"/>
         <source>Displays cover artwork of the loaded track.</source>
         <translation>Отображает обложку загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="846"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="850"/>
         <source>Displays options for editing cover artwork.</source>
         <translation>Отображает параметры для редактирования обложки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="851"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="855"/>
         <source>Star Rating</source>
         <translation>Рейтинг в виде звёзд</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="852"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="856"/>
         <source>Assign ratings to individual tracks by clicking the stars.</source>
         <translation>Присвоить оценки отдельным трекам с помощью звёздочек.</translation>
     </message>
@@ -13325,123 +13330,123 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Настройка питча в дополнение к ползунку скорости.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="633"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="637"/>
         <source>Opens a menu to clear hotcues or edit their labels and colors.</source>
         <translation>Открывает меню для удаления горячих меток или для редактирования их ярлыков и цветов.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="642"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="646"/>
         <source>Record Mix</source>
         <translation>Записать микс</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="643"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="647"/>
         <source>Toggle mix recording.</source>
         <translation>Переключение записи микса.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="653"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="657"/>
         <source>Enable Live Broadcasting</source>
         <translation>Включить трансляцию</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="654"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="658"/>
         <source>Stream your mix over the Internet.</source>
         <translation>Транслируйте свой микс через Интернет.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="655"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="659"/>
         <source>Provides visual feedback for Live Broadcasting status:</source>
         <translation>Обеспечивает визуальную обратную связь для Live вещания статуса:</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="656"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="660"/>
         <source>disabled, connecting, connected, failure.</source>
         <translation>отключено, подключение, подключено, ошибка.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="665"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="669"/>
         <source>When enabled, the deck directly plays the audio arriving on the vinyl input.</source>
         <translation>Когда этот параметр включён, дека напрямую воспроизводит звук, поступающий на вход пластинки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="677"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="681"/>
         <source>Blue for passthrough enabled.</source>
         <translation>Голубой для передачи включён.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="736"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="740"/>
         <source>Playback will resume where the track would have been if it had not entered the loop.</source>
         <translation>Воспроизведение возобновится, где трек был бы если он не введен цикла.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="757"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="761"/>
         <source>Loop Exit</source>
         <translation>Выход из петли</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="758"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="762"/>
         <source>Turns the current loop off.</source>
         <translation>Отключение текущего цикла.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="769"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="773"/>
         <source>Slip Mode</source>
         <translation>Режим скольжения</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="770"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="774"/>
         <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
         <translation>Когда этот параметр включён, воспроизведение продолжается приглушённым в фоновом режиме во время петли, обратной прокрутки, скретча и так далее.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="771"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="775"/>
         <source>Once disabled, the audible playback will resume where the track would have been.</source>
         <translation>После отключения звуковое воспроизведение возобновится с того места, где была бы дорожка.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="813"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="817"/>
         <source>Track Key</source>
         <extracomment>The musical key of a track</extracomment>
         <translation>Тональность трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="814"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="818"/>
         <source>Displays the musical key of the loaded track.</source>
         <translation>Отображает тональность загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="827"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="831"/>
         <source>Clock</source>
         <translation>Часы</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="828"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="832"/>
         <source>Displays the current time.</source>
         <translation>Отображает текущее время.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="831"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="835"/>
         <source>Audio Latency Usage Meter</source>
         <translation>Измеритель использования задержки аудио</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="832"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="836"/>
         <source>Displays the fraction of latency used for audio processing.</source>
         <translation>Отображает долю задержки, используемую для обработки звука.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="833"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="837"/>
         <source>A high value indicates that audible glitches are likely.</source>
         <translation>Высокое значение говорит о возможном наличии звуковых сбоев.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="834"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="838"/>
         <source>Do not enable keylock, effects or additional decks in this situation.</source>
         <translation>Не включайте блокировку клавиатуры, эффекты или дополнительные деки в этой ситуации.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="837"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="841"/>
         <source>Audio Latency Overload Indicator</source>
         <translation>Индикатор перегрузки задержки звука</translation>
     </message>
@@ -13543,117 +13548,117 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Когда трек активен, он будет повторяться при пропуске конца или включении обратного воспроизведения до старта.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="623"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="622"/>
         <source>Eject</source>
         <translation>Извлечь</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="624"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="622"/>
         <source>Ejects track from the player.</source>
         <translation>Извлечь трек из проигрывателя.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="626"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="630"/>
         <source>Hotcue</source>
         <translation>Горячая метка</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="628"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="632"/>
         <source>If hotcue is set, jumps to the hotcue.</source>
         <translation>Если указана горячая метка, переходит к горячей метке.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="629"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="633"/>
         <source>If hotcue is not set, sets the hotcue to the current play position.</source>
         <translation>Если горячая метка не указана, указывает горячую метку на текущей позиции.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="680"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="684"/>
         <source>Vinyl Control Mode</source>
         <translation>Режим управления пластинками</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="681"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="685"/>
         <source>Absolute mode - track position equals needle position and speed.</source>
         <translation>Абсолютный режим — позиция трека равна позиции и скорости иглы.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="682"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="686"/>
         <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
         <translation>Относительный режим - трек скорость равна скорость иглы независимо от положения иглы.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="683"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="687"/>
         <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
         <translation>Постоянный режим — скорость трека равна последней известной — постоянная скорость независимо от ввода иглы.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="673"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="677"/>
         <source>Vinyl Status</source>
         <translation>Статус пластинки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="674"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="678"/>
         <source>Provides visual feedback for vinyl control status:</source>
         <translation>Обеспечивает визуальную обратную связь для Винил управления статуса:</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="675"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="679"/>
         <source>Green for control enabled.</source>
         <translation>Зелёный для управления включён.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="676"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="680"/>
         <source>Blinking yellow for when the needle reaches the end of the record.</source>
         <translation>Мигать жёлтым, когда игла достигнет конца записи.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="693"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="697"/>
         <source>Loop-In Marker</source>
         <translation>Маркер входа в петлю</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="702"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="706"/>
         <source>Loop-Out Marker</source>
         <translation>Маркер выхода из петли</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="711"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="715"/>
         <source>Loop Halve</source>
         <translation>Сократить петлю вдвое</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="712"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="716"/>
         <source>Halves the current loop&apos;s length by moving the end marker.</source>
         <translation>Сокращает вдвое длину петли, перемещая маркер конца.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="713"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="717"/>
         <source>Deck immediately loops if past the new endpoint.</source>
         <translation>Дека сразу зацикливается, если вставить новую конечную точку.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="716"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="720"/>
         <source>Loop Double</source>
         <translation>Двойная петля</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="717"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="721"/>
         <source>Doubles the current loop&apos;s length by moving the end marker.</source>
         <translation>Удваивает длину текущей петли, перемещая маркер конца.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="732"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="736"/>
         <source>Beatloop</source>
         <translation>Битовая петля</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="763"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="767"/>
         <source>Toggles the current loop on or off.</source>
         <translation>Включает и выключает текущий цикл.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="759"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="763"/>
         <source>Works only if Loop-In and Loop-Out marker are set.</source>
         <translation>Срабатывает только если указаны маркеры входа и выхода из петли.</translation>
     </message>
@@ -13663,82 +13668,82 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation>Подсказка: Изменить режим метки по умолчанию можно в меню настройка -&gt; Интерфейс.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="686"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="690"/>
         <source>Vinyl Cueing Mode</source>
         <translation>Режим меток для пластинки</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="687"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="691"/>
         <source>Determines how cue points are treated in vinyl control Relative mode:</source>
         <translation>Определяет способ работы с точками меток в относительном режиме панели пластинки:</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="688"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="692"/>
         <source>Off - Cue points ignored.</source>
         <translation>-Ключевые точки игнорируются.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="689"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="693"/>
         <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
         <translation>Один Cue - если игла удаляется после ключевой точки, трек будет стремиться к этой ключевой точки.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="774"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="778"/>
         <source>Track Time</source>
         <translation>Время трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="780"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="784"/>
         <source>Track Duration</source>
         <translation>Длительность трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="781"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="785"/>
         <source>Displays the duration of the loaded track.</source>
         <translation>Отображает продолжительность загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="783"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="787"/>
         <source>Information is loaded from the track&apos;s metadata tags.</source>
         <translation>Информация загружена из тегов метаданных трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="785"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="789"/>
         <source>Track Artist</source>
         <translation>Исполнитель трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="786"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="790"/>
         <source>Displays the artist of the loaded track.</source>
         <translation>Отображает исполнителя загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="794"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="798"/>
         <source>Track Title</source>
         <translation>Название трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="795"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="799"/>
         <source>Displays the title of the loaded track.</source>
         <translation>Отображает название загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="803"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="807"/>
         <source>Track Album</source>
         <translation>Альбом трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="804"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="808"/>
         <source>Displays the album name of the loaded track.</source>
         <translation>Отображает название альбома загруженного трека.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="818"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="822"/>
         <source>Track Artist/Title</source>
         <translation>Исполнитель/название трека</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/tooltips.cpp" line="819"/>
+        <location filename="../../src/skin/legacy/tooltips.cpp" line="823"/>
         <source>Displays the artist and title of the loaded track.</source>
         <translation>Отображает исполнителя и название загруженного трека.</translation>
     </message>
@@ -14516,20 +14521,20 @@ This can not be undone!</source>
         <translation>Проход</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="794"/>
+        <location filename="../../src/widget/woverview.cpp" line="797"/>
         <source>Ready to play, analyzing...</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Готов к воспроизведению, производится анализ...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="797"/>
-        <location filename="../../src/widget/woverview.cpp" line="807"/>
+        <location filename="../../src/widget/woverview.cpp" line="800"/>
+        <location filename="../../src/widget/woverview.cpp" line="810"/>
         <source>Loading track...</source>
         <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Загрузка трека...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="801"/>
+        <location filename="../../src/widget/woverview.cpp" line="804"/>
         <source>Finalizing...</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Завершение...</translation>
@@ -15467,17 +15472,12 @@ Mixxx требует QT с поддержкой SQLite. Пожалуйста, п
         <translation>Каталог экспорта не был выбран. Выберите каталог, чтобы экспортировать медиатеку.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="260"/>
-        <source>A database already exists in the chosen directory, but it is of an unsupported version. Export is not guaranteed to succeed in this situation.</source>
-        <translation>База данных уже существует в выбранном каталоге, но её версия не поддерживается. Успех экспорта в этой ситуации не гарантирован.</translation>
-    </message>
-    <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="268"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="255"/>
         <source>A database already exists in the chosen directory. Exported tracks will be added into this database.</source>
         <translation>База данных уже существует в выбранном каталоге. Экспортированные треки будут добавлены в эту базу данных.</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/dlglibraryexport.cpp" line="279"/>
+        <location filename="../../src/library/export/dlglibraryexport.cpp" line="265"/>
         <source>A database already exists in the chosen directory, but there was a problem loading it. Export is not guaranteed to succeed in this situation.</source>
         <translation>База данных уже существует в выбранном каталоге, но при её загрузке возникла проблема. Успех экспорта в этой ситуации не гарантирован.</translation>
     </message>

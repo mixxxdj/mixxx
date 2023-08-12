@@ -2181,6 +2181,16 @@ void WTrackMenu::slotShowDlgTrackInfo() {
     m_pDlgTrackInfo->show();
 }
 
+void WTrackMenu::showDlgTrackInfo(const QString& property) {
+    if (isEmpty()) {
+        return;
+    }
+    slotShowDlgTrackInfo();
+    if (m_pDlgTrackInfo->isVisible()) {
+        m_pDlgTrackInfo->focusField(property);
+    }
+}
+
 void WTrackMenu::slotShowDlgTagFetcher() {
     if (isEmpty()) {
         return;

@@ -541,6 +541,64 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+if(NOT MSVC)
+  find_program(MOLD_EXECUTABLE mold)
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  if(MOLD_SUPPORT)
+    if(MOLD_EXECUTABLE)
+      message(STATUS "Selecting mold as linker")
+      set(SELECT_MOLD_WITH_FUSE true)
+      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
+      # Earlier versions must use the -B option.
+      if (GNU_GCC)
+        execute_process(
+          COMMAND gcc -dumpfullversion
+          ERROR_QUIET
+          OUTPUT_VARIABLE GCC_VERSION_STRING
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
+          set(SELECT_MOLD_WITH_FUSE false)
+        endif()
+      endif()
+      if (SELECT_MOLD_WITH_FUSE)
+        add_link_options("-fuse-ld=mold")
+      else()
+        add_link_options("-B${MOLD_EXECUTABLE}")
+      endif()
+    else()
+      message(FATAL_ERROR "Could NOT find mold (missing executable)")
+    endif()
+  else()
+    find_program(LLD_EXECUTABLE lld)
+    if(LLD_EXECUTABLE)
+      execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+        ERROR_QUIET
+        OUTPUT_VARIABLE LLD_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
+      if(LLD_VERSION_MATCH)
+        set(LLD_VERSION ${CMAKE_MATCH_1})
+        message(STATUS "Found lld with version: ${LLD_VERSION}")
+      else()
+        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+      endif()
+    endif()
+    # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
+    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    if(LLD_SUPPORT)
+      if(LLD_EXECUTABLE)
+        message(STATUS "Selecting lld as linker")
+        add_link_options("-fuse-ld=lld")
+      else()
+        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+      endif()
+    endif()
+  endif()
+endif()
+
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -808,6 +866,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
@@ -1213,6 +1272,7 @@ else()
       src/shaders/shader.cpp
       src/shaders/textureshader.cpp
       src/shaders/unicolorshader.cpp
+      src/shaders/vinylqualityshader.cpp
       src/util/texture.cpp
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
@@ -2065,70 +2125,83 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.16.1)
-
-  # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
-  # embedded SQLite in such a case.
-  if (APPLE AND NOT SQLite3_IS_STATIC)
-    message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
-    set(DJINTEROP_SYSTEM_SQLITE OFF)
-  else()
-    message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
-    set(DJINTEROP_SYSTEM_SQLITE ON)
+  set(LIBDJINTEROP_VERSION 0.19.1)
+  # Look whether an existing installation of libdjinterop matches the required version.
+  find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
+  if(NOT DjInterop_FOUND)
+    find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT MODULE)
   endif()
 
-  set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
-  set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  if(DjInterop_FOUND)
+    # An existing installation of djinterop is available.
+    message(STATUS "STATIC link existing system installation of libdjinterop")
+    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+  else()
+    # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
+    # embedded SQLite in such a case.
+    if (APPLE AND NOT SQLite3_IS_STATIC)
+      message(STATUS "Building libdjinterop sources (with embedded SQLite) fetched from GitHub")
+      set(DJINTEROP_SYSTEM_SQLITE OFF)
+    else()
+      message(STATUS "Building libdjinterop sources (with system SQLite) fetched from GitHub")
+      set(DJINTEROP_SYSTEM_SQLITE ON)
+    endif()
 
-  # CMake does not pass lists of paths properly to external projects.
-  # This is worked around by changing the list separator.
-  string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+    set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
+    set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
-  # For offline builds download the archive file from the URL and
-  # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
-  # the configuration.
-  ExternalProject_Add(libdjinterop
-    URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-    URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
-    DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
-    DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
-    INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
-    LIST_SEPARATOR "|"
-    CMAKE_ARGS
-      -DBUILD_SHARED_LIBS=OFF
-      -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-      -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
-      -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-      -DCMAKE_INSTALL_LIBDIR:PATH=lib
-      -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
-      -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
-      -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
-      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
-      -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
-    BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
-    BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
-    EXCLUDE_FROM_ALL TRUE
-  )
+    # CMake does not pass lists of paths properly to external projects.
+    # This is worked around by changing the list separator.
+    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
 
-  # Assemble a library based on the external project.
-  add_library(mixxx-libdjinterop STATIC IMPORTED)
-  add_dependencies(mixxx-libdjinterop libdjinterop)
-  set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
-  set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
-  set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
-  target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
-  target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
+    # For offline builds download the archive file from the URL and
+    # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
+    # the configuration.
+    ExternalProject_Add(libdjinterop
+      URL
+        "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
+        "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
+      URL_HASH SHA256=fd03a7ed54bf4e58da0075b517a6e7382546227a1ac165769987d57e1cf5e36e
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
+      DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
+      INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+      LIST_SEPARATOR "|"
+      CMAKE_ARGS
+        -DBUILD_SHARED_LIBS=OFF
+        -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
+        -DCMAKE_INSTALL_LIBDIR:PATH=lib
+        -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+        -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
+      BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
+      EXCLUDE_FROM_ALL TRUE
+    )
 
-  # Since we have built libdjinterop from sources as a static library, its
-  # transitive dependencies are not automatically recognised.  libdjinterop
-  # depends on zlib and optionally sqlite3.  If libdjinterop was configured
-  # to depend on system SQLite, Mixxx will already have the dependency.
-  # But it does not have zlib, so we explicitly add that here.
-  find_package(ZLIB 1.2.8 REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
+    # Assemble a library based on the external project.
+    add_library(mixxx-libdjinterop STATIC IMPORTED)
+    add_dependencies(mixxx-libdjinterop libdjinterop)
+    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
+    set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
+    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
+    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
+    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
+
+    # Since we have built libdjinterop from sources as a static library, its
+    # transitive dependencies are not automatically recognised.  libdjinterop
+    # depends on zlib and optionally sqlite3.  If libdjinterop was configured
+    # to depend on system SQLite, Mixxx will already have the dependency.
+    # But it does not have zlib, so we explicitly add that here.
+    find_package(ZLIB 1.2.8 REQUIRED)
+    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
+  endif()
 
   # Include conditional sources only required with Engine Prime export support.
   target_sources(mixxx-lib PRIVATE
@@ -2197,10 +2270,10 @@ if(KEYFINDER)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
-        -DCMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
-        -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
-        -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -DBUILD_TESTING=OFF
@@ -2311,7 +2384,7 @@ target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
 
 # Protobuf
 add_subdirectory(src/proto)
-target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
+target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue

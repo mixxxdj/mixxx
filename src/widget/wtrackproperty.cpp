@@ -103,7 +103,7 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-        m_pTrackMenu->slotShowDlgTrackInfo();
+        m_pTrackMenu->showDlgTrackInfo(m_property);
     }
 }
 

@@ -107,7 +107,7 @@ bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
         }
     }
 
-    m_playlistNameById[playlist.id] = uniqueName;
+    m_playlistNameById[playlist.id] = playlist.name;
 
     return true;
 }
@@ -158,7 +158,7 @@ void ITunesDAO::appendPlaylistTree(gsl::not_null<TreeItem*> item, int playlistId
             [this, &item](auto childEntry) {
                 int childId = childEntry.second;
                 QString childName = m_playlistNameById[childId];
-                TreeItem* child = item->appendChild(childName);
+                TreeItem* child = item->appendChild(childName, childId);
                 appendPlaylistTree(child, childId);
             });
 }

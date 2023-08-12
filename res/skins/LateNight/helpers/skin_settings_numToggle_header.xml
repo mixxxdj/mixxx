@@ -23,7 +23,7 @@ Variables:
       <Alignment>center</Alignment>
     </State>
     <Connection>
-      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <ConfigKey><Variable name="Setting"/></ConfigKey>
       <Transform><IsEqual><Variable name="IsEqual"/></IsEqual></Transform>
       <ButtonState>LeftButton</ButtonState>
     </Connection>

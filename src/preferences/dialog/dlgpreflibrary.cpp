@@ -241,6 +241,7 @@ void DlgPrefLibrary::slotUpdate() {
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
+    setSeratoMetadataEnabled(checkBox_SyncTrackMetadata->isChecked());
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -574,7 +575,16 @@ void DlgPrefLibrary::slotBpmColumnPrecisionChanged(int bpmPrecision) {
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadata->isChecked()) {
+    bool shouldSyncTrackMetadata = checkBox_SyncTrackMetadata->isChecked();
+    if (isVisible() && shouldSyncTrackMetadata) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+    }
+    setSeratoMetadataEnabled(shouldSyncTrackMetadata);
+}
+
+void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
+    checkBox_SeratoMetadataExport->setEnabled(shouldSyncTrackMetadata);
+    if (!shouldSyncTrackMetadata) {
+        checkBox_SeratoMetadataExport->setChecked(false);
     }
 }

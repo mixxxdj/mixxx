@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "library/itunes/itunesdao.h"
+#include "library/itunes/itunesfeature.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/queryutil.h"
@@ -43,15 +44,14 @@ const QString kRemote = "Remote";
 
 } // anonymous namespace
 
-ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
+ITunesXMLImporter::ITunesXMLImporter(
+        ITunesFeature* pParentFeature,
         const QString& xmlFilePath,
-        const std::atomic<bool>& cancelImport,
         std::unique_ptr<ITunesDAO> dao)
-        : m_parentFeature(parentFeature),
+        : ITunesImporter(pParentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
-          m_cancelImport(cancelImport),
           m_dao(std::move(dao)) {
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
@@ -73,7 +73,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
         return iTunesImport;
     }
 
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
         if (m_xml.isStartElement()) {
             if (m_xml.name() == QLatin1String("key")) {
@@ -90,9 +90,9 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                 } else if (key == "Playlists") {
                     parsePlaylists();
 
-                    // The parent feature may ne null during testing
-                    std::unique_ptr<TreeItem> pRootItem = m_parentFeature
-                            ? TreeItem::newRoot(m_parentFeature)
+                    // The parent feature may be null during testing
+                    std::unique_ptr<TreeItem> pRootItem = m_pParentFeature
+                            ? TreeItem::newRoot(m_pParentFeature)
                             : std::make_unique<TreeItem>();
                     m_dao->appendPlaylistTree(pRootItem.get());
 
@@ -213,7 +213,7 @@ void ITunesXMLImporter::parseTracks() {
     qDebug() << "Parse iTunes music collection";
 
     // read all sunsequent <dict> until we reach the closing ENTRY tag
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {
@@ -397,7 +397,7 @@ void ITunesXMLImporter::parseTrack() {
 void ITunesXMLImporter::parsePlaylists() {
     qDebug() << "Parse iTunes playlists";
 
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
         // We process and iterate the <dict> tags holding playlist summary information here
         if (m_xml.isStartElement() && m_xml.name() == kDict) {
@@ -436,7 +436,7 @@ void ITunesXMLImporter::parsePlaylist() {
     bool isPlaylistItemsStarted = false;
 
     // We process and iterate the <dict> tags holding playlist summary information here
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {
