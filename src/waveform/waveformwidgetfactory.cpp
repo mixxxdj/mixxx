@@ -819,7 +819,11 @@ void WaveformWidgetFactory::swap() {
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     if (m_openGlAvailable) {
         if (m_openGLShaderAvailable) {
+#ifndef MIXXX_USE_QOPENGL
             return WaveformWidgetType::GLSLRGBWaveform;
+#else
+            return WaveformWidgetType::AllShaderRGBWaveform;
+#endif
         } else {
             return WaveformWidgetType::GLRGBWaveform;
         }
