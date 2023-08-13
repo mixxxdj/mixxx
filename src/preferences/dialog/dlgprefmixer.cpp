@@ -184,7 +184,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         setScrollSafeGuard(pEqComboBox);
         m_deckEqEffectSelectors.append(pEqComboBox);
 
-        // Load EQ from from mixxx.cfg, add and select it in the comboboxe
+        // Load EQ from from mixxx.cfg, add and select it in the combobox(es).
         // If the ConfigKey exists the EQ is loaded. If the value is empty no
         // EQ was selected ('---').
         // If the key doesn't exist the default EQ is loaded.
@@ -193,8 +193,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 kDefaultEqId);
         const EffectManifestPointer pEQManifest =
                 m_pBackendManager->getManifestFromUniqueId(configuredEffect);
-        // We just add the one required item to the box so
-        // applyDeckEQs() can load it.
+        // We just add the one required item to the box so applyDeckEQs() can load it.
         if (pEQManifest) {
             pEqComboBox->addItem(pEQManifest->name(), QVariant(pEQManifest->uniqueId()));
         } else {
@@ -325,6 +324,7 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
         QString deckGroupName = PlayerManager::groupForDeck(deck);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
         EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+        DEBUG_ASSERT(pChain);
         for (const auto& pChainPreset : presetList) {
             pBox->addItem(pChainPreset->name());
             if (pChain->presetName() == pChainPreset->name()) {
@@ -461,6 +461,8 @@ void DlgPrefMixer::slotEQEffectChangedOnDeck(int effectIndex) {
 
     // If we are in single-effect mode and the first effect was changed,
     // change the others as well.
+    // TODO Fictional use case: when user changes EQ effect on a deck other than
+    // deck1 via direct chain controls, we may uncheck single EQ.
     if (m_singleEq) {
         slotSingleEqToggled(true);
     }
@@ -604,8 +606,8 @@ void DlgPrefMixer::slotLoEqSliderChanged() {
 }
 
 void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
-    // apply parameter, but don't write to config, yet, so
-    // Cancel will reset to the previous state
+    // Apply parameter, but don't write to config, yet, so Cancel will restore
+    // the saved state.
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (pEffectSlot.isNull()) {
         return;
@@ -618,7 +620,7 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
 
     // Update slider label
     int index = m_mainEQSliders.indexOf(pSlider);
-    QLabel* pValueLabel = m_mainEQValues[index]; // verify
+    QLabel* pValueLabel = m_mainEQValues[index];
     VERIFY_OR_DEBUG_ASSERT(pValueLabel) {
         return;
     }
@@ -644,9 +646,6 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
 }
 
 int DlgPrefMixer::getSliderPosition(double eqFreq, int minValue, int maxValue) {
-    // TODO there is some conversion issue with this and getEqFreq():
-    // values above ~15 kHz are lowered with each slotUpdate() until the settle
-    // at a certain value
     if (eqFreq >= kFrequencyUpperLimit) {
         return maxValue;
     } else if (eqFreq <= kFrequencyLowerLimit) {
@@ -699,7 +698,7 @@ void DlgPrefMixer::storeEqShelves() {
     m_pConfig->set(kLowEqFreqPreciseKey, ConfigValue(QString::number(m_lowEqFreq, 'f')));
 }
 
-// Update the widgets with values from config
+// Update the widgets with values from config / EffectsManager
 void DlgPrefMixer::slotUpdate() {
     // xfader //////////////////////////////////////////////////////////////////
     m_transform = m_pConfig->getValue(
@@ -808,7 +807,7 @@ void DlgPrefMixer::drawXfaderDisplay() {
     QPen gridPen(Qt::green);
     QPen graphLinePen(Qt::white);
 
-    // draw grid
+    // Draw grid
     for (int i = 1; i < kGrindXLines; i++) {
         pXfScene->addLine(
                 QLineF(0, i * (sizeY / kGrindXLines), sizeX, i * (sizeY / kGrindXLines)), gridPen);
@@ -947,7 +946,7 @@ void DlgPrefMixer::updateMainEQ() {
     if (configuredEffectManifest) {
         mainEqIndex = comboBoxMainEq->findData(configuredEffectManifest->uniqueId());
     }
-    // set index and create required sliders and labels
+    // Set index and create required sliders and labels
     comboBoxMainEq->setCurrentIndex(mainEqIndex);
 
     // Load parameters from preferences and set sliders
@@ -962,7 +961,7 @@ void DlgPrefMixer::updateMainEQ() {
             continue;
         }
         pSlider->setValue(static_cast<int>(paramValue * 100));
-        // label is updated in  slotMainEQParameterSliderChanged()
+        // Thelabel is updated in slotMainEQParameterSliderChanged()
     }
 }
 
@@ -1038,7 +1037,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
                 &QSlider::sliderMoved,
                 this,
                 &DlgPrefMixer::slotMainEQParameterSliderChanged);
-        // catch scroll event
+        // catch scroll event and slider->setValue()
         connect(pSlider,
                 &QSlider::valueChanged,
                 this,
@@ -1048,9 +1047,8 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         QString valueText = QString::number((double)pSlider->value() / 100);
         pValueLabel->setText(valueText);
 
-        // Use max required label width so column width doesn't change
-        // when slider is moved.
-        // Considers decimals only where we actually show them
+        // Use max required label width so column width doesn't change when the
+        // slider is moved. Considers decimals only where we actually show them.
         QFontMetrics metrics(font());
         QString maxValueString = QString::number(
                 roundToInt ? pSlider->maximum() : pSlider->maximum() - 0.01);
