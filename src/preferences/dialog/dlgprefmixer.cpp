@@ -260,13 +260,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         int deck = m_deckEqEffectSelectors.indexOf(pBox);
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
                 PlayerManager::groupForDeck(deck));
-        VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-            return;
-        }
+        DEBUG_ASSERT(pChainSlot);
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
-        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-            return;
-        }
+        DEBUG_ASSERT(pEffectSlot);
         const EffectManifestPointer pLoadedManifest =
                 pEffectSlot->getManifest();
 
@@ -496,13 +492,9 @@ void DlgPrefMixer::applyDeckEQs() {
 
         QString deckGroup = PlayerManager::groupForDeck(deck);
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(deckGroup);
-        VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-            return;
-        }
+        DEBUG_ASSERT(pChainSlot);
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
-        VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-            return;
-        }
+        DEBUG_ASSERT(pEffectSlot);
         pEffectSlot->setEnabled(!m_eqBypass);
 
         const EffectManifestPointer pManifest =
@@ -900,13 +892,9 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
 
 void DlgPrefMixer::setUpMainEQ() {
     auto pChainSlot = m_pEffectsManager->getOutputEffectChain();
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return;
-    }
+    DEBUG_ASSERT(pChainSlot);
     auto pEffectSlot = pChainSlot->getEffectSlot(0);
-    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-        return;
-    }
+    DEBUG_ASSERT(pEffectSlot);
     m_pEffectMainEQ = pEffectSlot;
 
     connect(pbResetMainEq, &QPushButton::clicked, this, &DlgPrefMixer::slotMainEQToDefault);
