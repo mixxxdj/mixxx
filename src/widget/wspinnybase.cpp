@@ -297,8 +297,7 @@ void WSpinnyBase::slotCoverFound(
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (pRequestor == this &&
-            m_pLoadedTrack &&
+    if (m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         setLoadedCover(pixmap);
         coverChanged();
