@@ -1127,12 +1127,28 @@ double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
 
 double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
+    const mixxx::audio::FramePos outroStartPosition = pDeck->outroStartPosition();
     const mixxx::audio::FramePos outroEndPosition = pDeck->outroEndPosition();
     if (!outroEndPosition.isValid() || outroEndPosition > trackEndPosition) {
-        return getLastSoundSecond(pDeck);
+        double lastSoundSecond = getLastSoundSecond(pDeck);
+        if (!outroStartPosition.isValid() || outroStartPosition > trackEndPosition) {
+            // No outro start and outro end set, use Last Sound.
+            return lastSoundSecond;
+        }
+        double outroStartSecond = framePositionToSeconds(outroStartPosition, pDeck);
+        if (m_transitionTime >= 0 && lastSoundSecond > outroStartSecond) {
+            double outroEndFromTime = outroStartSecond + m_transitionTime;
+            if (outroEndFromTime < lastSoundSecond) {
+                // The outroEnd is automatically placed by AnalyzerSilence at the last sound
+                // Here the user has removed it, but has placed a outro start.
+                // Use the transition time instead the dismissed last sound position.
+                return outroEndFromTime;
+            }
+            return lastSoundSecond;
+        }
+        return outroStartSecond;
     }
     return framePositionToSeconds(outroEndPosition, pDeck);
-    ;
 }
 
 double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
