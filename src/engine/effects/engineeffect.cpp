@@ -56,6 +56,7 @@ EngineEffect::~EngineEffect() {
 void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
         // already initialized for this input channel
+        return;
     }
 
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.

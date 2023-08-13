@@ -1017,7 +1017,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
     if (field.value > 0) {
         var effectUnitNumber = field.group.slice(-2, -1);
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(field.group, "load_preset", 1);
+            engine.setValue(field.group, "loaded_chain_preset", 1);
             return;
         }
         TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, function() {
@@ -1099,7 +1099,7 @@ TraktorS2MK2.effectButton = function(field) {
 
     if (field.value > 0) {
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(effectUnitGroup, "load_preset", buttonNumber+1);
+            engine.setValue(effectUnitGroup, "loaded_chain_preset", buttonNumber+1);
         } else {
             if (TraktorS2MK2.effectFocusChooseModeActive[effectUnitGroup]) {
                 if (focusedEffect === buttonNumber) {
