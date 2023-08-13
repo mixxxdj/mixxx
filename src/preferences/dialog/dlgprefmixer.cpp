@@ -217,8 +217,8 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 &DlgPrefMixer::slotQuickEffectChangedOnDeck);
         // Change the QuickEffect when it was changed in WEffectChainPresetSelector
         // or with controllers
-        QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroup);
-        EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+        EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
+        DEBUG_ASSERT(pChain);
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
@@ -321,9 +321,8 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
         pBox->clear();
         int currentIndex = 0; // preselect empty item '---' as default
 
-        QString deckGroupName = PlayerManager::groupForDeck(deck);
-        QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
-        EffectChainPointer pChain = m_pEffectsManager->getEffectChain(unitGroup);
+        EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(
+                PlayerManager::groupForDeck(deck));
         DEBUG_ASSERT(pChain);
         for (const auto& pChainPreset : presetList) {
             pBox->addItem(pChainPreset->name());
@@ -549,12 +548,9 @@ void DlgPrefMixer::applyQuickEffects() {
         }
 
         if (needLoad) {
-            const QString quickEffectGroup = QuickEffectChain::formatEffectChainGroup(
+            EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(
                     PlayerManager::groupForDeck(deck));
-            EffectChainPointer pChain = m_pEffectsManager->getEffectChain(quickEffectGroup);
-            VERIFY_OR_DEBUG_ASSERT(pChain) {
-                return;
-            }
+            DEBUG_ASSERT(pChain);
             const QList<EffectChainPresetPointer> presetList =
                     m_pChainPresetManager->getQuickEffectPresetsSorted();
             if (effectIndex >= 0 && effectIndex < presetList.size()) {
