@@ -582,8 +582,8 @@ TEST_F(EngineSyncTest, SetExplicitLeaderByLights) {
     ProcessBuffer();
 
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));
-    EXPECT_TRUE(isSoftLeader(m_sGroup1));
-    EXPECT_TRUE(isFollower(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
+    EXPECT_TRUE(isFollower(m_sGroup1));
 }
 
 TEST_F(EngineSyncTest, SetExplicitLeaderByLightsNoTracks) {

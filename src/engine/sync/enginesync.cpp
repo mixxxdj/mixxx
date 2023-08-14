@@ -60,11 +60,18 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     }
     case SyncMode::Follower: {
         // A request for follower mode may be converted into an enabling of soft
-        // leader mode.
-        activateFollower(pSyncable);
+        // leader mode if this still be best choice
+        if (m_pLeaderSyncable == pSyncable) {
+            // Avoid that pickLeader() returns pSyncable with SyncMode::LeaderExplicit
+            m_pLeaderSyncable = nullptr;
+        }
         Syncable* newLeader = pickLeader(pSyncable);
+        if (newLeader != pSyncable) {
+            activateFollower(pSyncable);
+        }
         if (newLeader && newLeader != m_pLeaderSyncable) {
             // if the leader has changed, activate it (this updates m_pLeaderSyncable)
+            // But don't make an an explicit leader soft.
             activateLeader(newLeader, SyncMode::LeaderSoft);
         }
         break;
