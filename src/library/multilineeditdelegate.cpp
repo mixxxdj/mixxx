@@ -137,8 +137,8 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     int vScrollW = vScrollbarVisible ? verticalScrollBar()->width() : 0;
     // TODO For some reason the width isn't enough for all content, h-scrollbars show up
     // BUT after v- or h-scroll, the document is suddenly 8px wider, no idea where those
-    // are coming from
-    int optW = docW + frameWidth() * 2 + vScrollW;
+    // are coming from. Adding these magic 8px fixes it.
+    int optW = docW + frameWidth() * 2 + 8 + vScrollW;
     int newW = std::max(indexRect.width(), optW);
     int tableW = tableRect.width();
     if (indexRect.x() + newW > tableW) {
