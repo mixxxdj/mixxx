@@ -469,9 +469,9 @@ void DlgPrefDeck::slotUpdate() {
     const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
             static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
                     ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
-                    EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER));
-    if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER) {
-        radioButtonImplicitLeader->setChecked(true);
+                    EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
+    if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER) {
+        radioButtonSoftLeader->setChecked(true);
     } else {
         radioButtonLockBpm->setChecked(true);
     }
@@ -561,7 +561,7 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
 
-    radioButtonImplicitLeader->setChecked(true);
+    radioButtonSoftLeader->setChecked(true);
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
@@ -742,9 +742,9 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
 
-    if (radioButtonImplicitLeader->isChecked()) {
+    if (radioButtonSoftLeader->isChecked()) {
         m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
-                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_IMPLICIT_LEADER));
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
     } else {
         m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
                 static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_LOCK_BPM));

@@ -22,7 +22,7 @@ class EngineSync : public SyncableListener {
     // and editing code is committed and we no longer need the lock bpm fallback option.
     enum SyncLockAlgorithm {
         // New behavior, which should work if beatgrids are reliable.
-        PREFER_IMPLICIT_LEADER,
+        PREFER_SOFT_LEADER,
         // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
         // for auto DJ mode.
         PREFER_LOCK_BPM
