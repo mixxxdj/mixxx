@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (unreleased)
+## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)
 
 * Fixed possible crash when closing Mixxx while browsing the file system
   [#11593](https://github.com/mixxxdj/mixxx/pull/11593)
