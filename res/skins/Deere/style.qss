@@ -263,15 +263,13 @@ WLibraryTextBrowser {
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 WBeatSpinBox,
-#LibraryBPMSpinBox {
-  selection-color: #000;
-  selection-background-color: #ccc;
-}
-WLibrary QLineEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
+  selection-color: #000;
+  selection-background-color: #ccc;
   border: 1px solid #006596;
 }
 
@@ -847,6 +845,7 @@ WTrackTableViewHeader::section,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -1961,6 +1960,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -1983,6 +1984,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2012,6 +2014,7 @@ WSearchLineEdit QAbstractScrollArea,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
   QLineEdit QMenu::item:selected,
+  QPlainTextEdit QMenu::item:selected,
   WCoverArtMenu::item:selected,
   WEffectSelector::item:selected,
   WEffectSelector::indicator:unchecked:selected,
@@ -2196,7 +2199,8 @@ WTrackTableViewHeader QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
 WLibraryTextBrowser QMenu::separator,
-QLineEdit QMenu::separator {
+QLineEdit QMenu::separator,
+QPlainTextEdit QMenu::separator {
   border-top: 1px solid #999;
 }
 
@@ -2211,6 +2215,7 @@ WTrackMenu QMenu QCheckBox::indicator {
 }
 
 QLineEdit QMenu::icon:selected,
+QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
 WTrackTableViewHeader QMenu::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
@@ -2223,7 +2228,8 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #555;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled {

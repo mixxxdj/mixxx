@@ -1209,6 +1209,7 @@ WTrackMenu QMenu QCheckBox,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 #CueLabelEdit,
@@ -2527,6 +2528,7 @@ WLibrarySidebar,
 #SkinSettings,
 WSearchLineEdit,
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 #spinBoxTransition,
 #LibraryBPMSpinBox {
   background-color: #0f0f0f;
@@ -2589,6 +2591,7 @@ WTrackTableView {
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   selection-color: #000;
@@ -2909,6 +2912,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2939,6 +2943,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -2972,6 +2978,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectChainPresetSelector::item:selected,
@@ -3018,7 +3025,8 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #494949;
 }
 
@@ -3029,6 +3037,7 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator,
   WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
