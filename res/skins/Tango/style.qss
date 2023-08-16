@@ -62,6 +62,8 @@ WEffectChainPresetSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 WSearchLineEdit QAbstractScrollArea,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
@@ -790,8 +792,15 @@ WLabel#TrackComment {
   #PlayPositionMini {
     padding: 0px 1px 0px 0px;
     }
-    #PlayPosition:hover, #PlayPositionMini:hover {
+    #PlayPosition:hover,
+    #PlayPositionMini:hover,
+    WTrackProperty:hover,
+    WTrackProperty:hover[selected="false"],
+    WTrackProperty[selected="true"] {
       border: 1px solid #ccc;
+    }
+    WTrackProperty:hover[selected="true"] {
+      border: 1px solid #fff;
     }
   #TrackTitleMini {
     padding: 0px 0px 0px 1px;
@@ -2627,12 +2636,19 @@ WTrackTableView {
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
-    border: 1px solid #555;
+    border-width: 1px;
+    border-style: solid;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    border-color: #555;
   }
 
 WLibrarySidebar {
@@ -2646,6 +2662,7 @@ WLibrarySidebar {
   Shift WSearchLineEdit instead */
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   WTrackTableView:focus,
