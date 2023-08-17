@@ -385,29 +385,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
     }
-
-    auto configVersionNumber = QVersionNumber::fromString(configVersion);
-
-    // When upgrading from 2.3.x or older to 2.4, or when upgrading
-    // from 2.4.0-beta once we are out of beta
-    if (configVersionNumber < QVersionNumber::fromString("2.4.0") ||
-            (VersionStore::version() != "2.4.0-beta" &&
-                    configVersion.startsWith("2.4.0-"))) {
-        // Proactively move users to an all-shader waveform widget type and set the
-        // framerate to 60 fps
-        bool ok = false;
-        auto waveformType =
-                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
-                        .toInt(&ok);
-        if (ok) {
-            config->set(ConfigKey("[Waveform]", "WaveformType"),
-                    ConfigValue(upgradeToAllShaders(
-                            static_cast<WaveformWidgetType::Type>(
-                                    waveformType))));
-        }
-        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
-    }
-
     if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
         qDebug() << "Upgrading from v1.9.x/1.10.x...";
 
@@ -505,19 +482,47 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            configVersion = "1.12.0";
+            config->set(ConfigKey("[Config]", "Version"),
+                    ConfigValue(configVersion));
         }
         else {
             qDebug() << "Upgrade failed!\n";
         }
     }
 
-    configVersionNumber = QVersionNumber::fromString(configVersion);
+    const auto configFileVersion = QVersionNumber::fromString(configVersion);
+
+    // When upgrading from 2.3.x or older to 2.4, or when upgrading
+    // from 2.4.0-beta once we are out of beta
+    if (QVersionNumber::fromString(configVersion) < QVersionNumber(2, 4, 0) ||
+            (VersionStore::version() != "2.4.0-beta" &&
+                    configVersion.startsWith("2.4.0-"))) {
+        // Proactively move users to an all-shader waveform widget type and set the
+        // framerate to 60 fps
+        bool ok = false;
+        auto waveformType =
+                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
+                        .toInt(&ok);
+        if (ok) {
+            config->set(ConfigKey("[Waveform]", "WaveformType"),
+                    ConfigValue(upgradeToAllShaders(
+                            static_cast<WaveformWidgetType::Type>(
+                                    waveformType))));
+        }
+        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
+
+        // mark the configuration as updated
+        configVersion = "2.4.0";
+        config->set(ConfigKey("[Config]", "Version"),
+                ConfigValue(configVersion));
+    }
 
     // This variable indicates the first known version that requires no changes.
-    const QVersionNumber cleanVersion(1, 12, 0);
-    if (configVersionNumber >= cleanVersion) {
+    // If additional upgrades are added for later versions, they should go before
+    // this block and cleanVersion should be bumped to the latest version.
+    const QVersionNumber cleanVersion(2, 4, 0);
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
