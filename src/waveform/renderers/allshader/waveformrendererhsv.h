@@ -13,7 +13,6 @@ class WaveformRendererHSV;
 class allshader::WaveformRendererHSV final : public allshader::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererHSV() override;
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;

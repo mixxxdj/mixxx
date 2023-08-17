@@ -12,8 +12,6 @@ class LRRGBWaveformWidget;
 class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~LRRGBWaveformWidget() override;
-
     WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::AllShaderLRRGBWaveform;
     }

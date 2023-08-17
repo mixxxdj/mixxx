@@ -12,8 +12,6 @@ class FilteredWaveformWidget;
 class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~FilteredWaveformWidget() override;
-
     WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::AllShaderFilteredWaveform;
     }

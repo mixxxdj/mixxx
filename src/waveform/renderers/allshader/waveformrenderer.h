@@ -13,7 +13,6 @@ class allshader::WaveformRenderer : public ::WaveformRendererAbstract,
                                     public allshader::WaveformRendererAbstract {
   public:
     explicit WaveformRenderer(WaveformWidgetRenderer* widget);
-    ~WaveformRenderer();
 
     // Pure virtual from allshader::WaveformRendererAbstract.
     // Renderers that use QPainter functionality implement this.

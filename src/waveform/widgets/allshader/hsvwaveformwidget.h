@@ -12,8 +12,6 @@ class HSVWaveformWidget;
 class allshader::HSVWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~HSVWaveformWidget() override;
-
     WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::AllShaderHSVWaveform;
     }

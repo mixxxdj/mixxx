@@ -37,9 +37,9 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
     case WaveformWidgetType::EmptyWaveform:
         return waveformType;
     case WaveformWidgetType::SoftwareSimpleWaveform:
-        return WaveformWidgetType::AllShaderSimpleWaveform;
+        return waveformType;
     case WaveformWidgetType::SoftwareWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
+        return waveformType;
     case WaveformWidgetType::QtSimpleWaveform:
         return WaveformWidgetType::AllShaderSimpleWaveform;
     case WaveformWidgetType::QtWaveform:

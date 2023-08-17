@@ -24,9 +24,6 @@ HSVWaveformWidget::HSVWaveformWidget(const QString& group, QWidget* parent)
     m_initSuccess = init();
 }
 
-HSVWaveformWidget::~HSVWaveformWidget() {
-}
-
 void HSVWaveformWidget::castToQWidget() {
     m_widget = this;
 }

@@ -12,8 +12,6 @@ class SimpleWaveformWidget;
 class allshader::SimpleWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~SimpleWaveformWidget() override;
-
     WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::AllShaderSimpleWaveform;
     }
