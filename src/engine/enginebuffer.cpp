@@ -530,15 +530,13 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     slotTrackLoaded(
             pTrack,
             pTrack->getSampleRate(),
-            // TODO: Round to integer after multiplication with sample rate
-            // and not before?
-            pTrack->getSampleRate() * pTrack->getDurationSecondsInt());
+            pTrack->getSampleRate() * pTrack->getDuration());
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
-                                   int iTrackSampleRate,
-                                   int iTrackNumSamples) {
+        int trackSampleRate,
+        double trackNumSamples) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::slotTrackLoaded";
     }
@@ -548,8 +546,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_visualPlayPos->setInvalid();
     m_playPosition = kInitialPlayPosition; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
-    m_pTrackSamples->set(iTrackNumSamples);
-    m_pTrackSampleRate->set(iTrackSampleRate);
+    m_pTrackSamples->set(trackNumSamples);
+    m_pTrackSampleRate->set(trackSampleRate);
     m_pTrackLoaded->forceSet(1);
 
     // Reset slip mode

@@ -886,6 +886,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/locationdelegate.cpp
   src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/multilineeditdelegate.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp

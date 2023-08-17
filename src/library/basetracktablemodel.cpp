@@ -9,6 +9,7 @@
 #include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
+#include "library/multilineeditdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
@@ -394,6 +395,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
+        return new MultiLineEditDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {

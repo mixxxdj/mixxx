@@ -51,7 +51,7 @@ void WaveformRenderBeat::paintGL() {
 
     m_color.setAlphaF(alpha / 100.0f);
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }

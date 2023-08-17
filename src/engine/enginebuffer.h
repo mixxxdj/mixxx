@@ -213,8 +213,10 @@ class EngineBuffer : public EngineObject {
 
   private slots:
     void slotTrackLoading();
-    void slotTrackLoaded(TrackPointer pTrack,
-                         int iSampleRate, int iNumSamples);
+    void slotTrackLoaded(
+            TrackPointer pTrack,
+            int trackSampleRate,
+            double trackNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
