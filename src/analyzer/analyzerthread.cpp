@@ -130,7 +130,7 @@ void AnalyzerThread::doRun() {
         kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getLocation();
 
         // Get the audio
-        const auto audioSource =
+        const mixxx::AudioSourcePointer audioSource =
                 SoundSourceProxy(m_currentTrack->getTrack()).openAudioSource(openParams);
         if (!audioSource) {
             kLogger.warning()

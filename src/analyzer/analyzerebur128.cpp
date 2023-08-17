@@ -22,10 +22,11 @@ AnalyzerEbur128::~AnalyzerEbur128() {
     cleanup(); // ...to prevent memory leaks
 }
 
-bool AnalyzerEbur128::initialize(const AnalyzerTrack& tio,
+bool AnalyzerEbur128::initialize(
+        const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
-    if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || frameLength <= 0) {
+    if (m_rgSettings.isAnalyzerDisabled(2, track.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }

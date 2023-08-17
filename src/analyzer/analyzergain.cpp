@@ -20,10 +20,10 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(const AnalyzerTrack& tio,
+bool AnalyzerGain::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
-    if (m_rgSettings.isAnalyzerDisabled(1, tio.getTrack()) || frameLength <= 0) {
+    if (m_rgSettings.isAnalyzerDisabled(1, track.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }

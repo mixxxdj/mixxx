@@ -42,7 +42,7 @@ AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
+bool AnalyzerKey::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
     if (frameLength <= 0) {
@@ -87,7 +87,7 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
     m_currentFrame = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio.getTrack());
+    bool bShouldAnalyze = shouldAnalyze(track.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
@@ -104,7 +104,7 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
         }
 
         if (m_pPlugin) {
-            if (m_pPlugin->initialize(m_sampleRate)) {
+            if (m_pPlugin->initialize(mixxx::audio::SampleRate(m_sampleRate))) {
                 qDebug() << "Key calculation started with plugin" << m_pluginId;
             } else {
                 qDebug() << "Key calculation will not start.";
@@ -118,14 +118,14 @@ bool AnalyzerKey::initialize(const AnalyzerTrack& tio,
     return bShouldAnalyze;
 }
 
-bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
+bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
         pluginID = defaultPlugin().id();
     }
 
-    const Keys keys = tio->getKeys();
+    const Keys keys = pTrack->getKeys();
     if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();

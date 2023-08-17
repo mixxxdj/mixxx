@@ -29,7 +29,7 @@ class AnalyzerBeats : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
-            SINT totalSamples) override;
+            SINT frameLength) override;
     bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;

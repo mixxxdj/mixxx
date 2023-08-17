@@ -71,6 +71,11 @@ QList<QString> ParserPls::parseAllLocations(const QString& playlistFile) {
 
         file.close();
     }
+
+    qDebug() << "ParserPls::parse() failed"
+             << playlistFile
+             << file.errorString();
+
     return locations;
 }
 

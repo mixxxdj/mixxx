@@ -44,7 +44,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
 bool AnalyzerBeats::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
-    if (frameLength == 0) {
+    if (frameLength <= 0) {
         return false;
     }
 
