@@ -1053,7 +1053,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         }
 
         if (category == WaveformWidgetCategory::Legacy) {
-            widgetName += " " + tr("(legacy)");
+            widgetName += QStringLiteral(" (%1)").arg(QObject::tr("legacy"));
         }
 
         bool active = true;
