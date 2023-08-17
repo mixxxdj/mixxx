@@ -19,21 +19,21 @@ namespace {
 // instead do what QRegularExpression::anchoredPattern by wrapping each regex in \\A(?: ... )\\z
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const QRegularExpression s_openKeyRegex(QStringLiteral(
+const QRegularExpression s_openKeyRegex(QStringLiteral(
         "\\A(?:^\\s*(1[0-2]|[1-9])([dm])\\s*$)\\z"));
 
-// Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const QRegularExpression s_lancelotKeyRegex(
-        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"),
-        QRegularExpression::CaseInsensitiveOption);
+// Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
+// or "I", "L", "M", "D", "P", "C" for the advanced modes
+const QRegularExpression s_lancelotKeyRegex(
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"));
 constexpr std::string_view s_lancelotMajorModes = "BILM";
 
 // a-g followed by any number of sharps or flats, optionally followed by
 // a scale mode spec (m = minor, min, maj ..)
 // Note: ## = x exists: https://jadebultitude.com/double-sharp-sign-in-music
-static const QRegularExpression s_keyRegex(QString::fromUtf8(
-                                                   "\\A(?:^\\s*([a-g])([#♯b♭]*) *"
-                                                   "([a-z]{3}.*|m)?\\s*$)\\z"),
+const QRegularExpression s_keyRegex(
+        QString::fromUtf8(
+                "\\A(?:^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$)\\z"),
         QRegularExpression::CaseInsensitiveOption);
 
 const QString s_sharpSymbol = QString::fromUtf8("♯");
@@ -360,7 +360,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         }
 
         bool major = openKeyMatch.captured(2)
-                             .compare("d", Qt::CaseInsensitive) == 0;
+                             .compare("d") == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }

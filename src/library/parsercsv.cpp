@@ -73,6 +73,11 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
         }
         file.close();
     }
+
+    qDebug() << "ParserCsv::parse() failed"
+             << playlistFile
+             << file.errorString();
+
     return locations;
 }
 
@@ -228,7 +233,7 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
                 QObject::tr("Readable text Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str + +"\n" + file.errorString());
+                QObject::tr("Could not create file") + " " + file_str + "\n" + file.errorString());
         return false;
     }
 

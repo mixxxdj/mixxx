@@ -43,7 +43,6 @@ class AnalyzerSilence : public Analyzer {
   private:
     UserSettingsPointer m_pConfig;
     SINT m_framesProcessed;
-    bool m_bPrevSilence;
     SINT m_signalStart;
     SINT m_signalEnd;
 };

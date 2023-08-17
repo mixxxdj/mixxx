@@ -100,7 +100,6 @@ bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
     }
 
     m_framesProcessed += count / mixxx::kAnalysisChannels;
-
     return true;
 }
 

@@ -35,7 +35,7 @@ AnalyzerWaveform::~AnalyzerWaveform() {
     destroyFilters();
 }
 
-bool AnalyzerWaveform::initialize(const AnalyzerTrack& tio,
+bool AnalyzerWaveform::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
         SINT frameLength) {
     if (frameLength <= 0) {
@@ -44,7 +44,7 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& tio,
     }
 
     // If we don't need to calculate the waveform/wavesummary, skip.
-    if (!shouldAnalyze(tio.getTrack())) {
+    if (!shouldAnalyze(track.getTrack())) {
         return false;
     }
 
@@ -67,8 +67,8 @@ bool AnalyzerWaveform::initialize(const AnalyzerTrack& tio,
     // Now, that the Waveform memory is initialized, we can set set them to
     // the TIO. Be aware that other threads of Mixxx can touch them from
     // now.
-    tio.getTrack()->setWaveform(m_waveform);
-    tio.getTrack()->setWaveformSummary(m_waveformSummary);
+    track.getTrack()->setWaveform(m_waveform);
+    track.getTrack()->setWaveformSummary(m_waveformSummary);
 
     m_waveformData = m_waveform->data();
     m_waveformSummaryData = m_waveformSummary->data();

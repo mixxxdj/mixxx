@@ -209,6 +209,8 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         const SINT next_block_frames_required =
                 static_cast<SINT>(m_pRubberBand->getSamplesRequired());
         if (remaining_frames > 0 && next_block_frames_required > 0) {
+            // The requested setting becomes effective after all previous frames have been processed
+            m_effectiveRate = m_dBaseRate * m_dTempoRatio;
             const SINT available_samples = m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
                     // are going forward or backward.
