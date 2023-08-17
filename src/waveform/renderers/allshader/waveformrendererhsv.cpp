@@ -180,7 +180,7 @@ void WaveformRendererHSV::paintGL() {
                 halfBreadth - heightFactor * maxAll[0],
                 fpos + 0.5f,
                 halfBreadth + heightFactor * maxAll[1]);
-        m_colors.addForRectangle(color.redF(), color.greenF(), color.blueF());
+        m_colors.addForRectangle(static_cast<float>(color.redF()), static_cast<float>(color.greenF()), static_cast<float>(color.blueF()));
 
         xVisualSampleIndex += visualIncrementPerPixel;
     }
