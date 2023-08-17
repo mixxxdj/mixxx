@@ -1,6 +1,7 @@
 #pragma once
 
 #include "analyzer/analyzertrack.h"
+#include "audio/signalinfo.h"
 #include "audio/types.h"
 #include "util/assert.h"
 #include "util/types.h"
@@ -26,13 +27,6 @@ class Analyzer {
     virtual bool initialize(const AnalyzerTrack& tio,
             mixxx::audio::SampleRate sampleRate,
             SINT totalSamples) = 0;
-
-    /////////////////////////////////////////////////////////////////////////
-    // All following methods will only be invoked after initialize()
-    // returned true!
-    /////////////////////////////////////////////////////////////////////////
-
-    // Analyze the next chunk of audio samples and return true if successful.
     // If processing fails the analysis can be aborted early by returning
     // false. After aborting the analysis only cleanup() will be invoked,
     // but not finalize()!
@@ -41,7 +35,7 @@ class Analyzer {
     // Update the track object with the analysis results after
     // processing finished successfully, i.e. all available audio
     // samples have been processed.
-    virtual void storeResults(TrackPointer tio) = 0;
+    virtual void storeResults(TrackPointer pTrack) = 0;
 
     // Discard any temporary results or free allocated memory.
     // This function will be invoked after the results have been
@@ -70,11 +64,9 @@ class AnalyzerWithState final {
         return m_active;
     }
 
-    bool initialize(const AnalyzerTrack& tio,
-            mixxx::audio::SampleRate sampleRate,
-            int totalSamples) {
+    bool initialize(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, SINT frameLength) {
         DEBUG_ASSERT(!m_active);
-        return m_active = m_analyzer->initialize(tio, sampleRate, totalSamples);
+        return m_active = m_analyzer->initialize(pTrack, sampleRate, frameLength);
     }
 
     void processSamples(const CSAMPLE* pIn, SINT iLen) {

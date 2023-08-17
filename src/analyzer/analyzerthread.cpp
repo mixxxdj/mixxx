@@ -144,9 +144,9 @@ void AnalyzerThread::doRun() {
         for (auto&& analyzer : m_analyzers) {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
-                        *m_currentTrack,
+                        m_currentTrack->getTrack(),
                         audioSource->getSignalInfo().getSampleRate(),
-                        audioSource->frameLength() * mixxx::kAnalysisChannels)) {
+                        audioSource->frameLength())) {
                 processTrack = true;
             }
         }
@@ -310,8 +310,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 3rd step: Update & emit progress
         if (audioSource->frameLength() > 0) {
             const double frameProgress =
-                    double(audioSource->frameLength() - remainingFrameRange.length()) /
-                    double(audioSource->frameLength());
+                    static_cast<double>(audioSource->frameLength() - remainingFrameRange.length()) /
+                    audioSource->frameLength();
             // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
                     math_min(kAnalyzerProgressFinalizing,

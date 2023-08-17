@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "analyzer/analyzertrack.h"
+#include "analyzer/constants.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -23,14 +24,15 @@ AnalyzerEbur128::~AnalyzerEbur128() {
 
 bool AnalyzerEbur128::initialize(const AnalyzerTrack& tio,
         mixxx::audio::SampleRate sampleRate,
-        SINT totalSamples) {
-    if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || totalSamples == 0) {
+        SINT frameLength) {
+    if (m_rgSettings.isAnalyzerDisabled(2, tio.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerEbur128";
         return false;
     }
     DEBUG_ASSERT(m_pState == nullptr);
-    m_pState = ebur128_init(2u,
-            static_cast<unsigned long>(sampleRate),
+    m_pState = ebur128_init(
+            mixxx::kAnalysisChannels,
+            sampleRate,
             EBUR128_MODE_I);
     return m_pState != nullptr;
 }
@@ -43,12 +45,12 @@ void AnalyzerEbur128::cleanup() {
     }
 }
 
-bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT iLen) {
+bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return false;
     }
     ScopedTimer t("AnalyzerEbur128::processSamples()");
-    size_t frames = iLen / 2;
+    size_t frames = count / mixxx::kAnalysisChannels;
     int e = ebur128_add_frames_float(m_pState, pIn, frames);
     VERIFY_OR_DEBUG_ASSERT(e == EBUR128_SUCCESS) {
         qWarning() << "AnalyzerEbur128::processSamples() failed with" << e;
@@ -57,7 +59,7 @@ bool AnalyzerEbur128::processSamples(const CSAMPLE* pIn, SINT iLen) {
     return true;
 }
 
-void AnalyzerEbur128::storeResults(TrackPointer tio) {
+void AnalyzerEbur128::storeResults(TrackPointer pTrack) {
     VERIFY_OR_DEBUG_ASSERT(m_pState) {
         return;
     }
@@ -74,8 +76,9 @@ void AnalyzerEbur128::storeResults(TrackPointer tio) {
     }
 
     const double fReplayGain2 = kReplayGain2ReferenceLUFS - averageLufs;
-    mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGain2));
-    tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2 << "dB for" << tio->getFileInfo();
+    pTrack->setReplayGain(replayGain);
+    qDebug() << "ReplayGain 2.0 (libebur128) result is" << fReplayGain2
+             << "dB for" << pTrack->getFileInfo();
 }

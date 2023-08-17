@@ -61,9 +61,6 @@ inline FrameCount frameBufferCapacityForStream(
 // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
 constexpr int64_t kavStreamDecoderFrameDelayAAC = 2112;
 
-// Use 0-based sample frame indexing
-constexpr SINT kMinFrameIndex = 0;
-
 constexpr SINT kMaxSamplesPerMP3Frame = 1152;
 
 const Logger kLogger("SoundSourceFFmpeg");
@@ -122,7 +119,7 @@ int64_t getStreamStartTime(const AVStream& avStream) {
             // the test file cover-test-itunes-12.7.0-aac.m4a has a valid
             // start_time of 0. Unfortunately, this special case cannot be
             // detected and compensated.
-            start_time = math_max(kavStreamDefaultStartTime, kavStreamDecoderFrameDelayAAC);
+            start_time = kavStreamDecoderFrameDelayAAC;
             break;
         }
         default:
@@ -134,7 +131,6 @@ int64_t getStreamStartTime(const AVStream& avStream) {
                 << start_time;
 #endif
     }
-    DEBUG_ASSERT(start_time != AV_NOPTS_VALUE);
     return start_time;
 }
 
@@ -150,19 +146,18 @@ inline int64_t getStreamEndTime(const AVStream& avStream) {
 
 inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
     DEBUG_ASSERT(pts != AV_NOPTS_VALUE);
-    // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
-    return kMinFrameIndex +
-            av_rescale_q(
-                    pts - getStreamStartTime(avStream),
-                    avStream.time_base,
-                    av_make_q(1, avStream.codecpar->sample_rate));
+    // getStreamStartTime(avStream) -> 1st audible frame at FrameIndex 0
+    return av_rescale_q(
+            pts - getStreamStartTime(avStream),
+            avStream.time_base,
+            av_make_q(1, avStream.codecpar->sample_rate));
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
     // Inverse mapping of convertStreamTimeToFrameIndex()
     return getStreamStartTime(avStream) +
             av_rescale_q(
-                    frameIndex - kMinFrameIndex,
+                    frameIndex,
                     av_make_q(1, avStream.codecpar->sample_rate),
                     avStream.time_base);
 }
@@ -476,7 +471,8 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
           m_pavPacket(av_packet_alloc()),
           m_pavDecodedFrame(nullptr),
           m_pavResampledFrame(nullptr),
-          m_seekPrerollFrameCount(0) {
+          m_seekPrerollFrameCount(0),
+          m_avutilVersion(avutil_version()) {
     DEBUG_ASSERT(m_pavPacket);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
     av_channel_layout_default(&m_avStreamChannelLayout, 0);
@@ -695,11 +691,11 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
 
     // Decoding MP3/AAC files manually into WAV using the ffmpeg CLI and
     // comparing the audio data revealed that we need to map the nominal
-    // range of the stream onto our internal range starting at kMinFrameIndex.
+    // range of the stream onto our internal range starting at FrameIndex 0.
     // See also the discussion regarding cue point shift/offset:
     // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/Cue.20shift.2Foffset
     const auto frameIndexRange = IndexRange::forward(
-            kMinFrameIndex,
+            0,
             streamFrameIndexRange.length());
     if (!initFrameIndexRangeOnce(frameIndexRange)) {
         kLogger.warning()
@@ -934,13 +930,12 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
     // sample accurate decoding the actual seek position must be
     // placed BEFORE the position where reading continues.
     auto seekIndex =
-            math_max(kMinFrameIndex, startIndex - m_seekPrerollFrameCount);
+            math_max(static_cast<SINT>(0), startIndex - m_seekPrerollFrameCount);
     // Seek to codec frame boundaries if the frame size is fixed and known
     if (m_pavStream->codecpar->frame_size > 0) {
-        seekIndex -=
-                (seekIndex - kMinFrameIndex) % m_pavCodecContext->frame_size;
+        seekIndex -= seekIndex % m_pavCodecContext->frame_size;
     }
-    DEBUG_ASSERT(seekIndex >= kMinFrameIndex);
+    DEBUG_ASSERT(seekIndex >= 0);
     DEBUG_ASSERT(seekIndex <= startIndex);
 
     if (m_frameBuffer.tryContinueReadingFrom(seekIndex)) {
@@ -1157,24 +1152,26 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
                 }
                 const auto decodedFrameCount = m_pavDecodedFrame->nb_samples;
                 DEBUG_ASSERT(decodedFrameCount > 0);
-                auto streamFrameIndex =
+                SINT streamFrameIndex =
                         convertStreamTimeToFrameIndex(
                                 *m_pavStream, m_pavDecodedFrame->pts);
-                // Only audible samples are counted, i.e. any inaudible aka
-                // "priming" samples are not included in nb_samples!
-                // https://github.com/mixxxdj/mixxx/issues/10464
-                if (streamFrameIndex < kMinFrameIndex) {
+
+                if (m_avutilVersion >= AV_VERSION_INT(56, 52, 100)) {
+                    // From ffmpeg 4.4 only audible samples are counted, i.e. any inaudible aka
+                    // "priming" samples are not included in nb_samples!
+                    // https://github.com/mixxxdj/mixxx/issues/10464
+                    if (streamFrameIndex < 0) {
 #if VERBOSE_DEBUG_LOG
-                    const auto inaudibleFrameCountUntilStartOfStream =
-                            kMinFrameIndex - streamFrameIndex;
-                    kLogger.debug()
-                            << "Skipping"
-                            << inaudibleFrameCountUntilStartOfStream
-                            << "inaudible sample frames before the start of the stream";
+                        const auto inaudibleFrameCountUntilStartOfStream = -streamFrameIndex;
+                        kLogger.debug()
+                                << "Skipping"
+                                << inaudibleFrameCountUntilStartOfStream
+                                << "inaudible sample frames before the start of the stream";
 #endif
-                    streamFrameIndex = kMinFrameIndex;
+                        streamFrameIndex = 0;
+                    }
                 }
-                DEBUG_ASSERT(streamFrameIndex >= kMinFrameIndex);
+
                 decodedFrameRange = IndexRange::forward(
                         streamFrameIndex,
                         decodedFrameCount);
