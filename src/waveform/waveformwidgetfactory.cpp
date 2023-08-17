@@ -111,7 +111,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_configType(WaveformWidgetType::EmptyWaveform),
           m_config(nullptr),
           m_skipRender(false),
-          m_frameRate(30),
+          m_frameRate(60),
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
