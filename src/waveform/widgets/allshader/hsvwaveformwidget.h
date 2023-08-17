@@ -6,20 +6,20 @@
 class WaveformWidgetFactory;
 
 namespace allshader {
-class LRRGBWaveformWidget;
+class HSVWaveformWidget;
 }
 
-class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
+class allshader::HSVWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~LRRGBWaveformWidget() override;
+    ~HSVWaveformWidget() override;
 
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderLRRGBWaveform;
+        return WaveformWidgetType::AllShaderHSVWaveform;
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("RGB L/R");
+        return tr("HSV");
     }
     static constexpr bool useOpenGl() {
         return true;
@@ -39,8 +39,8 @@ class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    LRRGBWaveformWidget(const QString& group, QWidget* parent);
+    HSVWaveformWidget(const QString& group, QWidget* parent);
     friend class ::WaveformWidgetFactory;
 
-    DISALLOW_COPY_AND_ASSIGN(LRRGBWaveformWidget);
+    DISALLOW_COPY_AND_ASSIGN(HSVWaveformWidget);
 };

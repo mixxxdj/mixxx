@@ -29,6 +29,7 @@
 #include "waveform/vsyncthread.h"
 #ifdef MIXXX_USE_QOPENGL
 #include "waveform/widgets/allshader/filteredwaveformwidget.h"
+#include "waveform/widgets/allshader/hsvwaveformwidget.h"
 #include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
@@ -838,7 +839,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         bool useOpenGl;
         bool useOpenGles;
         bool useOpenGLShaders;
-        bool developerOnly;
+        WaveformWidgetCategory category;
 
         switch(type) {
         case WaveformWidgetType::EmptyWaveform:
@@ -846,7 +847,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = EmptyWaveformWidget::useOpenGl();
             useOpenGles = EmptyWaveformWidget::useOpenGles();
             useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
-            developerOnly = EmptyWaveformWidget::developerOnly();
+            category = EmptyWaveformWidget::category();
             break;
         case WaveformWidgetType::SoftwareSimpleWaveform:
             continue; // //TODO(vrince):
@@ -862,7 +863,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
             useOpenGles = SoftwareWaveformWidget::useOpenGles();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
-            developerOnly = SoftwareWaveformWidget::developerOnly();
+            category = SoftwareWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::HSVWaveform:
@@ -873,7 +874,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = HSVWaveformWidget::useOpenGl();
             useOpenGles = HSVWaveformWidget::useOpenGles();
             useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
-            developerOnly = HSVWaveformWidget::developerOnly();
+            category = HSVWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::RGBWaveform:
@@ -884,7 +885,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = RGBWaveformWidget::useOpenGl();
             useOpenGles = RGBWaveformWidget::useOpenGles();
             useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
-            developerOnly = RGBWaveformWidget::developerOnly();
+            category = RGBWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::QtSimpleWaveform:
@@ -895,7 +896,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
             useOpenGles = QtSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = QtSimpleWaveformWidget::developerOnly();
+            category = QtSimpleWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::QtWaveform:
@@ -906,7 +907,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = QtWaveformWidget::useOpenGl();
             useOpenGles = QtWaveformWidget::useOpenGles();
             useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
-            developerOnly = QtWaveformWidget::developerOnly();
+            category = QtWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::GLSimpleWaveform:
@@ -914,49 +915,49 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = GLSimpleWaveformWidget::useOpenGl();
             useOpenGles = GLSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSimpleWaveformWidget::developerOnly();
+            category = GLSimpleWaveformWidget::category();
             break;
         case WaveformWidgetType::GLFilteredWaveform:
             widgetName = GLWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLWaveformWidget::useOpenGl();
             useOpenGles = GLWaveformWidget::useOpenGles();
             useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
-            developerOnly = GLWaveformWidget::developerOnly();
+            category = GLWaveformWidget::category();
             break;
         case WaveformWidgetType::GLSLFilteredWaveform:
             widgetName = GLSLFilteredWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLFilteredWaveformWidget::useOpenGl();
             useOpenGles = GLSLFilteredWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLFilteredWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSLFilteredWaveformWidget::developerOnly();
+            category = GLSLFilteredWaveformWidget::category();
             break;
         case WaveformWidgetType::GLSLRGBWaveform:
             widgetName = GLSLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLRGBWaveformWidget::useOpenGl();
             useOpenGles = GLSLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSLRGBWaveformWidget::developerOnly();
+            category = GLSLRGBWaveformWidget::category();
             break;
         case WaveformWidgetType::GLSLRGBStackedWaveform:
             widgetName = GLSLRGBStackedWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLRGBStackedWaveformWidget::useOpenGl();
             useOpenGles = GLSLRGBStackedWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLRGBStackedWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSLRGBStackedWaveformWidget::developerOnly();
+            category = GLSLRGBStackedWaveformWidget::category();
             break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
             useOpenGl = GLVSyncTestWidget::useOpenGl();
             useOpenGles =  GLVSyncTestWidget::useOpenGles();
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
-            developerOnly = GLVSyncTestWidget::developerOnly();
+            category = GLVSyncTestWidget::category();
             break;
         case WaveformWidgetType::GLRGBWaveform:
             widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLRGBWaveformWidget::useOpenGl();
             useOpenGles =  GLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
-            developerOnly = GLRGBWaveformWidget::developerOnly();
+            category = GLRGBWaveformWidget::category();
             break;
         case WaveformWidgetType::QtVSyncTest:
 #ifdef MIXXX_USE_QOPENGL
@@ -966,7 +967,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = QtVSyncTestWidget::useOpenGl();
             useOpenGles =  QtVSyncTestWidget::useOpenGles();
             useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
-            developerOnly = QtVSyncTestWidget::developerOnly();
+            category = QtVSyncTestWidget::category();
 #endif
             break;
         case WaveformWidgetType::QtHSVWaveform:
@@ -977,7 +978,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = QtHSVWaveformWidget::useOpenGl();
             useOpenGles = QtHSVWaveformWidget::useOpenGles();
             useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
-            developerOnly = QtHSVWaveformWidget::developerOnly();
+            category = QtHSVWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::QtRGBWaveform:
@@ -988,7 +989,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = QtRGBWaveformWidget::useOpenGl();
             useOpenGles = QtRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
-            developerOnly = QtRGBWaveformWidget::developerOnly();
+            category = QtRGBWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::AllShaderRGBWaveform:
@@ -999,7 +1000,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = allshader::RGBWaveformWidget::useOpenGl();
             useOpenGles = allshader::RGBWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::RGBWaveformWidget::useOpenGLShaders();
-            developerOnly = allshader::RGBWaveformWidget::developerOnly();
+            category = allshader::RGBWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::AllShaderLRRGBWaveform:
@@ -1010,7 +1011,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = allshader::LRRGBWaveformWidget::useOpenGl();
             useOpenGles = allshader::LRRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::LRRGBWaveformWidget::useOpenGLShaders();
-            developerOnly = allshader::LRRGBWaveformWidget::developerOnly();
+            category = allshader::LRRGBWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::AllShaderFilteredWaveform:
@@ -1021,7 +1022,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = allshader::FilteredWaveformWidget::useOpenGl();
             useOpenGles = allshader::FilteredWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::FilteredWaveformWidget::useOpenGLShaders();
-            developerOnly = allshader::FilteredWaveformWidget::developerOnly();
+            category = allshader::FilteredWaveformWidget::category();
             break;
 #endif
         case WaveformWidgetType::AllShaderSimpleWaveform:
@@ -1032,12 +1033,27 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGl = allshader::SimpleWaveformWidget::useOpenGl();
             useOpenGles = allshader::SimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = allshader::SimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = allshader::SimpleWaveformWidget::developerOnly();
+            category = allshader::SimpleWaveformWidget::category();
+            break;
+#endif
+        case WaveformWidgetType::AllShaderHSVWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
+            widgetName = allshader::HSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = allshader::HSVWaveformWidget::useOpenGl();
+            useOpenGles = allshader::HSVWaveformWidget::useOpenGles();
+            useOpenGLShaders = allshader::HSVWaveformWidget::useOpenGLShaders();
+            category = allshader::HSVWaveformWidget::category();
             break;
 #endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
+        }
+
+        if (category == WaveformWidgetCategory::Legacy) {
+            widgetName += " " + tr("(legacy)");
         }
 
         bool active = true;
@@ -1072,7 +1088,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
             }
         }
 
-        if (developerOnly && !CmdlineArgs::Instance().getDeveloper()) {
+        if (category == WaveformWidgetCategory::DeveloperOnly &&
+                !CmdlineArgs::Instance().getDeveloper()) {
             active = false;
         }
 
@@ -1138,6 +1155,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::AllShaderSimpleWaveform:
             widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::AllShaderHSVWaveform:
+            widget = new allshader::HSVWaveformWidget(viewer->getGroup(), viewer);
             break;
 #else
         case WaveformWidgetType::QtSimpleWaveform:

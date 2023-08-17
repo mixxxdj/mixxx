@@ -19,7 +19,7 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Filtered (all-shaders)");
+        return tr("Filtered");
     }
     static constexpr bool useOpenGl() {
         return true;
@@ -30,8 +30,8 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static constexpr bool developerOnly() {
-        return false;
+    static constexpr WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::AllShader;
     }
 
   protected:

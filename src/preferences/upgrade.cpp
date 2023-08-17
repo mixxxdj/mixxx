@@ -20,6 +20,7 @@
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
 #include "util/versionstore.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -28,6 +29,61 @@ Upgrade::Upgrade()
 
 Upgrade::~Upgrade() {
 }
+
+namespace {
+// mapping to proactively move users to the new all-shader waveform types
+WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+    switch (waveformType) {
+    case WaveformWidgetType::EmptyWaveform:
+        return waveformType;
+    case WaveformWidgetType::SoftwareSimpleWaveform:
+        return WaveformWidgetType::AllShaderSimpleWaveform;
+    case WaveformWidgetType::SoftwareWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::QtSimpleWaveform:
+        return WaveformWidgetType::AllShaderSimpleWaveform;
+    case WaveformWidgetType::QtWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::GLSimpleWaveform:
+        return WaveformWidgetType::AllShaderSimpleWaveform;
+    case WaveformWidgetType::GLFilteredWaveform:
+        return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WaveformWidgetType::GLSLFilteredWaveform:
+        return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WaveformWidgetType::HSVWaveform:
+        return WaveformWidgetType::AllShaderHSVWaveform;
+    case WaveformWidgetType::GLVSyncTest:
+        return waveformType;
+    case WaveformWidgetType::RGBWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::GLRGBWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::GLSLRGBWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::QtVSyncTest:
+        return waveformType;
+    case WaveformWidgetType::QtHSVWaveform:
+        return WaveformWidgetType::AllShaderHSVWaveform;
+    case WaveformWidgetType::QtRGBWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::GLSLRGBStackedWaveform:
+        return WaveformWidgetType::AllShaderRGBWaveform;
+    case WaveformWidgetType::AllShaderRGBWaveform:
+        return waveformType;
+    case WaveformWidgetType::AllShaderLRRGBWaveform:
+        return waveformType;
+    case WaveformWidgetType::AllShaderFilteredWaveform:
+        return waveformType;
+    case WaveformWidgetType::AllShaderSimpleWaveform:
+        return waveformType;
+    case WaveformWidgetType::AllShaderHSVWaveform:
+        return waveformType;
+    case WaveformWidgetType::Count_WaveformwidgetType:
+        return waveformType;
+    }
+    return WaveformWidgetType::AllShaderRGBWaveform;
+}
+} // namespace
 
 // We return the UserSettings here because we have to make changes to the
 // configuration and the location of the file may change between releases.
@@ -329,6 +385,29 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
     }
+
+    auto configVersionNumber = QVersionNumber::fromString(configVersion);
+
+    // When upgrading from 2.3.x or older to 2.4, or when upgrading
+    // from 2.4.0-beta once we are out of beta
+    if (configVersionNumber < QVersionNumber::fromString("2.4.0") ||
+            (VersionStore::version() != "2.4.0-beta" &&
+                    configVersion.startsWith("2.4.0-"))) {
+        // Proactively move users to an all-shader waveform widget type and set the
+        // framerate to 60 fps
+        bool ok = false;
+        auto waveformType =
+                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
+                        .toInt(&ok);
+        if (ok) {
+            config->set(ConfigKey("[Waveform]", "WaveformType"),
+                    ConfigValue(upgradeToAllShaders(
+                            static_cast<WaveformWidgetType::Type>(
+                                    waveformType))));
+        }
+        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
+    }
+
     if (configVersion.startsWith("1.9") || configVersion.startsWith("1.10")) {
         qDebug() << "Upgrading from v1.9.x/1.10.x...";
 
@@ -434,11 +513,11 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    const auto configFileVersion = QVersionNumber::fromString(configVersion);
+    configVersionNumber = QVersionNumber::fromString(configVersion);
 
     // This variable indicates the first known version that requires no changes.
     const QVersionNumber cleanVersion(1, 12, 0);
-    if (configFileVersion >= cleanVersion) {
+    if (configVersionNumber >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
