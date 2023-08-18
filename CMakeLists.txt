@@ -1940,21 +1940,8 @@ add_executable(mixxx-test
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore gtest gmock)
 
-#
-# Benchmark tests
-#
-
-# Disable testing of google/benchmark
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
-
-# Prevent installation of google/benchmark artifacts
-set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
-
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
-)
-target_link_libraries(mixxx-test PRIVATE benchmark)
+find_package(benchmark)
+target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
 
 # Test Suite
 include(CTest)
