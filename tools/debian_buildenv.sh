@@ -58,6 +58,7 @@ case "$1" in
             fonts-ubuntu \
             g++ \
             lcov \
+            libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
