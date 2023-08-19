@@ -7,9 +7,14 @@ class PerformanceTimer {
   public:
     PerformanceTimer()
             : m_elapsedTimer() {
-        // TODO: turn this into a static_assert once Qt enables it.
-        DEBUG_ASSERT(QElapsedTimer::clockType() == QElapsedTimer::ClockType::PerformanceCounter);
     }
+
+    // call this once at startup to ensure that the QElapsedTimer is monotonic
+    static void debugEnsureClockIsMonotonic() {
+        // TODO: turn this into a static_assert and inline this method
+        // once Qt enables it.
+        DEBUG_ASSERT(QElapsedTimer::isMonotonic());
+    };
 
     void start() {
         m_elapsedTimer.start();

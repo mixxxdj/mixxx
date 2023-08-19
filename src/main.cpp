@@ -170,6 +170,8 @@ int main(int argc, char * argv[]) {
     // the main thread. Issue #9130.
     ErrorDialogHandler::instance();
 
+    PerformanceTimer::debugEnsureClockIsMonotonic();
+
 #ifdef __APPLE__
     Sandbox::checkSandboxed();
 #endif
