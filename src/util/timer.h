@@ -73,7 +73,6 @@ class ScopedTimer {
         if (m_maybeTimer) {
             m_maybeTimer->elapsed(true);
         }
-        m_maybeTimer.reset();
     }
 
     ScopedTimer(const ScopedTimer&) = delete;
