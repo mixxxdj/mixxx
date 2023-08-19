@@ -143,7 +143,7 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
 
     int numBeatsToCue = pBeats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
     const auto firstBarAlignedBeatPlayPos = pBeats->findNBeatsFromPosition(
-            cueBeatPlayPos, numBeatsToCue & ~0x3);
+            cueBeatPlayPos, -1 * (numBeatsToCue & ~0x3));
     if (!firstBarAlignedBeatPlayPos.isValid()) {
         return false;
     }

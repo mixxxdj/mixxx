@@ -67,6 +67,7 @@ void DlgTrackInfo::init() {
     // Associate with property strings taken from library/dao/trackdao.h
     m_propertyWidgets.insert("artist", txtArtist);
     m_propertyWidgets.insert("title", txtTrackName);
+    m_propertyWidgets.insert("titleInfo", txtTrackName);
     m_propertyWidgets.insert("album", txtAlbum);
     m_propertyWidgets.insert("album_artist", txtAlbumArtist);
     m_propertyWidgets.insert("composer", txtComposer);
@@ -504,9 +505,9 @@ void DlgTrackInfo::focusField(const QString& property) {
     if (property.isEmpty()) {
         return;
     }
-    QWidget* w = m_propertyWidgets.find(property).value();
-    if (w) {
-        w->setFocus();
+    auto it = m_propertyWidgets.constFind(property);
+    if (it != m_propertyWidgets.constEnd()) {
+        it.value()->setFocus();
     }
 }
 

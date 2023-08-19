@@ -114,7 +114,7 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoaded(TrackPointer pTrack, int sampleRate, double numSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

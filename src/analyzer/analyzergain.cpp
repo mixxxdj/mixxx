@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "analyzer/analyzertrack.h"
+#include "analyzer/constants.h"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -19,38 +20,40 @@ AnalyzerGain::~AnalyzerGain() {
     delete m_pReplayGain;
 }
 
-bool AnalyzerGain::initialize(const AnalyzerTrack& tio,
+bool AnalyzerGain::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        SINT totalSamples) {
-    if (m_rgSettings.isAnalyzerDisabled(1, tio.getTrack()) || totalSamples == 0) {
+        SINT frameLength) {
+    if (m_rgSettings.isAnalyzerDisabled(1, track.getTrack()) || frameLength <= 0) {
         qDebug() << "Skipping AnalyzerGain";
         return false;
     }
 
-    return m_pReplayGain->initialise(static_cast<long>(sampleRate), 2);
+    return m_pReplayGain->initialise(
+            sampleRate,
+            mixxx::kAnalysisChannels);
 }
 
 void AnalyzerGain::cleanup() {
 }
 
-bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT iLen) {
+bool AnalyzerGain::processSamples(const CSAMPLE* pIn, SINT count) {
     ScopedTimer t(u"AnalyzerGain::process()");
 
-    SINT halfLength = static_cast<int>(iLen / 2);
-    if (halfLength > static_cast<SINT>(m_pLeftTempBuffer.size())) {
-        m_pLeftTempBuffer.resize(halfLength);
-        m_pRightTempBuffer.resize(halfLength);
+    SINT numFrames = count / mixxx::kAnalysisChannels;
+    if (numFrames > static_cast<SINT>(m_pLeftTempBuffer.size())) {
+        m_pLeftTempBuffer.resize(numFrames);
+        m_pRightTempBuffer.resize(numFrames);
     }
     SampleUtil::deinterleaveBuffer(m_pLeftTempBuffer.data(),
             m_pRightTempBuffer.data(),
             pIn,
-            halfLength);
-    SampleUtil::applyGain(m_pLeftTempBuffer.data(), 32767, halfLength);
-    SampleUtil::applyGain(m_pRightTempBuffer.data(), 32767, halfLength);
-    return m_pReplayGain->process(m_pLeftTempBuffer.data(), m_pRightTempBuffer.data(), halfLength);
+            numFrames);
+    SampleUtil::applyGain(m_pLeftTempBuffer.data(), 32767, numFrames);
+    SampleUtil::applyGain(m_pRightTempBuffer.data(), 32767, numFrames);
+    return m_pReplayGain->process(m_pLeftTempBuffer.data(), m_pRightTempBuffer.data(), numFrames);
 }
 
-void AnalyzerGain::storeResults(TrackPointer tio) {
+void AnalyzerGain::storeResults(TrackPointer pTrack) {
     //TODO: We are going to store values as relative peaks so that "0" means that no replaygain has been evaluated.
     // This means that we are going to transform from dB to peaks and vice-versa.
     // One may think to digg into replay_gain code and modify it so that
@@ -63,8 +66,9 @@ void AnalyzerGain::storeResults(TrackPointer tio) {
         return;
     }
 
-    mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(pTrack->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGainOutput));
-    tio->setReplayGain(replayGain);
-    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for" << tio->getLocation();
+    pTrack->setReplayGain(replayGain);
+    qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for"
+             << pTrack->getLocation();
 }

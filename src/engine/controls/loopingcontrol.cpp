@@ -724,7 +724,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     // Reset the loop out position if it is before the loop in so that loops
     // cannot be inverted.
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition < position) {
+    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= position) {
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         if (m_bLoopingEnabled) {
@@ -870,7 +870,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // If the user is trying to set a loop-out before the loop in or without
     // having a loop-in, then ignore it.
-    if (!loopInfo.startPosition.isValid() || position < loopInfo.startPosition) {
+    if (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition) {
         return;
     }
 

@@ -550,6 +550,64 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+if(NOT MSVC)
+  find_program(MOLD_EXECUTABLE mold)
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  if(MOLD_SUPPORT)
+    if(MOLD_EXECUTABLE)
+      message(STATUS "Selecting mold as linker")
+      set(SELECT_MOLD_WITH_FUSE true)
+      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
+      # Earlier versions must use the -B option.
+      if (GNU_GCC)
+        execute_process(
+          COMMAND gcc -dumpfullversion
+          ERROR_QUIET
+          OUTPUT_VARIABLE GCC_VERSION_STRING
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
+          set(SELECT_MOLD_WITH_FUSE false)
+        endif()
+      endif()
+      if (SELECT_MOLD_WITH_FUSE)
+        add_link_options("-fuse-ld=mold")
+      else()
+        add_link_options("-B${MOLD_EXECUTABLE}")
+      endif()
+    else()
+      message(FATAL_ERROR "Could NOT find mold (missing executable)")
+    endif()
+  else()
+    find_program(LLD_EXECUTABLE lld)
+    if(LLD_EXECUTABLE)
+      execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+        ERROR_QUIET
+        OUTPUT_VARIABLE LLD_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
+      if(LLD_VERSION_MATCH)
+        set(LLD_VERSION ${CMAKE_MATCH_1})
+        message(STATUS "Found lld with version: ${LLD_VERSION}")
+      else()
+        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+      endif()
+    endif()
+    # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
+    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    if(LLD_SUPPORT)
+      if(LLD_EXECUTABLE)
+        message(STATUS "Selecting lld as linker")
+        add_link_options("-fuse-ld=lld")
+      else()
+        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+      endif()
+    endif()
+  endif()
+endif()
+
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -817,6 +875,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
@@ -827,6 +886,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/locationdelegate.cpp
   src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/multilineeditdelegate.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -2074,7 +2134,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.19.1)
+  set(LIBDJINTEROP_VERSION 0.19.2)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2110,7 +2170,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=fd03a7ed54bf4e58da0075b517a6e7382546227a1ac165769987d57e1cf5e36e
+      URL_HASH SHA256=2f44b43a612b5fccc5bcba4d6c9e463ba8cd637edc9ab2e5dc19173d00c5f4eb
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}

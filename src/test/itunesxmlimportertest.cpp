@@ -22,12 +22,9 @@ class ITunesXMLImporterTest : public MixxxTest {
             const QString& xmlFileName, std::unique_ptr<ITunesDAO> dao) {
         QString xmlFilePath = getITunesTestDir().absoluteFilePath(xmlFileName);
         auto importer = std::make_unique<ITunesXMLImporter>(
-                nullptr, xmlFilePath, cancelImport, std::move(dao));
+                nullptr, xmlFilePath, std::move(dao));
         return importer;
     }
-
-  private:
-    std::atomic<bool> cancelImport;
 };
 
 class MockITunesDAO : public ITunesDAO {
