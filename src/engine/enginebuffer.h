@@ -352,7 +352,7 @@ class EngineBuffer : public EngineObject {
     int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
-    mixxx::audio::FramePos m_slipPosition;
+    mixxx::audio::FramePos m_slipPos;
     // Saved value of rate for slip mode
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.

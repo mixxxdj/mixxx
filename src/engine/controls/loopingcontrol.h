@@ -58,6 +58,12 @@ class LoopingControl : public EngineControl {
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
+    mixxx::audio::FramePos getLoopStartPosition() {
+        return m_loopInfo.getValue().startPosition;
+    }
+    mixxx::audio::FramePos getLoopEndPosition() {
+        return m_loopInfo.getValue().endPosition;
+    }
     void setRateControl(RateControl* rateControl);
     bool isLoopingEnabled();
     bool isLoopRollActive();

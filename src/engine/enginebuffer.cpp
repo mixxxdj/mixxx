@@ -87,7 +87,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_baserate_old(0),
           m_rate_old(0.),
           m_trackEndPositionOld(mixxx::audio::kInvalidFramePos),
-          m_slipPosition(mixxx::audio::kStartFramePos),
+          m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
           m_pRepeat(nullptr),
@@ -553,7 +553,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Reset slip mode
     m_pSlipButton->set(0);
     m_bSlipEnabledProcessing = false;
-    m_slipPosition = mixxx::audio::kStartFramePos;
+    m_slipPos = mixxx::audio::kStartFramePos;
     m_dSlipRate = 0;
 
     m_queuedSeek.setValue(kNoQueuedSeek);
@@ -585,7 +585,7 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, false, 0.0, 0.0, 0.0, 0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -1189,12 +1189,12 @@ void EngineBuffer::processSlip(int iBufferSize) {
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
-            m_slipPosition = m_playPosition;
+            m_slipPos = m_playPosition;
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
-            seekExact(m_slipPosition.toNearestFrameBoundary());
-            m_slipPosition = mixxx::audio::kStartFramePos;
+            seekExact(m_slipPos.toNearestFrameBoundary());
+            m_slipPos = mixxx::audio::kStartFramePos;
         }
     }
 
@@ -1214,12 +1214,12 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // Simulate looping if a regular loop is active
         if (m_pLoopingControl->isLoopingEnabled() &&
                 !m_pLoopingControl->isLoopRollActive()) {
-            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
-            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+            const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
+            m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
                     newPos,
                     m_dSlipRate < 0);
         } else {
-            m_slipPosition += slipDelta;
+            m_slipPos += slipDelta;
         }
     }
 }
@@ -1387,7 +1387,17 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPosition);
-    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPosition);
+    const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPos);
+    double fFractionalLoopStartPos = 0.0;
+    auto loopStartPos = m_pLoopingControl->getLoopStartPosition();
+    if (loopStartPos.isValid()) {
+        fFractionalLoopStartPos = fractionalPlayposFromAbsolute(loopStartPos);
+    }
+    double fFractionalLoopEndPos = 0.0;
+    auto loopEndPos = m_pLoopingControl->getLoopEndPosition();
+    if (loopEndPos.isValid()) {
+        fFractionalLoopEndPos = fractionalPlayposFromAbsolute(loopEndPos);
+    }
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
             m_trackSampleRateOld / getRateRatio();
@@ -1420,6 +1430,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
                     m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
+            m_pLoopingControl->isLoopingEnabled(),
+            fFractionalLoopStartPos,
+            fFractionalLoopEndPos,
             tempoTrackSeconds,
             iBufferSize / kSamplesPerFrame / m_sampleRate.toDouble() * 1000000.0);
 
@@ -1437,7 +1450,7 @@ void EngineBuffer::hintReader(const double dRate) {
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabledProcessing) {
         Hint hint;
-        hint.frame = static_cast<SINT>(m_slipPosition.toLowerFrameBoundary().value());
+        hint.frame = static_cast<SINT>(m_slipPos.toLowerFrameBoundary().value());
         hint.type = Hint::Type::SlipPosition;
         if (m_dSlipRate >= 0) {
             hint.frameCount = Hint::kFrameCountForward;

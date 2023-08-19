@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QTime>
-#include <QMap>
 #include <QAtomicPointer>
+#include <QMap>
+#include <QTime>
 
-#include "util/performancetimer.h"
 #include "control/controlvalue.h"
+#include "util/performancetimer.h"
 
 class ControlProxy;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -32,11 +32,14 @@ class VisualPlayPositionData {
   public:
     PerformanceTimer m_referenceTime;
     int m_callbackEntrytoDac; // Time from Audio Callback Entry to first sample of Buffer is transferred to DAC
-    double m_enginePlayPos; // Play position of fist Sample in Buffer
-    double m_rate;
+    double m_playPos;         // Play position of first Sample in Buffer
+    double m_playRate;
     double m_positionStep;
-    double m_slipPosition;
+    double m_slipPos;
     double m_slipRate;
+    bool m_loopEnabled;
+    double m_loopStartPos;
+    double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
     double m_audioBufferMicroS;
 };
@@ -50,12 +53,14 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(
-            double playPos,
-            double rate,
+    void set(double playPos,
+            double playRate,
             double positionStep,
-            double slipPosition,
+            double slipPos,
             double slipRate,
+            bool loopEnabled,
+            double loopStartPos,
+            double loopEndPos,
             double tempoTrackSeconds,
             double audioBufferMicroS);
 
