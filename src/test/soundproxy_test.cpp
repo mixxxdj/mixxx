@@ -756,15 +756,32 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
         SINT firstSoundSample;
     };
 
-    RefFirstSound refs[] = {
-            {QStringLiteral("cover-test.aiff"), 1166},
+    RefFirstSound refs[] = {{QStringLiteral("cover-test.aiff"), 1166},
             {QStringLiteral("cover-test-alac.caf"), 1166},
             {QStringLiteral("cover-test.flac"), 1166},
-            {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"), 1296},
-            {QStringLiteral("cover-test-ffmpeg-aac.m4a"), 2048},
+            {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"),
+                    1168}, // FFmpeg 4.2.7-0ubuntu0.1 / 4.4.2-0ubuntu0.22.04.1
+                           // 5390 Media Foundation 10.0.17763.2989
+                           // 1166 CoreAudio Version 11.7.8 (Build 20G1351)
+            {QStringLiteral("cover-test-ffmpeg-aac.m4a"),
+                    2048}, // FFmpeg 4.2.7-0ubuntu0.1
+                           // 1166 FFmpeg 4.4.2-0ubuntu0.22.04.1
+                           // 1166 FFmpeg 5.1.2 windows
+                           // 1112 CoreAudio Version 11.7.8 (Build 20G1351)
+                           // 1112 CoreAusio Version 12.6.7 (Build 21G651)
+                           // 3160 Media Foundation 10.0.17763.2989
+                           // 3160 Media Foundation 10.0.20348.1
             {QStringLiteral("cover-test-itunes-12.7.0-alac.m4a"), 1166},
-            {QStringLiteral("cover-test-png.mp3"), 1752},
-            {QStringLiteral("cover-test-vbr.mp3"), 3376},
+            {QStringLiteral("cover-test-png.mp3"),
+                    1752}, // MAD Linux / Windows
+                           // 584 FFmpeg
+                           // 0 CoreAudio Version 11.7.8 (Build 20G1351)
+            {QStringLiteral("cover-test-vbr.mp3"),
+                    3376}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
+                           // 3326 MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+                           // No offset compared to FPM_64BIT builds but rounding differences
+                           // 2318 CoreAudio Version 11.7.8 (Build 20G1351)
+                           // 1166 FFmpeg
             {QStringLiteral("cover-test.ogg"), 1166},
             {QStringLiteral("cover-test.opus"), 1268},
             {QStringLiteral("cover-test.wav"), 1166},
