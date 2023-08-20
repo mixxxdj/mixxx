@@ -4,7 +4,6 @@
 #include <algorithm>
 
 #include "util/assert.h"
-#include "util/make_const_iterator.h"
 
 namespace {
 
