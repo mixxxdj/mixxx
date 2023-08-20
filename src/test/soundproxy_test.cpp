@@ -2,6 +2,7 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
@@ -743,6 +744,88 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
                                                     mixxx::SampleBuffer::WritableSlice(readBuffer)))
                                 .frameIndexRange());
             }
+        }
+    }
+}
+
+TEST_F(SoundSourceProxyTest, firstSoundTest) {
+    constexpr SINT kReadFrameCount = 2000;
+
+    struct RefFirstSound {
+        QString path;
+        SINT firstSoundSample;
+    };
+
+    RefFirstSound refs[] = {
+            {QStringLiteral("cover-test.aiff"), 1166},
+            {QStringLiteral("cover-test-alac.caf"), 1166},
+            {QStringLiteral("cover-test.flac"), 1166},
+            {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"), 1296},
+            {QStringLiteral("cover-test-ffmpeg-aac.m4a"), 2048},
+            {QStringLiteral("cover-test-itunes-12.7.0-alac.m4a"), 1166},
+            {QStringLiteral("cover-test-png.mp3"), 1752},
+            {QStringLiteral("cover-test-vbr.mp3"), 3376},
+            {QStringLiteral("cover-test.ogg"), 1166},
+            {QStringLiteral("cover-test.opus"), 1268},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wv"), 1166}};
+
+    for (const auto& ref : refs) {
+        QString filePath = getTestDir().filePath(
+                QStringLiteral("id3-test-data/") +
+                ref.path);
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+        const auto fileUrl = QUrl::fromLocalFile(filePath);
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
+            mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                    filePath,
+                    providerRegistration.getProvider());
+
+            // Obtaining an AudioSource may fail for unsupported file formats,
+            // even if the corresponding file extension is supported, e.g.
+            // AAC vs. ALAC in .m4a files
+            if (!pContReadSource) {
+                // skip test file
+                continue;
+            }
+            mixxx::SampleBuffer contReadData(
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+
+            SINT contFrameIndex = pContReadSource->frameIndexMin();
+            while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
+                const auto readFrameIndexRange =
+                        mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
+                // Read next chunk of frames for Cont source without seeking
+                const auto contSampleFrames =
+                        pContReadSource->readSampleFrames(
+                                mixxx::WritableSampleFrames(
+                                        readFrameIndexRange,
+                                        mixxx::SampleBuffer::WritableSlice(contReadData)));
+                ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
+                ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
+                ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+                contFrameIndex += contSampleFrames.frameLength();
+
+                const SINT sampleCount =
+                        pContReadSource->getSignalInfo().frames2samples(
+                                contSampleFrames.frameLength());
+
+                auto samples = std::span<const CSAMPLE>(&contReadData[0], sampleCount);
+
+                const SINT firstSoundSample = AnalyzerSilence::findFirstSoundInChunk(samples);
+                if (firstSoundSample < static_cast<SINT>(samples.size())) {
+                    EXPECT_EQ(firstSoundSample, ref.firstSoundSample)
+                            << filePath.toStdString() << " "
+                            << providerRegistration.getProvider()
+                                       ->getDisplayName()
+                                       .toStdString();
+                    break;
+                }
+            }
+            break;
         }
     }
 }
