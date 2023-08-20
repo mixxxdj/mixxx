@@ -78,7 +78,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pKeyControl(nullptr),
           m_pReadAheadManager(nullptr),
           m_pReader(nullptr),
-          m_playPosition(kInitialPlayPosition),
+          m_playPos(kInitialPlayPosition),
           m_speed_old(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
@@ -455,7 +455,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         // (Must be called only once per callback)
         m_pScale->scaleBuffer(m_pCrossfadeBuffer, iBufferSize);
         // Restore the original position that was lost due to scaleBuffer() above
-        m_pReadAheadManager->notifySeek(m_playPosition);
+        m_pReadAheadManager->notifySeek(m_playPos);
         m_bCrossfadeReady = true;
      }
 }
@@ -471,14 +471,14 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
         kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << position;
     }
 
-    m_playPosition = position;
+    m_playPos = position;
 
     if (m_rate_old != 0.0) {
         // Before seeking, read extra buffer for crossfading
         // this also sets m_pReadAheadManager to newpos
         readToCrossfadeBuffer(m_iLastBufferSize);
     } else {
-        m_pReadAheadManager->notifySeek(m_playPosition);
+        m_pReadAheadManager->notifySeek(m_playPos);
     }
     m_pScale->clear();
 
@@ -487,7 +487,7 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->notifySeek(m_playPosition);
+        pControl->notifySeek(m_playPos);
     }
 
     verifyPlay(); // verify or update play button and indicator
@@ -544,7 +544,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
 
     m_visualPlayPos->setInvalid();
-    m_playPosition = kInitialPlayPosition; // for execute seeks to 0.0
+    m_playPos = kInitialPlayPosition; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(trackNumSamples);
     m_pTrackSampleRate->set(trackSampleRate);
@@ -626,7 +626,7 @@ void EngineBuffer::notifyTrackLoaded(
     const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
-        pControl->setFrameInfo(m_playPosition, trackEndPosition, sampleRate);
+        pControl->setFrameInfo(m_playPos, trackEndPosition, sampleRate);
     }
 
     if (pNewTrack) {
@@ -716,7 +716,7 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
-                    m_playPosition >= getTrackEndPosition() &&
+                    m_playPos >= getTrackEndPosition() &&
                     queuedSeek.seekType == SEEK_NONE) ||
             m_pPassthroughEnabled->toBool()) {
         // play not possible
@@ -844,7 +844,7 @@ void EngineBuffer::processTrackLocked(
     // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPos, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1012,13 +1012,13 @@ void EngineBuffer::processTrackLocked(
         rate = m_rate_old;
     }
 
-    const mixxx::audio::FramePos playpos_old = m_playPosition;
+    const mixxx::audio::FramePos playpos_old = m_playPos;
     bool bCurBufferPaused = false;
     bool atEnd = false;
     bool backwards = rate < 0;
     const mixxx::audio::FramePos trackEndPosition = getTrackEndPosition();
     if (trackEndPosition.isValid()) {
-        atEnd = m_playPosition >= trackEndPosition;
+        atEnd = m_playPos >= trackEndPosition;
         if (atEnd && !backwards) {
             // do not play past end
             bCurBufferPaused = true;
@@ -1048,15 +1048,15 @@ void EngineBuffer::processTrackLocked(
 
         if (m_bScalerOverride) {
             // If testing, we don't have a real log so we fake the position.
-            m_playPosition += framesRead;
+            m_playPos += framesRead;
         } else {
             // Adjust filepos_play by the amount we processed.
-            m_playPosition =
-                    m_pReadAheadManager->getFilePlaypositionFromLog(m_playPosition, framesRead);
+            m_playPos =
+                    m_pReadAheadManager->getFilePlaypositionFromLog(m_playPos, framesRead);
         }
         // Note: The last buffer of a track is padded with silence.
         // This silence is played together with the last samples in the last
-        // callback and the m_playPosition is advanced behind the end of the track.
+        // callback and the m_playPos is advanced behind the end of the track.
         // If repeat is enabled, scaler->scaleBuffer() wraps around at end/start
         // and fills the buffer with samples from the other end of the track.
 
@@ -1084,8 +1084,8 @@ void EngineBuffer::processTrackLocked(
     }
 
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setFrameInfo(m_playPosition, trackEndPosition, m_trackSampleRateOld);
-        pControl->process(rate, m_playPosition, iBufferSize);
+        pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
+        pControl->process(rate, m_playPos, iBufferSize);
     }
 
     m_scratching_old = is_scratching;
@@ -1099,7 +1099,7 @@ void EngineBuffer::processTrackLocked(
     // to set the sync'ed playposition right away and fill the wrap-around buffer
     // with correct samples from the sync'ed loop in / track start position?
     if (m_pRepeat->toBool() && m_pQuantize->toBool() &&
-            (m_playPosition > playpos_old) == backwards) {
+            (m_playPos > playpos_old) == backwards) {
         // TODO() The resulting seek is processed in the following callback
         // That is to late
         requestSyncPhase();
@@ -1189,7 +1189,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
-            m_slipPos = m_playPosition;
+            m_slipPos = m_playPos;
             m_dSlipRate = m_rate_old;
         } else {
             // TODO(owen) assuming that looping will get canceled properly
@@ -1274,7 +1274,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
         case SEEK_PHASE:
             // only adjust phase
-            position = m_playPosition;
+            position = m_playPos;
             break;
         case SEEK_STANDARD:
             if (m_pQuantize->toBool()) {
@@ -1309,11 +1309,11 @@ void EngineBuffer::processSeek(bool paused) {
         position = m_pLoopingControl->getSyncPositionInsideLoop(position, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
-                    << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_playPosition
+                    << "EngineBuffer::processSeek" << getGroup() << "seek info:" << m_playPos
                     << "->" << position;
         }
     }
-    if (position != m_playPosition) {
+    if (position != m_playPos) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
@@ -1370,7 +1370,7 @@ mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (!m_playPosition.isValid() ||
+    if (!m_playPos.isValid() ||
             !m_trackSampleRateOld.isValid() ||
             m_tempo_ratio_old == 0 ||
             m_pPassthroughEnabled->toBool()) {
@@ -1386,7 +1386,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Increase samplesCalculated by the buffer size
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
-    const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPosition);
+    const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPos);
     const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPos);
     double fFractionalLoopStartPos = 0.0;
     auto loopStartPos = m_pLoopingControl->getLoopStartPosition();
@@ -1440,7 +1440,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
     // Via the visual play position it's possible to access to the sample that is currently played,
     // and not the one that have been processed as in the current solution.
-    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPosition, m_sampleRate);
+    m_pClockControl->updateIndicators(speed * m_baserate_old, m_playPos, m_sampleRate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

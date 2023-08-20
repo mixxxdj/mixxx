@@ -313,7 +313,7 @@ class EngineBuffer : public EngineObject {
     HintVector m_hintList;
 
     // The current sample to play in the file.
-    mixxx::audio::FramePos m_playPosition;
+    mixxx::audio::FramePos m_playPos;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
