@@ -3027,6 +3027,7 @@ if(MEDIAFOUNDATION)
   )
   target_link_libraries(mixxx-lib PRIVATE
     ${MediaFoundation_LIBRARIES}
+    Version.lib
   )
 endif()
 
