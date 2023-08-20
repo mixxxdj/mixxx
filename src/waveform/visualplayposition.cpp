@@ -89,13 +89,13 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
         if (data.m_loopEnabled) {
             double loopSize = data.m_loopEndPos - data.m_loopStartPos;
             if (loopSize > 0) {
-                if (interpolatedPlayPos < data.m_loopStartPos) {
+                if ((data.m_playRate < 0.0) && (interpolatedPlayPos < data.m_loopStartPos)) {
                     interpolatedPlayPos = data.m_loopEndPos -
                             std::remainder(
                                     data.m_loopStartPos - interpolatedPlayPos,
                                     loopSize);
                 }
-                if (interpolatedPlayPos > data.m_loopEndPos) {
+                if ((data.m_playRate > 0.0) && (interpolatedPlayPos > data.m_loopEndPos)) {
                     interpolatedPlayPos = data.m_loopStartPos +
                             std::remainder(
                                     interpolatedPlayPos - data.m_loopEndPos,
