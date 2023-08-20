@@ -3,6 +3,10 @@
 
 #include "util/performancetimer.h"
 
+TEST(PerformanceTimerTest, ElapsedIsMonotonic) {
+    ASSERT_TRUE(PerformanceTimer::debugEnsureClockIsMonotonic());
+}
+
 // This test was added because of an signed/unsigned underflow bug that
 // affected Windows and (presumably) Symbian.
 // See https://github.com/mixxxdj/mixxx/issues/7397
