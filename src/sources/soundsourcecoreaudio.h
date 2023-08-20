@@ -58,7 +58,7 @@ class SoundSourceProviderCoreAudio : public SoundSourceProvider {
     static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QChar(' ') + getVersionString();
     }
 
     QStringList getSupportedFileTypes() const override {
@@ -71,6 +71,8 @@ class SoundSourceProviderCoreAudio : public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceCoreAudio>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx
