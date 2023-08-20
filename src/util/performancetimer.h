@@ -11,8 +11,6 @@ class PerformanceTimer {
 
     // call this once at startup to ensure that the QElapsedTimer is monotonic
     static bool debugEnsureClockIsMonotonic() {
-        // TODO: turn this into a static_assert and inline this method
-        // once Qt enables it.
         DEBUG_ASSERT(QElapsedTimer::isMonotonic());
         return QElapsedTimer::isMonotonic();
     };
