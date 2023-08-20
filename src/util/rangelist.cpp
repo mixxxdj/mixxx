@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "util/assert.h"
+#include "util/make_const_iterator.h"
 
 namespace {
 
@@ -36,9 +37,9 @@ QList<int> parseRangeList(const QString& input) {
         }
         for (int currentIndex = startIndex; currentIndex <= endIndex; currentIndex++) {
             // Add values sorted and skip duplicates
-            auto insertPos = std::lower_bound(intList.begin(), intList.end(), currentIndex);
-            if (insertPos == intList.end() || *insertPos != currentIndex) {
-                intList.insert(insertPos, currentIndex);
+            auto insertPos = std::lower_bound(intList.cbegin(), intList.cend(), currentIndex);
+            if (insertPos == intList.cend() || *insertPos != currentIndex) {
+                constInsert(&intList, insertPos, currentIndex);
             }
         }
     }
