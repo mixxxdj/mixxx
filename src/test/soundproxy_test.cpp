@@ -119,8 +119,8 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
             const CSAMPLE* actual,
             const char* errorMessage) {
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_NEAR(expected[i], actual[i],
-                    kMaxDecodingError) << errorMessage;
+            EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
+                    << "i=" << i << " " << errorMessage;
         }
     }
 
