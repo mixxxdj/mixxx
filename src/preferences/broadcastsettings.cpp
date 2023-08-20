@@ -9,6 +9,7 @@
 #include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
 #include "util/logger.h"
+#include "util/make_const_iterator.h"
 #include "util/memory.h"
 
 namespace {
@@ -202,7 +203,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+    for (auto profileIter = m_profiles.constBegin(); profileIter != m_profiles.constEnd();) {
         QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
@@ -210,7 +211,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
             const auto removedProfile = *profileIter;
             DEBUG_ASSERT(removedProfile);
             deleteFileForProfile(*removedProfile);
-            profileIter = m_profiles.erase(profileIter);
+            profileIter = constErase(&m_profiles, profileIter);
             emit profileRemoved(removedProfile);
         } else {
             ++profileIter;

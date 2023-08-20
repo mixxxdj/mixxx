@@ -9,6 +9,7 @@
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
 #include "util/logger.h"
+#include "util/make_const_iterator.h"
 
 namespace {
 
@@ -48,7 +49,11 @@ void CoverArtDelegate::emitRowsChanged(
     // Sort in ascending order...
     std::sort(rows.begin(), rows.end());
     // ...and then deduplicate...
-    rows.erase(std::unique(rows.begin(), rows.end()), rows.end());
+    constErase(
+            &rows,
+            make_const_iterator(
+                    rows, std::unique(rows.begin(), rows.end())),
+            rows.constEnd());
     // ...before emitting the signal.
     DEBUG_ASSERT(!rows.isEmpty());
     emit rowsChanged(std::move(rows));

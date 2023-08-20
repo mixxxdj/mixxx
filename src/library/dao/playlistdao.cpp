@@ -11,6 +11,7 @@
 #include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -212,10 +213,10 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
-    for (QMultiHash<TrackId, int>::iterator it = m_playlistsTrackIsIn.begin();
-            it != m_playlistsTrackIsIn.end();) {
+    for (auto it = m_playlistsTrackIsIn.constBegin();
+            it != m_playlistsTrackIsIn.constEnd();) {
         if (it.value() == playlistId) {
-            it = m_playlistsTrackIsIn.erase(it);
+            it = constErase(&m_playlistsTrackIsIn, it);
         } else {
             ++it;
         }

@@ -11,6 +11,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -1256,10 +1257,10 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     // and QVector::iterator is a pointer type in Qt5, but QStack inherits
     // from QList in Qt6 so QStack::iterator is not a pointer type in Qt6.
     // NOLINTNEXTLINE(readability-qualified-auto)
-    auto i = m_activeLoopRolls.begin();
-    while (i != m_activeLoopRolls.end()) {
+    auto i = m_activeLoopRolls.constBegin();
+    while (i != m_activeLoopRolls.constEnd()) {
         if (size == *i) {
-            i = m_activeLoopRolls.erase(i);
+            i = constErase(&m_activeLoopRolls, i);
         } else {
             ++i;
         }
