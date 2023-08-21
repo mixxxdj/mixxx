@@ -101,7 +101,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    // qDebug() << "slotImportAsMixxxPlaylist() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
     QString playlist;
