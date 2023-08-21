@@ -35,6 +35,7 @@
 #include "util/logger.h"
 #include "util/sample.h"
 #include "util/timer.h"
+#include "waveform/visualplayposition.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/waveformwidgetfactory.h"
 #endif
@@ -89,7 +90,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
-          m_slipModeState(SlipModeStates::Disabled),
+          m_slipModeState(SlipModeState::Disabled),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -555,7 +556,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_slipPos = mixxx::audio::kStartFramePos;
     m_dSlipRate = 0;
-    m_slipModeState = SlipModeStates::Disabled;
+    m_slipModeState = SlipModeState::Disabled;
 
     m_queuedSeek.setValue(kNoQueuedSeek);
 
@@ -591,7 +592,7 @@ void EngineBuffer::ejectTrack() {
             0.0,
             0.0,
             0.0,
-            SlipModeStates::Disabled,
+            SlipModeState::Disabled,
             false,
             0.0,
             0.0,
@@ -1230,13 +1231,13 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
                     newPos,
                     m_dSlipRate < 0);
-            m_slipModeState = SlipModeStates::Armed;
+            m_slipModeState = SlipModeState::Armed;
         } else {
             m_slipPos += slipDelta;
-            m_slipModeState = SlipModeStates::Running;
+            m_slipModeState = SlipModeState::Running;
         }
     } else {
-        m_slipModeState = SlipModeStates::Disabled;
+        m_slipModeState = SlipModeState::Disabled;
     }
 }
 

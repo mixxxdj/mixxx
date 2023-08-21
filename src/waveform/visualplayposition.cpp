@@ -30,7 +30,7 @@ void VisualPlayPosition::set(
         double positionStep,
         double slipPosition,
         double slipRate,
-        SlipModeStates m_slipModeState,
+        SlipModeState m_slipModeState,
         bool loopEnabled,
         double loopStartPosition,
         double loopEndPosition,
@@ -125,7 +125,7 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
         double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offset);
         *pPlayPosition = interpolatedPlayPos;
 
-        if (data.m_slipModeState == SlipModeStates::Running) {
+        if (data.m_slipModeState == SlipModeState::Running) {
             *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
         } else {
             *pSlipPosition = interpolatedPlayPos;

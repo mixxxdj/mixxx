@@ -12,13 +12,13 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
+#include "engine/slipmodestate.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/bpm.h"
 #include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
-#include "waveform/visualplayposition.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -359,7 +359,7 @@ class EngineBuffer : public EngineObject {
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
 
-    SlipModeStates m_slipModeState;
+    SlipModeState m_slipModeState;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
