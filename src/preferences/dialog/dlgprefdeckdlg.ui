@@ -486,7 +486,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
         <item row="2" column="1">
          <widget class="QRadioButton" name="radioButtonSoftLeader">
           <property name="toolTip">
-           <string>Apply tempo changes from a soft leading track (normally the previous track in a transition) to the follower tracks. After the transition, the follower track will continue with the previous leader's very last tempo. Changes from explicit selected leaders are always applied.</string>
+           <string>Apply tempo changes from a soft-leading track (usually the leaving track in a transition) to the follower tracks. After the transition, the follower track will continue with the previous leader's very last tempo. Changes from explicit selected leaders are always applied.</string>
           </property>
           <property name="text">
            <string>Follow soft leader's tempo</string>
@@ -638,7 +638,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
         <item row="2" column="2">
          <widget class="QRadioButton" name="radioButtonLockBpm">
           <property name="toolTip">
-           <string>The tempo of a previous soft leader track at the beginning of the transition is kept steady. After the transition, the follower track will maintain this original tempo. This technique serves as a workaround to avoid dynamic tempo changes, as seen in rubato-style tracks, during the outro. For instance it prevents the follower track from continuing with a slowed-down tempo of the soft leader. This corresponds to the behavior before Mixxx 2.4. Changes from explicit selected leaders are always applied.</string>
+           <string>The tempo of a previous soft leader track at the beginning of the transition is kept steady. After the transition, the follower track will maintain this original tempo. This technique serves as a workaround to avoid dynamic tempo changes, as seen during the outro of rubato-style tracks. For instance, it prevents the follower track from continuing with a slowed-down tempo of the soft leader. This corresponds to the behavior before Mixxx 2.4. Changes from explicit selected leaders are always applied.</string>
           </property>
           <property name="text">
            <string>Use steady tempo</string>
