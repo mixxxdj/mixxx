@@ -1213,6 +1213,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
                 static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
         // Simulate looping if a regular loop is active
         if (m_pLoopingControl->isLoopingEnabled() &&
+                m_pLoopingControl->loopWasEnabledBeforeSlipEnable() &&
                 !m_pLoopingControl->isLoopRollActive()) {
             const mixxx::audio::FramePos newPos = m_slipPos + slipDelta;
             m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(

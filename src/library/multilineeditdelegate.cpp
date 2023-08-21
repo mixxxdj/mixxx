@@ -175,7 +175,7 @@ MultiLineEditDelegate::MultiLineEditDelegate(QTableView* pTableView)
 QWidget* MultiLineEditDelegate::createEditor(QWidget* pParent,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    Q_UNUSED(index);
+    Q_UNUSED(option);
     auto* pEditor = new MultiLineEditor(pParent, m_pTableView, index);
     // Also emitted when pressing Return key, see MultiLineEditor::keyPressEvent()
     connect(pEditor,
