@@ -784,6 +784,15 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 void WMainMenuBar::connectMenuToSlotShowMenuBar(const QMenu* pMenu) {
     // If a menu hotkey like Alt+F(ile) is pressed while the menubar is hidden,
     // show the menubar and open the requested menu. See showMenuBar() for details.
+
+    // NOTE(ronso0) Test with xfwm4 and other window managers if you change this
+    // code or think you found alternative ways to toggle the menubar!
+    // In Gnome for example, when highlighting (pressed Alt only) or activating
+    // menus (Alt combos), the menubar receives focusIn events (even while it is
+    // hidden), and focusOut events respectively when closing menus. Hence we
+    // could simply show/hide the menubar in QMenuBar::focusInEvent() and focusoutEvent().
+    // However, with xfwm4 for example, menus are activated directly, i.e. the
+    // menubar doesn't receive focus change events.
     connect(pMenu,
             &QMenu::aboutToShow,
             this,
