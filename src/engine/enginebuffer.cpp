@@ -35,7 +35,6 @@
 #include "util/logger.h"
 #include "util/sample.h"
 #include "util/timer.h"
-#include "waveform/visualplayposition.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/waveformwidgetfactory.h"
 #endif
@@ -90,6 +89,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_slipPos(mixxx::audio::kStartFramePos),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
+          m_slipModeState(SlipModeStates::Disabled),
           m_pRepeat(nullptr),
           m_startButton(nullptr),
           m_endButton(nullptr),
@@ -555,6 +555,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_bSlipEnabledProcessing = false;
     m_slipPos = mixxx::audio::kStartFramePos;
     m_dSlipRate = 0;
+    m_slipModeState = SlipModeStates::Disabled;
 
     m_queuedSeek.setValue(kNoQueuedSeek);
 
@@ -585,7 +586,17 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pOldTrack = m_pCurrentTrack;
     m_pause.lock();
 
-    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0, false, 0.0, 0.0, 0.0, 0.0);
+    m_visualPlayPos->set(0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            SlipModeStates::Disabled,
+            false,
+            0.0,
+            0.0,
+            0.0,
+            0.0);
     doSeekPlayPos(mixxx::audio::kStartFramePos, SEEK_EXACT);
 
     m_pCurrentTrack.reset();
@@ -1219,9 +1230,13 @@ void EngineBuffer::processSlip(int iBufferSize) {
             m_slipPos = m_pLoopingControl->adjustedPositionForCurrentLoop(
                     newPos,
                     m_dSlipRate < 0);
+            m_slipModeState = SlipModeStates::Armed;
         } else {
             m_slipPos += slipDelta;
+            m_slipModeState = SlipModeStates::Running;
         }
+    } else {
+        m_slipModeState = SlipModeStates::Disabled;
     }
 }
 
@@ -1431,6 +1446,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
                     m_trackEndPositionOld.toEngineSamplePos(),
             fFractionalSlipPos,
             effectiveSlipRate,
+            m_slipModeState,
             m_pLoopingControl->isLoopingEnabled(),
             fFractionalLoopStartPos,
             fFractionalLoopEndPos,

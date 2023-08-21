@@ -18,6 +18,7 @@
 #include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
+#include "waveform/visualplayposition.h"
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -357,6 +358,8 @@ class EngineBuffer : public EngineObject {
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
+
+    SlipModeStates m_slipModeState;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;

@@ -30,6 +30,7 @@ void VisualPlayPosition::set(
         double positionStep,
         double slipPosition,
         double slipRate,
+        SlipModeStates m_slipModeState,
         bool loopEnabled,
         double loopStartPosition,
         double loopEndPosition,
@@ -43,6 +44,7 @@ void VisualPlayPosition::set(
     data.m_slipRate = slipRate;
     data.m_positionStep = positionStep;
     data.m_slipPos = slipPosition;
+    data.m_slipModeState = m_slipModeState;
     data.m_loopEnabled = loopEnabled;
     data.m_loopStartPos = loopStartPosition;
     data.m_loopEndPos = loopEndPosition;
@@ -79,31 +81,36 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
     return 0.0;
 }
 
+double VisualPlayPosition::determinePlayPosInLoopBoundries(
+        const VisualPlayPositionData& data, const double& offset) {
+    double interpolatedPlayPos = data.m_playPos + offset * data.m_playRate;
+
+    if (data.m_loopEnabled) {
+        double loopSize = data.m_loopEndPos - data.m_loopStartPos;
+        if (loopSize > 0) {
+            if ((data.m_playRate < 0.0) && (interpolatedPlayPos < data.m_loopStartPos)) {
+                interpolatedPlayPos = data.m_loopEndPos -
+                        std::remainder(
+                                data.m_loopStartPos - interpolatedPlayPos,
+                                loopSize);
+            }
+            if ((data.m_playRate > 0.0) && (interpolatedPlayPos > data.m_loopEndPos)) {
+                interpolatedPlayPos = data.m_loopStartPos +
+                        std::remainder(
+                                interpolatedPlayPos - data.m_loopEndPos,
+                                loopSize);
+            }
+        }
+    }
+    return interpolatedPlayPos;
+}
+
 double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
     if (m_valid) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
 
-        double interpolatedPlayPos = data.m_playPos + offset * data.m_playRate;
-
-        if (data.m_loopEnabled) {
-            double loopSize = data.m_loopEndPos - data.m_loopStartPos;
-            if (loopSize > 0) {
-                if ((data.m_playRate < 0.0) && (interpolatedPlayPos < data.m_loopStartPos)) {
-                    interpolatedPlayPos = data.m_loopEndPos -
-                            std::remainder(
-                                    data.m_loopStartPos - interpolatedPlayPos,
-                                    loopSize);
-                }
-                if ((data.m_playRate > 0.0) && (interpolatedPlayPos > data.m_loopEndPos)) {
-                    interpolatedPlayPos = data.m_loopStartPos +
-                            std::remainder(
-                                    interpolatedPlayPos - data.m_loopEndPos,
-                                    loopSize);
-                }
-            }
-        }
-        return interpolatedPlayPos;
+        return determinePlayPosInLoopBoundries(data, offset);
     }
     return -1;
 }
@@ -114,8 +121,15 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
     if (m_valid) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-        *pPlayPosition = data.m_playPos + offset * data.m_playRate;
-        *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
+
+        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offset);
+        *pPlayPosition = interpolatedPlayPos;
+
+        if (data.m_slipModeState == SlipModeStates::Running) {
+            *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
+        } else {
+            *pSlipPosition = interpolatedPlayPos;
+        }
     }
 }
 

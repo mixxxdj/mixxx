@@ -14,6 +14,12 @@ typedef void VSyncThread;
 class VSyncThread;
 #endif
 
+enum class SlipModeStates {
+    Disabled = 0,
+    Armed = 1,
+    Running = 2,
+};
+
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
 //
@@ -37,6 +43,7 @@ class VisualPlayPositionData {
     double m_positionStep;
     double m_slipPos;
     double m_slipRate;
+    SlipModeStates m_slipModeState;
     bool m_loopEnabled;
     double m_loopStartPos;
     double m_loopEndPos;
@@ -58,6 +65,7 @@ class VisualPlayPosition : public QObject {
             double positionStep,
             double slipPos,
             double slipRate,
+            SlipModeStates slipModeState,
             bool loopEnabled,
             double loopStartPos,
             double loopEndPos,
@@ -68,6 +76,8 @@ class VisualPlayPosition : public QObject {
     void getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
             double* playPosition,
             double* slipPosition);
+    double determinePlayPosInLoopBoundries(
+            const VisualPlayPositionData& data, const double& offset);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
