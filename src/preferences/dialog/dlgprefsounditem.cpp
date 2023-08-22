@@ -23,7 +23,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(
           m_type(type),
           m_index(index),
           m_isInput(isInput),
-          m_inhibitSettingChanged(false) {
+          m_emitSettingChanged(true) {
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
@@ -119,13 +119,13 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         }
     }
 emitAndReturn:
-    if (m_inhibitSettingChanged == false) {
+    if (m_emitSettingChanged) {
         emit settingChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
-    if (m_inhibitSettingChanged == false) {
+    if (m_emitSettingChanged) {
         emit settingChanged();
     }
 }
@@ -230,13 +230,13 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
 void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
     //qDebug() << "DlgPrefSoundItem::setDevice" << device;
-    if (index != -1) {
-        m_inhibitSettingChanged = true;
-        deviceComboBox->setCurrentIndex(index);
-        m_inhibitSettingChanged = false;
-    } else {
+    if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
         emit settingChanged();
+    } else {
+        m_emitSettingChanged = false;
+        deviceComboBox->setCurrentIndex(index);
+        m_emitSettingChanged = true;
     }
 }
 
@@ -248,13 +248,14 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
     // to store the channel info. x is the channel base and y is the channel
     // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
-    if (index != -1) {
-        m_inhibitSettingChanged = true;
-        channelComboBox->setCurrentIndex(index);
-        m_inhibitSettingChanged = false;
-    } else {
+    if (index == -1) {
+        // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
         emit settingChanged();
+    } else {
+        m_emitSettingChanged = false;
+        channelComboBox->setCurrentIndex(index);
+        m_emitSettingChanged = true;
     }
 }
 

@@ -50,5 +50,5 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
-    bool m_inhibitSettingChanged;
+    bool m_emitSettingChanged;
 };
