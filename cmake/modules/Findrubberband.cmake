@@ -85,14 +85,32 @@ if(rubberband_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_rubberband_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${rubberband_INCLUDE_DIR}"
     )
-    is_static_library(rubberband_IS_STATIC Chromaprint::Chromaprint)
+    is_static_library(rubberband_IS_STATIC rubberband::rubberband)
     if(rubberband_IS_STATIC)
-      find_package(FFTW REQUIRED)
       find_library(SAMPLERATE_LIBRARY samplerate REQUIRED)
       set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-        FFTW::FFTW
         ${SAMPLERATE_LIBRARY}
       )
+      find_package(FFTW)
+      if (FFTW_FOUND)
+        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          FFTW::FFTW
+        )
+      endif()
+      find_package(FFTW)
+      if (FFTW_FOUND)
+        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          FFTW::FFTW
+        )
+      endif()
+      find_package(Sleef)
+      if (Sleef_FOUND)
+        find_library(sleefdft_path sleefdft REQUIRED)
+        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          Sleef::sleef
+          ${sleefdft_path}
+        )
+      endif()
     endif()
   endif()
 endif()
