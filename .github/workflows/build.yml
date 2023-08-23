@@ -68,9 +68,10 @@ jobs:
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min1012
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1015
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -90,9 +91,10 @@ jobs:
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
@@ -119,6 +121,7 @@ jobs:
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
             cc: cl
             cxx: cl
