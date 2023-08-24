@@ -154,25 +154,19 @@ if(APPLE)
     message(FATAL_ERROR "'xcode-select -v' failed with '${XCODE_SELECT_RESULT}'. You may need to install Xcode and run 'sudo xcode-select --install'.")
   endif()
 
-  if(QT6)
-    # Minimum macOS version supported by Qt 6
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
-    endif()
+  if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+    # Minimum macOS version for arm64 Support
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+    set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target architecture")
+    set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+    set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
   else()
-    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
-      # Minimum macOS version for arm64 Support
-      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
-      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
-      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
-      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    if(QT6)
+      # Minimum macOS version supported by Qt 6
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     else()
       # Minimum macOS version supported by Qt 5.12
       set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-      if(NOT VCPKG_TARGET_TRIPLET)
-        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
-      endif()
       # Needed for deployment target < 10.14
       add_compile_options(-fno-aligned-allocation)
     endif()
