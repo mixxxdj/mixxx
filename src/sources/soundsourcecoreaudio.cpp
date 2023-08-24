@@ -3,8 +3,8 @@
 #include "engine/engine.h"
 #include "sources/mp3decoding.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/macosversion.h"
+#include "util/math.h"
 
 namespace mixxx {
 
