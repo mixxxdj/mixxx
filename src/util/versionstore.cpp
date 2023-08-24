@@ -1,5 +1,6 @@
 #include "util/versionstore.h"
 
+#include <qglobal.h>
 #include <soundtouch/SoundTouch.h>
 
 #include <QCoreApplication>
@@ -136,6 +137,11 @@ QString VersionStore::gitVersion() {
     }
 
     return gitVersion;
+}
+
+// static
+QString VersionStore::qtVersion() {
+    return qVersion();
 }
 
 // static
