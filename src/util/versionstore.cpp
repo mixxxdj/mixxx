@@ -1,6 +1,5 @@
 #include "util/versionstore.h"
 
-#include <qglobal.h>
 #include <soundtouch/SoundTouch.h>
 
 #include <QCoreApplication>
