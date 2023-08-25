@@ -97,12 +97,6 @@ if(rubberband_FOUND)
           FFTW::FFTW
         )
       endif()
-      find_package(FFTW)
-      if (FFTW_FOUND)
-        set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-          FFTW::FFTW
-        )
-      endif()
       find_package(Sleef)
       if (Sleef_FOUND)
         find_library(sleefdft_path sleefdft REQUIRED)
