@@ -139,6 +139,11 @@ QString VersionStore::gitVersion() {
 }
 
 // static
+QString VersionStore::qtVersion() {
+    return qVersion();
+}
+
+// static
 QString VersionStore::buildFlags() {
     return kBuildFlags;
 }
