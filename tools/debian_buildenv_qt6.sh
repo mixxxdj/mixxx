@@ -65,6 +65,8 @@ case "$1" in
             libfftw3-dev \
             libflac-dev \
             libgl1-mesa-dev \
+            libgmock-dev \
+            libgtest-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
