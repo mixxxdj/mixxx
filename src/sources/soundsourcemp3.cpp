@@ -161,12 +161,16 @@ bool decodeFrameHeader(
 } // anonymous namespace
 
 //static
-const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD");
 
 //static
 const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
+
+QString SoundSourceProviderMp3::getVersionString() const {
+    return QString(QString(mad_version) + QChar(' ') + QString(mad_build)).trimmed();
+}
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),
