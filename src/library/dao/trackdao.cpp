@@ -1381,7 +1381,7 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         QString columnsStr;
         int columnsSize = 0;
         for (int i = 0; i < columnsCount; ++i) {
-            columnsSize += qstrlen(columns[i].name) + 1;
+            columnsSize += static_cast<int>(qstrlen(columns[i].name)) + 1;
         }
         columnsStr.reserve(columnsSize);
         for (int i = 0; i < columnsCount; ++i) {

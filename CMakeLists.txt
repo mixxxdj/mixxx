@@ -1492,11 +1492,8 @@ if(WIN32)
   # max-and-std-cpp-min-not-available-in-visual-c-2010
   target_compile_definitions(mixxx-lib PUBLIC NOMINMAX UNICODE)
 
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    target_compile_definitions(mixxx-lib PUBLIC WIN32)
-  else()
-    target_compile_definitions(mixxx-lib PUBLIC WIN64)
-  endif()
+  # shoutidjc/shout.h checks for WIN32 to see if we are on Windows.
+  target_compile_definitions(mixxx-lib PUBLIC WIN32)
 
   target_link_libraries(mixxx-lib PRIVATE shell32)
 
