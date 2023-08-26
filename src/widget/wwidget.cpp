@@ -14,7 +14,9 @@ WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
           m_scaleFactor(1.0) {
     m_pTouchShift = new ControlProxy("[Controls]", "touch_shift");
     setAttribute(Qt::WA_StaticContents);
+#ifndef __APPLE__
     setAttribute(Qt::WA_AcceptTouchEvents);
+#endif
     setFocusPolicy(Qt::ClickFocus);
 }
 
