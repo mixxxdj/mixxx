@@ -130,6 +130,7 @@ endif()
 option(QT6 "Build with Qt6" OFF)
 option(QML "Build with QML" OFF)
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+option(QT_RELEASE "Always build with a release version of Qt, even in Debug mode" OFF)
 
 if(QML AND NOT QT6)
   message(FATAL_ERROR "Building with option QML=ON requires QT6=ON")
@@ -2404,42 +2405,52 @@ if(QT6)
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
+set(QT_COMPONENTS
+  Concurrent
+  Core
+  Gui
+  Network
+  OpenGL
+  PrintSupport
+  Qml
+  QuickWidgets
+  Sql
+  Svg
+  Test
+  Widgets
+  Xml
+)
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
-    Concurrent
-    Core
-    Gui
-    Network
-    OpenGL
-    PrintSupport
-    Qml
-    QuickWidgets
-    Sql
-    Svg
-    Test
-    Widgets
-    Xml
+    ${QT_COMPONENTS}
     ${QT6_NEW_COMPONENTS}
   REQUIRED
 )
-# PUBLIC is required below to find included headers
-target_link_libraries(mixxx-lib PUBLIC
-  Qt${QT_VERSION_MAJOR}::Concurrent
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Gui
-  Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::OpenGL
-  Qt${QT_VERSION_MAJOR}::PrintSupport
-  Qt${QT_VERSION_MAJOR}::Qml
-  Qt${QT_VERSION_MAJOR}::QuickWidgets
-  Qt${QT_VERSION_MAJOR}::Sql
-  Qt${QT_VERSION_MAJOR}::Svg
-  Qt${QT_VERSION_MAJOR}::Test
-  Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml)
+foreach(COMPONENT ${QT_COMPONENTS})
+  # PUBLIC is required below to find included headers
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+  if(QT_RELEASE)
+    set_target_properties(
+      Qt${QT_VERSION_MAJOR}::${COMPONENT}
+      PROPERTIES
+      MAP_IMPORTED_CONFIG_RELEASE Release
+      MAP_IMPORTED_CONFIG_DEBUG Release
+      MAP_IMPORTED_CONFIG_RELWITHDEBUGINFO Release
+    )
+  endif()
+endforeach()
 if(QT6)
   foreach(COMPONENT ${QT6_NEW_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
+    if(QT_RELEASE)
+      set_target_properties(
+        Qt6::${COMPONENT}
+        PROPERTIES
+        MAP_IMPORTED_CONFIG_RELEASE Release
+        MAP_IMPORTED_CONFIG_DEBUG Release
+        MAP_IMPORTED_CONFIG_RELWITHDEBUGINFO Release
+      )
+    endif()
   endforeach()
 endif()
 
