@@ -1405,15 +1405,16 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_playPos);
     const double fFractionalSlipPos = fractionalPlayposFromAbsolute(m_slipPos);
+
+    auto loopInfo = m_pLoopingControl->getLoopInfo();
+
     double fFractionalLoopStartPos = 0.0;
-    auto loopStartPos = m_pLoopingControl->getLoopStartPosition();
-    if (loopStartPos.isValid()) {
-        fFractionalLoopStartPos = fractionalPlayposFromAbsolute(loopStartPos);
+    if (loopInfo.startPosition.isValid()) {
+        fFractionalLoopStartPos = fractionalPlayposFromAbsolute(loopInfo.startPosition);
     }
     double fFractionalLoopEndPos = 0.0;
-    auto loopEndPos = m_pLoopingControl->getLoopEndPosition();
-    if (loopEndPos.isValid()) {
-        fFractionalLoopEndPos = fractionalPlayposFromAbsolute(loopEndPos);
+    if (loopInfo.endPosition.isValid()) {
+        fFractionalLoopEndPos = fractionalPlayposFromAbsolute(loopInfo.endPosition);
     }
 
     const double tempoTrackSeconds = m_trackEndPositionOld.value() /
