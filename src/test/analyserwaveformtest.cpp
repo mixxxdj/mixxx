@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <vector>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
 #include "test/mixxxtest.h"
@@ -100,7 +101,7 @@ class AnalyzerWaveformTest : public MixxxTest {
 
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    m_aw.initialize(m_pTrack,
+    m_aw.initialize(AnalyzerTrack(m_pTrack),
             m_pTrack->getSampleRate(),
             kBigBufSize / kChannelCount);
     m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);

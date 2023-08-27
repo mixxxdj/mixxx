@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "analyzer/analyzertrack.h"
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "track/track.h"
@@ -37,7 +38,7 @@ class AnalyzerSilenceTest : public MixxxTest {
     }
 
     void analyzeTrack() {
-        analyzerSilence.initialize(pTrack,
+        analyzerSilence.initialize(AnalyzerTrack(pTrack),
                 pTrack->getSampleRate(),
                 kTrackLengthFrames);
         analyzerSilence.processSamples(pTrackSampleData.data(), nTrackSampleDataLength);
