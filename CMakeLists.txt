@@ -2646,7 +2646,7 @@ if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
   if(QT6)
-    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../../translations" "${Qt6_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../translations/Qt6" REQUIRED NO_DEFAULT_PATH)
   else()
     find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
   endif()
