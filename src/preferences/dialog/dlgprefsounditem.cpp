@@ -137,6 +137,12 @@ void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedC
     // Go through the list of occupied channel indices and pick the first unoccupied
     for (int i = 0; i < channelComboBox->count(); i++) {
         if (!selectedChannels.contains(i)) {
+            // TODO(xxx) Some ideas to improve auto-select:
+            // * check selected indices and new selection for channel overlap, e.g.
+            //   if the device has 4 channels and ch.1/2 + ch.3/4 are already selected
+            //   don't select next index (ch.1) but fall back to ch.1/2?
+            // * if there are only mono indices selected, try to pick the next mono
+            //   channel index instead of suggesting index 0 (ch.1/)
             channelComboBox->setCurrentIndex(i);
             return;
         }
