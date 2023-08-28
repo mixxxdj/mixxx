@@ -78,7 +78,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pMoveUp.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -97,7 +97,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pScrollUp.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -116,7 +116,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveLeft = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveLeft"));
     m_pMoveRight = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveRight"));
     m_pMoveHorizontal = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveHorizontal"), false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pMoveLeft.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -136,7 +136,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pMoveFocusForward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusForward"));
     m_pMoveFocusBackward = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveFocusBackward"));
     m_pMoveFocus = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveFocus"), false);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pMoveFocusForward.get(),
             &ControlPushButton::valueChanged,
             this,
@@ -155,7 +155,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pFocusedWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "focused_widget"));
     m_pFocusedWidgetCO->setStates(static_cast<int>(FocusWidget::Count));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     m_pFocusedWidgetCO->connectValueChangeRequest(
             this,
             [this](double value) {
@@ -179,14 +179,14 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_pRefocusPrevWidgetCO = std::make_unique<ControlPushButton>(
             ConfigKey("[Library]", "refocus_prev_widget"));
     m_pRefocusPrevWidgetCO->setButtonMode(ControlPushButton::TRIGGER);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     m_pRefocusPrevWidgetCO->connectValueChangeRequest(this,
             &LibraryControl::refocusPrevLibraryWidget);
 #endif
 
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#ifndef MIXXX_USE_QML
     connect(m_pGoToItem.get(),
             &ControlPushButton::valueChanged,
             this,
