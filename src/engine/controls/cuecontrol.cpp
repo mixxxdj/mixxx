@@ -2250,10 +2250,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
-    int configValue =
-            getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                    static_cast<int>(SeekOnLoadMode::IntroStart));
-    return static_cast<SeekOnLoadMode>(configValue);
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), SeekOnLoadMode::IntroStart);
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {

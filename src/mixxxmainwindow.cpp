@@ -176,9 +176,9 @@ void MixxxMainWindow::initialize() {
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
     // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-            pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
-                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    m_toolTipsCfg = pConfig->getValue(
+            ConfigKey("[Controls]", "Tooltips"),
+            mixxx::TooltipsPreference::TOOLTIPS_ON);
 #ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
 #endif
