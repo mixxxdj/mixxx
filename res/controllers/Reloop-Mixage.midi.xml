@@ -832,12 +832,12 @@
       </control>
       <!-- T12 = FX On Button -->
       <control>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>group_[Channel2]_enable</key>
+        <group>[Channel2]</group>
+        <key>Mixage.handleFxPress</key>
         <status>0x90</status>
         <midino>0x16</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T12_SHIFT = Keylock Button -->
@@ -1192,62 +1192,6 @@
       </control>
     </controls>
     <outputs>
-      <output>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>group_[Channel1]_enable</key>
-        <status>0x90</status>
-        <midino>0x08</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>group_[Channel1]_enable</key>
-        <status>0x90</status>
-        <midino>0x08</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>group_[Channel1]_enable</key>
-        <status>0x90</status>
-        <midino>0x08</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>group_[Channel1]_enable</key>
-        <status>0x90</status>
-        <midino>0x08</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit1]</group>
-        <key>group_[Channel2]_enable</key>
-        <status>0x90</status>
-        <midino>0x16</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit2]</group>
-        <key>group_[Channel2]_enable</key>
-        <status>0x90</status>
-        <midino>0x16</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit3]</group>
-        <key>group_[Channel2]_enable</key>
-        <status>0x90</status>
-        <midino>0x16</midino>
-        <minimum>0.5</minimum>
-      </output>
-      <output>
-        <group>[EffectRack1_EffectUnit4]</group>
-        <key>group_[Channel2]_enable</key>
-        <status>0x90</status>
-        <midino>0x16</midino>
-        <minimum>0.5</minimum>
-      </output>
       <output>
         <group>[Channel1]</group>
         <key>beats_translate_earlier</key>

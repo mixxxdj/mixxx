@@ -20,9 +20,15 @@ Mixage.vuMeterConnection = [];
 Mixage.loopConnection = [];
 Mixage.beatConnection = [];
 Mixage.fxConnection = [];
+Mixage.testConnection = [];
 Mixage.libraryHideTimer = 0;
 Mixage.libraryRemainingTime = 0;
 Mixage.doublePressTimer = 0;
+
+Mixage.channels = [
+    "[Channel1]",
+    "[Channel2]",
+];
 
 Mixage.scratchToggleState = {
     "[Channel1]": false,
@@ -44,35 +50,19 @@ Mixage.isBeatMovePressed = {
     "[Channel2]": false,
 };
 
-Mixage.syncLeader = {
-    "[Channel1]": engine.getValue("[Channel1]", "sync_master"),
-    "[Channel2]": engine.getValue("[Channel2]", "sync_master"),
-};
-
 Mixage.init = function(_id, _debugging) {
     // all button LEDs off
     for (var i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
 
-    var numEffectSlots = engine.getValue("[EffectRack1_EffectUnit1]", "num_effects");
-    var numDecks = engine.getValue("[Master]", "num_decks");
-
-    print(numDecks);
-
-    Mixage.connectControlsToFunctions("[Channel1]");
-    Mixage.connectControlsToFunctions("[Channel2]");
-
-    engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
-    engine.setValue("[EffectRack1_EffectUnit2]", "show_focus", 1);
-
     // make connection for updating the VU meters
-    Mixage.vuMeterConnection[0] = engine.makeConnection("[Channel1]", "VuMeter", function(val) {
-        midi.sendShortMsg(0x90, 29, val * 7);
-    });
-    Mixage.vuMeterConnection[1] = engine.makeConnection("[Channel2]", "VuMeter", function(val) {
-        midi.sendShortMsg(0x90, 30, val * 7);
-    });
+    // Mixage.vuMeterConnection[0] = engine.makeConnection("[Channel1]", "VuMeter", function(val) {
+    //     midi.sendShortMsg(0x90, 29, val * 7);
+    // });
+    // Mixage.vuMeterConnection[1] = engine.makeConnection("[Channel2]", "VuMeter", function(val) {
+    //     midi.sendShortMsg(0x90, 30, val * 7);
+    // });
 
     // make connection for showing the beats on the loop button when a loop is active
     Mixage.loopConnection[0] = engine.makeConnection("[Channel1]", "loop_enabled", function(value) {
@@ -100,50 +90,44 @@ Mixage.init = function(_id, _debugging) {
         }
     });
 
-    Mixage.fxConnection[0] = engine.makeConnection("[EffectRack1_EffectUnit1]", "focused_effect", function(val) {
-        if (val === 0) {
-            Mixage.toggleLED(OFF, "[Channel1]", "fx_sel");
-            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "super1");
-        } else {
-            Mixage.toggleLED(ON, "[Channel1]", "fx_sel");
-            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit2_Effect" + val + "]", "meta");
-        }
-    });
+    var numEffectSlots = engine.getValue("[EffectRack1_EffectUnit1]", "num_effects");
+    // var numDecks = engine.getValue("[Master]", "num_decks");
 
-    Mixage.fxConnection[1] = engine.makeConnection("[EffectRack1_EffectUnit2]", "focused_effect", function(val) {
-        if (val === 0) {
-            Mixage.toggleLED(OFF, "[Channel2]", "fx_sel");
-            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "super1");
-        } else {
-            Mixage.toggleLED(ON, "[Channel2]", "fx_sel");
-            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit2_Effect" + val + "]", "meta");
-        }
-    });
+    Mixage.channels.forEach(function(channel) {
+        var deck = script.deckFromGroup(channel);
+        Mixage.connectControlsToFunctions(channel);
 
-    engine.softTakeover("[EffectRack1_EffectUnit1]", "super1", true);
-    engine.softTakeover("[EffectRack1_EffectUnit2]", "super1", true);
-    engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
-    engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
-
-    for (var deck = 1; deck <= numDecks; deck++) {
         for (var effect = 1; effect < numEffectSlots; effect++) {
             var groupString = "[EffectRack1_EffectUnit"+ deck +"_Effect" + effect + "]";
             engine.softTakeover(groupString, "meta", true);
         }
-    }
+
+        for (var effectUnit = 1; effectUnit <= 4; effectUnit++) {
+            var fxGroup = "group_"+channel+"_enable";
+            Mixage.testConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+effectUnit+"]", fxGroup, function() { Mixage.toggleFxLED(channel); }));
+            engine.softTakeover("[EffectRack1_EffectUnit"+effectUnit+"]", "super1", true);
+            engine.setValue("[EffectRack1_EffectUnit"+effectUnit+"]", "show_focus", 1);
+        }
+
+        Mixage.vuMeterConnection.push(engine.makeConnection(channel, "VuMeter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel]["VuMeter"], val * 7); }));
+        Mixage.fxConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
+
+        Mixage.toggleFxLED(channel);
+        Mixage.handleFxSelect(engine.getValue("[EffectRack1_EffectUnit"+deck+"]", "focused_effect"), channel);
+        engine.softTakeover("[QuickEffectRack1_"+channel+"]", "super1", true);
+    });
 };
 
 Mixage.shutdown = function() {
-    Mixage.vuMeterConnection[0].disconnect();
-    Mixage.vuMeterConnection[1].disconnect();
-    Mixage.loopConnection[0].disconnect();
-    Mixage.loopConnection[1].disconnect();
-    Mixage.beatConnection[0].disconnect();
-    Mixage.beatConnection[1].disconnect();
-    Mixage.fxConnection[0].disconnect();
-    Mixage.fxConnection[1].disconnect();
+
+    Mixage.vuMeterConnection.forEach(function(connection) { connection.disconnect(); });
+    Mixage.loopConnection.forEach(function(connection) { connection.disconnect(); });
+    Mixage.fxConnection.forEach(function(connection) { connection.disconnect(); });
+    Mixage.testConnection.forEach(function(connection) { connection.disconnect(); });
+
     Mixage.connectControlsToFunctions("[Channel1]", true);
     Mixage.connectControlsToFunctions("[Channel2]", true);
+
     // all button LEDs off
     for (var i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
@@ -161,13 +145,11 @@ Mixage.ledMap = {
         "loop": 0x05,
         "loop_enabled": 0x06,
         "sync_enabled": 0x09,
-        "sync_master": 0x07,
         "fx_on": 0x08,
         "fx_sel": 0x07,
         "scratch_active": 0x04,
         "scroll_active": 0x03,
-        "rate_temp_up": 0x02,
-        "rate_temp_down": 0x01,
+        "VuMeter": 0x1D,
     },
     "[Channel2]": {
         "cue_indicator": 0x18,
@@ -178,34 +160,42 @@ Mixage.ledMap = {
         "loop": 0x13,
         "loop_enabled": 0x14,
         "sync_enabled": 0x17,
-        "sync_master": 0x15,
         "fx_on": 0x16,
         "fx_sel": 0x15,
         "scratch_active": 0x12,
         "scroll_active": 0x11,
-        "rate_temp_up": 0x10,
-        "rate_temp_down": 0x0f,
+        "VuMeter": 0x1E,
     }
 };
 
 // Maps mixxx controls to a function that toggles their LEDs
 Mixage.connectionMap = {
-    "cue_indicator": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-    "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-    "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
-    "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-    "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-    "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    "[Channel1]": {
+        "cue_indicator": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
+        "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    },
+    "[Channel2]": {
+        "cue_indicator": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
+        "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+    },
 };
 
 // Set or remove functions to call when the state of a mixxx control changes
 Mixage.connectControlsToFunctions = function(group, remove) {
     remove = (remove !== undefined) ? remove : false;
-    for (var control in Mixage.connectionMap) {
+    for (var control in Mixage.connectionMap[group]) {
         if (remove) {
-            Mixage.connectionMap[control][1].disconnect();
+            Mixage.connectionMap[group][control][1].disconnect();
         } else {
-            Mixage.connectionMap[control][1] = engine.makeConnection(group, control, Mixage.connectionMap[control][0]);
+            Mixage.connectionMap[group][control][1] = engine.makeConnection(group, control, Mixage.connectionMap[group][control][0]);
         }
     }
 };
@@ -213,6 +203,32 @@ Mixage.connectControlsToFunctions = function(group, remove) {
 // Toggle the LED on the MIDI controller by sending a MIDI message
 Mixage.toggleLED = function(value, group, control) {
     midi.sendShortMsg(0x90, Mixage.ledMap[group][control], (value === 1 || value) ? 0x7F : 0);
+};
+
+Mixage.toggleFxLED = function(group) {
+    var numUnits = engine.getValue("[EffectRack1]", "num_effectunits");
+    var fxChannel = "group_" + group + "_enable";
+    var enabledFxGroups = [];
+
+    for (var i = 1; i <= numUnits; i++) {
+        enabledFxGroups.push(engine.getValue("[EffectRack1_EffectUnit" + i + "]", fxChannel));
+    }
+
+    if (enabledFxGroups.indexOf(1) !== -1) {
+        Mixage.toggleLED(ON, group, "fx_on");
+    } else {
+        Mixage.toggleLED(OFF, group, "fx_on");
+    }
+};
+
+Mixage.handleFxSelect = function(value, group) {
+    if (value === 0) {
+        Mixage.toggleLED(OFF, group, "fx_sel");
+        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "super1");
+    } else {
+        Mixage.toggleLED(ON, group, "fx_sel");
+        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit2_Effect" + value + "]", "meta");
+    }
 };
 
 // Toggle the LED on play button and make sure the preview deck stops when starting to play in a deck
