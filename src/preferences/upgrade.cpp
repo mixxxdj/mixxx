@@ -33,55 +33,39 @@ Upgrade::~Upgrade() {
 namespace {
 // mapping to proactively move users to the new all-shader waveform types
 WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+    // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
+    using WWT = WaveformWidgetType;
     switch (waveformType) {
-    case WaveformWidgetType::EmptyWaveform:
+    case WWT::EmptyWaveform:
+    case WWT::SoftwareSimpleWaveform:
+    case WWT::SoftwareWaveform:
+    case WWT::GLVSyncTest:
+    case WWT::QtVSyncTest:
+    case WWT::AllShaderRGBWaveform:
+    case WWT::AllShaderLRRGBWaveform:
+    case WWT::AllShaderFilteredWaveform:
+    case WWT::AllShaderSimpleWaveform:
+    case WWT::AllShaderHSVWaveform:
+    case WWT::Count_WaveformwidgetType:
         return waveformType;
-    case WaveformWidgetType::SoftwareSimpleWaveform:
-        return waveformType;
-    case WaveformWidgetType::SoftwareWaveform:
-        return waveformType;
-    case WaveformWidgetType::QtSimpleWaveform:
+    case WWT::QtSimpleWaveform:
+    case WWT::GLSimpleWaveform:
         return WaveformWidgetType::AllShaderSimpleWaveform;
-    case WaveformWidgetType::QtWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::GLSimpleWaveform:
-        return WaveformWidgetType::AllShaderSimpleWaveform;
-    case WaveformWidgetType::GLFilteredWaveform:
+    case WWT::GLFilteredWaveform:
+    case WWT::GLSLFilteredWaveform:
         return WaveformWidgetType::AllShaderFilteredWaveform;
-    case WaveformWidgetType::GLSLFilteredWaveform:
-        return WaveformWidgetType::AllShaderFilteredWaveform;
-    case WaveformWidgetType::HSVWaveform:
-        return WaveformWidgetType::AllShaderHSVWaveform;
-    case WaveformWidgetType::GLVSyncTest:
-        return waveformType;
-    case WaveformWidgetType::RGBWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::GLRGBWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::GLSLRGBWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::QtVSyncTest:
-        return waveformType;
-    case WaveformWidgetType::QtHSVWaveform:
-        return WaveformWidgetType::AllShaderHSVWaveform;
-    case WaveformWidgetType::QtRGBWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::GLSLRGBStackedWaveform:
-        return WaveformWidgetType::AllShaderRGBWaveform;
-    case WaveformWidgetType::AllShaderRGBWaveform:
-        return waveformType;
-    case WaveformWidgetType::AllShaderLRRGBWaveform:
-        return waveformType;
-    case WaveformWidgetType::AllShaderFilteredWaveform:
-        return waveformType;
-    case WaveformWidgetType::AllShaderSimpleWaveform:
-        return waveformType;
-    case WaveformWidgetType::AllShaderHSVWaveform:
-        return waveformType;
-    case WaveformWidgetType::Count_WaveformwidgetType:
-        return waveformType;
+    case WWT::QtWaveform:
+    case WWT::RGBWaveform:
+    case WWT::GLRGBWaveform:
+    case WWT::GLSLRGBWaveform:
+    case WWT::QtRGBWaveform:
+    case WWT::GLSLRGBStackedWaveform:
+        return WWT::AllShaderRGBWaveform;
+    case WWT::HSVWaveform:
+    case WWT::QtHSVWaveform:
+        return WWT::AllShaderHSVWaveform;
     }
-    return WaveformWidgetType::AllShaderRGBWaveform;
+    return WWT::AllShaderRGBWaveform;
 }
 } // namespace
 
