@@ -86,9 +86,9 @@ void DlgPrefEffects::setupChainListView(QListView* pListView) {
     //TODO: prevent drops of duplicate items
     pListView->setDefaultDropAction(Qt::CopyAction);
     connect(pListView->selectionModel(),
-            &QItemSelectionModel::currentRowChanged,
+            &QItemSelectionModel::selectionChanged,
             this,
-            &DlgPrefEffects::slotChainPresetSelected);
+            &DlgPrefEffects::slotChainPresetSelectionChanged);
     pListView->installEventFilter(this);
 }
 
@@ -205,19 +205,20 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
     effectType->setText(EffectsBackend::translatedBackendName(pManifest->backendType()));
 }
 
-void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
+void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selected) {
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
     // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
     // in eventFilter()
-    if (!selected.isValid() ||
-            m_pFocusedChainList->selectionModel()->selectedRows(0).count() > 1) {
+    auto* pSelModel = m_pFocusedChainList->selectionModel();
+    auto selIndices = pSelModel->selectedIndexes();
+    if (selIndices.count() != 1) {
         clearChainInfoDisableButtons();
         return;
     }
 
-    QString chainPresetName = selected.model()->data(selected).toString();
+    QString chainPresetName = selIndices.first().data().toString();
     EffectChainPresetPointer pChainPreset = m_pChainPresetManager->getPreset(chainPresetName);
     if (pChainPreset == nullptr || pChainPreset->isEmpty()) {
         return;
