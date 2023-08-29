@@ -61,6 +61,7 @@ jobs:
           - name: macOS 11 x64
             os: macos-11
             cmake_args: >-
+              -DQT6=ON
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
@@ -83,6 +84,7 @@ jobs:
           - name: macOS 11 arm64
             os: macos-11
             cmake_args: >-
+              -DQT6=ON
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
@@ -187,7 +189,7 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.19.x"
+          cmake-version: "3.21.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
