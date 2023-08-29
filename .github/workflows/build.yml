@@ -92,7 +92,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
+              -DVCPKG_DEFAULT_HOST_TRIPLET=arm64-osx-min1012
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
