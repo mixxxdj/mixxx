@@ -246,8 +246,9 @@ void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
 }
 
 void DlgPrefEffects::slotImportPreset() {
-    m_pChainPresetManager->importPreset();
-    loadChainPresetLists();
+    if (m_pChainPresetManager->importPreset()) {
+        loadChainPresetLists();
+    }
 }
 
 void DlgPrefEffects::slotExportPreset() {
@@ -266,12 +267,17 @@ void DlgPrefEffects::slotRenamePreset() {
         return;
     }
     saveChainPresetLists();
+    bool presetsRenamed = false;
     const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
     for (const auto& index : selectedIndices) {
         const QString& selectedPresetName = m_pFocusedChainList->model()->data(index).toString();
-        m_pChainPresetManager->renamePreset(selectedPresetName);
+        if (m_pChainPresetManager->renamePreset(selectedPresetName)) {
+            presetsRenamed = true;
+        }
     }
-    loadChainPresetLists();
+    if (presetsRenamed) {
+        loadChainPresetLists();
+    }
 }
 
 void DlgPrefEffects::slotDeletePreset() {
@@ -293,6 +299,7 @@ void DlgPrefEffects::slotDeletePreset() {
             pUnfocusedChainList->model());
     auto unfocusedChainStringList = pUnfocusedModel->stringList();
 
+    bool updateAndSavePresetLists = false;
     const auto& selectedIndices = m_pFocusedChainList->selectionModel()->selectedIndexes();
     for (const auto& index : selectedIndices) {
         QString selectedPresetName =
@@ -300,14 +307,18 @@ void DlgPrefEffects::slotDeletePreset() {
         if (!unfocusedChainStringList.contains(selectedPresetName)) {
             if (m_pChainPresetManager->deletePreset(selectedPresetName)) {
                 focusedChainStringList.removeAll(selectedPresetName);
+                updateAndSavePresetLists = true;
             }
         } else {
             focusedChainStringList.removeAll(selectedPresetName);
+            updateAndSavePresetLists = true;
         }
     }
 
-    pFocusedModel->setStringList(focusedChainStringList);
-    saveChainPresetLists();
+    if (updateAndSavePresetLists) {
+        pFocusedModel->setStringList(focusedChainStringList);
+        saveChainPresetLists();
+    }
 }
 
 bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
