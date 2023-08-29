@@ -144,7 +144,7 @@ void AnalyzerThread::doRun() {
         for (auto&& analyzer : m_analyzers) {
             // Make sure not to short-circuit initialize(...)
             if (analyzer.initialize(
-                        m_currentTrack->getTrack(),
+                        *m_currentTrack,
                         audioSource->getSignalInfo().getSampleRate(),
                         audioSource->frameLength())) {
                 processTrack = true;

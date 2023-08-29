@@ -88,8 +88,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     connect(m_pEject.get(),
             &ControlObject::valueChanged,
             this,
-            &BaseTrackPlayerImpl::slotEjectTrack,
-            Qt::DirectConnection);
+            &BaseTrackPlayerImpl::slotEjectTrack);
 
     // Get loop point control objects
     m_pLoopInPoint = make_parented<ControlProxy>(

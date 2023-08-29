@@ -59,8 +59,16 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos endPosition,
             bool enabled);
     void setRateControl(RateControl* rateControl);
-    bool isLoopingEnabled();
-    bool isLoopRollActive();
+
+    bool isLoopingEnabled() {
+        return m_bLoopingEnabled;
+    }
+    bool isLoopRollActive() {
+        return m_bLoopRollActive;
+    }
+    bool loopWasEnabledBeforeSlipEnable() {
+        return m_bLoopWasEnabledBeforeSlipEnable;
+    }
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -175,6 +183,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
+    bool m_bLoopWasEnabledBeforeSlipEnable;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bAdjustingLoopInOld;

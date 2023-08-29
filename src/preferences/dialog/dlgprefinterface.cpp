@@ -49,9 +49,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_pSkin(pSkinLoader ? pSkinLoader->getConfiguredSkin() : nullptr),
           m_dScaleFactor(1.0),
           m_minScaleFactor(1.0),
-          m_dDevicePixelRatio(1.0),
-          m_bStartWithFullScreen(false),
-          m_bRebootMixxxView(false) {
+          m_dDevicePixelRatio(1.0) {
     setupUi(this);
 
     // get the pixel ratio to display a crisp skin preview when Mixxx is scaled
@@ -99,7 +97,7 @@ DlgPrefInterface::DlgPrefInterface(
         const QString languageName = QLocale::languageToString(locale.language());
         // Ugly hack to skip non-resolvable locales
         if (languageName == QStringLiteral("C")) {
-            qWarning() << "Unsupported locale" << localeNameFixed;
+            qWarning() << "Preferences: skipping unsupported locale" << localeNameFixed;
             continue;
         }
         QString countryName;
@@ -122,6 +120,7 @@ DlgPrefInterface::DlgPrefInterface(
     ComboBoxLocale->model()->sort(0);
     // ...and then insert entry for default system locale at the top
     ComboBoxLocale->insertItem(0, QStringLiteral("System"), "");
+    ComboBoxLocale->insertSeparator(1);
 
     if (pSkinLoader) {
         // Skin configurations
@@ -177,10 +176,6 @@ DlgPrefInterface::DlgPrefInterface(
         skinPreviewLabel->hide();
     }
 
-    // Start in fullscreen mode
-    checkBoxStartFullScreen->setChecked(
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kStartInFullscreenKey), 0) == 1);
-
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
@@ -194,9 +189,6 @@ DlgPrefInterface::DlgPrefInterface(
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
     // Tooltip configuration
-    // Initialize checkboxes to match config
-    loadTooltipPreferenceFromConfig();
-    slotSetTooltips();  // Update disabled status of "only library" checkbox
     connect(buttonGroupTooltips,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -232,6 +224,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
     const QList<QString> schlist = m_pSkin->colorschemes();
 
     ComboBoxSchemeconf->clear();
+    m_colorSchemeOnUpdate = QString();
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
@@ -249,6 +242,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
             if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
                 m_colorScheme = configScheme;
+                m_colorSchemeOnUpdate = configScheme;
                 foundConfigScheme = true;
             }
         }
@@ -263,9 +257,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
-    const QString skinNameOnUpdate =
-            m_pConfig->getValue(ConfigKey(kConfigGroup, kResizableSkinKey));
-    const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
+    const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
     if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
         m_skinNameOnUpdate = pSkinOnUpdate->name();
     } else {
@@ -273,7 +265,6 @@ void DlgPrefInterface::slotUpdate() {
     }
     ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
     slotUpdateSchemes();
-    m_bRebootMixxxView = false;
 
     m_localeOnUpdate = m_pConfig->getValue(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
@@ -286,7 +277,7 @@ void DlgPrefInterface::slotUpdate() {
     spinBoxScaleFactor->setMinimum(m_minScaleFactor * 100);
 
     checkBoxStartFullScreen->setChecked(m_pConfig->getValue(
-            ConfigKey(kConfigGroup, kStartInFullscreenKey), m_bStartWithFullScreen));
+            ConfigKey(kConfigGroup, kStartInFullscreenKey), false));
 
     loadTooltipPreferenceFromConfig();
 
@@ -343,10 +334,7 @@ void DlgPrefInterface::slotSetScheme(int) {
             ? ComboBoxSchemeconf->currentText()
             : QString();
 
-    if (m_colorScheme != newScheme) {
-        m_colorScheme = newScheme;
-        m_bRebootMixxxView = true;
-    }
+    m_colorScheme = newScheme;
     slotSetSkinPreview();
 }
 
@@ -392,7 +380,6 @@ void DlgPrefInterface::slotSetSkin(int) {
         return;
     }
     m_pSkin = pNewSkin;
-    m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
     const auto* const pScreen = getScreen();
     if (pScreen && m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
@@ -440,12 +427,14 @@ void DlgPrefInterface::slotApply() {
         m_dScaleFactor = scaleFactor;
     }
 
-    if (m_bRebootMixxxView) {
+    // load skin/scheme if necessary
+    if (m_pSkin->name() != m_skinNameOnUpdate ||
+            m_colorScheme != m_colorSchemeOnUpdate) {
+        // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
         m_skinNameOnUpdate = m_pSkin->name();
     }
-    m_bRebootMixxxView = false;
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {

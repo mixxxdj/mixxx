@@ -563,7 +563,7 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
             "WHERE p1.id NOT IN ("
             "SELECT p2.id FROM PlaylistTracks AS p2 "
             "INNER JOIN library ON library.id=p2.track_id "
-            "WHERE p2.playlist_id=p1.playlist_id "
+            "WHERE p2.playlist_id=:id "
             "AND library.mixxx_deleted=0) "
             "AND p1.playlist_id=:id"));
     query.bindValue(":id", playlistId);
