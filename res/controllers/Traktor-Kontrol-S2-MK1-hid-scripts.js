@@ -54,51 +54,51 @@ class DeckClass {
         this.syncEnabledTime = {};
         this.calibration = null;
     }
-    registerInputs(inputReport0x01, inputReport0x02, config) {
+    registerInputs(config) {
         // InputReport 0x01
-        this.registerButton(inputReport0x01, "!gain_encoder_press", config.gainEncoderPress, this.gainEncoderPress);
-        this.registerButton(inputReport0x01, "!shift", config.shift, this.shift);
-        this.registerButton(inputReport0x01, "!sync_enabled", config.sync, this.syncButton);
-        this.registerButton(inputReport0x01, "!cue_default", config.cue, this.cueButton);
-        this.registerButton(inputReport0x01, "!play", config.play, this.playButton);
+        this.registerButton("!gain_encoder_press", config.gainEncoderPress, this.gainEncoderPress);
+        this.registerButton("!shift", config.shift, this.shift);
+        this.registerButton("!sync_enabled", config.sync, this.syncButton);
+        this.registerButton("!cue_default", config.cue, this.cueButton);
+        this.registerButton("!play", config.play, this.playButton);
         for (let i = 0; i < 4; i++) {
-            this.pads[i].registerInputs(inputReport0x01, config.pads[i]);
+            this.pads[i].registerInputs(config.pads[i]);
         }
-        this.registerButton(inputReport0x01, "!loop_in", config.loopIn, this.loopInButton);
-        this.registerButton(inputReport0x01, "!loop_out", config.loopOut, this.loopOutButton);
-        this.registerButton(inputReport0x01, "!samples_button", config.samples, this.samplerModeButton);
-        this.registerButton(inputReport0x01, "!reset_button", config.reset, this.introOutroModeButton);
-        this.registerButton(inputReport0x01, "!left_encoder_press", config.leftEncoderPress, this.leftEncoderPress);
-        this.registerButton(inputReport0x01, "!right_encoder_press", config.rightEncoderPress, this.rightEncoderPress);
-        this.registerButton(inputReport0x01, "!load_track", config.loadTrack, this.loadTrackButton);
-        this.registerButton(inputReport0x01, "!pfl", config.pfl, this.pflButton);
-        inputReport0x01.addControl(this.channel, "!jog_wheel", config.jogWheel, "I", 0xFFFFFFFF, false, this.jogMove.bind(this));
+        this.registerButton("!loop_in", config.loopIn, this.loopInButton);
+        this.registerButton("!loop_out", config.loopOut, this.loopOutButton);
+        this.registerButton("!samples_button", config.samples, this.samplerModeButton);
+        this.registerButton("!reset_button", config.reset, this.introOutroModeButton);
+        this.registerButton("!left_encoder_press", config.leftEncoderPress, this.leftEncoderPress);
+        this.registerButton("!right_encoder_press", config.rightEncoderPress, this.rightEncoderPress);
+        this.registerButton("!load_track", config.loadTrack, this.loadTrackButton);
+        this.registerButton("!pfl", config.pfl, this.pflButton);
+        config.jogWheel.hidReport.addControl(this.channel, "!jog_wheel", config.jogWheel.offset, "I", 0xFFFFFFFF, false, this.jogMove.bind(this));
         // InputReport 0x02
-        this.registerScalar(inputReport0x02, "rate", config.rate);
-        this.registerEncoder(inputReport0x02, "!left_encoder", config.leftEncoder, this.leftEncoderCallback);
-        this.registerEncoder(inputReport0x02, "!right_encoder", config.rightEncoder, this.rightEncoderCallback);
-        this.registerScalar(inputReport0x02, "!volume", config.volume, this.volume);
-        this.registerEncoder(inputReport0x02, "!pregain", config.gain, this.gainEncoderCallback);
-        this.registerScalar(inputReport0x02, "!jog_press", config.jogPress, this.jogPress);
-        this.eq.registerInputs(inputReport0x02, config.eq);
+        this.registerScalar("rate", config.rate);
+        this.registerEncoder("!left_encoder", config.leftEncoder, this.leftEncoderCallback);
+        this.registerEncoder("!right_encoder", config.rightEncoder, this.rightEncoderCallback);
+        this.registerScalar("!volume", config.volume, this.volume);
+        this.registerEncoder("!pregain", config.gain, this.gainEncoderCallback);
+        this.registerScalar("!jog_press", config.jogPress, this.jogPress);
+        this.eq.registerInputs(config.eq);
     }
-    registerOutputs(outputReport0x80, config) {
-        this.registerLed(outputReport0x80, "track_loaded", config.trackLoaded);
+    registerOutputs(config) {
+        this.registerLed("track_loaded", config.trackLoaded);
         for (let i = 0; i < 4; i++) {
-            this.registerLed(outputReport0x80, "!VuMeter" + i, config.vuMeter + i);
+            this.registerLed("!VuMeter" + i, {hidReport: config.vuMeter.hidReport, offset: config.vuMeter.offset + i});
         }
-        this.registerLed(outputReport0x80, "PeakIndicator", config.peak);
-        this.registerLed(outputReport0x80, "!reset_button", config.reset);
-        this.registerLed(outputReport0x80, "loop_in", config.loopIn);
-        this.registerLed(outputReport0x80, "loop_out",  config.loopOut);
-        this.registerLed(outputReport0x80, "pfl", config.pfl);
-        this.registerLed(outputReport0x80, "!samples_button", config.samples);
-        this.registerLed(outputReport0x80, "!shift", config.shift);
-        this.registerLed(outputReport0x80, "sync_enabled", config.sync);
-        this.registerLed(outputReport0x80, "cue_indicator", config.cue);
-        this.registerLed(outputReport0x80, "play_indicator", config.play);
+        this.registerLed("PeakIndicator", config.peak);
+        this.registerLed("!reset_button", config.reset);
+        this.registerLed("loop_in", config.loopIn);
+        this.registerLed("loop_out",  config.loopOut);
+        this.registerLed("pfl", config.pfl);
+        this.registerLed("!samples_button", config.samples);
+        this.registerLed("!shift", config.shift);
+        this.registerLed("sync_enabled", config.sync);
+        this.registerLed("cue_indicator", config.cue);
+        this.registerLed("play_indicator", config.play);
         for (let i = 0; i < 4; i++) {
-            this.pads[i].registerOutputs(outputReport0x80, config.pads[i]);
+            this.pads[i].registerOutputs(config.pads[i]);
         }
     }
     linkOutputs() {
@@ -122,26 +122,28 @@ class DeckClass {
         engine.softTakeover(this.group, "volume", true);
         this.eq.enableSoftTakeover();
     }
-    registerButton(hidReport, name, config, callback) {
+    registerButton(name, config, callback) {
+        if (callback !==undefined) {
+            callback = callback.bind(this);
+        }
+        config.hidReport.addControl(this.channel, name, config.offset, "B", config.mask, false, callback);
+    }
+    registerScalar(name, config, callback) {
         if (callback !==undefined) {
             callback= callback.bind(this);
         }
-        hidReport.addControl(this.channel, name, config[0], "B", config[1], false, callback);
+        config.hidReport.addControl(this.channel, name, config.offset, "H", 0xFFFF, false, callback);
     }
-    registerScalar(hidReport, name, config, callback) {
+    registerEncoder(name, config, callback) {
         if (callback !==undefined) {
             callback= callback.bind(this);
         }
-        hidReport.addControl(this.channel, name, config, "H", 0xFFFF, false, callback);
+        config.hidReport.addControl(this.channel, name, config.offset, "B", config.mask, false, callback);
     }
-    registerEncoder(hidReport, name, config, callback) {
-        if (callback !==undefined) {
-            callback= callback.bind(this);
-        }
-        hidReport.addControl(this.channel, name, config[0], "B", config[1], false, callback);
-    }
-    registerLed(hidReport, name, config) {
-        hidReport.addOutput(this.channel, name, config, "B");
+    registerLed(name, config) {
+        console.log(name);
+        console.log(config.hidReport);
+        config.hidReport.addOutput(this.channel, name, config.offset, "B");
     }
     linkLed(name, callback) {
         engine.makeConnection(this.channel, name, callback.bind(this));
@@ -545,15 +547,15 @@ class PadButton {
         this.samplerGroup = "[Sampler" + samplerNumber + "]";
         this.connections = [];
     }
-    registerInputs(inputReport0x01, config) {
-        inputReport0x01.addControl(this.deck.channel, "!pad" + this.number, config[0], "B", config[1], false, this.pressHandler.bind(this));
+    registerInputs(config) {
+        config.hidReport.addControl(this.deck.channel, "!pad" + this.number, config.offset, "B", config.mask, false, this.pressHandler.bind(this));
     }
-    registerOutputs(outputReport0x80, config) {
-        this.registerLed(outputReport0x80, "!pad_" + this.number + "_G", config.green);
-        this.registerLed(outputReport0x80, "!pad_" + this.number + "_B", config.blue);
+    registerOutputs(config) {
+        this.registerLed("!pad_" + this.number + "_G", config.green);
+        this.registerLed("!pad_" + this.number + "_B", config.blue);
     }
-    registerLed(hidReport, name, config) {
-        hidReport.addOutput(this.deck.channel, name, config, "B");
+    registerLed(name, config) {
+        config.hidReport.addOutput(this.deck.channel, name, config.offset, "B");
     }
     pressHandler(field) {
         const padMode = this.deck.currentPadMode;
@@ -681,9 +683,9 @@ class Equalizer {
             low: new EqualizerParameter(this, 1),
         };
     }
-    registerInputs(inputReport0x02, config) {
+    registerInputs(config) {
         for (const param in this.params) {
-            this.params[param].registerInputs(inputReport0x02, config[param]);
+            this.params[param].registerInputs(config[param]);
         }
     }
     calibrate(calibration) {
@@ -704,8 +706,8 @@ class EqualizerParameter {
         this.number = number;
         this.calibration = null;
     }
-    registerInputs(inputReport0x02, config) {
-        this.registerKnob(inputReport0x02, "!parameter" + this.number, config, this.knob);
+    registerInputs(config) {
+        this.registerKnob("!parameter" + this.number, config, this.knob);
     }
     calibrate(calibration) {
         this.calibration = calibration;
@@ -713,8 +715,8 @@ class EqualizerParameter {
     enableSoftTakeover() {
         engine.softTakeover(this.group, "parameter" + this.number, true);
     }
-    registerKnob(hidReport, name, config, callback) {
-        hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
+    registerKnob(name, config, callback) {
+        config.hidReport.addControl(this.group, name, config.offset, "H", 0xFFFF, false, callback.bind(this));
     }
     knob(field) {
         setKnobParameter(this.group, "parameter" + this.number, field.value, this.calibration);
@@ -741,21 +743,21 @@ class EffectUnit {
         ];
         this.calibration = null;
     }
-    registerInputs(inputReport0x01, inputReport0x02, config) {
-        this.registerButton(inputReport0x01, "!effect_focus_button", config.focus, this.effectFocusButton);
-        this.registerButton(inputReport0x01, "group_[Channel1]_enable", config.channel1);
-        this.registerButton(inputReport0x01, "group_[Channel2]_enable", config.channel2);
-        this.registerKnob(inputReport0x02, "!mix", config.mix, this.mixKnob);
+    registerInputs(config) {
+        this.registerButton("!effect_focus_button", config.focus, this.effectFocusButton);
+        this.registerButton("group_[Channel1]_enable", config.channel1);
+        this.registerButton("group_[Channel2]_enable", config.channel2);
+        this.registerKnob("!mix", config.mix, this.mixKnob);
         for (let i = 0; i < 3; i++) {
-            this.params[i].registerInputs(inputReport0x01, inputReport0x02, config.params[i]);
+            this.params[i].registerInputs(config.params[i]);
         }
     }
-    registerOutputs(outputReport0x80, config) {
-        this.registerLed(outputReport0x80, "!effect_focus_button", config.focus);
-        this.registerLed(outputReport0x80, "group_[Channel1]_enable", config.channel1);
-        this.registerLed(outputReport0x80, "group_[Channel2]_enable", config.channel2);
+    registerOutputs(config) {
+        this.registerLed("!effect_focus_button", config.focus);
+        this.registerLed("group_[Channel1]_enable", config.channel1);
+        this.registerLed("group_[Channel2]_enable", config.channel2);
         for (let i = 0; i < 3; i++) {
-            this.params[i].registerOutputs(outputReport0x80, config.params[i]);
+            this.params[i].registerOutputs(config.params[i]);
         }
     }
     linkOutputs() {
@@ -776,17 +778,17 @@ class EffectUnit {
             this.params[i].enableSoftTakeover();
         }
     }
-    registerButton(hidReport, name, config, callback) {
+    registerButton(name, config, callback) {
         if (callback !==undefined) {
             callback= callback.bind(this);
         }
-        hidReport.addControl(this.group, name, config[0], "B", config[1], false, callback);
+        config.hidReport.addControl(this.group, name, config.offset, "B", config.mask, false, callback);
     }
-    registerKnob(hidReport, name, config, callback) {
-        hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
+    registerKnob(name, config, callback) {
+        config.hidReport.addControl(this.group, name, config.offset, "H", 0xFFFF, false, callback.bind(this));
     }
-    registerLed(hidReport, name, config) {
-        hidReport.addOutput(this.group, name, config, "B");
+    registerLed(name, config) {
+        config.hidReport.addOutput(this.group, name, config.offset, "B");
     }
     effectFocusButton(field) {
         const showParameters = engine.getValue(this.group, "show_parameters");
@@ -890,12 +892,12 @@ class EffectParameter {
         this.ledConnection = null;
         this.calibration = null;
     }
-    registerInputs(inputReport0x01, inputReport0x02, config) {
-        this.registerButton(inputReport0x01, "!effectbutton" + this.number, config.button, this.effectButton);
-        this.registerKnob(inputReport0x02, "!effectknob" + this.number, config.knob, this.effectKnob);
+    registerInputs(config) {
+        this.registerButton("!effectbutton" + this.number, config.button, this.effectButton);
+        this.registerKnob("!effectknob" + this.number, config.knob, this.effectKnob);
     }
-    registerOutputs(outputReport0x80, config) {
-        outputReport0x80.addOutput(this.group, "!effectbutton" + this.number, config, "B");
+    registerOutputs(config) {
+        config.hidReport.addOutput(this.group, "!effectbutton" + this.number, config.offset, "B");
     }
     calibrate(calibration) {
         this.calibration = calibration;
@@ -907,11 +909,11 @@ class EffectParameter {
             engine.softTakeover(group, "parameter" + i, true);
         }
     }
-    registerButton(hidReport, name, config, callback) {
-        hidReport.addControl(this.group, name, config[0], "B", config[1], false, callback.bind(this));
+    registerButton(name, config, callback) {
+        config.hidReport.addControl(this.group, name, config.offset, "B", config.mask, false, callback.bind(this));
     }
-    registerKnob(hidReport, name, config, callback) {
-        hidReport.addControl(this.group, name, config, "H", 0xFFFF, false, callback.bind(this));
+    registerKnob(name, config, callback) {
+        config.hidReport.addControl(this.group, name, config.offset, "H", 0xFFFF, false, callback.bind(this));
     }
     effectButton(field) {
         const focusedEffect = engine.getValue(this.group, "focused_effect");
@@ -1039,93 +1041,111 @@ class TraktorS2MK1Class {
         // There are also some 4 bit encoders.
         const InputReport0x02 = new HIDPacket("InputReport0x02", 0x02, this.inputReport0x02Callback.bind(this));
 
-        this.decks[0].registerInputs(InputReport0x01, InputReport0x02, {
-            gainEncoderPress: [0x0E, 0x01],
-            shift: [0x0D, 0x80],
-            sync: [0x0D, 0x40],
-            cue: [0x0D, 0x20],
-            play: [0x0D, 0x10],
+        this.decks[0].registerInputs({
+            gainEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x01},
+            shift: {hidReport: InputReport0x01, offset: 0x0D, mask: 0x80},
+            sync: {hidReport: InputReport0x01, offset: 0x0D, mask: 0x40},
+            cue: {hidReport: InputReport0x01, offset: 0x0D, mask: 0x20},
+            play: {hidReport: InputReport0x01, offset: 0x0D, mask: 0x10},
             pads: [
-                [0x0D, 0x08],
-                [0x0D, 0x04],
-                [0x0D, 0x02],
-                [0x0D, 0x01],
+                {hidReport: InputReport0x01, offset: 0x0D, mask: 0x08},
+                {hidReport: InputReport0x01, offset: 0x0D, mask: 0x04},
+                {hidReport: InputReport0x01, offset: 0x0D, mask: 0x02},
+                {hidReport: InputReport0x01, offset: 0x0D, mask: 0x01},
             ],
-            loopIn: [0x09, 0x40],
-            loopOut: [0x09, 0x20],
-            samples: [0x0B, 0x02],
-            reset: [0x09, 0x10],
-            leftEncoderPress: [0x0E, 0x02],
-            rightEncoderPress: [0x0E, 0x04],
-            jogWheel: 0x01,
-            loadTrack: [0x0B, 0x08],
-            pfl: [0x09, 0x80],
-            rate: 0x0F,
-            leftEncoder: [0x01, 0xF0],
-            rightEncoder: [0x02, 0x0F],
-            volume: 0x2B,
-            gain: [0x01, 0x0F],
-            jogPress: 0x0D,
+            loopIn: {hidReport: InputReport0x01, offset: 0x09, mask: 0x40},
+            loopOut: {hidReport: InputReport0x01, offset: 0x09, mask: 0x20},
+            samples: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x02},
+            reset: {hidReport: InputReport0x01, offset: 0x09, mask: 0x10},
+            leftEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x02},
+            rightEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x04},
+            jogWheel: {hidReport: InputReport0x01, offset: 0x01},
+            loadTrack: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x08},
+            pfl: {hidReport: InputReport0x01, offset: 0x09, mask: 0x80},
+            rate: {hidReport: InputReport0x02, offset: 0x0F},
+            leftEncoder: {hidReport: InputReport0x02, offset: 0x01, mask: 0xF0},
+            rightEncoder: {hidReport: InputReport0x02, offset: 0x02, mask: 0x0F},
+            volume: {hidReport: InputReport0x02, offset: 0x2B},
+            gain: {hidReport: InputReport0x02, offset: 0x01, mask: 0x0F},
+            jogPress: {hidReport: InputReport0x02, offset: 0x0D},
             eq: {
-                hi: 0x11,
-                mid: 0x25,
-                low: 0x27,
+                hi: {hidReport: InputReport0x02, offset: 0x11},
+                mid: {hidReport: InputReport0x02, offset: 0x25},
+                low: {hidReport: InputReport0x02, offset: 0x27},
             }
         });
-        this.decks[1].registerInputs(InputReport0x01, InputReport0x02, {
-            gainEncoderPress: [0x0E, 0x10],
-            shift: [0x0C, 0x80],
-            sync: [0x0C, 0x40],
-            cue: [0x0C, 0x20],
-            play: [0x0C, 0x10],
+        this.decks[1].registerInputs({
+            gainEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x10},
+            shift: {hidReport: InputReport0x01, offset: 0x0C, mask: 0x80},
+            sync: {hidReport: InputReport0x01, offset: 0x0C, mask: 0x40},
+            cue: {hidReport: InputReport0x01, offset: 0x0C, mask: 0x20},
+            play: {hidReport: InputReport0x01, offset: 0x0C, mask: 0x10},
             pads: [
-                [0x0C, 0x08],
-                [0x0C, 0x04],
-                [0x0C, 0x02],
-                [0x0C, 0x01],
+                {hidReport: InputReport0x01, offset: 0x0C, mask: 0x08},
+                {hidReport: InputReport0x01, offset: 0x0C, mask: 0x04},
+                {hidReport: InputReport0x01, offset: 0x0C, mask: 0x02},
+                {hidReport: InputReport0x01, offset: 0x0C, mask: 0x01},
             ],
-            loopIn: [0x0B, 0x40],
-            loopOut: [0x0B, 0x20],
-            samples: [0x0B, 0x01],
-            reset: [0x0B, 0x10],
-            leftEncoderPress: [0x0E, 0x20],
-            rightEncoderPress: [0x0E, 0x40],
-            jogWheel: 0x05,
-            loadTrack: [0x0B, 0x04],
-            pfl: [0x0B, 0x80],
-            rate: 0x1F,
-            leftEncoder: [0x03, 0xF0],
-            rightEncoder: [0x04, 0x0F],
-            volume: 0x2D,
-            gain: [0x03, 0x0F],
-            jogPress: 0x1D,
+            loopIn: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x40},
+            loopOut: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x20},
+            samples: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x01},
+            reset: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x10},
+            leftEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x20},
+            rightEncoderPress: {hidReport: InputReport0x01, offset: 0x0E, mask: 0x40},
+            jogWheel: {hidReport: InputReport0x01, offset: 0x05},
+            loadTrack: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x04},
+            pfl: {hidReport: InputReport0x01, offset: 0x0B, mask: 0x80},
+            rate: {hidReport: InputReport0x02, offset: 0x1F},
+            leftEncoder: {hidReport: InputReport0x02, offset: 0x03, mask: 0xF0},
+            rightEncoder: {hidReport: InputReport0x02, offset: 0x04, mask: 0x0F},
+            volume: {hidReport: InputReport0x02, offset: 0x2D},
+            gain: {hidReport: InputReport0x02, offset: 0x03, mask: 0x0F},
+            jogPress: {hidReport: InputReport0x02, offset: 0x1D},
             eq: {
-                hi: 0x21,
-                mid: 0x23,
-                low: 0x29,
+                hi: {hidReport: InputReport0x02, offset: 0x21},
+                mid: {hidReport: InputReport0x02, offset: 0x23},
+                low: {hidReport: InputReport0x02, offset: 0x29},
             }
         });
-        this.effectUnits[0].registerInputs(InputReport0x01, InputReport0x02, {
-            focus: [0x09, 0x08],
-            mix: 0x0B,
+        this.effectUnits[0].registerInputs({
+            focus: {hidReport: InputReport0x01, offset: 0x09, mask: 0x08},
+            mix: {hidReport: InputReport0x02, offset: 0x0B},
             params: [
-                {button: [0x09, 0x04], knob: 0x09},
-                {button: [0x09, 0x02], knob: 0x07},
-                {button: [0x09, 0x01], knob: 0x05},
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x09, mask: 0x04},
+                    knob: {hidReport: InputReport0x02, offset: 0x09},
+                },
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x09, mask: 0x02},
+                    knob: {hidReport: InputReport0x02, offset: 0x07},
+                },
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x09, mask: 0x01},
+                    knob: {hidReport: InputReport0x02, offset: 0x05},
+                },
             ],
-            channel1: [0x0A, 0x02],
-            channel2: [0x0A, 0x08],
+            channel1: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x02},
+            channel2: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x08},
         });
-        this.effectUnits[1].registerInputs(InputReport0x01, InputReport0x02, {
-            focus: [0x0A, 0x80],
-            mix: 0x1B,
+        this.effectUnits[1].registerInputs({
+            focus: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x80},
+            mix: {hidReport: InputReport0x02, offset: 0x1B},
             params: [
-                {button: [0x0A, 0x40], knob: 0x19},
-                {button: [0x0A, 0x20], knob: 0x17},
-                {button: [0x0A, 0x10], knob: 0x15},
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x40},
+                    knob: {hidReport: InputReport0x02, offset: 0x19},
+                },
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x20},
+                    knob: {hidReport: InputReport0x02, offset: 0x17},
+                },
+                {
+                    button: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x10},
+                    knob: {hidReport: InputReport0x02, offset: 0x15},
+                },
             ],
-            channel1: [0x0A, 0x01],
-            channel2: [0x0A, 0x04],
+            channel1: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x01},
+            channel2: {hidReport: InputReport0x01, offset: 0x0A, mask: 0x04},
         });
         InputReport0x01.addControl("[Master]", "!browse_encoder_press", 0x0E, "B", 0x08, false, this.browseEncoderPress.bind(this));
 
@@ -1147,65 +1167,89 @@ class TraktorS2MK1Class {
     registerOutputPackets() {
         const OutputReport0x80 = new HIDPacket("OutputReport0x80", 0x80);
 
-        this.decks[0].registerOutputs(OutputReport0x80, {
-            trackLoaded: 0x1F,
-            vuMeter: 0x15,
-            peak: 0x01,
-            reset: 0x06,
-            loopIn: 0x02,
-            loopOut: 0x05,
-            pfl: 0x20,
-            samples: 0x35,
-            shift: 0x08,
-            sync: 0x04,
-            cue: 0x07,
-            play: 0x03,
+        this.decks[0].registerOutputs({
+            trackLoaded: {hidReport: OutputReport0x80, offset: 0x1F},
+            vuMeter: {hidReport: OutputReport0x80, offset: 0x15},
+            peak: {hidReport: OutputReport0x80, offset: 0x01},
+            reset: {hidReport: OutputReport0x80, offset: 0x06},
+            loopIn: {hidReport: OutputReport0x80, offset: 0x02},
+            loopOut: {hidReport: OutputReport0x80, offset: 0x05},
+            pfl: {hidReport: OutputReport0x80, offset: 0x20},
+            samples: {hidReport: OutputReport0x80, offset: 0x35},
+            shift: {hidReport: OutputReport0x80, offset: 0x08},
+            sync: {hidReport: OutputReport0x80, offset: 0x04},
+            cue: {hidReport: OutputReport0x80, offset: 0x07},
+            play: {hidReport: OutputReport0x80, offset: 0x03},
             pads: [
-                {green: 0x0C, blue: 0x10},
-                {green: 0x0B, blue: 0x0F},
-                {green: 0x0A, blue: 0x0E},
-                {green: 0x09, blue: 0x0D},
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x0C},
+                    blue: {hidReport: OutputReport0x80, offset: 0x10},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x0B},
+                    blue: {hidReport: OutputReport0x80, offset: 0x0F},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x0A},
+                    blue: {hidReport: OutputReport0x80, offset: 0x0E},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x09},
+                    blue: {hidReport: OutputReport0x80, offset: 0x0D},
+                },
             ],
         });
-        this.decks[1].registerOutputs(OutputReport0x80, {
-            trackLoaded: 0x1E,
-            vuMeter: 0x11,
-            peak: 0x25,
-            reset: 0x26,
-            loopIn: 0x22,
-            loopOut: 0x21,
-            pfl: 0x1D,
-            samples: 0x34,
-            shift: 0x28,
-            sync: 0x24,
-            cue: 0x27,
-            play: 0x23,
+        this.decks[1].registerOutputs({
+            trackLoaded: {hidReport: OutputReport0x80, offset: 0x1E},
+            vuMeter: {hidReport: OutputReport0x80, offset: 0x11},
+            peak: {hidReport: OutputReport0x80, offset: 0x25},
+            reset: {hidReport: OutputReport0x80, offset: 0x26},
+            loopIn: {hidReport: OutputReport0x80, offset: 0x22},
+            loopOut: {hidReport: OutputReport0x80, offset: 0x21},
+            pfl: {hidReport: OutputReport0x80, offset: 0x1D},
+            samples: {hidReport: OutputReport0x80, offset: 0x34},
+            shift: {hidReport: OutputReport0x80, offset: 0x28},
+            sync: {hidReport: OutputReport0x80, offset: 0x24},
+            cue: {hidReport: OutputReport0x80, offset: 0x27},
+            play: {hidReport: OutputReport0x80, offset: 0x23},
             pads: [
-                {green: 0x2C, blue: 0x30},
-                {green: 0x2B, blue: 0x2F},
-                {green: 0x2A, blue: 0x2E},
-                {green: 0x29, blue: 0x2D},
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x2C},
+                    blue: {hidReport: OutputReport0x80, offset: 0x30},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x2B},
+                    blue: {hidReport: OutputReport0x80, offset: 0x2F},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x2A},
+                    blue: {hidReport: OutputReport0x80, offset: 0x2E},
+                },
+                {
+                    green: {hidReport: OutputReport0x80, offset: 0x29},
+                    blue: {hidReport: OutputReport0x80, offset: 0x2D},
+                },
             ],
         });
-        this.effectUnits[0].registerOutputs(OutputReport0x80, {
-            focus: 0x1C,
+        this.effectUnits[0].registerOutputs({
+            focus: {hidReport: OutputReport0x80, offset: 0x1C},
             params: [
-                0x1B,
-                0x1A,
-                0x19,
+                {hidReport: OutputReport0x80, offset: 0x1B},
+                {hidReport: OutputReport0x80, offset: 0x1A},
+                {hidReport: OutputReport0x80, offset: 0x19},
             ],
-            channel1: 0x3D,
-            channel2: 0x3B,
+            channel1: {hidReport: OutputReport0x80, offset: 0x3D},
+            channel2: {hidReport: OutputReport0x80, offset: 0x3B},
         });
-        this.effectUnits[1].registerOutputs(OutputReport0x80, {
-            focus: 0x39,
+        this.effectUnits[1].registerOutputs({
+            focus: {hidReport: OutputReport0x80, offset: 0x39},
             params: [
-                0x38,
-                0x37,
-                0x36,
+                {hidReport: OutputReport0x80, offset: 0x38},
+                {hidReport: OutputReport0x80, offset: 0x37},
+                {hidReport: OutputReport0x80, offset: 0x36},
             ],
-            channel1: 0x3C,
-            channel2: 0x3A,
+            channel1: {hidReport: OutputReport0x80, offset: 0x3C},
+            channel2: {hidReport: OutputReport0x80, offset: 0x3A},
         });
 
         OutputReport0x80.addOutput("[Master]", "!warninglight", 0x33, "B");
