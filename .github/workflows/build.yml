@@ -67,7 +67,7 @@ jobs:
               -DMACOS_BUNDLE=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min1012
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1015
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
