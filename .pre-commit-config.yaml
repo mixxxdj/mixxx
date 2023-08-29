@@ -32,7 +32,7 @@ default_language_version:
   rust: 1.64.0
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.3.0
+    rev: v4.4.0
     hooks:
       - id: fix-byte-order-marker
         exclude: ^.*(\.cbproj|\.groupproj|\.props|\.sln|\.vcxproj|\.vcxproj.filters|UTF-8-BOM.txt)$
@@ -51,7 +51,7 @@ repos:
         # protect main and any branch that has a semver-like name
         args: [-b, main, -p, '^\d+\.\d+(?:\.\d+)?$']
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.2
+    rev: v2.2.5
     hooks:
       - id: codespell
         args:
@@ -65,7 +65,7 @@ repos:
           ]
         exclude: ^(packaging/wix/LICENSE.rtf|src/dialog/dlgabout\.cpp|.*\.(?:pot?|(?<!d\.)ts|wxl|svg))$
   - repo: https://github.com/pre-commit/mirrors-eslint
-    rev: v8.25.0
+    rev: v8.48.0
     hooks:
       - id: eslint
         args: [--fix, --report-unused-disable-directives]
@@ -91,33 +91,33 @@ repos:
           - manual
         language: python
         additional_dependencies:
-          - clang-format==14.0.6
+          - clang-format==16.0.6
         files: \.(c|cc|cxx|cpp|frag|glsl|h|hpp|hxx|ih|ispc|ipp|java|m|mm|proto|vert)$
   - repo: https://github.com/psf/black
-    rev: 22.10.0
+    rev: 23.7.0
     hooks:
       - id: black
         files: ^tools/.*$
   - repo: https://github.com/pycqa/flake8
-    rev: "5.0.4"
+    rev: "6.1.0"
     hooks:
       - id: flake8
         files: ^tools/.*$
         types: [text, python]
   - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.8.0.4
+    rev: v0.9.0.5
     hooks:
       - id: shellcheck
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.5.1
+    rev: v0.9.2
     hooks:
       - id: markdownlint-cli2
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.18.3
+    rev: 0.26.3
     hooks:
       - id: check-github-workflows
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.0.2
     hooks:
       - id: prettier
         types: [yaml]
