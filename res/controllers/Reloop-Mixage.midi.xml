@@ -2,15 +2,17 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1+">
   <info>
     <name>Reloop Mixage</name>
-    <author>Gersom Zomer</author>
+    <author>HorstBaerbel / gqzomer</author>
     <description>Mapping for the Reloop Mixage Interface Edition controller (https://www.reloop.com/reloop-mixage-ie). Should also work on the non-interface version.</description>
     <forums>https://mixxx.discourse.group/t/reloop-mixage-mapping/14779</forums>
     <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop%20Mixage</wiki>
+    <manual>https://www.reloop.com/media/catalog/product/pdf/2/2/4/224964_Reloop_IM.pdf</manual>
   </info>
   <controller id="Reloop Mixage">
     <scriptfiles>
       <file functionprefix="Mixage" filename="Reloop-Mixage.scripts.js" />
     </scriptfiles>
+    <!-- The comments reference the buttons on the controller The T prefixes are taken from the controller overview of the manual -->
     <controls>
       <!-- T1 = Pitch Bend Minus Button -->
       <control>
