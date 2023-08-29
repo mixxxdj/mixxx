@@ -790,7 +790,7 @@ DJ505.Sampler = function() {
      *
      * 1. Standalone mode
      *
-     * When the controller is in standlone mode, the controller's TR-S works
+     * When the controller is in standalone mode, the controller's TR-S works
      * with the SERATO SAMPLER and SYNC functionality disabled. Also, it's not
      * possible to apply FX to the TR-S output signal. The TR/SAMPLER LEVEL
      * knob can be used to adjust the volume of the output.
