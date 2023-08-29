@@ -1823,6 +1823,7 @@ add_executable(mixxx-test
   src/test/broadcastsettings_test.cpp
   src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/chrono_clock_resolution_test.cpp
   src/test/colorconfig_test.cpp
   src/test/colormapperjsproxy_test.cpp
   src/test/colorpalette_test.cpp
