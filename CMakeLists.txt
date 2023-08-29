@@ -1802,7 +1802,7 @@ if(MSVC)
   )
 endif()
 
-if(WIN32)
+if(WIN32 AND NOT QT6)
   # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
   # Qt does not link these and vcpkg does not build them as a dependency of Qt,
   # so copy them manually.
