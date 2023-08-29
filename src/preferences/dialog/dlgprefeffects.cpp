@@ -354,7 +354,6 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
                         currIndex,
                         QItemSelectionModel::ClearAndSelect);
             }
-            return true;
         } else if (pEffectList) {
             m_pFocusedEffectList = pEffectList;
             unfocusedEffectList()->selectionModel()->clearSelection();
@@ -366,12 +365,9 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
                 pEffectList->selectionModel()->clearCurrentIndex();
                 pEffectList->selectRow(currIndex.row());
             }
-            return true;
-        } else {
-            return false;
         }
     }
-    return false;
+    return QWidget::eventFilter(object, event);
 }
 
 QListView* DlgPrefEffects::unfocusedChainList() {
