@@ -368,6 +368,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::ResetPlayed |
             Capability::RemoveFromDisk |
+            Capability::Hide |
             Capability::Analyze;
 
     if (m_iPlaylistId !=
@@ -382,8 +383,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     if (m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getHiddenType(m_iPlaylistId) == PlaylistDAO::PLHT_SET_LOG) {
-        // Disable track reordering and adding tracks via drag'n'drop for history playlists
-        caps &= ~(Capability::ReceiveDrops | Capability::Reorder);
+        // Disallow reordering and hiding tracks, as well as adding tracks via
+        // drag'n'drop for history playlists
+        caps &= ~(Capability::ReceiveDrops | Capability::Reorder | Capability::Hide);
     }
     bool locked = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {
