@@ -26,7 +26,7 @@ IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_SHA256=23cb9232c7154273c0c1f6110ac64eb4b620bf37d8cdab1b37ae711b5e6ed8a7
 ) ELSE (
     SET BUILDENV_BRANCH=2.5
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-dea32d0
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-705eb0d
     SET BUILDENV_SHA256=16f83e732a2c7518b9c3e36034df4130e42c971ba009f0a9abbbe8eb126e6f55
 )
 
@@ -226,6 +226,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
