@@ -131,6 +131,7 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
             Capability::ResetPlayed |
+            Capability::Hide |
             Capability::RemoveFromDisk |
             Capability::Analyze;
 
