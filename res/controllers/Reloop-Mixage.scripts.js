@@ -166,7 +166,7 @@ Mixage.connectionMap = {
         "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
         "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
         "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-        "sync_enabled": [function(v, g, c) { Mixage.toggleLoopLED(v, g, c); }, null],
+        "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
     },
 };
 
