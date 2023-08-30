@@ -72,7 +72,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotColorButtonClicked();
 
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& info,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedCacheKey,

@@ -65,3 +65,10 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         effectsDelay.process(pInOut.data(), bufferSizeInSamples);
             } else if (!strcmp(pavInputFormat->name, "caf")) {
                 list.append("caf");
+// Adopted from Csound code at http://www.kunstmusik.com/udo/cache/moogladder.udo
+                << "-alac.caf"
+        // Test fails for file type "caf" supported by SoundSourceSndfile
+        //QStringLiteral("caf"),
+    // Source: FIPS 180-4 Secure Hash Standard (SHS)
+        // ALAC/CAF has been added in version 1.0.26
+        QStringLiteral("caf"),

@@ -113,7 +113,7 @@ class SyncControl : public EngineControl, public Syncable {
     mixxx::Bpm getLocalBpm() const;
 
     QString m_sGroup;
-    // The only reason we have this pointer is an optimzation so that the
+    // The only reason we have this pointer is an optimization so that the
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
     // asks EngineSync what EngineChannel is the "leader" channel.
     EngineChannel* m_pChannel;

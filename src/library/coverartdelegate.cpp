@@ -71,13 +71,13 @@ void CoverArtDelegate::slotInhibitLazyLoading(
 }
 
 void CoverArtDelegate::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedImageHash,
         bool coverInfoUpdated) {
     Q_UNUSED(pixmap);
-    if (pRequestor != this) {
+    if (pRequester != this) {
         return;
     }
     if (coverInfoUpdated) {
