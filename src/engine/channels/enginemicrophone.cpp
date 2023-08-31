@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "control/control.h"
 #include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
@@ -79,10 +80,11 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
-            pEngineEffectsManager->processPreFaderInPlace(
-                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
-                    // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                    static_cast<unsigned int>(m_sampleRate.get()));
+            pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                    m_pEffectsManager->getMasterHandle(),
+                    pOut,
+                    iBufferSize,
+                    mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
         }
     } else {
         SampleUtil::clear(pOut, iBufferSize);

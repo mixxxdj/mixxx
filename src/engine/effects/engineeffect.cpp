@@ -128,7 +128,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const unsigned int numSamples,
-        const unsigned int sampleRate,
+        const mixxx::audio::SampleRate sampleRate,
         const EffectEnableState chainEnableState,
         const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the combination of the effect's state
@@ -179,7 +179,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters engineParameters(
-                mixxx::audio::SampleRate(sampleRate),
+                sampleRate,
                 numSamples / mixxx::kEngineChannelCount);
 
         m_pProcessor->process(inputHandle,

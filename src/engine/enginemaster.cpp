@@ -439,7 +439,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pHead,
                 m_headphoneHandle.handle(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 m_pEngineEffectsManager);
 
         // Process headphone channel effects
@@ -459,7 +459,7 @@ void EngineMaster::process(const int iBufferSize) {
                     m_headphoneHandle.handle(),
                     m_pHead,
                     iBufferSize,
-                    static_cast<int>(m_sampleRate.value()),
+                    m_sampleRate,
                     headphoneFeatures);
         }
     }
@@ -473,7 +473,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_pTalkover,
             m_masterHandle.handle(),
             iBufferSize,
-            static_cast<int>(m_sampleRate.value()),
+            m_sampleRate,
             m_pEngineEffectsManager);
 
     // Process effects on all microphones mixed together
@@ -485,7 +485,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pTalkover,
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -533,7 +533,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_pOutputBusBuffers[o],
                 m_masterHandle.handle(),
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 m_pEngineEffectsManager);
     }
 
@@ -544,7 +544,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -554,7 +554,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -564,7 +564,7 @@ void EngineMaster::process(const int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 busFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
@@ -756,7 +756,7 @@ void EngineMaster::process(const int iBufferSize) {
                     m_masterHandle.handle(),
                     m_pMaster,
                     iBufferSize,
-                    static_cast<int>(m_sampleRate.value()),
+                    m_sampleRate,
                     masterFeatures);
         }
 
@@ -815,7 +815,7 @@ void EngineMaster::applyMasterEffects(int iBufferSize) {
                 m_masterHandle.handle(),
                 m_pMaster,
                 iBufferSize,
-                static_cast<int>(m_sampleRate.value()),
+                m_sampleRate,
                 masterFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,

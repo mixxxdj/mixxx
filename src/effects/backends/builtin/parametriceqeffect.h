@@ -26,7 +26,7 @@ class ParametricEQEffectGroupState final : public EffectState {
     ParametricEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
     ~ParametricEQEffectGroupState() override = default;
 
-    void setFilters(int sampleRate);
+    void setFilters(mixxx::audio::SampleRate sampleRate);
 
     // These containers are only appended in the constructor which is called on
     // the main thread, so there is no risk of allocation in the audio thread.

@@ -3,9 +3,11 @@
 #include "effects/backends/builtin/equalizer_util.h"
 #include "util/math.h"
 
-static constexpr unsigned int kStartupSamplerate = 44100;
-static constexpr unsigned int kStartupLoFreq = 246;
-static constexpr unsigned int kStartupHiFreq = 2484;
+namespace {
+constexpr auto kStartupSamplerate = mixxx::audio::SampleRate(44100);
+constexpr unsigned int kStartupLoFreq = 246;
+constexpr unsigned int kStartupHiFreq = 2484;
+} // namespace
 
 // static
 QString LinkwitzRiley8EQEffect::getId() {
@@ -60,7 +62,8 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+void LinkwitzRiley8EQEffectGroupState::setFilters(
+        mixxx::audio::SampleRate sampleRate, int lowFreq, int highFreq) {
     m_low1->setFrequencyCorners(sampleRate, lowFreq);
     m_high1->setFrequencyCorners(sampleRate, lowFreq);
     m_low2->setFrequencyCorners(sampleRate, highFreq);

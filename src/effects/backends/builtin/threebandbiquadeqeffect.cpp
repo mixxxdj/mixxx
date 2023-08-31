@@ -97,7 +97,7 @@ ThreeBandBiquadEQEffectGroupState::ThreeBandBiquadEQEffectGroupState(
 }
 
 void ThreeBandBiquadEQEffectGroupState::setFilters(
-        int sampleRate, double lowFreqCorner, double highFreqCorner) {
+        mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner) {
     double lowCenter = getCenterFrequency(kMinimumFrequency, lowFreqCorner);
     double midCenter = getCenterFrequency(lowFreqCorner, highFreqCorner);
     double highCenter = getCenterFrequency(highFreqCorner, kMaximumFrequency);

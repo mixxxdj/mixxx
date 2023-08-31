@@ -119,7 +119,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     }
 }
 
-void ParametricEQEffectGroupState::setFilters(int sampleRate) {
+void ParametricEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     for (int i = 0; i < kBandCount; i++) {
         m_bands[i]->setFrequencyCorners(
                 sampleRate, m_oldCenter[i], m_oldQ[i], m_oldGain[i]);

@@ -2,6 +2,7 @@
 
 #include <QScopedPointer>
 
+#include "audio/types.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
@@ -34,7 +35,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
             unsigned int numSamples,
-            unsigned int sampleRate);
+            mixxx::audio::SampleRate sampleRate);
 
     /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
     /// the contents of the input buffer.
@@ -43,7 +44,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const ChannelHandle& outputHandle,
             CSAMPLE* pInOut,
             unsigned int numSamples,
-            unsigned int sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
@@ -60,7 +61,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             CSAMPLE* pIn,
             CSAMPLE* pOut,
             unsigned int numSamples,
-            unsigned int sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,
@@ -91,7 +92,7 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             CSAMPLE* pIn,
             CSAMPLE* pOut,
             unsigned int numSamples,
-            unsigned int sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             const GroupFeatureState& groupFeatures,
             CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE,

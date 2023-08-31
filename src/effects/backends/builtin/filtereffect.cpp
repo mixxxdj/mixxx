@@ -69,8 +69,8 @@ FilterGroupState::FilterGroupState(const mixxx::EngineParameters& engineParamete
           m_q(0.707106781),
           m_hiFreq(kMinCorner / engineParameters.sampleRate()) {
     m_buffer = mixxx::SampleBuffer(engineParameters.samplesPerBuffer());
-    m_pLowFilter = new EngineFilterBiquad1Low(1, m_loFreq, m_q, true);
-    m_pHighFilter = new EngineFilterBiquad1High(1, m_hiFreq, m_q, true);
+    m_pLowFilter = new EngineFilterBiquad1Low(mixxx::audio::SampleRate(1), m_loFreq, m_q, true);
+    m_pHighFilter = new EngineFilterBiquad1High(mixxx::audio::SampleRate(1), m_hiFreq, m_q, true);
 }
 
 FilterGroupState::~FilterGroupState() {
@@ -128,8 +128,8 @@ void FilterEffect::processChannel(
             double qmax = 4 - 2 / 0.6 * ratio;
             clampedQ = math_min(clampedQ, qmax);
         }
-        pState->m_pLowFilter->setFrequencyCorners(1, lpf, clampedQ);
-        pState->m_pHighFilter->setFrequencyCorners(1, hpf, clampedQ);
+        pState->m_pLowFilter->setFrequencyCorners(mixxx::audio::SampleRate(1), lpf, clampedQ);
+        pState->m_pHighFilter->setFrequencyCorners(mixxx::audio::SampleRate(1), hpf, clampedQ);
     }
 
     const CSAMPLE* pLpfInput = pState->m_buffer.data();

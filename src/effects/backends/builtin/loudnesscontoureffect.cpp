@@ -80,7 +80,7 @@ LoudnessContourEffectGroupState::~LoudnessContourEffectGroupState() {
     SampleUtil::free(m_pBuf);
 }
 
-void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
+void LoudnessContourEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate, double gain) {
     m_low->setFrequencyCorners(
             sampleRate, kLoPeakFreq, kLoPleakQ, gain);
     m_high->setFrequencyCorners(

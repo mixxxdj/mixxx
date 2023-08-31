@@ -12,7 +12,7 @@ class BalanceGroupState : public EffectState {
     BalanceGroupState(const mixxx::EngineParameters& engineParameters);
     ~BalanceGroupState() override = default;
 
-    void setFilters(int sampleRate, double freq);
+    void setFilters(mixxx::audio::SampleRate sampleRate, double freq);
 
     std::unique_ptr<EngineFilterLinkwitzRiley4Low> m_low;
     std::unique_ptr<EngineFilterLinkwitzRiley4High> m_high;

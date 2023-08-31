@@ -1,9 +1,11 @@
 #include "effects/backends/builtin/graphiceqeffect.h"
 
+#include "audio/types.h"
 #include "util/math.h"
 
 namespace {
 constexpr double kQ = 1.2247449;
+constexpr auto kDefaultSampleRate = mixxx::audio::SampleRate(44100);
 } // namespace
 
 // static
@@ -94,10 +96,10 @@ GraphicEQEffectGroupState::GraphicEQEffectGroupState(
     m_centerFrequencies[7] = 9828;
 
     // Initialize the filters with default parameters
-    m_low = new EngineFilterBiquad1LowShelving(44100, m_centerFrequencies[0], kQ);
-    m_high = new EngineFilterBiquad1HighShelving(44100, m_centerFrequencies[7], kQ);
+    m_low = new EngineFilterBiquad1LowShelving(kDefaultSampleRate, m_centerFrequencies[0], kQ);
+    m_high = new EngineFilterBiquad1HighShelving(kDefaultSampleRate, m_centerFrequencies[7], kQ);
     for (int i = 1; i < 7; i++) {
-        m_bands.append(new EngineFilterBiquad1Peaking(44100,
+        m_bands.append(new EngineFilterBiquad1Peaking(kDefaultSampleRate,
                 m_centerFrequencies[i],
                 kQ));
     }
@@ -116,7 +118,7 @@ GraphicEQEffectGroupState::~GraphicEQEffectGroupState() {
     }
 }
 
-void GraphicEQEffectGroupState::setFilters(int sampleRate) {
+void GraphicEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     m_low->setFrequencyCorners(sampleRate, m_centerFrequencies[0], kQ, m_oldLow);
     m_high->setFrequencyCorners(sampleRate, m_centerFrequencies[7], kQ, m_oldHigh);
     for (int i = 0; i < 6; i++) {

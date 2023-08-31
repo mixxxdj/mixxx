@@ -7,6 +7,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
 #include "effects/effectsmanager.h"
@@ -46,7 +47,7 @@ class EngineEffect final : public EffectsRequestHandler {
             const CSAMPLE* pInput,
             CSAMPLE* pOutput,
             const unsigned int numSamples,
-            const unsigned int sampleRate,
+            const mixxx::audio::SampleRate sampleRate,
             const EffectEnableState chainEnableState,
             const GroupFeatureState& groupFeatures);
 
