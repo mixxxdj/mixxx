@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVector>
 
+#include "audio/types.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/types.h"
@@ -39,6 +40,6 @@ class KeyFactory {
     static Keys makePreferredKeys(
             const KeyChangeList& key_changes,
             const QHash<QString, QString>& extraVersionInfo,
-            int iSampleRate,
+            mixxx::audio::SampleRate sampleRate,
             SINT totalFrames);
 };

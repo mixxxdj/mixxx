@@ -510,7 +510,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-        const KeyChangeList& key_changes, SINT totalFrames, int iSampleRate) {
+        const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
         qDebug() << keyDebugName(key_changes[0].first);
         return key_changes[0].first;
@@ -532,7 +532,7 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
+        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / sampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
             max_delta = it.value();
