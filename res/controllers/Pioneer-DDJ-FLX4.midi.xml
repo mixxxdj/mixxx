@@ -998,7 +998,7 @@
             <!-- BEAT FX SECTION START -->
 
             <control>
-              <description>BEAT FX SELECT - press once - select effect unit 1</description>
+              <description>BEAT FX SELECT - press once - select next effect</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJFLX4.beatFxSelectPressed</key>
                 <status>0x94</status>
@@ -1007,9 +1007,19 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>
+              <description>BEAT FX SELECT + shift - press once - select previous effect</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJFLX4.beatFxSelectShiftPressed</key>
+                <status>0x94</status>
+                <midino>0x64</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
 
             <control>
-                <description>BEAT LEFT - press - select effect unit 2</description>
+                <description>BEAT LEFT - press - select previous effect unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJFLX4.beatFxLeftPressed</key>
                 <status>0x94</status>
@@ -1018,33 +1028,13 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>BEAT LEFT + shift - select previous effect for the current unit</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJFLX4.beatFxSelectPreviousEffect</key>
-                <status>0x94</status>
-                <midino>0x66</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
 
             <control>
-                <description>BEAT RIGHT - press - select effect unit 3</description>
+                <description>BEAT RIGHT - press - select next effect unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJFLX4.beatFxRightPressed</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>BEAT RIGHT + shift - select next effect for the current unit</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJFLX4.beatFxSelectNextEffect</key>
-                <status>0x94</status>
-                <midino>0x6B</midino>
                 <options>
                     <Script-Binding/>
                 </options>

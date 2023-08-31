@@ -18,13 +18,12 @@
 //
 //  Custom (Mixxx specific mappings):
 //      * BeatFX: Assigned Effect Unit 1
-//                v FX_SELECT focus EFFECT1.
-//                < LEFT focus EFFECT2
-//                > RIGHT focus EFFECT3
+//                v FX_SELECT Load next effect.
+//                SHIFT + v FX_SELECT Load previous effect.
+//                < LEFT Cycle effect focus leftward
+//                > RIGHT Cycle effect focus rightward
 //                ON/OFF toggles focused effect slot
 //                SHIFT + ON/OFF disables all three effect slots.
-//                SHIFT + < loads previous effect
-//                SHIFT + > loads next effect
 //
 //      * 32 beat jump forward & back (Shift + </> CUE/LOOP CALL arrows)
 //      * Toggle quantize (Shift + channel cue)
@@ -310,30 +309,44 @@ PioneerDDJFLX4.beatFxLevelDepthRotate = function(_channel, _control, value) {
     }
 };
 
-PioneerDDJFLX4.beatFxSelectPreviousEffect = function(_channel, _control, value) {
-    engine.setValue(PioneerDDJFLX4.focusedFxGroup(), "prev_effect", value);
-};
+PioneerDDJFLX4.changeFocusedEffectBy = function(numberOfSteps) {
+    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
 
-PioneerDDJFLX4.beatFxSelectNextEffect = function(_channel, _control, value) {
-    engine.setValue(PioneerDDJFLX4.focusedFxGroup(), "next_effect", value);
+    // Convert to zero-based index
+    focusedEffect -= 1;
+
+    // Standard Euclidean modulo by use of two plain modulos
+    var numberOfEffectsPerEffectUnit = 3;
+    focusedEffect = (((focusedEffect + numberOfSteps) % numberOfEffectsPerEffectUnit) + numberOfEffectsPerEffectUnit) % numberOfEffectsPerEffectUnit;
+
+    // Convert back to one-based index
+    focusedEffect += 1;
+
+    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", focusedEffect);
 };
 
 PioneerDDJFLX4.beatFxSelectPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 1);
+    engine.setValue(PioneerDDJFLX4.focusedFxGroup(), "next_effect", value);
+};
+
+PioneerDDJFLX4.beatFxSelectShiftPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
+    engine.setValue(PioneerDDJFLX4.focusedFxGroup(), "prev_effect", value);
 };
 
 PioneerDDJFLX4.beatFxLeftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 2);
+    PioneerDDJFLX4.changeFocusedEffectBy(-1);
 };
 
 PioneerDDJFLX4.beatFxRightPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", 3);
+    PioneerDDJFLX4.changeFocusedEffectBy(1);
 };
 
 PioneerDDJFLX4.beatFxOnOffPressed = function(_channel, _control, value) {
