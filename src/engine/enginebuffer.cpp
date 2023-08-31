@@ -484,11 +484,11 @@ void EngineBuffer::slotTrackLoading() {
     // Setting m_iTrackLoading inside a m_pause.lock ensures that
     // track buffer is not processed when starting to load a new one
     m_iTrackLoading = 1;
-    m_pause.unlock();
 
     // Set play here, to signal the user that the play command is adopted
-    m_playButton->set((double)m_bPlayAfterLoading);
+    m_playButton->set(m_bPlayAfterLoading ? 1.0 : 0.0);
     m_pTrackSamples->set(0); // Stop renderer
+    m_pause.unlock();
 }
 
 void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
