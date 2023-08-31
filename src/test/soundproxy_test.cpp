@@ -770,7 +770,7 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
                            // CoreAudio Version 11.7.8 (Build 20G1351)
                            // CoreAusio Version 12.6.7 (Build 21G651)
 #endif
-                           // 1168 FFmpeg 4.2.7-0ubuntu0.1
+            // 1168 FFmpeg 4.2.7-0ubuntu0.1
 
             {QStringLiteral("cover-test-ffmpeg-aac.m4a"),
 #if defined(__WINDOWS__)
@@ -791,7 +791,7 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
 #elif defined(__WINDOWS__)
                     1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
 #else
-                    0},    // CoreAudio Version 11.7.8 (Build 20G1351)
+                                    0},    // CoreAudio Version 11.7.8 (Build 20G1351)
 #endif
 
             {QStringLiteral("cover-test-vbr.mp3"),
@@ -801,9 +801,9 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
                     3326}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
                            // No offset compared to FPM_64BIT builds but rounding differences
 #else
-                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
+                                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
 #endif
-                           // 1166 FFmpeg
+            // 1166 FFmpeg
 
             {QStringLiteral("cover-test.ogg"), 1166},
             {QStringLiteral("cover-test.opus"), 1268},
