@@ -8,11 +8,11 @@
 #include "track/track.h"
 #include "util/assert.h"
 
-TrackPointer newTestTrack(int sampleRate) {
+TrackPointer newTestTrack() {
     TrackPointer pTrack(Track::newTemporary());
     pTrack->setAudioProperties(
             mixxx::audio::ChannelCount(2),
-            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::SampleRate(44100),
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(180));
     return pTrack;
@@ -326,7 +326,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     auto pQuery(
             m_parser.parseQuery("bpm:127.12", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
@@ -343,7 +343,7 @@ TEST_F(SearchQueryParserTest, NumericFilterYear) {
     auto pQuery(
             m_parser.parseQuery("year:1969", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     EXPECT_FALSE(pQuery->match(pTrack));
     // Note: The sourounding spaces are checking that a user input is popperly trimmed.
     pTrack->setYear(" 1969-08-15 ");
@@ -363,7 +363,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     auto pQuery(
             m_parser.parseQuery("bpm:", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
@@ -377,7 +377,7 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     auto pQuery(
             m_parser.parseQuery("-bpm:127.12", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
@@ -393,7 +393,7 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     auto pQuery(
             m_parser.parseQuery("bpm: 127.12", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
@@ -409,7 +409,7 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     auto pQuery(
             m_parser.parseQuery("bpm:>127.12", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.13);
@@ -451,7 +451,7 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     auto pQuery(
             m_parser.parseQuery("bpm:127.12-129", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
@@ -469,7 +469,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     auto pQuery(
             m_parser.parseQuery("bpm:127.12-129 artist:\"com truise\" Colorvision", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->trySetBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("Com Truise");
@@ -490,7 +490,7 @@ TEST_F(SearchQueryParserTest, ExtraFilterAppended) {
     auto pQuery(
             m_parser.parseQuery("asdf", "1 > 2"));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->setArtist("zxcv");
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("asdf");
@@ -506,7 +506,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearch) {
     auto pQuery(
             m_parser.parseQuery("duration:1:30", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->setDuration(91);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(90);
@@ -542,7 +542,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchWithOperators) {
     auto pQuery(
             m_parser.parseQuery("duration:>1:30", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->setDuration(89);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(91);
@@ -644,7 +644,7 @@ TEST_F(SearchQueryParserTest, HumanReadableDurationSearchwithRangeFilter) {
     auto pQuery(
             m_parser.parseQuery("duration:2:30-3:20", QString()));
 
-    TrackPointer pTrack = newTestTrack(44100);
+    TrackPointer pTrack = newTestTrack();
     pTrack->setDuration(80);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setDuration(150);
