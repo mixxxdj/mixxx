@@ -68,10 +68,10 @@ class SoundManager : public QObject {
     QString getLastErrorMessage(SoundDeviceStatus status) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
-    QList<unsigned int> getSampleRates(const QString& api) const;
+    QList<mixxx::audio::SampleRate> getSampleRates(const QString& api) const;
 
     // Convenience overload for SoundManager::getSampleRates(QString)
-    QList<unsigned int> getSampleRates() const;
+    QList<mixxx::audio::SampleRate> getSampleRates() const;
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
@@ -135,7 +135,7 @@ class SoundManager : public QObject {
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
-    QList<unsigned int> m_samplerates;
+    QList<mixxx::audio::SampleRate> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;

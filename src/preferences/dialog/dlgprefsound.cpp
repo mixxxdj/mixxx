@@ -47,11 +47,12 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::apiChanged);
 
     sampleRateComboBox->clear();
-    for (auto& srate : m_pSoundManager->getSampleRates()) {
-        if (srate > 0) {
+    for (auto& sampleRate : m_pSoundManager->getSampleRates()) {
+        if (sampleRate.isValid()) {
             // no ridiculous sample rate values. prohibiting zero means
             // avoiding a potential div-by-0 error in ::updateLatencies
-            sampleRateComboBox->addItem(tr("%1 Hz").arg(srate), srate);
+            sampleRateComboBox->addItem(tr("%1 Hz").arg(sampleRate.value()),
+                    QVariant::fromValue(sampleRate));
         }
     }
     connect(sampleRateComboBox,
@@ -435,7 +436,8 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     if (apiIndex != -1) {
         apiComboBox->setCurrentIndex(apiIndex);
     }
-    int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
+    int sampleRateIndex = sampleRateComboBox->findData(
+            QVariant::fromValue(m_config.getSampleRate()));
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
         if (audioBufferComboBox->count() <= 0) {
@@ -541,8 +543,7 @@ void DlgPrefSound::updateAPIs() {
  * sample rate in the config.
  */
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(
-            sampleRateComboBox->itemData(index).toUInt());
+    m_config.setSampleRate(mixxx::audio::SampleRate(sampleRateComboBox->itemData(index).toUInt()));
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
