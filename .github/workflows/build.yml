@@ -18,7 +18,6 @@ jobs:
           - name: Ubuntu 22.04
             os: ubuntu-22.04
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
               -DQT6=ON
               -DBULK=ON
               -DFFMPEG=ON
@@ -40,7 +39,6 @@ jobs:
           - name: Ubuntu 22.04 (QML)
             os: ubuntu-22.04
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
               -DQT6=ON
               -DQML=ON
               -DBULK=ON
@@ -113,7 +111,6 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
@@ -284,6 +281,7 @@ jobs:
           cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DWARNINGS_FATAL=ON
           -DDEBUG_ASSERTIONS_FATAL=OFF
           -DBATTERY=ON
           -DBROADCAST=ON
