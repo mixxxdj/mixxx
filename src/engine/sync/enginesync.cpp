@@ -252,10 +252,9 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
             stopped_deck_count++;
         }
     }
-
-    const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey("[BPM]", "sync_lock_algorithm"),
-                    PREFER_IMPLICIT_LEADER));
+    const SyncLockAlgorithm picker = m_pConfig->getValue(
+            ConfigKey("[BPM]", "sync_lock_algorithm"),
+            PREFER_IMPLICIT_LEADER);
     switch (picker) {
     case PREFER_IMPLICIT_LEADER:
         // Always pick a deck for a new leader.

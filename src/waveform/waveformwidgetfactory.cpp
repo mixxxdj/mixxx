@@ -537,25 +537,13 @@ bool WaveformWidgetFactory::setWidgetType(
 
     // check if type is acceptable
     int index = findHandleIndexFromType(type);
-    if (index > -1) {
-        // type is acceptable
-        *pCurrentType = type;
-        if (m_config) {
-            m_config->setValue(
-                    ConfigKey("[Waveform]", "WaveformType"),
-                    static_cast<int>(*pCurrentType));
-        }
-        return true;
-    }
-
-    // fallback
-    *pCurrentType = WaveformWidgetType::EmptyWaveform;
+    bool isAcceptable = index > -1;
+    *pCurrentType = isAcceptable ? type : WaveformWidgetType::EmptyWaveform;
     if (m_config) {
         m_config->setValue(
-                ConfigKey("[Waveform]", "WaveformType"),
-                static_cast<int>(*pCurrentType));
+                ConfigKey("[Waveform]", "WaveformType"), *pCurrentType);
     }
-    return false;
+    return isAcceptable;
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {

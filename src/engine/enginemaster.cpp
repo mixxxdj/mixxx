@@ -174,8 +174,9 @@ EngineMaster::EngineMaster(
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"), true, false, true);
-    m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
-            static_cast<double>(EngineBuffer::defaultKeylockEngine())));
+    m_pKeylockEngine->set(static_cast<double>(
+            pConfig->getValue(ConfigKey(group, "keylock_engine"),
+                    EngineBuffer::defaultKeylockEngine())));
 
     // TODO: Make this read only and make EngineMaster decide whether
     // processing the master mix is necessary.

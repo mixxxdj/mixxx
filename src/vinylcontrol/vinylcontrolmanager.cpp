@@ -42,12 +42,12 @@ VinylControlManager::~VinylControlManager() {
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_pConfig->setValue(ConfigKey(group, "vinylcontrol_enabled"), false);
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_cueing")))));
-        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
-            ConfigValue(static_cast<int>(ControlObject::get(
-                ConfigKey(group, "vinylcontrol_mode")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("cueing_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_cueing")))));
+        m_pConfig->set(ConfigKey(VINYL_PREF_KEY, QStringLiteral("mode_ch%1").arg(i + 1)),
+                ConfigValue(static_cast<int>(ControlObject::get(
+                        ConfigKey(group, "vinylcontrol_mode")))));
     }
 }
 
