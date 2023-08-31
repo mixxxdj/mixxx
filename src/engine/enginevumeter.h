@@ -25,7 +25,7 @@ class EngineVuMeter : public EngineObject {
     CSAMPLE m_fRMSvolumeSumL;
     CSAMPLE m_fRMSvolumeR;
     CSAMPLE m_fRMSvolumeSumR;
-    int m_iSamplesCalculated;
+    unsigned int m_iSamplesCalculated;
 
     ControlPotmeter* m_ctrlPeakIndicator;
     ControlPotmeter* m_ctrlPeakIndicatorL;

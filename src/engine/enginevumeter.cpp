@@ -1,5 +1,6 @@
 #include "engine/enginevumeter.h"
 
+#include "audio/types.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "moc_enginevumeter.cpp"
@@ -8,7 +9,7 @@
 namespace {
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-constexpr int kVuUpdateRate = 30;  // in 1/s, fits to display frame rate
+constexpr unsigned int kVuUpdateRate = 30; // in Hz (1/s), fits to display frame rate
 constexpr int kPeakDuration = 500; // in ms
 
 // Smoothing Factors
@@ -53,14 +54,14 @@ EngineVuMeter::~EngineVuMeter()
 void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
-    int sampleRate = static_cast<int>(m_sampleRate.get());
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
 
     SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
             &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_iSamplesCalculated += iBufferSize / 2;
+    m_iSamplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
 
     // Are we ready to update the VU meter?:
     if (m_iSamplesCalculated > (sampleRate / kVuUpdateRate)) {
