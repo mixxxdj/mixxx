@@ -1332,6 +1332,10 @@ if(APPLE)
   # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
 
+  # Disable deprecation warnings for OpenGL on macOS as we won't switch to
+  # Apple's Metal API in the foreseeable future.
+  target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
+
   target_sources(mixxx-lib PRIVATE
     src/util/darkappearance.mm
   )
