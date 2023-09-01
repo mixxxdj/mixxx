@@ -25,21 +25,29 @@ VisualPlayPosition::~VisualPlayPosition() {
 }
 
 void VisualPlayPosition::set(
-        double playPos,
-        double rate,
+        double playPosition,
+        double playRate,
         double positionStep,
         double slipPosition,
         double slipRate,
+        SlipModeState m_slipModeState,
+        bool loopEnabled,
+        double loopStartPosition,
+        double loopEndPosition,
         double tempoTrackSeconds,
         double audioBufferMicroS) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
     data.m_callbackEntrytoDac = static_cast<int>(m_dCallbackEntryToDacSecs * 1000000); // s to µs
-    data.m_enginePlayPos = playPos;
-    data.m_rate = rate;
+    data.m_playPos = playPosition;
+    data.m_playRate = playRate;
     data.m_slipRate = slipRate;
     data.m_positionStep = positionStep;
-    data.m_slipPosition = slipPosition;
+    data.m_slipPos = slipPosition;
+    data.m_slipModeState = m_slipModeState;
+    data.m_loopEnabled = loopEnabled;
+    data.m_loopStartPos = loopStartPosition;
+    data.m_loopEndPos = loopEndPosition;
     data.m_tempoTrackSeconds = tempoTrackSeconds;
     data.m_audioBufferMicroS = audioBufferMicroS;
 
@@ -73,11 +81,36 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
     return 0.0;
 }
 
+double VisualPlayPosition::determinePlayPosInLoopBoundries(
+        const VisualPlayPositionData& data, const double& offset) {
+    double interpolatedPlayPos = data.m_playPos + offset * data.m_playRate;
+
+    if (data.m_loopEnabled) {
+        double loopSize = data.m_loopEndPos - data.m_loopStartPos;
+        if (loopSize > 0) {
+            if ((data.m_playRate < 0.0) && (interpolatedPlayPos < data.m_loopStartPos)) {
+                interpolatedPlayPos = data.m_loopEndPos -
+                        std::remainder(
+                                data.m_loopStartPos - interpolatedPlayPos,
+                                loopSize);
+            }
+            if ((data.m_playRate > 0.0) && (interpolatedPlayPos > data.m_loopEndPos)) {
+                interpolatedPlayPos = data.m_loopStartPos +
+                        std::remainder(
+                                interpolatedPlayPos - data.m_loopEndPos,
+                                loopSize);
+            }
+        }
+    }
+    return interpolatedPlayPos;
+}
+
 double VisualPlayPosition::getAtNextVSync(VSyncThread* pVSyncThread) {
     if (m_valid) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-        return data.m_enginePlayPos + offset * data.m_rate;
+
+        return determinePlayPosInLoopBoundries(data, offset);
     }
     return -1;
 }
@@ -88,15 +121,22 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* pVSyncThread,
     if (m_valid) {
         const VisualPlayPositionData data = m_data.getValue();
         const double offset = calcOffsetAtNextVSync(pVSyncThread, data);
-        *pPlayPosition = data.m_enginePlayPos + offset * data.m_rate;
-        *pSlipPosition = data.m_slipPosition + offset * data.m_slipRate;
+
+        double interpolatedPlayPos = determinePlayPosInLoopBoundries(data, offset);
+        *pPlayPosition = interpolatedPlayPos;
+
+        if (data.m_slipModeState == SlipModeState::Running) {
+            *pSlipPosition = data.m_slipPos + offset * data.m_slipRate;
+        } else {
+            *pSlipPosition = interpolatedPlayPos;
+        }
     }
 }
 
 double VisualPlayPosition::getEnginePlayPos() {
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        return data.m_enginePlayPos;
+        return data.m_playPos;
     } else {
         return -1;
     }
@@ -105,7 +145,7 @@ double VisualPlayPosition::getEnginePlayPos() {
 void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        *pPlayPosition = data.m_enginePlayPos;
+        *pPlayPosition = data.m_playPos;
         *pTempoTrackSeconds = data.m_tempoTrackSeconds;
     } else {
         *pPlayPosition = 0;
