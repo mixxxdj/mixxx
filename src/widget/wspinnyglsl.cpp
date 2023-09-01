@@ -45,6 +45,8 @@ void WSpinnyGLSL::draw() {
 }
 
 void WSpinnyGLSL::resizeGL(int w, int h) {
+    Q_UNUSED(w);
+    Q_UNUSED(h);
     // The images were resized in WSpinnyBase::resizeEvent.
     updateTextures();
 }

@@ -88,6 +88,7 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
+    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     // Clicking a chain item moves keyboard focus to the list view.

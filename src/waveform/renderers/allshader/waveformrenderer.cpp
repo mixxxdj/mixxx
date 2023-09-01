@@ -11,5 +11,7 @@ WaveformRenderer::WaveformRenderer(WaveformWidgetRenderer* widget)
 WaveformRenderer::~WaveformRenderer() = default;
 
 void WaveformRenderer::draw(QPainter* painter, QPaintEvent* event) {
+    Q_UNUSED(painter);
+    Q_UNUSED(event);
     DEBUG_ASSERT(false);
 }

@@ -17,6 +17,8 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
     ~WaveformRendererSignalBase() override = default;
 
     void draw(QPainter* painter, QPaintEvent* event) override {
+        Q_UNUSED(painter);
+        Q_UNUSED(event);
     }
 
     allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {

@@ -208,7 +208,7 @@ void HidIoThread::updateCachedOutputReportData(quint8 reportID,
     // If useNonSkippingFIFO is false, the report data are cached here
     // If useNonSkippingFIFO is true, this cache is cleared
     actualOutputReportIterator->second->updateCachedData(
-            data, m_deviceInfo, m_logOutput, &m_globalOutputReportFifo, useNonSkippingFIFO);
+            data, m_logOutput, useNonSkippingFIFO);
 
     // If useNonSkippingFIFO is true, put the new report dataset on the FIFO
     if (useNonSkippingFIFO) {
@@ -250,7 +250,7 @@ bool HidIoThread::sendNextCachedOutputReport() {
         // The standard says that "No iterators or references are invalidated." using this operator.
         // Therefore m_outputReportIterator doesn't require Mutex protection.
         if (m_outputReportIterator->second->sendCachedData(
-                    &m_hidDeviceAndPollMutex, m_pHidDevice, m_deviceInfo, m_logOutput)) {
+                    &m_hidDeviceAndPollMutex, m_pHidDevice, m_logOutput)) {
             // Return after each time consuming sendCachedData
             return true;
         }
