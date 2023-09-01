@@ -409,15 +409,9 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
-    unsigned int framesPerBuffer = 1;
-    // first, get to the framesPerBuffer value corresponding to latency index 1
-    for (; framesPerBuffer / m_sampleRate.toDouble() * 1000 < 1.0; framesPerBuffer *= 2) {
-    }
-    // then, keep going until we get to our desired latency index (if not 1)
-    for (unsigned int latencyIndex = 1; latencyIndex < audioBufferSizeIndex; ++latencyIndex) {
-        framesPerBuffer <<= 1; // *= 2
-    }
-    return framesPerBuffer;
+
+    const unsigned int sampleRateKhz = static_cast<unsigned int>(m_sampleRate / 1000);
+    return std::bit_ceil(sampleRateKhz) << (audioBufferSizeIndex - 1);
 }
 
 // Set the audio buffer size
