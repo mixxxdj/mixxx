@@ -61,14 +61,14 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_iSamplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
+    m_samplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate / kVuUpdateRate)) {
+    if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
         doSmooth(m_fRMSvolumeL,
-                std::log10(SHRT_MAX * m_fRMSvolumeSumL / (m_iSamplesCalculated * 1000) + 1));
+                std::log10(SHRT_MAX * m_fRMSvolumeSumL / (m_samplesCalculated * 1000) + 1));
         doSmooth(m_fRMSvolumeR,
-                std::log10(SHRT_MAX * m_fRMSvolumeSumR / (m_iSamplesCalculated * 1000) + 1));
+                std::log10(SHRT_MAX * m_fRMSvolumeSumR / (m_samplesCalculated * 1000) + 1));
 
         const double epsilon = .0001;
 
@@ -89,7 +89,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         }
 
         // Reset calculation:
-        m_iSamplesCalculated = 0;
+        m_samplesCalculated = 0;
         m_fRMSvolumeSumL = 0;
         m_fRMSvolumeSumR = 0;
     }
@@ -141,7 +141,7 @@ void EngineVuMeter::reset() {
     m_ctrlPeakIndicatorL->set(0);
     m_ctrlPeakIndicatorR->set(0);
 
-    m_iSamplesCalculated = 0;
+    m_samplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;
