@@ -543,7 +543,7 @@ void DlgPrefSound::updateAPIs() {
  * sample rate in the config.
  */
 void DlgPrefSound::sampleRateChanged(int index) {
-    m_config.setSampleRate(mixxx::audio::SampleRate(sampleRateComboBox->itemData(index).toUInt()));
+    m_config.setSampleRate(sampleRateComboBox->itemData(index).value<mixxx::audio::SampleRate>());
     m_bLatencyChanged = true;
     updateAudioBufferSizes(index);
     checkLatencyCompensation();
