@@ -1,4 +1,4 @@
-var NLMK1 = (function () {
+var NLMMK3 = (function () {
 	'use strict';
 
 	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
@@ -4879,6 +4879,7 @@ var NLMK1 = (function () {
 	const sendShortMsg = function (control, value) {
 	  midi.sendShortMsg(control.status, control.midino, value);
 	};
+	const sendSysexMsg = midi.sendSysexMsg;
 
 	class Timer extends Component {
 	  constructor(task) {
@@ -7110,329 +7111,329 @@ var NLMK1 = (function () {
 	  };
 	};
 
-	var device = "Launchpad";
+	var device = "Launchpad Mini MK3";
 	var manufacturer = "Novation";
-	var global$1 = "NLMK1";
+	var global$1 = "NLMMK3";
 	var controls = {
 		up: [
 			176,
-			104
+			91
 		],
 		down: [
 			176,
-			105
+			92
 		],
 		left: [
 			176,
-			106
+			93
 		],
 		right: [
 			176,
-			107
+			94
 		],
 		session: [
 			176,
-			108
+			95
 		],
 		user1: [
 			176,
-			109
+			96
 		],
 		user2: [
 			176,
-			110
+			97
 		],
 		mixer: [
 			176,
-			111
+			98
 		],
 		vol: [
-			144,
-			8
+			176,
+			89
 		],
 		pan: [
-			144,
-			24
+			176,
+			79
 		],
 		snda: [
-			144,
-			40
+			176,
+			69
 		],
 		sndb: [
-			144,
-			56
+			176,
+			59
 		],
 		stop: [
-			144,
-			72
+			176,
+			49
 		],
 		trkon: [
-			144,
-			88
+			176,
+			39
 		],
 		solo: [
-			144,
-			104
+			176,
+			29
 		],
 		arm: [
-			144,
-			120
+			176,
+			19
 		],
 		"0,0": [
 			144,
-			0
+			81
 		],
 		"0,1": [
 			144,
-			1
+			82
 		],
 		"0,2": [
 			144,
-			2
+			83
 		],
 		"0,3": [
 			144,
-			3
+			84
 		],
 		"0,4": [
 			144,
-			4
+			85
 		],
 		"0,5": [
 			144,
-			5
+			86
 		],
 		"0,6": [
 			144,
-			6
+			87
 		],
 		"0,7": [
 			144,
-			7
+			88
 		],
 		"1,0": [
 			144,
-			16
+			71
 		],
 		"1,1": [
 			144,
-			17
+			72
 		],
 		"1,2": [
 			144,
-			18
+			73
 		],
 		"1,3": [
 			144,
-			19
+			74
 		],
 		"1,4": [
 			144,
-			20
+			75
 		],
 		"1,5": [
 			144,
-			21
+			76
 		],
 		"1,6": [
 			144,
-			22
+			77
 		],
 		"1,7": [
 			144,
-			23
+			78
 		],
 		"2,0": [
 			144,
-			32
+			61
 		],
 		"2,1": [
 			144,
-			33
+			62
 		],
 		"2,2": [
 			144,
-			34
+			63
 		],
 		"2,3": [
 			144,
-			35
+			64
 		],
 		"2,4": [
 			144,
-			36
+			65
 		],
 		"2,5": [
 			144,
-			37
+			66
 		],
 		"2,6": [
 			144,
-			38
+			67
 		],
 		"2,7": [
 			144,
-			39
+			68
 		],
 		"3,0": [
 			144,
-			48
+			51
 		],
 		"3,1": [
 			144,
-			49
+			52
 		],
 		"3,2": [
 			144,
-			50
+			53
 		],
 		"3,3": [
 			144,
-			51
+			54
 		],
 		"3,4": [
 			144,
-			52
+			55
 		],
 		"3,5": [
 			144,
-			53
+			56
 		],
 		"3,6": [
 			144,
-			54
+			57
 		],
 		"3,7": [
 			144,
-			55
+			58
 		],
 		"4,0": [
 			144,
-			64
+			41
 		],
 		"4,1": [
 			144,
-			65
+			42
 		],
 		"4,2": [
 			144,
-			66
+			43
 		],
 		"4,3": [
 			144,
-			67
+			44
 		],
 		"4,4": [
 			144,
-			68
+			45
 		],
 		"4,5": [
 			144,
-			69
+			46
 		],
 		"4,6": [
 			144,
-			70
+			47
 		],
 		"4,7": [
 			144,
-			71
+			48
 		],
 		"5,0": [
 			144,
-			80
+			31
 		],
 		"5,1": [
 			144,
-			81
+			32
 		],
 		"5,2": [
 			144,
-			82
+			33
 		],
 		"5,3": [
 			144,
-			83
+			34
 		],
 		"5,4": [
 			144,
-			84
+			35
 		],
 		"5,5": [
 			144,
-			85
+			36
 		],
 		"5,6": [
 			144,
-			86
+			37
 		],
 		"5,7": [
 			144,
-			87
+			38
 		],
 		"6,0": [
 			144,
-			96
+			21
 		],
 		"6,1": [
 			144,
-			97
+			22
 		],
 		"6,2": [
 			144,
-			98
+			23
 		],
 		"6,3": [
 			144,
-			99
+			24
 		],
 		"6,4": [
 			144,
-			100
+			25
 		],
 		"6,5": [
 			144,
-			101
+			26
 		],
 		"6,6": [
 			144,
-			102
+			27
 		],
 		"6,7": [
 			144,
-			103
+			28
 		],
 		"7,0": [
 			144,
-			112
+			11
 		],
 		"7,1": [
 			144,
-			113
+			12
 		],
 		"7,2": [
 			144,
-			114
+			13
 		],
 		"7,3": [
 			144,
-			115
+			14
 		],
 		"7,4": [
 			144,
-			116
+			15
 		],
 		"7,5": [
 			144,
-			117
+			16
 		],
 		"7,6": [
 			144,
-			118
+			17
 		],
 		"7,7": [
 			144,
-			119
+			18
 		]
 	};
 	var def = {
@@ -7443,19 +7444,34 @@ var NLMK1 = (function () {
 	};
 
 	const colors = {
-	  black: 4,
-	  lo_red: 1 + 4,
-	  hi_red: 3 + 4,
-	  lo_green: 16 + 4,
-	  hi_green: 48 + 4,
-	  lo_amber: 17 + 4,
-	  hi_amber: 51 + 4,
-	  hi_orange: 35 + 4,
-	  lo_orange: 18 + 4,
-	  hi_yellow: 50 + 4,
-	  lo_yellow: 33 + 4
+	  black: 0,
+	  lo_red: 7,
+	  hi_red: 5,
+	  lo_green: 19,
+	  hi_green: 17,
+	  lo_amber: 43,
+	  hi_amber: 41,
+	  hi_orange: 84,
+	  lo_orange: 61,
+	  hi_yellow: 13,
+	  lo_yellow: 15
 	};
-	class LaunchpadMK1Device extends LaunchpadDevice {
+	var DeviceMode;
+	(function (DeviceMode) {
+	  DeviceMode[DeviceMode["Live"] = 0] = "Live";
+	  DeviceMode[DeviceMode["Programmer"] = 1] = "Programmer";
+	})(DeviceMode || (DeviceMode = {}));
+	var LightingType;
+	(function (LightingType) {
+	  LightingType[LightingType["Static"] = 0] = "Static";
+	  LightingType[LightingType["Flash"] = 1] = "Flash";
+	  LightingType[LightingType["Pulse"] = 2] = "Pulse";
+	  LightingType[LightingType["RGB"] = 3] = "RGB";
+	})(LightingType || (LightingType = {}));
+	const selectMode = function (mode) {
+	  sendSysexMsg([240, 0, 32, 41, 2, 13, 14, mode, 247]);
+	};
+	class LaunchpadMiniMK3Device extends LaunchpadDevice {
 	  constructor() {
 	    super();
 	    _defineProperty(this, "supportsRGBColors", void 0);
@@ -7465,13 +7481,19 @@ var NLMK1 = (function () {
 	      return [k, convertControlDef(k, v)];
 	    }));
 	    this.colors = colors;
-	    this.supportsRGBColors = false;
+	    this.supportsRGBColors = true;
 	  }
-	  sendRGBColor(_control, _value) {
-	    throw new Error('Device does not support RGB Colors.');
+	  onMount() {
+	    selectMode(DeviceMode.Programmer);
+	    super.onMount();
+	  }
+	  sendRGBColor(control, color) {
+	    sendSysexMsg([240, 0, 32, 41, 2, 13, 3, LightingType.RGB, control.midino, ...color.map(function (x) {
+	      return ~~(x / 2);
+	    }), 247]);
 	  }
 	}
-	var index = useDevice(new LaunchpadMK1Device());
+	var index = useDevice(new LaunchpadMiniMK3Device());
 
 	return index;
 
