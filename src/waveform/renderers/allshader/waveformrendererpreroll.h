@@ -17,7 +17,6 @@ class WaveformRendererPreroll;
 class allshader::WaveformRendererPreroll final : public allshader::WaveformRenderer {
   public:
     explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
-    ~WaveformRendererPreroll() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void paintGL() override;

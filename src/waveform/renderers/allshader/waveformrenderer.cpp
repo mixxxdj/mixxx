@@ -8,8 +8,6 @@ WaveformRenderer::WaveformRenderer(WaveformWidgetRenderer* widget)
         : ::WaveformRendererAbstract(widget) {
 }
 
-WaveformRenderer::~WaveformRenderer() = default;
-
 void WaveformRenderer::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(painter);
     Q_UNUSED(event);

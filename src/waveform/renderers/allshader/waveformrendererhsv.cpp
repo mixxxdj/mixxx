@@ -1,6 +1,7 @@
-#include "waveform/renderers/allshader/waveformrenderersimple.h"
+#include "waveform/renderers/allshader/waveformrendererhsv.h"
 
 #include "track/track.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/waveform.h"
@@ -11,21 +12,21 @@
 
 using namespace allshader;
 
-WaveformRendererSimple::WaveformRendererSimple(
+WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-void WaveformRendererSimple::onSetup(const QDomNode& node) {
+void WaveformRendererHSV::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void WaveformRendererSimple::initializeGL() {
+void WaveformRendererHSV::initializeGL() {
     WaveformRendererSignalBase::initializeGL();
     m_shader.init();
 }
 
-void WaveformRendererSimple::paintGL() {
+void WaveformRendererHSV::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
@@ -61,37 +62,38 @@ void WaveformRendererSimple::paintGL() {
     const double visualIncrementPerPixel =
             (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
 
-    // Per-band gain from the EQ knobs.
-    float allGain{1.0};
-    float bandGain[3] = {1.0, 1.0, 1.0};
-    getGains(&allGain, &bandGain[0], &bandGain[1], &bandGain[2]);
+    float allGain(1.0);
+    getGains(&allGain, nullptr, nullptr, nullptr);
+
+    // Get base color of waveform in the HSV format (s and v isn't use)
+    float h, s, v;
+    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / 255.f;
+    const float heightFactor = allGain * halfBreadth / 256.f;
 
     // Effective visual index of x
     double xVisualSampleIndex = firstVisualIndex;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    int reserved[2];
+    const int reserved = numVerticesPerLine * (length + 1);
 
-    reserved[0] = numVerticesPerLine * length;
-    m_vertices[0].clear();
-    m_vertices[0].reserve(reserved[0]);
+    m_vertices.clear();
+    m_vertices.reserve(reserved);
+    m_colors.clear();
+    m_colors.reserve(reserved);
 
-    // the horizontal line
-    reserved[1] = numVerticesPerLine;
-    m_vertices[1].clear();
-    m_vertices[1].reserve(reserved[1]);
-
-    m_vertices[1].addRectangle(
-            0.f,
+    m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
             halfBreadth + 0.5f * devicePixelRatio);
+    m_colors.addForRectangle(
+            static_cast<float>(m_axesColor_r),
+            static_cast<float>(m_axesColor_g),
+            static_cast<float>(m_axesColor_b));
 
     for (int pos = 0; pos < length; ++pos) {
         // Our current pixel (x) corresponds to a number of visual samples
@@ -121,59 +123,91 @@ void WaveformRendererSimple::paintGL() {
         visualIndexStart = std::max(visualIndexStart, 0);
         visualIndexStop = std::min(visualIndexStop, dataSize);
 
-        // 2 channels
-        float max[2]{};
+        const float fpos = static_cast<float>(pos);
 
-        for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            for (int chn = 0; chn < 2; chn++) {
-                const WaveformData& waveformData = data[i + chn];
+        // per channel
+        float maxLow[2]{};
+        float maxMid[2]{};
+        float maxHigh[2]{};
+        float maxAll[2]{};
+
+        for (int chn = 0; chn < 2; chn++) {
+            // data is interleaved left / right
+            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                const WaveformData& waveformData = data[i];
+
+                const float filteredLow = static_cast<float>(waveformData.filtered.low);
+                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
+                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
                 const float filteredAll = static_cast<float>(waveformData.filtered.all);
 
-                max[chn] = math_max(max[chn], filteredAll);
+                maxLow[chn] = math_max(maxLow[chn], filteredLow);
+                maxMid[chn] = math_max(maxMid[chn], filteredMid);
+                maxHigh[chn] = math_max(maxHigh[chn], filteredHigh);
+                maxAll[chn] = math_max(maxAll[chn], filteredAll);
             }
         }
 
-        const float fpos = static_cast<float>(pos);
+        float total{};
+        float lo{};
+        float hi{};
+
+        if (maxAll[0] != 0.f && maxAll[1] != 0.f) {
+            // Calculate sum, to normalize
+            // Also multiply on 1.2 to prevent very dark or light color
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
+
+            // prevent division by zero
+            if (total != 0.f) {
+                // Normalize low and high (mid not need, because it not change the color)
+                lo = (maxLow[0] + maxLow[1]) / total;
+                hi = (maxHigh[0] + maxHigh[1]) / total;
+            }
+        }
+
+        // Set color
+        QColor color;
+        color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
         // lines are thin rectangles
-        m_vertices[0].addRectangle(
-                fpos - 0.5f,
-                halfBreadth - heightFactor * max[0],
+        // maxAll[0] is for left channel, maxAll[1] is for right channel
+        m_vertices.addRectangle(fpos - 0.5f,
+                halfBreadth - heightFactor * maxAll[0],
                 fpos + 0.5f,
-                halfBreadth + heightFactor * max[1]);
+                halfBreadth + heightFactor * maxAll[1]);
+        m_colors.addForRectangle(
+                static_cast<float>(color.redF()),
+                static_cast<float>(color.greenF()),
+                static_cast<float>(color.blueF()));
 
         xVisualSampleIndex += visualIncrementPerPixel;
     }
 
+    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reserved == m_colors.size());
+
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
     const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int colorLocation = m_shader.uniformLocation("color");
     const int positionLocation = m_shader.attributeLocation("position");
+    const int colorLocation = m_shader.attributeLocation("color");
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);
+    m_shader.enableAttributeArray(colorLocation);
 
     m_shader.setUniformValue(matrixLocation, matrix);
 
-    QColor colors[2];
-    colors[0].setRgbF(static_cast<float>(m_signalColor_r),
-            static_cast<float>(m_signalColor_g),
-            static_cast<float>(m_signalColor_b));
-    colors[1].setRgbF(static_cast<float>(m_axesColor_r),
-            static_cast<float>(m_axesColor_g),
-            static_cast<float>(m_axesColor_b),
-            static_cast<float>(m_axesColor_a));
+    m_shader.setAttributeArray(
+            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
+    m_shader.setAttributeArray(
+            colorLocation, GL_FLOAT, m_colors.constData(), 3);
 
-    for (int i = 0; i < 2; i++) {
-        DEBUG_ASSERT(reserved[i] == m_vertices[i].size());
-        m_shader.setUniformValue(colorLocation, colors[i]);
-        m_shader.setAttributeArray(
-                positionLocation, GL_FLOAT, m_vertices[i].constData(), 2);
-
-        glDrawArrays(GL_TRIANGLES, 0, m_vertices[i].size());
-    }
+    glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
     m_shader.disableAttributeArray(positionLocation);
+    m_shader.disableAttributeArray(colorLocation);
     m_shader.release();
 }

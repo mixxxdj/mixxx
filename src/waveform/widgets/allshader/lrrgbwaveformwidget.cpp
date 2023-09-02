@@ -24,9 +24,6 @@ LRRGBWaveformWidget::LRRGBWaveformWidget(const QString& group, QWidget* parent)
     m_initSuccess = init();
 }
 
-LRRGBWaveformWidget::~LRRGBWaveformWidget() {
-}
-
 void LRRGBWaveformWidget::castToQWidget() {
     m_widget = this;
 }
