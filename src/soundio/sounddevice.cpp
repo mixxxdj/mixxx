@@ -9,13 +9,16 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
+constexpr mixxx::audio::SampleRate SoundDevice::kFallbackSampleRate =
+        mixxx::audio::SampleRate(44100);
+
 SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
-          m_dSampleRate(44100.0),
+          m_sampleRate(kFallbackSampleRate),
           m_hostAPI("Unknown API"),
           m_configFramesPerBuffer(0) {
 }
@@ -28,12 +31,8 @@ int SoundDevice::getNumOutputChannels() const {
     return m_iNumOutputChannels;
 }
 
-void SoundDevice::setSampleRate(double sampleRate) {
-    if (sampleRate <= 0.0) {
-        // this is the default value used elsewhere in this file
-        sampleRate = 44100.0;
-    }
-    m_dSampleRate = sampleRate;
+void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {
+    m_sampleRate = sampleRate.isValid() ? sampleRate : kFallbackSampleRate;
 }
 
 void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {

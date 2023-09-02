@@ -3,6 +3,7 @@
 #include <QList>
 #include <QString>
 
+#include "audio/types.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevicestatus.h"
 #include "soundio/soundmanagerutil.h"
@@ -31,7 +32,7 @@ class SoundDevice {
     inline const QString& getHostAPI() const {
         return m_hostAPI;
     }
-    void setSampleRate(double sampleRate);
+    void setSampleRate(mixxx::audio::SampleRate sampleRate);
     void setConfigFramesPerBuffer(unsigned int framesPerBuffer);
     virtual SoundDeviceStatus open(bool isClkRefDevice, int syncBuffers) = 0;
     virtual bool isOpen() const = 0;
@@ -39,7 +40,7 @@ class SoundDevice {
     virtual void readProcess(SINT framesPerBuffer) = 0;
     virtual void writeProcess(SINT framesPerBuffer) = 0;
     virtual QString getError() const = 0;
-    virtual unsigned int getDefaultSampleRate() const = 0;
+    virtual mixxx::audio::SampleRate getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
     int getNumInputChannels() const;
     SoundDeviceStatus addOutput(const AudioOutputBuffer& out);
@@ -57,6 +58,8 @@ class SoundDevice {
     bool operator==(const QString &other) const;
 
   protected:
+    static const mixxx::audio::SampleRate kFallbackSampleRate;
+
     void composeOutputBuffer(CSAMPLE* outputBuffer,
                              const SINT iFramesPerBuffer,
                              const SINT readOffset,
@@ -81,7 +84,7 @@ class SoundDevice {
     // The number of input channels that the soundcard has
     int m_iNumInputChannels;
     // The current samplerate for the sound device.
-    double m_dSampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     // The name of the audio API used by this device.
     QString m_hostAPI;
     // The **configured** number of frames per buffer. We'll tell PortAudio we

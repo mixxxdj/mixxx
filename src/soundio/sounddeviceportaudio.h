@@ -46,9 +46,10 @@ class SoundDevicePortAudio : public SoundDevice {
                         const PaStreamCallbackTimeInfo *timeInfo,
                         PaStreamCallbackFlags statusFlags);
 
-    unsigned int getDefaultSampleRate() const override {
-        return m_deviceInfo ? static_cast<unsigned int>(
-            m_deviceInfo->defaultSampleRate) : 44100;
+    mixxx::audio::SampleRate getDefaultSampleRate() const override {
+        return m_deviceInfo ? mixxx::audio::SampleRate::fromDouble(
+                                      m_deviceInfo->defaultSampleRate)
+                            : SoundDevice::kFallbackSampleRate;
     }
 
   private:
