@@ -1,3 +1,14 @@
+/* eslint-disable */
+/*
+ * Novation-Launchpad-scripts.js
+ *
+ * This file is generated. Do not edit directly.
+ * Instead, edit the source file and regenerate it.
+ * See https://github.com/dszakallas/mixxx-launchpad#building-from-source.
+ *
+ * Commit tag: v3.1.1-4-g4acd883-dirty
+ * Commit hash: 4acd8832e0e93fef400055f7938c9f919036b7d6
+ */
 var NLMK1 = (function () {
 	'use strict';
 
