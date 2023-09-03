@@ -202,19 +202,25 @@
                   separately in each deck -->
                 <Template src="skin:../Deere/parallel_waveforms.xml"/>
 
-                <WidgetGroup><!-- Main section -->
+                <WidgetGroup>
                   <Layout>vertical</Layout>
-                  <SizePolicy>min,max</SizePolicy>
+                  <SizePolicy>me,me</SizePolicy>
                   <Children>
-                    <Template src="skin:../Deere/main_decks.xml"/>
-                    <Template src="skin:../Deere/effect_rack.xml"/>
-                    <Template src="skin:sample_decks.xml"/>
-                    <Template src="skin:../Deere/microphone_rack.xml"/>
+                    <WidgetGroup><!-- Main section -->
+                      <Layout>vertical</Layout>
+                      <SizePolicy>min,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:../Deere/main_decks.xml"/>
+                        <Template src="skin:../Deere/effect_rack.xml"/>
+                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skin:../Deere/microphone_rack.xml"/>
+                      </Children>
+                    </WidgetGroup><!-- /Main section -->
                     <SingletonContainer>
                       <ObjectName>Library</ObjectName>
                     </SingletonContainer>
                   </Children>
-                </WidgetGroup><!-- /Main section -->
+                </WidgetGroup>
 
               </Children>
             </Splitter><!-- regular library with decks etc. -->
