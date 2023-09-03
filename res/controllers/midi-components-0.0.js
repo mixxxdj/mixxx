@@ -789,6 +789,10 @@
         input: function(_channel, control, _value, status, _group) {
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
+        },
+        connect: function() {
+            Component.prototype.connect.call(this);
+            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
         }
     });
 
