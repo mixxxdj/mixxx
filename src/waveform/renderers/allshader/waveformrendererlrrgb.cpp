@@ -22,9 +22,6 @@ WaveformRendererLRRGB::WaveformRendererLRRGB(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-WaveformRendererLRRGB::~WaveformRendererLRRGB() {
-}
-
 void WaveformRendererLRRGB::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }

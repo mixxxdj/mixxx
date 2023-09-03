@@ -7,12 +7,12 @@
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
-class WaveformRendererRGB;
+class WaveformRendererHSV;
 }
 
-class allshader::WaveformRendererRGB final : public allshader::WaveformRendererSignalBase {
+class allshader::WaveformRendererHSV final : public allshader::WaveformRendererSignalBase {
   public:
-    explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRendererHSV(WaveformWidgetRenderer* waveformWidget);
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;
@@ -25,5 +25,5 @@ class allshader::WaveformRendererRGB final : public allshader::WaveformRendererS
     VertexData m_vertices;
     RGBData m_colors;
 
-    DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
+    DISALLOW_COPY_AND_ASSIGN(WaveformRendererHSV);
 };

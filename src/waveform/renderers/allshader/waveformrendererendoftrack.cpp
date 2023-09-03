@@ -29,9 +29,6 @@ WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
           m_pTimeRemainingControl(nullptr) {
 }
 
-WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
-}
-
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
