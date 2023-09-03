@@ -270,7 +270,7 @@ PioneerDDJFLX4.init = function() {
 //
 
 PioneerDDJFLX4.vuMeterUpdate = function(value, group) {
-    var newVal = value * 127;
+    const newVal = value * 127;
 
     switch (group) {
     case "[Channel1]":
@@ -288,14 +288,14 @@ PioneerDDJFLX4.vuMeterUpdate = function(value, group) {
 //
 
 PioneerDDJFLX4.toggleFxLight = function(_value, _group, _control) {
-    var enabled = engine.getValue(PioneerDDJFLX4.focusedFxGroup(), "enabled");
+    const enabled = engine.getValue(PioneerDDJFLX4.focusedFxGroup(), "enabled");
 
     PioneerDDJFLX4.toggleLight(PioneerDDJFLX4.lights.beatFx, enabled);
     PioneerDDJFLX4.toggleLight(PioneerDDJFLX4.lights.shiftBeatFx, enabled);
 };
 
 PioneerDDJFLX4.focusedFxGroup = function() {
-    var focusedFx = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
+    const focusedFx = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
     return "[EffectRack1_EffectUnit1_Effect" + focusedFx + "]";
 };
 
@@ -310,13 +310,13 @@ PioneerDDJFLX4.beatFxLevelDepthRotate = function(_channel, _control, value) {
 };
 
 PioneerDDJFLX4.changeFocusedEffectBy = function(numberOfSteps) {
-    var focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
+    let focusedEffect = engine.getValue("[EffectRack1_EffectUnit1]", "focused_effect");
 
     // Convert to zero-based index
     focusedEffect -= 1;
 
     // Standard Euclidean modulo by use of two plain modulos
-    var numberOfEffectsPerEffectUnit = 3;
+    const numberOfEffectsPerEffectUnit = 3;
     focusedEffect = (((focusedEffect + numberOfSteps) % numberOfEffectsPerEffectUnit) + numberOfEffectsPerEffectUnit) % numberOfEffectsPerEffectUnit;
 
     // Convert back to one-based index
@@ -352,7 +352,7 @@ PioneerDDJFLX4.beatFxRightPressed = function(_channel, _control, value) {
 PioneerDDJFLX4.beatFxOnOffPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    var toggleEnabled = !engine.getValue(PioneerDDJFLX4.focusedFxGroup(), "enabled");
+    const toggleEnabled = !engine.getValue(PioneerDDJFLX4.focusedFxGroup(), "enabled");
     engine.setValue(PioneerDDJFLX4.focusedFxGroup(), "enabled", toggleEnabled);
 };
 
@@ -362,7 +362,7 @@ PioneerDDJFLX4.beatFxOnOffShiftPressed = function(_channel, _control, value) {
     engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 0);
     engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
 
-    for (var i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 3; i++) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
     PioneerDDJFLX4.toggleLight(PioneerDDJFLX4.lights.beatFx, false);
@@ -370,7 +370,7 @@ PioneerDDJFLX4.beatFxOnOffShiftPressed = function(_channel, _control, value) {
 };
 
 PioneerDDJFLX4.beatFxChannel1 = function(_channel, control, value, _status, group) {
-    var enableChannel = 0;
+    let enableChannel = 0;
 
     if (value === 0x7f) { enableChannel = 1; }
 
@@ -378,7 +378,7 @@ PioneerDDJFLX4.beatFxChannel1 = function(_channel, control, value, _status, grou
 };
 
 PioneerDDJFLX4.beatFxChannel2 = function(_channel, control, value, _status, group) {
-    var enableChannel = 0;
+    let enableChannel = 0;
 
     if (value === 0x7f) { enableChannel = 1; }
 
@@ -419,7 +419,7 @@ PioneerDDJFLX4.setLoopButtonLights = function(status, value) {
 };
 
 PioneerDDJFLX4.startLoopLightsBlink = function(channel, control, status, group) {
-    var blink = 0x7F;
+    let blink = 0x7F;
 
     PioneerDDJFLX4.stopLoopLightsBlink(group, control, status);
 
@@ -458,7 +458,7 @@ PioneerDDJFLX4.stopLoopLightsBlink = function(group, control, status) {
 };
 
 PioneerDDJFLX4.loopToggle = function(value, group, control) {
-    var status = group === "[Channel1]" ? 0x90 : 0x91,
+    const status = group === "[Channel1]" ? 0x90 : 0x91,
         channel = group === "[Channel1]" ? 0 : 1;
 
     PioneerDDJFLX4.setReloopLight(status, value ? 0x7F : 0x00);
@@ -512,10 +512,10 @@ PioneerDDJFLX4.syncLongPressed = function(channel, control, value, status, group
 PioneerDDJFLX4.cycleTempoRange = function(_channel, _control, value, _status, group) {
     if (value === 0) { return; } // ignore release
 
-    var currRange = engine.getValue(group, "rateRange");
-    var idx = 0;
+    const currRange = engine.getValue(group, "rateRange");
+    let idx = 0;
 
-    for (var i = 0; i < this.tempoRanges.length; i++) {
+    for (let i = 0; i < this.tempoRanges.length; i++) {
         if (currRange === this.tempoRanges[i]) {
             // idx get the index of the value in tempoRanges following the currently configured one
             // or cycle back to 0 if the current is the last value of the list.
@@ -531,12 +531,12 @@ PioneerDDJFLX4.cycleTempoRange = function(_channel, _control, value, _status, gr
 //
 
 PioneerDDJFLX4.jogTurn = function(channel, _control, value, _status, group) {
-    var deckNum = channel + 1;
+    const deckNum = channel + 1;
     // wheel center at 64; <64 rew >64 fwd
-    var newVal = value - 64;
+    let newVal = value - 64;
 
     // loop_in / out adjust
-    var loopEnabled = engine.getValue(group, "loop_enabled");
+    const loopEnabled = engine.getValue(group, "loop_enabled");
     if (loopEnabled > 0) {
         if (PioneerDDJFLX4.loopAdjustIn[channel]) {
             newVal = newVal * PioneerDDJFLX4.loopAdjustMultiply + engine.getValue(group, "loop_start_position");
@@ -559,12 +559,12 @@ PioneerDDJFLX4.jogTurn = function(channel, _control, value, _status, group) {
 
 
 PioneerDDJFLX4.jogSearch = function(_channel, _control, value, _status, group) {
-    var newVal = (value - 64) * PioneerDDJFLX4.fastSeekScale;
+    const newVal = (value - 64) * PioneerDDJFLX4.fastSeekScale;
     engine.setValue(group, "jog", newVal);
 };
 
 PioneerDDJFLX4.jogTouch = function(channel, _control, value) {
-    var deckNum = channel + 1;
+    const deckNum = channel + 1;
 
     // skip while adjusting the loop points
     if (PioneerDDJFLX4.loopAdjustIn[channel] || PioneerDDJFLX4.loopAdjustOut[channel]) {
@@ -600,7 +600,7 @@ PioneerDDJFLX4.tempoSliderMSB = function(channel, control, value, status, group)
 };
 
 PioneerDDJFLX4.tempoSliderLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJFLX4.highResMSB[group].tempoSlider << 7) + value;
+    const fullValue = (PioneerDDJFLX4.highResMSB[group].tempoSlider << 7) + value;
 
     engine.setValue(
         group,
@@ -651,9 +651,9 @@ PioneerDDJFLX4.decreaseBeatjumpSizes = function(_channel, control, value, _statu
 
 PioneerDDJFLX4.samplerPlayOutputCallbackFunction = function(value, group, _control) {
     if (value === 1) {
-        var curPad = group.match(script.samplerRegEx)[1];
-        var deckIndex = 0;
-        var padIndex = 0;
+        const curPad = group.match(script.samplerRegEx)[1];
+        let deckIndex = 0;
+        let padIndex = 0;
 
         if (curPad >=1 && curPad <= 4) {
             deckIndex = 0;
@@ -677,7 +677,7 @@ PioneerDDJFLX4.samplerPlayOutputCallbackFunction = function(value, group, _contr
 };
 
 PioneerDDJFLX4.padModeKeyPressed = function(_channel, _control, value, _status, _group) {
-    var deck = (_status === 0x90 ? PioneerDDJFLX4.lights.deck1 : PioneerDDJFLX4.lights.deck2);
+    const deck = (_status === 0x90 ? PioneerDDJFLX4.lights.deck1 : PioneerDDJFLX4.lights.deck2);
 
     if (_control === 0x1B) {
         PioneerDDJFLX4.toggleLight(deck.hotcueMode, true);
@@ -715,7 +715,7 @@ PioneerDDJFLX4.samplerPadShiftPressed = function(_channel, _control, value, _sta
 };
 
 PioneerDDJFLX4.startSamplerBlink = function(channel, control, group) {
-    var val = 0x7f;
+    let val = 0x7f;
 
     PioneerDDJFLX4.stopSamplerBlink(channel, control);
     PioneerDDJFLX4.timers[channel][control] = engine.beginTimer(250, function() {
@@ -726,7 +726,7 @@ PioneerDDJFLX4.startSamplerBlink = function(channel, control, group) {
         // also blink the pad while SHIFT is pressed
         midi.sendShortMsg((channel+1), control, val);
 
-        var isPlaying = engine.getValue(group, "play") === 1;
+        const isPlaying = engine.getValue(group, "play") === 1;
 
         if (!isPlaying) {
             // kill timer
