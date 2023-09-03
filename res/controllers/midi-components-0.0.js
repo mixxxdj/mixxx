@@ -790,6 +790,9 @@
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
         },
+        // this is needed for features such as "deck switching" that work
+        // by changing the component group. It is assumed they call `connect`
+        // afterwards.
         connect: function() {
             Component.prototype.connect.call(this);
             this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
