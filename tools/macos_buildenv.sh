@@ -30,7 +30,7 @@ else
         BUILDENV_SHA256="bf9d4d34e08bc9412b99c333bdc20131603ab05a50f637ac8d3eaa7a4395d451"
     else
         BUILDENV_BRANCH="2.5"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1015-dea32d0"
+        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1015-705eb0d"
         BUILDENV_SHA256="94ec9f688ea2d80ae1722bc8a94457a33e6e7efea8afdef3a11589113974a5a0"
     fi
 fi
