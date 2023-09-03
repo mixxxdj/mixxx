@@ -791,18 +791,18 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
 #elif defined(__WINDOWS__)
                     1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
 #else
-                                    0},    // CoreAudio Version 11.7.8 (Build 20G1351)
+                                    0}, // CoreAudio Version 11.7.8 (Build 20G1351)
 #endif
 
             {QStringLiteral("cover-test-vbr.mp3"),
-#if defined(__LINUX__)
+#if defined(__LINUX__) || defined(__WINDOWS__)
                     3376}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
-#elif defined(__WINDOWS__)
-                    3326}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
-                           // No offset compared to FPM_64BIT builds but rounding differences
 #else
-                                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
+                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
 #endif
+            // 3326 MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+            // No offset compared to FPM_64BIT builds but rounding differences
+            // https://github.com/mixxxdj/mixxx/issues/11888
             // 1166 FFmpeg
 
             {QStringLiteral("cover-test.ogg"), 1166},
