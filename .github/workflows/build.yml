@@ -163,7 +163,7 @@ jobs:
         run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
 
       - name: "Check out repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -479,7 +479,7 @@ jobs:
     needs: build
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
