@@ -285,6 +285,7 @@ void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrac
 
 void WSpinnyBase::slotTrackCoverArtUpdated() {
     if (m_pLoadedTrack) {
+        qDebug() << "WSpinnyBase: requestTrackCover" << m_pLoadedTrack->getLocation();
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     }
 }

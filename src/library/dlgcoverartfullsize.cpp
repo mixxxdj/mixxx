@@ -151,6 +151,7 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
 
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
     if (m_pLoadedTrack) {
+        qDebug() << "DlgCoverArtFullSize: requestTrackCover" << m_pLoadedTrack->getLocation();
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     } else {
         coverArt->setPixmap(QPixmap());

@@ -144,6 +144,7 @@ void WCoverArt::slotReset() {
 
 void WCoverArt::slotTrackCoverArtUpdated() {
     if (m_loadedTrack) {
+        qDebug() << "WCoverArt: requestTrackCover" << m_loadedTrack->getLocation();
         CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
 }

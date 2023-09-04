@@ -407,6 +407,7 @@ void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {
 void DlgTagFetcher::loadCurrentTrackCover() {
     m_pWCurrentCoverArtLabel->loadTrack(m_pTrack);
     CoverArtCache* pCache = CoverArtCache::instance();
+    qDebug() << "DlgTagFetcher: requestTrackCover" << m_pTrack->getLocation();
     pCache->requestTrackCover(this, m_pTrack);
 }
 
