@@ -56,6 +56,7 @@ public:
     /// methods including getStringFromType, isIndexed, getTypeFromInt,
     /// channelsNeededForType (if necessary), the subclasses' getSupportedTypes
     /// (if necessary), etc.
+    /// Note: the enum order defines the order of items in DlgPrefSound
     enum AudioPathType {
         MASTER,
         HEADPHONES,
