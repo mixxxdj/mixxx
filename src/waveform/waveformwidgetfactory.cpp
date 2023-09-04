@@ -1249,3 +1249,27 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     }
     return index;
 }
+
+template<typename WaveformT>
+QString WaveformWidgetFactory::buildWidgetDisplayName() const {
+    const bool isLegacy = WaveformT::category() == WaveformWidgetCategory::Legacy;
+    QStringList extras;
+    if (isLegacy) {
+        extras.push_back(tr("legacy"));
+    }
+    if (isOpenGlAvailable() || isOpenGlesAvailable()) {
+        if (WaveformT::useOpenGLShaders()) {
+            extras.push_back(QStringLiteral("GLSL"));
+        } else if (WaveformT::useOpenGl()) {
+            extras.push_back(QStringLiteral("GL"));
+        }
+        if (WaveformT::useOpenGles()) {
+            extras.push_back(QStringLiteral("ES"));
+        }
+    }
+    QString name = WaveformT::getWaveformWidgetName();
+    if (extras.isEmpty()) {
+        return name;
+    }
+    return QStringLiteral("%1 (%2)").arg(name, extras.join(QStringLiteral(", ")));
+}

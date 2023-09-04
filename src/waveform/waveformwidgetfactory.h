@@ -160,6 +160,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private:
     void evaluateWidgets();
+    template<typename WaveformT>
+    QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
