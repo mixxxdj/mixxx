@@ -123,7 +123,7 @@ jobs:
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
-            ctest_args: --exclude-regex '^(AutoDJProcessorTest.*|CoverArtCacheTest\.loadCoverFromFile.*|CoverArtUtilTest\.extractEmbeddedCover|CoverArtUtilTest\.searchImage|TrackUpdateTest\.parseModified.*)$'
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
