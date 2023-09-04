@@ -312,12 +312,51 @@ QUrl DlgPrefSound::helpUrl() const {
  * if necessary.
  */
 void DlgPrefSound::initializePaths() {
-    foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
-        if (!out.isHidden()) {
-            addPath(out);
+    // Pre-sort paths so they're added in the order they'll appear later on
+    // so Tab key order matches order in layout:
+    // * by AudioPathType
+    // * identical types by index
+    QList<AudioOutput> outputsSorted;
+    for (const auto& outNew : m_pSoundManager->registeredOutputs()) {
+        if (outNew.isHidden()) { // Don't add Record/Broadcast and possibly others
+            continue;
         }
+        int pos;
+        for (pos = 0; pos < outputsSorted.count(); ++pos) {
+            const auto& outOld = outputsSorted.at(pos);
+            if (outNew.getType() < outOld.getType()) {
+                break;
+            } else if (outOld.getType() == outNew.getType() &&
+                    outOld.isIndexed(outOld.getType()) &&
+                    outNew.isIndexed(outNew.getType()) &&
+                    outNew.getIndex() < outOld.getIndex()) {
+                break;
+            }
+        }
+        outputsSorted.insert(pos, outNew);
     }
-    foreach (AudioInput in, m_pSoundManager->registeredInputs()) {
+    for (const auto& out : qAsConst(outputsSorted)) {
+        addPath(out);
+    }
+
+    // Inputs
+    QList<AudioInput> inputsSorted;
+    for (const auto& inNew : m_pSoundManager->registeredInputs()) {
+        int pos;
+        for (pos = 0; pos < inputsSorted.count(); ++pos) {
+            const auto& inOld = inputsSorted.at(pos);
+            if (inNew.getType() < inOld.getType()) {
+                break;
+            } else if (inOld.getType() == inNew.getType() &&
+                    inOld.isIndexed(inOld.getType()) &&
+                    inNew.isIndexed(inNew.getType()) &&
+                    inNew.getIndex() < inOld.getIndex()) {
+                break;
+            }
+        }
+        inputsSorted.insert(pos, inNew);
+    }
+    for (const auto& in : qAsConst(inputsSorted)) {
         addPath(in);
     }
 }

@@ -137,7 +137,8 @@ class AudioOutput : public AudioPath {
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-    bool isHidden();
+    bool isHidden() const;
+
   protected:
     void setType(AudioPathType type) override;
 };

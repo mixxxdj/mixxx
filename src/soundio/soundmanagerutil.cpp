@@ -312,7 +312,7 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     return types;
 }
 
-bool AudioOutput::isHidden() {
+bool AudioOutput::isHidden() const {
     return m_type == RECORD_BROADCAST;
 }
 
