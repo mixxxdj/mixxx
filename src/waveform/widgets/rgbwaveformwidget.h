@@ -16,7 +16,7 @@ class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline WaveformWidgetCategory category() {
-        return WaveformWidgetCategory::Legacy;
+        return WaveformWidgetCategory::Software;
     }
 
   protected:
