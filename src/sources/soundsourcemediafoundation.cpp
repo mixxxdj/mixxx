@@ -76,6 +76,7 @@ QString SoundSourceProviderMediaFoundation::getVersionString() const {
     DWORD pathLength = GetModuleFileName(mfModule, dllPath, MAX_PATH);
     DWORD versionInfoSize = GetFileVersionInfoSize(dllPath, nullptr);
     VERIFY_OR_DEBUG_ASSERT(versionInfoSize > 0) {
+        qWarning() << "failed to read" << dllPath << "error:" << GetLastError();
         return QString();
     }
     QVarLengthArray<BYTE> info(static_cast<int>(versionInfoSize));
