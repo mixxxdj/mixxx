@@ -992,7 +992,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
                 active = false;
             }
         } else {
-            // No sufficient GL supptor
+            // No sufficient GL support
             if (useOpenGles || useOpenGl || useOpenGLShaders) {
                 active = false;
             }
@@ -1007,7 +1007,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // add new handle for each available widget type
             WaveformWidgetAbstractHandle handle;
             handle.m_displayString = widgetName;
-            handle.m_type = (WaveformWidgetType::Type)type;
+            handle.m_type = static_cast<WaveformWidgetType::Type>(type);
 
             m_waveformWidgetHandles.push_back(handle);
         }
