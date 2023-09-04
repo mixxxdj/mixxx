@@ -844,7 +844,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         // this lambda needs its type specified explicitly,
         // requiring it to be called with via `.operator()<WaveformT>()`
         auto setWaveformVarsByType = [&]<typename WaveformT>() {
-            widgetName = WaveformT::getWaveformWidgetName();
+            widgetName = buildWidgetDisplayName<WaveformT>();
             useOpenGl = WaveformT::useOpenGl();
             useOpenGles = WaveformT::useOpenGles();
             useOpenGLShaders = WaveformT::useOpenGLShaders();
@@ -978,34 +978,18 @@ void WaveformWidgetFactory::evaluateWidgets() {
             continue;
         }
 
-        if (category == WaveformWidgetCategory::Legacy) {
-            widgetName += QStringLiteral(" (%1)").arg(QObject::tr("legacy"));
-        }
-
         bool active = true;
         if (isOpenGlAvailable()) {
             if (useOpenGles && !useOpenGl) {
                 active = false;
             } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
                 active = false;
-            } else {
-                if (useOpenGLShaders) {
-                    widgetName += " " + tr("(GLSL)");
-                } else if (useOpenGl) {
-                    widgetName += " " + tr("(GL)");
-                }
             }
         } else if (isOpenGlesAvailable()) {
             if (useOpenGl && !useOpenGles) {
                 active = false;
             } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
                 active = false;
-            } else {
-                if (useOpenGLShaders) {
-                    widgetName += " " + tr("(GLSL ES)");
-                } else if (useOpenGles) {
-                    widgetName += " " + tr("(GL ES)");
-                }
             }
         } else {
             // No sufficient GL supptor
