@@ -841,13 +841,19 @@ void WaveformWidgetFactory::evaluateWidgets() {
         bool useOpenGLShaders;
         WaveformWidgetCategory category;
 
+        // this lambda needs its type specified explicitly,
+        // requiring it to be called with via `.operator()<WaveformT>()`
+        auto setWaveformVarsByType = [&]<typename WaveformT>() {
+            widgetName = buildWidgetDisplayName<WaveformT>();
+            useOpenGl = WaveformT::useOpenGl();
+            useOpenGles = WaveformT::useOpenGles();
+            useOpenGLShaders = WaveformT::useOpenGLShaders();
+            category = WaveformT::category();
+        };
+
         switch(type) {
         case WaveformWidgetType::EmptyWaveform:
-            widgetName = EmptyWaveformWidget::getWaveformWidgetName();
-            useOpenGl = EmptyWaveformWidget::useOpenGl();
-            useOpenGles = EmptyWaveformWidget::useOpenGles();
-            useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
-            category = EmptyWaveformWidget::category();
+            setWaveformVarsByType.operator()<EmptyWaveformWidget>();
             break;
         case WaveformWidgetType::SoftwareSimpleWaveform:
             continue; // //TODO(vrince):
@@ -859,201 +865,117 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // https://bugs.launchpad.net/bugs/1928772
             continue;
 #else
-            widgetName = SoftwareWaveformWidget::getWaveformWidgetName();
-            useOpenGl = SoftwareWaveformWidget::useOpenGl();
-            useOpenGles = SoftwareWaveformWidget::useOpenGles();
-            useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
-            category = SoftwareWaveformWidget::category();
+            setWaveformVarsByType.operator()<SoftwareWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::HSVWaveform:
 #ifdef __APPLE__
             continue;
 #else
-            widgetName = HSVWaveformWidget::getWaveformWidgetName();
-            useOpenGl = HSVWaveformWidget::useOpenGl();
-            useOpenGles = HSVWaveformWidget::useOpenGles();
-            useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
-            category = HSVWaveformWidget::category();
+            setWaveformVarsByType.operator()<HSVWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::RGBWaveform:
 #ifdef __APPLE__
             continue;
 #else
-            widgetName = RGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = RGBWaveformWidget::useOpenGl();
-            useOpenGles = RGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
-            category = RGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<RGBWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::QtSimpleWaveform:
 #ifdef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtSimpleWaveformWidget::useOpenGl();
-            useOpenGles = QtSimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
-            category = QtSimpleWaveformWidget::category();
+            setWaveformVarsByType.operator()<QtSimpleWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::QtWaveform:
 #ifdef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = QtWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtWaveformWidget::useOpenGl();
-            useOpenGles = QtWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
-            category = QtWaveformWidget::category();
+            setWaveformVarsByType.operator()<QtWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::GLSimpleWaveform:
-            widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSimpleWaveformWidget::useOpenGl();
-            useOpenGles = GLSimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
-            category = GLSimpleWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLSimpleWaveformWidget>();
             break;
         case WaveformWidgetType::GLFilteredWaveform:
-            widgetName = GLWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLWaveformWidget::useOpenGl();
-            useOpenGles = GLWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
-            category = GLWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLWaveformWidget>();
             break;
         case WaveformWidgetType::GLSLFilteredWaveform:
-            widgetName = GLSLFilteredWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSLFilteredWaveformWidget::useOpenGl();
-            useOpenGles = GLSLFilteredWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLSLFilteredWaveformWidget::useOpenGLShaders();
-            category = GLSLFilteredWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLSLFilteredWaveformWidget>();
             break;
         case WaveformWidgetType::GLSLRGBWaveform:
-            widgetName = GLSLRGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSLRGBWaveformWidget::useOpenGl();
-            useOpenGles = GLSLRGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
-            category = GLSLRGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLSLRGBWaveformWidget>();
             break;
         case WaveformWidgetType::GLSLRGBStackedWaveform:
-            widgetName = GLSLRGBStackedWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSLRGBStackedWaveformWidget::useOpenGl();
-            useOpenGles = GLSLRGBStackedWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLSLRGBStackedWaveformWidget::useOpenGLShaders();
-            category = GLSLRGBStackedWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
             break;
         case WaveformWidgetType::GLVSyncTest:
-            widgetName = GLVSyncTestWidget::getWaveformWidgetName();
-            useOpenGl = GLVSyncTestWidget::useOpenGl();
-            useOpenGles =  GLVSyncTestWidget::useOpenGles();
-            useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
-            category = GLVSyncTestWidget::category();
+            setWaveformVarsByType.operator()<GLVSyncTestWidget>();
             break;
         case WaveformWidgetType::GLRGBWaveform:
-            widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLRGBWaveformWidget::useOpenGl();
-            useOpenGles =  GLRGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
-            category = GLRGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<GLRGBWaveformWidget>();
             break;
         case WaveformWidgetType::QtVSyncTest:
 #ifdef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = QtVSyncTestWidget::getWaveformWidgetName();
-            useOpenGl = QtVSyncTestWidget::useOpenGl();
-            useOpenGles =  QtVSyncTestWidget::useOpenGles();
-            useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
-            category = QtVSyncTestWidget::category();
+            setWaveformVarsByType.operator()<QtVSyncTestWidget>();
 #endif
             break;
         case WaveformWidgetType::QtHSVWaveform:
 #ifdef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtHSVWaveformWidget::useOpenGl();
-            useOpenGles = QtHSVWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
-            category = QtHSVWaveformWidget::category();
+            setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::QtRGBWaveform:
 #ifdef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtRGBWaveformWidget::useOpenGl();
-            useOpenGles = QtRGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
-            category = QtRGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<QtRGBWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::AllShaderRGBWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = allshader::RGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = allshader::RGBWaveformWidget::useOpenGl();
-            useOpenGles = allshader::RGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = allshader::RGBWaveformWidget::useOpenGLShaders();
-            category = allshader::RGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<allshader::RGBWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::AllShaderLRRGBWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = allshader::LRRGBWaveformWidget::getWaveformWidgetName();
-            useOpenGl = allshader::LRRGBWaveformWidget::useOpenGl();
-            useOpenGles = allshader::LRRGBWaveformWidget::useOpenGles();
-            useOpenGLShaders = allshader::LRRGBWaveformWidget::useOpenGLShaders();
-            category = allshader::LRRGBWaveformWidget::category();
+            setWaveformVarsByType.operator()<allshader::LRRGBWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::AllShaderFilteredWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = allshader::FilteredWaveformWidget::getWaveformWidgetName();
-            useOpenGl = allshader::FilteredWaveformWidget::useOpenGl();
-            useOpenGles = allshader::FilteredWaveformWidget::useOpenGles();
-            useOpenGLShaders = allshader::FilteredWaveformWidget::useOpenGLShaders();
-            category = allshader::FilteredWaveformWidget::category();
+            setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::AllShaderSimpleWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = allshader::SimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = allshader::SimpleWaveformWidget::useOpenGl();
-            useOpenGles = allshader::SimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = allshader::SimpleWaveformWidget::useOpenGLShaders();
-            category = allshader::SimpleWaveformWidget::category();
+            setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
             break;
 #endif
         case WaveformWidgetType::AllShaderHSVWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
 #else
-            widgetName = allshader::HSVWaveformWidget::getWaveformWidgetName();
-            useOpenGl = allshader::HSVWaveformWidget::useOpenGl();
-            useOpenGles = allshader::HSVWaveformWidget::useOpenGles();
-            useOpenGLShaders = allshader::HSVWaveformWidget::useOpenGLShaders();
-            category = allshader::HSVWaveformWidget::category();
+            setWaveformVarsByType.operator()<allshader::HSVWaveformWidget>();
             break;
 #endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
-        }
-
-        if (category == WaveformWidgetCategory::Legacy) {
-            widgetName += QStringLiteral(" (%1)").arg(QObject::tr("legacy"));
         }
 
         bool active = true;
@@ -1062,27 +984,15 @@ void WaveformWidgetFactory::evaluateWidgets() {
                 active = false;
             } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
                 active = false;
-            } else {
-                if (useOpenGLShaders) {
-                    widgetName += " " + tr("(GLSL)");
-                } else if (useOpenGl) {
-                    widgetName += " " + tr("(GL)");
-                }
             }
         } else if (isOpenGlesAvailable()) {
             if (useOpenGl && !useOpenGles) {
                 active = false;
             } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
                 active = false;
-            } else {
-                if (useOpenGLShaders) {
-                    widgetName += " " + tr("(GLSL ES)");
-                } else if (useOpenGles) {
-                    widgetName += " " + tr("(GL ES)");
-                }
             }
         } else {
-            // No sufficient GL supptor
+            // No sufficient GL support
             if (useOpenGles || useOpenGl || useOpenGLShaders) {
                 active = false;
             }
@@ -1097,7 +1007,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
             // add new handle for each available widget type
             WaveformWidgetAbstractHandle handle;
             handle.m_displayString = widgetName;
-            handle.m_type = (WaveformWidgetType::Type)type;
+            handle.m_type = static_cast<WaveformWidgetType::Type>(type);
 
             m_waveformWidgetHandles.push_back(handle);
         }
@@ -1248,4 +1158,28 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
         }
     }
     return index;
+}
+
+template<typename WaveformT>
+QString WaveformWidgetFactory::buildWidgetDisplayName() const {
+    const bool isLegacy = WaveformT::category() == WaveformWidgetCategory::Legacy;
+    QStringList extras;
+    if (isLegacy) {
+        extras.push_back(tr("legacy"));
+    }
+    if (isOpenGlAvailable() || isOpenGlesAvailable()) {
+        if (WaveformT::useOpenGLShaders()) {
+            extras.push_back(QStringLiteral("GLSL"));
+        } else if (WaveformT::useOpenGl()) {
+            extras.push_back(QStringLiteral("GL"));
+        }
+        if (WaveformT::useOpenGles()) {
+            extras.push_back(QStringLiteral("ES"));
+        }
+    }
+    QString name = WaveformT::getWaveformWidgetName();
+    if (extras.isEmpty()) {
+        return name;
+    }
+    return QStringLiteral("%1 (%2)").arg(name, extras.join(QStringLiteral(", ")));
 }
