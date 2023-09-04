@@ -87,10 +87,13 @@ QString SoundSourceProviderMediaFoundation::getVersionString() const {
                 pVerInfo != nullptr &&
                 size >= sizeof(VS_FIXEDFILEINFO)) {
             return QStringLiteral("%1.%2.%3.%4")
-                    .arg(HIWORD(pVerInfo->dwProductVersionMS))
-                    .arg(LOWORD(pVerInfo->dwProductVersionMS))
-                    .arg(HIWORD(pVerInfo->dwProductVersionLS))
-                    .arg(LOWORD(pVerInfo->dwProductVersionLS));
+                    .arg(QString::number(HIWORD(pVerInfo->dwProductVersionMS)),
+                            QString::number(
+                                    LOWORD(pVerInfo->dwProductVersionMS)),
+                            QString::number(
+                                    HIWORD(pVerInfo->dwProductVersionLS)),
+                            QString::number(
+                                    LOWORD(pVerInfo->dwProductVersionLS)));
         }
     }
     qWarning() << "failed to read version from" << dllPath << "error:" << GetLastError();
