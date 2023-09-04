@@ -81,17 +81,19 @@ QString SoundSourceProviderMediaFoundation::getVersionString() const {
     }
     QVarLengthArray<BYTE> info(static_cast<int>(versionInfoSize));
     if (GetFileVersionInfo(dllPath, 0, versionInfoSize, info.data())) {
-        UINT size;
-        DWORD* fi;
-        if (VerQueryValue(info.data(), L"\\", reinterpret_cast<void**>(&fi), &size) && size) {
-            const VS_FIXEDFILEINFO* verInfo = reinterpret_cast<const VS_FIXEDFILEINFO*>(fi);
+        UINT size = 0;
+        VS_FIXEDFILEINFO* pVerInfo = nullptr;
+        if (VerQueryValue(info.data(), L"\\", reinterpret_cast<LPVOID*>(&pVerInfo), &size) &&
+                pVerInfo != nullptr &&
+                size >= sizeof(VS_FIXEDFILEINFO)) {
             return QStringLiteral("%1.%2.%3.%4")
-                    .arg(HIWORD(verInfo->dwProductVersionMS))
-                    .arg(LOWORD(verInfo->dwProductVersionMS))
-                    .arg(HIWORD(verInfo->dwProductVersionLS))
-                    .arg(LOWORD(verInfo->dwProductVersionLS));
+                    .arg(HIWORD(pVerInfo->dwProductVersionMS))
+                    .arg(LOWORD(pVerInfo->dwProductVersionMS))
+                    .arg(HIWORD(pVerInfo->dwProductVersionLS))
+                    .arg(LOWORD(pVerInfo->dwProductVersionLS));
         }
     }
+    qWarning() << "failed to read version from" << dllPath << "error:" << GetLastError();
     return QString();
 }
 
