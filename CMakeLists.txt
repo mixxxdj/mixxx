@@ -1337,6 +1337,7 @@ if(APPLE)
 
   target_sources(mixxx-lib PRIVATE
     src/util/darkappearance.mm
+    src/util/macosversion.mm
   )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
@@ -2799,7 +2800,6 @@ if(COREAUDIO)
     src/sources/soundsourcecoreaudio.cpp
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
-    src/util/macosversion.mm
   )
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
