@@ -61,12 +61,17 @@ void WEffectChainPresetButton::populateMenu() {
                     QChar(' ') + title;
             presetIsReadOnly = pChainPreset->isReadOnly();
         }
-        QStringList tooltip;
-        tooltip.append(QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>"));
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        QStringList effectNames;
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                tooltip.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
             }
+        }
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
         }
         parented_ptr<QAction> pAction = make_parented<QAction>(title, this);
         connect(pAction,
@@ -75,7 +80,7 @@ void WEffectChainPresetButton::populateMenu() {
                 [this, pChainPreset]() {
                     m_pChain->loadChainPreset(pChainPreset);
                 });
-        pAction->setToolTip(tooltip.join("<br/>"));
+        pAction->setToolTip(tooltip);
         m_pMenu->addAction(pAction);
     }
     m_pMenu->addSeparator();

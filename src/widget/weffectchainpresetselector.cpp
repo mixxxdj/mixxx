@@ -81,14 +81,19 @@ void WEffectChainPresetSelector::populate() {
                 Qt::ElideMiddle,
                 view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
-        QStringList tooltip;
-        tooltip.append(QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>"));
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        QStringList effectNames;
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                tooltip.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
             }
         }
-        setItemData(i, tooltip.join("<br/>"), Qt::ToolTipRole);
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
+        }
+        setItemData(i, tooltip, Qt::ToolTipRole);
     }
 
     slotChainPresetChanged(m_pChain->presetName());
