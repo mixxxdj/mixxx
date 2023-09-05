@@ -465,6 +465,10 @@ SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
     return SoundSourceProviderPriority::Lowest;
 }
 
+QString SoundSourceProviderFFmpeg::getVersionString() const {
+    return QString::fromUtf8(av_version_info());
+}
+
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
         : SoundSource(url),
           m_pavStream(nullptr),
