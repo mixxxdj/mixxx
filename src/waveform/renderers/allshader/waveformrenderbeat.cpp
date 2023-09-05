@@ -16,9 +16,6 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {
 }
 
-WaveformRenderBeat::~WaveformRenderBeat() {
-}
-
 void WaveformRenderBeat::initializeGL() {
     WaveformRenderer::initializeGL();
     m_shader.init();

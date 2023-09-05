@@ -14,7 +14,9 @@ class GLWaveformWidget : public GLWaveformWidgetAbstract {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 
   protected:
     virtual void castToQWidget();

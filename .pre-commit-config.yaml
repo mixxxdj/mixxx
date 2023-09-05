@@ -75,8 +75,8 @@ repos:
           - commit
           - manual
         additional_dependencies:
-          - eslint@^v8.6.0
-          - eslint-plugin-jsdoc@^v37.5.0
+          - eslint@^8.48.0
+          - eslint-plugin-jsdoc@^v46.5.1
           - "@typescript-eslint/eslint-plugin"
           - "@typescript-eslint/parser"
   - repo: local

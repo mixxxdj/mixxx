@@ -1284,6 +1284,7 @@ else()
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
       src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp
       src/waveform/renderers/allshader/waveformrendererrgb.cpp
@@ -1292,6 +1293,7 @@ else()
       src/waveform/renderers/allshader/waveformrendermark.cpp
       src/waveform/renderers/allshader/waveformrendermarkrange.cpp
       src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+      src/waveform/widgets/allshader/hsvwaveformwidget.cpp
       src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
       src/waveform/widgets/allshader/rgbwaveformwidget.cpp
       src/waveform/widgets/allshader/simplewaveformwidget.cpp
@@ -1338,6 +1340,7 @@ if(APPLE)
 
   target_sources(mixxx-lib PRIVATE
     src/util/darkappearance.mm
+    src/util/macosversion.mm
   )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
@@ -3095,6 +3098,7 @@ if(MEDIAFOUNDATION)
   )
   target_link_libraries(mixxx-lib PRIVATE
     ${MediaFoundation_LIBRARIES}
+    Version.lib
   )
 endif()
 
