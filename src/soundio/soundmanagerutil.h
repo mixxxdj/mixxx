@@ -136,7 +136,10 @@ class AudioOutput : public AudioPath {
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-    bool isHidden();
+    bool isHidden() const {
+        return m_type == RECORD_BROADCAST;
+    }
+
   protected:
     void setType(AudioPathType type) override;
 };
@@ -165,6 +168,11 @@ class AudioInput : public AudioPath {
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
+    // implemented for regularity with AudioOutput
+    bool isHidden() const {
+        return false;
+    }
+
   protected:
     void setType(AudioPathType type) override;
 };
