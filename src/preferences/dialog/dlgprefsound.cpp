@@ -3,7 +3,6 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <algorithm>
-#include <ranges>
 #include <vector>
 
 #include "control/controlproxy.h"
@@ -15,6 +14,23 @@
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
+
+namespace {
+
+bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
+    for (const QObject* pObj : widget.children()) {
+        auto item = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (!item || item->type() != output.getType()) {
+            continue;
+        }
+        if (!AudioPath::isIndexed(item->type()) || item->index() == output.getIndex()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+} // namespace
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -333,29 +349,17 @@ void DlgPrefSound::initializePaths() {
 
 void DlgPrefSound::addPath(const AudioOutput& output) {
     // if we already know about this output, don't make a new entry
-    foreach (QObject *obj, outputTab->children()) {
-        DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
-        if (item) {
-            if (item->type() == output.getType()) {
-                if (AudioPath::isIndexed(item->type())) {
-                    if (item->index() == output.getIndex()) {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
-    }
 
-    DlgPrefSoundItem* pSoundItem;
-    AudioPathType type = output.getType();
-    if (AudioPath::isIndexed(type)) {
-        pSoundItem = new DlgPrefSoundItem(
-                outputTab, type, m_outputDevices, false, output.getIndex());
-    } else {
-        pSoundItem = new DlgPrefSoundItem(outputTab, type, m_outputDevices, false);
+    if (soundItemAlreadyExists(output, *outputTab)) {
+        return;
     }
+    AudioPathType type = output.getType();
+    // TODO who owns this?
+    DlgPrefSoundItem* pSoundItem = new DlgPrefSoundItem(outputTab,
+            type,
+            m_outputDevices,
+            false,
+            AudioPath::isIndexed(type) ? output.getIndex() : 0);
     connect(this,
             &DlgPrefSound::refreshOutputDevices,
             pSoundItem,
@@ -367,28 +371,17 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
 }
 
 void DlgPrefSound::addPath(const AudioInput& input) {
-    DlgPrefSoundItem* pSoundItem;
-    // if we already know about this input, don't make a new entry
-    foreach (QObject *obj, inputTab->children()) {
-        DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
-        if (item) {
-            if (item->type() == input.getType()) {
-                if (AudioPath::isIndexed(item->type())) {
-                    if (item->index() == input.getIndex()) {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
+    if (soundItemAlreadyExists(input, *inputTab)) {
+        return;
     }
     AudioPathType type = input.getType();
-    if (AudioPath::isIndexed(type)) {
-        pSoundItem = new DlgPrefSoundItem(inputTab, type, m_inputDevices, true, input.getIndex());
-    } else {
-        pSoundItem = new DlgPrefSoundItem(inputTab, type, m_inputDevices, true);
-    }
+    // TODO: who owns this?
+    DlgPrefSoundItem* pSoundItem = new DlgPrefSoundItem(inputTab,
+            type,
+            m_inputDevices,
+            true,
+            AudioPath::isIndexed(type) ? input.getIndex() : 0);
+
     connect(this,
             &DlgPrefSound::refreshInputDevices,
             pSoundItem,
