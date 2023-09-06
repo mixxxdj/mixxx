@@ -244,10 +244,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
-DlgPrefSound::~DlgPrefSound() {
-    delete m_pLatencyCompensation;
-}
-
 /**
  * Slot called when the preferences dialog is opened or this pane is
  * selected.
