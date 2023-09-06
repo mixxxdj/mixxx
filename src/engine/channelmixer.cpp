@@ -22,7 +22,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
     //     D) Mixes the temporary buffer into pOutput
     // The original channel input buffers are not modified.
     SampleUtil::clear(pOutput, iBufferSize);
-    ScopedTimer t("EngineMaster::applyEffectsAndMixChannels");
+    ScopedTimer t(u"EngineMaster::applyEffectsAndMixChannels");
     for (auto* pChannelInfo : activeChannels) {
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];
         CSAMPLE_GAIN oldGain = gainCache.m_gain;
@@ -67,7 +67,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
     //    A) Applies the calculated gain to the channel buffer, modifying the original input buffer
     //    B) Applies effects to the buffer, modifying the original input buffer
     // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
-    ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels");
+    ScopedTimer t(u"EngineMaster::applyEffectsInPlaceAndMixChannels");
     SampleUtil::clear(pOutput, iBufferSize);
     for (auto* pChannelInfo : activeChannels) {
         EngineMaster::GainCache& gainCache = (*channelGainCache)[pChannelInfo->m_index];

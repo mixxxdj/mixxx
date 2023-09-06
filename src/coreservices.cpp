@@ -110,7 +110,7 @@ CoreServices::CoreServices(const CmdlineArgs& args, QApplication* pApp)
           m_isInitialized(false) {
     m_runtime_timer.start();
     mixxx::Time::start();
-    ScopedTimer t("CoreServices::CoreServices");
+    ScopedTimer t(u"CoreServices::CoreServices");
     // All this here is running without without start up screen
     // Defer long initializations to CoreServices::initialize() which is
     // called after the GUI is initialized
@@ -210,7 +210,7 @@ void CoreServices::initialize(QApplication* pApp) {
         return;
     }
 
-    ScopedTimer t("CoreServices::initialize");
+    ScopedTimer t(u"CoreServices::initialize");
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";

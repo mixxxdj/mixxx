@@ -1097,7 +1097,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/mac.cpp
   src/util/moc_included_test.cpp
   src/util/movinginterquartilemean.cpp
-  src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
   src/util/ringdelaybuffer.cpp
@@ -1831,6 +1830,7 @@ add_executable(mixxx-test
   src/test/broadcastsettings_test.cpp
   src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/chrono_clock_resolution_test.cpp
   src/test/colorconfig_test.cpp
   src/test/colormapperjsproxy_test.cpp
   src/test/colorpalette_test.cpp
