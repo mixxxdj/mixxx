@@ -119,8 +119,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     }
     m_deviceId.portAudioIndex = devIndex;
     m_strDisplayName = QString::fromUtf8(deviceInfo->name);
-    m_iNumInputChannels = m_deviceInfo->maxInputChannels;
-    m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
+    m_numInputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxInputChannels);
+    m_numOutputChannels = mixxx::audio::ChannelCount(m_deviceInfo->maxOutputChannels);
 
     m_inputParams.device = 0;
     m_inputParams.channelCount = 0;
@@ -662,7 +662,7 @@ void SoundDevicePortAudio::writeProcess(SINT framesPerBuffer) {
                     if (m_outputDrift) {
                         //qDebug() << "SoundDevicePortAudio::writeProcess() skip one frame"
                         //        << (float)writeAvailable / outChunkSize << (float)readAvailable / outChunkSize;
-                    	copyCount = qMin(readAvailable, copyCount + m_iNumOutputChannels);
+                        copyCount = qMin(readAvailable, copyCount + m_numOutputChannels);
                     } else {
                         m_outputDrift = true;
                     }

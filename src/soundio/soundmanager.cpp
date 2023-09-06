@@ -117,8 +117,8 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         // we want input devices, or don't have output channels when we want
         // output devices. If searching for both input and output devices,
         // make sure to include any devices that have >0 channels.
-        bool hasOutputs = pDevice->getNumOutputChannels() >= 0;
-        bool hasInputs = pDevice->getNumInputChannels() >= 0;
+        const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
+        const bool hasInputs = pDevice->getNumInputChannels().isValid();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
                 (bInputDevices && !bOutputDevices && !hasInputs) ||

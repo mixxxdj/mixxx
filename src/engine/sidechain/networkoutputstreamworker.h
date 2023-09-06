@@ -53,7 +53,8 @@ class NetworkOutputStreamWorker {
     virtual void setOutputFifo(QSharedPointer<FIFO<CSAMPLE>> pOutputFifo);
     virtual QSharedPointer<FIFO<CSAMPLE>> getOutputFifo();
 
-    void startStream(mixxx::audio::SampleRate sampleRate, int numOutputChannels);
+    void startStream(mixxx::audio::SampleRate sampleRate,
+            mixxx::audio::ChannelCount numOutputChannels);
     void stopStream();
 
     virtual bool threadWaiting();
@@ -85,7 +86,7 @@ protected:
 
 private:
   mixxx::audio::SampleRate m_sampleRate;
-  int m_numOutputChannels;
+  mixxx::audio::ChannelCount m_numOutputChannels;
 
   int m_workerState;
   int m_functionCode;

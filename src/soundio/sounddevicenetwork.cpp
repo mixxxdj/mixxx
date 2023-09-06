@@ -46,8 +46,8 @@ SoundDeviceNetwork::SoundDeviceNetwork(
     m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
-    m_iNumInputChannels = pNetworkStream->getNumInputChannels();
-    m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
+    m_numInputChannels = pNetworkStream->getNumInputChannels();
+    m_numOutputChannels = pNetworkStream->getNumOutputChannels();
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
@@ -69,13 +69,13 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
     // Feed the network device buffer directly from the
     // clock reference device callback
     // This is what should work best.
-    if (m_iNumOutputChannels) {
+    if (m_numOutputChannels) {
         m_outputFifo = std::make_unique<FIFO<CSAMPLE>>(
-                m_iNumOutputChannels * framesPerBuffer * 2);
+                m_numOutputChannels * framesPerBuffer * 2);
     }
-    if (m_iNumInputChannels) {
+    if (m_numInputChannels) {
         m_inputFifo = std::make_unique<FIFO<CSAMPLE>>(
-                m_iNumInputChannels * framesPerBuffer * 2);
+                m_numInputChannels * framesPerBuffer * 2);
     }
 
     m_pNetworkStream->startStream(m_sampleRate);
@@ -134,14 +134,13 @@ QString SoundDeviceNetwork::getError() const {
 }
 
 void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
-    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
+    if (!m_inputFifo || !m_pNetworkStream || !m_numInputChannels.isValid()) {
         return;
     }
     DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
-    int inChunkSize = framesPerBuffer * m_iNumInputChannels;
-    int readAvailable = m_pNetworkStream->getReadExpected()
-            * m_iNumInputChannels;
+    int inChunkSize = framesPerBuffer * m_numInputChannels;
+    int readAvailable = m_pNetworkStream->getReadExpected() * m_numInputChannels;
     int writeAvailable = m_inputFifo->writeAvailable();
     int copyCount = qMin(writeAvailable, readAvailable);
     if (copyCount > 0) {
@@ -153,12 +152,12 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
                 &dataPtr1, &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the input buffer
         m_pNetworkStream->read(dataPtr1,
-                size1 / m_iNumInputChannels);
-        CSAMPLE* lastFrame = &dataPtr1[size1 - m_iNumInputChannels];
+                size1 / m_numInputChannels);
+        CSAMPLE* lastFrame = &dataPtr1[size1 - m_numInputChannels];
         if (size2 > 0) {
             m_pNetworkStream->read(dataPtr2,
-                    size2 / m_iNumInputChannels);
-            lastFrame = &dataPtr2[size2 - m_iNumInputChannels];
+                    size2 / m_numInputChannels);
+            lastFrame = &dataPtr2[size2 - m_numInputChannels];
         }
         m_inputFifo->releaseWriteRegions(copyCount);
 
@@ -178,9 +177,8 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
                 // duplicate one frame
                 //kLogger.debug() << "readProcess() duplicate one frame"
                 //                << (float)writeAvailable / inChunkSize << (float)readAvailable / inChunkSize;
-                (void) m_inputFifo->aquireWriteRegions(
-                        m_iNumInputChannels, &dataPtr1, &size1,
-                        &dataPtr2, &size2);
+                (void)m_inputFifo->aquireWriteRegions(
+                        m_numInputChannels, &dataPtr1, &size1, &dataPtr2, &size2);
                 if (size1) {
                     SampleUtil::copy(dataPtr1, lastFrame, size1);
                     m_inputFifo->releaseWriteRegions(size1);
@@ -210,13 +208,14 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
                 &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
         composeInputBuffer(dataPtr1,
-                size1 / m_iNumInputChannels, 0,
-                m_iNumInputChannels);
+                size1 / m_numInputChannels,
+                0,
+                m_numInputChannels);
         if (size2 > 0) {
             composeInputBuffer(dataPtr2,
-                    size2 / m_iNumInputChannels,
-                    size1 / m_iNumInputChannels,
-                    m_iNumInputChannels);
+                    size2 / m_numInputChannels,
+                    size1 / m_numInputChannels,
+                    m_numInputChannels);
         }
         m_inputFifo->releaseReadRegions(readCount);
     }
@@ -229,12 +228,12 @@ void SoundDeviceNetwork::readProcess(SINT framesPerBuffer) {
 }
 
 void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
-    if (!m_outputFifo || !m_pNetworkStream || !m_iNumOutputChannels) {
+    if (!m_outputFifo || !m_pNetworkStream || !m_numOutputChannels) {
         return;
     }
     DEBUG_ASSERT(m_configFramesPerBuffer >= framesPerBuffer);
 
-    int outChunkSize = framesPerBuffer * m_iNumOutputChannels;
+    int outChunkSize = framesPerBuffer * m_numOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();
     int writeCount = outChunkSize;
     if (outChunkSize > writeAvailable) {
@@ -252,12 +251,12 @@ void SoundDeviceNetwork::writeProcess(SINT framesPerBuffer) {
         (void)m_outputFifo->aquireWriteRegions(writeCount, &dataPtr1,
                 &size1, &dataPtr2, &size2);
         // Fetch fresh samples and write to the the output buffer
-        composeOutputBuffer(dataPtr1, size1 / m_iNumOutputChannels, 0, m_iNumOutputChannels);
+        composeOutputBuffer(dataPtr1, size1 / m_numOutputChannels, 0, m_numOutputChannels);
         if (size2 > 0) {
             composeOutputBuffer(dataPtr2,
-                    size2 / m_iNumOutputChannels,
-                    size1 / m_iNumOutputChannels,
-                    m_iNumOutputChannels);
+                    size2 / m_numOutputChannels,
+                    size1 / m_numOutputChannels,
+                    m_numOutputChannels);
         }
         m_outputFifo->releaseWriteRegions(writeCount);
     }
@@ -297,7 +296,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
     int writeExpectedFrames = static_cast<int>(
             pWorker->getStreamTimeFrames() - pWorker->framesWritten());
 
-    int writeExpected = writeExpectedFrames * m_iNumOutputChannels;
+    int writeExpected = writeExpectedFrames * m_numOutputChannels;
 
     if (writeExpected <= 0) {
         // Overflow
@@ -335,9 +334,9 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
                 //                    "skip one frame"
                 //                 << (float)writeAvailable / outChunkSize
                 //                 << (float)readAvailable / outChunkSize;
-                if (size1 >= m_iNumOutputChannels) {
-                    dataPtr1 += m_iNumOutputChannels;
-                    size1 -= m_iNumOutputChannels;
+                if (size1 >= m_numOutputChannels) {
+                    dataPtr1 += m_numOutputChannels;
+                    size1 -= m_numOutputChannels;
                 }
             } else {
                 pWorker->setOutputDrift(true);
@@ -346,9 +345,9 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             pWorker->setOutputDrift(false);
         }
 
-        workerWrite(pWorker, dataPtr1, size1 / m_iNumOutputChannels);
+        workerWrite(pWorker, dataPtr1, size1 / m_numOutputChannels);
         if (size2 > 0) {
-            workerWrite(pWorker, dataPtr2, size2 / m_iNumOutputChannels);
+            workerWrite(pWorker, dataPtr2, size2 / m_numOutputChannels);
         }
 
         QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
@@ -356,8 +355,8 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
             // interval = copyCount
             // Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code
-            if (pFifo->readAvailable() + copyCount / 2
-                    >= (m_iNumOutputChannels * kNetworkLatencyFrames)) {
+            if (pFifo->readAvailable() + copyCount / 2 >=
+                    (m_numOutputChannels * kNetworkLatencyFrames)) {
                 pWorker->outputAvailable();
             }
         }
@@ -374,7 +373,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
     QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
     if (pFifo) {
         int writeAvailable = pFifo->writeAvailable();
-        int writeRequired = frames * m_iNumOutputChannels;
+        int writeRequired = frames * m_numOutputChannels;
         if (writeAvailable < writeRequired) {
             kLogger.warning() << "write: worker buffer full, losing samples";
             pWorker->incOverflowCount();
@@ -387,7 +386,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
             // This means in case of buffer full (where we loose some frames)
             // we do not get out of sync, and the syncing code tries to catch up the
             // stream by writing silence, once the buffer is free.
-            pWorker->addFramesWritten(copyCount / m_iNumOutputChannels);
+            pWorker->addFramesWritten(copyCount / m_numOutputChannels);
         }
     }
 }
@@ -401,7 +400,7 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
     if (pFifo) {
         int writeAvailable = pFifo->writeAvailable();
-        int writeRequired = frames * m_iNumOutputChannels;
+        int writeRequired = frames * m_numOutputChannels;
         if (writeAvailable < writeRequired) {
             kLogger.warning() << "writeSilence: worker buffer full, losing samples";
             pWorker->incOverflowCount();
@@ -423,7 +422,7 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
             pFifo->releaseWriteRegions(clearCount);
 
             // we advance the frame only by the samples we have actually cleared
-            pWorker->addFramesWritten(clearCount / m_iNumOutputChannels);
+            pWorker->addFramesWritten(clearCount / m_numOutputChannels);
         }
     }
 }

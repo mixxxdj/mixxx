@@ -23,11 +23,11 @@ class EngineNetworkStream {
     qint64 getInputStreamTimeUs();
     qint64 getInputStreamTimeFrames();
 
-    int getNumOutputChannels() {
+    mixxx::audio::ChannelCount getNumOutputChannels() {
         return m_numOutputChannels;
     }
 
-    int getNumInputChannels() {
+    mixxx::audio::ChannelCount getNumInputChannels() {
         return m_numInputChannels;
     }
 
@@ -46,8 +46,8 @@ class EngineNetworkStream {
     void debugOutputSlots();
 
     FIFO<CSAMPLE>* m_pInputFifo;
-    int m_numOutputChannels;
-    int m_numInputChannels;
+    mixxx::audio::ChannelCount m_numOutputChannels;
+    mixxx::audio::ChannelCount m_numInputChannels;
     mixxx::audio::SampleRate m_sampleRate;
     qint64 m_inputStreamStartTimeUs;
     qint64 m_inputStreamFramesWritten;
