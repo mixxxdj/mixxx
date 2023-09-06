@@ -102,27 +102,37 @@ public:
         return qHash(path.hashValue(), seed);
     }
 
-    friend bool operator==(
-            const AudioPath& lhs,
-            const AudioPath& rhs) {
-        // Exclude m_channelGroup from comparison!
-        // See also: hashValue()/qHash()
-        // TODO: Why??
-        return lhs.m_type == rhs.m_type &&
-                lhs.m_index == rhs.m_index;
-    }
+    // CppCoreGuidelines C.161: Use non-member functions for symmetric operators
+    friend constexpr bool operator<(const AudioPath& lhs,
+            const AudioPath& rhs) noexcept;
+    friend constexpr bool operator==(const AudioPath& lhs,
+            const AudioPath& rhs) noexcept;
 
-protected:
+  protected:
     virtual void setType(AudioPathType type) = 0;
     ChannelGroup m_channelGroup;
     AudioPathType m_type;
     unsigned char m_index;
 };
 
-inline bool operator!=(
-        const AudioPath& lhs,
-        const AudioPath& rhs) {
-    return !(lhs == rhs);
+// TODO: turn this into operator<=> once all targets fully support that
+// XCode 14 probably and GCC 10
+constexpr bool operator<(const AudioPath& lhs,
+        const AudioPath& rhs) noexcept {
+    // Exclude m_channelGroup from comparison!
+    // See also: hashValue()/qHash()
+    // TODO: Why??
+    return std::tie(lhs.m_type, lhs.m_index) <
+            std::tie(rhs.m_type, rhs.m_index);
+}
+
+constexpr bool operator==(const AudioPath& lhs,
+        const AudioPath& rhs) noexcept {
+    // Exclude m_channelGroup from comparison!
+    // See also: hashValue()/qHash()
+    // TODO: Why??
+    return std::tie(lhs.m_type, lhs.m_index) ==
+            std::tie(rhs.m_type, rhs.m_index);
 }
 
 /// A source of audio in Mixxx that is to be output to a group of
