@@ -58,8 +58,8 @@ jobs:
             artifacts_path: build/*.deb
             artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 11 x64
-            os: macos-11
+          - name: macOS 12 x64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
@@ -80,8 +80,8 @@ jobs:
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
-          - name: macOS 11 arm64
-            os: macos-11
+          - name: macOS 12 arm64
+            os: macos-12
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
