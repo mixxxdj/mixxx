@@ -818,6 +818,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the musical key of the loaded track.")
             << trackTags;
 
+    add("track_comment")
+            << tr("Track Comment")
+            << tr("Displays the comment tag of the loaded track.")
+            << trackTags + "\n"
+            << dropTracksHere
+            << dragItem
+            << QString("%1: %2").arg(doubleClick, trackProperties)
+            << QString("%1: %2").arg(rightClick, trackMenu);
+
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")

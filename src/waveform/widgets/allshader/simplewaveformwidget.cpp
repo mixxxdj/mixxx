@@ -24,9 +24,6 @@ SimpleWaveformWidget::SimpleWaveformWidget(const QString& group, QWidget* parent
     m_initSuccess = init();
 }
 
-SimpleWaveformWidget::~SimpleWaveformWidget() {
-}
-
 void SimpleWaveformWidget::castToQWidget() {
     m_widget = this;
 }

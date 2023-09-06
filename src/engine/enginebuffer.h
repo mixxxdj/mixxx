@@ -12,6 +12,7 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
+#include "engine/slipmodestate.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/bpm.h"
@@ -213,8 +214,10 @@ class EngineBuffer : public EngineObject {
 
   private slots:
     void slotTrackLoading();
-    void slotTrackLoaded(TrackPointer pTrack,
-                         int iSampleRate, int iNumSamples);
+    void slotTrackLoaded(
+            TrackPointer pTrack,
+            int trackSampleRate,
+            double trackNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
@@ -311,7 +314,7 @@ class EngineBuffer : public EngineObject {
     HintVector m_hintList;
 
     // The current sample to play in the file.
-    mixxx::audio::FramePos m_playPosition;
+    mixxx::audio::FramePos m_playPos;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
@@ -350,11 +353,13 @@ class EngineBuffer : public EngineObject {
     int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
-    mixxx::audio::FramePos m_slipPosition;
+    mixxx::audio::FramePos m_slipPos;
     // Saved value of rate for slip mode
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
+
+    SlipModeState m_slipModeState;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;

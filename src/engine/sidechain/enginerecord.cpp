@@ -307,6 +307,9 @@ bool EngineRecord::openFile() {
     if (m_pEncoder) {
         m_file.setFileName(m_fileName);
         if (!m_file.open(QIODevice::WriteOnly)) {
+            qDebug() << "EngineRecord::openFile() failed for"
+                     << m_fileName
+                     << m_file.errorString();
             return false;
         }
         if (m_file.handle() != -1) {
@@ -330,7 +333,9 @@ bool EngineRecord::openCueFile() {
 
     // TODO(rryan): maybe we need to use the sandbox to get read/write rights on Mac OS ?!
     if (!m_cueFile.open(QIODevice::WriteOnly)) {
-        qDebug() << "Could not write Cue File:" << m_cueFileName;
+        qDebug() << "Could not write Cue File:"
+                 << m_cueFileName
+                 << m_cueFile.errorString();
         return false;
     }
 

@@ -2,6 +2,7 @@
 #include <QTemporaryFile>
 #include <QtDebug>
 
+#include "analyzer/analyzersilence.h"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "test/mixxxtest.h"
@@ -119,8 +120,8 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
             const CSAMPLE* actual,
             const char* errorMessage) {
         for (SINT i = 0; i < size; ++i) {
-            EXPECT_NEAR(expected[i], actual[i],
-                    kMaxDecodingError) << errorMessage;
+            EXPECT_NEAR(expected[i], actual[i], kMaxDecodingError)
+                    << "i=" << i << " " << errorMessage;
         }
     }
 
@@ -743,6 +744,128 @@ TEST_F(SoundSourceProxyTest, regressionTestCachingReaderChunkJumpForward) {
                                                     mixxx::SampleBuffer::WritableSlice(readBuffer)))
                                 .frameIndexRange());
             }
+        }
+    }
+}
+
+TEST_F(SoundSourceProxyTest, firstSoundTest) {
+    constexpr SINT kReadFrameCount = 2000;
+
+    struct RefFirstSound {
+        QString path;
+        SINT firstSoundSample;
+    };
+
+    RefFirstSound refs[] = {{QStringLiteral("cover-test.aiff"), 1166},
+            {QStringLiteral("cover-test-alac.caf"), 1166},
+            {QStringLiteral("cover-test.flac"), 1166},
+            {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"),
+#if defined(__WINDOWS__)
+                    1390}, // Media Foundation 10.0.17763.2989
+                           // Media Foundation 10.0.20348.1
+#else
+                    1166}, // FFmpeg 4.2.7-0ubuntu0.1
+                           // FFmpeg 4.4.2-0ubuntu0.22.04.1
+                           // FFmpeg 5.1.2 windows
+                           // CoreAudio Version 11.7.8 (Build 20G1351)
+                           // CoreAusio Version 12.6.7 (Build 21G651)
+#endif
+            // 1168 FFmpeg 4.2.7-0ubuntu0.1
+
+            {QStringLiteral("cover-test-ffmpeg-aac.m4a"),
+#if defined(__WINDOWS__)
+                    3160}, // Media Foundation 10.0.17763.2989
+                           // Media Foundation 10.0.20348.1
+#else
+                    1112}, // FFmpeg 4.2.7-0ubuntu0.1
+                           // FFmpeg 4.4.2-0ubuntu0.22.04.1
+                           // FFmpeg 5.1.2 windows
+                           // CoreAudio Version 11.7.8 (Build 20G1351)
+                           // CoreAusio Version 12.6.7 (Build 21G651)
+#endif
+
+            {QStringLiteral("cover-test-itunes-12.7.0-alac.m4a"), 1166},
+            {QStringLiteral("cover-test-png.mp3"),
+#if defined(__LINUX__)
+                    1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
+#elif defined(__WINDOWS__)
+                    1752}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+#else
+                                    0}, // CoreAudio Version 11.7.8 (Build 20G1351)
+#endif
+
+            {QStringLiteral("cover-test-vbr.mp3"),
+#if defined(__LINUX__) || defined(__WINDOWS__)
+                    3376}, // MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_64BIT
+#else
+                    2318}, // CoreAudio Version 11.7.8 (Build 20G1351)
+#endif
+            // 3326 MAD: MPEG Audio Decoder 0.15.1 (beta) NDEBUG FPM_DEFAULT
+            // No offset compared to FPM_64BIT builds but rounding differences
+            // https://github.com/mixxxdj/mixxx/issues/11888
+            // 1166 FFmpeg
+
+            {QStringLiteral("cover-test.ogg"), 1166},
+            {QStringLiteral("cover-test.opus"), 1268},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wav"), 1166},
+            {QStringLiteral("cover-test.wv"), 1166}};
+
+    for (const auto& ref : refs) {
+        QString filePath = getTestDir().filePath(
+                QStringLiteral("id3-test-data/") +
+                ref.path);
+        ASSERT_TRUE(SoundSourceProxy::isFileNameSupported(filePath));
+        const auto fileUrl = QUrl::fromLocalFile(filePath);
+        const auto providerRegistrations =
+                SoundSourceProxy::allProviderRegistrationsForUrl(fileUrl);
+        for (const auto& providerRegistration : providerRegistrations) {
+            mixxx::AudioSourcePointer pContReadSource = openAudioSource(
+                    filePath,
+                    providerRegistration.getProvider());
+
+            // Obtaining an AudioSource may fail for unsupported file formats,
+            // even if the corresponding file extension is supported, e.g.
+            // AAC vs. ALAC in .m4a files
+            if (!pContReadSource) {
+                // skip test file
+                continue;
+            }
+            mixxx::SampleBuffer contReadData(
+                    pContReadSource->getSignalInfo().frames2samples(kReadFrameCount));
+
+            SINT contFrameIndex = pContReadSource->frameIndexMin();
+            while (pContReadSource->frameIndexRange().containsIndex(contFrameIndex)) {
+                const auto readFrameIndexRange =
+                        mixxx::IndexRange::forward(contFrameIndex, kReadFrameCount);
+                // Read next chunk of frames for Cont source without seeking
+                const auto contSampleFrames =
+                        pContReadSource->readSampleFrames(
+                                mixxx::WritableSampleFrames(
+                                        readFrameIndexRange,
+                                        mixxx::SampleBuffer::WritableSlice(contReadData)));
+                ASSERT_FALSE(contSampleFrames.frameIndexRange().empty());
+                ASSERT_TRUE(contSampleFrames.frameIndexRange().isSubrangeOf(readFrameIndexRange));
+                ASSERT_EQ(contSampleFrames.frameIndexRange().start(), readFrameIndexRange.start());
+                contFrameIndex += contSampleFrames.frameLength();
+
+                const SINT sampleCount =
+                        pContReadSource->getSignalInfo().frames2samples(
+                                contSampleFrames.frameLength());
+
+                auto samples = std::span<const CSAMPLE>(&contReadData[0], sampleCount);
+
+                const SINT firstSoundSample = AnalyzerSilence::findFirstSoundInChunk(samples);
+                if (firstSoundSample < static_cast<SINT>(samples.size())) {
+                    EXPECT_EQ(firstSoundSample, ref.firstSoundSample)
+                            << filePath.toStdString() << " "
+                            << providerRegistration.getProvider()
+                                       ->getDisplayName()
+                                       .toStdString();
+                    break;
+                }
+            }
+            break;
         }
     }
 }

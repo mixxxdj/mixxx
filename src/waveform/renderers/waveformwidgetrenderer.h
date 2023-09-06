@@ -107,7 +107,7 @@ class WaveformWidgetRenderer {
     double getGain() const {
         return m_gain;
     }
-    int getTrackSamples() const {
+    double getTrackSamples() const {
         return m_trackSamples;
     }
 
@@ -201,7 +201,7 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
-    int m_trackSamples;
+    double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 

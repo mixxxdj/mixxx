@@ -877,6 +877,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/locationdelegate.cpp
   src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/multilineeditdelegate.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -1280,6 +1281,7 @@ else()
       src/waveform/renderers/allshader/waveformrenderer.cpp
       src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
       src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+      src/waveform/renderers/allshader/waveformrendererhsv.cpp
       src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
       src/waveform/renderers/allshader/waveformrendererpreroll.cpp
       src/waveform/renderers/allshader/waveformrendererrgb.cpp
@@ -1288,6 +1290,7 @@ else()
       src/waveform/renderers/allshader/waveformrendermark.cpp
       src/waveform/renderers/allshader/waveformrendermarkrange.cpp
       src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+      src/waveform/widgets/allshader/hsvwaveformwidget.cpp
       src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
       src/waveform/widgets/allshader/rgbwaveformwidget.cpp
       src/waveform/widgets/allshader/simplewaveformwidget.cpp
@@ -1328,8 +1331,13 @@ if(APPLE)
   # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
 
+  # Disable deprecation warnings for OpenGL on macOS as we won't switch to
+  # Apple's Metal API in the foreseeable future.
+  target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
+
   target_sources(mixxx-lib PRIVATE
     src/util/darkappearance.mm
+    src/util/macosversion.mm
   )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
@@ -1808,23 +1816,6 @@ endif()
 # Tests
 #
 
-# CMake + googletest: https://crascit.com/2015/07/25/cmake-gtest/
-
-# Prevent GoogleTest from overriding our compiler/linker options
-# when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
-
-# Prevent installation of GoogleTest libraries
-set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
-
-# Add googletest directly to our build. This adds the following targets:
-# gtest, gtest_main, gmock and gmock_main
-message(STATUS "Adding goolgletest targets gtest, gtest_main, gmock and gmock_main")
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
-)
-
 add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
   src/test/analyzersilence_test.cpp
@@ -1936,24 +1927,12 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
   src/util/moc_included_test.cpp
 )
+find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore gtest gmock)
+target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
 
-#
-# Benchmark tests
-#
-
-# Disable testing of google/benchmark
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
-
-# Prevent installation of google/benchmark artifacts
-set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
-
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
-)
-target_link_libraries(mixxx-test PRIVATE benchmark)
+find_package(benchmark)
+target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
 
 # Test Suite
 include(CTest)
@@ -2322,11 +2301,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
   target_compile_options(FpClassify PRIVATE -ffp-contract=on -fno-fast-math)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
-
-# googletest
-# Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
-# in production code
-target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
 # LAME
 find_package(mp3lame REQUIRED)
@@ -3055,6 +3029,7 @@ if(MEDIAFOUNDATION)
   )
   target_link_libraries(mixxx-lib PRIVATE
     ${MediaFoundation_LIBRARIES}
+    Version.lib
   )
 endif()
 

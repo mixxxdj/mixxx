@@ -58,9 +58,34 @@ class LoopingControl : public EngineControl {
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
+
+    enum class LoopSeekMode {
+        Changed, // force the playposition to be inside the loop after adjusting it.
+        MovedOut,
+        None,
+    };
+
+    struct LoopInfo {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
+        LoopSeekMode seekMode;
+    };
+
+    LoopInfo getLoopInfo() {
+        return m_loopInfo.getValue();
+    }
+
     void setRateControl(RateControl* rateControl);
-    bool isLoopingEnabled();
-    bool isLoopRollActive();
+
+    bool isLoopingEnabled() {
+        return m_bLoopingEnabled;
+    }
+    bool isLoopRollActive() {
+        return m_bLoopRollActive;
+    }
+    bool loopWasEnabledBeforeSlipEnable() {
+        return m_bLoopWasEnabledBeforeSlipEnable;
+    }
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -114,18 +139,6 @@ class LoopingControl : public EngineControl {
     void slotLoopEnabledValueChangeRequest(double enabled);
 
   private:
-    enum class LoopSeekMode {
-        Changed, // force the playposition to be inside the loop after adjusting it.
-        MovedOut,
-        None,
-    };
-
-    struct LoopInfo {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        LoopSeekMode seekMode;
-    };
-
     void setLoopingEnabled(bool enabled);
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
@@ -175,6 +188,7 @@ class LoopingControl : public EngineControl {
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
+    bool m_bLoopWasEnabledBeforeSlipEnable;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bAdjustingLoopInOld;

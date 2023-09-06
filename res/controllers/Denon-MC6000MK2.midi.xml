@@ -1688,15 +1688,6 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>gain</key>
-                <status>0xB0</status>
-                <midino>0x19</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>DenonMC6000MK2.recvJogSpin</key>
                 <status>0xB0</status>
