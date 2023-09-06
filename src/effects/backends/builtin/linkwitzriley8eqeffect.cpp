@@ -4,7 +4,6 @@
 #include "util/math.h"
 
 namespace {
-constexpr auto kStartupSamplerate = mixxx::audio::SampleRate(44100);
 constexpr unsigned int kStartupLoFreq = 246;
 constexpr unsigned int kStartupHiFreq = 2484;
 } // namespace
@@ -39,17 +38,17 @@ LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
           old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
-          m_oldSampleRate(kStartupSamplerate),
+          m_oldSampleRate(engineParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
     m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMidBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    m_low1 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupLoFreq);
-    m_high1 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupLoFreq);
-    m_low2 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupHiFreq);
-    m_high2 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupHiFreq);
+    m_low1 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupLoFreq);
+    m_high1 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupLoFreq);
+    m_low2 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupHiFreq);
+    m_high2 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupHiFreq);
 }
 
 LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
