@@ -2,6 +2,9 @@
 
 #include <QMessageBox>
 #include <QtDebug>
+#include <algorithm>
+#include <ranges>
+#include <vector>
 
 #include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
@@ -308,14 +311,24 @@ QUrl DlgPrefSound::helpUrl() const {
  * if necessary.
  */
 void DlgPrefSound::initializePaths() {
-    foreach (AudioOutput out, m_pSoundManager->registeredOutputs()) {
-        if (!out.isHidden()) {
-            addPath(out);
+    // Pre-sort paths so they're added in the order they'll appear later on
+    // so Tab key order matches order in layout:
+    // * by AudioPathType
+    // * identical types by index
+    auto sortFilterAdd = [this]<typename T>(const QList<T>& l) {
+        // we use a vec of ref_wrappers since copying the path is unnecessary
+        // and we really just want to change the order
+        auto ref_vec_to_sort = std::vector<std::reference_wrapper<const T>>(l.begin(), l.end());
+        std::sort(ref_vec_to_sort.begin(), ref_vec_to_sort.end());
+        for (const T& path : ref_vec_to_sort) {
+            if (!path.isHidden()) {
+                addPath(path);
+            }
         }
-    }
-    foreach (AudioInput in, m_pSoundManager->registeredInputs()) {
-        addPath(in);
-    }
+    };
+
+    sortFilterAdd(m_pSoundManager->registeredOutputs());
+    sortFilterAdd(m_pSoundManager->registeredInputs());
 }
 
 void DlgPrefSound::addPath(const AudioOutput& output) {
