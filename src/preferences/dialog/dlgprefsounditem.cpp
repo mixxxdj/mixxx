@@ -79,7 +79,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
 void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
-    unsigned int numChannels = 0;
+    mixxx::audio::ChannelCount numChannels;
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
@@ -93,7 +93,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
             }
         }
     }
-    if (numChannels == 0) {
+    if (!numChannels.isValid()) {
         goto emitAndReturn;
     } else {
         unsigned char minChannelsForType =
