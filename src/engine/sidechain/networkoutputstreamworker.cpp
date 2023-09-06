@@ -9,8 +9,7 @@ const mixxx::Logger kLogger("NetworkStreamWorker");
 } // namespace
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
-        : m_sampleRate(),
-          m_numOutputChannels(0),
+        : m_numOutputChannels(0),
           m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
           m_functionCode(0),
           m_runCount(0),
