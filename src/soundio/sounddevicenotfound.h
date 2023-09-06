@@ -3,7 +3,7 @@
 #include <QString>
 
 #include "soundio/sounddevice.h"
-
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class EngineNetworkStream;
@@ -36,6 +36,6 @@ class SoundDeviceNotFound : public SoundDevice {
     };
 
     mixxx::audio::SampleRate getDefaultSampleRate() const override {
-        return SoundDevice::kFallbackSampleRate;
+        return SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 };

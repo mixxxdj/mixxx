@@ -8,6 +8,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -208,7 +209,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     // Sample rate
     if (!m_sampleRate.isValid()) {
-        m_sampleRate = SoundDevice::kFallbackSampleRate;
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;

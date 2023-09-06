@@ -26,8 +26,6 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
-//
-constexpr auto kDefaultSampleRate = mixxx::audio::SampleRate(44100);
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
 } // namespace
@@ -45,7 +43,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
           m_targetTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
-    m_sampleRate = SoundDevice::kFallbackSampleRate;
+    m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
@@ -61,7 +59,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
 
     // Sample rate
     if (!m_sampleRate.isValid()) {
-        m_sampleRate = SoundDevice::kFallbackSampleRate;
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     const SINT framesPerBuffer = m_configFramesPerBuffer;
@@ -128,7 +126,7 @@ SoundDeviceStatus SoundDeviceNetwork::close() {
 }
 
 mixxx::audio::SampleRate SoundDeviceNetwork::getDefaultSampleRate() const {
-    return kDefaultSampleRate;
+    return SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
 QString SoundDeviceNetwork::getError() const {

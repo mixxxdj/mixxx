@@ -58,8 +58,6 @@ class SoundDevice {
     bool operator==(const QString &other) const;
 
   protected:
-    static const mixxx::audio::SampleRate kFallbackSampleRate;
-
     void composeOutputBuffer(CSAMPLE* outputBuffer,
                              const SINT iFramesPerBuffer,
                              const SINT readOffset,

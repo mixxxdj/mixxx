@@ -10,8 +10,9 @@
 
 const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
-// Sample Rate even the cheap sound Devices will support most likely
-const mixxx::audio::SampleRate SoundManagerConfig::kFallbackSampleRate =
+constexpr mixxx::audio::SampleRate SoundManagerConfig::kMixxxDefaultSampleRate =
+        mixxx::audio::SampleRate(44100);
+constexpr mixxx::audio::SampleRate SoundManagerConfig::kFallbackSampleRate =
         mixxx::audio::SampleRate(48000);
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 

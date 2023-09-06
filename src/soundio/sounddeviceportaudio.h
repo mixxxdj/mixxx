@@ -7,6 +7,7 @@
 
 #include "control/pollingcontrolproxy.h"
 #include "soundio/sounddevice.h"
+#include "soundio/soundmanagerconfig.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
 
@@ -49,7 +50,7 @@ class SoundDevicePortAudio : public SoundDevice {
     mixxx::audio::SampleRate getDefaultSampleRate() const override {
         return m_deviceInfo ? mixxx::audio::SampleRate::fromDouble(
                                       m_deviceInfo->defaultSampleRate)
-                            : SoundDevice::kFallbackSampleRate;
+                            : SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
   private:

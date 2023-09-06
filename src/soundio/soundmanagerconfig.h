@@ -55,6 +55,10 @@ class SoundManagerConfig {
 
     static const QString kDefaultAPI;
     static const QString kEmptyComboBox;
+
+    /// The default sample rate that Mixxx uses.
+    static const mixxx::audio::SampleRate kMixxxDefaultSampleRate;
+    /// A sample rate that likely every soundcard supports, even cheap ones.
     static const mixxx::audio::SampleRate kFallbackSampleRate;
     static const unsigned int kDefaultDeckCount;
     static const int kDefaultSyncBuffers;

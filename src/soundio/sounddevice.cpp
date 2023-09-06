@@ -4,13 +4,12 @@
 #include <cstring> // for memcpy and strcmp
 
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
+#include "soundmanagerconfig.h"
 #include "util/debug.h"
 #include "util/defs.h"
 #include "util/sample.h"
-
-constexpr mixxx::audio::SampleRate SoundDevice::kFallbackSampleRate =
-        mixxx::audio::SampleRate(44100);
 
 SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
@@ -18,7 +17,7 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
-          m_sampleRate(kFallbackSampleRate),
+          m_sampleRate(SoundManagerConfig::kMixxxDefaultSampleRate),
           m_hostAPI("Unknown API"),
           m_configFramesPerBuffer(0) {
 }
@@ -32,7 +31,7 @@ int SoundDevice::getNumOutputChannels() const {
 }
 
 void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {
-    m_sampleRate = sampleRate.isValid() ? sampleRate : kFallbackSampleRate;
+    m_sampleRate = sampleRate.isValid() ? sampleRate : SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
 void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {
