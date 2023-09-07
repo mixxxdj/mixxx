@@ -127,7 +127,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
-option(QT6 "Build with Qt6" OFF)
+option(QT6 "Build with Qt6" ON)
 option(QML "Build with QML" OFF)
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 
