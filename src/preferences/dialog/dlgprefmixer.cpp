@@ -39,6 +39,15 @@ const ConfigKey kLowEqFreqKey = ConfigKey(kMixerProfile, kLowEqFrequency);
 const ConfigKey kLowEqFreqPreciseKey =
         ConfigKey(kMixerProfile, QStringLiteral("LoEQFrequencyPrecise"));
 
+const ConfigKey kXfaderModeKey = ConfigKey(EngineXfader::kXfaderConfigKey,
+        QStringLiteral("xFaderMode"));
+const ConfigKey kXfaderCurveKey = ConfigKey(EngineXfader::kXfaderConfigKey,
+        QStringLiteral("xFaderCurve"));
+const ConfigKey kXfaderCalibrationKey = ConfigKey(EngineXfader::kXfaderConfigKey,
+        QStringLiteral("xFaderCalibration"));
+const ConfigKey kXfaderReverseKey = ConfigKey(EngineXfader::kXfaderConfigKey,
+        QStringLiteral("xFaderReverse"));
+
 constexpr int kFrequencyUpperLimit = 20050;
 constexpr int kFrequencyLowerLimit = 16;
 
@@ -60,10 +69,10 @@ DlgPrefMixer::DlgPrefMixer(
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
-          m_mode(EngineXfader::kXfaderConfigKey, "xFaderMode"),
-          m_curve(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-          m_calibration(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
-          m_reverse(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
+          m_mode(kXfaderModeKey),
+          m_curve(kXfaderCurveKey),
+          m_calibration(kXfaderCalibrationKey),
+          m_reverse(kXfaderReverseKey),
           m_crossfader("[Master]", "crossfader"),
           m_xFaderReverse(false),
           m_COLoFreq(kLowEqFreqKey),
@@ -656,12 +665,9 @@ void DlgPrefMixer::slotApply() {
         m_crossfader.set(0.0 - position);
         m_xFaderReverse = checkBoxReverse->isChecked();
     }
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
-            ConfigValue(m_xFaderMode));
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            ConfigValue(QString::number(m_transform)));
-    m_pConfig->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
-            ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
+    m_pConfig->set(kXfaderModeKey, ConfigValue(m_xFaderMode));
+    m_pConfig->set(kXfaderCurveKey, ConfigValue(QString::number(m_transform)));
+    m_pConfig->set(kXfaderReverseKey, ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
 
     // EQ & QuickEffect settings ///////////////////////////////////////////////
     m_pConfig->set(kEnableEqsKey, ConfigValue(m_eqBypass ? 0 : 1));
@@ -689,9 +695,7 @@ void DlgPrefMixer::storeEqShelves() {
 // Update the widgets with values from config / EffectsManager
 void DlgPrefMixer::slotUpdate() {
     // xfader //////////////////////////////////////////////////////////////////
-    m_transform = m_pConfig->getValue(
-            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            EngineXfader::kTransformDefault);
+    m_transform = m_pConfig->getValue(kXfaderCurveKey, EngineXfader::kTransformDefault);
 
     // Range SliderXFader 0 .. 100
     double sliderVal = RescalerUtils::oneByXToLinear(
@@ -701,18 +705,14 @@ void DlgPrefMixer::slotUpdate() {
             SliderXFader->maximum());
     SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
 
-    m_xFaderMode = m_pConfig->getValueString(
-                                    ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"))
-                           .toInt();
+    m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
     if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
         radioButtonConstantPower->setChecked(true);
     } else {
         radioButtonAdditive->setChecked(true);
     }
 
-    m_xFaderReverse = m_pConfig->getValueString(
-                                       ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"))
-                              .toInt() == 1;
+    m_xFaderReverse = m_pConfig->getValueString(kXfaderReverseKey).toInt() == 1;
     checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
