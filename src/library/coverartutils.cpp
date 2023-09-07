@@ -56,6 +56,18 @@ QImage CoverArtUtils::extractEmbeddedCover(
     return image;
 }
 
+QImage CoverArtUtils::extractEmbeddedCover(
+        TrackPointer pTrack) {
+    QImage image;
+    // Both resetMissingTagMetadata = false/true have the same effect
+    constexpr auto resetMissingTagMetadata = false;
+    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+            nullptr,
+            &image,
+            resetMissingTagMetadata);
+    return image;
+}
+
 //static
 QList<QFileInfo> CoverArtUtils::findPossibleCoversInFolder(const QString& folder) {
     // Search for image files in the track directory.
@@ -204,7 +216,7 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
                 << fileAccess.info();
     }
 
-    QImage embeddedCover = CoverArtUtils::extractEmbeddedCover(fileAccess);
+    QImage embeddedCover = CoverArtUtils::extractEmbeddedCover(pTrack);
 
     return guessCoverInfo(
             fileAccess.info(),

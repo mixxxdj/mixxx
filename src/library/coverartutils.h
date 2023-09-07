@@ -30,6 +30,8 @@ class CoverArtUtils {
     // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             mixxx::FileAccess trackFileAccess);
+    static QImage extractEmbeddedCover(
+            TrackPointer pTrack);
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
