@@ -181,7 +181,7 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
     auto loadedImage = coverInfo.loadImage(
-            pTrack ? pTrack->getFileAccess().token() : SecurityTokenPointer());
+            pTrack ? pTrack->getFileAccessToken() : SecurityTokenPointer());
     if (!loadedImage.image.isNull()) {
         // Refresh hash before resizing the original image!
         res.coverInfoUpdated = coverInfo.refreshImageDigest(loadedImage.image);

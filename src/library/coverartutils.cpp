@@ -209,17 +209,17 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
 
 CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
         TrackPointer pTrack) {
-    const auto fileAccess = pTrack->getFileAccess();
+    const auto fileInfo = pTrack->getFileInfo();
     if (kLogger.debugEnabled()) {
         kLogger.debug()
                 << "Guessing cover art for track"
-                << fileAccess.info();
+                << fileInfo;
     }
 
     QImage embeddedCover = CoverArtUtils::extractEmbeddedCover(pTrack);
 
     return guessCoverInfo(
-            fileAccess.info(),
+            fileInfo,
             pTrack->getAlbum(),
             embeddedCover);
 }
