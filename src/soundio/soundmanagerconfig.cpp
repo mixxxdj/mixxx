@@ -1,10 +1,11 @@
-#include <QRegularExpression>
-
 #include "soundio/soundmanagerconfig.h"
 
-#include "soundio/soundmanagerutil.h"
+#include <QRegularExpression>
+
+#include "audio/types.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
@@ -510,7 +511,10 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
+                AudioOutput masterOut(AudioPath::MASTER,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        0);
                 addOutput(pDevice->getDeviceId(), masterOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;

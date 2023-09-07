@@ -4,6 +4,7 @@
 #include <QPair>
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
@@ -1048,16 +1049,35 @@ void EngineMaster::onInputDisconnected(const AudioInput& input) {
 }
 
 void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
-    pSoundManager->registerInput(AudioInput(AudioPath::RECORD_BROADCAST, 0, 2),
-                                 m_pEngineSideChain);
+    pSoundManager->registerInput(AudioInput(AudioPath::RECORD_BROADCAST,
+                                         0,
+                                         mixxx::audio::ChannelCount::stereo()),
+            m_pEngineSideChain);
 
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::BOOTH, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::BOOTH,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
+          pSoundManager->registerOutput(
+                  AudioOutput(AudioOutput::BUS,
+                          0,
+                          mixxx::audio::ChannelCount::stereo(),
+                          o),
+                  this);
     }
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST,
+                                          0,
+                                          mixxx::audio::ChannelCount::stereo()),
+            this);
 }
 
 bool EngineMaster::sidechainMixRequired() const {

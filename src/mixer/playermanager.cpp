@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -428,12 +429,19 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioOutput::DECK,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioInput::VINYLCONTROL,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);

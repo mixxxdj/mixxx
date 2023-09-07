@@ -393,7 +393,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         // Statically connect the Network Device to the Sidechain
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
+            AudioOutput out(AudioPath::RECORD_BROADCAST,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    0);
             outputs.append(out);
             if (m_config.getForceNetworkClock() && !jackApiUsed()) {
                 pNewMasterClockRef = pDevice;
