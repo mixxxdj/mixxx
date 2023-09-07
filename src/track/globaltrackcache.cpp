@@ -341,15 +341,13 @@ void GlobalTrackCache::relocateTracks(
                 fileAccess.info(),
                 plainPtr->getId());
         if (!trackRef.hasCanonicalLocation() && trackRef.hasId() && pRelocator) {
-            auto relocatedFileAccess = pRelocator->relocateCachedTrack(
-                    trackRef.getId(),
-                    fileAccess);
-            if (fileAccess.info() != relocatedFileAccess.info()) {
+            auto relocatedFileAccess = pRelocator->relocateCachedTrack(trackRef.getId());
+            if (relocatedFileAccess.info().hasLocation() &&
+                    fileAccess.info() != relocatedFileAccess.info()) {
                 plainPtr->relocate(relocatedFileAccess);
                 trackRef = TrackRef::fromFileInfo(
                         relocatedFileAccess.info(),
                         trackRef.getId());
-                fileAccess = std::move(relocatedFileAccess);
             }
         }
         if (!trackRef.hasCanonicalLocation()) {

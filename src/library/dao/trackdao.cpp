@@ -2232,13 +2232,11 @@ TrackPointer TrackDAO::getOrAddTrack(
     return pTrack;
 }
 
-mixxx::FileAccess TrackDAO::relocateCachedTrack(
-        TrackId trackId,
-        mixxx::FileAccess fileAccess) {
+mixxx::FileAccess TrackDAO::relocateCachedTrack(TrackId trackId) {
     QString trackLocation = getTrackLocation(trackId);
     if (trackLocation.isEmpty()) {
         // not found
-        return fileAccess;
+        return mixxx::FileAccess();
     } else {
         return mixxx::FileAccess(mixxx::FileInfo(trackLocation));
     }
