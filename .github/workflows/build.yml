@@ -191,7 +191,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"
         if: runner.os == 'Windows'
-        uses: seanmiddleditch/gha-setup-vsdevenv@v4
+        uses: ilammy/msvc-dev-cmd@v1
 
       - name: "[macOS] install ccache and make"
         if: runner.os == 'macOS'
