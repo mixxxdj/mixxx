@@ -1803,13 +1803,14 @@ if(MSVC)
   )
 endif()
 
-if(WIN32)
-  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
-  # Qt does not link these and vcpkg does not build them as a dependency of Qt,
-  # so copy them manually.
-  find_file(EGL_DLL libEGL.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-  find_file(GLESv2_DLL libGLESv2.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-  install(FILES ${EGL_DLL} ${GLESv2_DLL} DESTINATION "${MIXXX_INSTALL_BINDIR}")
+if(WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is on the ignore list.
+  # It does not work with Debug, because the debug version is compiled without the a d suffix
+  find_package(unofficial-angle CONFIG REQUIRED)
+  install(IMPORTED_RUNTIME_ARTIFACTS
+    unofficial::angle::libEGL
+    unofficial::angle::libGLESv2
+    DESTINATION "${MIXXX_INSTALL_BINDIR}")
 endif()
 
 #
