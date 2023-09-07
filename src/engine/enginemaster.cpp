@@ -587,7 +587,7 @@ void EngineMaster::process(const int iBufferSize) {
         // Process master, booth, and record/broadcast buffers according to the
         // MicMonitorMode configured in DlgPrefSound
         // TODO(Be): make SampleUtil ramping functions update the old gain variable
-        if (configuredMicMonitorMode == MicMonitorMode::MASTER) {
+        if (configuredMicMonitorMode == MicMonitorMode::Main) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. To apply master effects
             // to both the master and booth in that case will require refactoring
@@ -626,7 +626,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
             }
-        } else if (configuredMicMonitorMode == MicMonitorMode::MASTER_AND_BOOTH) {
+        } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process master channel effects
             // TODO(Be): Move this after mixing in talkover. For the MASTER only
             // MicMonitorMode above, that will require refactoring the effects system
@@ -669,7 +669,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
             }
-        } else if (configuredMicMonitorMode == MicMonitorMode::DIRECT_MONITOR) {
+        } else if (configuredMicMonitorMode == MicMonitorMode::DirectMonitor) {
             // Skip mixing talkover with the master and booth outputs
             // if using direct monitoring because it is being mixed in hardware
             // without the latency of sending the signal into Mixxx for processing.

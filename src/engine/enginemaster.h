@@ -195,10 +195,10 @@ class EngineMaster : public QObject, public AudioSource {
         // These are out of order with how they are listed in DlgPrefSound for backwards
         // compatibility with Mixxx 2.0 user settings. In Mixxx 2.0, before the
         // booth output was added, this was a binary option without
-        // the MASTER_AND_BOOTH mode.
-        MASTER = 0,
-        DIRECT_MONITOR,
-        MASTER_AND_BOOTH
+        // the MainAndBooth mode.
+        Main = 0,
+        DirectMonitor,
+        MainAndBooth,
     };
 
     template<typename T, unsigned int CAPACITY>

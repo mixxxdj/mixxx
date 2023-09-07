@@ -139,11 +139,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
     micMonitorModeComboBox->addItem(tr("Main output only"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::Main)));
     micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MainAndBooth)));
     micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DirectMonitor)));
     int modeIndex = micMonitorModeComboBox->findData(
         static_cast<int>(m_pMicMonitorMode->get()));
     micMonitorModeComboBox->setCurrentIndex(modeIndex);
@@ -714,11 +714,11 @@ void DlgPrefSound::slotResetToDefaults() {
 
     // Enable talkover master output
     m_pMicMonitorMode->set(
-        static_cast<double>(
-            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            static_cast<double>(
+                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
     micMonitorModeComboBox->setCurrentIndex(
-        micMonitorModeComboBox->findData(
-            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            micMonitorModeComboBox->findData(
+                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
@@ -795,7 +795,7 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);
-        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
+        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
             QString warningIcon(
                     "<html>"
