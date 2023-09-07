@@ -115,6 +115,7 @@ CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
         }
         loadedImage.location = trackLocation;
         if (pTrack) {
+            DEBUG_ASSERT(trackLocation == pTrack->getLocation());
             loadedImage.image = CoverArtUtils::extractEmbeddedCover(pTrack);
         } else {
             loadedImage.image = CoverArtUtils::extractEmbeddedCover(
