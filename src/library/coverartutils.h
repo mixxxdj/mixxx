@@ -78,11 +78,10 @@ class CoverInfoGuesser {
 
     // Extracts an embedded cover image if available and guesses
     // the cover art for the provided track.
-    CoverInfoRelative guessCoverInfoForTrack(
-            const Track& track);
+    CoverInfoRelative guessCoverInfoForTrack(TrackPointer pTrack);
 
     void guessAndSetCoverInfoForTrack(
-            Track& track);
+            TrackPointer pTrack);
     void guessAndSetCoverInfoForTracks(
             const TrackPointerList& tracks);
 

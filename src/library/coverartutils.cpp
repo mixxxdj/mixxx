@@ -196,46 +196,46 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
 }
 
 CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
-        const Track& track) {
-    const auto fileAccess = track.getFileAccess();
+        TrackPointer pTrack) {
+    const auto fileAccess = pTrack->getFileAccess();
     if (kLogger.debugEnabled()) {
         kLogger.debug()
                 << "Guessing cover art for track"
                 << fileAccess.info();
     }
+
+    QImage embeddedCover = CoverArtUtils::extractEmbeddedCover(fileAccess);
+
     return guessCoverInfo(
             fileAccess.info(),
-            track.getAlbum(),
-            CoverArtUtils::extractEmbeddedCover(fileAccess));
+            pTrack->getAlbum(),
+            embeddedCover);
 }
 
 void CoverInfoGuesser::guessAndSetCoverInfoForTrack(
-        Track& track) {
-    track.setCoverInfo(guessCoverInfoForTrack(track));
+        TrackPointer pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    pTrack->setCoverInfo(guessCoverInfoForTrack(pTrack));
 }
 
 void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
         const TrackPointerList& tracks) {
     for (const auto& pTrack : tracks) {
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            continue;
-        }
-        guessAndSetCoverInfoForTrack(*pTrack);
+        guessAndSetCoverInfoForTrack(pTrack);
     }
 }
 
 QFuture<void> guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return {};
-    }
     if (s_enableConcurrentGuessingOfTrackCoverInfo) {
         return QtConcurrent::run([pTrack] {
-            CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+            CoverInfoGuesser().guessAndSetCoverInfoForTrack(pTrack);
         });
     } else {
         // Disabled only during tests
-        CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        CoverInfoGuesser().guessAndSetCoverInfoForTrack(pTrack);
         return {};
     }
 }
