@@ -1,9 +1,6 @@
 #include "util/timer.h"
 
-#include "moc_timer.cpp"
 #include "util/experiment.h"
-#include "util/time.h"
-#include "waveform/guitick.h"
 
 Timer::Timer(QString key, Stat::ComputeFlags compute)
         : m_key(std::move(key)),
