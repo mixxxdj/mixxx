@@ -47,7 +47,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
     // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
-    void apply();
+    void applyTagsAndCover();
+    void applyCover();
     void retry();
     void quit();
     void reject() override;

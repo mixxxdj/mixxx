@@ -297,7 +297,14 @@
           </widget>
          </item>
          <item>
-          <spacer name="lowerLabelSpacer">
+          <widget class="QPushButton" name="btnApplyCover">
+           <property name="text">
+            <string>Apply Cover</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -428,6 +435,7 @@
   <tabstop>submit_tree</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
+  <tabstop>btnApplyCover</tabstop>
   <tabstop>btnApply</tabstop>
   <tabstop>btnQuit</tabstop>
   <tabstop>btnRetry</tabstop>

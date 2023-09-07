@@ -142,7 +142,8 @@ void DlgTagFetcher::init() {
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::applyTagsAndCover);
+    connect(btnApplyCover, &QPushButton::clicked, this, &DlgTagFetcher::applyCover);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
     connect(tags, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::tagSelected);
@@ -234,6 +235,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    btnApplyCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
@@ -261,7 +263,7 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     }
 }
 
-void DlgTagFetcher::apply() {
+void DlgTagFetcher::applyTagsAndCover() {
     int tagIndex = m_data.m_selectedTag;
     if (tagIndex < 0) {
         return;
@@ -325,6 +327,19 @@ void DlgTagFetcher::apply() {
     }
 #endif // __EXTRA_METADATA__
 
+    applyCover();
+
+    statusMessage->setText(tr("Selected metadata applied"));
+
+    m_pTrack->replaceMetadataFromSource(
+            std::move(trackMetadata),
+            // Prevent re-import of outdated metadata from file tags
+            // by explicitly setting the synchronization time stamp
+            // to the current time.
+            QDateTime::currentDateTimeUtc());
+}
+
+void DlgTagFetcher::applyCover() {
     if (!m_fetchedCoverArtByteArrays.isNull()) {
         VERIFY_OR_DEBUG_ASSERT(m_isCoverArtCopyWorkerRunning == false) {
             return;
@@ -371,19 +386,13 @@ void DlgTagFetcher::apply() {
         m_pWorker->start();
     }
 
-    statusMessage->setText(tr("Selected metadata applied"));
-
-    m_pTrack->replaceMetadataFromSource(
-            std::move(trackMetadata),
-            // Prevent re-import of outdated metadata from file tags
-            // by explicitly setting the synchronization time stamp
-            // to the current time.
-            QDateTime::currentDateTimeUtc());
+    statusMessage->setText(tr("Selected cover art applied"));
 }
 
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    btnApplyCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
 }
@@ -434,6 +443,7 @@ void DlgTagFetcher::fetchTagFinished(
         return;
     } else {
         btnApply->setEnabled(true);
+        btnApplyCover->setEnabled(true);
         btnRetry->setEnabled(false);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
@@ -589,6 +599,8 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     m_pWFetchedCoverArtLabel->loadData(
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
+
+    btnApplyCover->setEnabled(!data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
