@@ -154,7 +154,7 @@ if(APPLE)
     message(FATAL_ERROR "'xcode-select -v' failed with '${XCODE_SELECT_RESULT}'. You may need to install Xcode and run 'sudo xcode-select --install'.")
   endif()
 
-  if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+  if(VCPKG_TARGET_TRIPLET MATCHES "^arm64-osx")
     # Minimum macOS version for arm64 Support
     set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
     set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target architecture")
