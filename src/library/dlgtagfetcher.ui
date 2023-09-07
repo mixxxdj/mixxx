@@ -137,6 +137,12 @@
        </item>
        <item row="0" column="0">
         <widget class="QTreeWidget" name="tags">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+           <horstretch>1</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
          <property name="editTriggers">
           <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
          </property>
@@ -194,6 +200,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
            <property name="styleSheet">
             <string notr="true">QLabel { font-weight: bold; }</string>
            </property>
@@ -205,12 +214,15 @@
          <item>
           <widget class="QWidget" name="currentCover" native="true">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>250</horstretch>
              <verstretch>250</verstretch>
             </sizepolicy>
            </property>
            <layout class="QVBoxLayout" name="currentCoverArtLayout">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
             <property name="spacing">
              <number>0</number>
             </property>
@@ -228,9 +240,6 @@
             </property>
             <property name="bottomMargin">
              <number>0</number>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTop|Qt::AlignCenter</set>
             </property>
            </layout>
           </widget>
@@ -243,6 +252,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
            <property name="styleSheet">
             <string notr="true">QLabel { font-weight: bold; }</string>
            </property>
@@ -254,12 +266,15 @@
          <item>
           <widget class="QWidget" name="fetchedCover" native="true">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>250</horstretch>
              <verstretch>250</verstretch>
             </sizepolicy>
            </property>
            <layout class="QVBoxLayout" name="fetchedCoverArtLayout">
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
             <property name="spacing">
              <number>0</number>
             </property>
@@ -278,9 +293,6 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignBottom|Qt::AlignCenter</set>
-            </property>
            </layout>
           </widget>
          </item>
@@ -288,12 +300,6 @@
           <spacer name="lowerLabelSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
            </property>
           </spacer>
          </item>
@@ -304,9 +310,9 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QHBoxLayout" name="progressRetryLayout">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
+      <layout class="QVBoxLayout" name="progressMessageLayout">
        <property name="sizeConstraint">
         <enum>QLayout::SetMaximumSize</enum>
        </property>
@@ -317,13 +323,16 @@
          </property>
         </widget>
        </item>
-       <item alignment="Qt::AlignHCenter">
+       <item>
         <widget class="QLabel" name="statusMessage">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
          <property name="layoutDirection">
           <enum>Qt::LeftToRight</enum>
@@ -355,14 +364,8 @@
        </item>
       </layout>
      </item>
-     <item alignment="Qt::AlignRight">
+     <item>
       <widget class="QPushButton" name="btnRetry">
-       <property name="maximumSize">
-        <size>
-         <width>80</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="text">
         <string>Retry</string>
        </property>
