@@ -19,7 +19,7 @@ namespace {
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
-        auto item = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        const auto* item = qobject_cast<const DlgPrefSoundItem*>(pObj);
         if (!item || item->type() != output.getType()) {
             continue;
         }
