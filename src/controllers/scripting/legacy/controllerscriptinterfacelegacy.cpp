@@ -461,7 +461,12 @@ int ControllerScriptInterfaceLegacy::beginTimer(
         logOrThrowError(
                 QStringLiteral("passed a string to `engine.beginTimer`, please "
                                "pass a function instead!"));
-        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(timerCallback.toString());
+        // wrap the code in a function to make the evaluation lazy.
+        // otherwise the code would be evaluated immediately instead of after
+        // the timer which is obviously undesired and could also cause
+        // issues when used recursively.
+        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(
+                QStringLiteral("()=>%1").arg(timerCallback.toString()));
     } else if (!timerCallback.isCallable()) {
         QString sErrorMessage(
                 "Invalid timer callback provided to engine.beginTimer. Valid "
