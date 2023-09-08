@@ -149,6 +149,6 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    PollingControlProxy m_masterAudioLatencyOverloadCount;
-    PollingControlProxy m_masterAudioLatencyOverload;
+    PollingControlProxy m_mainAudioLatencyOverloadCount;
+    PollingControlProxy m_mainAudioLatencyOverload;
 };

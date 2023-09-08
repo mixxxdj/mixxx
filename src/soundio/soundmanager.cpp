@@ -52,9 +52,9 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
-          m_masterAudioLatencyOverloadCount("[Master]",
+          m_mainAudioLatencyOverloadCount("[Master]",
                   "audio_latency_overload_count"),
-          m_masterAudioLatencyOverload("[Master]", "audio_latency_overload") {
+          m_mainAudioLatencyOverload("[Master]", "audio_latency_overload") {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -350,7 +350,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     // compute the new one then atomically hand off below.
     SoundDevicePointer pNewMasterClockRef;
 
-    m_masterAudioLatencyOverloadCount.set(0);
+    m_mainAudioLatencyOverloadCount.set(0);
 
     // load with all configured devices.
     // all found devices are removed below
@@ -687,9 +687,9 @@ int SoundManager::getConfiguredDeckCount() const {
 void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
     if (m_underflowUpdateCount == 0) {
         if (atomicLoadRelaxed(m_underflowHappened)) {
-            m_masterAudioLatencyOverload.set(1.0);
-            m_masterAudioLatencyOverloadCount.set(
-                    m_masterAudioLatencyOverloadCount.get() + 1);
+            m_mainAudioLatencyOverload.set(1.0);
+            m_mainAudioLatencyOverloadCount.set(
+                    m_mainAudioLatencyOverloadCount.get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION *
                     m_config.getSampleRate() / framesPerBuffer / 1000;
 
@@ -697,7 +697,7 @@ void SoundManager::processUnderflowHappened(SINT framesPerBuffer) {
                                      // but that is OK, because we count only
                                      // 1 underflow each 500 ms
         } else {
-            m_masterAudioLatencyOverload.set(0.0);
+            m_mainAudioLatencyOverload.set(0.0);
         }
     } else {
         --m_underflowUpdateCount;
