@@ -174,7 +174,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
 
             if (majorVersion * 100 + minorVersion >= 201) {
-                m_openGlAvailable = true;
                 if (pContext->isOpenGLES()) {
                     m_openGlesAvailable = true;
                 } else {
@@ -818,16 +817,15 @@ void WaveformWidgetFactory::swap() {
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
-    if (m_openGlAvailable) {
-        if (m_openGLShaderAvailable) {
+    if (isOpenGlShaderAvailable()) {
 #ifndef MIXXX_USE_QOPENGL
-            return WaveformWidgetType::GLSLRGBWaveform;
+        return WaveformWidgetType::GLSLRGBWaveform;
 #else
-            return WaveformWidgetType::AllShaderRGBWaveform;
+        return WaveformWidgetType::AllShaderRGBWaveform;
 #endif
-        } else {
-            return WaveformWidgetType::GLRGBWaveform;
-        }
+    }
+    if (isOpenGlAvailable() || isOpenGlesAvailable()) {
+        return WaveformWidgetType::GLRGBWaveform;
     }
     return WaveformWidgetType::RGBWaveform;
 }
