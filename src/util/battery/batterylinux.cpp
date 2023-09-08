@@ -7,6 +7,7 @@
 #include <QtDebug>
 
 #include "moc_batterylinux.cpp"
+#include "util/assert.h"
 
 BatteryLinux::BatteryLinux(QObject* pParent)
     : Battery(pParent),

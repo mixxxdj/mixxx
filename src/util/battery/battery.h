@@ -1,6 +1,7 @@
 #pragma once
 
-#include "util/timer.h"
+#include <QObject>
+#include <QTimer>
 
 class Battery : public QObject {
     Q_OBJECT

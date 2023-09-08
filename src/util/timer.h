@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QObject>
+#include <QString>
 #include <QStringView>
 #include <optional>
 
-#include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/duration.h"
-#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 #include "util/stat.h"
 
