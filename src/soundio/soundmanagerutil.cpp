@@ -312,11 +312,6 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     return types;
 }
 
-bool AudioOutput::isHidden() {
-    return m_type == RECORD_BROADCAST;
-}
-
-
 /**
  * Implements setting the type of an AudioOutput, using
  * AudioOutput::getSupportedTypes.
