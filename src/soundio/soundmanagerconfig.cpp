@@ -10,8 +10,6 @@
 
 const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
-// Sample Rate even the cheap sound Devices will support most likely
-const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
@@ -68,7 +66,8 @@ bool SoundManagerConfig::readFromDisk() {
     file.close();
     rootElement = doc.documentElement();
     setAPI(rootElement.attribute(xmlAttributeApi));
-    setSampleRate(rootElement.attribute(xmlAttributeSampleRate, "0").toUInt());
+    setSampleRate(mixxx::audio::SampleRate(
+            rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute(xmlAttributeBufferSize, "0").toUInt());
     setSyncBuffers(rootElement.attribute(xmlAttributeSyncBuffers, "2").toUInt());
@@ -223,7 +222,7 @@ bool SoundManagerConfig::writeToDisk() const {
     QDomDocument doc(xmlRootElement);
     QDomElement docElement(doc.createElement(xmlRootElement));
     docElement.setAttribute(xmlAttributeApi, m_api);
-    docElement.setAttribute(xmlAttributeSampleRate, m_sampleRate);
+    docElement.setAttribute(xmlAttributeSampleRate, m_sampleRate.value());
     docElement.setAttribute(xmlAttributeBufferSize, m_audioBufferSizeIndex);
     docElement.setAttribute(xmlAttributeSyncBuffers, m_syncBuffers);
     docElement.setAttribute(xmlAttributeForceNetworkClock, m_forceNetworkClock);
@@ -292,15 +291,14 @@ bool SoundManagerConfig::checkAPI() {
     return true;
 }
 
-unsigned int SoundManagerConfig::getSampleRate() const {
+mixxx::audio::SampleRate SoundManagerConfig::getSampleRate() const {
     return m_sampleRate;
 }
 
-void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
+void SoundManagerConfig::setSampleRate(mixxx::audio::SampleRate sampleRate) {
     // making sure we don't divide by zero elsewhere
-    m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
+    m_sampleRate = sampleRate.isValid() ? sampleRate : kFallbackSampleRate;
 }
-
 
 unsigned int SoundManagerConfig::getSyncBuffers() const {
     return m_syncBuffers;
@@ -408,16 +406,9 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
-    unsigned int framesPerBuffer = 1;
-    double sampleRate = m_sampleRate; // need this to avoid int division
-    // first, get to the framesPerBuffer value corresponding to latency index 1
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
-    }
-    // then, keep going until we get to our desired latency index (if not 1)
-    for (unsigned int latencyIndex = 1; latencyIndex < audioBufferSizeIndex; ++latencyIndex) {
-        framesPerBuffer <<= 1; // *= 2
-    }
-    return framesPerBuffer;
+
+    const unsigned int sampleRateKhz = static_cast<unsigned int>(m_sampleRate / 1000);
+    return std::bit_ceil(sampleRateKhz) << (audioBufferSizeIndex - 1);
 }
 
 // Set the audio buffer size
@@ -509,7 +500,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         }
     }
 
-    unsigned int defaultSampleRate = kFallbackSampleRate;
+    mixxx::audio::SampleRate defaultSampleRate = kFallbackSampleRate;
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
@@ -527,7 +518,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
-        QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
+        QList<mixxx::audio::SampleRate> sampleRates = soundManager->getSampleRates(m_api);
         if (sampleRates.contains(defaultSampleRate)) {
             m_sampleRate = defaultSampleRate;
         } else if (sampleRates.contains(kFallbackSampleRate)) {

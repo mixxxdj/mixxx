@@ -8,6 +8,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -97,7 +98,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_lastCallbackEntrytoDacSecs(0) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
-    m_dSampleRate = deviceInfo->defaultSampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
     if (m_deviceTypeId == paALSA) {
         // PortAudio gives the device name including the ALSA hw device. The
         // ALSA hw device is an only somewhat reliable identifier; it may change
@@ -207,8 +208,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     }
 
     // Sample rate
-    if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0;
+    if (!m_sampleRate.isValid()) {
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     SINT framesPerBuffer = m_configFramesPerBuffer;
@@ -226,8 +227,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     } else {
         qDebug() << "framesPerBuffer:" << framesPerBuffer;
     }
-    double bufferMSec = framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz and buffer size:"
+    double bufferMSec = framesPerBuffer / m_sampleRate.toDouble() * 1000;
+    qDebug() << "Requested sample rate: " << m_sampleRate << "Hz and buffer size:"
              << bufferMSec << "ms";
 
     qDebug() << "Output channels:" << m_outputParams.channelCount
@@ -338,7 +339,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     err = Pa_OpenStream(&pStream,
             pInputParams,
             pOutputParams,
-            m_dSampleRate,
+            m_sampleRate.toDouble(),
             framesPerBuffer,
             paClipOff, // Stream flags
             pCallback,
@@ -376,16 +377,16 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
 
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
-    m_dSampleRate = streamDetails->sampleRate;
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(streamDetails->sampleRate);
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
-    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:"
+    qDebug() << "   Actual sample rate: " << m_sampleRate << "Hz, latency:"
              << currentLatencyMSec << "ms";
 
     if (isClkRefDevice) {
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_sampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
@@ -1042,7 +1043,7 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 
     PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
             - timeInfo->currentTime;
-    double bufferSizeSec = framesPerBuffer / m_dSampleRate;
+    double bufferSizeSec = framesPerBuffer / m_sampleRate.toDouble();
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
@@ -1085,10 +1086,10 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
 void SoundDevicePortAudio::updateAudioLatencyUsage(
         const SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_masterAudioLatencyUsage.set(
-                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+                secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
         //qDebug() << m_pMasterAudioLatencyUsage

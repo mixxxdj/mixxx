@@ -2,9 +2,10 @@
 
 #include <QVarLengthArray>
 
-#include "util/types.h"
-#include "engine/enginemaster.h"
+#include "audio/types.h"
 #include "effects/engineeffectsmanager.h"
+#include "engine/enginemaster.h"
+#include "util/types.h"
 
 class ChannelMixer {
   public:
@@ -20,7 +21,7 @@ class ChannelMixer {
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,
             unsigned int iBufferSize,
-            unsigned int iSampleRate,
+            mixxx::audio::SampleRate sampleRate,
             EngineEffectsManager* pEngineEffectsManager);
     // This does modify the input channel buffers, then mixes them to make the output buffer.
     static void applyEffectsInPlaceAndMixChannels(
@@ -32,6 +33,6 @@ class ChannelMixer {
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,
             unsigned int iBufferSize,
-            unsigned int iSampleRate,
+            mixxx::audio::SampleRate sampleRate,
             EngineEffectsManager* pEngineEffectsManager);
 };

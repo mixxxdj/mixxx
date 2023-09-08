@@ -10,7 +10,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         CSAMPLE* pOutput,
         const ChannelHandle& outputHandle,
         unsigned int iBufferSize,
-        unsigned int iSampleRate,
+        mixxx::audio::SampleRate sampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
     // 1. Clear pOutput buffer
@@ -42,7 +42,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
                 pChannelInfo->m_pBuffer,
                 pOutput,
                 iBufferSize,
-                iSampleRate,
+                sampleRate,
                 pChannelInfo->m_features,
                 oldGain,
                 newGain,
@@ -59,7 +59,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         CSAMPLE* pOutput,
         const ChannelHandle& outputHandle,
         unsigned int iBufferSize,
-        unsigned int iSampleRate,
+        mixxx::audio::SampleRate sampleRate,
         EngineEffectsManager* pEngineEffectsManager) {
     // Signal flow overview:
     // 1. Calculate gains for each channel
@@ -87,7 +87,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
                 outputHandle,
                 pChannelInfo->m_pBuffer,
                 iBufferSize,
-                iSampleRate,
+                sampleRate,
                 pChannelInfo->m_features,
                 oldGain,
                 newGain,

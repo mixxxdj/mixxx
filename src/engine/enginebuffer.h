@@ -8,6 +8,7 @@
 #include <initializer_list>
 
 #include "audio/frame.h"
+#include "audio/types.h"
 #include "control/controlvalue.h"
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
@@ -216,7 +217,7 @@ class EngineBuffer : public EngineObject {
     void slotTrackLoading();
     void slotTrackLoaded(
             TrackPointer pTrack,
-            int trackSampleRate,
+            mixxx::audio::SampleRate trackSampleRate,
             double trackNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
             const QString& reason);

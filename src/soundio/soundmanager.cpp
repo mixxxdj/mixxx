@@ -65,9 +65,9 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
             ConfigKey(VINYL_PREF_KEY, "gain"));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
-    m_samplerates.push_back(44100);
-    m_samplerates.push_back(48000);
-    m_samplerates.push_back(96000);
+    m_samplerates.push_back(mixxx::audio::SampleRate(44100));
+    m_samplerates.push_back(mixxx::audio::SampleRate(48000));
+    m_samplerates.push_back(mixxx::audio::SampleRate(96000));
 
     m_pNetworkStream = QSharedPointer<EngineNetworkStream>(
             new EngineNetworkStream(2, 0));
@@ -215,11 +215,11 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     }
 }
 
-QList<unsigned int> SoundManager::getSampleRates(const QString& api) const {
+QList<mixxx::audio::SampleRate> SoundManager::getSampleRates(const QString& api) const {
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
-        QList<unsigned int> samplerates;
+        QList<mixxx::audio::SampleRate> samplerates;
         if (m_jackSampleRate.isValid()) {
             samplerates.append(m_jackSampleRate);
         }
@@ -228,7 +228,7 @@ QList<unsigned int> SoundManager::getSampleRates(const QString& api) const {
     return m_samplerates;
 }
 
-QList<unsigned int> SoundManager::getSampleRates() const {
+QList<mixxx::audio::SampleRate> SoundManager::getSampleRates() const {
     return getSampleRates("");
 }
 
@@ -559,8 +559,8 @@ SoundDeviceStatus SoundManager::setConfig(const SoundManagerConfig& config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
-                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
+    m_pConfig->set(ConfigKey("[Soundcard]", "Samplerate"),
+            ConfigValue(static_cast<int>(m_config.getSampleRate().value())));
 
     status = setupDevices();
     if (status == SoundDeviceStatus::Ok) {

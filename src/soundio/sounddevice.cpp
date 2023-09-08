@@ -4,7 +4,9 @@
 #include <cstring> // for memcpy and strcmp
 
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerconfig.h"
 #include "soundio/soundmanagerutil.h"
+#include "soundmanagerconfig.h"
 #include "util/debug.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -15,7 +17,7 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
-          m_dSampleRate(44100.0),
+          m_sampleRate(SoundManagerConfig::kMixxxDefaultSampleRate),
           m_hostAPI("Unknown API"),
           m_configFramesPerBuffer(0) {
 }
@@ -28,12 +30,8 @@ int SoundDevice::getNumOutputChannels() const {
     return m_iNumOutputChannels;
 }
 
-void SoundDevice::setSampleRate(double sampleRate) {
-    if (sampleRate <= 0.0) {
-        // this is the default value used elsewhere in this file
-        sampleRate = 44100.0;
-    }
-    m_dSampleRate = sampleRate;
+void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {
+    m_sampleRate = sampleRate.isValid() ? sampleRate : SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
 void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {

@@ -43,7 +43,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
           m_targetTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
-    m_dSampleRate = 44100.0;
+    m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
@@ -58,13 +58,13 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
     kLogger.debug() << "open:" << m_deviceId.name;
 
     // Sample rate
-    if (m_dSampleRate <= 0) {
-        m_dSampleRate = 44100.0;
+    if (!m_sampleRate.isValid()) {
+        m_sampleRate = SoundManagerConfig::kMixxxDefaultSampleRate;
     }
 
     const SINT framesPerBuffer = m_configFramesPerBuffer;
     const auto requestedBufferTime = mixxx::Duration::fromSeconds(
-            framesPerBuffer / m_dSampleRate);
+            framesPerBuffer / m_sampleRate.toDouble());
 
     // Feed the network device buffer directly from the
     // clock reference device callback
@@ -78,18 +78,18 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
                 m_iNumInputChannels * framesPerBuffer * 2);
     }
 
-    m_pNetworkStream->startStream(m_dSampleRate);
+    m_pNetworkStream->startStream(m_sampleRate);
 
     // Create the callback Thread if requested
     if (isClkRefDevice) {
         kLogger.debug() << "Clock Reference with:" << framesPerBuffer << "frames/buffer @"
-                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
+                        << m_sampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
 
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"),
                 requestedBufferTime.toDoubleMillis());
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_sampleRate);
 
         // Network stream was just started above so we have to wait until
         // we can pass one chunk.
@@ -100,7 +100,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
         m_pThread->start(QThread::TimeCriticalPriority);
     } else {
         kLogger.debug() << "Maximum:" << framesPerBuffer << "frames/buffer @"
-                        << m_dSampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
+                        << m_sampleRate << "Hz =" << requestedBufferTime.formatMillisWithUnit();
     }
 
     return SoundDeviceStatus::Ok;
@@ -123,6 +123,10 @@ SoundDeviceStatus SoundDeviceNetwork::close() {
     m_inputFifo.reset();
 
     return SoundDeviceStatus::Ok;
+}
+
+mixxx::audio::SampleRate SoundDeviceNetwork::getDefaultSampleRate() const {
+    return SoundManagerConfig::kMixxxDefaultSampleRate;
 }
 
 QString SoundDeviceNetwork::getError() const {
@@ -501,7 +505,7 @@ void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
     m_clkRefTimer.start();
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();
     // This deadline for the next buffer in microseconds since the Unix epoch
-    m_targetTime += static_cast<qint64>(framesPerBuffer / m_dSampleRate * 1000000);
+    m_targetTime += static_cast<qint64>(framesPerBuffer / m_sampleRate.toDouble() * 1000000);
     double callbackEntrytoDacSecs = (m_targetTime - currentTime) / 1000000.0;
     callbackEntrytoDacSecs = math_max(callbackEntrytoDacSecs, 0.0001);
     VisualPlayPosition::setCallbackEntryToDacSecs(callbackEntrytoDacSecs, m_clkRefTimer);
@@ -510,11 +514,10 @@ void SoundDeviceNetwork::updateCallbackEntryToDacTime(SINT framesPerBuffer) {
 
 void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
-    if (m_framesSinceAudioLatencyUsageUpdate
-            > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
+    if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / CPU_USAGE_UPDATE_RATE)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
         m_masterAudioLatencyUsage.set(secInAudioCb /
-                (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
+                (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::empty();
         m_framesSinceAudioLatencyUsageUpdate = 0;
         //qDebug() << m_pMasterAudioLatencyUsage->get();
