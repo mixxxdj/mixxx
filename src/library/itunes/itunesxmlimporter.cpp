@@ -42,6 +42,7 @@ const QString kTrackNumber = "Track Number";
 const QString kRating = "Rating";
 const QString kTrackType = "Track Type";
 const QString kRemote = "Remote";
+const QString kPlayCount = "Play Count";
 
 } // anonymous namespace
 
@@ -266,6 +267,8 @@ void ITunesXMLImporter::parseTrack() {
     QString tracknumber;
     QString tracktype;
 
+    int playCount = 0;
+
     while (!m_xml.atEnd()) {
         m_xml.readNext();
 
@@ -361,6 +364,10 @@ void ITunesXMLImporter::parseTrack() {
                     tracktype = content;
                     continue;
                 }
+                if (key == kPlayCount) {
+                    playCount = content.toInt();
+                    continue;
+                }
             }
         }
         // exit loop on closing </dict>
@@ -394,6 +401,7 @@ void ITunesXMLImporter::parseTrack() {
             .trackNumber = tracknumber.toInt(),
             .bpm = bpm,
             .bitrate = bitrate,
+            .playCount = playCount,
     };
 
     if (!m_dao->importTrack(track)) {

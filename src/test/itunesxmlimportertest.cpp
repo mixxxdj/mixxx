@@ -338,6 +338,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 1,
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{

@@ -30,6 +30,7 @@ struct ITunesTrack {
     int trackNumber;
     int bpm;
     int bitrate;
+    int playCount;
 
 #if __cplusplus >= 202002L
     bool operator==(const ITunesTrack&) const = default;
@@ -51,7 +52,8 @@ struct ITunesTrack {
                 comment == other.comment &&
                 trackNumber == other.trackNumber &&
                 bpm == other.bpm &&
-                bitrate == other.bitrate);
+                bitrate == other.bitrate &&
+                playCount == other.playCount);
     }
 #endif
 };

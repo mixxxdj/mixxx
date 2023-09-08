@@ -191,6 +191,7 @@ class ImporterImpl {
                 .trackNumber = static_cast<int>(item.trackNumber),
                 .bpm = static_cast<int>(item.beatsPerMinute),
                 .bitrate = static_cast<int>(item.bitrate),
+                .playCount = static_cast<int>(item.playCount),
         };
 
         if (!m_dao.importTrack(track)) {
