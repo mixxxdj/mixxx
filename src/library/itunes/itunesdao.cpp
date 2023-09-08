@@ -26,7 +26,9 @@ std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
        << ".trackNumber = " << track.trackNumber << ", "
        << ".bpm = " << track.bpm << ", "
        << ".bitrate = " << track.bitrate << ", "
-       << ".playCount = " << track.playCount << " }";
+       << ".playCount = " << track.playCount << ", "
+       << ".lastPlayedAt = " << track.lastPlayedAt.toString().toStdString() << ", "
+       << ".dateAdded = " << track.dateAdded.toString().toStdString() << " }";
     return os;
 }
 

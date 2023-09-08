@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDateTime>
 #include <QHash>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -31,6 +32,8 @@ struct ITunesTrack {
     int bpm;
     int bitrate;
     int playCount;
+    QDateTime lastPlayedAt;
+    QDateTime dateAdded;
 
 #if __cplusplus >= 202002L
     bool operator==(const ITunesTrack&) const = default;
@@ -53,7 +56,9 @@ struct ITunesTrack {
                 trackNumber == other.trackNumber &&
                 bpm == other.bpm &&
                 bitrate == other.bitrate &&
-                playCount == other.playCount);
+                playCount == other.playCount &&
+                lastPlayedAt == other.lastPlayedAt &&
+                dateAdded == other.dateAdded);
     }
 #endif
 };

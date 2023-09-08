@@ -1,5 +1,6 @@
 #include "library/itunes/itunesxmlimporter.h"
 
+#include <QDateTime>
 #include <QSqlQuery>
 #include <QString>
 #include <QUrl>
@@ -43,6 +44,8 @@ const QString kRating = "Rating";
 const QString kTrackType = "Track Type";
 const QString kRemote = "Remote";
 const QString kPlayCount = "Play Count";
+const QString kPlayDateUTC = "Play Date UTC";
+const QString kDateAdded = "Date Added";
 
 } // anonymous namespace
 
@@ -268,6 +271,8 @@ void ITunesXMLImporter::parseTrack() {
     QString tracktype;
 
     int playCount = 0;
+    QDateTime lastPlayedAt;
+    QDateTime dateAdded;
 
     while (!m_xml.atEnd()) {
         m_xml.readNext();
@@ -368,6 +373,14 @@ void ITunesXMLImporter::parseTrack() {
                     playCount = content.toInt();
                     continue;
                 }
+                if (key == kPlayDateUTC) {
+                    lastPlayedAt = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
+                if (key == kDateAdded) {
+                    dateAdded = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
             }
         }
         // exit loop on closing </dict>
@@ -402,6 +415,8 @@ void ITunesXMLImporter::parseTrack() {
             .bpm = bpm,
             .bitrate = bitrate,
             .playCount = playCount,
+            .lastPlayedAt = lastPlayedAt,
+            .dateAdded = dateAdded,
     };
 
     if (!m_dao->importTrack(track)) {

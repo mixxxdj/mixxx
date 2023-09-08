@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QDateTime>
 #include <QDir>
 #include <QString>
 #include <atomic>
@@ -91,25 +92,30 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
-    EXPECT_CALL(*dao, importTrack(ITunesTrack{
-                              .id = 482,
-                              .artist = "AC/DC",
-                              .title = "Play Ball",
-                              .album = "Rock or Bust",
-                              .albumArtist = "AC/DC",
-                              .composer = "Angus Young & Malcolm Young",
-                              .genre = "Rock",
-                              .grouping = "",
-                              .year = 2014,
-                              .duration = 167,
-                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
-                              .rating = 0,
-                              .comment = "",
-                              .trackNumber = 2,
-                              .bpm = 0,
-                              .bitrate = 256,
-                      }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 482,
+                    .artist = "AC/DC",
+                    .title = "Play Ball",
+                    .album = "Rock or Bust",
+                    .albumArtist = "AC/DC",
+                    .composer = "Angus Young & Malcolm Young",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2014,
+                    .duration = 167,
+                    .location =
+                            musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 2,
+                    .bpm = 0,
+                    .bitrate = 256,
+                    .dateAdded = QDateTime::fromString(
+                            "2023-04-25T14:13:36Z", Qt::ISODate),
+            }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 476,
@@ -130,6 +136,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -148,6 +155,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -171,6 +179,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -192,6 +201,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
@@ -282,25 +292,30 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
-    EXPECT_CALL(*dao, importTrack(ITunesTrack{
-                              .id = 79,
-                              .artist = "AC/DC",
-                              .title = "Play Ball",
-                              .album = "Rock or Bust",
-                              .albumArtist = "AC/DC",
-                              .composer = "Angus Young & Malcolm Young",
-                              .genre = "Rock",
-                              .grouping = "",
-                              .year = 2014,
-                              .duration = 167,
-                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
-                              .rating = 0,
-                              .comment = "",
-                              .trackNumber = 2,
-                              .bpm = 0,
-                              .bitrate = 256,
-                      }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 79,
+                    .artist = "AC/DC",
+                    .title = "Play Ball",
+                    .album = "Rock or Bust",
+                    .albumArtist = "AC/DC",
+                    .composer = "Angus Young & Malcolm Young",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2014,
+                    .duration = 167,
+                    .location =
+                            musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 2,
+                    .bpm = 0,
+                    .bitrate = 256,
+                    .dateAdded = QDateTime::fromString(
+                            "2023-04-25T14:13:36Z", Qt::ISODate),
+            }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 81,
@@ -320,6 +335,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -339,6 +355,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .bpm = 0,
                     .bitrate = 256,
                     .playCount = 1,
+                    .lastPlayedAt = QDateTime::fromString("2023-04-25T14:18:39Z", Qt::ISODate),
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -362,6 +380,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -383,6 +402,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
