@@ -94,7 +94,7 @@ class EngineMaster : public QObject, public AudioSource {
     }
 
     // These are really only exposed for tests to use.
-    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getMainBuffer() const;
     const CSAMPLE* getBoothBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;

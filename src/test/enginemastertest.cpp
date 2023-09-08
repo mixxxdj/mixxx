@@ -41,9 +41,10 @@ class EngineChannelMock : public EngineChannel {
 
 class EngineMasterTest : public BaseSignalPathTest {
   protected:
-    void assertMasterBufferMatchesGolden(const QString& testName) {
-          assertBufferMatchesReference(m_pEngineMaster->getMasterBuffer(), MAX_BUFFER_LEN,
-              QString("%1-master").arg(testName));
+    void assertMainBufferMatchesGolden(const QString& testName) {
+        assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+                MAX_BUFFER_LEN,
+                QString("%1-main").arg(testName));
     };
 
     void assertHeadphoneBufferMatchesGolden(const QString& testName) {
@@ -90,7 +91,7 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain the channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -134,7 +135,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output is empty.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output contains the channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -205,7 +206,7 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -276,7 +277,7 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -373,7 +374,7 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -470,7 +471,7 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
