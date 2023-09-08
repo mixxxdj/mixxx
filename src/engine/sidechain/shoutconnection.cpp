@@ -58,7 +58,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_pConfig(pConfig),
           m_pProfile(profile),
           m_encoder(nullptr),
-          m_masterSamplerate("[Master]", "samplerate"),
+          m_mainSamplerate("[Master]", "samplerate"),
           m_broadcastEnabled(BROADCAST_PREF_KEY, "enabled"),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -396,13 +396,13 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    auto masterSamplerate = mixxx::audio::SampleRate::fromDouble(m_masterSamplerate.get());
-    VERIFY_OR_DEBUG_ASSERT(masterSamplerate.isValid()) {
-        qWarning() << "Invalid sample rate!" << masterSamplerate;
+    auto mainSamplerate = mixxx::audio::SampleRate::fromDouble(m_mainSamplerate.get());
+    VERIFY_OR_DEBUG_ASSERT(mainSamplerate.isValid()) {
+        qWarning() << "Invalid sample rate!" << mainSamplerate;
         return;
     }
 
-    if (m_format_is_ov && masterSamplerate == 96000) {
+    if (m_format_is_ov && mainSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
@@ -412,7 +412,7 @@ void ShoutConnection::updateFromPreferences() {
     }
 
 #ifdef __OPUS__
-    if (m_format_is_opus && masterSamplerate != EncoderOpus::getMasterSamplerate()) {
+    if (m_format_is_opus && mainSamplerate != EncoderOpus::getMasterSamplerate()) {
         errorDialog(
             EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported sample rate")
@@ -463,7 +463,7 @@ void ShoutConnection::updateFromPreferences() {
     QString userErrorMsg;
     int ret = -1;
     if (m_encoder) {
-        ret = m_encoder->initEncoder(masterSamplerate, &userErrorMsg);
+        ret = m_encoder->initEncoder(mainSamplerate, &userErrorMsg);
     }
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
