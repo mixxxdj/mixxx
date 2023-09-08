@@ -32,7 +32,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     DlgPrefSound(QWidget* parent,
             std::shared_ptr<SoundManager> soundManager,
             UserSettingsPointer pSettings);
-    virtual ~DlgPrefSound();
 
     QUrl helpUrl() const override;
 
