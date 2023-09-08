@@ -43,6 +43,7 @@ WSpinnyBase::WSpinnyBase(
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
+          m_pShowCoverProxy(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
