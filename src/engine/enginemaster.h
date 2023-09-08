@@ -106,7 +106,7 @@ class EngineMaster : public QObject, public AudioSource {
         return m_pEngineSideChain;
     }
 
-    CSAMPLE_GAIN getMasterGain(int channelIndex) const;
+    CSAMPLE_GAIN getMainGain(int channelIndex) const;
 
     struct ChannelInfo {
         ChannelInfo(int index)
@@ -276,7 +276,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // The previous gain of each channel for each mixing output (master,
     // headphone, talkover).
-    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMasterGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelTalkoverGainCache;
 
@@ -299,7 +299,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pEngineSync;
 
-    ControlObject* m_pMasterGain;
+    ControlObject* m_pMainGain;
     ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
     ControlObject* m_pMasterSampleRate;
@@ -332,7 +332,7 @@ class EngineMaster : public QObject, public AudioSource {
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE_GAIN m_masterGainOld;
     CSAMPLE_GAIN m_boothGainOld;
-    CSAMPLE_GAIN m_headphoneMasterGainOld;
+    CSAMPLE_GAIN m_headphoneMainGainOld;
     CSAMPLE_GAIN m_headphoneGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;

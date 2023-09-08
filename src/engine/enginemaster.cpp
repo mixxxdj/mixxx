@@ -38,7 +38,7 @@ EngineMaster::EngineMaster(
           m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_masterGainOld(0.0),
           m_boothGainOld(0.0),
-          m_headphoneMasterGainOld(0.0),
+          m_headphoneMainGainOld(0.0),
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
@@ -93,7 +93,7 @@ EngineMaster::EngineMaster(
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
     // Master gain
-    m_pMasterGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
+    m_pMainGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
 
     // Booth gain
     m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
@@ -200,7 +200,7 @@ EngineMaster::~EngineMaster() {
     delete m_pBalance;
     delete m_pHeadMix;
     delete m_pHeadSplitEnabled;
-    delete m_pMasterGain;
+    delete m_pMainGain;
     delete m_pBoothGain;
     delete m_pHeadGain;
     delete m_pTalkoverDucking;
@@ -307,7 +307,7 @@ void EngineMaster::processChannels(int iBufferSize) {
             m_activeTalkoverChannels.append(pChannelInfo);
 
             // Check if we need to fade out the master channel
-            GainCache& gainCache = m_channelMasterGainCache[i];
+            GainCache& gainCache = m_channelMainGainCache[i];
             if (gainCache.m_gain != 0) {
                 gainCache.m_fadeout = true;
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
@@ -325,7 +325,7 @@ void EngineMaster::processChannels(int iBufferSize) {
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
             } else {
                 // Check if we need to fade out the channel
-                GainCache& gainCache = m_channelMasterGainCache[i];
+                GainCache& gainCache = m_channelMainGainCache[i];
                 if (gainCache.m_gain != 0) {
                     gainCache.m_fadeout = true;
                     m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
@@ -527,8 +527,8 @@ void EngineMaster::process(const int iBufferSize) {
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         ChannelMixer::applyEffectsInPlaceAndMixChannels(m_masterGain,
                 m_activeBusChannels[o],
-                &m_channelMasterGainCache, // no [o] because the old gain
-                                           // follows an orientation switch
+                &m_channelMainGainCache, // no [o] because the old gain
+                                         // follows an orientation switch
                 m_pOutputBusBuffers[o],
                 m_masterHandle.handle(),
                 iBufferSize,
@@ -618,7 +618,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain, iBufferSize);
             m_masterGainOld = master_gain;
 
@@ -657,7 +657,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
                     m_pMaster,
                     m_masterGainOld,
@@ -698,7 +698,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
 
             // Apply master gain
-            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMasterGain->get());
+            CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
                     m_pMaster,
                     m_masterGainOld,
@@ -749,7 +749,7 @@ void EngineMaster::process(const int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState masterFeatures;
             masterFeatures.has_gain = true;
-            masterFeatures.gain = m_pMasterGain->get();
+            masterFeatures.gain = m_pMainGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_masterOutputHandle.handle(),
                     m_masterHandle.handle(),
@@ -809,7 +809,7 @@ void EngineMaster::applyMasterEffects(int iBufferSize) {
     if (m_pEngineEffectsManager) {
         GroupFeatureState masterFeatures;
         masterFeatures.has_gain = true;
-        masterFeatures.gain = m_pMasterGain->get();
+        masterFeatures.gain = m_pMainGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
                 m_masterHandle.handle(),
                 m_pMaster,
@@ -829,10 +829,10 @@ void EngineMaster::processHeadphones(
     SampleUtil::addWithRampingGain(
             m_pHead,
             m_pMaster,
-            m_headphoneMasterGainOld,
+            m_headphoneMainGainOld,
             masterMixGainInHeadphones,
             iBufferSize);
-    m_headphoneMasterGainOld = masterMixGainInHeadphones;
+    m_headphoneMainGainOld = masterMixGainInHeadphones;
 
     // If Head Split is enabled, replace the left channel of the pfl buffer
     // with a mono mix of the headphone buffer, and the right channel of the pfl
@@ -875,7 +875,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     constexpr GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
     m_channelTalkoverGainCache.append(gainCacheDefault);
-    m_channelMasterGainCache.append(gainCacheDefault);
+    m_channelMainGainCache.append(gainCacheDefault);
 
     // Pre-allocate scratch buffers to avoid memory allocation in the
     // callback. QVarLengthArray does nothing if reserve is called with a size
@@ -903,9 +903,9 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
     return nullptr;
 }
 
-CSAMPLE_GAIN EngineMaster::getMasterGain(int channelIndex) const {
-    if (channelIndex >= 0 && channelIndex < m_channelMasterGainCache.size()) {
-        return m_channelMasterGainCache[channelIndex].m_gain;
+CSAMPLE_GAIN EngineMaster::getMainGain(int channelIndex) const {
+    if (channelIndex >= 0 && channelIndex < m_channelMainGainCache.size()) {
+        return m_channelMainGainCache[channelIndex].m_gain;
     }
     return CSAMPLE_GAIN_ZERO;
 }
