@@ -22,7 +22,7 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handleGroup,
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    setMaster(false); // Use "talkover" button to enable microphones
+    setMainMix(false); // Use "talkover" button to enable microphones
 }
 
 EngineMicrophone::~EngineMicrophone() {

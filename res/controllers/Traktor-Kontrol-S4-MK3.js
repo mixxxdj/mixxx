@@ -2603,7 +2603,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
             mixer: this,
             input: MixerControlsMixAuxOnShift ? function(value) {
                 if (this.mixer.shifted && this.group !== `[Channel${idx}]`) { // FIXME only if group != [ChannelX]
-                    const controlKey = (this.group === `[Microphone${idx}]` || this.group === "[Microphone]") ? "talkover" : "master";
+                    const controlKey = (this.group === `[Microphone${idx}]` || this.group === "[Microphone]") ? "talkover" : "main_mix";
                     const isPlaying = engine.getValue(this.group, controlKey);
                     if ((value !== 0) !== isPlaying) {
                         engine.setValue(this.group, controlKey, value !== 0);

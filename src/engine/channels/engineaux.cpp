@@ -22,9 +22,9 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* p
                                       ConfigKey(getGroup(), "input_configured"));
 
     // by default Aux is disabled on the master and disabled on PFL. User
-    // can over-ride by setting the "pfl" or "master" controls.
+    // can over-ride by setting the "pfl" or "main_mix" controls.
     // Skins can change that during initialisation, if the master control is not provided.
-    setMaster(false);
+    setMainMix(false);
 }
 
 EngineAux::~EngineAux() {

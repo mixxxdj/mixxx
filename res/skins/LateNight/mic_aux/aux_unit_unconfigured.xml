@@ -36,7 +36,7 @@
                   <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Pressed>
                 </State>
                 <Connection>
-                  <ConfigKey><Variable name="Group"/>,master</ConfigKey>
+                  <ConfigKey><Variable name="Group"/>,main_mix</ConfigKey>
                 </Connection>
               </PushButton>
             </Children>

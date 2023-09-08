@@ -319,7 +319,7 @@ void EngineMaster::processChannels(int iBufferSize) {
                 gainCache.m_fadeout = true;
                 m_activeTalkoverChannels.append(pChannelInfo);
             }
-            if (pChannel->isMasterEnabled() &&
+            if (pChannel->isMainMixEnabled() &&
                     !pChannelInfo->m_pMuteControl->toBool()) {
                 // the xFader-Mix
                 m_activeBusChannels[pChannel->getOrientation()].append(pChannelInfo);
