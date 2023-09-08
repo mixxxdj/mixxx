@@ -19,11 +19,11 @@ namespace {
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
-        auto item = qobject_cast<const DlgPrefSoundItem*>(pObj);
-        if (!item || item->type() != output.getType()) {
+        const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
+        if (!pItem || pItem->type() != output.getType()) {
             continue;
         }
-        if (!AudioPath::isIndexed(item->type()) || item->index() == output.getIndex()) {
+        if (!AudioPath::isIndexed(pItem->type()) || pItem->index() == output.getIndex()) {
             return true;
         }
     }
