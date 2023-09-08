@@ -2820,7 +2820,7 @@ if(FAAD)
     src/sources/soundsourcem4a.cpp
     src/sources/libfaadloader.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __FAAD__)
+  target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
     target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
     target_link_libraries(mixxx-lib PRIVATE MP4v2::MP4v2)
