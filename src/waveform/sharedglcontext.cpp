@@ -14,10 +14,7 @@ WGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 // static
 void SharedGLContext::setWidget(WGLWidget* pWidget) {
     s_pSharedGLWidget = pWidget;
-#ifdef MIXXX_USE_QOPENGL
-    qDebug() << "Set root GL Context widget valid:"
-             << pWidget << (pWidget && pWidget->isContextValid());
-#else
+#ifndef MIXXX_USE_QOPENGL
     qDebug() << "Set root GL Context widget valid:"
              << pWidget << (pWidget && pWidget->isValid());
     if (pWidget) {

@@ -184,6 +184,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             if (!rendererString.isEmpty()) {
                 m_openGLVersion += " (" + rendererString + ")";
             }
+        } else {
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
         }
         widget->doneCurrent();
         widget->hide();
