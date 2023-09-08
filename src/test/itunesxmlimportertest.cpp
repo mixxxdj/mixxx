@@ -92,6 +92,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -113,6 +115,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 2,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString(
                             "2023-04-25T14:13:36Z", Qt::ISODate),
             }));
@@ -136,6 +140,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -145,6 +151,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .title = "What I'd Say",
                     .album = "What I'd Say",
                     .albumArtist = "Ray Charles",
+                    .composer = {},
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2012,
@@ -155,6 +162,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -179,6 +188,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -201,6 +212,8 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
@@ -292,6 +305,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -313,6 +328,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 2,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString(
                             "2023-04-25T14:13:36Z", Qt::ISODate),
             }));
@@ -335,6 +352,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -344,6 +363,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .title = "What I'd Say",
                     .album = "What I'd Say",
                     .albumArtist = "Ray Charles",
+                    .composer = {},
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2012,
@@ -380,6 +400,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
@@ -402,6 +424,8 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
                     .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
