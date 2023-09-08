@@ -29,6 +29,7 @@ const QString kName = "Name";
 const QString kArtist = "Artist";
 const QString kAlbum = "Album";
 const QString kAlbumArtist = "Album Artist";
+const QString kComposer = "Composer";
 const QString kGenre = "Genre";
 const QString kGrouping = "Grouping";
 const QString kBPM = "BPM";
@@ -249,6 +250,7 @@ void ITunesXMLImporter::parseTrack() {
     QString artist;
     QString album;
     QString albumArtist;
+    QString composer;
     QString year;
     QString genre;
     QString grouping;
@@ -296,6 +298,10 @@ void ITunesXMLImporter::parseTrack() {
                 }
                 if (key == kAlbumArtist) {
                     albumArtist = content;
+                    continue;
+                }
+                if (key == kComposer) {
+                    composer = content;
                     continue;
                 }
                 if (key == kGenre) {
@@ -377,6 +383,7 @@ void ITunesXMLImporter::parseTrack() {
             .title = title,
             .album = album,
             .albumArtist = albumArtist,
+            .composer = composer,
             .genre = genre,
             .grouping = grouping,
             .year = year.toInt(),

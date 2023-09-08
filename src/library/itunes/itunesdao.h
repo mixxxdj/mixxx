@@ -19,6 +19,7 @@ struct ITunesTrack {
     QString title;
     QString album;
     QString albumArtist;
+    QString composer;
     QString genre;
     QString grouping;
     int year;
@@ -40,6 +41,7 @@ struct ITunesTrack {
                 title == other.title &&
                 album == other.album &&
                 albumArtist == other.albumArtist &&
+                composer == other.composer &&
                 genre == other.genre &&
                 grouping == other.grouping &&
                 year == other.year &&

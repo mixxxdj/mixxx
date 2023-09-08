@@ -15,6 +15,7 @@ std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
        << ".title = \"" << track.title.toStdString() << "\", "
        << ".album = \"" << track.album.toStdString() << "\", "
        << ".albumArtist = \"" << track.albumArtist.toStdString() << "\", "
+       << ".composer = \"" << track.composer.toStdString() << "\", "
        << ".genre = \"" << track.genre.toStdString() << "\", "
        << ".grouping = \"" << track.grouping.toStdString() << "\", "
        << ".year = " << track.year << ", "
