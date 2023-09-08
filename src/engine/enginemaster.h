@@ -246,11 +246,11 @@ class EngineMaster : public QObject, public AudioSource {
 
   protected:
     // The master buffer is protected so it can be accessed by test subclasses.
-    CSAMPLE* m_pMaster;
+    CSAMPLE* m_pMain;
 
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
-    ControlObject* m_pMasterEnabled;
+    ControlObject* m_pMainEnabled;
     ControlObject* m_pHeadphoneEnabled;
     ControlObject* m_pBoothEnabled;
 
@@ -302,14 +302,14 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pMainGain;
     ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
-    ControlObject* m_pMasterSampleRate;
-    ControlObject* m_pMasterLatency;
+    ControlObject* m_pMainSampleRate;
+    ControlObject* m_pMainLatency;
     ControlObject* m_pAudioLatencyOverloadCount;
     ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
-    EngineDelay* m_pMasterDelay;
+    EngineDelay* m_pMainDelay;
     EngineDelay* m_pHeadDelay;
     EngineDelay* m_pBoothDelay;
     EngineDelay* m_pLatencyCompensationDelay;
@@ -345,7 +345,7 @@ class EngineMaster : public QObject, public AudioSource {
     const ChannelHandleAndGroup m_busCrossfaderRightHandle;
 
     // Mix two Mono channels. This is useful for outdoor gigs
-    ControlObject* m_pMasterMonoMixdown;
+    ControlObject* m_pMainMonoMixdown;
     ControlObject* m_pMicMonitorMode;
 
     volatile bool m_bBusOutputConnected[3];

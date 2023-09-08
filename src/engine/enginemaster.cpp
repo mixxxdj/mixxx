@@ -67,11 +67,11 @@ EngineMaster::EngineMaster(
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     // Master sample rate
-    m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
-    m_pMasterSampleRate->set(44100.);
+    m_pMainSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
+    m_pMainSampleRate->set(44100.);
 
     // Latency control
-    m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"),
+    m_pMainLatency = new ControlObject(ConfigKey(group, "latency"),
             true,
             true); // reported latency (sometimes correct)
     m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group, "audio_latency_overload_count"), true, true);
@@ -106,7 +106,7 @@ EngineMaster::EngineMaster(
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
 
-    m_pMasterDelay = new EngineDelay(group, ConfigKey(group, "delay"));
+    m_pMainDelay = new EngineDelay(group, ConfigKey(group, "delay"));
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
     m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
     m_pLatencyCompensationDelay = new EngineDelay(group,
@@ -135,13 +135,13 @@ EngineMaster::EngineMaster(
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pMain = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBooth = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pTalkoverHeadphones = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pSidechainMix = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pMaster, MAX_BUFFER_LEN);
+    SampleUtil::clear(m_pMain, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pBooth, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
     SampleUtil::clear(m_pTalkoverHeadphones, MAX_BUFFER_LEN);
@@ -179,12 +179,16 @@ EngineMaster::EngineMaster(
 
     // TODO: Make this read only and make EngineMaster decide whether
     // processing the master mix is necessary.
-    m_pMasterEnabled = new ControlObject(ConfigKey(group, "enabled"),
-            true, false, true);  // persist = true
+    m_pMainEnabled = new ControlObject(ConfigKey(group, "enabled"),
+            true,
+            false,
+            true); // persist = true
     m_pBoothEnabled = new ControlObject(ConfigKey(group, "booth_enabled"));
     m_pBoothEnabled->setReadOnly();
-    m_pMasterMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
-            true, false, true);  // persist = true
+    m_pMainMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
+            true,
+            false,
+            true); // persist = true
     m_pMicMonitorMode = new ControlObject(ConfigKey(group, "talkover_mix"),
             true, false, true);  // persist = true
     m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
@@ -206,7 +210,7 @@ EngineMaster::~EngineMaster() {
     delete m_pTalkoverDucking;
     delete m_pVumeter;
     delete m_pEngineSideChain;
-    delete m_pMasterDelay;
+    delete m_pMainDelay;
     delete m_pHeadDelay;
     delete m_pBoothDelay;
     delete m_pLatencyCompensationDelay;
@@ -218,20 +222,20 @@ EngineMaster::~EngineMaster() {
     delete m_pXFaderMode;
 
     delete m_pEngineSync;
-    delete m_pMasterSampleRate;
-    delete m_pMasterLatency;
+    delete m_pMainSampleRate;
+    delete m_pMainLatency;
     delete m_pAudioLatencyOverloadCount;
     delete m_pAudioLatencyUsage;
     delete m_pAudioLatencyOverload;
 
-    delete m_pMasterEnabled;
+    delete m_pMainEnabled;
     delete m_pBoothEnabled;
-    delete m_pMasterMonoMixdown;
+    delete m_pMainMonoMixdown;
     delete m_pMicMonitorMode;
     delete m_pHeadphoneEnabled;
 
     SampleUtil::free(m_pHead);
-    SampleUtil::free(m_pMaster);
+    SampleUtil::free(m_pMain);
     SampleUtil::free(m_pBooth);
     SampleUtil::free(m_pTalkover);
     SampleUtil::free(m_pTalkoverHeadphones);
@@ -252,8 +256,8 @@ EngineMaster::~EngineMaster() {
     }
 }
 
-const CSAMPLE* EngineMaster::getMasterBuffer() const {
-    return m_pMaster;
+const CSAMPLE* EngineMaster::getMainBuffer() const {
+    return m_pMain;
 }
 
 const CSAMPLE* EngineMaster::getBoothBuffer() const {
@@ -396,11 +400,11 @@ void EngineMaster::process(const int iBufferSize) {
     }
     //Trace t("EngineMaster::process");
 
-    bool masterEnabled = m_pMasterEnabled->toBool();
+    bool masterEnabled = m_pMainEnabled->toBool();
     bool boothEnabled = m_pBoothEnabled->toBool();
     bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
-    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMasterSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMainSampleRate->get());
     // TODO: remove assumption of stereo buffer
     constexpr unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
@@ -572,7 +576,7 @@ void EngineMaster::process(const int iBufferSize) {
 
     if (masterEnabled) {
         // Mix the crossfader orientation buffers together into the master mix
-        SampleUtil::copy3WithGain(m_pMaster,
+        SampleUtil::copy3WithGain(m_pMain,
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 1.0,
                 m_pOutputBusBuffers[EngineChannel::CENTER],
@@ -605,7 +609,7 @@ void EngineMaster::process(const int iBufferSize) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
                         m_pBooth,
-                        m_pMaster,
+                        m_pMain,
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -614,17 +618,17 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Mix talkover into master mix
             if (m_pNumMicsConfigured->get() > 0) {
-                SampleUtil::add(m_pMaster, m_pTalkover, iBufferSize);
+                SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
             }
 
             // Apply master gain
             CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
-            SampleUtil::applyRampingGain(m_pMaster, m_masterGainOld, master_gain, iBufferSize);
+            SampleUtil::applyRampingGain(m_pMain, m_masterGainOld, master_gain, iBufferSize);
             m_masterGainOld = master_gain;
 
             // Record/broadcast signal is the same as the master output
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
+                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process master channel effects
@@ -641,7 +645,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
-                SampleUtil::add(m_pMaster, m_pTalkover, iBufferSize);
+                SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
             }
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
@@ -649,7 +653,7 @@ void EngineMaster::process(const int iBufferSize) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
                         m_pBooth,
-                        m_pMaster,
+                        m_pMain,
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -659,7 +663,7 @@ void EngineMaster::process(const int iBufferSize) {
             // Apply master gain
             CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
-                    m_pMaster,
+                    m_pMain,
                     m_masterGainOld,
                     master_gain,
                     iBufferSize);
@@ -667,7 +671,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Record/broadcast signal is the same as the master output
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
+                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::DirectMonitor) {
             // Skip mixing talkover with the master and booth outputs
@@ -680,7 +684,7 @@ void EngineMaster::process(const int iBufferSize) {
                 CSAMPLE_GAIN boothGain = static_cast<CSAMPLE_GAIN>(m_pBoothGain->get());
                 SampleUtil::copyWithRampingGain(
                         m_pBooth,
-                        m_pMaster,
+                        m_pMain,
                         m_boothGainOld,
                         boothGain,
                         iBufferSize);
@@ -700,13 +704,13 @@ void EngineMaster::process(const int iBufferSize) {
             // Apply master gain
             CSAMPLE_GAIN master_gain = static_cast<CSAMPLE_GAIN>(m_pMainGain->get());
             SampleUtil::applyRampingGain(
-                    m_pMaster,
+                    m_pMain,
                     m_masterGainOld,
                     master_gain,
                     iBufferSize);
             m_masterGainOld = master_gain;
             if (sidechainMixRequired()) {
-                SampleUtil::copy(m_pSidechainMix, m_pMaster, iBufferSize);
+                SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
 
                 if (m_pNumMicsConfigured->get() > 0) {
                     // The talkover signal Mixxx receives is delayed by the round trip latency.
@@ -753,7 +757,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_masterOutputHandle.handle(),
                     m_masterHandle.handle(),
-                    m_pMaster,
+                    m_pMain,
                     iBufferSize,
                     static_cast<int>(m_sampleRate.value()),
                     masterFeatures);
@@ -770,8 +774,12 @@ void EngineMaster::process(const int iBufferSize) {
         }
 
         // Perform balancing on main out
-        SampleUtil::applyRampingAlternatingGain(m_pMaster, balleft, balright,
-                m_balleftOld, m_balrightOld, iBufferSize);
+        SampleUtil::applyRampingAlternatingGain(m_pMain,
+                balleft,
+                balright,
+                m_balleftOld,
+                m_balrightOld,
+                iBufferSize);
 
         m_balleftOld = balleft;
         m_balrightOld = balright;
@@ -779,18 +787,18 @@ void EngineMaster::process(const int iBufferSize) {
         // Update VU meter (it does not return anything). Needs to be here so that
         // master balance and talkover is reflected in the VU meter.
         if (m_pVumeter != nullptr) {
-            m_pVumeter->process(m_pMaster, iBufferSize);
+            m_pVumeter->process(m_pMain, iBufferSize);
         }
     }
 
-    if (m_pMasterMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_pMaster, iBufferSize);
+    if (m_pMainMonoMixdown->toBool()) {
+        SampleUtil::mixStereoToMono(m_pMain, iBufferSize);
     }
 
     if (masterEnabled) {
-        m_pMasterDelay->process(m_pMaster, iBufferSize);
+        m_pMainDelay->process(m_pMain, iBufferSize);
     } else {
-        SampleUtil::clear(m_pMaster, iBufferSize);
+        SampleUtil::clear(m_pMain, iBufferSize);
     }
     if (headphoneEnabled) {
         m_pHeadDelay->process(m_pHead, iBufferSize);
@@ -812,7 +820,7 @@ void EngineMaster::applyMasterEffects(int iBufferSize) {
         masterFeatures.gain = m_pMainGain->get();
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
                 m_masterHandle.handle(),
-                m_pMaster,
+                m_pMain,
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 masterFeatures,
@@ -828,7 +836,7 @@ void EngineMaster::processHeadphones(
     // Add master mix to headphones
     SampleUtil::addWithRampingGain(
             m_pHead,
-            m_pMaster,
+            m_pMain,
             m_headphoneMainGainOld,
             masterMixGainInHeadphones,
             iBufferSize);
@@ -842,7 +850,7 @@ void EngineMaster::processHeadphones(
         // with all compilers, except clang >= 14.
         for (SINT i = 0; i + 1 < iBufferSize; i += 2) {
             m_pHead[i] = (m_pHead[i] + m_pHead[i + 1]) / 2;
-            m_pHead[i + 1] = (m_pMaster[i] + m_pMaster[i + 1]) / 2;
+            m_pHead[i + 1] = (m_pMain[i] + m_pMain[i + 1]) / 2;
         }
     }
 
@@ -934,7 +942,7 @@ const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
 const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
     switch (output.getType()) {
     case AudioOutput::MASTER:
-        return getMasterBuffer();
+        return getMainBuffer();
         break;
     case AudioOutput::BOOTH:
         return getBoothBuffer();
@@ -960,16 +968,16 @@ void EngineMaster::onOutputConnected(const AudioOutput& output) {
     switch (output.getType()) {
         case AudioOutput::MASTER:
             // overwrite config option if a master output is configured
-            m_pMasterEnabled->forceSet(1.0);
-            break;
+        m_pMainEnabled->forceSet(1.0);
+        break;
         case AudioOutput::HEADPHONES:
-            m_pMasterEnabled->forceSet(1.0);
-            m_pHeadphoneEnabled->forceSet(1.0);
-            break;
+        m_pMainEnabled->forceSet(1.0);
+        m_pHeadphoneEnabled->forceSet(1.0);
+        break;
         case AudioOutput::BOOTH:
-            m_pMasterEnabled->forceSet(1.0);
-            m_pBoothEnabled->forceSet(1.0);
-            break;
+        m_pMainEnabled->forceSet(1.0);
+        m_pBoothEnabled->forceSet(1.0);
+        break;
         case AudioOutput::BUS:
             m_bBusOutputConnected[output.getIndex()] = true;
             break;
