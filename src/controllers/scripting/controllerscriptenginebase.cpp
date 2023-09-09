@@ -77,16 +77,12 @@ bool ControllerScriptEngineBase::executeFunction(
         return false;
     }
 
-    if (functionObject.isError()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toString();
-        return false;
-    }
-
-    // If it's not a function, we're done.
-    if (!functionObject.isCallable()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toVariant() << "Not a function";
+    const bool isError = functionObject.isError();
+    const bool isCallable = functionObject.isCallable();
+    if (isError || !isCallable) {
+        logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
+                                 : QStringLiteral("\"%1\" is not callable"))
+                                .arg(functionObject.toString()));
         return false;
     }
 
