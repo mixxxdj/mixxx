@@ -2,14 +2,15 @@
 
 #include "engine/channels/enginechannel.h"
 
+using mixxx::audio::ChannelCount;
+
 /**
  * Constructs a ChannelGroup.
  * @param channelBase the first channel in the group.
  * @param channels the number of channels.
  */
-ChannelGroup::ChannelGroup(unsigned char channelBase, unsigned char channels)
-  : m_channelBase(channelBase)
-  , m_channels(channels) {
+ChannelGroup::ChannelGroup(unsigned char channelBase, ChannelCount channels)
+        : m_channelBase(channelBase), m_channels(channels) {
 }
 
 /**
@@ -22,7 +23,7 @@ unsigned char ChannelGroup::getChannelBase() const {
 /**
  * @return The number of channels in this ChannelGroup
  */
-unsigned char ChannelGroup::getChannelCount() const {
+ChannelCount ChannelGroup::getChannelCount() const {
     return m_channels;
 }
 
@@ -33,7 +34,7 @@ unsigned char ChannelGroup::getChannelCount() const {
  *          false otherwise.
  */
 bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
-    if (m_channels == 0 || other.m_channels == 0) {
+    if (!m_channels.isValid() || !other.m_channels.isValid()) {
         return false; // can't clash if there are no channels in use
     }
     return (m_channelBase > other.m_channelBase
@@ -50,10 +51,10 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
  * @param channelBase the first channel on a sound device used by this AudioPath.
  * @param channels the number of channels used.
  */
-AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_channelGroup(channelBase, channels),
-      m_type(INVALID),
-      m_index(0) {
+AudioPath::AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels)
+        : m_channelGroup(channelBase, channels),
+          m_type(INVALID),
+          m_index(0) {
 }
 
 /**
@@ -232,29 +233,29 @@ AudioPathType AudioPath::getTypeFromInt(int typeInt) {
 }
 
 // static
-unsigned char AudioPath::minChannelsForType(AudioPathType type) {
+ChannelCount AudioPath::minChannelsForType(AudioPathType type) {
     switch (type) {
     case AudioPath::VINYLCONTROL:
-        return 2;
+        return ChannelCount::stereo();
     default:
-        return 1;
+        return ChannelCount::mono();
     }
 }
 
 // static
-unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
+ChannelCount AudioPath::maxChannelsForType(AudioPathType type) {
     Q_UNUSED(type);
-    return 2;
+    return ChannelCount::stereo();
 }
 
 /**
  * Constructs an AudioOutput.
  */
 AudioOutput::AudioOutput(AudioPathType type,
-                         unsigned char channelBase,
-                         unsigned char channels,
-                         unsigned char index)
-    : AudioPath(channelBase, channels) {
+        unsigned char channelBase,
+        ChannelCount channels,
+        unsigned char index)
+        : AudioPath(channelBase, channels) {
     // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
@@ -273,7 +274,7 @@ QDomElement AudioOutput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
-    element->setAttribute("channel_count", m_channelGroup.getChannelCount());
+    element->setAttribute("channel_count", m_channelGroup.getChannelCount().value());
     return *element;
 }
 
@@ -285,13 +286,13 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    unsigned int channels(xml.attribute("channel_count", "0").toUInt());
+    auto channels = ChannelCount::fromInt(xml.attribute("channel_count", "0").toInt());
     // In Mixxx < 1.12.0 we didn't save channels to file since they directly
     // corresponded to the type. To migrate users over, use mono for all
     // microphones and stereo for everything else since previously microphone
     // inputs were the only mono AudioPath.
-    if (channels == 0) {
-        channels = 2;
+    if (!channels.isValid()) {
+        channels = ChannelCount::stereo();
     }
     return AudioOutput(type, channel, channels, index);
 }
@@ -328,9 +329,9 @@ void AudioOutput::setType(AudioPathType type) {
  * Constructs an AudioInput.
  */
 AudioInput::AudioInput(AudioPathType type,
-                       unsigned char channelBase,
-                       unsigned char channels,
-                       unsigned char index)
+        unsigned char channelBase,
+        ChannelCount channels,
+        unsigned char index)
         : AudioPath(channelBase, channels) {
     // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
@@ -354,7 +355,7 @@ QDomElement AudioInput::toXML(QDomElement *element) const {
     element->setAttribute("type", AudioPath::getStringFromType(m_type));
     element->setAttribute("index", m_index);
     element->setAttribute("channel", m_channelGroup.getChannelBase());
-    element->setAttribute("channel_count", m_channelGroup.getChannelCount());
+    element->setAttribute("channel_count", m_channelGroup.getChannelCount().value());
     return *element;
 }
 
@@ -366,13 +367,13 @@ AudioInput AudioInput::fromXML(const QDomElement &xml) {
     AudioPathType type(AudioPath::getTypeFromString(xml.attribute("type")));
     unsigned int index(xml.attribute("index", "0").toUInt());
     unsigned int channel(xml.attribute("channel", "0").toUInt());
-    unsigned int channels(xml.attribute("channel_count", "0").toUInt());
+    auto channels = ChannelCount::fromInt(xml.attribute("channel_count", "0").toInt());
     // In Mixxx <1.12.0 we didn't save channels to file since they directly
     // corresponded to the type. To migrate users over, use mono for all
     // microphones and stereo for everything else since previously microphone
     // inputs were the only mono AudioPath.
-    if (channels == 0) {
-        channels = type == MICROPHONE ? 1 : 2;
+    if (!channels.isValid()) {
+        channels = type == MICROPHONE ? ChannelCount::mono() : ChannelCount::stereo();
     }
     return AudioInput(type, channel, channels, index);
 }

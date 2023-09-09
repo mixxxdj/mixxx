@@ -15,19 +15,19 @@ SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
           m_strDisplayName("Unknown Soundcard"),
-          m_iNumOutputChannels(2),
-          m_iNumInputChannels(2),
+          m_numOutputChannels(mixxx::audio::ChannelCount::stereo()),
+          m_numInputChannels(mixxx::audio::ChannelCount::stereo()),
           m_sampleRate(SoundManagerConfig::kMixxxDefaultSampleRate),
           m_hostAPI("Unknown API"),
           m_configFramesPerBuffer(0) {
 }
 
-int SoundDevice::getNumInputChannels() const {
-    return m_iNumInputChannels;
+mixxx::audio::ChannelCount SoundDevice::getNumInputChannels() const {
+    return m_numInputChannels;
 }
 
-int SoundDevice::getNumOutputChannels() const {
-    return m_iNumOutputChannels;
+mixxx::audio::ChannelCount SoundDevice::getNumOutputChannels() const {
+    return m_numOutputChannels;
 }
 
 void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {

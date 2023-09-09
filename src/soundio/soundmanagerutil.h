@@ -5,6 +5,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "util/compatibility/qhash.h"
 #include "util/fifo.h"
 #include "util/types.h"
@@ -12,13 +13,13 @@
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
 class ChannelGroup {
   public:
-    ChannelGroup(unsigned char channelBase, unsigned char channels);
+    ChannelGroup(unsigned char channelBase, mixxx::audio::ChannelCount channels);
     unsigned char getChannelBase() const;
-    unsigned char getChannelCount() const;
+    mixxx::audio::ChannelCount getChannelCount() const;
     bool clashesWith(const ChannelGroup& other) const;
 
     uint hashValue() const {
-        return (m_channels << 8) |
+        return (m_channels.value() << 8) |
                 m_channelBase;
     }
     friend qhash_seed_t qHash(
@@ -36,7 +37,7 @@ class ChannelGroup {
 
   private:
     unsigned char m_channelBase; // base (first) channel used on device
-    unsigned char m_channels; // number of channels used (s/b 2 in most cases)
+    mixxx::audio::ChannelCount m_channels; // number of channels used (s/b 2 in most cases)
 };
 
 inline bool operator!=(
@@ -68,7 +69,7 @@ public:
         RECORD_BROADCAST,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
-    AudioPath(unsigned char channelBase, unsigned char channels);
+    AudioPath(unsigned char channelBase, mixxx::audio::ChannelCount channels);
     virtual ~AudioPath() = default;
     AudioPathType getType() const;
     ChannelGroup getChannelGroup() const;
@@ -83,11 +84,11 @@ public:
 
     /// Returns the minimum number of channels needed on a sound device for an
     /// AudioPathType.
-    static unsigned char minChannelsForType(AudioPathType type);
+    static mixxx::audio::ChannelCount minChannelsForType(AudioPathType type);
 
     // Returns the maximum number of channels needed on a sound device for an
     // AudioPathType.
-    static unsigned char maxChannelsForType(AudioPathType type);
+    static mixxx::audio::ChannelCount maxChannelsForType(AudioPathType type);
 
     uint hashValue() const {
         // Exclude m_channelGroup from hash value!
@@ -139,9 +140,10 @@ constexpr bool operator==(const AudioPath& lhs,
 /// channels on an audio interface.
 class AudioOutput : public AudioPath {
   public:
-    AudioOutput(AudioPathType type, unsigned char channelBase,
-                unsigned char channels,
-                unsigned char index = 0);
+    AudioOutput(AudioPathType type,
+            unsigned char channelBase,
+            mixxx::audio::ChannelCount channels,
+            unsigned char index = 0);
     ~AudioOutput() override = default;
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
@@ -172,8 +174,10 @@ class AudioOutputBuffer : public AudioOutput {
 /// that is be processed in Mixxx.
 class AudioInput : public AudioPath {
   public:
-    AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
-               unsigned char channels = 0, unsigned char index = 0);
+    AudioInput(AudioPathType type = INVALID,
+            unsigned char channelBase = 0,
+            mixxx::audio::ChannelCount channels = mixxx::audio::ChannelCount(),
+            unsigned char index = 0);
     ~AudioInput() override;
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);

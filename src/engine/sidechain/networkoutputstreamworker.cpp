@@ -9,8 +9,7 @@ const mixxx::Logger kLogger("NetworkStreamWorker");
 } // namespace
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
-        : m_numOutputChannels(0),
-          m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
+        : m_workerState(NETWORKSTREAMWORKER_STATE_NEW),
           m_functionCode(0),
           m_runCount(0),
           m_streamStartTimeUs(-1),
@@ -31,7 +30,7 @@ QSharedPointer<FIFO<CSAMPLE>> NetworkOutputStreamWorker::getOutputFifo() {
 }
 
 void NetworkOutputStreamWorker::startStream(
-        mixxx::audio::SampleRate sampleRate, int numOutputChannels) {
+        mixxx::audio::SampleRate sampleRate, mixxx::audio::ChannelCount numOutputChannels) {
     m_sampleRate = sampleRate;
     m_numOutputChannels = numOutputChannels;
 
@@ -41,7 +40,7 @@ void NetworkOutputStreamWorker::startStream(
 
 void NetworkOutputStreamWorker::stopStream() {
     m_sampleRate = mixxx::audio::SampleRate();
-    m_numOutputChannels = 0;
+    m_numOutputChannels = mixxx::audio::ChannelCount();
 
     m_streamStartTimeUs = -1;
 }

@@ -117,8 +117,8 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         // we want input devices, or don't have output channels when we want
         // output devices. If searching for both input and output devices,
         // make sure to include any devices that have >0 channels.
-        bool hasOutputs = pDevice->getNumOutputChannels() >= 0;
-        bool hasInputs = pDevice->getNumInputChannels() >= 0;
+        const bool hasOutputs = pDevice->getNumOutputChannels().isValid();
+        const bool hasInputs = pDevice->getNumInputChannels().isValid();
         if (pDevice->getHostAPI() != filterAPI ||
                 (bOutputDevices && !bInputDevices && !hasOutputs) ||
                 (bInputDevices && !bOutputDevices && !hasInputs) ||
@@ -393,7 +393,10 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         // Statically connect the Network Device to the Sidechain
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
+            AudioOutput out(AudioPath::RECORD_BROADCAST,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    0);
             outputs.append(out);
             if (m_config.getForceNetworkClock() && !jackApiUsed()) {
                 pNewMasterClockRef = pDevice;

@@ -2,6 +2,7 @@
 
 #include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
@@ -30,7 +31,11 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
+                AudioInput(AudioInput::VINYLCONTROL,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        i),
+                m_pProcessor);
     }
 }
 
