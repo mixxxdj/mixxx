@@ -66,7 +66,7 @@ EngineMaster::EngineMaster(
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start(QThread::HighPriority);
 
-    // Master sample rate
+    // Main sample rate
     m_pMainSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
     m_pMainSampleRate->set(44100.);
 
@@ -78,7 +78,7 @@ EngineMaster::EngineMaster(
     m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
     m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
 
-    // Master sync controller
+    // Sync controller
     m_pEngineSync = new EngineSync(pConfig);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
@@ -92,7 +92,7 @@ EngineMaster::EngineMaster(
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
 
-    // Master gain
+    // Main gain
     m_pMainGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
 
     // Booth gain
@@ -126,7 +126,7 @@ EngineMaster::EngineMaster(
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
-    // Master / Headphone split-out mode (for devices with only one output).
+    // Main / Headphone split-out mode (for devices with only one output).
     m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
