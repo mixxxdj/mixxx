@@ -1222,6 +1222,34 @@
         <midino>0x02</midino>
         <minimum>0.5</minimum>
       </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beats_translate_earlier</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>beats_translate_later</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <minimum>0.5</minimum>
+      </output>
+      <output>
+        <group>[Channel2]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <minimum>0.5</minimum>
+      </output>
     </outputs>
   </controller>
 </MixxxControllerPreset>
