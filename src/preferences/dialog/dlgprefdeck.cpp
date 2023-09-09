@@ -268,9 +268,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
 
-    //
     // Key lock mode
-    //
     connect(buttonGroupKeyLockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -283,9 +281,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
-    //
     // Key unlock mode
-    //
     connect(buttonGroupKeyUnlockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -298,21 +294,23 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
-    //
     // Cue Mode
-    //
-
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+    labelCueMode->setText(labelCueMode->text() + QChar(' ') +
             coloredLinkString(
                     m_pLinkColor,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_CUE_MODES_URL));
 
-    //
-    // Speed / Pitch reset configuration
-    //
+    // Sync Mode
+    // Add "(?)" with a manual link to the label
+    labelSyncMode->setText(labelSyncMode->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SYNC_MODES_URL));
 
+    // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
     int configSPAutoReset = m_pConfig->getValue<int>(
