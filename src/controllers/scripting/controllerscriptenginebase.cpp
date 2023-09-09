@@ -129,6 +129,14 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
     }
 }
 
+void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
+    if (m_bAbortOnWarning) {
+        throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
+    }
+}
+
 void ControllerScriptEngineBase::scriptErrorDialog(
         const QString& detailedError, const QString& key, bool bFatalError) {
     if (m_bTesting) {
