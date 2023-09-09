@@ -17,7 +17,7 @@ Auxiliary::Auxiliary(PlayerManager* pParent,
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     EngineAux* pAuxiliary = new EngineAux(channelGroup, pEffectsManager);
     pEngine->addChannel(pAuxiliary);
-    AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 2, index);
+    AudioInput auxInput = AudioInput(AudioPathType::Auxiliary, 0, 2, index);
     pSoundManager->registerInput(auxInput, pAuxiliary);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);

@@ -18,7 +18,7 @@ Microphone::Microphone(PlayerManager* pParent,
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);

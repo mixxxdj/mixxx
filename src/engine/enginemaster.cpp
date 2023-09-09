@@ -941,22 +941,22 @@ const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
 
 const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
     switch (output.getType()) {
-    case AudioOutput::MASTER:
+    case AudioPathType::Main:
         return getMainBuffer();
         break;
-    case AudioOutput::BOOTH:
+    case AudioPathType::Booth:
         return getBoothBuffer();
         break;
-    case AudioOutput::HEADPHONES:
+    case AudioPathType::Headphones:
         return getHeadphoneBuffer();
         break;
-    case AudioOutput::BUS:
+    case AudioPathType::Bus:
         return getOutputBusBuffer(output.getIndex());
         break;
-    case AudioOutput::DECK:
+    case AudioPathType::Deck:
         return getDeckBuffer(output.getIndex());
         break;
-    case AudioOutput::RECORD_BROADCAST:
+    case AudioPathType::RecordBroadcast:
         return getSidechainBuffer();
         break;
     default:
@@ -966,107 +966,107 @@ const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
 
 void EngineMaster::onOutputConnected(const AudioOutput& output) {
     switch (output.getType()) {
-        case AudioOutput::MASTER:
+    case AudioPathType::Main:
         // overwrite config option if a main output is configured
         m_pMainEnabled->forceSet(1.0);
         break;
-        case AudioOutput::HEADPHONES:
+    case AudioPathType::Headphones:
         m_pMainEnabled->forceSet(1.0);
         m_pHeadphoneEnabled->forceSet(1.0);
         break;
-        case AudioOutput::BOOTH:
+    case AudioPathType::Booth:
         m_pMainEnabled->forceSet(1.0);
         m_pBoothEnabled->forceSet(1.0);
         break;
-        case AudioOutput::BUS:
-            m_bBusOutputConnected[output.getIndex()] = true;
-            break;
-        case AudioOutput::DECK:
-            // We don't track enabled decks.
-            break;
-        case AudioOutput::RECORD_BROADCAST:
-            // We don't track enabled sidechain.
-            break;
-        default:
-            break;
+    case AudioPathType::Bus:
+        m_bBusOutputConnected[output.getIndex()] = true;
+        break;
+    case AudioPathType::Deck:
+        // We don't track enabled decks.
+        break;
+    case AudioPathType::RecordBroadcast:
+        // We don't track enabled sidechain.
+        break;
+    default:
+        break;
     }
 }
 
 void EngineMaster::onOutputDisconnected(const AudioOutput& output) {
     switch (output.getType()) {
-        case AudioOutput::MASTER:
-            // not used, because we need the main buffer for headphone mix
-            // and recording/broadcasting as well
-            break;
-        case AudioOutput::BOOTH:
-            m_pBoothEnabled->forceSet(0.0);
-            break;
-        case AudioOutput::HEADPHONES:
-            m_pHeadphoneEnabled->forceSet(0.0);
-            break;
-        case AudioOutput::BUS:
-            m_bBusOutputConnected[output.getIndex()] = false;
-            break;
-        case AudioOutput::DECK:
-            // We don't track enabled decks.
-            break;
-        case AudioOutput::RECORD_BROADCAST:
-            // We don't track enabled sidechain.
-            break;
-        default:
-            break;
+    case AudioPathType::Main:
+        // not used, because we need the main buffer for headphone mix
+        // and recording/broadcasting as well
+        break;
+    case AudioPathType::Booth:
+        m_pBoothEnabled->forceSet(0.0);
+        break;
+    case AudioPathType::Headphones:
+        m_pHeadphoneEnabled->forceSet(0.0);
+        break;
+    case AudioPathType::Bus:
+        m_bBusOutputConnected[output.getIndex()] = false;
+        break;
+    case AudioPathType::Deck:
+        // We don't track enabled decks.
+        break;
+    case AudioPathType::RecordBroadcast:
+        // We don't track enabled sidechain.
+        break;
+    default:
+        break;
     }
 }
 
 void EngineMaster::onInputConnected(const AudioInput& input) {
     switch (input.getType()) {
-      case AudioInput::MICROPHONE:
-          m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() + 1);
-          break;
-      case AudioInput::AUXILIARY:
-          // We don't track enabled auxiliary inputs.
-          break;
-      case AudioInput::VINYLCONTROL:
-          // We don't track enabled vinyl control inputs.
-          break;
-      case AudioInput::RECORD_BROADCAST:
-          m_bExternalRecordBroadcastInputConnected = true;
-          break;
-      default:
-          break;
+    case AudioPathType::Microphone:
+        m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() + 1);
+        break;
+    case AudioPathType::Auxiliary:
+        // We don't track enabled auxiliary inputs.
+        break;
+    case AudioPathType::VinylControl:
+        // We don't track enabled vinyl control inputs.
+        break;
+    case AudioPathType::RecordBroadcast:
+        m_bExternalRecordBroadcastInputConnected = true;
+        break;
+    default:
+        break;
     }
 }
 
 void EngineMaster::onInputDisconnected(const AudioInput& input) {
     switch (input.getType()) {
-      case AudioInput::MICROPHONE:
-          m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() - 1);
-          break;
-      case AudioInput::AUXILIARY:
-          // We don't track enabled auxiliary inputs.
-          break;
-      case AudioInput::VINYLCONTROL:
-          // We don't track enabled vinyl control inputs.
-          break;
-      case AudioInput::RECORD_BROADCAST:
-          m_bExternalRecordBroadcastInputConnected = false;
-          break;
-      default:
-          break;
+    case AudioPathType::Microphone:
+        m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() - 1);
+        break;
+    case AudioPathType::Auxiliary:
+        // We don't track enabled auxiliary inputs.
+        break;
+    case AudioPathType::VinylControl:
+        // We don't track enabled vinyl control inputs.
+        break;
+    case AudioPathType::RecordBroadcast:
+        m_bExternalRecordBroadcastInputConnected = false;
+        break;
+    default:
+        break;
     }
 }
 
 void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
-    pSoundManager->registerInput(AudioInput(AudioPath::RECORD_BROADCAST, 0, 2),
-                                 m_pEngineSideChain);
+    pSoundManager->registerInput(AudioInput(AudioPathType::RecordBroadcast, 0, 2),
+            m_pEngineSideChain);
 
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::BOOTH, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Main, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Headphones, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::Booth, 0, 2), this);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
+        pSoundManager->registerOutput(AudioOutput(AudioPathType::Bus, 0, 2, o), this);
     }
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+    pSoundManager->registerOutput(AudioOutput(AudioPathType::RecordBroadcast, 0, 2), this);
 }
 
 bool EngineMaster::sidechainMixRequired() const {

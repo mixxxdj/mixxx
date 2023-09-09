@@ -393,7 +393,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         // Statically connect the Network Device to the Sidechain
         if (pDevice->getDeviceId().name == kNetworkDeviceInternalName) {
-            AudioOutput out(AudioPath::RECORD_BROADCAST, 0, 2, 0);
+            AudioOutput out(AudioPathType::RecordBroadcast, 0, 2, 0);
             outputs.append(out);
             if (m_config.getForceNetworkClock() && !jackApiUsed()) {
                 pNewMasterClockRef = pDevice;
@@ -420,11 +420,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
 
             if (!m_config.getForceNetworkClock() || jackApiUsed()) {
-                if (out.getType() == AudioOutput::MASTER) {
+                if (out.getType() == AudioPathType::Main) {
                     pNewMasterClockRef = pDevice;
-                } else if ((out.getType() == AudioOutput::DECK ||
-                            out.getType() == AudioOutput::BUS)
-                        && !pNewMasterClockRef) {
+                } else if ((out.getType() == AudioPathType::Deck ||
+                                   out.getType() == AudioPathType::Bus) &&
+                        !pNewMasterClockRef) {
                     pNewMasterClockRef = pDevice;
                 }
             }

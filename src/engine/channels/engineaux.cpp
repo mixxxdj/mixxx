@@ -46,7 +46,7 @@ EngineChannel::ActiveState EngineAux::updateActiveState() {
 }
 
 void EngineAux::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::AUXILIARY) {
+    if (input.getType() != AudioPathType::Auxiliary) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
@@ -56,7 +56,7 @@ void EngineAux::onInputConfigured(const AudioInput& input) {
 }
 
 void EngineAux::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::AUXILIARY) {
+    if (input.getType() != AudioPathType::Auxiliary) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
