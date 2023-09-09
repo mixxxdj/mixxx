@@ -1865,8 +1865,7 @@ add_executable(mixxx-test
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
-  # TODO: reanable this after https://github.com/mixxxdj/mixxx/pull/11666
-  # src/test/itunesxmlimportertest.cpp
+  src/test/itunesxmlimportertest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
