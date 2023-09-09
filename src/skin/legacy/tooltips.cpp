@@ -578,7 +578,9 @@ void Tooltips::addStandardTooltips() {
 
     add("sync_leader")
             << tr("Enable Sync Leader")
-            << tr("When enabled, this device will serve as the sync leader for all other decks.");
+            << tr("When enabled, this device will serve as the sync leader for all other decks.")
+            << tr("This is relevant when a dynamic tempo track is loaded to a sync leader."
+                  "In that case, other synced devices will adopt the changing tempo.");
 
     add("rate")
             << tr("Speed Control")
