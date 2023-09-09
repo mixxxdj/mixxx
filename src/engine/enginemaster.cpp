@@ -597,7 +597,7 @@ void EngineMaster::process(const int iBufferSize) {
             // to both the main and booth in that case will require refactoring
             // the effects system to be able to process the same effects on multiple
             // buffers within the same callback.
-            applyMasterEffects(iBufferSize);
+            applyMainEffects(iBufferSize);
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);
@@ -637,7 +637,7 @@ void EngineMaster::process(const int iBufferSize) {
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,
             // process main effects here before mixing in talkover.
-            applyMasterEffects(iBufferSize);
+            applyMainEffects(iBufferSize);
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);
@@ -695,7 +695,7 @@ void EngineMaster::process(const int iBufferSize) {
             // NOTE(Be): This should occur before mixing in talkover for the
             // record/broadcast signal so the record/broadcast signal is the same
             // as what is heard on the main & booth outputs.
-            applyMasterEffects(iBufferSize);
+            applyMainEffects(iBufferSize);
 
             if (headphoneEnabled) {
                 processHeadphones(mainMixGainInHeadphones, iBufferSize);
@@ -812,7 +812,7 @@ void EngineMaster::process(const int iBufferSize) {
     m_pWorkerScheduler->runWorkers();
 }
 
-void EngineMaster::applyMasterEffects(int iBufferSize) {
+void EngineMaster::applyMainEffects(int bufferSize) {
     // Apply main effects
     if (m_pEngineEffectsManager) {
         GroupFeatureState masterFeatures;
@@ -821,7 +821,7 @@ void EngineMaster::applyMasterEffects(int iBufferSize) {
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
                 m_masterHandle.handle(),
                 m_pMain,
-                iBufferSize,
+                bufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 masterFeatures,
                 CSAMPLE_GAIN_ONE,

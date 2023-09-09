@@ -263,7 +263,7 @@ class EngineMaster : public QObject, public AudioSource {
     void processChannels(int iBufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
-    void applyMasterEffects(int iBufferSize);
+    void applyMainEffects(int bufferSize);
     void processHeadphones(
             const CSAMPLE_GAIN masterMixGainInHeadphones,
             int iBufferSize);
