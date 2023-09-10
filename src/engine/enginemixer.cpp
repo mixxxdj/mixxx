@@ -42,19 +42,19 @@ EngineMixer::EngineMixer(
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
-          m_masterHandle(registerChannelGroup(group)),
+          m_mainHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
+          m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
-    pEffectsManager->registerInputChannel(m_masterHandle);
+    pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
-    pEffectsManager->registerOutputChannel(m_masterHandle);
+    pEffectsManager->registerOutputChannel(m_mainHandle);
     pEffectsManager->registerOutputChannel(m_headphoneHandle);
 
-    pEffectsManager->registerInputChannel(m_masterOutputHandle);
+    pEffectsManager->registerInputChannel(m_mainOutputHandle);
     pEffectsManager->registerInputChannel(m_busTalkoverHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
@@ -474,7 +474,7 @@ void EngineMixer::process(const int iBufferSize) {
             m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
-            m_masterHandle.handle(),
+            m_mainHandle.handle(),
             iBufferSize,
             static_cast<int>(m_sampleRate.value()),
             m_pEngineEffectsManager);
@@ -485,7 +485,7 @@ void EngineMixer::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busTalkoverHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pTalkover,
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -534,7 +534,7 @@ void EngineMixer::process(const int iBufferSize) {
                 &m_channelMainGainCache, // no [o] because the old gain
                                          // follows an orientation switch
                 m_pOutputBusBuffers[o],
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 m_pEngineEffectsManager);
@@ -544,7 +544,7 @@ void EngineMixer::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderLeftHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -554,7 +554,7 @@ void EngineMixer::process(const int iBufferSize) {
                 false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -564,7 +564,7 @@ void EngineMixer::process(const int iBufferSize) {
                 false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -751,16 +751,16 @@ void EngineMixer::process(const int iBufferSize) {
         // Process effects that apply to main hardware output only but not
         // record/broadcast signal
         if (m_pEngineEffectsManager) {
-            GroupFeatureState masterFeatures;
-            masterFeatures.has_gain = true;
-            masterFeatures.gain = m_pMainGain->get();
+            GroupFeatureState mainFeatures;
+            mainFeatures.has_gain = true;
+            mainFeatures.gain = m_pMainGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_masterOutputHandle.handle(),
-                    m_masterHandle.handle(),
+                    m_mainOutputHandle.handle(),
+                    m_mainHandle.handle(),
                     m_pMain,
                     iBufferSize,
                     static_cast<int>(m_sampleRate.value()),
-                    masterFeatures);
+                    mainFeatures);
         }
 
         // Balance values
@@ -815,15 +815,15 @@ void EngineMixer::process(const int iBufferSize) {
 void EngineMixer::applyMainEffects(int bufferSize) {
     // Apply main effects
     if (m_pEngineEffectsManager) {
-        GroupFeatureState masterFeatures;
-        masterFeatures.has_gain = true;
-        masterFeatures.gain = m_pMainGain->get();
-        m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
-                m_masterHandle.handle(),
+        GroupFeatureState mainFeatures;
+        mainFeatures.has_gain = true;
+        mainFeatures.gain = m_pMainGain->get();
+        m_pEngineEffectsManager->processPostFaderInPlace(m_mainHandle.handle(),
+                m_mainHandle.handle(),
                 m_pMain,
                 bufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                masterFeatures,
+                mainFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
                 false);

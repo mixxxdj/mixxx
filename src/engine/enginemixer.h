@@ -336,9 +336,9 @@ class EngineMixer : public QObject, public AudioSource {
     CSAMPLE_GAIN m_headphoneGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
-    const ChannelHandleAndGroup m_masterHandle;
+    const ChannelHandleAndGroup m_mainHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
-    const ChannelHandleAndGroup m_masterOutputHandle;
+    const ChannelHandleAndGroup m_mainOutputHandle;
     const ChannelHandleAndGroup m_busTalkoverHandle;
     const ChannelHandleAndGroup m_busCrossfaderLeftHandle;
     const ChannelHandleAndGroup m_busCrossfaderCenterHandle;
