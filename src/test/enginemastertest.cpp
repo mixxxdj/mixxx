@@ -32,7 +32,7 @@ class EngineChannelMock : public EngineChannel {
 
     MOCK_METHOD0(updateActiveState, ActiveState());
     MOCK_METHOD0(isActive, bool());
-    MOCK_CONST_METHOD0(isMasterEnabled, bool());
+    MOCK_CONST_METHOD0(isMainMixEnabled, bool());
     MOCK_CONST_METHOD0(isPflEnabled, bool());
     MOCK_METHOD2(process, void(CSAMPLE* pInOut, const int iBufferSize));
     MOCK_CONST_METHOD1(collectFeatures, void(GroupFeatureState* pGroupFeatures));
@@ -41,9 +41,10 @@ class EngineChannelMock : public EngineChannel {
 
 class EngineMasterTest : public BaseSignalPathTest {
   protected:
-    void assertMasterBufferMatchesGolden(const QString& testName) {
-          assertBufferMatchesReference(m_pEngineMaster->getMasterBuffer(), MAX_BUFFER_LEN,
-              QString("%1-master").arg(testName));
+    void assertMainBufferMatchesGolden(const QString& testName) {
+        assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+                MAX_BUFFER_LEN,
+                QString("%1-main").arg(testName));
     };
 
     void assertHeadphoneBufferMatchesGolden(const QString& testName) {
@@ -64,14 +65,14 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
-    // Instruct the mock to claim it is active, master and not PFL.
+    // Instruct the mock to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMasterEnabled())
+    EXPECT_CALL(*pChannel, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel, isPflEnabled())
@@ -89,8 +90,8 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output contains the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output contains the channel data.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain the channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -108,14 +109,14 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
-    // Instruct the mock to claim it is active, not master and PFL
+    // Instruct the mock to claim it is active, not main and PFL
     EXPECT_CALL(*pChannel, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel, isMasterEnabled())
+    EXPECT_CALL(*pChannel, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel, isPflEnabled())
@@ -133,8 +134,8 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output is empty.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output is empty.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output contains the channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -158,14 +159,14 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active, master and not PFL.
+    // Instruct channel 1 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
+    EXPECT_CALL(*pChannel1, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPflEnabled())
@@ -176,14 +177,14 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 2 to claim it is active, master and not PFL.
+    // Instruct channel 2 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
+    EXPECT_CALL(*pChannel2, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPflEnabled())
@@ -204,8 +205,8 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output contains the sum of the channel data.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -229,14 +230,14 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active, master and PFL.
+    // Instruct channel 1 to claim it is active, main and PFL.
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isActive())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
+    EXPECT_CALL(*pChannel1, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPflEnabled())
@@ -247,14 +248,14 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 2 to claim it is active, master and PFL.
+    // Instruct channel 2 to claim it is active, main and PFL.
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isActive())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
+    EXPECT_CALL(*pChannel2, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPflEnabled())
@@ -275,8 +276,8 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output contains the sum of the channel data.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -305,14 +306,14 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
     SampleUtil::fill(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active, master and not PFL.
+    // Instruct channel 1 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
+    EXPECT_CALL(*pChannel1, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPflEnabled())
@@ -323,14 +324,14 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel1, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 2 to claim it is active, master and not PFL.
+    // Instruct channel 2 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
+    EXPECT_CALL(*pChannel2, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPflEnabled())
@@ -341,14 +342,14 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     EXPECT_CALL(*pChannel2, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 3 to claim it is active, master and not PFL.
+    // Instruct channel 3 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel3, isActive())
             .Times(1)
             .WillOnce(Return(true));
-    EXPECT_CALL(*pChannel3, isMasterEnabled())
+    EXPECT_CALL(*pChannel3, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, isPflEnabled())
@@ -372,8 +373,8 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output contains the sum of the channel data.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);
@@ -402,14 +403,14 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     SampleUtil::fill(pChannel2Buffer, 0.2f, MAX_BUFFER_LEN);
     SampleUtil::fill(pChannel3Buffer, 0.3f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active, master and not PFL.
+    // Instruct channel 1 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel1, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel1, isActive())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel1, isMasterEnabled())
+    EXPECT_CALL(*pChannel1, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPflEnabled())
@@ -420,14 +421,14 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel1, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 2 to claim it is active, master and not PFL.
+    // Instruct channel 2 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel2, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel2, isActive())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel2, isMasterEnabled())
+    EXPECT_CALL(*pChannel2, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPflEnabled())
@@ -438,14 +439,14 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     EXPECT_CALL(*pChannel2, postProcess(160000))
             .Times(1);
 
-    // Instruct channel 3 to claim it is active, master and not PFL.
+    // Instruct channel 3 to claim it is active, main and not PFL.
     EXPECT_CALL(*pChannel3, updateActiveState())
             .Times(1)
             .WillOnce(Return(EngineChannel::ActiveState::Active));
     EXPECT_CALL(*pChannel3, isActive())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*pChannel3, isMasterEnabled())
+    EXPECT_CALL(*pChannel3, isMainMixEnabled())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, isPflEnabled())
@@ -469,8 +470,8 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
 
     m_pEngineMaster->process(MAX_BUFFER_LEN);
 
-    // Check that the master output contains the sum of the channel data.
-    assertMasterBufferMatchesGolden(testName);
+    // Check that the main output contains the sum of the channel data.
+    assertMainBufferMatchesGolden(testName);
 
     // Check that the headphone output does not contain any channel data.
     assertHeadphoneBufferMatchesGolden(testName);

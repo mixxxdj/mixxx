@@ -20,8 +20,10 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
-    m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
+    m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
+    ControlDoublePrivate::insertAlias(
+            ConfigKey(getGroup(), "master"), ConfigKey(getGroup(), "main_mix"));
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
@@ -44,7 +46,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
 }
 
 EngineChannel::~EngineChannel() {
-    delete m_pMaster;
+    delete m_pMainMix;
     delete m_pPFL;
     delete m_pOrientation;
     delete m_pOrientationLeft;
@@ -61,12 +63,12 @@ bool EngineChannel::isPflEnabled() const {
     return m_pPFL->toBool();
 }
 
-void EngineChannel::setMaster(bool enabled) {
-    m_pMaster->set(enabled ? 1.0 : 0.0);
+void EngineChannel::setMainMix(bool enabled) {
+    m_pMainMix->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isMasterEnabled() const {
-    return m_pMaster->toBool();
+bool EngineChannel::isMainMixEnabled() const {
+    return m_pMainMix->toBool();
 }
 
 void EngineChannel::setTalkover(bool enabled) {

@@ -110,13 +110,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     }
 
     m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
-    m_pMasterDelay = new ControlProxy("[Master]", "delay", this);
+    m_pMainDelay = new ControlProxy("[Master]", "delay", this);
     m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
     m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
 
     latencyCompensationSpinBox->setValue(m_pLatencyCompensation->get());
     latencyCompensationWarningLabel->setWordWrap(true);
-    masterDelaySpinBox->setValue(m_pMasterDelay->get());
+    mainDelaySpinBox->setValue(m_pMainDelay->get());
     headDelaySpinBox->setValue(m_pHeadDelay->get());
     boothDelaySpinBox->setValue(m_pBoothDelay->get());
 
@@ -124,10 +124,10 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
             &DlgPrefSound::latencyCompensationSpinboxChanged);
-    connect(masterDelaySpinBox,
+    connect(mainDelaySpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
-            &DlgPrefSound::masterDelaySpinboxChanged);
+            &DlgPrefSound::mainDelaySpinboxChanged);
     connect(headDelaySpinBox,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -139,11 +139,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
     micMonitorModeComboBox->addItem(tr("Main output only"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::Main)));
     micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MainAndBooth)));
     micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
-        QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
+            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DirectMonitor)));
     int modeIndex = micMonitorModeComboBox->findData(
         static_cast<int>(m_pMicMonitorMode->get()));
     micMonitorModeComboBox->setCurrentIndex(modeIndex);
@@ -201,34 +201,34 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 loadSettings();
             });
 
-    m_pMasterAudioLatencyOverloadCount =
+    m_pMainAudioLatencyOverloadCount =
             new ControlProxy("[Master]", "audio_latency_overload_count", this);
-    m_pMasterAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
+    m_pMainAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
 
-    m_pMasterLatency = new ControlProxy("[Master]", "latency", this);
-    m_pMasterLatency->connectValueChanged(this, &DlgPrefSound::masterLatencyChanged);
+    m_pMainLatency = new ControlProxy("[Master]", "latency", this);
+    m_pMainLatency->connectValueChanged(this, &DlgPrefSound::mainLatencyChanged);
 
-    // TODO: remove this option by automatically disabling/enabling the master mix
-    // when recording, broadcasting, headphone, and master outputs are enabled/disabled
-    m_pMasterEnabled = new ControlProxy("[Master]", "enabled", this);
-    masterMixComboBox->addItem(tr("Disabled"));
-    masterMixComboBox->addItem(tr("Enabled"));
-    masterMixComboBox->setCurrentIndex(m_pMasterEnabled->toBool() ? 1 : 0);
-    connect(masterMixComboBox,
+    // TODO: remove this option by automatically disabling/enabling the main mix
+    // when recording, broadcasting, headphone, and main outputs are enabled/disabled
+    m_pMainEnabled = new ControlProxy("[Master]", "enabled", this);
+    mainMixComboBox->addItem(tr("Disabled"));
+    mainMixComboBox->addItem(tr("Enabled"));
+    mainMixComboBox->setCurrentIndex(m_pMainEnabled->toBool() ? 1 : 0);
+    connect(mainMixComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefSound::masterMixChanged);
-    m_pMasterEnabled->connectValueChanged(this, &DlgPrefSound::masterEnabledChanged);
+            &DlgPrefSound::mainMixChanged);
+    m_pMainEnabled->connectValueChanged(this, &DlgPrefSound::mainEnabledChanged);
 
-    m_pMasterMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
-    masterOutputModeComboBox->addItem(tr("Stereo"));
-    masterOutputModeComboBox->addItem(tr("Mono"));
-    masterOutputModeComboBox->setCurrentIndex(m_pMasterMonoMixdown->toBool() ? 1 : 0);
-    connect(masterOutputModeComboBox,
+    m_pMainMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
+    mainOutputModeComboBox->addItem(tr("Stereo"));
+    mainOutputModeComboBox->addItem(tr("Mono"));
+    mainOutputModeComboBox->setCurrentIndex(m_pMainMonoMixdown->toBool() ? 1 : 0);
+    connect(mainOutputModeComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefSound::masterOutputModeComboBoxChanged);
-    m_pMasterMonoMixdown->connectValueChanged(this, &DlgPrefSound::masterMonoMixdownChanged);
+            &DlgPrefSound::mainOutputModeComboBoxChanged);
+    m_pMainMonoMixdown->connectValueChanged(this, &DlgPrefSound::mainMonoMixdownChanged);
 
     m_pKeylockEngine =
             new ControlProxy("[Master]", "keylock_engine", this);
@@ -700,11 +700,11 @@ void DlgPrefSound::slotResetToDefaults() {
     }
     m_pKeylockEngine->set(static_cast<double>(keylockEngine));
 
-    masterMixComboBox->setCurrentIndex(1);
-    m_pMasterEnabled->set(1.0);
+    mainMixComboBox->setCurrentIndex(1);
+    m_pMainEnabled->set(1.0);
 
-    masterDelaySpinBox->setValue(0.0);
-    m_pMasterDelay->set(0.0);
+    mainDelaySpinBox->setValue(0.0);
+    m_pMainDelay->set(0.0);
 
     headDelaySpinBox->setValue(0.0);
     m_pHeadDelay->set(0.0);
@@ -712,13 +712,13 @@ void DlgPrefSound::slotResetToDefaults() {
     boothDelaySpinBox->setValue(0.0);
     m_pBoothDelay->set(0.0);
 
-    // Enable talkover master output
+    // Enable talkover main output
     m_pMicMonitorMode->set(
-        static_cast<double>(
-            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            static_cast<double>(
+                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
     micMonitorModeComboBox->setCurrentIndex(
-        micMonitorModeComboBox->findData(
-            static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
+            micMonitorModeComboBox->findData(
+                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
@@ -730,7 +730,7 @@ void DlgPrefSound::bufferUnderflow(double count) {
     update();
 }
 
-void DlgPrefSound::masterLatencyChanged(double latency) {
+void DlgPrefSound::mainLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
 }
@@ -740,8 +740,8 @@ void DlgPrefSound::latencyCompensationSpinboxChanged(double value) {
     checkLatencyCompensation();
 }
 
-void DlgPrefSound::masterDelaySpinboxChanged(double value) {
-    m_pMasterDelay->set(value);
+void DlgPrefSound::mainDelaySpinboxChanged(double value) {
+    m_pMainDelay->set(value);
 }
 
 void DlgPrefSound::headDelaySpinboxChanged(double value) {
@@ -752,22 +752,22 @@ void DlgPrefSound::boothDelaySpinboxChanged(double value) {
     m_pBoothDelay->set(value);
 }
 
-void DlgPrefSound::masterMixChanged(int value) {
-    m_pMasterEnabled->set(value);
+void DlgPrefSound::mainMixChanged(int value) {
+    m_pMainEnabled->set(value);
 }
 
-void DlgPrefSound::masterEnabledChanged(double value) {
-    const bool masterEnabled = (value != 0);
-    masterMixComboBox->setCurrentIndex(masterEnabled ? 1 : 0);
+void DlgPrefSound::mainEnabledChanged(double value) {
+    const bool mainEnabled = (value != 0);
+    mainMixComboBox->setCurrentIndex(mainEnabled ? 1 : 0);
 }
 
-void DlgPrefSound::masterOutputModeComboBoxChanged(int value) {
-    m_pMasterMonoMixdown->set((double)value);
+void DlgPrefSound::mainOutputModeComboBoxChanged(int value) {
+    m_pMainMonoMixdown->set((double)value);
 }
 
-void DlgPrefSound::masterMonoMixdownChanged(double value) {
-    const bool masterMonoMixdownEnabled = (value != 0);
-    masterOutputModeComboBox->setCurrentIndex(masterMonoMixdownEnabled ? 1 : 0);
+void DlgPrefSound::mainMonoMixdownChanged(double value) {
+    const bool mainMonoMixdownEnabled = (value != 0);
+    mainOutputModeComboBox->setCurrentIndex(mainMonoMixdownEnabled ? 1 : 0);
 }
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
@@ -795,7 +795,7 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);
-        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DIRECT_MONITOR) {
+        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
             QString warningIcon(
                     "<html>"

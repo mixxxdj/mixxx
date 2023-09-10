@@ -46,8 +46,6 @@ using ::testing::_;
         EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
     }
 
-// Subclass of EngineMaster that provides access to the master buffer object
-// for comparison.
 class TestEngineMaster : public EngineMaster {
   public:
     TestEngineMaster(UserSettingsPointer _config,
@@ -60,13 +58,9 @@ class TestEngineMaster : public EngineMaster {
                       pEffectsManager,
                       pChannelHandleFactory,
                       bEnableSidechain) {
-        m_pMasterEnabled->forceSet(1);
+        m_pMainEnabled->forceSet(1);
         m_pHeadphoneEnabled->forceSet(1);
         m_pBoothEnabled->forceSet(1);
-    }
-
-    CSAMPLE* masterBuffer() {
-        return m_pMaster;
     }
 };
 
@@ -148,7 +142,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     }
 
     void addDeck(EngineDeck* pDeck) {
-        ControlObject::set(ConfigKey(pDeck->getGroup(), "master"), 1.0);
+        ControlObject::set(ConfigKey(pDeck->getGroup(), "main_mix"), 1.0);
         ControlObject::set(ConfigKey(pDeck->getGroup(), "rate_dir"), kDefaultRateDir);
         ControlObject::set(ConfigKey(pDeck->getGroup(), "rateRange"), kDefaultRateRange);
         m_pNumDecks->set(m_pNumDecks->get() + 1);

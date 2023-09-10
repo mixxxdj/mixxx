@@ -100,13 +100,13 @@
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QComboBox" name="masterMixComboBox"/>
+      <widget class="QComboBox" name="mainMixComboBox"/>
      </item>
      <item row="7" column="1">
-      <widget class="QComboBox" name="masterOutputModeComboBox"/>
+      <widget class="QComboBox" name="mainOutputModeComboBox"/>
      </item>
      <item row="7" column="0">
-      <widget class="QLabel" name="masterMonoLabel">
+      <widget class="QLabel" name="mainMonoLabel">
        <property name="text">
         <string>Main Output Mode</string>
        </property>
@@ -146,14 +146,14 @@
       </widget>
      </item>
      <item row="11" column="0">
-      <widget class="QLabel" name="masterDelayLabel">
+      <widget class="QLabel" name="mainDelayLabel">
        <property name="text">
         <string>Main Output Delay</string>
        </property>
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QDoubleSpinBox" name="masterDelaySpinBox">
+      <widget class="QDoubleSpinBox" name="mainDelaySpinBox">
        <property name="suffix">
         <string extracomment="milliseconds"> ms</string>
        </property>
@@ -429,11 +429,11 @@
   <tabstop>deviceSyncComboBox</tabstop>
   <tabstop>engineClockComboBox</tabstop>
   <tabstop>keylockComboBox</tabstop>
-  <tabstop>masterMixComboBox</tabstop>
-  <tabstop>masterOutputModeComboBox</tabstop>
+  <tabstop>mainMixComboBox</tabstop>
+  <tabstop>mainOutputModeComboBox</tabstop>
   <tabstop>micMonitorModeComboBox</tabstop>
   <tabstop>latencyCompensationSpinBox</tabstop>
-  <tabstop>masterDelaySpinBox</tabstop>
+  <tabstop>mainDelaySpinBox</tabstop>
   <tabstop>headDelaySpinBox</tabstop>
   <tabstop>boothDelaySpinBox</tabstop>
   <tabstop>queryButton</tabstop>

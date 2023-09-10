@@ -22,7 +22,7 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handleGroup,
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    setMaster(false); // Use "talkover" button to enable microphones
+    setMainMix(false); // Use "talkover" button to enable microphones
 }
 
 EngineMicrophone::~EngineMicrophone() {
@@ -44,7 +44,7 @@ EngineChannel::ActiveState EngineMicrophone::updateActiveState() {
 }
 
 void EngineMicrophone::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::MICROPHONE) {
+    if (input.getType() != AudioPathType::Microphone) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
@@ -54,7 +54,7 @@ void EngineMicrophone::onInputConfigured(const AudioInput& input) {
 }
 
 void EngineMicrophone::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::MICROPHONE) {
+    if (input.getType() != AudioPathType::Microphone) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;

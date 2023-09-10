@@ -62,7 +62,7 @@
         </State>
         <Pos>5,35</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],master</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],main_mix</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>

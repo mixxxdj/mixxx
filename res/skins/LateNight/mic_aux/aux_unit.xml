@@ -39,7 +39,7 @@
                     <SetVariable name="ObjectName">AuxPlay</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="BtnSize">medium</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,master</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,main_mix</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>

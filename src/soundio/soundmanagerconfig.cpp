@@ -176,7 +176,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) {
+            if (out.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -199,7 +199,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) {
+            if (in.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -350,9 +350,9 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if ((type == AudioInput::DECK ||
-                        type == AudioInput::VINYLCONTROL ||
-                        type == AudioInput::AUXILIARY) &&
+            if ((type == AudioPathType::Deck ||
+                        type == AudioPathType::VinylControl ||
+                        type == AudioPathType::Auxiliary) &&
                     index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = index + 1;
@@ -363,7 +363,7 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
+            if (type == AudioPathType::Deck && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
                 minimum_deck_count = index + 1;
             }
@@ -438,9 +438,9 @@ void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutpu
 
 void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
     m_inputs.insert(device, in);
-    if (in.getType() == AudioPath::MICROPHONE) {
+    if (in.getType() == AudioPathType::Microphone) {
         m_iNumMicInputs++;
-    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+    } else if (in.getType() == AudioPathType::RecordBroadcast) {
         m_bExternalRecordBroadcastConnected = true;
     }
 }
@@ -519,7 +519,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
+                AudioOutput masterOut(AudioPathType::Main, 0, 2, 0);
                 addOutput(pDevice->getDeviceId(), masterOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
