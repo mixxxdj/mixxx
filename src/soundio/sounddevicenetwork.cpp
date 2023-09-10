@@ -517,7 +517,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
                 (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_timeInAudioCallback = mixxx::Duration::empty();
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage->get();
+        // qDebug() << m_mainAudioLatencyUsage->get();
     }
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();

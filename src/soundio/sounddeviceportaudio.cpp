@@ -1091,8 +1091,8 @@ void SoundDevicePortAudio::updateAudioLatencyUsage(
                 secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage
-        //         << m_pMasterAudioLatencyUsage->get();
+        // qDebug() << m_mainAudioLatencyUsage
+        //          << m_mainAudioLatencyUsage->get();
     }
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();
