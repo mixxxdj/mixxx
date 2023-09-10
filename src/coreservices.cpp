@@ -258,9 +258,10 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
+    ControlDoublePrivate::insertGroupAlias(QStringLiteral("[Master]"), QStringLiteral("[Main]"));
     m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
-            "[Master]",
+            "[Main]",
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);

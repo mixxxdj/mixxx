@@ -39,6 +39,13 @@ class ControlDoublePrivate : public QObject {
     // using this UserSettings.
     static void setUserConfig(const UserSettingsPointer& pConfig);
 
+    /// Adds a group alias for the control group `originalGroup`. Can be used
+    /// for supporting legacy / deprecated controls. Aliases for existing
+    /// controls with group `originalGroup` are added immediately. For new
+    /// controls, an alias for new controls with group `originalGroup` is added
+    /// when they are created.
+    static void insertGroupAlias(const QString& aliasGroup, const QString& originalGroup);
+
     // Adds a ConfigKey for 'alias' to the control for 'key'. Can be used for
     // supporting a legacy / deprecated control. The 'key' control must exist
     // for this to work.
