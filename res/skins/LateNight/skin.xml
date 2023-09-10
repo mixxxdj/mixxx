@@ -37,8 +37,8 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
     <!-- Set skin defaults -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Main],num_decks">4</attribute>
+      <attribute config_key="[Main],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 
@@ -73,7 +73,7 @@
       <attribute persist="true" config_key="[Skin],show_vumeters_compact">1</attribute>
 
     <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Main],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_main_head_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -92,7 +92,7 @@
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
     <!-- Library -->
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Main],maximize_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
@@ -404,7 +404,7 @@
           <Children>
 
             <!-- regular or maximized library -->
-            <WidgetStack currentpage="[Master],maximize_library">
+            <WidgetStack currentpage="[Main],maximize_library">
               <Children>
 
                 <!-- Waveforms, Decks, Effects... /  Library
@@ -470,7 +470,7 @@
                 <!-- Decks, Effects, Samplers, Mic/Aux, Library -->
 
                 <!-- Maximized Library & mini decks only -->
-                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                <WidgetGroup trigger="[Main],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>

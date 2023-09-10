@@ -58,9 +58,9 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <attribute config_key="[Master],num_decks">2</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
-      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[Main],num_decks">2</attribute>
+      <attribute config_key="[Main],num_samplers">8</attribute>
+      <attribute config_key="[Main],num_preview_decks">1</attribute>
       <!--Optionally, make elements visible on skin load-->
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
@@ -76,7 +76,7 @@
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
 
       <!--Disable hidden effect routing Buttons-->
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Main]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
@@ -92,7 +92,7 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Microphone2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Auxiliary2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Main]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
@@ -108,7 +108,7 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Microphone2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Auxiliary2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Main]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
@@ -124,7 +124,7 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Microphone2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Auxiliary2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Main]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
@@ -388,7 +388,7 @@
 
           </Children>
           <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <ConfigKey>[Main],maximize_library</ConfigKey>
             <BindProperty>visible</BindProperty>
             <Transform><Not/></Transform>
           </Connection>

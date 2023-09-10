@@ -10,7 +10,7 @@
         <SetVariable name="Group">[Channel<Variable name="ChanNum"/>]</SetVariable>
       </Template>
 
-      <WidgetStack currentpage="[Master],show_mixer" persist="true">
+      <WidgetStack currentpage="[Main],show_mixer" persist="true">
         <Children>
 
           <!-- no mixer -->
@@ -47,7 +47,7 @@
           </WidgetStack>
 
           <!-- mixer shown = full deck -->
-          <WidgetGroup trigger="[Master],show_mixer" on_hide_select="0">
+          <WidgetGroup trigger="[Main],show_mixer" on_hide_select="0">
             <Layout>horizontal</Layout>
             <Children>
               <SingletonContainer>

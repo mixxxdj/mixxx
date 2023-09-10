@@ -15,13 +15,13 @@
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:vumeter_v.xml">
-            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="group">[Main]</SetVariable>
             <SetVariable name="side">L</SetVariable>
             <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
             <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
           </Template>
           <Template src="skin:vumeter_v.xml">
-            <SetVariable name="group">[Master]</SetVariable>
+            <SetVariable name="group">[Main]</SetVariable>
             <SetVariable name="side">R</SetVariable>
             <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
             <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>

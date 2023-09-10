@@ -52,7 +52,7 @@
 		</WidgetGroup>
 	  </Children>
 	   <Connection>
-		   <ConfigKey>[Master],maximize_library</ConfigKey>
+		   <ConfigKey>[Main],maximize_library</ConfigKey>
 		   <BindProperty>visible</BindProperty>
 		   <Transform>
 		     <Not/>

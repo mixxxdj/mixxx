@@ -11,7 +11,7 @@
         <SetVariable name="Size">80f,20f</SetVariable>
         <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
         <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
-        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+        <SetVariable name="ConfigKey">[Main],maximize_library</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -49,7 +49,7 @@
             <SetVariable name="Size">48f,20f</SetVariable>
             <SetVariable name="state_0_text">MIXER</SetVariable>
             <SetVariable name="state_1_text">MIXER</SetVariable>
-            <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+            <SetVariable name="ConfigKey">[Main],show_mixer</SetVariable>
           </Template>
 
           <Template src="skin:../LateNight/controls/button_2state_persist.xml">
@@ -81,7 +81,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Main],maximize_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -113,7 +113,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Main],maximize_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- GUI toggles with maximized library -->
@@ -178,12 +178,12 @@
                     <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[Main],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[Main],audio_latency_overload</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup><!-- LatencyMeterBox -->
@@ -319,7 +319,7 @@
           <Text>      SETTINGS</Text>
         </State>
         <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
+          <ConfigKey>[Main],skin_settings</ConfigKey>
         </Connection>
       </PushButton>
 

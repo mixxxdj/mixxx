@@ -15,7 +15,7 @@
             <SetVariable name="Size">42f,24f</SetVariable>
             <SetVariable name="BtnType">embedded</SetVariable>
             <SetVariable name="BtnSize">medium</SetVariable>
-            <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+            <SetVariable name="ConfigKey">[Main],talkoverDucking</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -30,7 +30,7 @@
             <SetVariable name="KnobColor">red</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
             <SetVariable name="ArcReversed">true</SetVariable>
-            <SetVariable name="Group">[Master]</SetVariable>
+            <SetVariable name="Group">[Main]</SetVariable>
             <SetVariable name="Control">duckStrength</SetVariable>
           </Template>
         </Children>

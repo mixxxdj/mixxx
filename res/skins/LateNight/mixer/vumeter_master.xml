@@ -28,7 +28,7 @@
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
-              <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+              <ConfigKey>[Main],PeakIndicatorL</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -41,7 +41,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterL</ConfigKey>
+              <ConfigKey>[Main],VuMeterL</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -57,7 +57,7 @@
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
-              <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+              <ConfigKey>[Main],PeakIndicatorR</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -70,7 +70,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterR</ConfigKey>
+              <ConfigKey>[Main],VuMeterR</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

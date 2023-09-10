@@ -35,7 +35,7 @@ Description:
               </Label>
             </Children>
             <Connection>
-              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <ConfigKey>[Main],headEnabled</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -60,7 +60,7 @@ Description:
                     <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                     <KnobCenterYOffset>2.000</KnobCenterYOffset>
                     <Connection>
-                      <ConfigKey>[Master],headGain</ConfigKey>
+                      <ConfigKey>[Main],headGain</ConfigKey>
                     </Connection>
                   </KnobComposed>
                 </Children>
@@ -73,7 +73,7 @@ Description:
                 <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/headMix_scale.svg</Slider>
                 <Horizontal>true</Horizontal>
                 <Connection>
-                  <ConfigKey>[Master],headMix</ConfigKey>
+                  <ConfigKey>[Main],headMix</ConfigKey>
                 </Connection>
               </SliderComposed>
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -83,7 +83,7 @@ Description:
                 <SetVariable name="Size">30f,22f</SetVariable>
                 <SetVariable name="state_0_icon">headSplit_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">headSplit_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                <SetVariable name="ConfigKey">[Main],headSplit</SetVariable>
               </Template>
                 <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
             </Children>
