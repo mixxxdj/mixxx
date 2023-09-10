@@ -22,8 +22,8 @@ NumarkScratch.invertLoopEncoderFunction = false;
 
 // Defines the bightness of button LEDs when they inactive.
 // '0x00' sets the LEDSs to completely off. '0x01 sets the LEDs to dim.
-// Default: 0x00
-NumarkScratch.LOW_LIGHT = 0x00;
+// Default: 0x01 (dim)
+NumarkScratch.LOW_LIGHT = 0x01;
 
 /*
  * CODE
@@ -126,9 +126,9 @@ NumarkScratch.EffectUnit = function(deckNumber) {
     for (let i = 0; i < 3; i++) {
         this.effectButtons[i] = new components.Button({
             group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect" + (i + 1) + "]",
-            midi: [0x98 + deckNumber - 1, deckNumber - 1 + i],
-            off: NumarkScratch.LOW_LIGHT,
+            midi: [0x98 + deckNumber - 1, (deckNumber - 1) * 3 + i],
             inKey: "enabled",
+            outKey: "enabled", // Bind the LED state to the effect enabled state
             input: inputUnshifted,
             shift: function() {
                 this.input = inputShifted;
