@@ -103,15 +103,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_decks"), true, true)),
+                  ConfigKey("[Main]", "num_decks"), true, true)),
           m_pCONumSamplers(new ControlObject(
-                  ConfigKey("[Master]", "num_samplers"), true, true)),
+                  ConfigKey("[Main]", "num_samplers"), true, true)),
           m_pCONumPreviewDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
+                  ConfigKey("[Main]", "num_preview_decks"), true, true)),
           m_pCONumMicrophones(new ControlObject(
-                  ConfigKey("[Master]", "num_microphones"), true, true)),
+                  ConfigKey("[Main]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
-                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+                  ConfigKey("[Main]", "num_auxiliaries"), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -241,7 +241,7 @@ unsigned int PlayerManager::numDecks() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        pCOPNumDecks = new ControlProxy(ConfigKey("[Main]", "num_decks"));
         if (!pCOPNumDecks->valid()) {
             delete pCOPNumDecks;
             pCOPNumDecks = nullptr;
@@ -259,7 +259,7 @@ unsigned int PlayerManager::numSamplers() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        pCOPNumSamplers = new ControlProxy(ConfigKey("[Main]", "num_samplers"));
         if (!pCOPNumSamplers->valid()) {
             delete pCOPNumSamplers;
             pCOPNumSamplers = nullptr;
@@ -278,7 +278,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey("[Master]", "num_preview_decks"));
+                ConfigKey("[Main]", "num_preview_decks"));
         if (!pCOPNumPreviewDecks->valid()) {
             delete pCOPNumPreviewDecks;
             pCOPNumPreviewDecks = nullptr;

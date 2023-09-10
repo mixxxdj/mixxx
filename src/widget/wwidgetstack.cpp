@@ -169,7 +169,7 @@ void WWidgetStack::slotSetIndex(int index) {
     // index widget re-focus that widget.
     // For now, its only purpose is to keep the keyboard focus on
     // library widgets in the Library singleton when toggling
-    // [Master],maximize_library
+    // [Main],maximize_library
     QWidget* prevFocusWidget = QApplication::focusWidget();
     setCurrentIndex(index);
     if (currentWidget()->isAncestorOf(prevFocusWidget)) {

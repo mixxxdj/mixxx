@@ -42,9 +42,9 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
           m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "TimeFormat"))),
           m_pNumDecks(
-                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+                  make_parented<ControlProxy>("[Main]", "num_decks", this)),
           m_pNumSamplers(make_parented<ControlProxy>(
-                  "[Master]", "num_samplers", this)),
+                  "[Main]", "num_samplers", this)),
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);

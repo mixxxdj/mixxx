@@ -21,7 +21,7 @@ EngineRecord::EngineRecord(UserSettingsPointer pConfig)
           m_bCueIsEnabled(false) {
 
     m_pRecReady = new ControlProxy(RECORDING_PREF_KEY, "status", this);
-    m_pSamplerate = new ControlProxy("[Master]", "samplerate", this);
+    m_pSamplerate = new ControlProxy("[Main]", "samplerate", this);
     m_sampleRate = static_cast<mixxx::audio::SampleRate::value_t>(m_pSamplerate->get());
 }
 

@@ -294,7 +294,7 @@ void SkinLoader::setupMicDuckingControls() {
     m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowDuckingControls->setReadOnly();
 
-    m_pNumMics = make_parented<ControlProxy>("[Master]", "num_microphones", this);
+    m_pNumMics = make_parented<ControlProxy>("[Main]", "num_microphones", this);
     m_pNumMics->connectValueChanged(this, &SkinLoader::slotNumMicsChanged);
 
     m_micDuckingControlsCreated = true;

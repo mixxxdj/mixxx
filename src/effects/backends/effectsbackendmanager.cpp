@@ -10,7 +10,7 @@
 
 EffectsBackendManager::EffectsBackendManager() {
     m_pNumEffectsAvailable = std::make_unique<ControlObject>(
-            ConfigKey("[Master]", "num_effectsavailable"));
+            ConfigKey("[Main]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));

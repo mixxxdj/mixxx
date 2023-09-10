@@ -19,7 +19,7 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 } // namespace
 
 EngineVuMeter::EngineVuMeter(const QString& group)
-        : m_sampleRate("[Master]", "samplerate") {
+        : m_sampleRate("[Main]", "samplerate") {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);

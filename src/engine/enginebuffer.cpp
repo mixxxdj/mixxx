@@ -174,7 +174,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy("[Main]", "samplerate", this);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
@@ -258,7 +258,7 @@ EngineBuffer::EngineBuffer(const QString& group,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
-    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy("[Main]", "keylock_engine", this);
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);

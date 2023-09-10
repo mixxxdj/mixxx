@@ -52,9 +52,9 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0),
-          m_mainAudioLatencyOverloadCount("[Master]",
+          m_mainAudioLatencyOverloadCount("[Main]",
                   "audio_latency_overload_count"),
-          m_mainAudioLatencyOverload("[Master]", "audio_latency_overload") {
+          m_mainAudioLatencyOverload("[Main]", "audio_latency_overload") {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(

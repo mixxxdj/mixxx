@@ -167,7 +167,7 @@ AutoDJProcessor::AutoDJProcessor(
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
 
-    m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
+    m_pCOCrossfader = new ControlProxy("[Main]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(

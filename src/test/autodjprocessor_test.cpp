@@ -27,7 +27,7 @@ const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.
 class FakeMixer {
   public:
     FakeMixer()
-            : crossfader(ConfigKey("[Master]", "crossfader"), -1.0, 1.0),
+            : crossfader(ConfigKey("[Main]", "crossfader"), -1.0, 1.0),
               crossfaderReverse(ConfigKey("[Mixer Profile]", "xFaderReverse")) {
         crossfaderReverse.setButtonMode(ControlPushButton::TOGGLE);
     }
@@ -124,10 +124,10 @@ class FakeDeck : public BaseTrackPlayer {
 class MockPlayerManager : public PlayerManagerInterface {
   public:
     MockPlayerManager()
-            : numDecks(ConfigKey("[Master]", "num_decks"), true),
-              numSamplers(ConfigKey("[Master]", "num_samplers"), true),
-              numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
-                              true) {
+            : numDecks(ConfigKey("[Main]", "num_decks"), true),
+              numSamplers(ConfigKey("[Main]", "num_samplers"), true),
+              numPreviewDecks(ConfigKey("[Main]", "num_preview_decks"),
+                      true) {
     }
 
     virtual ~MockPlayerManager() {

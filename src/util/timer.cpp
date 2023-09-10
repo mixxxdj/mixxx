@@ -84,7 +84,7 @@ mixxx::Duration SuspendableTimer::elapsed(bool report) {
 GuiTickTimer::GuiTickTimer(QObject* pParent)
         : QObject(pParent),
           m_pGuiTick(make_parented<ControlProxy>(
-              "[Master]", "guiTickTime", this)),
+                  "[Main]", "guiTickTime", this)),
           m_bActive(false) {
 }
 
