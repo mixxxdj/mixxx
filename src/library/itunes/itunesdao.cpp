@@ -2,10 +2,12 @@
 
 #include <QObject>
 #include <QSqlQuery>
+#include <QStringLiteral>
 #include <gsl/pointers>
 
 #include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunespathmapping.h"
+#include "library/itunes/itunesschema.h"
 #include "library/queryutil.h"
 #include "library/treeitem.h"
 
@@ -47,22 +49,27 @@ void ITunesDAO::initialize(const QSqlDatabase& database) {
     m_applyPathMappingQuery = QSqlQuery(database);
 
     m_insertTrackQuery.prepare(
-            "INSERT INTO itunes_library (id, artist, title, album, "
-            "album_artist, genre, grouping, year, duration, "
-            "location, rating, comment, tracknumber, bpm, bitrate) "
-            "VALUES (:id, :artist, :title, :album, :album_artist, "
-            ":genre, :grouping, :year, :duration, :location, "
-            ":rating, :comment, :tracknumber, :bpm, :bitrate)");
+            QStringLiteral("INSERT INTO %1 (id, artist, title, album, "
+                           "album_artist, genre, grouping, year, duration, "
+                           "location, rating, comment, tracknumber, bpm, bitrate) "
+                           "VALUES (:id, :artist, :title, :album, :album_artist, "
+                           ":genre, :grouping, :year, :duration, :location, "
+                           ":rating, :comment, :tracknumber, :bpm, :bitrate)")
+                    .arg(ITUNES_LIBRARY_TABLE));
 
-    m_insertPlaylistQuery.prepare("INSERT INTO itunes_playlists (id, name) VALUES (:id, :name)");
+    m_insertPlaylistQuery.prepare(
+            QStringLiteral("INSERT INTO %1 (id, name) VALUES (:id, :name)")
+                    .arg(ITUNES_PLAYLISTS_TABLE));
 
-    m_insertPlaylistTrackQuery.prepare(
-            "INSERT INTO itunes_playlist_tracks (playlist_id, track_id, "
-            "position) VALUES (:playlist_id, :track_id, :position)");
+    m_insertPlaylistTrackQuery.prepare(QStringLiteral(
+            "INSERT INTO %1 (playlist_id, track_id, "
+            "position) VALUES (:playlist_id, :track_id, :position)")
+                                               .arg(ITUNES_PLAYLIST_TRACKS_TABLE));
 
-    m_applyPathMappingQuery.prepare(
-            "UPDATE itunes_library SET location = replace( location, "
-            ":itunes_path, :mixxx_path )");
+    m_applyPathMappingQuery.prepare(QStringLiteral(
+            "UPDATE %1 SET location = replace( location, "
+            ":itunes_path, :mixxx_path )")
+                                            .arg(ITUNES_LIBRARY_TABLE));
 
     m_isDatabaseInitialized = true;
 }
