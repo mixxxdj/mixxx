@@ -191,7 +191,7 @@
       <!-- Xfader Reverse On -->
       <control>
         <group>[Mixer Profile]</group>
-        <key>NumarkScratch.xfader.crossfader.xFaderReverse</key>
+        <key>NumarkScratch.xfader.xFaderReverse</key>
         <status>0x9F</status>
         <midino>0x1E</midino>
         <options>
@@ -201,7 +201,7 @@
       <!-- Xfader Reverse Off -->
       <control>
         <group>[Mixer Profile]</group>
-        <key>NumarkScratch.xfader.crossfader.xFaderReverse</key>
+        <key>NumarkScratch.xfader.xFaderReverse</key>
         <status>0x8F</status>
         <midino>0x1E</midino>
         <options>
@@ -211,7 +211,7 @@
       <!-- Xfader Curve -->
       <control>
         <group>[Mixer Profile]</group>
-        <key>NumarkScratch.xfader.crossfader.setCurve</key>
+        <key>NumarkScratch.xfader.setCurve</key>
         <status>0xBF</status>
         <midino>0x09</midino>
         <options>

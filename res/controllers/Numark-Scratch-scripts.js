@@ -201,6 +201,7 @@ NumarkScratch.XfaderContainer = function() {
             engine.setValue("[Mixer Profile]", "xFaderMode", 0);
             engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
             engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+            break;
         }
     };
 
