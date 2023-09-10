@@ -1865,8 +1865,7 @@ add_executable(mixxx-test
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
   src/test/indexrange_test.cpp
-  # TODO: reanable this after https://github.com/mixxxdj/mixxx/pull/11666
-  # src/test/itunesxmlimportertest.cpp
+  src/test/itunesxmlimportertest.cpp
   src/test/keyutilstest.cpp
   src/test/lcstest.cpp
   src/test/learningutilstest.cpp
@@ -2889,7 +2888,7 @@ if(FAAD)
     src/sources/soundsourcem4a.cpp
     src/sources/libfaadloader.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __FAAD__)
+  target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
     target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
     target_link_libraries(mixxx-lib PRIVATE MP4v2::MP4v2)

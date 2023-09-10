@@ -1,5 +1,6 @@
 #include "library/itunes/itunesxmlimporter.h"
 
+#include <QDateTime>
 #include <QSqlQuery>
 #include <QString>
 #include <QUrl>
@@ -29,6 +30,7 @@ const QString kName = "Name";
 const QString kArtist = "Artist";
 const QString kAlbum = "Album";
 const QString kAlbumArtist = "Album Artist";
+const QString kComposer = "Composer";
 const QString kGenre = "Genre";
 const QString kGrouping = "Grouping";
 const QString kBPM = "BPM";
@@ -41,6 +43,9 @@ const QString kTrackNumber = "Track Number";
 const QString kRating = "Rating";
 const QString kTrackType = "Track Type";
 const QString kRemote = "Remote";
+const QString kPlayCount = "Play Count";
+const QString kPlayDateUTC = "Play Date UTC";
+const QString kDateAdded = "Date Added";
 
 } // anonymous namespace
 
@@ -249,6 +254,7 @@ void ITunesXMLImporter::parseTrack() {
     QString artist;
     QString album;
     QString albumArtist;
+    QString composer;
     QString year;
     QString genre;
     QString grouping;
@@ -263,6 +269,10 @@ void ITunesXMLImporter::parseTrack() {
     QString comment;
     QString tracknumber;
     QString tracktype;
+
+    int playCount = 0;
+    QDateTime lastPlayedAt;
+    QDateTime dateAdded;
 
     while (!m_xml.atEnd()) {
         m_xml.readNext();
@@ -296,6 +306,10 @@ void ITunesXMLImporter::parseTrack() {
                 }
                 if (key == kAlbumArtist) {
                     albumArtist = content;
+                    continue;
+                }
+                if (key == kComposer) {
+                    composer = content;
                     continue;
                 }
                 if (key == kGenre) {
@@ -355,6 +369,18 @@ void ITunesXMLImporter::parseTrack() {
                     tracktype = content;
                     continue;
                 }
+                if (key == kPlayCount) {
+                    playCount = content.toInt();
+                    continue;
+                }
+                if (key == kPlayDateUTC) {
+                    lastPlayedAt = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
+                if (key == kDateAdded) {
+                    dateAdded = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
             }
         }
         // exit loop on closing </dict>
@@ -377,6 +403,7 @@ void ITunesXMLImporter::parseTrack() {
             .title = title,
             .album = album,
             .albumArtist = albumArtist,
+            .composer = composer,
             .genre = genre,
             .grouping = grouping,
             .year = year.toInt(),
@@ -387,6 +414,9 @@ void ITunesXMLImporter::parseTrack() {
             .trackNumber = tracknumber.toInt(),
             .bpm = bpm,
             .bitrate = bitrate,
+            .playCount = playCount,
+            .lastPlayedAt = lastPlayedAt,
+            .dateAdded = dateAdded,
     };
 
     if (!m_dao->importTrack(track)) {

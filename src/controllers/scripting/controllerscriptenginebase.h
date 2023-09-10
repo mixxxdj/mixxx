@@ -48,6 +48,7 @@ class ControllerScriptEngineBase : public QObject {
     virtual void shutdown();
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
+    void logOrThrowError(const QString& errorMessage);
 
     bool m_bDisplayingExceptionDialog;
     std::shared_ptr<QJSEngine> m_pJSEngine;

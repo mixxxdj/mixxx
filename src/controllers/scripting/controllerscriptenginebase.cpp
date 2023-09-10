@@ -77,16 +77,12 @@ bool ControllerScriptEngineBase::executeFunction(
         return false;
     }
 
-    if (pFunctionObject->isError()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << pFunctionObject->toString();
-        return false;
-    }
-
-    // If it's not a function, we're done.
-    if (!pFunctionObject->isCallable()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << pFunctionObject->toVariant() << "Not a function";
+    const bool isError = pFunctionObject->isError();
+    const bool isCallable = pFunctionObject->isCallable();
+    if (isError || !isCallable) {
+        logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
+                                 : QStringLiteral("\"%1\" is not callable"))
+                                .arg(pFunctionObject->toString()));
         return false;
     }
 
@@ -126,6 +122,14 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
+    }
+}
+
+void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
+    if (m_bAbortOnWarning) {
+        throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
     }
 }
 
