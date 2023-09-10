@@ -760,7 +760,7 @@
       <!-- FX Echo button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect1</key>
+        <key>NumarkScratch.effect[0].effectButtons[0].input</key>
         <status>0x98</status>
         <midino>0x00</midino>
         <options>
@@ -770,7 +770,7 @@
       <!-- FX Echo button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect1</key>
+        <key>NumarkScratch.effect[0].effectButtons[0].input</key>
         <status>0x88</status>
         <midino>0x00</midino>
         <options>
@@ -780,7 +780,7 @@
       <!-- FX Delay button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect2</key>
+        <key>NumarkScratch.effect[0].effectButtons[1].input</key>
         <status>0x98</status>
         <midino>0x01</midino>
         <options>
@@ -790,7 +790,7 @@
       <!-- FX Delay button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect2</key>
+        <key>NumarkScratch.effect[0].effectButtons[1].input</key>
         <status>0x88</status>
         <midino>0x01</midino>
         <options>
@@ -800,7 +800,7 @@
       <!-- FX Flanger button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect3</key>
+        <key>NumarkScratch.effect[0].effectButtons[2].input</key>
         <status>0x98</status>
         <midino>0x02</midino>
         <options>
@@ -810,7 +810,7 @@
       <!-- FX Flanger button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].effect3</key>
+        <key>NumarkScratch.effect[0].effectButtons[2].input</key>
         <status>0x88</status>
         <midino>0x02</midino>
         <options>
@@ -820,7 +820,7 @@
       <!-- FX Reverb button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect1</key>
+        <key>NumarkScratch.effect[1].effectButtons[0].input</key>
         <status>0x99</status>
         <midino>0x03</midino>
         <options>
@@ -830,7 +830,7 @@
       <!-- FX Reverb button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect1</key>
+        <key>NumarkScratch.effect[1].effectButtons[0].input</key>
         <status>0x89</status>
         <midino>0x03</midino>
         <options>
@@ -840,7 +840,7 @@
       <!-- FX V.Echo button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect2</key>
+        <key>NumarkScratch.effect[1].effectButtons[1].input</key>
         <status>0x99</status>
         <midino>0x04</midino>
         <options>
@@ -850,7 +850,7 @@
       <!-- FX V.Echo button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect2</key>
+        <key>NumarkScratch.effect[1].effectButtons[1].input</key>
         <status>0x89</status>
         <midino>0x04</midino>
         <options>
@@ -860,7 +860,7 @@
       <!-- FX Phaser button (press) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect3</key>
+        <key>NumarkScratch.effect[1].effectButtons[2].input</key>
         <status>0x99</status>
         <midino>0x05</midino>
         <options>
@@ -870,7 +870,7 @@
       <!-- FX Phaser button (release) -->
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].effect3</key>
+        <key>NumarkScratch.effect[1].effectButtons[2].input</key>
         <status>0x89</status>
         <midino>0x05</midino>
         <options>
@@ -880,7 +880,7 @@
       <!-- FX enable switch -->
       <control>
         <group>[EffectRack1_EffectUnit1]</group>
-        <key>NumarkScratch.effect[0].enableSwitch</key>
+        <key>NumarkScratch.effect[0].paddle.input</key>
         <status>0xB8</status>
         <midino>0x03</midino>
         <options>
@@ -889,7 +889,7 @@
       </control>
       <control>
         <group>[EffectRack1_EffectUnit2]</group>
-        <key>NumarkScratch.effect[1].enableSwitch</key>
+        <key>NumarkScratch.effect[1].paddle.input</key>
         <status>0xB9</status>
         <midino>0x03</midino>
         <options>

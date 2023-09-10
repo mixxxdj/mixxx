@@ -1,4 +1,4 @@
-var NumarkScratch = {};
+const NumarkScratch = {};
 
 /*
  * USER CONFIGURABLE SETTINGS.
@@ -92,52 +92,68 @@ NumarkScratch.unshift = function() {
     NumarkScratch.effect.unshift();
 };
 
-NumarkScratch.allEffectOff = function() {
-    NumarkScratch.effect[0].effects=[false, false, false];
-    NumarkScratch.effect[1].effects=[false, false, false];
-    NumarkScratch.FxUpdateLEDs();
-    NumarkScratch.effect[0].updateEffects();
-    NumarkScratch.effect[1].updateEffects();
-};
-
-NumarkScratch.FxUpdateLEDs = function() {
-    let newStates1=[false, false, false];
-    let newStates2=[false, false, false];
-    newStates1=NumarkScratch.effect[0].effects;
-    newStates2=NumarkScratch.effect[1].effects;
-    midi.sendShortMsg(0x98, 0x00, newStates1[0] ? 0x7F:NumarkScratch.LOW_LIGHT);
-    midi.sendShortMsg(0x98, 0x01, newStates1[1] ? 0x7F:NumarkScratch.LOW_LIGHT);
-    midi.sendShortMsg(0x98, 0x02, newStates1[2] ? 0x7F:NumarkScratch.LOW_LIGHT);
-    midi.sendShortMsg(0x99, 0x03, newStates2[0] ? 0x7F:NumarkScratch.LOW_LIGHT);
-    midi.sendShortMsg(0x99, 0x04, newStates2[1] ? 0x7F:NumarkScratch.LOW_LIGHT);
-    midi.sendShortMsg(0x99, 0x05, newStates2[2] ? 0x7F:NumarkScratch.LOW_LIGHT);
-};
-// TODO - it is not possible to "properly" map the FX selection buttons.
-// solution should use proper OOP principles & incorporate global quickeffect chain preset, see
-// https://github.com/mixxxdj/mixxx/pull/11378
 NumarkScratch.EffectUnit = function(deckNumber) {
-    this.effects = [false, false, false];
-    this.isSwitchHoldOn = false;
 
-    this.updateEffects = function() {
-        for (let i = 1; i <= this.effects.length; i++) {
-            engine.setValue("[EffectRack1_EffectUnit" + deckNumber + "_Effect"+i+"]", "enabled", this.effects[i-1]);
+    const inputUnshifted = function(channel, control, value, _status, _group) {
+        if (value !== 0x7F) {
+            return;
+        }
+        // Enable the current button
+        engine.setValue(this.group, this.inKey, true);
+
+        // Disable all other buttons in the same unit
+        NumarkScratch.effect[deckNumber - 1].effectButtons.forEach((effectButton) => {
+            if (effectButton !== this) {
+                engine.setValue(effectButton.group, effectButton.inKey, false);
+            }
+        });
+
+        // Disable all buttons in the other unit
+        NumarkScratch.effect[1 - (deckNumber - 1)].effectButtons.forEach((effectButton) => {
+            engine.setValue(effectButton.group, effectButton.inKey, false);
+        });
+    };
+
+    const inputShifted = function(channel, control, value, _status, _group) {
+        if (value === 0x7F) {
+            // Toggle the current button state
+            const currentState = engine.getValue(this.group, this.inKey);
+            engine.setValue(this.group, this.inKey, !currentState);
         }
     };
 
-    // switch values are:
-    // 0 - switch in the middle
-    // 1 - switch up
-    // 2 - switch down
-    this.enableSwitch = function(channel, control, value, _status, _group) {
-        this.isSwitchHoldOn = value !== 0;
-        engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
-        engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + deckNumber + "]_enable", (value !== 0));
-        this.updateEffects();
-    };
+    this.effectButtons = [];
+    for (let i = 0; i < 3; i++) {
+        this.effectButtons[i] = new components.Button({
+            group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect" + (i + 1) + "]",
+            midi: [0x98 + deckNumber - 1, deckNumber - 1 + i],
+            off: NumarkScratch.LOW_LIGHT,
+            inKey: "enabled",
+            input: inputUnshifted,
+            shift: function() {
+                this.input = inputShifted;
+            },
+            unshift: function() {
+                this.input = inputUnshifted;
+            },
+        });
+    }
+
+    this.paddle = new components.Button({
+        group: "[EffectRack1_EffectUnit" + deckNumber + "]",
+        outKey: "enabled",
+        inKey: "group_[Channel" + deckNumber + "]_enable",
+        input: function(channel, control, value, _status, _group) {
+            this.isPress = value !== 0;
+            engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel" + deckNumber + "]_enable", this.isPress);
+            engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel" + deckNumber + "]_enable", this.isPress);
+            this.trigger();
+        }
+    });
 
     this.dryWetKnob = new components.Pot({
         group: "[EffectRack1_EffectUnit" + deckNumber + "]",
+        inKey: "mix",
         shift: function() {
             this.inKey = "super1";
         },
@@ -145,41 +161,6 @@ NumarkScratch.EffectUnit = function(deckNumber) {
             this.inKey = "mix";
         },
     });
-
-    this.effect1 = function(channel, control, value, status, _group) {
-        if (value === 0x7F) {
-            if (!NumarkScratch.shifted) {
-                NumarkScratch.allEffectOff();
-            }
-            this.effects[0] = !this.effects[0];
-            midi.sendShortMsg(status, control, this.effects[0] ? 0x7F : NumarkScratch.LOW_LIGHT);
-        }
-
-        this.updateEffects();
-    };
-
-    this.effect2 = function(channel, control, value, status, _group) {
-        if (value === 0x7F) {
-            if (!NumarkScratch.shifted) {
-                NumarkScratch.allEffectOff();
-            }
-            this.effects[1] = !this.effects[1];
-            midi.sendShortMsg(status, control, this.effects[1] ? 0x7F : NumarkScratch.LOW_LIGHT);
-        }
-
-        this.updateEffects();
-    };
-
-    this.effect3 = function(channel, control, value, status, _group) {
-        if (value === 0x7F) {
-            if (!NumarkScratch.shifted) {
-                NumarkScratch.allEffectOff();
-            }
-            this.effects[2] = !this.effects[2];
-            midi.sendShortMsg(status, control, this.effects[2] ? 0x7F : NumarkScratch.LOW_LIGHT);
-        }
-        this.updateEffects();
-    };
 };
 NumarkScratch.EffectUnit.prototype = new components.ComponentContainer();
 
