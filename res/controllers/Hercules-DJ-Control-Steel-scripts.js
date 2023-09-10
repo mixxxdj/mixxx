@@ -28,7 +28,7 @@ v0.1 10/09/2010 First public release
 //TODO: Cleanup, create objects from init.
 //Remove led timers when alsa midi is working properly.
 HerculesSteel = new function() {
-    this.group = "[Master]";
+    this.group = "[Main]";
     this.shiftMode = false;
     this.scratchMode = false;
     this.jogPlaylistScrollMode = false;

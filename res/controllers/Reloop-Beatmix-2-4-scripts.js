@@ -185,8 +185,8 @@ ReloopBeatmix24.connectControls = function() {
     }
 
     // Effects reset
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Master]_enable", 0);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Master]_enable", 0);
+    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Main]_enable", 0);
+    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Main]_enable", 0);
 };
 
 ReloopBeatmix24.init = function(id, _debug) {
@@ -376,7 +376,7 @@ ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status,
 };
 
 ReloopBeatmix24.SamplerVol = function(channel, control, value, _status, _group) {
-    for (let i = 1; i <= engine.getValue("[Master]", "num_samplers"); i++) {
+    for (let i = 1; i <= engine.getValue("[Main]", "num_samplers"); i++) {
         engine.setValue("[Sampler" + i + "]", "volume", value / 127.0);
     }
 };

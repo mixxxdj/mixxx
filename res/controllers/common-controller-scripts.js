@@ -577,7 +577,7 @@ var LedState = {"off": 0x00, "on": 0x7F};
 // Controller
 
 var Controller = function() {
-    this.group = "[Master]";
+    this.group = "[Main]";
     this.Controls = [];
     this.Buttons = [];
 };

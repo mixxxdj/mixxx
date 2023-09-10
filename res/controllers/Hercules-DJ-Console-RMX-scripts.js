@@ -835,11 +835,11 @@ HerculesRMX.init = function (id) {    // called when the MIDI device is opened &
    engine.softTakeover("[Channel2]","filterHigh",true);
    engine.softTakeover("[Channel2]","filterMed",true);
    engine.softTakeover("[Channel2]","filterLow",true);
-   engine.softTakeover("[Master]","crossfader",true);
-   engine.softTakeover("[Master]","headVolume",true);
-   engine.softTakeover("[Master]","headMix",true);
-   engine.softTakeover("[Master]","volume",true);
-   engine.softTakeover("[Master]","balance",true);
+   engine.softTakeover("[Main]","crossfader",true);
+   engine.softTakeover("[Main]","headVolume",true);
+   engine.softTakeover("[Main]","headMix",true);
+   engine.softTakeover("[Main]","volume",true);
+   engine.softTakeover("[Main]","balance",true);
    // does not work, because whole Mic volume and "Talk" button of the skin
    // does not seem to be matched to controller
    // engine.softTakeover("[Microphone]","volume",true);

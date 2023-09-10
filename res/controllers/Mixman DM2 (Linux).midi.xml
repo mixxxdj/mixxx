@@ -36,7 +36,7 @@
       <control>
         <status>0xb0</status>
         <midino>0x2</midino>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <options>
           <normal/>
@@ -45,7 +45,7 @@
       <control>
         <status>0xb0</status>
         <midino>0x79</midino>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>volume</key>
         <options>
           <normal/>

@@ -16,7 +16,7 @@
             <!-- global controls -->
 
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB0</status>
                 <midino>0x45</midino>
@@ -25,7 +25,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB0</status>
                 <midino>0x44</midino>
@@ -37,7 +37,7 @@
             <!-- master/pfl vumeter select -->
 
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <status>0x90</status>
                 <midino>0x24</midino>
                 <key>DJTechDJM101.vumeter_select_master</key>
@@ -47,7 +47,7 @@
             </control>
 
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <status>0x90</status>
                 <midino>0x23</midino>
                 <key>DJTechDJM101.vumeter_select_pfl</key>
@@ -57,7 +57,7 @@
             </control>
 
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB0</status>
                 <midino>0x43</midino>
@@ -67,7 +67,7 @@
             </control>
 
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x40</midino>

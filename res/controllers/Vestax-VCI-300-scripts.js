@@ -208,7 +208,7 @@
 
 function VestaxVCI300() {}
 
-VestaxVCI300.group = "[Master]";
+VestaxVCI300.group = "[Main]";
 
 VestaxVCI300.JOG_RESOLUTION = 1600; // Steps per revolution: (0x0C << 7) + 0x40 = 1536 + 64 = 1600
 

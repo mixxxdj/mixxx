@@ -975,7 +975,7 @@
                 this.valueAtLastEffectSwitch = this.previousValueReceived;
                 // Floor the threshold to ensure that every effect can be selected
                 this.changeThreshold = Math.floor(this.max /
-                    engine.getValue("[Master]", "num_effectsavailable"));
+                    engine.getValue("[Main]", "num_effectsavailable"));
 
                 this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {

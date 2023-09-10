@@ -21,7 +21,7 @@
 
         // Shift
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>DJCStarlight.shiftButton</key>
                 <description>Shift button</description>
                 <status>0x90</status>
@@ -85,7 +85,7 @@
 
         // Vinyl button
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>DJCStarlight.vinylButton</key>
                 <description>Vinyl</description>
                 <status>0x91</status>
@@ -213,7 +213,7 @@
 
         // PFL
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>DJCStarlight.cueMaster</key>
                 <description>CUE Master</description>
                 <status>0x94</status>
@@ -277,7 +277,7 @@
 
         // PFL
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>DJCStarlight.cueMix</key>
                 <description>Headphone CUE + MIX</description>
                 <status>0x95</status>
@@ -830,7 +830,7 @@
 
         // Crossfader
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB0</status>

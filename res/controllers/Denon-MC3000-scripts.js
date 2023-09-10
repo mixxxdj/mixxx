@@ -166,16 +166,16 @@ mc3000.micVolume = function(channel, control, value, status, group) {
     engine.setValue("[Microphone]", "volume", value/127);
 }
 mc3000.headMix = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "headMix", (value-64)/64);
+    engine.setValue("[Main]", "headMix", (value-64)/64);
 }
 mc3000.headVolume = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "headVolume", value/127*5);
+    engine.setValue("[Main]", "headVolume", value/127*5);
 }
 mc3000.masterBalance = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "balance", (value-64)/64);
+    engine.setValue("[Main]", "balance", (value-64)/64);
 }
 mc3000.masterVolume = function(channel, control, value, status, group) {
-    engine.setValue("[Master]", "volume", value/127*5);
+    engine.setValue("[Main]", "volume", value/127*5);
 }
 
 // === PLAYLIST ===

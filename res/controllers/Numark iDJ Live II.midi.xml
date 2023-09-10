@@ -13,7 +13,7 @@
     <controls>
       <!-- Master -->
       <control>
-	<group>[Master]</group>
+	<group>[Main]</group>
 	<key>Numark.toggleScratchMode</key>
 	<status>0x90</status>
 	<midino>0x48</midino>
@@ -22,13 +22,13 @@
 	</options>
       </control>
       <control>
-	<group>[Master]</group>
+	<group>[Main]</group>
 	<key>gain</key>
 	<status>0xB0</status>
 	<midino>0x17</midino>
       </control>
       <control>
-	<group>[Master]</group>
+	<group>[Main]</group>
 	<key>crossfader</key>
 	<status>0xB0</status>
 	<midino>0x0A</midino>
@@ -47,7 +47,7 @@
 	</options>
       </control>
       <control>
-	<group>[Master]</group>
+	<group>[Main]</group>
 	<key>maximize_library</key>
 	<status>0x90</status>
 	<midino>0x4F</midino>

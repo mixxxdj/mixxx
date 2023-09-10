@@ -101,7 +101,7 @@ joyMIDI.shutdown = function() {
 
 //==== Callback  ==============================================================
 joyMIDI.onBeatIndicator = function(value, group, _control) {
-    var fader = engine.getParameter("[Master]", "crossfader");
+    var fader = engine.getParameter("[Main]", "crossfader");
     if (fader < 0.5) {
         // Left
         if (group === "[Channel1]") {

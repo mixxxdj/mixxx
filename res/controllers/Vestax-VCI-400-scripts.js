@@ -17,7 +17,7 @@ Owen todo:
  * buttons and controls affecting the MASTER output
  */
 VestaxVCI400 = new function() {
-   this.group = "[Master]";
+   this.group = "[Main]";
    this.Controls = []; //The list of control objects, i.e., knobs
    this.Buttons = [];  //The list of buttons objects
 }
@@ -37,7 +37,7 @@ VestaxVCI400.ModeEnum = {
  * Called when the MIDI device is opened for set up
  */
 VestaxVCI400.init = function (id) {
-   engine.setValue("[Master]", "num_decks", 4);
+   engine.setValue("[Main]", "num_decks", 4);
    //Initialize controls and their default values here
    VestaxVCI400.Decks.A.init();
    VestaxVCI400.Decks.B.init();
@@ -46,8 +46,8 @@ VestaxVCI400.init = function (id) {
 
    //Connect vu meters
    // No need if using the sound card
-   engine.connectControl("[Master]","VuMeterL", "VestaxVCI400.onMasterVuMeterLChanged");
-   engine.connectControl("[Master]","VuMeterR", "VestaxVCI400.onMasterVuMeterRChanged");
+   engine.connectControl("[Main]","VuMeterL", "VestaxVCI400.onMasterVuMeterLChanged");
+   engine.connectControl("[Main]","VuMeterR", "VestaxVCI400.onMasterVuMeterRChanged");
 
    //Reset VU meters
    if (VestaxVCI400.enableMasterVu) {

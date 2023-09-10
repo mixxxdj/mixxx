@@ -1468,7 +1468,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
 
          <!-- Mixer main-->
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>headMix</key>
             <status>0xB0</status>
             <midino>0x22</midino>
@@ -1477,7 +1477,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>headVolume</key>
             <status>0xB0</status>
             <midino>0x23</midino>
@@ -1486,7 +1486,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>volume</key>
             <status>0xB0</status>
             <midino>0x1C</midino>
@@ -1495,7 +1495,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
             </options>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>balance</key>
             <status>0xB0</status>
             <midino>0x1D</midino>

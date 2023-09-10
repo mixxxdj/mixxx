@@ -18,8 +18,8 @@ WirelessDJ.init = function(id) {
     // LEDs
     engine.connectControl("[Channel1]", "VuMeter", "WirelessDJ.meter");
     engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter");
-    engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter");
-    engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter");
+    engine.connectControl("[Main]", "VuMeterL", "WirelessDJ.meter");
+    engine.connectControl("[Main]", "VuMeterR", "WirelessDJ.meter");
 
     // sliders feedback
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback");
@@ -32,8 +32,8 @@ WirelessDJ.init = function(id) {
     engine.connectControl("[Channel2]", "filterHigh", "WirelessDJ.controlFeedback");
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback");
     engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback");
-    engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback");
-    engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Main]", "crossfader", "WirelessDJ.controlFeedback");
+    engine.connectControl("[Main]", "headMix", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback");
     engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback");
@@ -50,8 +50,8 @@ WirelessDJ.init = function(id) {
 WirelessDJ.shutdown = function(id) {
     engine.connectControl("[Channel1]", "VuMeter", "WirelessDJ.meter", true);
     engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter", true);
-    engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter", true);
-    engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter", true);
+    engine.connectControl("[Main]", "VuMeterL", "WirelessDJ.meter", true);
+    engine.connectControl("[Main]", "VuMeterR", "WirelessDJ.meter", true);
 
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "volume", "WirelessDJ.controlFeedback", true);
@@ -63,8 +63,8 @@ WirelessDJ.shutdown = function(id) {
     engine.connectControl("[Channel2]", "filterHigh", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterMid", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel2]", "filterLow", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Master]", "crossfader", "WirelessDJ.controlFeedback", true);
-    engine.connectControl("[Master]", "headMix", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Main]", "crossfader", "WirelessDJ.controlFeedback", true);
+    engine.connectControl("[Main]", "headMix", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoPeriod", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoDepth", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Flanger]", "lfoDelay", "WirelessDJ.controlFeedback", true);

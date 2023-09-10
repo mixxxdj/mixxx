@@ -86,8 +86,8 @@ DJC4.init = function() {
     engine.makeConnection("[Channel3]", "track_loaded", DJC4.autoShowDecks);
     engine.makeConnection("[Channel4]", "track_loaded", DJC4.autoShowDecks);
 
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[Main]", "num_samplers") < 8) {
+        engine.setValue("[Main]", "num_samplers", 8);
     }
 
     DJC4.browseEncoder = new components.Encoder({
@@ -141,7 +141,7 @@ DJC4.init = function() {
     if (DJC4.showMasterVu === true) {
         DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x03],
-            group: "[Master]",
+            group: "[Main]",
             outKey: "VuMeterL",
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
@@ -157,7 +157,7 @@ DJC4.init = function() {
 
         DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x04],
-            group: "[Master]",
+            group: "[Main]",
             outKey: "VuMeterR",
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
@@ -331,7 +331,7 @@ DJC4.autoShowDecks = function() {
     if (!DJC4.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", anyLoaded);
+    engine.setValue("[Main]", "show_4decks", anyLoaded);
 };
 
 DJC4.shiftButton = function(channel, control, value) {

@@ -120,10 +120,10 @@ StantonSCS1d.knobSignals = [  [ ["CurrentChannel", "filterLow", "StantonSCS1d.en
                                 ["[Flanger]", "lfoPeriod", "StantonSCS1d.FXPeriodLEDs"],
                                 ["CurrentChannel", "pregain", "StantonSCS1d.encoder4EQLEDs"]
                               ],
-                              [ ["[Master]", "headMix", "StantonSCS1d.encoder1BalanceLEDs"],
-                                ["[Master]", "headVolume", "StantonSCS1d.encoder2MVolumeLEDs"],
-                                ["[Master]", "balance", "StantonSCS1d.encoder3BalanceLEDs"],
-                                ["[Master]", "volume", "StantonSCS1d.encoder4MVolumeLEDs"]
+                              [ ["[Main]", "headMix", "StantonSCS1d.encoder1BalanceLEDs"],
+                                ["[Main]", "headVolume", "StantonSCS1d.encoder2MVolumeLEDs"],
+                                ["[Main]", "balance", "StantonSCS1d.encoder3BalanceLEDs"],
+                                ["[Main]", "volume", "StantonSCS1d.encoder4MVolumeLEDs"]
                               ]
                            ];
 StantonSCS1d.padSignals = [    [],    // Bank 0 (non-existent)
@@ -201,7 +201,7 @@ StantonSCS1d.init2 = function () {
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
     // Set active deck to last available so the below will switch to #1.
-    StantonSCS1d.deck = engine.getValue("[Master]","num_decks");
+    StantonSCS1d.deck = engine.getValue("[Main]","num_decks");
     // Set the default platter mode for this last deck
     if (!StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"])
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.platterMode["default"];
@@ -630,7 +630,7 @@ StantonSCS1d.rangeButton = function (channel, control, value, status) {
         if (StantonSCS1d.crossFader) {
             // Move to cross-fader position
             StantonSCS1d.pitchRangeLEDs(0); // darken range LEDs
-            var xfader = engine.getValue("[Master]","crossfader")*63+64;
+            var xfader = engine.getValue("[Main]","crossfader")*63+64;
             if (StantonSCS1d.debug) print ("Moving slider to "+xfader+" for cross-fader");
             midi.sendShortMsg(0xB0+StantonSCS1d.channel,0x00,xfader);
             StantonSCS1d.state["crossfaderAdjusted"]=false;
@@ -670,7 +670,7 @@ StantonSCS1d.pitchReset = function (channel, control, value, status) {
     else {
         midi.sendShortMsg(0x80+StantonSCS1d.channel,control,0); // Darken button LED
         if (StantonSCS1d.modifier["pitchRange"]==1) {
-            engine.setValue("[Master]","crossfader",0);
+            engine.setValue("[Main]","crossfader",0);
             StantonSCS1d.state["crossfaderAdjusted"]=true;
         }
         else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",0);
@@ -791,7 +791,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
             StantonSCS1d.newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
 
         // Supports n-decks
-        if (StantonSCS1d.deck == engine.getValue("[Master]","num_decks")) StantonSCS1d.deck=1;
+        if (StantonSCS1d.deck == engine.getValue("[Main]","num_decks")) StantonSCS1d.deck=1;
         else StantonSCS1d.deck++;
 
         if (StantonSCS1d.debug) print("StantonSCS1d: Switching to deck "+StantonSCS1d.deck);
@@ -1288,7 +1288,7 @@ StantonSCS1d.pitchSlider = function (channel, control, value) {
     if (newValue>1) newValue=1.0;
     StantonSCS1d.state["dontMove"]=new Date();
     if (StantonSCS1d.crossFader && StantonSCS1d.modifier["pitchRange"]==1) {
-        engine.setValue("[Master]","crossfader",newValue);
+        engine.setValue("[Main]","crossfader",newValue);
         StantonSCS1d.state["crossfaderAdjusted"]=true;
     }
     else engine.setValue("[Channel"+StantonSCS1d.deck+"]","rate",newValue);
@@ -1432,8 +1432,8 @@ StantonSCS1d.EnterButton = function (channel, control, value, status) {
     if ((status & 0xF0) == 0x90) {    // If button down
         // If the deck is playing and the cross-fader is not completely toward the other deck...
         if (engine.getValue("[Channel"+StantonSCS1d.deck+"]","play")==1 &&
-        ((StantonSCS1d.deck==1 && engine.getValue("[Master]","crossfader")<1.0) ||
-        (StantonSCS1d.deck==2 && engine.getValue("[Master]","crossfader")>-1.0))) {
+        ((StantonSCS1d.deck==1 && engine.getValue("[Main]","crossfader")<1.0) ||
+        (StantonSCS1d.deck==2 && engine.getValue("[Main]","crossfader")>-1.0))) {
             // ...light the button red to show acknowledgement of the press but don't load
             StantonSCS1d.buttonLED(value,control,64,0);
             print ("StantonSCS1d: Not loading into deck "+StantonSCS1d.deck+" because it's playing to the Master output.");

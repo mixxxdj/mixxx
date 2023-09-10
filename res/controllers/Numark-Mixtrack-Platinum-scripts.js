@@ -118,8 +118,8 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
     engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
     engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "VuMeterL", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "VuMeterR", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -1013,7 +1013,7 @@ MixtrackPlatinum.HeadGain = function(sampler) {
     });
 };
 MixtrackPlatinum.HeadGain.prototype = new components.Pot({
-    group: '[Master]',
+    group: '[Main]',
     inKey: 'headGain',
     input: function (channel, control, value, status, group) {
         // we call softTakeoverIgnoreNextValue() here on the non-targeted
@@ -1410,13 +1410,13 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
     }
-    else if (group == '[Master]' && control == 'VuMeterL') {
+    else if (group == '[Main]' && control == 'VuMeterL') {
         if (engine.getValue(group, "PeakIndicatorL")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
-    else if (group == '[Master]' && control == 'VuMeterR') {
+    else if (group == '[Main]' && control == 'VuMeterR') {
         if (engine.getValue(group, "PeakIndicatorR")) {
             level = 81;
         }

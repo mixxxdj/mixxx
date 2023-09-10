@@ -438,16 +438,16 @@ HerculesMP3Hid.define_hid_format = function() {
 
     // master
 
-    c.add_control(pid, "crossfader", "[Master]", "fader", 11, 0xff)
-    //c.add_control(pid, "joystick_x", "[Master]", "fader", 19, 0xff)
-    //c.add_control(pid, "joystick_y", "[Master]", "fader", 20, 0xff)
+    c.add_control(pid, "crossfader", "[Main]", "fader", 11, 0xff)
+    //c.add_control(pid, "joystick_x", "[Main]", "fader", 19, 0xff)
+    //c.add_control(pid, "joystick_y", "[Main]", "fader", 20, 0xff)
 
     // headphone cue
 
-    c.add_control(pid, "monitor_a", "[Master]", "button", 3, 0x10);
-    c.add_control(pid, "monitor_b", "[Master]", "button", 4, 0x01);
-    //c.add_control(pid, "monitor_both", "[Master]", "button", 5, 0x4);
-    c.add_control(pid, "monitor_both", "[Master]", "button", 5, 0x8);
+    c.add_control(pid, "monitor_a", "[Main]", "button", 3, 0x10);
+    c.add_control(pid, "monitor_b", "[Main]", "button", 4, 0x01);
+    //c.add_control(pid, "monitor_both", "[Main]", "button", 5, 0x4);
+    c.add_control(pid, "monitor_both", "[Main]", "button", 5, 0x8);
 
     // define led feedback
 

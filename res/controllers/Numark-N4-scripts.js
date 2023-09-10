@@ -355,7 +355,7 @@ NumarkN4.MixerTemplate = function() {
     this.navigationEncoderButton = new components.Button({
         shift: function() {
             this.type=components.Button.prototype.types.toggle;
-            this.group="[Master]";
+            this.group="[Main]";
             this.inKey="maximize_library";
         },
         unshift: function() {

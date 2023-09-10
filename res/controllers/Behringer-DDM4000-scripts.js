@@ -37,7 +37,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
 
         var CrossfaderUnit = function(options) {
             var unitOptions = options || {};
-            unitOptions.group = unitOptions.group || "[Master]";
+            unitOptions.group = unitOptions.group || "[Main]";
             c.ComponentContainer.call(this, unitOptions);
 
             var Crossfader = function(options) {
@@ -53,7 +53,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 },
                 disable: function() {
                     this.input = this.ignoreInput;
-                    engine.setValue("[Master]", "crossfader_set_default", 1);
+                    engine.setValue("[Main]", "crossfader_set_default", 1);
                 },
             });
             var crossfader = new Crossfader(options.crossfader);
@@ -382,7 +382,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                     ]
                 },
                 { // Crossfader
-                    defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
+                    defaultDefinition: {type: c.Button, options: {group: "[Main]"}},
                     components: [
                         { // Crossfader: On
                             type: CrossfaderUnit, options: {

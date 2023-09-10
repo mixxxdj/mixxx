@@ -130,7 +130,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>DJCJV.headCue</key>
         <description>Headphone CUE button</description>
         <status>0x90</status>
@@ -140,7 +140,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>DJCJV.headMix</key>
         <description>Headphone MIX button</description>
         <status>0x90</status>
@@ -1005,7 +1005,7 @@
       <!-- CC's MIDI Generic -->
       <!-- Vinyl button -->
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>DJCJV.vinylButton</key>
         <description>Vinyl Deck A</description>
         <status>0x90</status>
@@ -1016,7 +1016,7 @@
       </control>
       <!-- View button -->
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>maximize_library</key>
         <description>Browser button - Maximize Library view</description>
         <status>0x90</status>
@@ -1049,7 +1049,7 @@
       </control>
       <!-- Crossfader -->
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <description>Crossfader</description>
         <status>0xB0</status>
@@ -1719,7 +1719,7 @@
       </output>
       <!--  VIEW LED -->
       <output>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>maximize_library</key>
         <description>VIEW button LED</description>
         <minimum>0.5</minimum>

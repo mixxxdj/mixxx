@@ -1252,7 +1252,7 @@ class HIDController {
             "[Sampler6]",
             "[Sampler7]",
             "[Sampler8]",
-            "[Master]",
+            "[Main]",
             "[PreviewDeck1]",
             "[Effects]",
             "[Playlist]",
@@ -2085,7 +2085,7 @@ class HIDController {
                 deck = 1;
             } else {
                 // This is unusable: num_decks has always minimum 4 decks
-                // var totalDecks = engine.getValue("[Master]","num_decks");
+                // var totalDecks = engine.getValue("[Main]","num_decks");
                 // deck = (this.activeDeck+1) % totalDecks;
                 deck = this.deckSwitchMap[this.activeDeck];
                 if (deck === undefined) {

@@ -311,7 +311,7 @@ PioneerDDJ400.beatFxChannel = function(_channel, control, value, _status, group)
 
     engine.setValue(group, "group_[Channel1]_enable", enableChannel1);
     engine.setValue(group, "group_[Channel2]_enable", enableChannel2);
-    engine.setValue(group, "group_[Master]_enable", enableMaster);
+    engine.setValue(group, "group_[Main]_enable", enableMaster);
 };
 
 //

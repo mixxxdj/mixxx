@@ -392,7 +392,7 @@ PioneerDDJSX.init = function(id) {
     };
 
     // set 32 Samplers as default:
-    engine.setValue("[Master]", "num_samplers", 32);
+    engine.setValue("[Main]", "num_samplers", 32);
 
     // activate vu meter timer for Auto DJ:
     if (PioneerDDJSX.twinkleVumeterAutodjOn) {
@@ -547,7 +547,7 @@ PioneerDDJSX.autoDJControl = function() {
 
         // Only adjust key when approaching the middle of fading
         if (PioneerDDJSX.autoDJSyncKey) {
-            var diffFader = Math.abs(engine.getValue("[Master]", "crossfader") - 0.5);
+            var diffFader = Math.abs(engine.getValue("[Main]", "crossfader") - 0.5);
             if (diffFader < 0.25) {
                 nextKey = engine.getValue("[Channel" + next + "]", "key");
                 engine.setValue("[Channel" + prev + "]", "key", nextKey);
@@ -680,9 +680,9 @@ PioneerDDJSX.bindNonDeckControlConnections = function(bind) {
         }
     }
 
-    engine.connectControl("[Master]", "headSplit", "PioneerDDJSX.shiftMasterCueLed", !bind);
+    engine.connectControl("[Main]", "headSplit", "PioneerDDJSX.shiftMasterCueLed", !bind);
     if (bind) {
-        engine.trigger("[Master]", "headSplit");
+        engine.trigger("[Main]", "headSplit");
     }
 
     engine.connectControl("[AutoDJ]", "enabled", "PioneerDDJSX.autoDJTimer", !bind);
@@ -794,7 +794,7 @@ PioneerDDJSX.highResMSB = {
     '[Channel2]': {},
     '[Channel3]': {},
     '[Channel4]': {},
-    '[Master]': {},
+    '[Main]': {},
     '[Samplers]': {}
 };
 
@@ -2206,7 +2206,7 @@ PioneerDDJSX.backButton = function(channel, control, value, status) {
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
     if (value) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Main]", "maximize_library");
     }
 };
 

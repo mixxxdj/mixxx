@@ -179,17 +179,17 @@ TraktorS2MK3.registerInputPackets = function() {
     this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel1]]", "super1", 0x13, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x25, 0xFFFF, this.parameterHandler);
 
-    this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Main]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
     /*
     do NOT map the "master" button because it also drives the analog output gain.
     Disabling this mapping is the only way to have independent controls for the
     digital master gain and the output level - the latter usually needs to be set
     at 100%.
     */
-    // this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
+    // this.registerInputScaler(messageLong, "[Main]", "gain", 0x15, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Sampler]", "pregain", 0x17, 0xFFFF, this.samplerPregainHandler);
-    this.registerInputScaler(messageLong, "[Master]", "headMix", 0x19, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Main]", "headMix", 0x19, 0xFFFF, this.parameterHandler);
+    this.registerInputScaler(messageLong, "[Main]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
 
     this.controller.registerInputPacket(messageLong);
 
@@ -214,11 +214,11 @@ TraktorS2MK3.registerInputPackets = function() {
     engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 
-    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Main]", "crossfader", true);
     // see the above comment on master gain
-    //engine.softTakeover("[Master]", "gain", true);
-    engine.softTakeover("[Master]", "headMix", true);
-    engine.softTakeover("[Master]", "headGain", true);
+    //engine.softTakeover("[Main]", "gain", true);
+    engine.softTakeover("[Main]", "headMix", true);
+    engine.softTakeover("[Main]", "headGain", true);
 
     for (let i = 1; i <= 16; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
@@ -506,7 +506,7 @@ TraktorS2MK3.maximizeLibraryHandler = function(field) {
         return;
     }
 
-    script.toggleControl("[Master]", "maximize_library");
+    script.toggleControl("[Main]", "maximize_library");
 };
 
 TraktorS2MK3.selectLoopHandler = function(field) {

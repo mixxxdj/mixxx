@@ -29,7 +29,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>gain</key>
                 <status>0xB0</status>
                 <midino>0x30</midino>
@@ -83,7 +83,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x40</midino>
@@ -416,7 +416,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <status>0xB0</status>
                 <midino>0x31</midino>

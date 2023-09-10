@@ -405,14 +405,14 @@ VCI102.init = function(id, debug) {
 
     function headMix(value, group, key) {
         if (value) {
-            if (engine.getValue("[Master]", "headMix") == 1) {
-                engine.setValue("[Master]", "headMix", -1);
+            if (engine.getValue("[Main]", "headMix") == 1) {
+                engine.setValue("[Main]", "headMix", -1);
             }
-        } else if (engine.getValue("[Master]", "headMix") == -1) {
+        } else if (engine.getValue("[Main]", "headMix") == -1) {
             if (VCI102.deck.every(function(deck) {
                 return !engine.getValue(deck, "pfl");
             })) {
-                engine.setValue("[Master]", "headMix", 1);
+                engine.setValue("[Main]", "headMix", 1);
             }
         }
     }

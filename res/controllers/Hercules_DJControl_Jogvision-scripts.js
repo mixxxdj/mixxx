@@ -161,7 +161,7 @@ var DJCJV = {
         midi.sendShortMsg(DJCJV.led.master, DJCJV.led.vinylMode, DJCJV.other.on);
 
         // Set Headphone CUE/MIX LED state
-        if (engine.getValue("[Master]", "headMix") > 0.5) {
+        if (engine.getValue("[Main]", "headMix") > 0.5) {
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headCue, DJCJV.other.on); // headset "Mix" button LED
             midi.sendShortMsg(DJCJV.led.master, DJCJV.led.headMix, DJCJV.other.off);
         } else {
@@ -170,7 +170,7 @@ var DJCJV = {
         }
 
         // Enable Soft takeover
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.softTakeover("[Main]", "crossfader", true);
         engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
         engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 

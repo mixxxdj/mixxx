@@ -921,7 +921,7 @@
                 </options>
             </control>
 			<control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MC7000.samplerLevel</key>
                 <status>0xBF</status>
                 <midino>0x1A</midino>
@@ -1303,7 +1303,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xBF</status>
@@ -2197,7 +2197,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>Full screen Library</description>
                 <status>0x9F</status>
@@ -2514,7 +2514,7 @@
     <!-- FX TAP BUTTON ON FX MASTER AND HEADPHONE -->
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>FX1 on master</description>
                 <status>0x98</status>
                 <midino>0x04</midino>
@@ -2524,7 +2524,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>FX2 on master</description>
                 <status>0x99</status>
                 <midino>0x04</midino>
@@ -4021,7 +4021,7 @@
 <!-- FX TAP BUTTON ON FX MASTER AND HEADPHONE -->
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>FX1 on master</description>
                 <status>0x98</status>
                 <midino>0x04</midino>
@@ -4030,7 +4030,7 @@
             </output>
             <output>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>FX2 on master</description>
                 <status>0x99</status>
                 <midino>0x04</midino>

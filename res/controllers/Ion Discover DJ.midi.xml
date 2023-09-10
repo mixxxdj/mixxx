@@ -13,7 +13,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x90</status>
@@ -232,7 +232,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>
@@ -336,7 +336,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x80</status>
@@ -375,7 +375,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x0A</midino>

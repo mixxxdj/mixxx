@@ -10,35 +10,35 @@
 <controller id="Akai MPD24 MIDI 1">
   <controls>
     <control>
-      <group>[Master]</group>
+      <group>[Main]</group>
       <key>crossfader</key>
       <status>0xB0</status>
       <midino>17</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
+      <group>[Main]</group>
       <key>balance</key>
       <status>0xB0</status>
       <midino>32</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
+      <group>[Main]</group>
       <key>volume</key>
       <status>0xB0</status>
       <midino>3</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
+      <group>[Main]</group>
       <key>headVolume</key>
       <status>0xB0</status>
       <midino>26</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
+      <group>[Main]</group>
       <key>headMix</key>
       <status>0xB0</status>
       <midino>4</midino>

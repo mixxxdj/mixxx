@@ -754,10 +754,10 @@ KontrolF1.registerCallbacks = function() {
     controller.setCallback("control", "hid", "play_3", KontrolF1.play);
     controller.setCallback("control", "hid", "play_4", KontrolF1.play);
 
-    KontrolF1.linkKnob("decks", "knob_1", "[Master]", "headVolume", "pregain");
-    KontrolF1.linkKnob("decks", "knob_2", "[Master]", "headMix", "plusminus");
-    KontrolF1.linkKnob("decks", "knob_3", "[Master]", "balance", "plusminus");
-    KontrolF1.linkKnob("decks", "knob_4", "[Master]", "volume", "pregain");
+    KontrolF1.linkKnob("decks", "knob_1", "[Main]", "headVolume", "pregain");
+    KontrolF1.linkKnob("decks", "knob_2", "[Main]", "headMix", "plusminus");
+    KontrolF1.linkKnob("decks", "knob_3", "[Main]", "balance", "plusminus");
+    KontrolF1.linkKnob("decks", "knob_4", "[Main]", "volume", "pregain");
     KontrolF1.linkFader("decks", "fader_1", "[Channel1]", "rate", "rate");
     KontrolF1.linkFader("decks", "fader_2", "[Channel1]", "volume", "volume");
     KontrolF1.linkFader("decks", "fader_3", "[Channel2]", "volume", "volume");

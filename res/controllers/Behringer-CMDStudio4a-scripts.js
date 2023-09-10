@@ -65,8 +65,8 @@ BehringerCMDStudio4a.init = function () {
     // Initialise anything that might not be in the correct state.
     BehringerCMDStudio4a.initLEDs();
     // Connect the VUMeters
-    engine.connectControl("[Master]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate");
-    engine.connectControl("[Master]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate");
+    engine.connectControl("[Main]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate");
+    engine.connectControl("[Main]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate");
 }
 
 BehringerCMDStudio4a.shutdown = function() {
@@ -76,8 +76,8 @@ BehringerCMDStudio4a.shutdown = function() {
     // Disconnect the VUMeters.
 // Maybe not! It seems you don't have to do this even though the connection
 // in done in init(), in fact if you try it throws an error.
-//  engine.connectControl("[Master]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate",true);
-//  engine.connectControl("[Master]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate",true);
+//  engine.connectControl("[Main]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate",true);
+//  engine.connectControl("[Main]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate",true);
 }
 
 

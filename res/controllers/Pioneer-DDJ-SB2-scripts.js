@@ -533,8 +533,8 @@ PioneerDDJSB2.bindNonDeckControlConnections = function(isUnbinding) {
     }
 
     if (PioneerDDJSB2.showVumeterMaster) {
-        engine.connectControl("[Master]", "VuMeterL", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Master]", "VuMeterR", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Main]", "VuMeterL", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Main]", "VuMeterR", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
     } else {
         engine.connectControl("[Channel1]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
         engine.connectControl("[Channel2]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
@@ -941,7 +941,7 @@ PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
             midi.sendShortMsg(0xB0 + midiChannel, 2, value);
         }
     } else {
-        if (group === "[Master]") {
+        if (group === "[Main]") {
             if (control === "VuMeterL") {
                 PioneerDDJSB2.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB2.valueVuMeter["[Channel3]_current"] = value;

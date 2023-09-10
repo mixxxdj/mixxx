@@ -75,8 +75,8 @@ firstmix.init = function (channel, control, value, status, group) {
     // midi.sendShortMsg(0xB0,0x7F,0x7F);
 
     // Enable soft-takeover for all direct hardware controls
-    engine.softTakeover("[Master]","crossfader",true);
-    engine.softTakeover("[Master]","headMix",true);
+    engine.softTakeover("[Main]","crossfader",true);
+    engine.softTakeover("[Main]","headMix",true);
     engine.softTakeover("[Channel1]","pregain",true);
     engine.softTakeover("[Channel1]","filterHigh",true);
     engine.softTakeover("[Channel1]","filterMed",true);

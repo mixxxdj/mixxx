@@ -1104,7 +1104,7 @@ class Mixer extends ComponentContainer {
         });
 
         this.crossfader = new Pot({
-            group: "[Master]",
+            group: "[Main]",
             inKey: "crossfader",
             inByte: 0,
             inReport: inReports[2],
@@ -1403,7 +1403,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
             outReport: outReport,
             shift: function() {
                 this.group = this.unit.group;
-                this.outKey = "group_[Master]_enable";
+                this.outKey = "group_[Main]_enable";
                 this.outConnect();
                 this.outTrigger();
             },
@@ -1424,7 +1424,7 @@ class S4Mk3EffectUnit extends ComponentContainer {
                     if (this.unit.focusedEffect !== null) {
                         this.unit.setFocusedEffect(null);
                     } else {
-                        script.toggleControl(this.unit.group, "group_[Master]_enable");
+                        script.toggleControl(this.unit.group, "group_[Main]_enable");
                         this.shift();
                     }
                 }
@@ -2079,7 +2079,7 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.libraryViewButton = new Button({
-            group: "[Master]",
+            group: "[Main]",
             key: "maximize_library",
             libraryEncoder: this.libraryEncoder,
             libraryEncoderPress: this.libraryEncoderPress,
@@ -2722,8 +2722,8 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
-        if (engine.getValue("[Master]", "num_samplers") < 16) {
-            engine.setValue("[Master]", "num_samplers", 16);
+        if (engine.getValue("[Main]", "num_samplers") < 16) {
+            engine.setValue("[Main]", "num_samplers", 16);
         }
 
         this.inReports = [];
@@ -2885,7 +2885,7 @@ class S4MK3 {
 
         const that = this;
         /* eslint no-unused-vars: "off" */
-        const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
+        const meterConnection = engine.makeConnection("[Main]", "guiTick50ms", function(_value) {
             const deckMeters = new Uint8Array(78).fill(0);
             // Each column has 14 segments, but treat the top one specially for the clip indicator.
             const deckSegments = 13;

@@ -1268,7 +1268,7 @@
       </control>
       <!-- Mixer main-->
       <control>
-    <group>[Master]</group>
+    <group>[Main]</group>
     <key>headMix</key>
     <status>0xB0</status>
     <midino>0x22</midino>
@@ -1277,7 +1277,7 @@
     </options>
       </control>
       <control>
-    <group>[Master]</group>
+    <group>[Main]</group>
     <key>headVolume</key>
     <status>0xB0</status>
     <midino>0x23</midino>
@@ -1286,7 +1286,7 @@
     </options>
       </control>
       <control>
-    <group>[Master]</group>
+    <group>[Main]</group>
     <key>volume</key>
     <status>0xB0</status>
     <midino>0x1C</midino>
@@ -1295,7 +1295,7 @@
     </options>
       </control>
       <control>
-    <group>[Master]</group>
+    <group>[Main]</group>
     <key>balance</key>
     <status>0xB0</status>
     <midino>0x1D</midino>

@@ -15,7 +15,7 @@
 
             <!-- Master Section -->
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>Jockey3ME.crossfaderCurve</key>
                 <status>0xB0</status>
                 <midino>0x38</midino>
@@ -24,7 +24,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>Jockey3ME.crossfader</key>
                 <status>0xB0</status>
                 <midino>0x37</midino>
@@ -60,7 +60,7 @@
 				</options>
 			</control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB0</status>
                 <midino>0x36</midino>
@@ -69,7 +69,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>balance</key>
                 <status>0xB0</status>
                 <midino>0x33</midino>
@@ -78,7 +78,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>TraxPush to Browse</description>
                 <status>0x90</status>

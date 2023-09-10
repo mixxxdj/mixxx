@@ -15,7 +15,7 @@
                     <control>
                         <status>0xb0</status>
                         <midino>0x3D</midino>
-                        <group>[Master]</group>
+                        <group>[Main]</group>
                         <key>headMix</key>
                         <options>
                             <normal/>
@@ -321,7 +321,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x38</midino>
-                    <group>[Master]</group>
+                    <group>[Main]</group>
                     <key>crossfader</key>
                     <options>
                         <normal/>

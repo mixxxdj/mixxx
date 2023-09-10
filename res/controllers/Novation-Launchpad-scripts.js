@@ -3846,12 +3846,12 @@ var NLMK1 = (function () {
 	};
 	const masterControlDef = {
 	  maximize_library: {
-	    group: '[Master]',
+	    group: '[Main]',
 	    name: 'maximize_library',
 	    type: 'binary'
 	  },
 	  num_samplers: {
-	    group: '[Master]',
+	    group: '[Main]',
 	    name: 'num_samplers',
 	    type: 'number'
 	  }

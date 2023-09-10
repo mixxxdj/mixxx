@@ -190,7 +190,7 @@ Hercules4Mx.VuMeterL = {
     'vu2': 0x18,
     'vu1': 0x19,
     // Which source to use for this vumeter. [Disabled] for no source
-    'source': '[Master]',
+    'source': '[Main]',
     // Midichan of this vumeter. This is needed when switching the Decks (A/C, B/D)
     'midichan': 0x90,
     // Last value evaluated. This allows to quantize the value and reduce the amount of messages sent.
@@ -206,7 +206,7 @@ Hercules4Mx.VuMeterR = {
     'vu2': 0x38,
     'vu1': 0x39,
     // Which source to use for this vumeter. [Disabled] for no source
-    'source': '[Master]',
+    'source': '[Main]',
     // Midichan of this vumeter. This is needed when switching the Decks (A/C, B/D)
     'midichan': 0x90,
     // Last value evaluated. This allows to quantize the value and reduce the amount of messages sent.
@@ -325,8 +325,8 @@ Hercules4Mx.init = function(id, debugging) {
         }
     }
     if (Hercules4Mx.userSettings.useVuMeters) {
-        engine.connectControl("[Master]", "VuMeterL", "Hercules4Mx.onVuMeterMasterL");
-        engine.connectControl("[Master]", "VuMeterR", "Hercules4Mx.onVuMeterMasterR");
+        engine.connectControl("[Main]", "VuMeterL", "Hercules4Mx.onVuMeterMasterL");
+        engine.connectControl("[Main]", "VuMeterR", "Hercules4Mx.onVuMeterMasterR");
         for (i = 1; i <= 4; i++) {
             engine.connectControl("[Channel" + i + "]", "VuMeter", "Hercules4Mx.onVuMeterDeck" + i);
             engine.connectControl("[Channel" + i + "]", "passthrough", "Hercules4Mx.onKillOrSourceChange" + i);
@@ -358,7 +358,7 @@ Hercules4Mx.doDelayedSetup = function() {
         engine.softTakeover("[EqualizerRack1_[Channel" + i + "]_Effect1]", "parameter2", true);
         engine.softTakeover("[EqualizerRack1_[Channel" + i + "]_Effect1]", "parameter1", true);
     }
-    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Main]", "crossfader", true);
 };
 
 Hercules4Mx.shutdown = function() {
@@ -448,10 +448,10 @@ Hercules4Mx.onSongLoaded = function(value, group, control) {
             engine.setParameter("[Channel" + i + "]", "pfl", (deck === i) ? 1 : 0);
         }
 
-        var currentHeadMix = engine.getParameter("[Master]", "headMix");
+        var currentHeadMix = engine.getParameter("[Main]", "headMix");
         if (currentHeadMix == 1) {
             //Change the headmix if it was to full Mix.
-            engine.setParameter("[Master]", "headMix", Hercules4Mx.previousHeadMix);
+            engine.setParameter("[Main]", "headMix", Hercules4Mx.previousHeadMix);
         }
     }
 };
@@ -529,15 +529,15 @@ Hercules4Mx.onPreFaderListen = function(value, group, control) {
         var pfl2 = engine.getParameter("[Channel2]", "pfl");
         var pfl3 = engine.getParameter("[Channel3]", "pfl");
         var pfl4 = engine.getParameter("[Channel4]", "pfl");
-        var currentHeadMix = engine.getParameter("[Master]", "headMix");
+        var currentHeadMix = engine.getParameter("[Main]", "headMix");
 
         if (pfl1 === 0 && pfl2 === 0 && pfl3 === 0 && pfl4 === 0) {
             // If they are all disabled after switching, move headmix to master.
             Hercules4Mx.previousHeadMix = currentHeadMix;
-            engine.setParameter("[Master]", "headMix", 1);
+            engine.setParameter("[Main]", "headMix", 1);
         } else if (currentHeadMix == 1) {
             // If at least one is enabled and headmix is set to master, restore previous headmix.
-            engine.setParameter("[Master]", "headMix", Hercules4Mx.previousHeadMix);
+            engine.setParameter("[Main]", "headMix", Hercules4Mx.previousHeadMix);
         }
     }
     if (Hercules4Mx.userSettings.useVuMeters) {
@@ -639,12 +639,12 @@ Hercules4Mx.onSyncLed = function(value, group, control) {
 
 // only feed the correct levels to each channel of the vumeter
 Hercules4Mx.onVuMeterMasterL = function(value) {
-    if (Hercules4Mx.VuMeterL.source === '[Master]') {
+    if (Hercules4Mx.VuMeterL.source === '[Main]') {
         Hercules4Mx.updateVumeterEvent(Hercules4Mx.VuMeterL, value);
     }
 };
 Hercules4Mx.onVuMeterMasterR = function(value) {
-    if (Hercules4Mx.VuMeterR.source === '[Master]') {
+    if (Hercules4Mx.VuMeterR.source === '[Main]') {
         Hercules4Mx.updateVumeterEvent(Hercules4Mx.VuMeterR, value);
     }
 };
@@ -1615,7 +1615,7 @@ Hercules4Mx.getNewDestinationChannel = function(chan) {
     } else if (pfl > 0) {
         returnarray[0] = "[Channel" + chan + "]";
     } else {
-        returnarray[0] = "[Master]";
+        returnarray[0] = "[Main]";
     }
     return returnarray;
 };

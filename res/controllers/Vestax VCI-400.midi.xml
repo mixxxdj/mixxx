@@ -12,7 +12,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.shiftActivate</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
@@ -61,7 +61,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx1ToggleButton1</key>
                 <status>0x9C</status>
                 <midino>0x01</midino>
@@ -70,7 +70,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx2ToggleButton1</key>
                 <status>0x9D</status>
                 <midino>0x01</midino>
@@ -157,7 +157,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx1ToggleButton2</key>
                 <status>0x9C</status>
                 <midino>0x02</midino>
@@ -166,7 +166,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx2ToggleButton2</key>
                 <status>0x9D</status>
                 <midino>0x02</midino>
@@ -253,7 +253,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx1ToggleButton3</key>
                 <status>0x9C</status>
                 <midino>0x03</midino>
@@ -262,7 +262,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx2ToggleButton3</key>
                 <status>0x9D</status>
                 <midino>0x03</midino>
@@ -331,7 +331,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx1ToggleButton4</key>
                 <status>0x9C</status>
                 <midino>0x04</midino>
@@ -340,7 +340,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>VestaxVCI400.fx2ToggleButton4</key>
                 <status>0x9D</status>
                 <midino>0x04</midino>
@@ -600,7 +600,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x9C</status>
                 <midino>0x08</midino>
@@ -610,7 +610,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <description>MIDI Learned from 4 messages.</description>
                 <status>0x9D</status>
                 <midino>0x08</midino>
@@ -1274,7 +1274,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x14</midino>
@@ -1878,7 +1878,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xBE</status>
                 <midino>0x2A</midino>
@@ -1887,7 +1887,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <description>MIDI Learned from 928 messages.</description>
                 <status>0xBE</status>
@@ -2329,7 +2329,7 @@
             </output>
             <output>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <status>0x9C</status>
                 <midino>0x08</midino>
                 <minimum>0.5</minimum>
@@ -2371,7 +2371,7 @@
             </output>
             <output>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>group_[Master]_enable</key>
+                <key>group_[Main]_enable</key>
                 <status>0x9D</status>
                 <midino>0x08</midino>
                 <minimum>0.5</minimum>

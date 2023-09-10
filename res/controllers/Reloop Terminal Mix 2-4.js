@@ -83,14 +83,14 @@ TerminalMix.init = function (id,debug) {
     TerminalMix.effectUnit24.init();
 
     // Enable four decks in v1.11.x
-    engine.setValue("[Master]", "num_decks", 4);
+    engine.setValue("[Main]", "num_decks", 4);
 
     // Set soft-takeover for all Sampler volumes
-    for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
+    for (var i=engine.getValue("[Main]","num_samplers"); i>=1; i--) {
         engine.softTakeover("[Sampler"+i+"]","pregain",true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+    for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
         engine.softTakeover("[Channel"+i+"]","volume",true);
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
@@ -98,7 +98,7 @@ TerminalMix.init = function (id,debug) {
         engine.softTakeover("[Channel"+i+"]","rate",true);
     }
 
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[Main]","crossfader",true);
 
     engine.connectControl("[Channel1]","beat_active","TerminalMix.tapLEDL");
     engine.connectControl("[Channel2]","beat_active","TerminalMix.tapLEDR");
@@ -167,7 +167,7 @@ TerminalMix.wheelTurn = function (channel, control, value, status, group) {
 
 TerminalMix.samplerVolume = function (channel, control, value) {
     // Link all sampler volume controls to the Sampler Volume knob
-    for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
+    for (var i=engine.getValue("[Main]","num_samplers"); i>=1; i--) {
         engine.setValue("[Sampler"+i+"]","pregain",
                         script.absoluteNonLin(value, 0.0, 1.0, 4.0));
     }
@@ -432,7 +432,7 @@ TerminalMix.channelFader = function (channel, control, value, status, group) {
 
 TerminalMix.crossFader = function (channel, control, value, status, group) {
     var cfValue = script.absoluteNonLin(value,-1,0,1);
-    engine.setValue("[Master]","crossfader",cfValue);
+    engine.setValue("[Main]","crossfader",cfValue);
 
     // Fader start logic
     if (TerminalMix.lastFader["crossfader"]==cfValue) return;
@@ -441,7 +441,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
 
     // If CF is now full left and decks assigned to R are playing, cue them
     if (cfValue==-1.0) {
-        for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+        for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2
@@ -453,7 +453,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
 
     if (cfValue==1.0) {
         // If CF is now full right and decks assigned to L are playing, cue them
-        for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+        for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0
@@ -465,7 +465,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
 
     // If the CF is moved from full left, start any decks assigned to R
     if (TerminalMix.lastFader["crossfader"]==-1.0) {
-        for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+        for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2) {
@@ -476,7 +476,7 @@ TerminalMix.crossFader = function (channel, control, value, status, group) {
 
     if (TerminalMix.lastFader["crossfader"]==1.0) {
         // If the CF is moved from full right, start any decks assigned to L
-        for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+        for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
             if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0) {

@@ -54,8 +54,8 @@ MC4000.init = function () {
     MC4000.rightDeck = new MC4000.Deck(1);
     // VU meters
     // TODO: implement VU meters for the PFL when cue button is on
-    engine.connectControl("[Master]", "VuMeterL", "MC4000.OnVuMeterChangeL");
-    engine.connectControl("[Master]", "VuMeterR", "MC4000.OnVuMeterChangeR");
+    engine.connectControl("[Main]", "VuMeterL", "MC4000.OnVuMeterChangeL");
+    engine.connectControl("[Main]", "VuMeterR", "MC4000.OnVuMeterChangeR");
     // Control all sampler levels simultaneously with the single knob on the mixer
     MC4000.samplerLevel = function (channel, control, value, status, group) {
         engine.setValue("[Sampler1]", "pregain", script.absoluteNonLin(value, 0, 1.0, 4.0));

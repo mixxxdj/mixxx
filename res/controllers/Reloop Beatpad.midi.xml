@@ -1083,7 +1083,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>CROSSFADER</description>
                 <status>0xB4</status>
@@ -1153,7 +1153,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <description>CUE_MIX</description>
                 <status>0xB4</status>
@@ -1943,7 +1943,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <description>SHIFT_CUE_MIX</description>
                 <status>0xB4</status>
@@ -1981,7 +1981,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>ReloopBeatpad.InboundSysex</key>
                 <description>SYSEX</description>
                 <status>0xF0</status>

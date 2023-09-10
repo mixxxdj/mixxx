@@ -366,12 +366,12 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "filterLowKill",     "[Channel2]", "button", 5, 0x80);
 
   // master buttons
-  c.add_control(pid, "scratch",           "[Master]",   "button", 6, 0x01);
-  c.add_control(pid, "menu_up",           "[Master]",   "button", 6, 0x02);
-  c.add_control(pid, "menu_down",         "[Master]",   "button", 6, 0x04);
-  c.add_control(pid, "menu_left",         "[Master]",   "button", 6, 0x08);
-  c.add_control(pid, "menu_right",        "[Master]",   "button", 6, 0x10);
-  c.add_control(pid, "mic_toggle",        "[Master]",   "button", 6, 0x20);
+  c.add_control(pid, "scratch",           "[Main]",   "button", 6, 0x01);
+  c.add_control(pid, "menu_up",           "[Main]",   "button", 6, 0x02);
+  c.add_control(pid, "menu_down",         "[Main]",   "button", 6, 0x04);
+  c.add_control(pid, "menu_left",         "[Main]",   "button", 6, 0x08);
+  c.add_control(pid, "menu_right",        "[Main]",   "button", 6, 0x10);
+  c.add_control(pid, "mic_toggle",        "[Main]",   "button", 6, 0x20);
 
   // wheels
   c.add_control(pid, "jog",               "[Channel1]", "encoder", 7, 0xff);
@@ -385,10 +385,10 @@ RMX.define_hid_format = function() {
   c.add_control(pid, "filterMid",         "[Channel1]", "fader", 13, 0xff);
   c.add_control(pid, "filterLow",         "[Channel1]", "fader", 14, 0xff);
 
-  c.add_control(pid, "balance",           "[Master]",   "fader", 15, 0xff);
-  c.add_control(pid, "volume",            "[Master]",   "fader", 16, 0xff);
-  c.add_control(pid, "crossfader",        "[Master]",   "fader", 17, 0xff);
-  c.add_control(pid, "headMix",           "[Master]",   "fader", 18, 0xff);
+  c.add_control(pid, "balance",           "[Main]",   "fader", 15, 0xff);
+  c.add_control(pid, "volume",            "[Main]",   "fader", 16, 0xff);
+  c.add_control(pid, "crossfader",        "[Main]",   "fader", 17, 0xff);
+  c.add_control(pid, "headMix",           "[Main]",   "fader", 18, 0xff);
 
   c.add_control(pid, "rate",              "[Channel2]", "fader", 19, 0xff);
   c.add_control(pid, "volume",            "[Channel2]", "fader", 20, 0xff);
@@ -403,7 +403,7 @@ RMX.define_hid_format = function() {
   pid = 0x00;
   c.cache_out[pid] = [ pid, 0x0, 0x0, 0x0 ];
 
-  c.add_control(pid, "scratch",       "[Master]",   "led", 1, 0x01); // blinking: 3, 0x2
+  c.add_control(pid, "scratch",       "[Main]",   "led", 1, 0x01); // blinking: 3, 0x2
   c.add_control(pid, "play",          "[Channel1]", "led", 1, 0x02); // blinking: 3, 0x2
   c.add_control(pid, "cue_default",   "[Channel1]", "led", 1, 0x04);
   c.add_control(pid, "headphone_cue", "[Channel1]", "led", 1, 0x08);

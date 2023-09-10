@@ -401,13 +401,13 @@
 
          <!-- Mixer main-->
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>crossfader</key>
             <status>0xB0</status>
             <midino>0x07</midino>
          </control>
          <!-- <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>NumarkNS7.crossfader_lsb</key>
             <status>0xB0</status>
             <midino>0x1F</midino>
@@ -416,19 +416,19 @@
             </options>
          </control> -->
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>headMix</key>
             <status>0xB0</status>
             <midino>0x12</midino>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>headVolume</key>
             <status>0xB0</status>
             <midino>0x42</midino>
          </control>
          <control>
-            <group>[Master]</group>
+            <group>[Main]</group>
             <key>volume</key>
             <status>0xB0</status>
             <midino>0x40</midino>
@@ -560,7 +560,7 @@
 			    <minimum>0.5</minimum>
 			</output>
 			<output>
-			    <group>[Master]</group>
+			    <group>[Main]</group>
 			    <key>VuMeter</key>
 			    <status>0xB0</status>
 			    <midino>0x36</midino>
