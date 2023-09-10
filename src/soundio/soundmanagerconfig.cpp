@@ -472,11 +472,11 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
 }
 
 /**
- * Loads default values for API, master output, sample rate and/or latency.
+ * Loads default values for API, main output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
  * @param flags Bitfield to determine which defaults to load, use something
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
+ *              load default API and main device.
  */
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
@@ -519,8 +519,8 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPathType::Main, 0, 2, 0);
-                addOutput(pDevice->getDeviceId(), masterOut);
+                auto mainOut = AudioOutput(AudioPathType::Main, 0, 2, 0);
+                addOutput(pDevice->getDeviceId(), mainOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }
