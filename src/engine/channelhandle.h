@@ -130,11 +130,11 @@ inline qhash_seed_t qHash(
     return qHash(handleGroup.handle(), seed);
 }
 
-// A helper class used by EngineMaster to assign ChannelHandles to channel group
+// A helper class used by EngineMixer to assign ChannelHandles to channel group
 // strings. Warning: ChannelHandles produced by different ChannelHandleFactory
 // objects are not compatible and will produce incorrect results when compared,
 // stored in the same container, etc. In practice we only use one instance in
-// EngineMaster.
+// EngineMixer.
 class ChannelHandleFactory {
   public:
     ChannelHandleFactory() : m_iNextHandle(0) {

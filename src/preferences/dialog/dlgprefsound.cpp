@@ -7,7 +7,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefsound.cpp"
 #include "preferences/dialog/dlgprefsounditem.h"
@@ -139,11 +139,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
     micMonitorModeComboBox->addItem(tr("Main output only"),
-            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::Main)));
+            QVariant(static_cast<int>(EngineMixer::MicMonitorMode::Main)));
     micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
-            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MainAndBooth)));
+            QVariant(static_cast<int>(EngineMixer::MicMonitorMode::MainAndBooth)));
     micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
-            QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DirectMonitor)));
+            QVariant(static_cast<int>(EngineMixer::MicMonitorMode::DirectMonitor)));
     int modeIndex = micMonitorModeComboBox->findData(
         static_cast<int>(m_pMicMonitorMode->get()));
     micMonitorModeComboBox->setCurrentIndex(modeIndex);
@@ -715,10 +715,10 @@ void DlgPrefSound::slotResetToDefaults() {
     // Enable talkover main output
     m_pMicMonitorMode->set(
             static_cast<double>(
-                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
+                    static_cast<int>(EngineMixer::MicMonitorMode::Main)));
     micMonitorModeComboBox->setCurrentIndex(
             micMonitorModeComboBox->findData(
-                    static_cast<int>(EngineMaster::MicMonitorMode::Main)));
+                    static_cast<int>(EngineMixer::MicMonitorMode::Main)));
 
     latencyCompensationSpinBox->setValue(latencyCompensationSpinBox->minimum());
 
@@ -771,9 +771,9 @@ void DlgPrefSound::mainMonoMixdownChanged(double value) {
 }
 
 void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
-    EngineMaster::MicMonitorMode newMode =
-        static_cast<EngineMaster::MicMonitorMode>(
-            micMonitorModeComboBox->itemData(value).toInt());
+    EngineMixer::MicMonitorMode newMode =
+            static_cast<EngineMixer::MicMonitorMode>(
+                    micMonitorModeComboBox->itemData(value).toInt());
 
     m_pMicMonitorMode->set(static_cast<double>(newMode));
 
@@ -781,9 +781,9 @@ void DlgPrefSound::micMonitorModeComboBoxChanged(int value) {
 }
 
 void DlgPrefSound::checkLatencyCompensation() {
-    EngineMaster::MicMonitorMode configuredMicMonitorMode =
-        static_cast<EngineMaster::MicMonitorMode>(
-            static_cast<int>(m_pMicMonitorMode->get()));
+    EngineMixer::MicMonitorMode configuredMicMonitorMode =
+            static_cast<EngineMixer::MicMonitorMode>(
+                    static_cast<int>(m_pMicMonitorMode->get()));
 
     // Do not clear the SoundManagerConfig on startup, from slotApply, or from slotUpdate
     if (!m_bSkipConfigClear) {
@@ -795,7 +795,7 @@ void DlgPrefSound::checkLatencyCompensation() {
 
     if (m_config.hasMicInputs() && !m_config.hasExternalRecordBroadcast()) {
         micMonitorModeComboBox->setEnabled(true);
-        if (configuredMicMonitorMode == EngineMaster::MicMonitorMode::DirectMonitor) {
+        if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
             QString warningIcon(
                     "<html>"

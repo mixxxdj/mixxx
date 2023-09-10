@@ -32,18 +32,18 @@ class EngineTalkoverDucking;
 class EngineDelay;
 
 // The number of channels to pre-allocate in various structures in the
-// engine. Prevents memory allocation in EngineMaster::addChannel.
+// engine. Prevents memory allocation in EngineMixer::addChannel.
 static constexpr int kPreallocatedChannels = 64;
 
-class EngineMaster : public QObject, public AudioSource {
+class EngineMixer : public QObject, public AudioSource {
     Q_OBJECT
   public:
-    EngineMaster(UserSettingsPointer pConfig,
+    EngineMixer(UserSettingsPointer pConfig,
             const QString& group,
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
-    virtual ~EngineMaster();
+    virtual ~EngineMixer();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
@@ -166,7 +166,7 @@ class EngineMaster : public QObject, public AudioSource {
         inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const {
             const CSAMPLE_GAIN channelVolume = static_cast<CSAMPLE_GAIN>(
                     pChannelInfo->m_pVolumeControl->get());
-            const CSAMPLE_GAIN orientationGain = EngineMaster::gainForOrientation(
+            const CSAMPLE_GAIN orientationGain = EngineMixer::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
                     m_dLeftGain,
                     m_dCenterGain,

@@ -14,7 +14,7 @@ class QApplication;
 class CmdlineArgs;
 class KeyboardEventFilter;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class SoundManager;
 class PlayerManager;
 class RecordingManager;
@@ -130,7 +130,7 @@ class CoreServices : public QObject {
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager
     LV2Backend* m_pLV2Backend;
-    std::shared_ptr<EngineMaster> m_pEngine;
+    std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;

@@ -10,7 +10,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "moc_soundmanager.cpp"
@@ -44,8 +44,8 @@ constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-        EngineMaster* pMaster)
-        : m_pMaster(pMaster),
+        EngineMixer* pEngineMixer)
+        : m_pEngineMixer(pEngineMixer),
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
@@ -174,7 +174,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
             for (auto it = m_registeredDestinations.constFind(in);
                  it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
-                m_pMaster->onInputDisconnected(in);
+                m_pEngineMixer->onInputDisconnected(in);
             }
         }
         for (const auto& out: pDevice->outputs()) {
@@ -385,7 +385,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                     it != m_registeredDestinations.end() && it.key() == in;
                     ++it) {
                 it.value()->onInputConfigured(in);
-                m_pMaster->onInputConnected(in);
+                m_pEngineMixer->onInputConnected(in);
             }
         }
         QList<AudioOutput> outputs =
@@ -405,7 +405,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
                 haveOutput = true;
             }
-            // following keeps us from asking for a channel buffer EngineMaster
+            // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
             if (pBuffer == nullptr) {
@@ -586,9 +586,9 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer) {
-    // Produce a block of samples for output. EngineMaster expects stereo
+    // Produce a block of samples for output. EngineMixer expects stereo
     // samples so multiply iFramesPerBuffer by 2.
-    m_pMaster->process(iFramesPerBuffer * 2);
+    m_pEngineMixer->process(iFramesPerBuffer * 2);
 }
 
 void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,

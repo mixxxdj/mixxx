@@ -779,7 +779,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
-  src/engine/enginemaster.cpp
+  src/engine/enginemixer.cpp
   src/engine/engineobject.cpp
   src/engine/enginepregain.cpp
   src/engine/enginesidechaincompressor.cpp
@@ -1856,7 +1856,7 @@ add_executable(mixxx-test
   src/test/enginebuffertest.cpp
   src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
-  src/test/enginemastertest.cpp
+  src/test/enginemixertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/fileinfo_test.cpp

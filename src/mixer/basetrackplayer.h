@@ -15,7 +15,7 @@
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
-class EngineMaster;
+class EngineMixer;
 class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
@@ -62,7 +62,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public:
     BaseTrackPlayerImpl(PlayerManager* pParent,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
@@ -74,7 +74,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer getLoadedTrack() const final;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
-    // connected. Delete me when EngineMaster supports AudioInput assigning.
+    // connected. Delete me when EngineMixer supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
     void setupEqControls() final;
@@ -124,7 +124,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void disconnectLoadedTrack();
 
     UserSettingsPointer m_pConfig;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;

@@ -4,7 +4,7 @@
 
 PreviewDeck::PreviewDeck(PlayerManager* pParent,
         UserSettingsPointer pConfig,
-        EngineMaster* pMixingEngine,
+        EngineMixer* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup)

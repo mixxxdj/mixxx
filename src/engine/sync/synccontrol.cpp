@@ -7,7 +7,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -575,7 +575,7 @@ void SyncControl::setLocalBpm(mixxx::Bpm localBpm) {
 void SyncControl::updateAudible() {
     int channelIndex = m_pChannel->getChannelIndex();
     if (channelIndex >= 0) {
-        CSAMPLE_GAIN gain = getEngineMaster()->getMainGain(channelIndex);
+        CSAMPLE_GAIN gain = getEngineMixer()->getMainGain(channelIndex);
         bool newAudible = gain > CSAMPLE_GAIN_ZERO;
         if (static_cast<bool>(m_audible) != newAudible) {
             m_audible = newAudible;

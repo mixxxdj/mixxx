@@ -2,7 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/channels/engineaux.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_auxiliary.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -11,7 +11,7 @@ Auxiliary::Auxiliary(PlayerManager* pParent,
         const QString& group,
         int index,
         SoundManager* pSoundManager,
-        EngineMaster* pEngine,
+        EngineMixer* pEngine,
         EffectsManager* pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);

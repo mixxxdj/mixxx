@@ -14,7 +14,7 @@
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
@@ -46,14 +46,14 @@ using ::testing::_;
         EXPECT_FRAMEPOS_EQ(position, controlPos);                        \
     }
 
-class TestEngineMaster : public EngineMaster {
+class TestEngineMixer : public EngineMixer {
   public:
-    TestEngineMaster(UserSettingsPointer _config,
+    TestEngineMixer(UserSettingsPointer _config,
             const QString& group,
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain)
-            : EngineMaster(_config,
+            : EngineMixer(_config,
                       group,
                       pEffectsManager,
                       pChannelHandleFactory,
@@ -71,7 +71,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
-        m_pEngineMaster = new TestEngineMaster(m_pConfig,
+        m_pEngineMixer = new TestEngineMixer(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
                 m_pChannelHandleFactory,
@@ -79,38 +79,38 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
-                m_pEngineMaster,
+                m_pEngineMixer,
                 m_pEffectsManager,
                 EngineChannel::CENTER,
-                m_pEngineMaster->registerChannelGroup(m_sGroup1));
+                m_pEngineMixer->registerChannelGroup(m_sGroup1));
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
-                m_pEngineMaster,
+                m_pEngineMixer,
                 m_pEffectsManager,
                 EngineChannel::CENTER,
-                m_pEngineMaster->registerChannelGroup(m_sGroup2));
+                m_pEngineMixer->registerChannelGroup(m_sGroup2));
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
-                m_pEngineMaster,
+                m_pEngineMixer,
                 m_pEffectsManager,
                 EngineChannel::CENTER,
-                m_pEngineMaster->registerChannelGroup(m_sGroup3));
+                m_pEngineMixer->registerChannelGroup(m_sGroup3));
 
         m_pChannel1 = m_pMixerDeck1->getEngineDeck();
         m_pChannel2 = m_pMixerDeck2->getEngineDeck();
         m_pChannel3 = m_pMixerDeck3->getEngineDeck();
         m_pPreview1 = new PreviewDeck(nullptr,
                 m_pConfig,
-                m_pEngineMaster,
+                m_pEngineMixer,
                 m_pEffectsManager,
                 EngineChannel::CENTER,
-                m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
+                m_pEngineMixer->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
         // to this sampler.  FIX IT!
         // m_pSampler1 = new Sampler(NULL, m_pConfig,
-        //                           m_pEngineMaster, m_pEffectsManager,
+        //                           m_pEngineMixer, m_pEffectsManager,
         //                           EngineChannel::CENTER, m_sSamplerGroup);
         // ControlObject::getControl(ConfigKey(m_sSamplerGroup, "file_bpm"))->set(2.0);
 
@@ -118,7 +118,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         addDeck(m_pChannel2);
         addDeck(m_pChannel3);
 
-        m_pEngineSync = m_pEngineMaster->getEngineSync();
+        m_pEngineSync = m_pEngineMixer->getEngineSync();
         ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
 
         PlayerInfo::create();
@@ -135,7 +135,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         delete m_pPreview1;
 
         // Deletes all EngineChannels added to it.
-        delete m_pEngineMaster;
+        delete m_pEngineMixer;
         delete m_pEffectsManager;
         delete m_pNumDecks;
         PlayerInfo::destroy();
@@ -236,7 +236,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
 
     void ProcessBuffer() {
         qDebug() << "------- Process Buffer -------";
-        m_pEngineMaster->process(kProcessBufferSize);
+        m_pEngineMixer->process(kProcessBufferSize);
     }
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
@@ -244,7 +244,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
-    TestEngineMaster* m_pEngineMaster;
+    TestEngineMixer* m_pEngineMixer;
     Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;

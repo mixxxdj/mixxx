@@ -19,7 +19,7 @@ class ControlProxy;
 
 /*
  * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
- * on EngineMaster that emits every time a channel is added, and a slot here
+ * on EngineMixer that emits every time a channel is added, and a slot here
  * that updates the dialog accordingly.
  */
 

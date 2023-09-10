@@ -16,7 +16,7 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
-class EngineMaster;
+class EngineMixer;
 class AudioOutput;
 class AudioInput;
 class AudioSource;
@@ -40,7 +40,7 @@ class SoundDeviceNotFound;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, EngineMixer* pEngineMixer);
     ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -130,7 +130,7 @@ class SoundManager : public QObject {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
-    EngineMaster *m_pMaster;
+    EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
