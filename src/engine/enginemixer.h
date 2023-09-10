@@ -265,7 +265,7 @@ class EngineMixer : public QObject, public AudioSource {
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMainEffects(int bufferSize);
     void processHeadphones(
-            const CSAMPLE_GAIN masterMixGainInHeadphones,
+            const CSAMPLE_GAIN mainMixGainInHeadphones,
             int iBufferSize);
     bool sidechainMixRequired() const;
 
