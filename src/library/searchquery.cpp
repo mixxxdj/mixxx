@@ -337,7 +337,8 @@ bool ExternalPlaylistFilterNode::match(const TrackPointer& pTrack) const {
             return false;
         }
 
-        DbFieldIndex trackIdColumn = query.record().indexOf("track_id");
+        DbFieldIndex trackIdColumn = query.record().indexOf(
+                QStringLiteral("%1.id").arg(LIBRARY_TABLE));
 
         while (query.next()) {
             m_matchingTrackIds.push_back(TrackId(query.fieldValue(trackIdColumn)));
