@@ -44,7 +44,7 @@ class SearchQueryParser {
 
     TrackCollection* m_pTrackCollection;
     QStringList m_queryColumns;
-    bool m_searchCrates;
+    bool m_searchCratesAndExternal;
     QStringList m_textFilters;
     QStringList m_numericFilters;
     QStringList m_specialFilters;

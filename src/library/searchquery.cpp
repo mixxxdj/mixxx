@@ -1,14 +1,21 @@
 #include "library/searchquery.h"
 
 #include <QRegularExpression>
+#include <QStringLiteral>
+#include <QtDebug>
 
 #include "library/dao/trackschema.h"
+#include "library/itunes/itunesschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
 #include "library/trackset/crate/cratestorage.h" // for CrateTrackSelectResult
 #include "track/keyutils.h"
 #include "track/track.h"
+#include "track/trackid.h"
 #include "util/db/dbconnection.h"
+#include "util/db/dbfieldindex.h"
+#include "util/db/fwdsqlquery.h"
+#include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqllikewildcards.h"
 
 namespace {
@@ -300,6 +307,64 @@ QString NoCrateFilterNode::toSql() const {
     return QString("%1 NOT IN (%2)")
             .arg(CRATETABLE_ID,
                     CrateStorage::formatQueryForTrackIdsWithCrate());
+}
+
+ITunesFilterNode::ITunesFilterNode(const QSqlDatabase& database, const QString& playlistNameLike)
+        : m_database(database),
+          m_playlistNameLike(playlistNameLike) {
+}
+
+bool ITunesFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_matchInitialized) {
+        FwdSqlQuery query(m_database,
+                QStringLiteral("SELECT %1.id, %2.playlist_id %3")
+                        .arg(
+                                LIBRARY_TABLE,
+                                ITUNES_PLAYLIST_TRACKS_TABLE,
+                                formatQuerySuffixForTrackIds()));
+
+        query.bindValue(":name", m_playlistNameLike);
+
+        if (!query.execPrepared()) {
+            return false;
+        }
+
+        DbFieldIndex trackIdColumn = query.record().indexOf("track_id");
+
+        while (query.next()) {
+            m_matchingTrackIds.push_back(TrackId(query.fieldValue(trackIdColumn)));
+        }
+
+        m_matchInitialized = true;
+    }
+
+    return std::binary_search(m_matchingTrackIds.begin(),
+            m_matchingTrackIds.end(),
+            pTrack->getId());
+}
+
+QString ITunesFilterNode::toSql() const {
+    return QStringLiteral("id IN (SELECT %1.id %2)")
+            .arg(LIBRARY_TABLE, formatQuerySuffixForTrackIds());
+}
+
+QString ITunesFilterNode::formatQuerySuffixForTrackIds() const {
+    FieldEscaper escaper(m_database);
+    QString escapedPlaylistNameLike = escaper.escapeString(m_playlistNameLike);
+    return QStringLiteral(
+            "FROM %1 "
+            "JOIN %2 ON %2.id = %1.playlist_id "
+            "JOIN %3 ON %3.id = %1.track_id "
+            "JOIN %4 ON %4.location = %3.location "
+            "JOIN %5 ON %5.location = %4.id "
+            "WHERE %2.name LIKE %6 ORDER BY %1.track_id")
+            .arg(
+                    ITUNES_PLAYLIST_TRACKS_TABLE,
+                    ITUNES_PLAYLISTS_TABLE,
+                    ITUNES_LIBRARY_TABLE,
+                    TRACKLOCATIONS_TABLE,
+                    LIBRARY_TABLE,
+                    escapedPlaylistNameLike);
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
