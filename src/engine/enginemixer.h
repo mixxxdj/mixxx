@@ -245,7 +245,7 @@ class EngineMixer : public QObject, public AudioSource {
     };
 
   protected:
-    // The master buffer is protected so it can be accessed by test subclasses.
+    // The main buffer is protected so it can be accessed by test subclasses.
     CSAMPLE* m_pMain;
 
     // ControlObjects for switching off unnecessary processing
@@ -274,7 +274,7 @@ class EngineMixer : public QObject, public AudioSource {
     // List of channels added to the engine.
     QVarLengthArray<ChannelInfo*, kPreallocatedChannels> m_channels;
 
-    // The previous gain of each channel for each mixing output (master,
+    // The previous gain of each channel for each mixing output (main,
     // headphone, talkover).
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
