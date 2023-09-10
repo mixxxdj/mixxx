@@ -1,6 +1,7 @@
 #include "library/searchquery.h"
 
 #include <QRegularExpression>
+#include <QSqlDatabase>
 #include <QStringLiteral>
 #include <QtDebug>
 
@@ -309,18 +310,25 @@ QString NoCrateFilterNode::toSql() const {
                     CrateStorage::formatQueryForTrackIdsWithCrate());
 }
 
-ITunesFilterNode::ITunesFilterNode(const QSqlDatabase& database, const QString& playlistNameLike)
+ExternalPlaylistFilterNode::ExternalPlaylistFilterNode(const QSqlDatabase& database,
+        const QString& playlistNameLike,
+        const QString& externalPlaylistsTable,
+        const QString& externalPlaylistTracksTable,
+        const QString& externalLibraryTable)
         : m_database(database),
-          m_playlistNameLike(playlistNameLike) {
+          m_playlistNameLike(playlistNameLike),
+          m_externalPlaylistsTable(externalPlaylistsTable),
+          m_externalPlaylistTracksTable(externalPlaylistTracksTable),
+          m_externalLibraryTable(externalLibraryTable) {
 }
 
-bool ITunesFilterNode::match(const TrackPointer& pTrack) const {
+bool ExternalPlaylistFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
         FwdSqlQuery query(m_database,
                 QStringLiteral("SELECT %1.id, %2.playlist_id %3")
                         .arg(
                                 LIBRARY_TABLE,
-                                ITUNES_PLAYLIST_TRACKS_TABLE,
+                                m_externalPlaylistTracksTable,
                                 formatQuerySuffixForTrackIds()));
 
         query.bindValue(":name", m_playlistNameLike);
@@ -343,12 +351,12 @@ bool ITunesFilterNode::match(const TrackPointer& pTrack) const {
             pTrack->getId());
 }
 
-QString ITunesFilterNode::toSql() const {
+QString ExternalPlaylistFilterNode::toSql() const {
     return QStringLiteral("id IN (SELECT %1.id %2)")
             .arg(LIBRARY_TABLE, formatQuerySuffixForTrackIds());
 }
 
-QString ITunesFilterNode::formatQuerySuffixForTrackIds() const {
+QString ExternalPlaylistFilterNode::formatQuerySuffixForTrackIds() const {
     FieldEscaper escaper(m_database);
     QString escapedPlaylistNameLike = escaper.escapeString(m_playlistNameLike);
     return QStringLiteral(
@@ -359,12 +367,21 @@ QString ITunesFilterNode::formatQuerySuffixForTrackIds() const {
             "JOIN %5 ON %5.location = %4.id "
             "WHERE %2.name LIKE %6 ORDER BY %1.track_id")
             .arg(
-                    ITUNES_PLAYLIST_TRACKS_TABLE,
-                    ITUNES_PLAYLISTS_TABLE,
-                    ITUNES_LIBRARY_TABLE,
+                    m_externalPlaylistTracksTable,
+                    m_externalPlaylistsTable,
+                    m_externalLibraryTable,
                     TRACKLOCATIONS_TABLE,
                     LIBRARY_TABLE,
                     escapedPlaylistNameLike);
+}
+
+ITunesFilterNode::ITunesFilterNode(const QSqlDatabase& database, const QString& playlistNameLike)
+        : ExternalPlaylistFilterNode(
+                  database,
+                  playlistNameLike,
+                  ITUNES_PLAYLISTS_TABLE,
+                  ITUNES_PLAYLIST_TRACKS_TABLE,
+                  ITUNES_LIBRARY_TABLE) {
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
