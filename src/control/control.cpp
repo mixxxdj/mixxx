@@ -289,6 +289,18 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
     return s_qCOAliasHash;
 }
 
+// static
+QString ControlDoublePrivate::getGroupAlias(const QString& group) {
+    MMutexLocker locker(&s_qCOHashMutex);
+
+    auto it = s_qCOGroupAliasHash.constFind(group);
+    if (it != s_qCOGroupAliasHash.constEnd()) {
+        return it.value();
+    }
+
+    return QString();
+}
+
 void ControlDoublePrivate::deleteCreatorCO() {
     delete m_pCreatorCO.fetchAndStoreOrdered(nullptr);
 }

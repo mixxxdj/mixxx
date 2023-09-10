@@ -1,15 +1,21 @@
 #include "effects/chains/outputeffectchain.h"
 
+#include "control/control.h"
 #include "effects/effectslot.h"
 #include "moc_outputeffectchain.cpp"
 
 OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
         EffectsMessengerPointer pEffectsMessenger)
-        : EffectChain(formatEffectChainGroup("[Master]"),
+        : EffectChain(formatEffectChainGroup("[Main]"),
                   pEffectsManager,
                   pEffectsMessenger,
                   SignalProcessingStage::Postfader) {
-    addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+    addEffectSlot("[OutputEffectRack_[Main]_Effect1]");
+    ControlDoublePrivate::insertGroupAlias(formatEffectChainGroup("[Master]"), getGroup());
+    ControlDoublePrivate::insertGroupAlias(
+            QStringLiteral("[OutputEffectRack_[Master]_Effect1]"),
+            QStringLiteral("[OutputEffectRack_[Main]_Effect1]"));
+
     m_effectSlots[0]->setEnabled(true);
 
     // Register the main channel

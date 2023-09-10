@@ -70,6 +70,9 @@ class ControlDoublePrivate : public QObject {
     static QList<QSharedPointer<ControlDoublePrivate>> takeAllInstances();
 
     static QHash<ConfigKey, ConfigKey> getControlAliases();
+    /// Get the group alias for `group`, or an empty string if there is no
+    /// alias for `group`.
+    static QString getGroupAlias(const QString& group);
 
     const QString& name() const {
         return m_name;
