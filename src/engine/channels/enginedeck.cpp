@@ -73,7 +73,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
         pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
-                m_pEffectsManager->getMasterHandle(),
+                m_pEffectsManager->getMainHandle(),
                 pOut,
                 iBufferSize,
                 // TODO(jholthuis): Use mixxx::audio::SampleRate instead
