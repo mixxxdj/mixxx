@@ -190,7 +190,7 @@ NumarkScratch.XfaderContainer = function() {
         inKey: "crossfader",
     });
 
-    this.crossfader.setCurve = function(channel, control, value, _status, _group) {
+    this.setCurve = function(channel, control, value, _status, _group) {
         switch (value) {
         case 0x00: // Additive/Linear
             engine.setValue("[Mixer Profile]", "xFaderMode", 0);
@@ -205,7 +205,7 @@ NumarkScratch.XfaderContainer = function() {
         }
     };
 
-    this.crossfader.xFaderReverse = function(channel, control, value, _status, _group) {
+    this.xFaderReverse = function(channel, control, value, _status, _group) {
         // 0x7F is ON, 0x00 is OFF
         engine.setValue("[Mixer Profile]", "xFaderReverse", (value === 0x7F) ? 1 : 0);
     };
