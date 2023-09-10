@@ -608,7 +608,11 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
                 static_cast<unsigned int>(SoundManagerConfig::
                                 JackAudioBufferSizeIndex::Size4096fpp));
     } else {
-        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
+        DEBUG_ASSERT(sampleRateComboBox->itemData(sampleRateIndex)
+                             .canConvert<mixxx::audio::SampleRate>());
+        double sampleRate = sampleRateComboBox->itemData(sampleRateIndex)
+                                    .value<mixxx::audio::SampleRate>()
+                                    .toDouble();
         unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
         // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
         // don't right now!), so we iterate over all the buffer sizes until we
