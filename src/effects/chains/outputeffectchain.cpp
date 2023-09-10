@@ -25,7 +25,7 @@ OutputEffectChain::OutputEffectChain(EffectsManager* pEffectsManager,
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectsManager->registeredInputChannels();
     for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        if (handle_group.name() == "[MasterOutput]") {
+        if (handle_group.name() == "[MainOutput]") {
             mainHandleAndGroup = &handle_group;
             break;
         }
