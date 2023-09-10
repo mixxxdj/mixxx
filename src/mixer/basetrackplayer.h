@@ -66,7 +66,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
-            bool defaultMaster,
+            bool defaultMainMix,
             bool defaultHeadphones,
             bool primaryDeck);
     ~BaseTrackPlayerImpl() override;

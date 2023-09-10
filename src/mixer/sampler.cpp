@@ -15,7 +15,7 @@ Sampler::Sampler(PlayerManager* pParent,
                   pEffectsManager,
                   defaultOrientation,
                   handleGroup,
-                  /*defaultMaster*/ true,
+                  /*defaultMainMix*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ false) {
 }

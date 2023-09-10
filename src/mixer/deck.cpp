@@ -14,7 +14,7 @@ Deck::Deck(PlayerManager* pParent,
                   pEffectsManager,
                   defaultOrientation,
                   handleGroup,
-                  /*defaultMaster*/ true,
+                  /*defaultMainMix*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ true) {
 }

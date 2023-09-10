@@ -14,7 +14,7 @@ PreviewDeck::PreviewDeck(PlayerManager* pParent,
                   pEffectsManager,
                   defaultOrientation,
                   handleGroup,
-                  /*defaultMaster*/ false,
+                  /*defaultMainMix*/ false,
                   /*defaultHeadphones*/ true,
                   /*primaryDeck*/ false) {
 }
