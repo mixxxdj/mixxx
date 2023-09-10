@@ -1,7 +1,9 @@
 #include "library/searchqueryparser.h"
 
 #include <QRegularExpression>
+#include <memory>
 
+#include "library/searchquery.h"
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";
@@ -12,7 +14,7 @@ const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
-          m_searchCrates(false) {
+          m_searchCratesAndExternal(false) {
     setSearchColumns(std::move(searchColumns));
 
     m_textFilters << "artist"
@@ -24,7 +26,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
                   << "grouping"
                   << "comment"
                   << "location"
-                  << "crate";
+                  << "crate"
+                  << "itunes";
     m_numericFilters << "track"
                      << "bpm"
                      << "played"
@@ -79,8 +82,8 @@ void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
 
     // we need to create a filtered columns list that are handled differently
     for (int i = 0; i < m_queryColumns.size(); ++i) {
-        if (m_queryColumns[i] == "crate") {
-            m_searchCrates = true;
+        if (m_queryColumns[i] == "crate" || m_queryColumns[i] == "itunes") {
+            m_searchCratesAndExternal = true;
             m_queryColumns.removeAt(i);
             break;
         }
@@ -173,6 +176,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 if (field == "crate") {
                     pNode = std::make_unique<CrateFilterNode>(
                             &m_pTrackCollection->crates(), argument);
+                } else if (field == "itunes") {
+                    pNode = std::make_unique<ITunesFilterNode>(
+                            m_pTrackCollection->database(), argument);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(),
@@ -241,10 +247,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 // For untagged strings we search the track fields as well
                 // as the crate names the track is in. This allows the user
                 // to use crates like tags
-                if (m_searchCrates) {
+                if (m_searchCratesAndExternal) {
                     auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
                                     &m_pTrackCollection->crates(), argument));
+                    gNode->addNode(std::make_unique<ITunesFilterNode>(
+                            m_pTrackCollection->database(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(), m_queryColumns, argument));
                     pNode = std::move(gNode);
