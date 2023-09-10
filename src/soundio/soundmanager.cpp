@@ -348,7 +348,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     // Instead of clearing m_pClkRefDevice and then assigning it directly,
     // compute the new one then atomically hand off below.
-    SoundDevicePointer pNewMasterClockRef;
+    SoundDevicePointer pNewMainClockRef;
 
     m_mainAudioLatencyOverloadCount.set(0);
 
@@ -396,7 +396,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             AudioOutput out(AudioPathType::RecordBroadcast, 0, 2, 0);
             outputs.append(out);
             if (m_config.getForceNetworkClock() && !jackApiUsed()) {
-                pNewMasterClockRef = pDevice;
+                pNewMainClockRef = pDevice;
             }
         }
 
@@ -421,11 +421,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
             if (!m_config.getForceNetworkClock() || jackApiUsed()) {
                 if (out.getType() == AudioPathType::Main) {
-                    pNewMasterClockRef = pDevice;
+                    pNewMainClockRef = pDevice;
                 } else if ((out.getType() == AudioPathType::Deck ||
                                    out.getType() == AudioPathType::Bus) &&
-                        !pNewMasterClockRef) {
-                    pNewMasterClockRef = pDevice;
+                        !pNewMainClockRef) {
+                    pNewMainClockRef = pDevice;
                 }
             }
 
@@ -451,9 +451,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         // If we have not yet set a clock source then we use the first
         // output pDevice
-        if (pNewMasterClockRef.isNull() &&
+        if (pNewMainClockRef.isNull() &&
                 (!haveOutput || mode.isOutput)) {
-            pNewMasterClockRef = pDevice;
+            pNewMainClockRef = pDevice;
             qWarning() << "Output sound device clock reference not set! Using"
                        << pDevice->getDisplayName();
         }
@@ -464,7 +464,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
             syncBuffers = 2;
         }
-        status = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
+        status = pDevice->open(pNewMainClockRef == pDevice, syncBuffers);
         if (status != SoundDeviceStatus::Ok) {
             goto closeAndError;
         }
@@ -477,8 +477,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    if (pNewMasterClockRef) {
-        qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
+    if (pNewMainClockRef) {
+        qDebug() << "Using" << pNewMainClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
         qWarning() << "No output devices opened, no clock reference device set";
