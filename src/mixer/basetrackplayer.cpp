@@ -71,7 +71,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
 
-    // Set the routing option defaults for the master and headphone mixes.
+    // Set the routing option defaults for the main and headphone mixes.
     m_pChannel->setMainMix(defaultMainMix);
     m_pChannel->setPfl(defaultHeadphones);
 

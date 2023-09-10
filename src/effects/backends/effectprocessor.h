@@ -114,7 +114,7 @@ class EffectProcessor {
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
 /// input channel to output channel. This allows for processing effects in
-/// parallel for PFL and post-fader for the master output.
+/// parallel for PFL and post-fader for the main output.
 /// EffectSpecificState must be a subclass of EffectState.
 template<typename EffectSpecificState>
 class EffectProcessorImpl : public EffectProcessor {

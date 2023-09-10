@@ -632,7 +632,7 @@ void EngineMixer::process(const int iBufferSize) {
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process main channel effects
-            // TODO(Be): Move this after mixing in talkover. For the MASTER only
+            // TODO(Be): Move this after mixing in talkover. For the main output only
             // MicMonitorMode above, that will require refactoring the effects system
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,

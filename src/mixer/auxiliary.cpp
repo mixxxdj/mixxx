@@ -32,7 +32,7 @@ void Auxiliary::slotAuxMainMixEnabled(double v) {
     bool configured = m_pInputConfigured->toBool();
     bool auxMainMixEnable = v > 0.0;
 
-    // Warn the user if they try to enable master on a auxiliary with no
+    // Warn the user if they try to enable main on a auxiliary with no
     // configured input.
     if (!configured && auxMainMixEnable) {
         m_pAuxMainMixEnabled->set(0.0);

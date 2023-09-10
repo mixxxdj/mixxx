@@ -330,7 +330,7 @@ void BaseSqlTableModel::select() {
     // number of total rows returned by the query
     DEBUG_ASSERT(trackIdToRows.size() <= rowInfos.size());
 
-    // We're done! Issue the update signals and replace the master maps.
+    // We're done! Issue the update signals and replace the main maps.
     replaceRows(
             std::move(rowInfos),
             std::move(trackIdToRows));

@@ -229,8 +229,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
-    // Emitted when the user tries to enable an auxiliary master control when
-    // there is no input configured.
+    // Emitted when the user tries to enable an auxiliary `main_mix` control
+    // when there is no input configured.
     void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no

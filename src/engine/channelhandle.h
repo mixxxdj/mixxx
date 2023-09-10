@@ -10,7 +10,7 @@
 #include "util/compatibility/qhash.h"
 
 // ChannelHandle defines a unique identifier for channels of audio in the engine
-// (e.g. headphone output, master output, deck 1, microphone 3). Previously we
+// (e.g. headphone output, main output, deck 1, microphone 3). Previously we
 // used the group string of the channel in the engine to uniquely identify it
 // and key associative containers (e.g. QMap, QHash) but the downside to this is
 // that we waste a lot of callback time hashing and re-hashing the strings.
@@ -23,7 +23,7 @@
 // (since the keys are numbered [0, num_channels]).
 
 /// A wrapper around an integer handle. Used to uniquely identify and refer to
-/// channels (headphone output, master output, deck 1, microphone 4, etc.) while
+/// channels (headphone output, main output, deck 1, microphone 4, etc.) while
 /// avoiding slow QString comparisons incurred when using the group.
 ///
 /// A helper class, ChannelHandleFactory, keeps a running count of handles that

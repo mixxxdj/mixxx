@@ -323,7 +323,7 @@ QUrl DlgPrefSound::helpUrl() const {
  * Initializes (and creates) all the path items. Each path item widget allows
  * the user to input a sound device name and channel number given a description
  * of what will be done with that info. Inputs and outputs are grouped by tab,
- * and each path item has an identifier (Master, Headphones, ...) and an index,
+ * and each path item has an identifier (Main, Headphones, ...) and an index,
  * if necessary.
  */
 void DlgPrefSound::initializePaths() {

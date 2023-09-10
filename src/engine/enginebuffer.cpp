@@ -1000,9 +1000,9 @@ void EngineBuffer::processTrackLocked(
         m_tempo_ratio_old = tempoRatio;
         m_reverse_old = is_reverse;
 
-        // Now we need to update the scaler with the master sample rate, the
+        // Now we need to update the scaler with the main sample rate, the
         // base rate (ratio between sample rate of the source audio and the
-        // master samplerate), the deck speed, the pitch shift, and whether
+        // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
 
         m_pScale->setScaleParameters(baserate,
@@ -1168,7 +1168,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we can't predict when they will be in place.
         // If one does this, a click from breaking the last track is somehow
         // natural and he should know that such sound should not be played to
-        // the master (audience).
+        // the main (audience).
         // Workaround: Simply pause the track before.
 
         // TODO(XXX):
