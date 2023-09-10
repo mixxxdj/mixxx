@@ -69,10 +69,10 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     BaseSignalPathTest() {
         m_pControlIndicatorTimer = std::make_unique<mixxx::ControlIndicatorTimer>();
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
+        m_pNumDecks = new ControlObject(ConfigKey(m_sMainGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(config(), m_pChannelHandleFactory);
         m_pEngineMixer = new TestEngineMixer(m_pConfig,
-                m_sMasterGroup,
+                m_sMainGroup,
                 m_pEffectsManager,
                 m_pChannelHandleFactory,
                 false);
@@ -119,7 +119,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         addDeck(m_pChannel3);
 
         m_pEngineSync = m_pEngineMixer->getEngineSync();
-        ControlObject::set(ConfigKey(m_sMasterGroup, "enabled"), 1.0);
+        ControlObject::set(ConfigKey(m_sMainGroup, "enabled"), 1.0);
 
         PlayerInfo::create();
     }
@@ -249,7 +249,7 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
     PreviewDeck* m_pPreview1;
 
-    static const QString m_sMasterGroup;
+    static const QString m_sMainGroup;
     static const QString m_sInternalClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
