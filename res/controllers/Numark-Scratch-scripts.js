@@ -1,4 +1,4 @@
-const NumarkScratch = {};
+var NumarkScratch = {};
 
 /*
  * USER CONFIGURABLE SETTINGS.
