@@ -1,8 +1,8 @@
 <!DOCTYPE template>
-<!-- Master level meter -->
+<!-- Main level meter -->
 <Template>
   <WidgetGroup>
-    <ObjectName>MasterVu</ObjectName>
+    <ObjectName>MainVu</ObjectName>
     <Layout>vertical</Layout>
     <MinimumSize>28,60</MinimumSize>
     <MaximumSize>28,300</MaximumSize>

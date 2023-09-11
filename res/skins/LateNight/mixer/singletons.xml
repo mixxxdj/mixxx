@@ -102,7 +102,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Dark</ObjectName>
+    <ObjectName>VuMeterMain_Dark</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -116,7 +116,7 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Light</ObjectName>
+    <ObjectName>VuMeterMain_Light</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>

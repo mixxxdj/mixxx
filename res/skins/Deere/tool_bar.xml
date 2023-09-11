@@ -47,7 +47,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>MasterControls</ObjectName>
+            <ObjectName>MainControls</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>

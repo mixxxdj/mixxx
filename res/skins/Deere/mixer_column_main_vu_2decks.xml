@@ -1,5 +1,5 @@
 <!DOCTYPE template>
-<!-- Master level meter -->
+<!-- Main level meter -->
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>

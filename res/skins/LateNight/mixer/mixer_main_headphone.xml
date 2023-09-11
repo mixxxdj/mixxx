@@ -12,19 +12,19 @@
     <Children>
 
       <WidgetGroup><!--sized and styled in css -->
-        <ObjectName>MasterMixerSeparator</ObjectName>
+        <ObjectName>MainMixerSeparator</ObjectName>
         <Layout>horizontal</Layout>
         <Children/>
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>MixerMasterHeadphone</ObjectName>
+        <ObjectName>MixerMainHeadphone</ObjectName>
         <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>MasterControls</ObjectName>
+            <ObjectName>MainControls</ObjectName>
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -35,7 +35,7 @@
                 <SizePolicy>min,me</SizePolicy>
               </WidgetGroup>
 
-              <!-- Master knobs
+              <!-- Main knobs
                   Labels are separate so knobs are spaced equally -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
@@ -143,15 +143,15 @@
                   </WidgetGroup>
 
                   <WidgetGroup>
-                    <ObjectName>VuMeterMaster_4Decks</ObjectName>
+                    <ObjectName>VuMeterMain_4Decks</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>max,max</SizePolicy>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>VuMeterMaster_Light</ObjectName>
+                        <ObjectName>VuMeterMain_Light</ObjectName>
                       </SingletonContainer>
                     </Children>
-                  </WidgetGroup><!-- VuMeterMaster_4Decks -->
+                  </WidgetGroup><!-- VuMeterMain_4Decks -->
 
                   <WidgetGroup>
                     <MinimumSize>0,20</MinimumSize>
@@ -164,13 +164,13 @@
                   <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- /MasterVuMeter4ch -->
+              </WidgetGroup><!-- /MainVuMeter4ch -->
 
             </Children>
-          </WidgetGroup><!-- MasterControls -->
+          </WidgetGroup><!-- MainControls -->
 
           <WidgetGroup><!-- sized and styled in css -->
-            <ObjectName>MasterHeadphoneSeparator</ObjectName>
+            <ObjectName>MainHeadphoneSeparator</ObjectName>
             <Layout>horizontal</Layout>
             <Children/>
           </WidgetGroup>
@@ -282,7 +282,7 @@
           </WidgetGroup><!-- HeadphoneControls -->
 
         </Children>
-      </WidgetGroup><!-- MixerMasterHeadphone -->
+      </WidgetGroup><!-- MixerMainHeadphone -->
 
     </Children>
     <Connection>

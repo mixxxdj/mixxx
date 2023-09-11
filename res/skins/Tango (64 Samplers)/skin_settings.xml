@@ -460,7 +460,7 @@ Description:
             <Text>Mixer</Text>
           </Label>
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
-            <SetVariable name="text">Master/Headphone Mixer</SetVariable>
+            <SetVariable name="text">Main/Headphone Mixer</SetVariable>
             <SetVariable name="width">105</SetVariable>
             <SetVariable name="Setting">[Tango],master_mixer</SetVariable>
           </Template>

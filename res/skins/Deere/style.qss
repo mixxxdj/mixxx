@@ -1030,7 +1030,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 4;
 }
 
-#MasterControls, #HeadphoneControls {
+#MainControls, #HeadphoneControls {
     qproperty-layoutSpacing: 10;
     margin-bottom: 1px;
     margin-top: 1px;
@@ -1334,7 +1334,7 @@ WBeatSpinBox,
   border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
-#MasterControls {
+#MainControls {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1442,7 +1442,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#master_VuMeter_Group {
+#main_VuMeter_Group {
   qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 5px;
@@ -1450,7 +1450,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#MasterVu {
+#MainVu {
   qproperty-layoutAlignment: 'AlignCenter';
   /* background-color: #582831; */
 }

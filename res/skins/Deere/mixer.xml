@@ -98,7 +98,7 @@
                   <Template src="skin:mixer_controls_4decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
-                  <!-- The 4-deck master VU meter column contains the same
+                  <!-- The 4-deck main VU meter column contains the same
                       structure and mechanisms as the left/right channel controls.
                       When altering those remember to change i.e. <MaximumSize>
                       and fixed spacers there as well -->

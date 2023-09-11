@@ -61,13 +61,13 @@
 /* dim 1st-level containers */
 #ToolBar,
 #WaveformsContainer,
-#MasterControls,
+#MainControls,
 #HeadphoneControls,
 #VuMeterDeck1_Compact,
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnitHeaderCollapsed,
 #FxUnitHeaderExpanded,
 #SamplerExpandBox,
@@ -225,8 +225,8 @@ WSearchLineEdit {
 
 /* meters */
 #VuMeterBox,
-#VuMeterBoxMaster,
-#VuMeterBoxMasterSingle,
+#VuMeterBoxMain,
+#VuMeterBoxMainSingle,
 #LatencyMeterBox {
   background-color: #040404;
   }
@@ -246,7 +246,7 @@ WSearchLineEdit {
   background-color: rgba(0,0,1,50);
 }
 
-#VuMasterCover {
+#VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
 
@@ -272,8 +272,8 @@ WSearchLineEdit {
 
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
-#MasterMixerSeparator,
-#MasterHeadphoneSeparator,
+#MainMixerSeparator,
+#MainHeadphoneSeparator,
 #FxMixerSeparatorCollapsed,
 #FxSlotSeparatorH,
 #SeparatorToolbar,
@@ -305,7 +305,7 @@ WSearchLineEdit {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
   }
-  #MasterMixerSeparator {
+  #MainMixerSeparator {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #222;
   }
@@ -404,7 +404,7 @@ WSearchLineEdit {
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #FxRackFillerR,
@@ -739,13 +739,13 @@ WBeatSpinBox::down-button,
     margin-left: 3px;
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   }
-  #MasterControls,
+  #MainControls,
   #HeadphoneControls {
     padding: 4px;
   }
-  #MasterControls {
+  #MainControls {
     border-radius: 0px 1px 0px 0px;
     }
     #BoothLabelBox {
@@ -762,10 +762,10 @@ WBeatSpinBox::down-button,
 #VuMeterChannel_4Decks {
   margin: 6px 0px 6px 11px;
 }
-#VuMeterMaster_2Decks {
+#VuMeterMain_2Decks {
   margin: 0px 0px 2px 0px;
 }
-#VuMeterMaster_4Decks {
+#VuMeterMain_4Decks {
   margin: 5px 0px;
 }
 
@@ -783,7 +783,7 @@ WBeatSpinBox::down-button,
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
-#VuMeterMaster_Compact {
+#VuMeterMain_Compact {
   margin-right: 4px;
   margin-left: 4px;
   padding: 0px 5px;
@@ -1325,7 +1325,7 @@ WEffectChainPresetSelector:!editable:on,
 #PlayPositionText, #PlayPositionTextSmall,
 #DurationText,
 #RateText, #RateRangePrefix, #RateRangeText,
-#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
+#MixerMainHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
@@ -1350,9 +1350,9 @@ WEffectChainPresetSelector QAbstractScrollArea,
   color: #666;
   }
 
-/* Even darker grey for knob labels in master/headphone mixer */
-#MixerMasterHeadphone #KnobLabel,
-#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+/* Even darker grey for knob labels in main/headphone mixer */
+#MixerMainHeadphone #KnobLabel,
+#MixerMainHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
   color: #555;
 }
 
@@ -1625,7 +1625,7 @@ WBeatSpinBox::down-button {
   }
   /* dark buttons in toolbar */
   #ToolBar WPushButton[displayValue="0"],
-  #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+  #MixerMainHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
     background-color: #151517;
   }
 

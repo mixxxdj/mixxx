@@ -1,6 +1,6 @@
 <!--
 Description:
-  Container for left deck, master VU, [GUI controls, xfader, etc.] and right deck
+  Container for left deck, main VU, [GUI controls, xfader, etc.] and right deck
 Variables:
   SignalBgColor_1   defined in skin.xml
   SignalColor_1

@@ -1,6 +1,6 @@
 <!--
   Description:
-    A stereo meter for the Master VU level
+    A stereo meter for the Main VU level
 
   Variables:
     Group
@@ -13,13 +13,13 @@
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>VuMeterBoxMaster</ObjectName>
+    <ObjectName>VuMeterBoxMain</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <!-- Left -->
       <WidgetGroup>
-        <ObjectName>VuMeterBoxMasterSingle</ObjectName>
+        <ObjectName>VuMeterBoxMainSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -45,10 +45,10 @@
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- VuMeterBoxMasterSingle -->
+      </WidgetGroup><!-- VuMeterBoxMainSingle -->
       <!-- Right -->
       <WidgetGroup>
-        <ObjectName>VuMeterBoxMasterSingle</ObjectName>
+        <ObjectName>VuMeterBoxMainSingle</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
@@ -74,8 +74,8 @@
             </Connection>
           </VuMeter>
         </Children>
-      </WidgetGroup><!-- VuMeterBoxMasterSingle -->
+      </WidgetGroup><!-- VuMeterBoxMainSingle -->
       <!-- Right -->
     </Children>
-  </WidgetGroup><!-- VuMeterBoxMaster -->
+  </WidgetGroup><!-- VuMeterBoxMain -->
 </Template>
