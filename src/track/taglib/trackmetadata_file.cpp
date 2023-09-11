@@ -120,7 +120,8 @@ bool readAudioPropertiesFromFile(
     // we must pick one explicit,
     // to prevent "use of overloaded operator '<<' is ambiguous" error
     // on clang-cl builds.
-    const std::wstring& filename = file.name().wstr();
+    TagLib::FileName filename_owning = file.name();
+    const std::wstring& filename = filename_owning.wstr();
 #else
     const char* filename = file.name();
 #endif
