@@ -112,7 +112,7 @@ Description:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+      <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /Main Mixer -->

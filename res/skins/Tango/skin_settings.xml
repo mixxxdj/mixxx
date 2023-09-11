@@ -450,7 +450,7 @@ Description:
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Main/Headphone Mixer</SetVariable>
             <SetVariable name="width">105</SetVariable>
-            <SetVariable name="Setting">[Tango],master_mixer</SetVariable>
+            <SetVariable name="Setting">[Tango],main_mixer</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Channel mixer toggle + hint for big cover -->

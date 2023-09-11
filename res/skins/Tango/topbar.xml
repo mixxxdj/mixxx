@@ -55,14 +55,14 @@ Description:
                 <SetVariable name="ObjectName">MainHeadMixerToggle</SetVariable>
                 <!-- Size needs to be changed in size_detector_stars.xml, too -->
                 <SetVariable name="Size">15f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],main_mixer</SetVariable>
               </Template>
 
               <Label>
                 <Size>22f,28f</Size>
                 <ObjectName>MainHeadMixerLabel</ObjectName>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
