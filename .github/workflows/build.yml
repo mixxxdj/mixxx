@@ -299,11 +299,11 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@0.2.0
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@master
+        uses: ammaraskar/msvc-problem-matcher@0.2.0
 
       - name: "Build"
         run: cmake --build . --config RelWithDebInfo
