@@ -13,7 +13,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -258,7 +258,7 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
-    m_pEngine = std::make_shared<EngineMaster>(
+    m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
             "[Master]",
             m_pEffectsManager.get(),
@@ -615,8 +615,8 @@ void CoreServices::finalize() {
     CLEAR_AND_CHECK_DELETED(m_pBroadcastManager);
 #endif
 
-    // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMaster";
+    // EngineMixer depends on Config and m_pEffectsManager.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";

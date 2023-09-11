@@ -20,7 +20,7 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
@@ -67,7 +67,7 @@ constexpr int kPlaypositionUpdateRate = 15; // updates per second
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        EngineMaster* pMixingEngine)
+        EngineMixer* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
@@ -282,11 +282,11 @@ EngineBuffer::EngineBuffer(const QString& group,
     writer.setDevice(&df);
 #endif
 
-    // Now that all EngineControls have been created call setEngineMaster.
-    // TODO(XXX): Get rid of EngineControl::setEngineMaster and
+    // Now that all EngineControls have been created call setEngineMixer.
+    // TODO(XXX): Get rid of EngineControl::setEngineMixer and
     // EngineControl::setEngineBuffer entirely and pass them through the
     // constructor.
-    setEngineMaster(pMixingEngine);
+    setEngineMixer(pMixingEngine);
 }
 
 EngineBuffer::~EngineBuffer() {
@@ -382,9 +382,9 @@ void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
-void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
+void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setEngineMaster(pEngineMaster);
+        pControl->setEngineMixer(pEngineMixer);
     }
 }
 
@@ -1000,9 +1000,9 @@ void EngineBuffer::processTrackLocked(
         m_tempo_ratio_old = tempoRatio;
         m_reverse_old = is_reverse;
 
-        // Now we need to update the scaler with the master sample rate, the
+        // Now we need to update the scaler with the main sample rate, the
         // base rate (ratio between sample rate of the source audio and the
-        // master samplerate), the deck speed, the pitch shift, and whether
+        // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
 
         m_pScale->setScaleParameters(baserate,
@@ -1168,7 +1168,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we can't predict when they will be in place.
         // If one does this, a click from breaking the last track is somehow
         // natural and he should know that such sound should not be played to
-        // the master (audience).
+        // the main (audience).
         // Workaround: Simply pause the track before.
 
         // TODO(XXX):

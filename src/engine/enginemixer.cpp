@@ -1,4 +1,4 @@
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 
 #include <QList>
 #include <QPair>
@@ -21,14 +21,14 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
-#include "moc_enginemaster.cpp"
+#include "moc_enginemixer.cpp"
 #include "preferences/usersettings.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
 
-EngineMaster::EngineMaster(
+EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
         const QString& group,
         EffectsManager* pEffectsManager,
@@ -42,19 +42,19 @@ EngineMaster::EngineMaster(
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
-          m_masterHandle(registerChannelGroup(group)),
+          m_mainHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_masterOutputHandle(registerChannelGroup("[MasterOutput]")),
+          m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
-    pEffectsManager->registerInputChannel(m_masterHandle);
+    pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
-    pEffectsManager->registerOutputChannel(m_masterHandle);
+    pEffectsManager->registerOutputChannel(m_mainHandle);
     pEffectsManager->registerOutputChannel(m_headphoneHandle);
 
-    pEffectsManager->registerInputChannel(m_masterOutputHandle);
+    pEffectsManager->registerInputChannel(m_mainOutputHandle);
     pEffectsManager->registerInputChannel(m_busTalkoverHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderLeftHandle);
     pEffectsManager->registerInputChannel(m_busCrossfaderCenterHandle);
@@ -177,7 +177,7 @@ EngineMaster::EngineMaster(
     m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
             static_cast<double>(EngineBuffer::defaultKeylockEngine())));
 
-    // TODO: Make this read only and make EngineMaster decide whether
+    // TODO: Make this read only and make EngineMixer decide whether
     // processing the main mix is necessary.
     m_pMainEnabled = new ControlObject(ConfigKey(group, "enabled"),
             true,
@@ -197,8 +197,8 @@ EngineMaster::EngineMaster(
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
 }
 
-EngineMaster::~EngineMaster() {
-    //qDebug() << "in ~EngineMaster()";
+EngineMixer::~EngineMixer() {
+    // qDebug() << "in ~EngineMixer()";
     delete m_pKeylockEngine;
     delete m_pCrossfader;
     delete m_pBalance;
@@ -256,23 +256,23 @@ EngineMaster::~EngineMaster() {
     }
 }
 
-const CSAMPLE* EngineMaster::getMainBuffer() const {
+const CSAMPLE* EngineMixer::getMainBuffer() const {
     return m_pMain;
 }
 
-const CSAMPLE* EngineMaster::getBoothBuffer() const {
+const CSAMPLE* EngineMixer::getBoothBuffer() const {
     return m_pBooth;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
+const CSAMPLE* EngineMixer::getHeadphoneBuffer() const {
     return m_pHead;
 }
 
-const CSAMPLE* EngineMaster::getSidechainBuffer() const {
+const CSAMPLE* EngineMixer::getSidechainBuffer() const {
     return m_pSidechainMix;
 }
 
-void EngineMaster::processChannels(int iBufferSize) {
+void EngineMixer::processChannels(int iBufferSize) {
     // Update internal sync lock rate.
     m_pEngineSync->onCallbackStart(m_sampleRate, iBufferSize);
 
@@ -283,7 +283,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeTalkoverChannels.clear();
     m_activeChannels.clear();
 
-    //ScopedTimer timer("EngineMaster::processChannels");
+    // ScopedTimer timer("EngineMixer::processChannels");
     EngineChannel* pLeaderChannel = m_pEngineSync->getLeaderChannel();
     // Reserve the first place for the main channel which
     // should be processed first
@@ -392,13 +392,13 @@ void EngineMaster::processChannels(int iBufferSize) {
     }
 }
 
-void EngineMaster::process(const int iBufferSize) {
+void EngineMixer::process(const int iBufferSize) {
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
         haveSetName = true;
     }
-    //Trace t("EngineMaster::process");
+    // Trace t("EngineMixer::process");
 
     bool mainEnabled = m_pMainEnabled->toBool();
     bool boothEnabled = m_pBoothEnabled->toBool();
@@ -474,7 +474,7 @@ void EngineMaster::process(const int iBufferSize) {
             m_activeTalkoverChannels,
             &m_channelTalkoverGainCache,
             m_pTalkover,
-            m_masterHandle.handle(),
+            m_mainHandle.handle(),
             iBufferSize,
             static_cast<int>(m_sampleRate.value()),
             m_pEngineEffectsManager);
@@ -485,7 +485,7 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busTalkoverHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pTalkover,
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -534,7 +534,7 @@ void EngineMaster::process(const int iBufferSize) {
                 &m_channelMainGainCache, // no [o] because the old gain
                                          // follows an orientation switch
                 m_pOutputBusBuffers[o],
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
                 m_pEngineEffectsManager);
@@ -544,7 +544,7 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderLeftHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::LEFT],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -554,7 +554,7 @@ void EngineMaster::process(const int iBufferSize) {
                 false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderCenterHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::CENTER],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -564,7 +564,7 @@ void EngineMaster::process(const int iBufferSize) {
                 false);
         m_pEngineEffectsManager->processPostFaderInPlace(
                 m_busCrossfaderRightHandle.handle(),
-                m_masterHandle.handle(),
+                m_mainHandle.handle(),
                 m_pOutputBusBuffers[EngineChannel::RIGHT],
                 iBufferSize,
                 static_cast<int>(m_sampleRate.value()),
@@ -632,7 +632,7 @@ void EngineMaster::process(const int iBufferSize) {
             }
         } else if (configuredMicMonitorMode == MicMonitorMode::MainAndBooth) {
             // Process main channel effects
-            // TODO(Be): Move this after mixing in talkover. For the MASTER only
+            // TODO(Be): Move this after mixing in talkover. For the main output only
             // MicMonitorMode above, that will require refactoring the effects system
             // to be able to process the same effects on different buffers
             // within the same callback. For consistency between the MicMonitorModes,
@@ -751,16 +751,16 @@ void EngineMaster::process(const int iBufferSize) {
         // Process effects that apply to main hardware output only but not
         // record/broadcast signal
         if (m_pEngineEffectsManager) {
-            GroupFeatureState masterFeatures;
-            masterFeatures.has_gain = true;
-            masterFeatures.gain = m_pMainGain->get();
+            GroupFeatureState mainFeatures;
+            mainFeatures.has_gain = true;
+            mainFeatures.gain = m_pMainGain->get();
             m_pEngineEffectsManager->processPostFaderInPlace(
-                    m_masterOutputHandle.handle(),
-                    m_masterHandle.handle(),
+                    m_mainOutputHandle.handle(),
+                    m_mainHandle.handle(),
                     m_pMain,
                     iBufferSize,
                     static_cast<int>(m_sampleRate.value()),
-                    masterFeatures);
+                    mainFeatures);
         }
 
         // Balance values
@@ -812,25 +812,25 @@ void EngineMaster::process(const int iBufferSize) {
     m_pWorkerScheduler->runWorkers();
 }
 
-void EngineMaster::applyMainEffects(int bufferSize) {
+void EngineMixer::applyMainEffects(int bufferSize) {
     // Apply main effects
     if (m_pEngineEffectsManager) {
-        GroupFeatureState masterFeatures;
-        masterFeatures.has_gain = true;
-        masterFeatures.gain = m_pMainGain->get();
-        m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
-                m_masterHandle.handle(),
+        GroupFeatureState mainFeatures;
+        mainFeatures.has_gain = true;
+        mainFeatures.gain = m_pMainGain->get();
+        m_pEngineEffectsManager->processPostFaderInPlace(m_mainHandle.handle(),
+                m_mainHandle.handle(),
                 m_pMain,
                 bufferSize,
                 static_cast<int>(m_sampleRate.value()),
-                masterFeatures,
+                mainFeatures,
                 CSAMPLE_GAIN_ONE,
                 CSAMPLE_GAIN_ONE,
                 false);
     }
 }
 
-void EngineMaster::processHeadphones(
+void EngineMixer::processHeadphones(
         const CSAMPLE_GAIN mainMixGainInHeadphones,
         int iBufferSize) {
     // Add main mix to headphones
@@ -864,7 +864,7 @@ void EngineMaster::processHeadphones(
     m_headphoneGainOld = headphoneGain;
 }
 
-void EngineMaster::addChannel(EngineChannel* pChannel) {
+void EngineMixer::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannel->setChannelIndex(pChannelInfo->m_index);
     pChannelInfo->m_pChannel = pChannel;
@@ -901,7 +901,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-EngineChannel* EngineMaster::getChannel(const QString& group) {
+EngineChannel* EngineMixer::getChannel(const QString& group) {
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
@@ -911,25 +911,25 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
     return nullptr;
 }
 
-CSAMPLE_GAIN EngineMaster::getMainGain(int channelIndex) const {
+CSAMPLE_GAIN EngineMixer::getMainGain(int channelIndex) const {
     if (channelIndex >= 0 && channelIndex < m_channelMainGainCache.size()) {
         return m_channelMainGainCache[channelIndex].m_gain;
     }
     return CSAMPLE_GAIN_ZERO;
 }
 
-const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
+const CSAMPLE* EngineMixer::getDeckBuffer(unsigned int i) const {
     return getChannelBuffer(PlayerManager::groupForDeck(i));
 }
 
-const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
+const CSAMPLE* EngineMixer::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT) {
         return m_pOutputBusBuffers[i];
     }
     return nullptr;
 }
 
-const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
+const CSAMPLE* EngineMixer::getChannelBuffer(const QString& group) const {
     for (int i = 0; i < m_channels.size(); ++i) {
         const ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
@@ -939,7 +939,7 @@ const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
     return nullptr;
 }
 
-const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
+const CSAMPLE* EngineMixer::buffer(const AudioOutput& output) const {
     switch (output.getType()) {
     case AudioPathType::Main:
         return getMainBuffer();
@@ -964,7 +964,7 @@ const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
     }
 }
 
-void EngineMaster::onOutputConnected(const AudioOutput& output) {
+void EngineMixer::onOutputConnected(const AudioOutput& output) {
     switch (output.getType()) {
     case AudioPathType::Main:
         // overwrite config option if a main output is configured
@@ -992,7 +992,7 @@ void EngineMaster::onOutputConnected(const AudioOutput& output) {
     }
 }
 
-void EngineMaster::onOutputDisconnected(const AudioOutput& output) {
+void EngineMixer::onOutputDisconnected(const AudioOutput& output) {
     switch (output.getType()) {
     case AudioPathType::Main:
         // not used, because we need the main buffer for headphone mix
@@ -1018,7 +1018,7 @@ void EngineMaster::onOutputDisconnected(const AudioOutput& output) {
     }
 }
 
-void EngineMaster::onInputConnected(const AudioInput& input) {
+void EngineMixer::onInputConnected(const AudioInput& input) {
     switch (input.getType()) {
     case AudioPathType::Microphone:
         m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() + 1);
@@ -1037,7 +1037,7 @@ void EngineMaster::onInputConnected(const AudioInput& input) {
     }
 }
 
-void EngineMaster::onInputDisconnected(const AudioInput& input) {
+void EngineMixer::onInputDisconnected(const AudioInput& input) {
     switch (input.getType()) {
     case AudioPathType::Microphone:
         m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() - 1);
@@ -1056,7 +1056,7 @@ void EngineMaster::onInputDisconnected(const AudioInput& input) {
     }
 }
 
-void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
+void EngineMixer::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
     pSoundManager->registerInput(AudioInput(AudioPathType::RecordBroadcast, 0, 2),
             m_pEngineSideChain);
 
@@ -1069,6 +1069,6 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
     pSoundManager->registerOutput(AudioOutput(AudioPathType::RecordBroadcast, 0, 2), this);
 }
 
-bool EngineMaster::sidechainMixRequired() const {
+bool EngineMixer::sidechainMixRequired() const {
     return m_pEngineSideChain && !m_bExternalRecordBroadcastInputConnected;
 }

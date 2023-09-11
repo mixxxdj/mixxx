@@ -13,7 +13,7 @@
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
-    m_effectMasterOutputStr = tr("Main Output");
+    m_effectMainOutputStr = tr("Main Output");
     m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
@@ -894,8 +894,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 m_effectUnitStr.arg(iEffectUnitNumber));
 
         addControl(effectUnitGroup, "group_[Master]_enable",
-                assignString + m_effectMasterOutputStr, // in ComboBox
-                assignString + m_effectMasterOutputStr, // description below
+                assignString + m_effectMainOutputStr, // in ComboBox
+                assignString + m_effectMainOutputStr, // description below
                 effectUnitGroups,
                 false,
                 groupDescriptionPrefix);

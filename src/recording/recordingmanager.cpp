@@ -8,7 +8,7 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
@@ -17,7 +17,7 @@
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
-RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),

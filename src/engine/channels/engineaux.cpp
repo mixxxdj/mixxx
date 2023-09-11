@@ -21,9 +21,9 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* p
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    // by default Aux is disabled on the master and disabled on PFL. User
+    // by default Aux is disabled on the main and disabled on PFL. User
     // can over-ride by setting the "pfl" or "main_mix" controls.
-    // Skins can change that during initialisation, if the master control is not provided.
+    // Skins can change that during initialisation, if the main control is not provided.
     setMainMix(false);
 }
 
@@ -80,7 +80,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
-                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
+                    m_group.handle(), m_pEffectsManager->getMainHandle(), pOut, iBufferSize,
                     // TODO(jholthuis): Use mixxx::audio::SampleRate instead
                     static_cast<unsigned int>(m_sampleRate.get()));
         }

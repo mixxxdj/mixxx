@@ -38,7 +38,7 @@ bool isMixingEQ(EffectManifest* pManifest) {
 }
 
 bool isMainEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
+    return pManifest->isMainEQ();
 }
 } // anonymous namespace
 
