@@ -644,7 +644,7 @@
               **********************************************
               -->
               <Knob>
-                <TooltipId>master_gain</TooltipId>
+                <TooltipId>main_gain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>151,15</Pos>
@@ -879,7 +879,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>master_VuMeterL</TooltipId>
+                    <TooltipId>main_VuMeterL</TooltipId>
                     <PathVu>skin:/style/volume_display_master_over.png</PathVu>
                     <PathBack>skin:/style/volume_display_master.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
@@ -898,7 +898,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>master_VuMeterR</TooltipId>
+                    <TooltipId>main_VuMeterR</TooltipId>
                     <PathVu>skin:/style/volume_display_master_over.png</PathVu>
                     <PathBack>skin:/style/volume_display_master.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
@@ -935,7 +935,7 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorL</TooltipId>
+                <TooltipId>main_PeakIndicatorL</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_master.png</PathBack>
                 <Pos>122,57</Pos>
@@ -944,7 +944,7 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorR</TooltipId>
+                <TooltipId>main_PeakIndicatorR</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_master.png</PathBack>
                 <Pos>128,57</Pos>

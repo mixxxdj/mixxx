@@ -19,7 +19,7 @@ Description:
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <KnobComposed>
-            <TooltipId>master_gain</TooltipId>
+            <TooltipId>main_gain</TooltipId>
             <Size>26f,22f</Size>
             <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
             <BackPath>skin:../Tango/knobs_sliders/knob_bg_master.svg</BackPath>

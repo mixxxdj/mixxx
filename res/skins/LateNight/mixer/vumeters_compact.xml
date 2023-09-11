@@ -72,7 +72,7 @@
                 <Size>14f,96f</Size>
                 <Children>
                   <WidgetGroup>
-                    <!-- <TooltipId>master_VuMeter</TooltipId> -->
+                    <!-- <TooltipId>main_VuMeter</TooltipId> -->
                     <ObjectName>VuMasterCover</ObjectName>
                   </WidgetGroup>
                   <!-- Unfortnately we can load a Singleton only once,

@@ -46,7 +46,7 @@
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
                       <Template src="skin:../LateNight/controls/knob_with_label.xml">
-                        <SetVariable name="TooltipId">master_gain</SetVariable>
+                        <SetVariable name="TooltipId">main_gain</SetVariable>
                         <SetVariable name="Size">35f,30f</SetVariable>
                         <SetVariable name="KnobColor">orange</SetVariable>
                         <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
