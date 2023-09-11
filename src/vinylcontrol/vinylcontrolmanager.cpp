@@ -31,7 +31,7 @@ VinylControlManager::VinylControlManager(QObject* pParent,
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
         pSoundManager->registerInput(
-                AudioInput(AudioInput::VINYLCONTROL,
+                AudioInput(AudioPathType::VinylControl,
                         0,
                         mixxx::audio::ChannelCount::stereo(),
                         i),

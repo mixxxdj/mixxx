@@ -94,7 +94,7 @@ class EngineMaster : public QObject, public AudioSource {
     }
 
     // These are really only exposed for tests to use.
-    const CSAMPLE* getMasterBuffer() const;
+    const CSAMPLE* getMainBuffer() const;
     const CSAMPLE* getBoothBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
@@ -106,7 +106,7 @@ class EngineMaster : public QObject, public AudioSource {
         return m_pEngineSideChain;
     }
 
-    CSAMPLE_GAIN getMasterGain(int channelIndex) const;
+    CSAMPLE_GAIN getMainGain(int channelIndex) const;
 
     struct ChannelInfo {
         ChannelInfo(int index)
@@ -195,10 +195,10 @@ class EngineMaster : public QObject, public AudioSource {
         // These are out of order with how they are listed in DlgPrefSound for backwards
         // compatibility with Mixxx 2.0 user settings. In Mixxx 2.0, before the
         // booth output was added, this was a binary option without
-        // the MASTER_AND_BOOTH mode.
-        MASTER = 0,
-        DIRECT_MONITOR,
-        MASTER_AND_BOOTH
+        // the MainAndBooth mode.
+        Main = 0,
+        DirectMonitor,
+        MainAndBooth,
     };
 
     template<typename T, unsigned int CAPACITY>
@@ -246,11 +246,11 @@ class EngineMaster : public QObject, public AudioSource {
 
   protected:
     // The master buffer is protected so it can be accessed by test subclasses.
-    CSAMPLE* m_pMaster;
+    CSAMPLE* m_pMain;
 
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
-    ControlObject* m_pMasterEnabled;
+    ControlObject* m_pMainEnabled;
     ControlObject* m_pHeadphoneEnabled;
     ControlObject* m_pBoothEnabled;
 
@@ -263,7 +263,7 @@ class EngineMaster : public QObject, public AudioSource {
     void processChannels(int iBufferSize);
 
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
-    void applyMasterEffects(int iBufferSize);
+    void applyMainEffects(int bufferSize);
     void processHeadphones(
             const CSAMPLE_GAIN masterMixGainInHeadphones,
             int iBufferSize);
@@ -276,7 +276,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // The previous gain of each channel for each mixing output (master,
     // headphone, talkover).
-    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMasterGainCache;
+    QVarLengthArray<GainCache, kPreallocatedChannels> m_channelMainGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelHeadphoneGainCache;
     QVarLengthArray<GainCache, kPreallocatedChannels> m_channelTalkoverGainCache;
 
@@ -299,17 +299,17 @@ class EngineMaster : public QObject, public AudioSource {
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pEngineSync;
 
-    ControlObject* m_pMasterGain;
+    ControlObject* m_pMainGain;
     ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
-    ControlObject* m_pMasterSampleRate;
-    ControlObject* m_pMasterLatency;
+    ControlObject* m_pMainSampleRate;
+    ControlObject* m_pMainLatency;
     ControlObject* m_pAudioLatencyOverloadCount;
     ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
-    EngineDelay* m_pMasterDelay;
+    EngineDelay* m_pMainDelay;
     EngineDelay* m_pHeadDelay;
     EngineDelay* m_pBoothDelay;
     EngineDelay* m_pLatencyCompensationDelay;
@@ -329,10 +329,10 @@ class EngineMaster : public QObject, public AudioSource {
 
     PflGainCalculator m_headphoneGain;
     TalkoverGainCalculator m_talkoverGain;
-    OrientationVolumeGainCalculator m_masterGain;
-    CSAMPLE_GAIN m_masterGainOld;
+    OrientationVolumeGainCalculator m_mainGain;
+    CSAMPLE_GAIN m_mainGainOld;
     CSAMPLE_GAIN m_boothGainOld;
-    CSAMPLE_GAIN m_headphoneMasterGainOld;
+    CSAMPLE_GAIN m_headphoneMainGainOld;
     CSAMPLE_GAIN m_headphoneGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
@@ -345,7 +345,7 @@ class EngineMaster : public QObject, public AudioSource {
     const ChannelHandleAndGroup m_busCrossfaderRightHandle;
 
     // Mix two Mono channels. This is useful for outdoor gigs
-    ControlObject* m_pMasterMonoMixdown;
+    ControlObject* m_pMainMonoMixdown;
     ControlObject* m_pMicMonitorMode;
 
     volatile bool m_bBusOutputConnected[3];

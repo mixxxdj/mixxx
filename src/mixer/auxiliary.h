@@ -26,9 +26,9 @@ class Auxiliary : public BasePlayer {
     void noAuxiliaryInputConfigured();
 
   private slots:
-    void slotAuxMasterEnabled(double v);
+    void slotAuxMainMixEnabled(double v);
 
   private:
     parented_ptr<ControlProxy> m_pInputConfigured;
-    parented_ptr<ControlProxy> m_pAuxMasterEnabled;
+    parented_ptr<ControlProxy> m_pAuxMainMixEnabled;
 };

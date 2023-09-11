@@ -131,7 +131,7 @@ void EngineDeck::receiveBuffer(
 }
 
 void EngineDeck::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
@@ -141,7 +141,7 @@ void EngineDeck::onInputConfigured(const AudioInput& input) {
 }
 
 void EngineDeck::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;

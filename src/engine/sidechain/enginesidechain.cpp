@@ -66,7 +66,7 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
 void EngineSideChain::receiveBuffer(const AudioInput& input,
         const CSAMPLE* pBuffer,
         unsigned int iFrames) {
-    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
+    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioPathType::RecordBroadcast) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;
     }

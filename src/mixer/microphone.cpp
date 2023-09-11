@@ -19,7 +19,7 @@ Microphone::Microphone(PlayerManager* pParent,
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE,
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
             0,
             mixxx::audio::ChannelCount::stereo(),
             index);

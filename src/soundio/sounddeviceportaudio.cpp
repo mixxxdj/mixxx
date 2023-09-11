@@ -91,7 +91,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
-          m_masterAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
@@ -1088,12 +1088,12 @@ void SoundDevicePortAudio::updateAudioLatencyUsage(
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_masterAudioLatencyUsage.set(
+        m_mainAudioLatencyUsage.set(
                 secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage
-        //         << m_pMasterAudioLatencyUsage->get();
+        // qDebug() << m_mainAudioLatencyUsage
+        //          << m_mainAudioLatencyUsage->get();
     }
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();

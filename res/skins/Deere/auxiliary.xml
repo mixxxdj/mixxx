@@ -108,7 +108,7 @@
                     <SetVariable name="SizePolicy">me,f</SetVariable>
                     <SetVariable name="state_0_text">Play</SetVariable>
                     <SetVariable name="state_1_text">Play</SetVariable>
-                    <SetVariable name="left_connection_control"><Variable name="group"/>,master</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
                   </Template>
 
                   <Template src="skin:left_2state_button.xml">
