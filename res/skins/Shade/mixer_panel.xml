@@ -880,8 +880,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>main_VuMeterL</TooltipId>
-                    <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_master.png</PathBack>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -899,8 +899,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>main_VuMeterR</TooltipId>
-                    <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_master.png</PathBack>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -936,8 +936,8 @@
               </StatusLight>
               <StatusLight>
                 <TooltipId>main_PeakIndicatorL</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
@@ -945,8 +945,8 @@
               </StatusLight>
               <StatusLight>
                 <TooltipId>main_PeakIndicatorR</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorR</ConfigKey>

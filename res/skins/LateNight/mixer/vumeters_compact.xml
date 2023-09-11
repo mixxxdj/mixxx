@@ -77,7 +77,7 @@
                   </WidgetGroup>
                   <!-- Unfortnately we can load a Singleton only once,
                       so we need a separate vu meter instance -->
-                  <Template src="skin:../LateNight/mixer/vumeter_master.xml"/>
+                  <Template src="skin:../LateNight/mixer/vumeter_main.xml"/>
                 </Children>
               </WidgetGroup>
             </Children>

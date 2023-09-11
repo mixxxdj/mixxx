@@ -107,7 +107,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../LateNight/mixer/vumeter_master.xml">
+          <Template src="skin:../LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">dark</SetVariable>
           </Template>
         </Children>
@@ -121,7 +121,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../LateNight/mixer/vumeter_master.xml">
+          <Template src="skin:../LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">light</SetVariable>
           </Template>
         </Children>

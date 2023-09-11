@@ -69,7 +69,7 @@ Description:
               </Label>
 
               <!-- Master & Headphone mixer -->
-              <Template src="skin:../Tango/mixer/mixer_master.xml"/>
+              <Template src="skin:../Tango/mixer/mixer_main.xml"/>
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>

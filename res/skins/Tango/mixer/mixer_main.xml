@@ -22,7 +22,7 @@ Description:
             <TooltipId>main_gain</TooltipId>
             <Size>26f,22f</Size>
             <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
-            <BackPath>skin:../Tango/knobs_sliders/knob_bg_master.svg</BackPath>
+            <BackPath>skin:../Tango/knobs_sliders/knob_bg_main.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -82,10 +82,10 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">3</SetVariable>
               </Template>
             </Children>
@@ -96,10 +96,10 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">4</SetVariable>
               </Template>
             </Children>

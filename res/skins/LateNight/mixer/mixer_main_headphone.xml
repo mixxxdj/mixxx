@@ -1,8 +1,8 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
   <SetVariable name="Group">[Master]</SetVariable>
-  <SetVariable name="KnobBg">master</SetVariable>
-  <SetVariable name="KnobIndicator">master</SetVariable>
+  <SetVariable name="KnobBg">main</SetVariable>
+  <SetVariable name="KnobIndicator">main</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
   <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
 
@@ -125,8 +125,8 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../LateNight/fx/assign_buttons_master.xml">
-                    <SetVariable name="Type">master</SetVariable>
+                  <Template src="skin:../LateNight/fx/assign_buttons_main.xml">
+                    <SetVariable name="Type">main</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -269,7 +269,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../LateNight/fx/assign_buttons_master.xml">
+                  <Template src="skin:../LateNight/fx/assign_buttons_main.xml">
                     <SetVariable name="Group">[Headphone]</SetVariable>
                     <SetVariable name="Type">headphones</SetVariable>
                   </Template>

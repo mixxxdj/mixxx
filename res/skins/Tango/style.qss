@@ -287,10 +287,10 @@ WWidgetGroup {
   }
 
 #MasterHeadMixerLabel {
-  image: url(skin:/../Tango/buttons/btn_master_head_mixer.svg) no-repeat center center;
+  image: url(skin:/../Tango/buttons/btn_main_head_mixer.svg) no-repeat center center;
   }
   #MasterMixerLabel {
-    image: url(skin:/../Tango/buttons/btn_master.svg) no-repeat center center;
+    image: url(skin:/../Tango/buttons/btn_main.svg) no-repeat center center;
   }
   #HeadphoneMixerLabel {
     image: url(skin:/../Tango/buttons/btn_head.svg) no-repeat center center;
@@ -1501,7 +1501,7 @@ decks, samplers, mic, aux, fx */
   }
 
 #VUMeterLabelMaster {
-  image: url(skin:/../Tango/buttons/btn_master_vu_label.svg) no-repeat center center;
+  image: url(skin:/../Tango/buttons/btn_main_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck1 {
   image: url(skin:/../Tango/buttons/btn_deck1_vu_label.svg) no-repeat center center;

@@ -5,7 +5,7 @@
   <SingletonDefinition>
     <ObjectName>StereoVUMeterMaster</ObjectName>
     <Children>
-      <Template src="skin:vumeter_master.xml"/>
+      <Template src="skin:vumeter_main.xml"/>
     </Children>
   </SingletonDefinition>
 
