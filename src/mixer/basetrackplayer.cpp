@@ -44,7 +44,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup,
-        bool defaultMainMixMix,
+        bool defaultMainMix,
         bool defaultHeadphones,
         bool primaryDeck)
         : BaseTrackPlayer(pParent, handleGroup.name()),
@@ -72,7 +72,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     pMixingEngine->addChannel(m_pChannel);
 
     // Set the routing option defaults for the main and headphone mixes.
-    m_pChannel->setMainMix(defaultMainMixMix);
+    m_pChannel->setMainMix(defaultMainMix);
     m_pChannel->setPfl(defaultHeadphones);
 
     // Connect our signals and slots with the EngineBuffer's signals and
