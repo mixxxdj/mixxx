@@ -9,7 +9,7 @@
 // Most of the groundwork for this has been done here:
 //
 //      https://github.com/Holzhaus/serato-tags
-//      https://github.com/Holzhaus/serato-tags/blob/master/scripts/database_v2.py
+//      https://github.com/Holzhaus/serato-tags/blob/main/scripts/database_v2.py
 
 #include <QFuture>
 #include <QFutureWatcher>
