@@ -6,7 +6,7 @@
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -95,7 +95,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
+        EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),

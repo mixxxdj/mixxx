@@ -225,16 +225,16 @@ TEST_F(EngineBufferE2ETest, BasicProcessingTest) {
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "BasicProcessingTestPlay");
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "BasicProcessingTestPlaying");
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "BasicProcessingTestPause");
 }
@@ -249,7 +249,7 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), -1.1);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "ScratchTestMaster");
 }
@@ -264,7 +264,7 @@ TEST_F(EngineBufferE2ETest, ScratchTestStart) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "scratch2"), 0.5);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "ScratchTestStart");
 }
@@ -276,7 +276,7 @@ TEST_F(EngineBufferE2ETest, ReverseTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "ReverseTest");
 }
@@ -292,20 +292,20 @@ TEST_F(EngineBufferE2ETest, DISABLED_SoundTouchToggleTest) {
    // Test transition from vinyl to keylock
    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "SoundTouchTest");
    // Test transition from keylock to vinyl due to slow speed.
    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "SoundTouchTestSlow");
    // Test transition back to keylock due to regular speed.
    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "SoundTouchTestRegular");
 }
@@ -321,20 +321,20 @@ TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
    // Test transition from vinyl to keylock
    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "RubberbandTest");
    // Test transition from keylock to vinyl due to slow speed.
    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "RubberbandTestSlow");
    // Test transition back to keylock due to regular speed.
    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
    ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
            kProcessBufferSize,
            "RubberbandTestRegular");
 }
@@ -357,7 +357,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_KeylockReverseTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "reverse"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "KeylockReverseTest");
 }
@@ -370,7 +370,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             mixxx::audio::FramePos(500), EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "SeekTest");
 }
@@ -410,7 +410,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndStopTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandstop"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "CueGotoAndStopTest");
 }
@@ -425,7 +425,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "CueGotoAndPlayTest");
 }
@@ -437,7 +437,7 @@ TEST_F(EngineBufferE2ETest, CueStartPlayTest) {
     ProcessBuffer();
     ControlObject::set(ConfigKey(m_sGroup1, "start_play"), 1.0);
     ProcessBuffer();
-    assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
             "StartPlayTest");
 }

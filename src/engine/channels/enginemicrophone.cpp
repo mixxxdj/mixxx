@@ -81,7 +81,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
-                    m_pEffectsManager->getMasterHandle(),
+                    m_pEffectsManager->getMainHandle(),
                     pOut,
                     iBufferSize,
                     mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));

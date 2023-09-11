@@ -10,7 +10,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "moc_soundmanager.cpp"
@@ -44,8 +44,8 @@ constexpr unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-        EngineMaster* pMaster)
-        : m_pMaster(pMaster),
+        EngineMixer* pEngineMixer)
+        : m_pEngineMixer(pEngineMixer),
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
@@ -174,7 +174,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
             for (auto it = m_registeredDestinations.constFind(in);
                  it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
-                m_pMaster->onInputDisconnected(in);
+                m_pEngineMixer->onInputDisconnected(in);
             }
         }
         for (const auto& out: pDevice->outputs()) {
@@ -348,7 +348,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
     // Instead of clearing m_pClkRefDevice and then assigning it directly,
     // compute the new one then atomically hand off below.
-    SoundDevicePointer pNewMasterClockRef;
+    SoundDevicePointer pNewMainClockRef;
 
     m_mainAudioLatencyOverloadCount.set(0);
 
@@ -385,7 +385,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                     it != m_registeredDestinations.end() && it.key() == in;
                     ++it) {
                 it.value()->onInputConfigured(in);
-                m_pMaster->onInputConnected(in);
+                m_pEngineMixer->onInputConnected(in);
             }
         }
         QList<AudioOutput> outputs =
@@ -399,7 +399,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
                     0);
             outputs.append(out);
             if (m_config.getForceNetworkClock() && !jackApiUsed()) {
-                pNewMasterClockRef = pDevice;
+                pNewMainClockRef = pDevice;
             }
         }
 
@@ -408,7 +408,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
                 haveOutput = true;
             }
-            // following keeps us from asking for a channel buffer EngineMaster
+            // following keeps us from asking for a channel buffer EngineMixer
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
             if (pBuffer == nullptr) {
@@ -424,11 +424,11 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
             if (!m_config.getForceNetworkClock() || jackApiUsed()) {
                 if (out.getType() == AudioPathType::Main) {
-                    pNewMasterClockRef = pDevice;
+                    pNewMainClockRef = pDevice;
                 } else if ((out.getType() == AudioPathType::Deck ||
                                    out.getType() == AudioPathType::Bus) &&
-                        !pNewMasterClockRef) {
-                    pNewMasterClockRef = pDevice;
+                        !pNewMainClockRef) {
+                    pNewMainClockRef = pDevice;
                 }
             }
 
@@ -454,9 +454,9 @@ SoundDeviceStatus SoundManager::setupDevices() {
 
         // If we have not yet set a clock source then we use the first
         // output pDevice
-        if (pNewMasterClockRef.isNull() &&
+        if (pNewMainClockRef.isNull() &&
                 (!haveOutput || mode.isOutput)) {
-            pNewMasterClockRef = pDevice;
+            pNewMainClockRef = pDevice;
             qWarning() << "Output sound device clock reference not set! Using"
                        << pDevice->getDisplayName();
         }
@@ -467,7 +467,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
         if (CmdlineArgs::Instance().getSafeMode() && syncBuffers == 0) {
             syncBuffers = 2;
         }
-        status = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
+        status = pDevice->open(pNewMainClockRef == pDevice, syncBuffers);
         if (status != SoundDeviceStatus::Ok) {
             goto closeAndError;
         }
@@ -480,8 +480,8 @@ SoundDeviceStatus SoundManager::setupDevices() {
         }
     }
 
-    if (pNewMasterClockRef) {
-        qDebug() << "Using" << pNewMasterClockRef->getDisplayName()
+    if (pNewMainClockRef) {
+        qDebug() << "Using" << pNewMainClockRef->getDisplayName()
                  << "as output sound device clock reference";
     } else {
         qWarning() << "No output devices opened, no clock reference device set";
@@ -589,9 +589,9 @@ void SoundManager::checkConfig() {
 }
 
 void SoundManager::onDeviceOutputCallback(const SINT iFramesPerBuffer) {
-    // Produce a block of samples for output. EngineMaster expects stereo
+    // Produce a block of samples for output. EngineMixer expects stereo
     // samples so multiply iFramesPerBuffer by 2.
-    m_pMaster->process(iFramesPerBuffer * 2);
+    m_pEngineMixer->process(iFramesPerBuffer * 2);
 }
 
 void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,

@@ -1,11 +1,11 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"
 #include "util/defs.h"
@@ -21,8 +21,12 @@ class EngineChannelMock : public EngineChannel {
   public:
     EngineChannelMock(const QString& group,
             ChannelOrientation defaultOrientation,
-            EngineMaster* pMaster)
-            : EngineChannel(pMaster->registerChannelGroup(group), defaultOrientation, nullptr, /*isTalkoverChannel*/ false, /*isPrimarydeck*/ true) {
+            EngineMixer* pEngineMixer)
+            : EngineChannel(pEngineMixer->registerChannelGroup(group),
+                      defaultOrientation,
+                      nullptr,
+                      /*isTalkoverChannel*/ false,
+                      /*isPrimarydeck*/ true) {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
@@ -39,29 +43,30 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD1(postProcess, void(const int iBufferSize));
 };
 
-class EngineMasterTest : public BaseSignalPathTest {
+class EngineMixerTest : public BaseSignalPathTest {
   protected:
     void assertMainBufferMatchesGolden(const QString& testName) {
-        assertBufferMatchesReference(m_pEngineMaster->getMainBuffer(),
+        assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
                 MAX_BUFFER_LEN,
                 QString("%1-main").arg(testName));
     };
 
     void assertHeadphoneBufferMatchesGolden(const QString& testName) {
-          assertBufferMatchesReference(m_pEngineMaster->getHeadphoneBuffer(), MAX_BUFFER_LEN,
-              QString("%1-headphone").arg(testName));
+        assertBufferMatchesReference(m_pEngineMixer->getHeadphoneBuffer(),
+                MAX_BUFFER_LEN,
+                QString("%1-headphone").arg(testName));
     };
 };
 
-TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
+TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
     const QString testName = "SingleChannelOutputWorks";
 
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
@@ -88,7 +93,7 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -97,15 +102,15 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     assertHeadphoneBufferMatchesGolden(testName);
 }
 
-TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
+TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
     const QString testName = "SingleChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, MAX_BUFFER_LEN);
 
@@ -132,7 +137,7 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output is empty.
     assertMainBufferMatchesGolden(testName);
@@ -141,19 +146,19 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     assertHeadphoneBufferMatchesGolden(testName);
 }
 
-TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
+TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
     const QString testName = "TwoChannelOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel1);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel2);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -203,7 +208,7 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -212,19 +217,19 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     assertHeadphoneBufferMatchesGolden(testName);
 }
 
-TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
+TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
     const QString testName = "TwoChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel1);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel2);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel2);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -274,7 +279,7 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -283,23 +288,23 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     assertHeadphoneBufferMatchesGolden(testName);
 }
 
-TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
+TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
     const QString testName = "ThreeChannelOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel1);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel2);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel3);
+            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -371,7 +376,7 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -380,23 +385,23 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     assertHeadphoneBufferMatchesGolden(testName);
 }
 
-TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
+TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
     const QString testName = "ThreeChannelPFLOutputWorks";
 
     EngineChannelMock* pChannel1 = new EngineChannelMock(
-            "[Test1]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel1);
+            "[Test1]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel1);
     EngineChannelMock* pChannel2 = new EngineChannelMock(
-            "[Test2]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel2);
+            "[Test2]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel2);
     EngineChannelMock* pChannel3 = new EngineChannelMock(
-            "[Test3]", EngineChannel::CENTER, m_pEngineMaster);
-    m_pEngineMaster->addChannel(pChannel3);
+            "[Test3]", EngineChannel::CENTER, m_pEngineMixer);
+    m_pEngineMixer->addChannel(pChannel3);
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
-    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test1]"));
-    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test2]"));
-    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMaster->getChannelBuffer("[Test3]"));
+    CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
+    CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
+    CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
 
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, MAX_BUFFER_LEN);
@@ -468,7 +473,7 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMaster->process(MAX_BUFFER_LEN);
+    m_pEngineMixer->process(MAX_BUFFER_LEN);
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);

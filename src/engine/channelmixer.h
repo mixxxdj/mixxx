@@ -4,7 +4,7 @@
 
 #include "audio/types.h"
 #include "effects/engineeffectsmanager.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "util/types.h"
 
 class ChannelMixer {
@@ -13,10 +13,10 @@ class ChannelMixer {
     // channel buffers is done after copying to a temporary buffer, then they are mixed
     // to make the output buffer.
     static void applyEffectsAndMixChannels(
-            const EngineMaster::GainCalculator& gainCalculator,
-            const QVarLengthArray<EngineMaster::ChannelInfo*,
+            const EngineMixer::GainCalculator& gainCalculator,
+            const QVarLengthArray<EngineMixer::ChannelInfo*,
                     kPreallocatedChannels>& activeChannels,
-            QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
+            QVarLengthArray<EngineMixer::GainCache, kPreallocatedChannels>*
                     channelGainCache,
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,
@@ -25,10 +25,10 @@ class ChannelMixer {
             EngineEffectsManager* pEngineEffectsManager);
     // This does modify the input channel buffers, then mixes them to make the output buffer.
     static void applyEffectsInPlaceAndMixChannels(
-            const EngineMaster::GainCalculator& gainCalculator,
-            const QVarLengthArray<EngineMaster::ChannelInfo*,
+            const EngineMixer::GainCalculator& gainCalculator,
+            const QVarLengthArray<EngineMixer::ChannelInfo*,
                     kPreallocatedChannels>& activeChannels,
-            QVarLengthArray<EngineMaster::GainCache, kPreallocatedChannels>*
+            QVarLengthArray<EngineMixer::GainCache, kPreallocatedChannels>*
                     channelGainCache,
             CSAMPLE* pOutput,
             const ChannelHandle& outputHandle,

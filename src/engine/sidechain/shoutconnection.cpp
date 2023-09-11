@@ -405,7 +405,7 @@ void ShoutConnection::updateFromPreferences() {
     }
 
 #ifdef __OPUS__
-    if (m_format_is_opus && mainSamplerate != EncoderOpus::getMasterSamplerate()) {
+    if (m_format_is_opus && mainSamplerate != EncoderOpus::getMainSampleRate()) {
         errorDialog(
             EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported sample rate")
