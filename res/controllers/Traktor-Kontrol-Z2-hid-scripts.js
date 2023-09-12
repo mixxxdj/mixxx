@@ -21,7 +21,6 @@ const kLedBright = 0x7F;
 class DeckClass {
     /**
      * Creates an instance of DeckClass.
-     *
      * @param {TraktorZ2Class} parent
      * @param {number} deckNumber
      * @param {string} group
@@ -110,18 +109,18 @@ class DeckClass {
                 engine.setValue(
                     sideChannel[chIdx], "intro_start" + action, field.value);
             } else
-            if (padNumber === 2) {
-                engine.setValue(
-                    sideChannel[chIdx], "intro_end" + action, field.value);
-            } else
-            if (padNumber === 3) {
-                engine.setValue(
-                    sideChannel[chIdx], "outro_start" + action, field.value);
-            } else
-            if (padNumber === 4) {
-                engine.setValue(
-                    sideChannel[chIdx], "outro_end" + action, field.value);
-            }
+                if (padNumber === 2) {
+                    engine.setValue(
+                        sideChannel[chIdx], "intro_end" + action, field.value);
+                } else
+                    if (padNumber === 3) {
+                        engine.setValue(
+                            sideChannel[chIdx], "outro_start" + action, field.value);
+                    } else
+                        if (padNumber === 4) {
+                            engine.setValue(
+                                sideChannel[chIdx], "outro_end" + action, field.value);
+                        }
         } else {
             console.log("setting " + "hotcue_" + padNumber + action + " " + field.value);
             engine.setValue(
@@ -247,7 +246,6 @@ class DeckClass {
      * defineButton2 allows us to configure input buttons for the two main decks of the 2+2 deck
      * mixer layout, depending on which is appropriate.  This avoids extra logic in the function
      * where we define all the magic numbers.
-     *
      * @param hidReport
      * @param name
      * @param deck1Offset
@@ -273,7 +271,6 @@ class DeckClass {
      * defineLED2 allows us to configure output LEDs for the two main decks of the 2+2 deck mixer
      * layout, depending on which is appropriate.  This avoids extra logic in the function where we
      * define all the magic numbers.
-     *
      * @param hidReport
      * @param name
      * @param deck1Offset
@@ -299,7 +296,6 @@ class DeckClass {
      * defineLED2 allows us to configure output LEDs for all 4 decks of the 2+2 deck mixer layout,
      * depending on which is appropriate.  This avoids extra logic in the function where we define
      * all the magic numbers.
-     *
      * @param hidReport
      * @param name
      * @param deck1Offset
@@ -1735,7 +1731,6 @@ class TraktorZ2Class {
 
     /**
      basicOutputHandler drives lights that only have one color.
-     *
      * @param value
      * @param group
      * @param key
