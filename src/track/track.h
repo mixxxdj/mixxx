@@ -81,7 +81,7 @@ class Track : public QObject {
     mixxx::FileInfo getFileInfo() const {
         // Copying mixxx::FileInfo based on QFileInfo is thread-safe due to implicit sharing,
         // i.e. no locking needed.
-        static_assert(sizeof(QSharedDataPointer<int>) == sizeof(mixxx::FileInfo));
+        static_assert(mixxx::FileInfo::isQFileInfo());
         return m_fileAccess.info();
     }
 
