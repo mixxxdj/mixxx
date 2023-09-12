@@ -37,8 +37,8 @@
   -->
     <attributes>
       <!-- Set skin defaults. -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[Main],num_decks">4</attribute>
+      <attribute config_key="[Main],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
@@ -72,7 +72,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
+      <attribute persist="true" config_key="[Main],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -92,26 +92,26 @@
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 
       <!-- Library -->
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Main],maximize_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
@@ -328,7 +328,7 @@
               <SizePolicy>min,me</SizePolicy>
               <Children>
                 <Template src="skin:../Tango/mixer/vumeter_single.xml">
-                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="group">[Main]</SetVariable>
                 </Template>
                 <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
                 <WidgetGroup>
@@ -401,7 +401,7 @@
                 <Template src="skin:../Tango/topbar.xml"/>
 
                 <!-- regular / maximized library -->
-                <WidgetStack currentpage="[Master],maximize_library">
+                <WidgetStack currentpage="[Main],maximize_library">
                   <Children>
                     <!-- regular library
                         [stacked  waveforms]
@@ -415,7 +415,7 @@
                       <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Connection>
-                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <ConfigKey>[Main],maximize_library</ConfigKey>
                         <Transform><Not/></Transform>
                         <BindProperty>visible</BindProperty>
                       </Connection>
@@ -503,7 +503,7 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <Connection>
-                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <ConfigKey>[Main],maximize_library</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                       <Children>

@@ -2475,7 +2475,7 @@
             </control>
             <!-- Master stuff.-->
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>gain</key>
                 <description>Main knob.</description>
                 <status>0xB0</status>
@@ -2485,7 +2485,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader.</description>
                 <status>0xB0</status>
@@ -2495,7 +2495,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>PHONES MIX knob.</description>
                 <status>0xB0</status>
@@ -2505,7 +2505,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <description>PHONES VOLUME knob.</description>
                 <status>0xB0</status>

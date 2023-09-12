@@ -25,6 +25,11 @@ QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> s_qCOHash
 QHash<ConfigKey, ConfigKey> s_qCOAliasHash
         GUARDED_BY(s_qCOHashMutex);
 
+/// Hash of aliases between group names. Solely used for looking up the first
+/// alias associated with a name when adding a new control.
+QHash<QString, QString> s_qCOGroupAliasHash
+        GUARDED_BY(s_qCOHashMutex);
+
 /// is used instead of a nullptr, helps to omit null checks everywhere
 QWeakPointer<ControlDoublePrivate> s_pDefaultCO;
 } // namespace
@@ -126,6 +131,32 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 }
 
 // static
+void ControlDoublePrivate::insertGroupAlias(
+        const QString& aliasGroup, const QString& originalGroup) {
+    MMutexLocker locker(&s_qCOHashMutex);
+
+    // Check if there are any pre-existing control with the group that we want
+    // to add an alias for and control aliases for them.
+    for (auto it = s_qCOHash.cbegin(), end = s_qCOHash.cend(); it != end; ++it) {
+        const auto originalKey = it.key();
+        if (originalKey.group != originalGroup) {
+            continue;
+        }
+
+        QSharedPointer<ControlDoublePrivate> pControl = it.value();
+        if (pControl.isNull()) {
+            continue;
+        }
+
+        const auto aliasKey = ConfigKey(aliasGroup, originalKey.item);
+        s_qCOAliasHash.insert(originalKey, aliasKey);
+        s_qCOHash.insert(aliasKey, pControl);
+    }
+
+    s_qCOGroupAliasHash.insert(originalGroup, aliasGroup);
+}
+
+// static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key,
         ControlFlags flags,
@@ -175,9 +206,22 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
                         bTrack,
                         bPersist,
                         defaultValue));
-        const MMutexLocker locker(&s_qCOHashMutex);
+        s_qCOHashMutex.lock();
         //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
         s_qCOHash.insert(key, pControl);
+
+        // Check if the control's group is aliased. If so, add a corresponding
+        // alias for this control.
+        auto it = s_qCOGroupAliasHash.constFind(key.group);
+        if (it != s_qCOGroupAliasHash.constEnd()) {
+            QString aliasGroup = it.value();
+            auto aliasKey = ConfigKey(aliasGroup, key.item);
+            s_qCOHashMutex.unlock();
+            insertAlias(aliasKey, key);
+        } else {
+            s_qCOHashMutex.unlock();
+        }
+
         return pControl;
     }
 
@@ -243,6 +287,18 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
     MMutexLocker locker(&s_qCOHashMutex);
     // lock thread-unsafe copy constructors of QHash
     return s_qCOAliasHash;
+}
+
+// static
+QString ControlDoublePrivate::getGroupAlias(const QString& group) {
+    MMutexLocker locker(&s_qCOHashMutex);
+
+    auto it = s_qCOGroupAliasHash.constFind(group);
+    if (it != s_qCOGroupAliasHash.constEnd()) {
+        return it.value();
+    }
+
+    return QString();
 }
 
 void ControlDoublePrivate::deleteCreatorCO() {

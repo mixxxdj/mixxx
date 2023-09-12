@@ -9,31 +9,31 @@
   <controller id="M-Audio Xsession pro" port="Port">
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0x11</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>balance</key>
         <status>0xB0</status>
         <midino>0x20</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>volume</key>
         <status>0xB0</status>
         <midino>0x21</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headVolume</key>
         <status>0xB0</status>
         <midino>0x1a</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headMix</key>
         <status>0xB0</status>
         <midino>0x19</midino>

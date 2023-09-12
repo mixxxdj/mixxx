@@ -19,7 +19,7 @@ Description:
       </Label>
     </Children>
     <Connection>
-      <ConfigKey>[Master],headEnabled</ConfigKey>
+      <ConfigKey>[Main],headEnabled</ConfigKey>
       <BindProperty>visible</BindProperty>
       <Transform><Not/></Transform>
     </Connection>

@@ -805,7 +805,7 @@ var AutoCut = function (deckNum) {
 AutoCut.prototype.On = function() {
     if (!this.enabled) {
         this.enabled = true;
-        engine.softTakeover("[Master]", "crossfader", false);
+        engine.softTakeover("[Main]", "crossfader", false);
     }
 };
 
@@ -821,15 +821,15 @@ AutoCut.prototype.FaderCut = function(jogValue) {
         if (this.deckNum == 1) {
             direction = -direction;
         } // else direction is of the good sign
-        engine.setValue('[Master]', 'crossfader', direction);
+        engine.setValue('[Main]', 'crossfader', direction);
     }
 };
 
 AutoCut.prototype.Off = function() {
     if (this.enabled) {
         this.enabled = false;
-        engine.setValue('[Master]', 'crossfader', 0);
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.setValue('[Main]', 'crossfader', 0);
+        engine.softTakeover("[Main]", "crossfader", true);
     }
 };
 
@@ -1655,18 +1655,18 @@ ReloopBeatpad.init = function(id, debug) {
     ReloopBeatpad.initobjects();
 
     // Set soft-takeover for all Sampler volumes
-    for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
+    for (i = engine.getValue("[Main]", "num_samplers"); i >= 1; i--) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
+    for (i = engine.getValue("[Main]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "volume", true);
         engine.softTakeover("[Channel" + i + "]", "filterHigh", true);
         engine.softTakeover("[Channel" + i + "]", "filterMid", true);
         engine.softTakeover("[Channel" + i + "]", "filterLow", true);
     }
 
-    engine.softTakeover("[Master]", "crossfader", true);
+    engine.softTakeover("[Main]", "crossfader", true);
 
     for (i = 1; i <= 4; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit" + i + "]", "super1", true);

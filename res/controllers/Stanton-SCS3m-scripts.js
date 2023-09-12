@@ -756,7 +756,7 @@ SCS3M.Agent = function(device) {
                 var softbutton = part.touches[tnr];
                 var fxchannel = channel;
                 if (master.engaged()) {
-                    fxchannel = either('[Headphone]', '[Master]');
+                    fxchannel = either('[Headphone]', '[Main]');
                 }
                 var effectunit = '[EffectRack1_EffectUnit' + (tnr + 1) + ']';
                 var effectunit_enable = 'group_' + fxchannel + '_enable';
@@ -869,7 +869,7 @@ SCS3M.Agent = function(device) {
         }
 
         // Light the logo and let it go out to signal an overload
-        watch("[Master]", 'audio_latency_overload', binarylight(
+        watch("[Main]", 'audio_latency_overload', binarylight(
             device.logo.on,
             device.logo.off
         ));
@@ -882,34 +882,34 @@ SCS3M.Agent = function(device) {
         expect(device.master.release, repatch(master.cancel));
         if (master.engaged()) {
             modeset(device.left.pitch.mode.absolute);
-            watch("[Master]", "headMix", patch(device.left.pitch.meter.centerbar));
+            watch("[Main]", "headMix", patch(device.left.pitch.meter.centerbar));
             expect(device.left.pitch.slide,
-                eqheld.left.engaged() ? reset('[Master]', 'headMix') : set('[Master]', 'headMix')
+                eqheld.left.engaged() ? reset('[Main]', 'headMix') : set('[Main]', 'headMix')
             );
 
             modeset(device.right.pitch.mode.absolute);
-            watch("[Master]", "balance", patch(device.right.pitch.meter.centerbar));
+            watch("[Main]", "balance", patch(device.right.pitch.meter.centerbar));
             expect(device.right.pitch.slide,
-                eqheld.right.engaged() ? reset('[Master]', 'balance') : set('[Master]', 'balance')
+                eqheld.right.engaged() ? reset('[Main]', 'balance') : set('[Main]', 'balance')
             );
 
             modeset(device.left.gain.mode.relative);
-            watch("[Master]", "headVolume", patch(device.left.gain.meter.centerbar));
-            expect(device.left.gain.slide, budge('[Master]', 'headVolume'));
+            watch("[Main]", "headVolume", patch(device.left.gain.meter.centerbar));
+            expect(device.left.gain.slide, budge('[Main]', 'headVolume'));
 
             modeset(device.right.gain.mode.relative);
-            watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
-            expect(device.right.gain.slide, budge('[Master]', 'volume'));
+            watch("[Main]", "volume", patch(device.right.gain.meter.centerbar));
+            expect(device.right.gain.slide, budge('[Main]', 'volume'));
 
-            watch("[Master]", "VuMeterL", vupatch(device.left.meter.bar));
-            watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
+            watch("[Main]", "VuMeterL", vupatch(device.left.meter.bar));
+            watch("[Main]", "VuMeterR", vupatch(device.right.meter.bar));
         }
 
         if (deck.left.held() || deck.right.held()) {
             // Needledrop handled in Side()
         } else {
-            expect(device.crossfader.slide, set("[Master]", "crossfader"));
-            watch("[Master]", "crossfader", patch(device.crossfader.meter.centerbar));
+            expect(device.crossfader.slide, set("[Main]", "crossfader"));
+            watch("[Main]", "crossfader", patch(device.crossfader.meter.centerbar));
         }
 
         // Communicate currently selected channel of each deck so SCS3d can read it

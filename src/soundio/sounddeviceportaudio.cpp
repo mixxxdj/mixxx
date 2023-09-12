@@ -90,7 +90,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
-          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_mainAudioLatencyUsage("[Main]", "audio_latency_usage"),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
@@ -384,8 +384,8 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     if (isClkRefDevice) {
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
-        ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Main]", "latency"), currentLatencyMSec);
+        ControlObject::set(ConfigKey("[Main]", "samplerate"), m_dSampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }

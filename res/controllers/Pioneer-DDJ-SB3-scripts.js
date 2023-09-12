@@ -673,8 +673,8 @@ PioneerDDJSB3.bindNonDeckControlConnections = function(isUnbinding) {
     }
 
     if (PioneerDDJSB3.showVumeterMaster) {
-        engine.connectControl("[Master]", "VuMeterL", PioneerDDJSB3.VuMeterLeds, isUnbinding);
-        engine.connectControl("[Master]", "VuMeterR", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Main]", "VuMeterL", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Main]", "VuMeterR", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     } else {
         engine.connectControl("[Channel1]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
         engine.connectControl("[Channel2]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
@@ -894,16 +894,16 @@ PioneerDDJSB3.headphoneMasterUpdate = function() {
     if (masterCue) {
         if (anyDeckCue) {
             // 50% master 50% cue
-            engine.setValue("[Master]", "headMix", 0);
+            engine.setValue("[Main]", "headMix", 0);
         } else {
             // 100% master
             // Check if 1 is all master or all cue
-            engine.setValue("[Master]", "headMix", 1);
+            engine.setValue("[Main]", "headMix", 1);
         }
     } else {
         // 0% master
         // Check if 1 is all master or all cue
-        engine.setValue("[Master]", "headMix", -1);
+        engine.setValue("[Main]", "headMix", -1);
     }
 };
 
@@ -1118,7 +1118,7 @@ PioneerDDJSB3.VuMeterLeds = function(value, group, control) {
             midi.sendShortMsg(0xB0 + midiChannel, 2, value);
         }
     } else {
-        if (group === "[Master]") {
+        if (group === "[Main]") {
             if (control === "VuMeterL") {
                 PioneerDDJSB3.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB3.valueVuMeter["[Channel3]_current"] = value;

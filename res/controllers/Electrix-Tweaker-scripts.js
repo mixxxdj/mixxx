@@ -193,8 +193,8 @@ ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/;
 // ================================================= INITIALIZATION & SHUTDOWN ============================================
 
 ElectrixTweaker.init = function() {
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[Main]", "num_samplers") < 8) {
+        engine.setValue("[Main]", "num_samplers", 8);
     }
     for (const group in ElectrixTweaker.encoders) { // loop over each [Channel]
         //         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
@@ -438,9 +438,9 @@ ElectrixTweaker.topShiftButton = function(channel, control, value, status, group
         "headSplit": "ElectrixTweaker.headSplitLED"
     };
     for (const control in controlsToFunctions) {
-        engine.connectControl("[Master]", control, controlsToFunctions[control], ! value/127);
+        engine.connectControl("[Main]", control, controlsToFunctions[control], ! value/127);
         if (value) {
-            engine.trigger("[Master]", control);
+            engine.trigger("[Main]", control);
         }
     }
 };
@@ -506,7 +506,7 @@ ElectrixTweaker.bigEncoderButton = function(channel, control, value, _status, _g
         if (ElectrixTweaker.topShift) {
             engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
         } else {
-            engine.setValue("[Master]", "maximize_library", ! engine.getValue("[Master]", "maximize_library"));
+            engine.setValue("[Main]", "maximize_library", ! engine.getValue("[Main]", "maximize_library"));
         }
     }
 };
@@ -632,9 +632,9 @@ ElectrixTweaker.highEncoder = function(channel, control, value, status, group) {
     group = ElectrixTweaker.deck[group];
     if (ElectrixTweaker.topShift) {
         if (control === ElectrixTweaker.encoders["[Channel1]"].High.cc) {
-            engine.setValue("[Master]", "headVolume", script.absoluteNonLin(value, 0, 1, 5));
+            engine.setValue("[Main]", "headVolume", script.absoluteNonLin(value, 0, 1, 5));
         } else {
-            engine.setValue("[Master]", "volume", script.absoluteNonLin(value, 0, 1, 5));
+            engine.setValue("[Main]", "volume", script.absoluteNonLin(value, 0, 1, 5));
         }
     } else if (ElectrixTweaker.deckShift[group]) {
         engine.setValue(group, "rate", script.absoluteLin(value, -1, 1, 0, 126));
@@ -659,9 +659,9 @@ ElectrixTweaker.highEncoderPress = function(channel, control, value, status, gro
     if (value) {
         if (ElectrixTweaker.topShift) {
             if (control === ElectrixTweaker.encoders["[Channel1]"].High.button) {
-                engine.setValue("[Master]", "headVolume", 1);
+                engine.setValue("[Main]", "headVolume", 1);
             } else {
-                engine.setValue("[Master]", "volume", 1);
+                engine.setValue("[Main]", "volume", 1);
             }
         } else {
             switch (ElectrixTweaker.mode[group]) {
@@ -683,9 +683,9 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
     group = ElectrixTweaker.deck[group];
     if (ElectrixTweaker.topShift) {
         if (control === ElectrixTweaker.encoders["[Channel1]"].Mid.cc) {
-            engine.setValue("[Master]", "headMix", script.absoluteLin(value, -1, 1));
+            engine.setValue("[Main]", "headMix", script.absoluteLin(value, -1, 1));
         } else {
-            engine.setValue("[Master]", "balance", script.absoluteLin(value, -1, 1));
+            engine.setValue("[Main]", "balance", script.absoluteLin(value, -1, 1));
         }
     } else if (ElectrixTweaker.deckShift[group]) {
         engine.stopTimer(ElectrixTweaker.midEncoderLEDTimer[group]);
@@ -722,9 +722,9 @@ ElectrixTweaker.midEncoderPress = function(channel, control, value, status, grou
     if (value) {
         if (ElectrixTweaker.topShift) {
             if (control === ElectrixTweaker.encoders["[Channel1]"].Mid.button) {
-                engine.setValue("[Master]", "headSplit", ! engine.getValue("[Master]", "headSplit"));
+                engine.setValue("[Main]", "headSplit", ! engine.getValue("[Main]", "headSplit"));
             } else {
-                engine.setValue("[Master]", "balance", 0);
+                engine.setValue("[Main]", "balance", 0);
             }
         } else {
             switch (ElectrixTweaker.mode[group]) {

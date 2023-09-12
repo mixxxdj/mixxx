@@ -179,7 +179,7 @@
                     <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Master],crossfader</ConfigKey>
+                      <ConfigKey>[Main],crossfader</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </SliderComposed>
@@ -265,7 +265,7 @@
       </WidgetGroup><!-- Mixer -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_mixer</ConfigKey>
+      <ConfigKey>[Main],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MixerBorder -->

@@ -163,8 +163,8 @@ DJ505.init = function() {
     engine.makeConnection("[Channel3]", "track_loaded", DJ505.autoShowDecks);
     engine.makeConnection("[Channel4]", "track_loaded", DJ505.autoShowDecks);
 
-    if (engine.getValue("[Master]", "num_samplers") < 16) {
-        engine.setValue("[Master]", "num_samplers", 16);
+    if (engine.getValue("[Main]", "num_samplers") < 16) {
+        engine.setValue("[Main]", "num_samplers", 16);
     }
 
     // Send Serato SysEx messages to request initial state and unlock pads
@@ -189,7 +189,7 @@ DJ505.autoShowDecks = function(_value, _group, _control) {
     if (!DJ505.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", anyLoaded);
+    engine.setValue("[Main]", "show_4decks", anyLoaded);
 };
 
 DJ505.shutdown = function() {
@@ -298,7 +298,7 @@ DJ505.addPrepareButton = new components.Button({
     shiftOffset: -7,
     sendShifted: true,
     shiftControl: true,
-    group: "[Master]",
+    group: "[Main]",
     key: "maximize_library",
     type: components.Button.prototype.types.toggle,
 });
@@ -332,7 +332,7 @@ DJ505.sortLibrary = function(channel, control, value, _status, _group) {
 
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
-    group: "[Master]",
+    group: "[Main]",
     inKey: "crossfader",
     input: function() {
         // We need a weird max. for the crossfader to make it cut cleanly.
@@ -609,7 +609,7 @@ DJ505.Deck = function(deckNumbers, offset) {
             // indicator for the LED instead.
             if (value === 3) {
                 if (this.connections[1] === undefined) {
-                    this.connections[1] = engine.makeConnection("[Master]", "indicator_500millis", this.setLed.bind(this));
+                    this.connections[1] = engine.makeConnection("[Main]", "indicator_500millis", this.setLed.bind(this));
                 }
                 return;
             }
@@ -1638,7 +1638,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
         output: function(value, _group, _control) {
             this.stopBlinking();
             if (value === 2) {
-                this.connections[2] = engine.makeConnection("[Master]", "indicator_250millis", function(value, _group, _control) {
+                this.connections[2] = engine.makeConnection("[Main]", "indicator_250millis", function(value, _group, _control) {
                     const colorValue = this.colorMapper.getValueForNearestColor(
                         engine.getValue(this.group, this.colorKey));
                     if (value) {

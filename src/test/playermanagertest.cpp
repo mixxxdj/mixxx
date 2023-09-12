@@ -50,7 +50,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
         m_pEngine = std::make_shared<EngineMixer>(
                 m_pConfig,
-                "[Master]",
+                "[Main]",
                 m_pEffectsManager.get(),
                 pChannelHandleFactory,
                 true);

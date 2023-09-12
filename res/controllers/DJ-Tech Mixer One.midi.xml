@@ -14,7 +14,7 @@
         <controls>
 <!--MIDDLE STRIP (Everything done twice for channels 5 and 7)-->
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB5</status>
                 <midino>0x0B</midino>
@@ -23,7 +23,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB7</status>
                 <midino>0x0B</midino>
@@ -32,7 +32,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB5</status>
                 <midino>0x0C</midino>
@@ -41,7 +41,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB7</status>
                 <midino>0x0C</midino>
@@ -50,7 +50,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB5</status>
                 <midino>0x0D</midino>
@@ -59,7 +59,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB7</status>
                 <midino>0x0D</midino>
@@ -68,7 +68,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB5</status>
                 <midino>0x0F</midino>
@@ -77,7 +77,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB7</status>
                 <midino>0x0F</midino>
@@ -86,7 +86,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.clearVolumeLEDs</key>
                 <status>0x97</status>
                 <midino>0x0A</midino>
@@ -95,7 +95,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.clearVolumeLEDs</key>
                 <status>0x95</status>
                 <midino>0x0A</midino>
@@ -104,7 +104,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.xfaderCurve</key>
                 <status>0xB5</status>
                 <midino>0x0E</midino>
@@ -113,7 +113,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.xfaderCurve</key>
                 <status>0xB7</status>
                 <midino>0x0E</midino>
@@ -122,7 +122,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.mute</key>
                 <status>0x97</status>
                 <midino>0x05</midino>
@@ -131,7 +131,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MIXER1.mute</key>
                 <status>0x95</status>
                 <midino>0x05</midino>

@@ -185,7 +185,7 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x01.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0A, "B", 0x04);
 
     // maximize the library on browse encoder press
-    InputReport0x01.addControl("[Master]", "maximize_library", 0x0E, "B", 0x08, false, this.toggleButton);
+    InputReport0x01.addControl("[Main]", "maximize_library", 0x0E, "B", 0x08, false, this.toggleButton);
 
     engine.makeConnection("[EffectRack1_EffectUnit1]", "show_parameters", TraktorS2MK1.onShowParametersChange);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "show_parameters", TraktorS2MK1.onShowParametersChange);
@@ -225,10 +225,10 @@ TraktorS2MK1.registerInputPackets = function() {
     InputReport0x02.addControl("[Channel2]", "pregain", 0x03, "B", 0x0F, false, this.gainEncoder);
     InputReport0x02.addControl("[Channel2]", "!jog_touch", 0x1D, "H", 0xFFFF, false, this.jogTouch);
 
-    InputReport0x02.addControl("[Master]", "crossfader", 0x2F, "H");
-    InputReport0x02.addControl("[Master]", "headMix", 0x31, "H");
-    InputReport0x02.addControl("[Master]", "!samplerGain", 0x13, "H");
-    InputReport0x02.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
+    InputReport0x02.addControl("[Main]", "crossfader", 0x2F, "H");
+    InputReport0x02.addControl("[Main]", "headMix", 0x31, "H");
+    InputReport0x02.addControl("[Main]", "!samplerGain", 0x13, "H");
+    InputReport0x02.setCallback("[Main]", "!samplerGain", this.samplerGainKnob);
     InputReport0x02.addControl("[Playlist]", "!browse", 0x02, "B", 0xF0, false, this.browseEncoder);
 
     // Soft takeover for knobs
@@ -241,8 +241,8 @@ TraktorS2MK1.registerInputPackets = function() {
     engine.softTakeover("[Channel1]", "pregain", true);
     engine.softTakeover("[Channel2]", "pregain", true);
 
-    engine.softTakeover("[Master]", "crossfader", true);
-    engine.softTakeover("[Master]", "headMix", true);
+    engine.softTakeover("[Main]", "crossfader", true);
+    engine.softTakeover("[Main]", "headMix", true);
     for (var i = 1; i <= 8; i++) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
@@ -308,7 +308,7 @@ TraktorS2MK1.registerOutputPackets = function() {
     OutputReport0x80.addOutput("[Channel2]", "loop_out", 0x21, "B");
 
     OutputReport0x80.addOutput("[Channel1]", "pfl", 0x20, "B");
-    OutputReport0x80.addOutput("[Master]", "!warninglight", 0x31, "B");
+    OutputReport0x80.addOutput("[Main]", "!warninglight", 0x31, "B");
     OutputReport0x80.addOutput("[Channel2]", "pfl", 0x1D, "B");
 
     OutputReport0x80.addOutput("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0x1C, "B");
@@ -478,7 +478,7 @@ TraktorS2MK1.init = function() {
         TraktorS2MK1.registerOutputPackets();
     }
 
-    TraktorS2MK1.controller.setOutput("[Master]", "!warninglight", 0x00, true);
+    TraktorS2MK1.controller.setOutput("[Main]", "!warninglight", 0x00, true);
     TraktorS2MK1.lightDeck("[Channel1]");
     TraktorS2MK1.lightDeck("[Channel2]");
     TraktorS2MK1.lightDeck("[EffectRack1_EffectUnit1]");
@@ -1245,7 +1245,7 @@ TraktorS2MK1.scalerParameter = function(group, name, value) {
 };
 
 TraktorS2MK1.scalerVolume = function(group, name, value) {
-    if (group === "[Master]") {
+    if (group === "[Main]") {
         return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
     } else {
         return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);

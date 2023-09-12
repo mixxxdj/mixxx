@@ -60,7 +60,7 @@ Variables:
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Main],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

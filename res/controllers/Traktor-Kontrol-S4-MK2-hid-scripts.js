@@ -193,11 +193,11 @@ TraktorS4MK2.registerInputPackets = function() {
     MessageShort.addControl("[Library]", "GoToItem",  0x13, "B", 0x04);
     MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
     MessageShort.addControl("[Recording]", "toggle_recording", 0x0F, "B", 0x04);
-    MessageShort.addControl("[Master]", "!play_shifter", 0x0F, "B", 0x06);
+    MessageShort.addControl("[Main]", "!play_shifter", 0x0F, "B", 0x06);
 
 
-    MessageShort.addControl("[Master]", "!quantize", 0x0A, "B", 0x08);
-    MessageShort.addControl("[Master]", "!snap", 0x0A, "B", 0x02);
+    MessageShort.addControl("[Main]", "!quantize", 0x0A, "B", 0x08);
+    MessageShort.addControl("[Main]", "!snap", 0x0A, "B", 0x02);
 
     MessageShort.setCallback("deck1", "!shift", this.shiftHandler);
     MessageShort.setCallback("deck2", "!shift", this.shiftHandler);
@@ -245,9 +245,9 @@ TraktorS4MK2.registerInputPackets = function() {
     MessageShort.setCallback("[Channel4]", "!pregain_reset", this.pregainResetHandler);
 
     MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
-    MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
-    MessageShort.setCallback("[Master]", "!snap", this.snapHandler);
-    MessageShort.setCallback("[Master]", "!play_shifter", this.playLRButtonHandler);
+    MessageShort.setCallback("[Main]", "!quantize", this.quantizeHandler);
+    MessageShort.setCallback("[Main]", "!snap", this.snapHandler);
+    MessageShort.setCallback("[Main]", "!play_shifter", this.playLRButtonHandler);
 
     MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect1]", "!FXButton", this.FXButtonHandler);
     MessageShort.setCallback("[EffectRack1_EffectUnit1_Effect2]", "!FXButton", this.FXButtonHandler);
@@ -331,9 +331,9 @@ TraktorS4MK2.registerInputPackets = function() {
 
     // The physical master button controls the internal sound card volume, so if we hook this
     // up the adjustment is double-applied.
-    //MessageLong.addControl("[Master]", "volume", 0x11, "H");
-    MessageLong.addControl("[Master]", "crossfader", 0x07, "H");
-    MessageLong.addControl("[Master]", "headMix", 0x0D, "H");
+    //MessageLong.addControl("[Main]", "volume", 0x11, "H");
+    MessageLong.addControl("[Main]", "crossfader", 0x07, "H");
+    MessageLong.addControl("[Main]", "headMix", 0x0D, "H");
     MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, undefined, true);
     MessageLong.setCallback("[Playlist]", "!browse", this.callbackBrowse);
 
@@ -378,8 +378,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     Output1.addOutput("[Channel3]", "PeakIndicator", 0x07, "B");
     Output1.addOutput("[Channel4]", "PeakIndicator", 0x1F, "B");
 
-    Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
-    Output1.addOutput("[Master]", "!quantize", 0x31, "B");
+    Output1.addOutput("[Main]", "!usblight", 0x2A, "B");
+    Output1.addOutput("[Main]", "!quantize", 0x31, "B");
     Output1.addOutput("[InternalClock]", "sync_leader", 0x30, "B");
     Output1.addOutput("[Recording]", "status", 0x34, "B");
 
@@ -466,8 +466,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     Output3.addOutput("[Channel2]", "pfl", 0x19, "B");
     Output3.addOutput("[Channel4]", "pfl", 0x1A, "B");
 
-    Output3.addOutput("[Master]", "PeakIndicatorL", 0x3B, "B");
-    Output3.addOutput("[Master]", "PeakIndicatorR", 0x3C, "B");
+    Output3.addOutput("[Main]", "PeakIndicatorL", 0x3B, "B");
+    Output3.addOutput("[Main]", "PeakIndicatorR", 0x3C, "B");
 
     Output3.addOutput("deck1", "!deckLight", 0x13, "B");
     Output3.addOutput("deck1", "LoadSelectedTrack", 0x14, "B");
@@ -529,8 +529,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[Channel3]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[Channel4]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
@@ -719,9 +719,9 @@ TraktorS4MK2.init = function(id) {
     engine.setValue("[Channel2]", "quantize", TraktorS4MK2.master_quantize);
     engine.setValue("[Channel3]", "quantize", TraktorS4MK2.master_quantize);
     engine.setValue("[Channel4]", "quantize", TraktorS4MK2.master_quantize);
-    TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
+    TraktorS4MK2.controller.setOutput("[Main]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 
-    TraktorS4MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
+    TraktorS4MK2.controller.setOutput("[Main]", "!usblight", 0x7F, true);
 
     TraktorS4MK2.outputChannelCallback(engine.getValue("[InternalClock]", "sync_leader"), "[InternalClock]", "sync_leader");
     TraktorS4MK2.outputChannelCallback(engine.getValue("[Recording]", "status"), "[Recording]", "status");
@@ -1232,15 +1232,15 @@ TraktorS4MK2.quantizeHandler = function(field) {
     engine.setValue("[Channel2]", "quantize", TraktorS4MK2.master_quantize);
     engine.setValue("[Channel3]", "quantize", TraktorS4MK2.master_quantize);
     engine.setValue("[Channel4]", "quantize", TraktorS4MK2.master_quantize);
-    TraktorS4MK2.controller.setOutput("[Master]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
+    TraktorS4MK2.controller.setOutput("[Main]", "!quantize", 0x7F * TraktorS4MK2.master_quantize, true);
 };
 
 TraktorS4MK2.snapHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    library_maximized = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !library_maximized);
+    library_maximized = engine.getValue("[Main]", "maximize_library");
+    engine.setValue("[Main]", "maximize_library", !library_maximized);
 };
 
 TraktorS4MK2.FXButtonHandler = function(field) {
@@ -1493,7 +1493,7 @@ TraktorS4MK2.scalerParameter = function(group, name, value) {
 TraktorS4MK2.scalerParameter.useSetParameter = true;
 
 TraktorS4MK2.scalerVolume = function(group, name, value) {
-    if (group === "[Master]") {
+    if (group === "[Main]") {
         return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
     } else {
         return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);

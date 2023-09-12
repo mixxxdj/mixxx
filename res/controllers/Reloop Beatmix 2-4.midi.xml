@@ -2658,7 +2658,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>CROSSFADER</description>
                 <status>0xB5</status>
@@ -2668,7 +2668,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <description>MASTERVOL</description>
                 <status>0xB5</status>
@@ -2678,7 +2678,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>CUE MIX</description>
                 <status>0xB5</status>

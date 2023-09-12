@@ -51,6 +51,13 @@ void EqualizerEffectChain::setupLegacyAliasesForGroup(const QString& group) {
     EffectSlotPointer pEffectSlot = getEffectSlot(0);
     if (pEffectSlot) {
         const QString& effectSlotGroup = pEffectSlot->getGroup();
+        const QString groupAlias = ControlDoublePrivate::getGroupAlias(group);
+        if (!groupAlias.isEmpty()) {
+            ControlDoublePrivate::insertGroupAlias(formatEffectChainGroup(groupAlias), getGroup());
+            ControlDoublePrivate::insertGroupAlias(
+                    formatEffectSlotGroup(groupAlias), effectSlotGroup);
+        }
+
         ControlDoublePrivate::insertAlias(ConfigKey(group, "filterLow"),
                 ConfigKey(effectSlotGroup, "parameter1"));
 

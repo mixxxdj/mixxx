@@ -1291,7 +1291,7 @@ DenonMC6000MK2.OldSide.prototype.onFilterMidiValue = function(value) {
 
 DenonMC6000MK2.id = undefined;
 DenonMC6000MK2.debug = undefined;
-DenonMC6000MK2.group = "[Master]";
+DenonMC6000MK2.group = "[Main]";
 
 // left side
 DenonMC6000MK2.oldDeck1 = new DenonMC6000MK2.OldDeck(1, DenonMC6000MK2.MIDI_CH0);
@@ -1533,7 +1533,7 @@ DenonMC6000MK2.recvAreaButton = function(_channel, _control, value, _status, _gr
 
 DenonMC6000MK2.recvListButton = function(_channel, _control, value, _status, _group) {
     if (DenonMC6000MK2.isButtonPressed(value)) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Main]", "maximize_library");
     }
 };
 

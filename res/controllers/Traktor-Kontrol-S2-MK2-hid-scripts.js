@@ -181,7 +181,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0E, "B", 0x02);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0E, "B", 0x01);
 
-    MessageShort.addControl("[Master]", "maximize_library", 0x0F, "B", 0x04, false, this.toggleButton);
+    MessageShort.addControl("[Main]", "maximize_library", 0x0F, "B", 0x04, false, this.toggleButton);
 
     MessageShort.addControl("[Microphone]", "talkover", 0x0A, "B", 0x08, false, this.toggleButton);
 
@@ -223,11 +223,11 @@ TraktorS2MK2.registerInputPackets = function() {
 
     // The master gain knob controls the internal sound card volume, so if this was mapped
     // the gain would be double-applied.
-    //MessageLong.addControl("[Master]", "volume", 0x11, "H");
-    MessageLong.addControl("[Master]", "crossfader", 0x05, "H");
-    MessageLong.addControl("[Master]", "headMix", 0x0B, "H");
-    MessageLong.addControl("[Master]", "!samplerGain", 0xD, "H");
-    MessageLong.setCallback("[Master]", "!samplerGain", this.samplerGainKnob);
+    //MessageLong.addControl("[Main]", "volume", 0x11, "H");
+    MessageLong.addControl("[Main]", "crossfader", 0x05, "H");
+    MessageLong.addControl("[Main]", "headMix", 0x0B, "H");
+    MessageLong.addControl("[Main]", "!samplerGain", 0xD, "H");
+    MessageLong.setCallback("[Main]", "!samplerGain", this.samplerGainKnob);
     MessageLong.addControl("[Playlist]", "!browse", 0x02, "B", 0x0F, false, this.browseEncoder);
 
     // Soft takeover for knobs
@@ -240,8 +240,8 @@ TraktorS2MK2.registerInputPackets = function() {
     engine.softTakeover("[Channel1]", "pregain", true);
     engine.softTakeover("[Channel2]", "pregain", true);
 
-    engine.softTakeover("[Master]", "crossfader", true);
-    engine.softTakeover("[Master]", "headMix", true);
+    engine.softTakeover("[Main]", "crossfader", true);
+    engine.softTakeover("[Main]", "headMix", true);
 
     engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
     engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
@@ -305,7 +305,7 @@ TraktorS2MK2.registerOutputPackets = function() {
     OutputTop.addOutput("[Channel2]", "loop_out", 0x24, "B");
 
     OutputTop.addOutput("[Channel1]", "pfl", 0x1B, "B");
-    OutputTop.addOutput("[Master]", "!usblight", 0x1D, "B");
+    OutputTop.addOutput("[Main]", "!usblight", 0x1D, "B");
     OutputTop.addOutput("[Channel2]", "pfl", 0x1F, "B");
 
     OutputTop.addOutput("[EffectRack1_EffectUnit1]", "!effect_focus_button", 0xB, "B");
@@ -485,7 +485,7 @@ TraktorS2MK2.init = function() {
         TraktorS2MK2.registerOutputPackets();
     }
 
-    TraktorS2MK2.controller.setOutput("[Master]", "!usblight", 0x7F, true);
+    TraktorS2MK2.controller.setOutput("[Main]", "!usblight", 0x7F, true);
     TraktorS2MK2.lightDeck("[Channel1]");
     TraktorS2MK2.lightDeck("[Channel2]");
     TraktorS2MK2.lightDeck("[EffectRack1_EffectUnit1]");
@@ -1280,7 +1280,7 @@ TraktorS2MK2.scalerParameter = function(group, name, value) {
 };
 
 TraktorS2MK2.scalerVolume = function(group, name, value) {
-    if (group === "[Master]") {
+    if (group === "[Main]") {
         return script.absoluteNonLin(value, 0, 1, 4, 16, 4080);
     } else {
         return script.absoluteNonLin(value, 0, 0.25, 1, 16, 4080);

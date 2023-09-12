@@ -82,7 +82,7 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     midi_for_light.vu_meter_timer = [-1, -1];
     midi_for_light.volumebeat_on_delay_timer = [-1, -1];
 
-    engine.connectControl("[Master]", "crossfader", "midi_for_light.crossfaderChange");
+    engine.connectControl("[Main]", "crossfader", "midi_for_light.crossfaderChange");
 
     if (enable_vu_meter_global === true) midi_for_light.vu_meter_timer = engine.beginTimer(40, "midi_for_light.vuMeter()");
 
@@ -145,9 +145,9 @@ midi_for_light.vuMeter = function() { // read, calculate and send vu-meter value
     var vu_out_range = vu_out_max - vu_out_min;
 
     // get current value Vu-Meter
-    var vu_mono_current = engine.getValue("[Master]", "VuMeter");
-    var vu_left_current = engine.getValue("[Master]", "VuMeterL");
-    var vu_right_current = engine.getValue("[Master]", "VuMeterR");
+    var vu_mono_current = engine.getValue("[Main]", "VuMeter");
+    var vu_left_current = engine.getValue("[Main]", "VuMeterL");
+    var vu_right_current = engine.getValue("[Main]", "VuMeterR");
 
     // arraycounter
     vu_array_fill_counter++;
@@ -439,18 +439,18 @@ midi_for_light.crossfaderChange = function() { // crossfader chenge, check deck 
     // check changing to "deck change by volume" method
     midi_for_light.volumebeat = false;
     engine.stopTimer(midi_for_light.volumebeat_on_delay_timer);
-    if (engine.getValue("[Master]", "crossfader") > -0.25) { // crossfader more than 25% left;
-        if (engine.getValue("[Master]", "crossfader") < 0.25) { // crossfader more then 25% right;
+    if (engine.getValue("[Main]", "crossfader") > -0.25) { // crossfader more than 25% left;
+        if (engine.getValue("[Main]", "crossfader") < 0.25) { // crossfader more then 25% right;
             midi_for_light.volumebeat_on_delay_timer = engine.beginTimer(3000, "midi_for_light.volumeBeatOnDelay()");
         }
     }
 
     // if crossfader in middle position, go out
-    if (engine.getValue("[Master]", "crossfader") === 0) return;
+    if (engine.getValue("[Main]", "crossfader") === 0) return;
 
     // check what deck is current, crossfader exact 0 is defined as left
     var deck = 0;
-    if (engine.getValue("[Master]", "crossfader") > 0) { // crossfader is right, not middle
+    if (engine.getValue("[Main]", "crossfader") > 0) { // crossfader is right, not middle
         deck = 1;
         if (beat_watchdog[1] === true) deck = 3;
     } else {

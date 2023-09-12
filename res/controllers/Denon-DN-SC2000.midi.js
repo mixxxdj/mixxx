@@ -8,7 +8,7 @@ DenonDNSC2000.Deck = function (deckNumber, group) {
 }
 
 DenonDNSC2000.init = function (id) {
-    engine.setValue("[Master]", "num_decks", 4);
+    engine.setValue("[Main]", "num_decks", 4);
     var leds = [0x11,0x13,0x15,0x17,0x19,0x1B,0x1D,0x20,/* cues */
                 0x24,0x40,0x2B,/* loops */
                 0x27,0x26,/* play,cue */

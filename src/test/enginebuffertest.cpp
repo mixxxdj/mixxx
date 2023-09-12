@@ -102,7 +102,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
 
     // With Soundtouch, it should switch the scaler as well
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
@@ -112,7 +112,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
     ProcessBuffer();
 
     // With Rubberband, and transport stopped it should be still keylock
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::RubberBandFaster));
     ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0);
     ProcessBuffer();
@@ -204,7 +204,7 @@ TEST_F(EngineBufferTest, ResetPitchAdjustUsesLinear) {
 TEST_F(EngineBufferE2ETest, SoundTouchCrashTest) {
     // Soundtouch has a bug where a pitch value of zero causes an infinite loop
     // and crash.
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), 1.2);
     ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.05);
@@ -284,59 +284,59 @@ TEST_F(EngineBufferE2ETest, ReverseTest) {
 // DISABLED: This test is too dependent on the sound touch library version.
 TEST_F(EngineBufferE2ETest, DISABLED_SoundTouchToggleTest) {
    // Test various cases where SoundTouch toggles on and off.
-   ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
-           static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
-   ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
-   ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-   ProcessBuffer();
-   // Test transition from vinyl to keylock
-   ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "SoundTouchTest");
-   // Test transition from keylock to vinyl due to slow speed.
-   ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
-   ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "SoundTouchTestSlow");
-   // Test transition back to keylock due to regular speed.
-   ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "SoundTouchTestRegular");
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
+            static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    // Test transition from vinyl to keylock
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "SoundTouchTest");
+    // Test transition from keylock to vinyl due to slow speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "SoundTouchTestSlow");
+    // Test transition back to keylock due to regular speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "SoundTouchTestRegular");
 }
 
 // DISABLED: This test is too dependent on the rubber band library version.
 TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
    // Test various cases where Rubberband toggles on and off.
-   ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
-           static_cast<double>(EngineBuffer::KeylockEngine::RubberBandFaster));
-   ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
-   ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-   ProcessBuffer();
-   // Test transition from vinyl to keylock
-   ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "RubberbandTest");
-   // Test transition from keylock to vinyl due to slow speed.
-   ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
-   ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "RubberbandTestSlow");
-   // Test transition back to keylock due to regular speed.
-   ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
-   ProcessBuffer();
-   assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
-           kProcessBufferSize,
-           "RubberbandTestRegular");
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
+            static_cast<double>(EngineBuffer::KeylockEngine::RubberBandFaster));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    // Test transition from vinyl to keylock
+    ControlObject::set(ConfigKey(m_sGroup1, "keylock"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "RubberbandTest");
+    // Test transition from keylock to vinyl due to slow speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 0.0072);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "RubberbandTestSlow");
+    // Test transition back to keylock due to regular speed.
+    ControlObject::set(ConfigKey(m_sGroup1, "rateSearch"), 1.0);
+    ProcessBuffer();
+    assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
+            kProcessBufferSize,
+            "RubberbandTestRegular");
 }
 
 // DISABLED: This test is too dependent on the sound touch library version.
@@ -347,7 +347,7 @@ TEST_F(EngineBufferE2ETest, DISABLED_RubberbandToggleTest) {
 TEST_F(EngineBufferE2ETest, DISABLED_KeylockReverseTest) {
     // Confirm that when toggling reverse while keylock is on, interpolation
     // is smooth.
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ControlObject::set(ConfigKey(m_sGroup1, "keylockMode"),
                        0.0);
@@ -378,7 +378,7 @@ TEST_F(EngineBufferE2ETest, SeekTest) {
 TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing issue #8061
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::SoundTouch));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
@@ -392,7 +392,7 @@ TEST_F(EngineBufferE2ETest, SoundTouchReverseTest) {
 TEST_F(EngineBufferE2ETest, RubberbandReverseTest) {
     // This test must not crash when changing to reverse while pitch is tweaked
     // Testing issue #8061
-    ControlObject::set(ConfigKey("[Master]", "keylock_engine"),
+    ControlObject::set(ConfigKey("[Main]", "keylock_engine"),
             static_cast<double>(EngineBuffer::KeylockEngine::RubberBandFaster));
     ControlObject::set(ConfigKey(m_sGroup1, "pitch"), -1);
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);

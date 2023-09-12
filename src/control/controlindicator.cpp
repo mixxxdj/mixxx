@@ -8,9 +8,9 @@ ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_pCOIndicator250millis(make_parented<ControlProxy>(
-                  "[Master]", "indicator_250millis", this)),
+                  "[Main]", "indicator_250millis", this)),
           m_pCOIndicator500millis(make_parented<ControlProxy>(
-                  "[Master]", "indicator_500millis", this)) {
+                  "[Main]", "indicator_500millis", this)) {
     connect(this,
             &ControlIndicator::blinkValueChanged,
             this,

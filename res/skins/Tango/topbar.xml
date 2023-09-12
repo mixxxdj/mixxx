@@ -109,7 +109,7 @@ Description:
 		                    <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/crossfader_scale.svg</Slider>
 		                    <Horizontal>true</Horizontal>
 		                    <Connection>
-		                      <ConfigKey>[Master],crossfader</ConfigKey>
+		                      <ConfigKey>[Main],crossfader</ConfigKey>
 		                    </Connection>
 		                  </SliderComposed>
 		                </Children>
@@ -122,13 +122,13 @@ Description:
 		          </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <ConfigKey persist="true">[Main],show_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Main],maximize_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -214,7 +214,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Main],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -239,7 +239,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Main],maximize_library</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -343,7 +343,7 @@ Description:
                     <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[Main],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter><!-- /latency usage -->
                 </Children>
@@ -369,13 +369,13 @@ Description:
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Main],skin_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Main],skin_settings</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

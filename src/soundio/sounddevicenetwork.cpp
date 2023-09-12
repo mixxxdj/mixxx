@@ -37,7 +37,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
-          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_mainAudioLatencyUsage("[Main]", "audio_latency_usage"),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
           m_targetTime(0) {
@@ -87,9 +87,9 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
 
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
-        ControlObject::set(ConfigKey("[Master]", "latency"),
+        ControlObject::set(ConfigKey("[Main]", "latency"),
                 requestedBufferTime.toDoubleMillis());
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey("[Main]", "samplerate"), m_dSampleRate);
 
         // Network stream was just started above so we have to wait until
         // we can pass one chunk.

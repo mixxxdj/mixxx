@@ -16,7 +16,7 @@ Column {
         width: 50
         height: 26
         orientation: Qt.Horizontal
-        group: "[Master]"
+        group: "[Main]"
         key: "duckStrength"
         barColor: Theme.crossfaderBarColor
         barStart: 1
@@ -53,7 +53,7 @@ Column {
                 this.value = (this.value + 1) % MicrophoneDuckingPanel.DuckingMode.NumModes;
             }
 
-            group: "[Master]"
+            group: "[Main]"
             key: "talkoverDucking"
         }
     }

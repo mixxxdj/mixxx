@@ -250,7 +250,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <description>MIDI Learned from 252 messages.</description>
         <status>0xB0</status>
@@ -260,7 +260,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader_set_default</key>
         <description>MIDI Learned from 2 messages.</description>
         <status>0xB1</status>

@@ -44,11 +44,13 @@ EngineMixer::EngineMixer(
           m_balrightOld(1.0),
           m_mainHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
-          m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
+          m_mainOutputHandle(registerChannelGroup("[MainOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
           m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
+    ControlDoublePrivate::insertGroupAlias(
+            QStringLiteral("[MasterOutput]"), QStringLiteral("[MainOutput]"));
     pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_mainHandle);

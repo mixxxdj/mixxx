@@ -12,7 +12,7 @@
     </scriptfiles>
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <status>0xB4</status>
         <midino>0x10</midino>
@@ -21,7 +21,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <status>0xB4</status>
         <midino>0x20</midino>
@@ -30,7 +30,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headGain</key>
         <status>0xB4</status>
         <midino>0x12</midino>
@@ -39,13 +39,13 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headMix</key>
         <status>0xB4</status>
         <midino>0x13</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>gain</key>
         <status>0xB4</status>
         <midino>0x14</midino>

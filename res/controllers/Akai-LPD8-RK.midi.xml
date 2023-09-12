@@ -25,7 +25,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB0</status>
                 <midino>0x66</midino>
@@ -34,7 +34,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB0</status>
                 <midino>0x67</midino>
@@ -43,7 +43,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB0</status>
                 <midino>0x68</midino>
@@ -343,7 +343,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB1</status>
                 <midino>0x66</midino>
@@ -352,7 +352,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB1</status>
                 <midino>0x67</midino>
@@ -361,7 +361,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB1</status>
                 <midino>0x68</midino>
@@ -663,7 +663,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xB2</status>
                 <midino>0x66</midino>
@@ -672,7 +672,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xB2</status>
                 <midino>0x67</midino>
@@ -681,7 +681,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB2</status>
                 <midino>0x68</midino>
@@ -983,7 +983,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>LPD8RK.softXfade</key>
                 <status>0xb3</status>
                 <midino>0x66</midino>
@@ -992,7 +992,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <status>0xb3</status>
                 <midino>0x67</midino>
@@ -1001,7 +1001,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xb3</status>
                 <midino>0x68</midino>

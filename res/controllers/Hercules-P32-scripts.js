@@ -47,8 +47,8 @@ P32.init = function() {
     components.Component.prototype.shiftChannel = true;
     components.Button.prototype.sendShifted = true;
 
-    if (engine.getValue("[Master]", "num_samplers") < 32) {
-        engine.setValue("[Master]", "num_samplers", 32);
+    if (engine.getValue("[Main]", "num_samplers") < 32) {
+        engine.setValue("[Main]", "num_samplers", 32);
     }
 
     P32.leftDeck = new P32.Deck([1, 3], 1);
@@ -95,7 +95,7 @@ P32.browseEncoder = function(_channel, _control, value, _status, _group) {
 
 P32.headMixEncoder = function(_channel, _control, value, _status, _group) {
     var direction = (value > 64) ? -1 : 1;
-    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.1 * direction));
+    engine.setValue("[Main]", "headMix", engine.getValue("[Main]", "headMix") + (0.1 * direction));
 };
 
 P32.recordButton = new components.Button({

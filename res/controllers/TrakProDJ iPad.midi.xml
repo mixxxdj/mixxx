@@ -400,19 +400,19 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <status>0XB0</status>
         <midino>0X07</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headMix</key>
         <status>0XB0</status>
         <midino>0X1B</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headVolume</key>
         <status>0XB1</status>
         <midino>0X1B</midino>

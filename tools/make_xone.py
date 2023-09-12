@@ -303,7 +303,7 @@ main_knobs = """            <control>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.leftBottomKnob</key>
                 <status>0xBF</status>
                 <midino>0x14</midino>
@@ -312,7 +312,7 @@ main_knobs = """            <control>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.shift_on</key>
                 <status>0x9F</status>
                 <midino>0xF</midino>
@@ -321,7 +321,7 @@ main_knobs = """            <control>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.shift_on</key>
                 <status>0x8F</status>
                 <midino>0xF</midino>
@@ -350,7 +350,7 @@ if SYNC_LOCK_LAYOUT:
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.leftBottomKnob</key>
                 <status>0xBF</status>
                 <midino>0x14</midino>
@@ -359,7 +359,7 @@ if SYNC_LOCK_LAYOUT:
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.shift_on</key>
                 <status>0x9F</status>
                 <midino>0xF</midino>
@@ -368,7 +368,7 @@ if SYNC_LOCK_LAYOUT:
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>XoneK2.shift_on</key>
                 <status>0x8F</status>
                 <midino>0xF</midino>

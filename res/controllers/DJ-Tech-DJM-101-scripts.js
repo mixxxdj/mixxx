@@ -11,8 +11,8 @@ DJTechDJM101.vumeter[2] = 0;
 
 DJTechDJM101.init = function(id) {
     DJTechDJM101.vumeter_select(true);
-    engine.connectControl("[Master]", "VuMeterL", "DJTechDJM101.VuMeterMasterL");
-    engine.connectControl("[Master]", "VuMeterR", "DJTechDJM101.VuMeterMasterR");
+    engine.connectControl("[Main]", "VuMeterL", "DJTechDJM101.VuMeterMasterL");
+    engine.connectControl("[Main]", "VuMeterR", "DJTechDJM101.VuMeterMasterR");
     engine.connectControl("[Channel1]", "VuMeter", "DJTechDJM101.VuMeterDeck1");
     engine.connectControl("[Channel2]", "VuMeter", "DJTechDJM101.VuMeterDeck2");
     engine.connectControl("[Channel1]", "pfl", "DJTechDJM101.pfl");

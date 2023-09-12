@@ -77,7 +77,7 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_dMouseSampeTime(0) {
     m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
     m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
-    m_pMainSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+    m_pMainSampleRate = ControlObject::getControl(ConfigKey("[Main]", "samplerate"));
     m_pVelocityController = new VelocityController();
     m_pRateIIFilter = new RateIIFilter;
 }

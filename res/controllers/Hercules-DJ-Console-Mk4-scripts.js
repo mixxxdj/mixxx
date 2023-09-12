@@ -207,14 +207,14 @@ HerculesMk4.pfl = function (midino, control, value, status, group) {
         var pfl2=engine.getValue("[Channel2]","pfl");
 
 
-        var actualMixCue=engine.getValue("[Master]","headMix");
+        var actualMixCue=engine.getValue("[Main]","headMix");
 
         if(pfl1==0 && pfl2==0){
             HerculesMk4.antiguoMixCue=actualMixCue;
-            engine.setValue("[Master]","headMix",1);
+            engine.setValue("[Main]","headMix",1);
         }else{
             if(actualMixCue==1){
-                engine.setValue("[Master]","headMix",HerculesMk4.antiguoMixCue);
+                engine.setValue("[Main]","headMix",HerculesMk4.antiguoMixCue);
             }
         };
     };

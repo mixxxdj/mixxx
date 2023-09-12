@@ -258,9 +258,10 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
+    ControlDoublePrivate::insertGroupAlias(QStringLiteral("[Master]"), QStringLiteral("[Main]"));
     m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
-            "[Master]",
+            "[Main]",
             m_pEffectsManager.get(),
             pChannelHandleFactory,
             true);
@@ -440,16 +441,16 @@ void CoreServices::initialize(QApplication* pApp) {
         bool defaultValue;
     };
     const std::vector<UIControlConfig> uiControls = {
-            {ConfigKey("[Master]", "skin_settings"), false, false},
+            {ConfigKey("[Main]", "skin_settings"), false, false},
             {ConfigKey("[Microphone]", "show_microphone"), true, true},
             {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
             {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
             {ConfigKey("[Library]", "show_coverart"), true, true},
-            {ConfigKey("[Master]", "maximize_library"), true, false},
+            {ConfigKey("[Main]", "maximize_library"), true, false},
             {ConfigKey("[Samplers]", "show_samplers"), true, true},
             {ConfigKey("[EffectRack1]", "show"), true, true},
             {ConfigKey("[Skin]", "show_4effectunits"), true, false},
-            {ConfigKey("[Master]", "show_mixer"), true, true},
+            {ConfigKey("[Main]", "show_mixer"), true, true},
             {ConfigKey("[Skin]", "show_spinnies"), true, true},
             {ConfigKey("[Skin]", "show_coverart"), true, true},
     };

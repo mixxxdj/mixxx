@@ -735,17 +735,17 @@ MixtrackProFX.Browse.prototype = new components.ComponentContainer();
 
 MixtrackProFX.Gains = function() {
     this.mainGain = new components.Pot({
-        group: "[Master]",
+        group: "[Main]",
         inKey: "gain"
     });
 
     this.cueGain = new components.Pot({
-        group: "[Master]",
+        group: "[Main]",
         inKey: "headGain"
     });
 
     this.cueMix = new components.Pot({
-        group: "[Master]",
+        group: "[Main]",
         inKey: "headMix"
     });
 };

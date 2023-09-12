@@ -25,25 +25,25 @@ HerculesAir.init = function(id) {
     midi.sendShortMsg(0x90, 0x3B, 0x7f) // headset volume "-" button LED (always on)
     midi.sendShortMsg(0x90, 0x3C, 0x7f) // headset volume "+" button LED (always on)
 
-    if(engine.getValue("[Master]", "headMix") > 0.5) {
+    if(engine.getValue("[Main]", "headMix") > 0.5) {
         midi.sendShortMsg(0x90, 0x39, 0x7f) // headset "Mix" button LED
     } else {
         midi.sendShortMsg(0x90, 0x3A, 0x7f) // headset "Cue" button LED
     }
 
     // Set soft-takeover for all Sampler volumes
-    for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
+    for (var i=engine.getValue("[Main]","num_samplers"); i>=1; i--) {
         engine.softTakeover("[Sampler"+i+"]","pregain",true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+    for (var i=engine.getValue("[Main]","num_decks"); i>=1; i--) {
         engine.softTakeover("[Channel"+i+"]","volume",true);
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);
         engine.softTakeover("[Channel"+i+"]","filterLow",true);
     }
 
-    engine.softTakeover("[Master]","crossfader",true);
+    engine.softTakeover("[Main]","crossfader",true);
 
     engine.connectControl("[Channel1]", "beat_active", "HerculesAir.beatProgressDeckA")
     engine.connectControl("[Channel1]", "play", "HerculesAir.playDeckA")

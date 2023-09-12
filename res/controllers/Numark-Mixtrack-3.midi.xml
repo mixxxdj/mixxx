@@ -14,7 +14,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB0</status>
@@ -44,7 +44,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>gain</key>
                 <description>Master gain knob</description>
                 <status>0xB0</status>
@@ -54,7 +54,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>Cue mix knob</description>
                 <status>0xB0</status>
@@ -64,7 +64,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <description>Cue gain knob</description>
                 <status>0xB0</status>

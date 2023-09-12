@@ -43,7 +43,7 @@ class EffectsManager {
     }
 
     const ChannelHandle getMainHandle() const {
-        return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
+        return m_pChannelHandleFactory->getOrCreateHandle("[Main]");
     }
 
     const EffectChainPresetManagerPointer getChainPresetManager() const {

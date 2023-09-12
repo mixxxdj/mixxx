@@ -977,7 +977,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader (MSB), Slider: FADE</description>
                 <status>0xB6</status>
@@ -987,7 +987,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader (LSB), Slider: FADE</description>
                 <status>0xB6</status>
@@ -1557,7 +1557,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>Head mix (MSB), Knob: HEADPHONES MIX</description>
                 <status>0xB6</status>
@@ -1567,7 +1567,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>Head mix (MSB), Knob: HEADPHONES MIX</description>
                 <status>0xB6</status>

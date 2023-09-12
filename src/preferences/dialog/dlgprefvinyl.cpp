@@ -19,7 +19,7 @@ DlgPrefVinyl::DlgPrefVinyl(
         : DlgPreferencePage(parent),
           m_pVCManager(pVCMan),
           config(config) {
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Main]", "num_decks", this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 
     setupUi(this);

@@ -24,7 +24,7 @@ const QString kEffectForGroupPrefix = QStringLiteral("EffectForGroup_");
 const QString kEnableEqs = QStringLiteral("EnableEQs");
 const QString kEqsOnly = QStringLiteral("EQsOnly");
 const QString kSingleEq = QStringLiteral("SingleEQEffect");
-const QString kMainEQParameterKey = QStringLiteral("EffectForGroup_[Master]_parameter");
+const QString kMainEQParameterKey = QStringLiteral("EffectForGroup_[Main]_parameter");
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
         EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultQuickEffectChainName = QStringLiteral("Filter");
@@ -56,7 +56,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_curve(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
           m_calibration(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
           m_reverse(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
-          m_crossfader("[Master]", "crossfader"),
+          m_crossfader("[Main]", "crossfader"),
           m_xFaderReverse(false),
           m_COLoFreq(kConfigGroup, QStringLiteral("LoEQFrequency")),
           m_COHiFreq(kConfigGroup, QStringLiteral("HiEQFrequency")),
@@ -137,7 +137,7 @@ DlgPrefMixer::DlgPrefMixer(
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy("[Main]", "num_decks", this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefMixer::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -855,7 +855,7 @@ void DlgPrefMixer::setUpMainEQ() {
             &DlgPrefMixer::slotMainEqEffectChanged);
 
     const QString configuredEffectId = m_pConfig->getValue(ConfigKey(kConfigGroup,
-                                                                   "EffectForGroup_[Master]"),
+                                                                   "EffectForGroup_[Main]"),
             kDefaultMainEqId);
     const EffectManifestPointer configuredEffectManifest =
             m_pBackendManager->getManifestFromUniqueId(configuredEffectId);
@@ -983,7 +983,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
 
     // Update the configured effect for the current QComboBox
     if (pManifest) {
-        m_pConfig->set(ConfigKey(kConfigGroup, "EffectForGroup_[Master]"),
+        m_pConfig->set(ConfigKey(kConfigGroup, "EffectForGroup_[Main]"),
                 ConfigValue(pManifest->uniqueId()));
     }
 }

@@ -273,7 +273,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <status>0x96</status>
                 <midino>0x65</midino>
@@ -1218,7 +1218,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x3F</midino>
@@ -1722,7 +1722,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB6</status>
                 <midino>0x25</midino>
@@ -1821,7 +1821,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
@@ -1956,7 +1956,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB6</status>
                 <midino>0x05</midino>

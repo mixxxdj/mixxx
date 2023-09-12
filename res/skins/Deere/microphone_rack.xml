@@ -83,7 +83,7 @@
                       <Text>MAN</Text>
                     </State>
                     <Connection>
-                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                      <ConfigKey>[Main],talkoverDucking</ConfigKey>
                       <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                     </Connection>
                   </PushButton>
@@ -91,7 +91,7 @@
                   <!-- knob_with_label.xml template will not work here because
                   "Strength" label exceeds width of knob. -->
                   <Template src="skin:knob.xml">
-                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="group">[Main]</SetVariable>
                     <SetVariable name="control">duckStrength</SetVariable>
                     <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
                     <SetVariable name="color">blue</SetVariable>

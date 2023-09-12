@@ -12,7 +12,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x10</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <description></description>
                 <options>
@@ -32,7 +32,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x12</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <description></description>
                 <options>
@@ -182,7 +182,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x23</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>

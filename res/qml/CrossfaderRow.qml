@@ -60,7 +60,7 @@ Item {
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
             orientation: Qt.Horizontal
-            group: "[Master]"
+            group: "[Main]"
             key: "crossfader"
             barColor: Theme.crossfaderBarColor
             barStart: 0.5

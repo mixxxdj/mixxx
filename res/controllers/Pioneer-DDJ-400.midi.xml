@@ -623,7 +623,7 @@
             <!-- MIXER Section START -->
             <control>
                 <description>CROSSFADER - slider</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x1F</midino>
@@ -633,7 +633,7 @@
             </control>
             <control>
                 <description>CROSSFADER - slider</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB6</status>
                 <midino>0x3F</midino>
@@ -912,7 +912,7 @@
 
             <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB6</status>
                 <midino>0x2C</midino>
@@ -922,7 +922,7 @@
             </control>
             <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xB6</status>
                 <midino>0x0C</midino>
@@ -933,7 +933,7 @@
 
             <control>
                 <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <status>0xB6</status>
                 <midino>0x2D</midino>
@@ -943,7 +943,7 @@
             </control>
             <control>
                 <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headGain</key>
                 <status>0xB6</status>
                 <midino>0x0D</midino>

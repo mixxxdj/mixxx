@@ -464,12 +464,12 @@ CMDMM.init = function () {
   CMDMM.crossfader = new components.Pot({
     midi: [MIDI.CC,0x40],
     inKey: "crossfader",
-    group: "[Master]",
+    group: "[Main]",
   });
   CMDMM.middleButton = new components.Button({
     midi:[MIDI.noteOn,0x12],
     key: "crossfader",
-    group: "[Master]",
+    group: "[Main]",
     layer1: function () {
       this.input = function () {this.inSetParameter(0.5);};
       this.output = function () {this.send(this.inGetParameter()===0.5);};
@@ -491,22 +491,22 @@ CMDMM.init = function () {
   });
   CMDMM.out1 = new components.Pot({
     midi: [MIDI.CC,0x01],
-    group: "[Master]",
+    group: "[Main]",
     inKey: "balance",
   });
   CMDMM.out2 = new components.Pot({
     midi: [MIDI.CC,0x02],
-    group: "[Master]",
+    group: "[Main]",
     inKey: "gain",
   });
   CMDMM.cueVol = new components.Pot({
     midi: [MIDI.CC,0x04],
-    group: "[Master]",
+    group: "[Main]",
     inKey: "headGain",
   });
   CMDMM.cueMix = new components.Pot({
     midi: [MIDI.CC,0x05],
-    group: "[Master]",
+    group: "[Main]",
     inKey: "headMix",
   });
   CMDMM.libraryButton = new components.Button({
@@ -536,10 +536,10 @@ CMDMM.init = function () {
       this.speed=navEncoderScale;
     },
   });
-  CMDMM.VuMeterL = engine.makeUnbufferedConnection("[Master]","VuMeterL",function (value) {
+  CMDMM.VuMeterL = engine.makeUnbufferedConnection("[Main]","VuMeterL",function (value) {
     midi.sendShortMsg(MIDI.CC, 0x50, (value * 15) + 48);
   });
-  CMDMM.VuMeterR = engine.makeUnbufferedConnection("[Master]","VuMeterR",function (value) {
+  CMDMM.VuMeterR = engine.makeUnbufferedConnection("[Main]","VuMeterR",function (value) {
     midi.sendShortMsg(MIDI.CC, 0x51, (value * 15) + 48);
   });
   CMDMM.layer(1);
@@ -549,8 +549,8 @@ CMDMM.init = function () {
 };
 
 CMDMM.shutdown = function () {
-  engine.setParameter("[Master]","VuMeterL",0);
-  engine.setParameter("[Master]","VuMeterR",0);
+  engine.setParameter("[Main]","VuMeterL",0);
+  engine.setParameter("[Main]","VuMeterR",0);
   for (var i = 0; i<127; i++) {
     midi.sendShortMsg(MIDI.noteOn, i, 0);
     // sets the controller to orange (to match the left/right buttons which only light up in orange);

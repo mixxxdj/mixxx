@@ -45,7 +45,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* mixerMenu = addSubmenu(tr("Mixer"));
     // Crossfader / Orientation
     QMenu* crossfaderMenu = addSubmenu(tr("Crossfader / Orientation"), mixerMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "crossfader",
             tr("Crossfader"),
             tr("Crossfader"),
@@ -69,19 +69,19 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             crossfaderMenu);
     // Main Output
     QMenu* mainOutputMenu = addSubmenu(tr("Main Output"), mixerMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "gain",
             tr("Main Output Gain"),
             tr("Main Output gain"),
             mainOutputMenu,
             true);
-    addControl("[Master]",
+    addControl("[Main]",
             "balance",
             tr("Main Output Balance"),
             tr("Main Output balance"),
             mainOutputMenu,
             true);
-    addControl("[Master]",
+    addControl("[Main]",
             "delay",
             tr("Main Output Delay"),
             tr("Main Output delay"),
@@ -89,24 +89,24 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             true);
     // Headphone
     QMenu* headphoneMenu = addSubmenu(tr("Headphone"), mixerMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "headGain",
             tr("Headphone Gain"),
             tr("Headphone gain"),
             headphoneMenu,
             true);
-    addControl("[Master]",
+    addControl("[Main]",
             "headMix",
             tr("Headphone Mix"),
             tr("Headphone mix (pre/main)"),
             headphoneMenu,
             true);
-    addControl("[Master]",
+    addControl("[Main]",
             "headSplit",
             tr("Headphone Split Cue"),
             tr("Toggle headphone split cueing"),
             headphoneMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "headDelay",
             tr("Headphone Delay"),
             tr("Headphone delay"),
@@ -116,7 +116,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"), mixerMenu);
     constexpr int kNumEqRacks = 1;
-    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Main]", "num_decks")));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
@@ -893,7 +893,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         QString groupDescriptionPrefix = QString("%1").arg(
                 m_effectUnitStr.arg(iEffectUnitNumber));
 
-        addControl(effectUnitGroup, "group_[Master]_enable",
+        addControl(effectUnitGroup, "group_[Main]_enable",
                 assignString + m_effectMainOutputStr, // in ComboBox
                 assignString + m_effectMainOutputStr, // description below
                 effectUnitGroups,
@@ -921,7 +921,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumSamplers = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_samplers")));
+                ConfigKey("[Main]", "num_samplers")));
         for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                 ++iSamplerNumber) {
             // PlayerManager::groupForSampler is 0-indexed.
@@ -937,7 +937,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumMicrophones = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_microphones")));
+                ConfigKey("[Main]", "num_microphones")));
         for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
                 ++iMicrophoneNumber) {
             QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
@@ -952,7 +952,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumAuxiliaries = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries")));
+                ConfigKey("[Main]", "num_auxiliaries")));
         for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                 ++iAuxiliaryNumber) {
             QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
@@ -1112,13 +1112,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             microphoneMenu,
             true,
             false);
-    addControl("[Master]",
+    addControl("[Main]",
             "duckStrength",
             tr("Microphone Ducking Strength"),
             tr("Microphone Ducking Strength"),
             microphoneMenu,
             true);
-    addControl("[Master]",
+    addControl("[Main]",
             "talkoverDucking",
             tr("Microphone Ducking Mode"),
             tr("Toggle microphone ducking mode (OFF, AUTO, MANUAL)"),
@@ -1249,7 +1249,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("4 Effect Units Show/Hide"),
             tr("Switches between showing 2 and 4 effect units"),
             guiMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "show_mixer",
             tr("Mixer Show/Hide"),
             tr("Show or hide the mixer."),
@@ -1259,7 +1259,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Library)"),
             tr("Show/hide cover art in the library"),
             guiMenu);
-    addControl("[Master]",
+    addControl("[Main]",
             "maximize_library",
             tr("Library Maximize/Restore"),
             tr("Maximize the track library to take up all the available screen "
@@ -1392,10 +1392,10 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         bool previewdeckControls,
         bool addReset) {
     const int iNumSamplers = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_samplers")));
-    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+            ControlObject::get(ConfigKey("[Main]", "num_samplers")));
+    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Main]", "num_decks")));
     const int iNumPreviewDecks = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_preview_decks")));
+            ControlObject::get(ConfigKey("[Main]", "num_preview_decks")));
 
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
@@ -1518,7 +1518,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
 
     if (microphoneControls) {
         const int kNumMicrophones = static_cast<int>(
-                ControlObject::get(ConfigKey("[Master]", "num_microphones")));
+                ControlObject::get(ConfigKey("[Main]", "num_microphones")));
         for (int i = 1; i <= kNumMicrophones; ++i) {
             QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
@@ -1545,7 +1545,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
     }
 
     const int kNumAuxiliaries = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_auxiliaries")));
+            ControlObject::get(ConfigKey("[Main]", "num_auxiliaries")));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
             QString prefix = m_auxStr.arg(i);

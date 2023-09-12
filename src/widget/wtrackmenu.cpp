@@ -66,11 +66,11 @@ WTrackMenu::WTrackMenu(
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
     m_pNumSamplers = new ControlProxy(
-            "[Master]", "num_samplers", this);
+            "[Main]", "num_samplers", this);
     m_pNumDecks = new ControlProxy(
-            "[Master]", "num_decks", this);
+            "[Main]", "num_decks", this);
     m_pNumPreviewDecks = new ControlProxy(
-            "[Master]", "num_preview_decks", this);
+            "[Main]", "num_preview_decks", this);
 
     // Warn if any of the chosen features depend on a TrackModel
     VERIFY_OR_DEBUG_ASSERT(trackModel || (m_eTrackModelFeatures & flags) == 0) {

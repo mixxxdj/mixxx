@@ -194,7 +194,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x1</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <options>
                     <normal/>
@@ -429,7 +429,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x10</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <options>
                     <normal/>
@@ -447,7 +447,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x11</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <options>
                     <normal/>

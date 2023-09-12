@@ -37,7 +37,7 @@
                       <Template src="skin:hide_show_button.xml">
                         <SetVariable name="TooltipId">maximize_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Master],maximize_library</SetVariable>
+                        <SetVariable name="control">[Main],maximize_library</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>

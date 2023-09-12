@@ -291,10 +291,20 @@ void EffectChain::registerInputChannel(const ChannelHandleAndGroup& handleGroup,
         return;
     }
 
+    auto enableControlKey = ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name()));
     auto pEnableControl = std::make_shared<ControlPushButton>(
-            ConfigKey(m_group, QString("group_%1_enable").arg(handleGroup.name())),
+            enableControlKey,
             true,
             initialValue);
+
+    const QString groupAlias = ControlDoublePrivate::getGroupAlias(handleGroup.name());
+    if (!groupAlias.isEmpty()) {
+        ControlDoublePrivate::insertAlias(
+                ConfigKey(enableControlKey.group,
+                        QString("group_%1_enable").arg(groupAlias)),
+                enableControlKey);
+    }
+
     m_channelEnableButtons.insert(handleGroup, pEnableControl);
     pEnableControl->setButtonMode(ControlPushButton::POWERWINDOW);
     if (pEnableControl->toBool()) {

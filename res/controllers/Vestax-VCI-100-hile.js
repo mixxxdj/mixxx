@@ -196,7 +196,7 @@ HileVci100.registerScalers = function() {
 
 HileVci100.registerInputs = function() {
     HileVci100.modifiers = new Object();
-    HileVci100.modifiers["[Master]"] = new Object();
+    HileVci100.modifiers["[Main]"] = new Object();
     HileVci100.modifiers["[Channel1]"] = new Object();
     HileVci100.modifiers["[Channel2]"] = new Object();
 
@@ -260,9 +260,9 @@ HileVci100.registerInputs = function() {
     HileVci100.linkFader("deck2_eq2","[Channel2]","filterHigh","eq");
     HileVci100.linkFader("deck2_eq3","[Channel2]","filterMid","eq");
     HileVci100.linkFader("deck2_eq4","[Channel2]","filterLow","eq");
-    HileVci100.linkFader("crossfader","[Master]","crossfader");
-    HileVci100.linkFader("deck1_trim","[Master]","headVolume","master");
-    HileVci100.linkFader("deck2_trim","[Master]","headMix","crossfader");
+    HileVci100.linkFader("crossfader","[Main]","crossfader");
+    HileVci100.linkFader("deck1_trim","[Main]","headVolume","master");
+    HileVci100.linkFader("deck2_trim","[Main]","headMix","crossfader");
 
 };
 

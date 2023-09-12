@@ -9,9 +9,9 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults. -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">64</attribute>
-      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[Main],num_decks">4</attribute>
+      <attribute config_key="[Main],num_samplers">64</attribute>
+      <attribute config_key="[Main],num_preview_decks">1</attribute>
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
@@ -24,7 +24,7 @@
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Main],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_faders">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -51,26 +51,26 @@
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Main],maximize_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MainOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
@@ -187,7 +187,7 @@
         <Template src="skin:../Deere/tool_bar.xml"/>
 
         <!-- regular or maximized library -->
-        <WidgetStack currentpage="[Master],maximize_library">
+        <WidgetStack currentpage="[Main],maximize_library">
           <Children>
 
             <!-- regular library with decks etc. -->
@@ -221,7 +221,7 @@
             </Splitter><!-- regular library with decks etc. -->
 
             <!-- maximized Library with minimal decks -->
-            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+            <WidgetGroup trigger="[Main],maximize_library" on_hide_select="0">
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>

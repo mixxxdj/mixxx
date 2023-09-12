@@ -16,7 +16,7 @@
             <!-- General Controls -->
             <control>
                 <!-- Master Volume Pt 1 -->
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB0</status>
                 <midino>0x44</midino>
@@ -26,7 +26,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xB0</status>
                 <midino>0x45</midino>
@@ -37,7 +37,7 @@
             </control>
             <control>
                 <!-- Master HeadMix Pt 1 -->
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>MIDI Learned from 462 messages.</description>
                 <status>0xB0</status>
@@ -48,7 +48,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description>MIDI Learned from 462 messages.</description>
                 <status>0xB0</status>
@@ -60,7 +60,7 @@
             </control>
             <control>
                 <!-- Master Crossfader Pt 1 -->
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x48</midino>
@@ -70,7 +70,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x49</midino>

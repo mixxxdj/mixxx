@@ -40,7 +40,7 @@
 
               <Template src="skin:vumeter_latency.xml">
                 <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Main]</SetVariable>
                 <SetVariable name="control">audio_latency_usage</SetVariable>
               </Template>
             </Children>
@@ -53,7 +53,7 @@
             <Children>
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">master_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Main]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
                 <SetVariable name="label">Main</SetVariable>
@@ -67,7 +67,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">FX1</SetVariable>
                 <SetVariable name="state_1_text">FX1</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit1],group_[Main]_enable</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -78,7 +78,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">2</SetVariable>
                 <SetVariable name="state_1_text">2</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit2],group_[Main]_enable</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -89,7 +89,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">3</SetVariable>
                 <SetVariable name="state_1_text">3</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit3],group_[Main]_enable</SetVariable>
               </Template>
 
               <Template src="skin:left_2state_button.xml">
@@ -100,12 +100,12 @@
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">4</SetVariable>
                 <SetVariable name="state_1_text">4</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit4],group_[Main]_enable</SetVariable>
               </Template>
 
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">balance</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Main]</SetVariable>
                 <SetVariable name="control">balance</SetVariable>
                 <SetVariable name="color">purple</SetVariable>
                 <SetVariable name="label">Bal</SetVariable>
@@ -118,13 +118,13 @@
             <ObjectName>BoothControls</ObjectName>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Master],booth_enabled</ConfigKey>
+              <ConfigKey>[Main],booth_enabled</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">booth_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Main]</SetVariable>
                 <SetVariable name="control">booth_gain</SetVariable>
                 <SetVariable name="color">grey</SetVariable>
                 <SetVariable name="label">Booth</SetVariable>
@@ -139,14 +139,14 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <ConfigKey>[Main],headEnabled</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
 
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Main]</SetVariable>
                 <SetVariable name="control">headGain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
                 <SetVariable name="label">Head</SetVariable>
@@ -164,7 +164,7 @@
                     <MaxAngle>135</MaxAngle>
                     <KnobCenterYOffset>1.32</KnobCenterYOffset>
                     <Connection>
-                      <ConfigKey>[Master],headMix</ConfigKey>
+                      <ConfigKey>[Main],headMix</ConfigKey>
                     </Connection>
                   </KnobComposed>
                   <WidgetGroup>
@@ -197,7 +197,7 @@
                 <SetVariable name="SizePolicy">f,f</SetVariable>
                 <SetVariable name="state_0_text">SPLIT</SetVariable>
                 <SetVariable name="state_1_text">SPLIT</SetVariable>
-                <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
+                <SetVariable name="left_connection_control">[Main],headSplit</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
@@ -360,7 +360,7 @@
                 <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">MIXER</SetVariable>
                 <SetVariable name="state_1_text">MIXER</SetVariable>
-                <SetVariable name="left_connection_control">[Master],show_mixer</SetVariable>
+                <SetVariable name="left_connection_control">[Main],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -403,7 +403,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Main],maximize_library</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -441,13 +441,13 @@
                   <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Main],skin_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Main],skin_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>

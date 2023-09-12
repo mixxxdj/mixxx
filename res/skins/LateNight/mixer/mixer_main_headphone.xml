@@ -1,6 +1,6 @@
 <Template>
   <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
-  <SetVariable name="Group">[Master]</SetVariable>
+  <SetVariable name="Group">[Main]</SetVariable>
   <SetVariable name="KnobBg">master</SetVariable>
   <SetVariable name="KnobIndicator">master</SetVariable>
   <SetVariable name="ArcRadius"><Variable name="ArcRadiusCompact"/></SetVariable>
@@ -109,7 +109,7 @@
                   </WidgetGroup><!-- BoothLabelBox -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],booth_enabled</ConfigKey>
+                  <ConfigKey>[Main],booth_enabled</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- BoothKnobBox -->
@@ -251,7 +251,7 @@
                       <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
                     </State>
                     <Connection>
-                      <ConfigKey>[Master],headSplit</ConfigKey>
+                      <ConfigKey>[Main],headSplit</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                   </PushButton>

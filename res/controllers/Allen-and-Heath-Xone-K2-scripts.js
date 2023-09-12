@@ -114,7 +114,7 @@ XoneK2.shutdown = function(id) {
 XoneK2.decksBottomLeftEncoderPress = function (channel, control, value, status) {
     XoneK2.controllers[channel].leftEncoderIsPressed =  (status & 0xF0) === 0x90;
     if (XoneK2.controllers[channel].isShifted && XoneK2.controllers[channel].leftEncoderIsPressed) {
-        script.toggleControl('[Master]', 'headSplit');
+        script.toggleControl('[Main]', 'headSplit');
     }
 };
 XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
@@ -128,22 +128,22 @@ XoneK2.decksBottomLeftEncoder = function (channel, control, value, status) {
             }
             engine.setValue("[InternalClock]", "bpm", bpm);
         } else {
-            var mix = engine.getValue("[Master]", "headMix");
+            var mix = engine.getValue("[Main]", "headMix");
             if (value === 1) {
                 mix += 1;
             } else {
                 mix -= 1;
             }
-            engine.setValue("[Master]", "headMix", mix);
+            engine.setValue("[Main]", "headMix", mix);
         }
     } else {
-        var gain = engine.getValue("[Master]", "headGain");
+        var gain = engine.getValue("[Main]", "headGain");
         if (value === 1) {
             gain += 0.025;
         } else {
             gain -= 0.025;
         }
-        engine.setValue("[Master]", "headGain", gain);
+        engine.setValue("[Main]", "headGain", gain);
     }
 };
 
@@ -183,13 +183,13 @@ XoneK2.decksBottomRightEncoder = function (channel, control, value, status) {
         }
         engine.setValue("[InternalClock]", "bpm", bpm);
     } else {
-        var gain = engine.getValue("[Master]", "gain");
+        var gain = engine.getValue("[Main]", "gain");
         if (value === 1) {
             gain += 0.025;
         } else {
             gain -= 0.025;
         }
-        engine.setValue("[Master]", "gain", gain);
+        engine.setValue("[Main]", "gain", gain);
     }
 };
 
@@ -734,8 +734,8 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
             },
             shift: function () {
                 this.disconnect();
-                this.inKey = 'group_[Master]_enable';
-                this.outKey = 'group_[Master]_enable';
+                this.inKey = 'group_[Main]_enable';
+                this.outKey = 'group_[Main]_enable';
                 this.color = XoneK2.color.amber;
                 this.connect();
                 this.trigger();
@@ -895,7 +895,7 @@ XoneK2.EffectUnit = function (column, unitNumber, midiChannel, twoDeck) {
                     this.valueAtLastEffectSwitch = this.previousValueReceived;
                     // Floor the threshold to ensure that every effect can be selected
                     this.changeThreshold = Math.floor(this.max /
-                        engine.getValue('[Master]', 'num_effectsavailable'));
+                        engine.getValue('[Main]', 'num_effectsavailable'));
 
                     this.input = function (channel, control, value, status, group) {
                         var change = value - this.valueAtLastEffectSwitch;

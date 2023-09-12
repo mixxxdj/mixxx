@@ -9,13 +9,13 @@
   <controller id="us428" port="Port">
     <controls>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>crossfader</key>
         <status>0xB0</status>
         <midino>0xa4</midino>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headVolume</key>
         <status>0xB0</status>
         <midino>0x4c</midino>
@@ -24,7 +24,7 @@
       </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Main]</group>
         <key>headMix</key>
         <status>0xB0</status>
         <midino>0x4d</midino>

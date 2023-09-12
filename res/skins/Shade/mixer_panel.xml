@@ -75,7 +75,7 @@
                 <Pos>72,200</Pos>
                 <Horizontal>true</Horizontal>
                 <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
+                  <ConfigKey>[Main],crossfader</ConfigKey>
                   <EmitOnDownPress>false</EmitOnDownPress>
                 </Connection>
               </SliderComposed>
@@ -518,7 +518,7 @@
                 <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
                 <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[Main],audio_latency_overload</ConfigKey>
                 </Connection>
               </StatusLight>
 
@@ -537,7 +537,7 @@
                     <PeakFallStep>1</PeakFallStep>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[Main],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -649,7 +649,7 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>151,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],gain</ConfigKey>
+                  <ConfigKey>[Main],gain</ConfigKey>
                 </Connection>
               </Knob>
               <Knob>
@@ -658,7 +658,7 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>184,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],balance</ConfigKey>
+                  <ConfigKey>[Main],balance</ConfigKey>
                 </Connection>
               </Knob>
 
@@ -673,7 +673,7 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>45,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headMix</ConfigKey>
+                  <ConfigKey>[Main],headMix</ConfigKey>
                 </Connection>
               </Knob>
               <Knob>
@@ -682,7 +682,7 @@
                 <Path>knobs_no_center/knob_rotary_s%1.png</Path>
                 <Pos>78,15</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headGain</ConfigKey>
+                  <ConfigKey>[Main],headGain</ConfigKey>
                 </Connection>
               </Knob>
 
@@ -706,7 +706,7 @@
                 </State>
                 <Pos>11,18</Pos>
                 <Connection>
-                  <ConfigKey>[Master],headSplit</ConfigKey>
+                  <ConfigKey>[Main],headSplit</ConfigKey>
                 </Connection>
               </PushButton>
 
@@ -887,7 +887,7 @@
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],VuMeterL</ConfigKey>
+                      <ConfigKey>[Main],VuMeterL</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -906,7 +906,7 @@
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],VuMeterR</ConfigKey>
+                      <ConfigKey>[Main],VuMeterR</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -940,7 +940,7 @@
                 <PathBack>skin:/style/volume_clipping_master.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                  <ConfigKey>[Main],PeakIndicatorL</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
@@ -949,7 +949,7 @@
                 <PathBack>skin:/style/volume_clipping_master.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                  <ConfigKey>[Main],PeakIndicatorR</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>

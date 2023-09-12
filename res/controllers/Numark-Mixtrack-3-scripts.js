@@ -117,7 +117,7 @@ var loopsize = [2, 4, 8, 16, 0.125, 0.25, 0.5, 1];
 
 
 var NumarkMixtrack3 = {
-    group: "[Master]",
+    group: "[Main]",
     decks: [],
     samplers: []
 };
@@ -673,7 +673,7 @@ var AutoCut = function(decknum) {
 AutoCut.prototype.On = function() {
     if (!this.enabled) {
         this.enabled = true;
-        engine.softTakeover("[Master]", "crossfader", false);
+        engine.softTakeover("[Main]", "crossfader", false);
     }
 };
 
@@ -689,15 +689,15 @@ AutoCut.prototype.FaderCut = function(jogValue, decknum) {
         if (decknum === 1) {
             direction = -direction;
         } // else direction is of the good sign
-        engine.setValue("[Master]", "crossfader", direction);
+        engine.setValue("[Main]", "crossfader", direction);
     }
 };
 
 AutoCut.prototype.Off = function() {
     if (this.enabled) {
         this.enabled = false;
-        engine.setValue("[Master]", "crossfader", 0);
-        engine.softTakeover("[Master]", "crossfader", true);
+        engine.setValue("[Main]", "crossfader", 0);
+        engine.softTakeover("[Main]", "crossfader", true);
     }
 };
 
@@ -1091,7 +1091,7 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 	    } else {
 	        // Browse push : maximize/minimize library view
 	        if (value === ON) {
-	            script.toggleControl("[Master]", "maximize_library");
+	            script.toggleControl("[Main]", "maximize_library");
 	        }
 	    }
     }

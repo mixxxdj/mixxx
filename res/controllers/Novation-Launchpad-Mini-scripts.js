@@ -400,7 +400,7 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        NLM.numofdecks = engine.getValue("[Main]", "num_decks");
         // For testing NLM.numofdecks = 4;
 
         //Init hw

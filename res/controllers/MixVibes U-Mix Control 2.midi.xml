@@ -632,7 +632,7 @@
             <control>
                 <status>0xb2</status>
                 <midino>0x1</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>
@@ -642,7 +642,7 @@
             <control>
                 <status>0xb2</status>
                 <midino>0x3</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <description></description>
                 <options>

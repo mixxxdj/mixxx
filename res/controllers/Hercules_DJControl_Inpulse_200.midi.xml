@@ -237,7 +237,7 @@
             <!-- NN's MIDI Channel 4 (0x93 - SHIFT MODE)-->
             <!--Browser section (Encoder button)-->
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>Browser button - Maximize Library view</description>
                 <status>0x93</status>
@@ -877,7 +877,7 @@
             <!-- CC's MIDI Channel 1 (0xB0 Standard mode)-->
             <!--Crossfader-->
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xB0</status>
@@ -1293,7 +1293,7 @@
                 <off>0x07</off>
             </output>
             <output>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>maximize_library</key>
                 <description>Browser LED (GREEN)</description>
                 <minimum>0.5</minimum>

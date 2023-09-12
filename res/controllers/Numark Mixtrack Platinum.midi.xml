@@ -1981,7 +1981,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <status>0xBF</status>
                 <midino>0x0D</midino>
@@ -1990,7 +1990,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>MixtrackPlatinum.head_gain.input</key>
                 <status>0xBF</status>
                 <midino>0x0C</midino>
@@ -1999,7 +1999,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <status>0xBF</status>
                 <midino>0x0A</midino>
@@ -2008,7 +2008,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <status>0xBF</status>
                 <midino>0x08</midino>

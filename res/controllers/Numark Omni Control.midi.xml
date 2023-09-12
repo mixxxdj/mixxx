@@ -413,7 +413,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0xa</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>
@@ -463,7 +463,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0xf</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headVolume</key>
                 <description></description>
                 <options>
@@ -533,7 +533,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x16</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>headMix</key>
                 <description></description>
                 <options>
@@ -543,7 +543,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x17</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>volume</key>
                 <description></description>
                 <options>
@@ -593,7 +593,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x31</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>NumarkTotalControl.toggleSimpleCue</key>
                 <description></description>
                 <options>
@@ -633,7 +633,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x35</midino>
-                <group>[Master]</group>
+                <group>[Main]</group>
                 <key>NumarkTotalControl.toggleExtendedLooping</key>
                 <description></description>
                 <options>

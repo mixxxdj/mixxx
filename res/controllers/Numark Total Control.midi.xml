@@ -14,25 +14,25 @@
 		<controls>
 <!-- Master and PFL controls -->
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>headVolume</key>
 				<status>0xb0</status>
 				<midino>0x0f</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>headMix</key>
 				<status>0xb0</status>
 				<midino>0x16</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>volume</key>
 				<status>0xb0</status>
 				<midino>0x17</midino>
 			</control>
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>crossfader</key>
 				<status>0xb0</status>
 				<midino>0x0a</midino>
@@ -184,7 +184,7 @@
 			</control>
 			<!-- Select -->
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>NumarkTotalControl.toggleSimpleCue</key>
 				<status>0x90</status>
 				<midino>0x31</midino>
@@ -453,7 +453,7 @@
 <!-- Loops -->
 			<!-- Select -->
 			<control>
-				<group>[Master]</group>
+				<group>[Main]</group>
 				<key>NumarkTotalControl.toggleExtendedLooping</key>
 				<status>0x90</status>
 				<midino>0x35</midino>

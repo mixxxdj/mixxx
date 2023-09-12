@@ -56,7 +56,7 @@
                             <SetVariable name="TooltipId">maximize_library</SetVariable>
                             <SetVariable name="ObjectName">LibExpand</SetVariable>
                             <SetVariable name="Size">18f,18me</SetVariable>
-                            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                            <SetVariable name="ConfigKey">[Main],maximize_library</SetVariable>
                           </Template>
                         </Children>
                       </WidgetGroup><!-- LibExpandBox -->

@@ -486,12 +486,12 @@ HerculesMP3e2.pitch = function(midino, control, value, status, group) {
         sign = (value == 0x01) ? 1 : -1;
 
         if (group == "[Channel1]") {
-            newValue = HerculesMP3e2.knobIncrement("[Master]", "headVolume", 0, 5, 1, 30, sign);
-            engine.setValue("[Master]", "headVolume", newValue);
+            newValue = HerculesMP3e2.knobIncrement("[Main]", "headVolume", 0, 5, 1, 30, sign);
+            engine.setValue("[Main]", "headVolume", newValue);
         }
         if (group == "[Channel2]") {
-            newValue = HerculesMP3e2.knobIncrement("[Master]", "headMix", -1, 1, 0, 20, sign);
-            engine.setValue("[Master]", "headMix", newValue);
+            newValue = HerculesMP3e2.knobIncrement("[Main]", "headMix", -1, 1, 0, 20, sign);
+            engine.setValue("[Main]", "headMix", newValue);
         }
     } else {
         var deck = HerculesMP3e2.switchDeck(group);
