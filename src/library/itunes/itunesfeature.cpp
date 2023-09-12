@@ -366,7 +366,7 @@ void ITunesFeature::onTrackCollectionLoaded() {
     if (root) {
         m_pSidebarModel->setRootItem(std::move(root));
 
-        // Tell the rhythmbox track source that it should re-build its index.
+        // Tell the iTunes track source that it should re-build its index.
         m_trackSource->buildIndex();
 
         //m_pITunesTrackModel->select();
