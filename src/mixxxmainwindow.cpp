@@ -159,11 +159,8 @@ void MixxxMainWindow::initializeQOpenGL() {
 #else
     if (!CmdlineArgs::Instance().getSafeMode()) {
 #endif
-        QSurfaceFormat format;
-        format.setVersion(2, 1);
-        format.setProfile(QSurfaceFormat::CoreProfile);
         QOpenGLContext context;
-        context.setFormat(format);
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
         if (context.create()) {
             // This widget and its QOpenGLWindow will be used to query QOpenGL
             // information (version, driver, etc) in WaveformWidgetFactory.
@@ -176,11 +173,11 @@ void MixxxMainWindow::initializeQOpenGL() {
             // with the actual initialization
             connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
             widget->show();
-            // note: the format is set in the WGLWidget's OpenGLWindow constructor
             return;
         }
+        qDebug() << "QOpenGLContext::create() failed";
     }
-    // Initialize without OpenGL.
+    qInfo() << "Initializing without OpenGL";
     initialize();
 }
 #endif
