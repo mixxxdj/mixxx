@@ -61,12 +61,15 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
     QString idColumn = "id";
     QStringList columns = {
             "id",
+            "timesplayed",
+            "last_played_at",
             "artist",
             "title",
             "album",
             "album_artist",
             "year",
             "genre",
+            "composer",
             "grouping",
             "tracknumber",
             "location",
@@ -74,13 +77,15 @@ ITunesFeature::ITunesFeature(Library* pLibrary, UserSettingsPointer pConfig)
             "duration",
             "bitrate",
             "bpm",
-            "rating"};
+            "rating",
+            "datetime_added"};
     QStringList searchColumns = {
             "artist",
             "album",
             "album_artist",
             "location",
             "grouping",
+            "composer",
             "comment",
             "title",
             "genre"};
