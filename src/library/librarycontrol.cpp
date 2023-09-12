@@ -195,6 +195,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+    m_pAutoDjAddTop->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddTop")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddTop.get(),
             &ControlPushButton::valueChanged,
@@ -203,6 +205,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 #endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+    m_pAutoDjAddBottom->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddBottom")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddBottom.get(),
             &ControlPushButton::valueChanged,
@@ -413,9 +417,6 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
-
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QApplication* app = qApp;
