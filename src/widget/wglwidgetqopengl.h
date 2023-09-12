@@ -20,7 +20,6 @@ class WGLWidget : public QWidget {
     ~WGLWidget();
 
     bool isContextValid() const;
-    bool isContextSharing() const;
 
     bool shouldRender() const;
 

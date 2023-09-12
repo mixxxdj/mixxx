@@ -174,7 +174,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
 
             if (majorVersion * 100 + minorVersion >= 201) {
-                m_openGlAvailable = true;
                 if (pContext->isOpenGLES()) {
                     m_openGlesAvailable = true;
                 } else {
@@ -185,6 +184,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             if (!rendererString.isEmpty()) {
                 m_openGLVersion += " (" + rendererString + ")";
             }
+        } else {
+            qDebug() << "QOpenGLContext::currentContext() returns nullptr";
         }
         widget->doneCurrent();
         widget->hide();
@@ -818,16 +819,15 @@ void WaveformWidgetFactory::swap() {
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
-    if (m_openGlAvailable) {
-        if (m_openGLShaderAvailable) {
+    if (isOpenGlShaderAvailable()) {
 #ifndef MIXXX_USE_QOPENGL
-            return WaveformWidgetType::GLSLRGBWaveform;
+        return WaveformWidgetType::GLSLRGBWaveform;
 #else
-            return WaveformWidgetType::AllShaderRGBWaveform;
+        return WaveformWidgetType::AllShaderRGBWaveform;
 #endif
-        } else {
-            return WaveformWidgetType::GLRGBWaveform;
-        }
+    }
+    if (isOpenGlAvailable() || isOpenGlesAvailable()) {
+        return WaveformWidgetType::GLRGBWaveform;
     }
     return WaveformWidgetType::RGBWaveform;
 }
@@ -1182,4 +1182,35 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
         return name;
     }
     return QStringLiteral("%1 (%2)").arg(name, extras.join(QStringLiteral(", ")));
+}
+
+// static
+QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
+    QSurfaceFormat format;
+    format.setVersion(2, 1);
+    format.setProfile(QSurfaceFormat::CoreProfile);
+
+    // setSwapInterval sets the application preferred swap interval
+    // in minimum number of video frames that are displayed before a buffer swap occurs
+    // - 0 will turn the vertical refresh syncing off
+    // - 1 (default) means swapping after drawig a video frame to the buffer
+    // - n means swapping after drawing n video frames to the buffer
+    //
+    // The vertical sync setting requested by the OpenGL application, can be overwritten
+    // if a user changes the "Wait for vertical refresh" setting in AMD graphic drivers
+    // for Windows.
+
+#if defined(__APPLE__)
+    // On OS X, syncing to vsync has good performance FPS-wise and
+    // eliminates tearing. (This is an comment from pre QOpenGLWindow times)
+    format.setSwapInterval(1);
+#else
+    // It seems that on Windows (at least for some AMD drivers), the setting 1 is not
+    // not properly handled. We saw frame rates divided by exact integers, like it should
+    // be with values >1 (see https://github.com/mixxxdj/mixxx/issues/11617)
+    // Reported as https://bugreports.qt.io/browse/QTBUG-114882
+    // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
+    format.setSwapInterval(0);
+#endif
+    return format;
 }
