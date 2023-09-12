@@ -1,15 +1,15 @@
 <!--
 Description:
-	Container for Master mixer in topbar.
+	Container for Main mixer in topbar.
 -->
 <Template>
-  <WidgetGroup><!-- Master Mixer -->
+  <WidgetGroup><!-- Main Mixer -->
     <ObjectName>MixerbarSection</ObjectName>
     <Layout>horizontal</Layout>
     <Size>-1min,28f</Size>
     <Children>
       <WidgetGroup>
-        <ObjectName>MasterMixerLabel</ObjectName>
+        <ObjectName>MainMixerLabel</ObjectName>
         <Size>24f,24f</Size>
       </WidgetGroup>
 
@@ -19,10 +19,10 @@ Description:
         <SizePolicy>min,me</SizePolicy>
         <Children>
           <KnobComposed>
-            <TooltipId>master_gain</TooltipId>
+            <TooltipId>main_gain</TooltipId>
             <Size>26f,22f</Size>
             <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
-            <BackPath>skin:../Tango/knobs_sliders/knob_bg_master.svg</BackPath>
+            <BackPath>skin:../Tango/knobs_sliders/knob_bg_main.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -72,34 +72,34 @@ Description:
       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
       <WidgetGroup><!-- FX assignment buttons -->
-        <ObjectName>FxMasterToggles</ObjectName>
+        <ObjectName>FxMainToggles</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>FxMasterToggles</ObjectName>
+            <ObjectName>FxMainToggles</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">3</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>FxMasterToggles</ObjectName>
+            <ObjectName>FxMainToggles</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/master_button.xml">
+              <Template src="skin:../Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">4</SetVariable>
               </Template>
             </Children>
@@ -112,8 +112,8 @@ Description:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+      <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-  </WidgetGroup><!-- /Master Mixer -->
+  </WidgetGroup><!-- /Main Mixer -->
 </Template>

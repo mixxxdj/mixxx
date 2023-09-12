@@ -17,10 +17,6 @@
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
-
     addRenderer<GLWaveformRenderBackground>(); // 172 µs
     //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
     //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)

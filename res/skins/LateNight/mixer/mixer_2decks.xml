@@ -60,7 +60,7 @@
                   </SingletonContainer>
                   <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
                   <SingletonContainer>
-                    <ObjectName>VuMeterMaster_Dark</ObjectName>
+                    <ObjectName>VuMeterMain_Dark</ObjectName>
                   </SingletonContainer>
                   <WidgetGroup><Size>7f,0min</Size></WidgetGroup>
                   <SingletonContainer>

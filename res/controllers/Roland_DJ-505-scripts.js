@@ -30,7 +30,7 @@
  * not switch it off. The performance pad LEDs can all be set individually
  * (including the mode buttons).
  *
- * The TR-S output is not connected to the master out. Instead, it is connected
+ * The TR-S output is not connected to the main out. Instead, it is connected
  * to one of input channels of the controller's audio interface. Hence, the
  * TR/SAMPLER LEVEL knob does not control the output volume of TR-S, and
  * works as a generic MIDI control instead.
@@ -801,7 +801,7 @@ DJ505.Sampler = function() {
      * In this mode, the BPM can be set by sending MIDI clock
      * messages (0xF8). The sampler can be started by sending one MIDI
      * message per bar (0xBA 0x02 XX). The TR-S is not directly connected to
-     * the master out. Instead, the sound is played on channels 7-8 so that the
+     * the main out. Instead, the sound is played on channels 7-8 so that the
      * signal can be routed through the FX section.
      *
      * The SERATO SAMPLER features 8 instruments (S1 - S8) that can be to play

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSurfaceFormat>
 #include <QVector>
 #include <vector>
 
@@ -97,6 +98,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+
+    /// Returns the desired surface format for the OpenGLWindow
+    static QSurfaceFormat getSurfaceFormat();
 
   protected:
     bool setWidgetType(

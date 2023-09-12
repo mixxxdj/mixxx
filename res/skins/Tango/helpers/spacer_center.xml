@@ -8,7 +8,7 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><!-- with mixer and Master VU -->
+      <WidgetGroup><!-- with mixer and Main VU -->
         <Layout>vertical</Layout>
         <Size>16f,0f</Size>
         <Connection>

@@ -1,14 +1,14 @@
 <!--
 Description:
-  A button to assign an effect unit to master output.
+  A button to assign an effect unit to main output.
 Variables:
   Size
   FxUnitNum      : [EffectRack1_EffectUnitN]
 -->
 <Template>
   <PushButton>
-    <TooltipId>EffectUnit_master_enabled</TooltipId>
-    <ObjectName>FxMasterButton</ObjectName>
+    <TooltipId>EffectUnit_main_enabled</TooltipId>
+    <ObjectName>FxMainButton</ObjectName>
     <Size>26f,13f</Size>
     <NumberStates>2</NumberStates>
     <State>

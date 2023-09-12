@@ -35,7 +35,7 @@
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
                   <Template src="skin:../LateNight/controls/button_2state.xml">
-                    <SetVariable name="TooltipId">master_enable</SetVariable>
+                    <SetVariable name="TooltipId">main_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlay</SetVariable>
                     <SetVariable name="Size">42f,26f</SetVariable>
                     <SetVariable name="BtnSize">medium</SetVariable>

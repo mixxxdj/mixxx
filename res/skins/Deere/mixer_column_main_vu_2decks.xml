@@ -1,5 +1,5 @@
 <!DOCTYPE template>
-<!-- Master level meter -->
+<!-- Main level meter -->
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
@@ -20,7 +20,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <Template src="skin:vumeter_master.xml"/>
+          <Template src="skin:vumeter_main.xml"/>
         </Children>
       </WidgetGroup>
 

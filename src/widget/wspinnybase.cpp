@@ -43,6 +43,7 @@ WSpinnyBase::WSpinnyBase(
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
+          m_pShowCoverProxy(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -73,9 +74,6 @@ WSpinnyBase::WSpinnyBase(
 #endif // __VINYLCONTROL__
     // Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinnyBase(): Created WGLWidget, Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
