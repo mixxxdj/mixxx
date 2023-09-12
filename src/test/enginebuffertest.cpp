@@ -251,7 +251,7 @@ TEST_F(EngineBufferE2ETest, ScratchTest) {
     ProcessBuffer();
     assertBufferMatchesReference(m_pEngineMixer->getMainBuffer(),
             kProcessBufferSize,
-            "ScratchTestMaster");
+            "ScratchTestMain");
 }
 
 TEST_F(EngineBufferE2ETest, ScratchTestStart) {

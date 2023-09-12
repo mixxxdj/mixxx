@@ -47,12 +47,12 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>MasterControls</ObjectName>
+            <ObjectName>MainControls</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:knob_toolbar.xml">
-                <SetVariable name="TooltipId">master_gain</SetVariable>
+                <SetVariable name="TooltipId">main_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
@@ -60,7 +60,7 @@
               </Template>
 
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">26,22</SetVariable>
                 <SetVariable name="MaximumSize">26,22</SetVariable>
@@ -71,7 +71,7 @@
               </Template>
 
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
                 <SetVariable name="MaximumSize">18,22</SetVariable>
@@ -82,7 +82,7 @@
               </Template>
 
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
                 <SetVariable name="MaximumSize">18,22</SetVariable>
@@ -93,7 +93,7 @@
               </Template>
 
               <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
                 <SetVariable name="MaximumSize">18,22</SetVariable>

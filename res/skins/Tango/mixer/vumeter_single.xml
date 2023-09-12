@@ -1,6 +1,6 @@
 <!--
 Description:
-  VUMeter template for mixer VU meter and floating channel & Master VU meter
+  VUMeter template for mixer VU meter and floating channel & Main VU meter
 Variables:
   group   : [ChannelN]
   side    : L or R

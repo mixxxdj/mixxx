@@ -48,7 +48,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>master_enable</TooltipId>
+        <TooltipId>main_enable</TooltipId>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>

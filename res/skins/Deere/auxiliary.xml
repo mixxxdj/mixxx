@@ -101,7 +101,7 @@
                 <Children>
 
                   <Template src="skin:left_2state_button.xml">
-                    <SetVariable name="TooltipId">master_enable</SetVariable>
+                    <SetVariable name="TooltipId">main_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
                     <SetVariable name="MinimumSize">32,22</SetVariable>
                     <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>

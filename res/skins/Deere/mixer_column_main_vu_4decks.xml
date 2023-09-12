@@ -1,11 +1,11 @@
 <!DOCTYPE template>
-<!-- Master level meter -->
+<!-- Main level meter -->
 <Template>
 
   <SingletonDefinition>
-    <ObjectName>StereoVUMeterMaster</ObjectName>
+    <ObjectName>StereoVUMeterMain</ObjectName>
     <Children>
-      <Template src="skin:vumeter_master.xml"/>
+      <Template src="skin:vumeter_main.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -29,7 +29,7 @@
             <MaximumSize>60,300</MaximumSize>
             <Children>
               <SingletonContainer>
-                <ObjectName>StereoVUMeterMaster</ObjectName>
+                <ObjectName>StereoVUMeterMain</ObjectName>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
@@ -90,7 +90,7 @@
                     <MaximumSize>60,180</MaximumSize>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>StereoVUMeterMaster</ObjectName>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
                       </SingletonContainer>
                     </Children>
                     <Connection>
@@ -107,7 +107,7 @@
                     <MaximumSize>60,210</MaximumSize>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>StereoVUMeterMaster</ObjectName>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
                       </SingletonContainer>
                     </Children>
                     <Connection>
@@ -134,7 +134,7 @@
                     <MaximumSize>60,193</MaximumSize>
                     <Children>
                       <SingletonContainer>
-                        <ObjectName>StereoVUMeterMaster</ObjectName>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
                       </SingletonContainer>
                     </Children>
                   </WidgetGroup>
