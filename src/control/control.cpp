@@ -108,6 +108,10 @@ void ControlDoublePrivate::setUserConfig(const UserSettingsPointer& pConfig) {
 // static
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     MMutexLocker locker(&s_qCOHashMutex);
+    VERIFY_OR_DEBUG_ASSERT(alias != key) {
+        qWarning() << "cannot create alias with identical key" << key;
+        return;
+    }
 
     auto it = s_qCOHash.constFind(key);
     VERIFY_OR_DEBUG_ASSERT(it != s_qCOHash.constEnd()) {
