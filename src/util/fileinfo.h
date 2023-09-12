@@ -258,6 +258,8 @@ class FileInfo final {
 
     // This can be used to assert that the object is thread-safe copyable like QFileInfo
     static constexpr bool isQFileInfo() {
+        // This only works because Qt's implicit sharing allows copies to be
+        // threadsafe and this class only consists of a single QFileInfo member.
         // Additional member variables will violate this assumption
         return (sizeof(QFileInfo) == sizeof(mixxx::FileInfo) &&
                 std::is_same_v<decltype(m_fileInfo), QFileInfo>);
