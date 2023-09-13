@@ -44,9 +44,6 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
     m_pKillHigh = parameters.value("killHigh");
 }
 
-Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
-}
-
 void Bessel8LVMixEQEffect::processChannel(
         Bessel8LVMixEQEffectGroupState* pState,
         const CSAMPLE* pInput,

@@ -22,7 +22,7 @@ class Bessel4LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilt
 class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
   public:
     Bessel4LVMixEQEffect();
-    ~Bessel4LVMixEQEffect() override;
+    ~Bessel4LVMixEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
