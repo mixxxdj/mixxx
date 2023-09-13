@@ -22,8 +22,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
     m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
-    ControlDoublePrivate::insertAlias(
-            ConfigKey(getGroup(), "master"), ConfigKey(getGroup(), "main_mix"));
+    m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);

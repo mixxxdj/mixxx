@@ -18,8 +18,7 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* p
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)) {
     // Make input_configured read-only.
     m_pInputConfigured->setReadOnly();
-    ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
-                                      ConfigKey(getGroup(), "input_configured"));
+    m_pInputConfigured->addAlias(ConfigKey(getGroup(), QStringLiteral("enabled")));
 
     // by default Aux is disabled on the main and disabled on PFL. User
     // can over-ride by setting the "pfl" or "main_mix" controls.
