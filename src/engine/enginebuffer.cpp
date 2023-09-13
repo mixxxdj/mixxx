@@ -1389,7 +1389,6 @@ mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     if (!m_playPos.isValid() ||
             !m_trackSampleRateOld.isValid() ||
-            m_tempo_ratio_old == 0 ||
             m_pPassthroughEnabled->toBool()) {
         // Skip indicator updates with invalid values to prevent undefined behavior,
         // e.g. in WaveformRenderBeat::draw().
