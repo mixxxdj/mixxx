@@ -120,7 +120,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // EQs
     QMenu* eqMenu = addSubmenu(tr("Equalizers"), mixerMenu);
     constexpr int kNumEqRacks = 1;
-    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+    const int iNumDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(kAppGroup, QStringLiteral("num_decks"))));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
@@ -925,7 +926,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumSamplers = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_samplers")));
+                ConfigKey(kAppGroup, QStringLiteral("num_samplers"))));
         for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
                 ++iSamplerNumber) {
             // PlayerManager::groupForSampler is 0-indexed.
@@ -941,7 +942,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumMicrophones = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_microphones")));
+                ConfigKey(kAppGroup, QStringLiteral("num_microphones"))));
         for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
                 ++iMicrophoneNumber) {
             QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
@@ -956,7 +957,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         }
 
         const int iNumAuxiliaries = static_cast<int>(ControlObject::get(
-                ConfigKey("[Master]", "num_auxiliaries")));
+                ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries"))));
         for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
                 ++iAuxiliaryNumber) {
             QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
@@ -1396,10 +1397,11 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
         bool previewdeckControls,
         bool addReset) {
     const int iNumSamplers = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_samplers")));
-    const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
+            ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_samplers"))));
+    const int iNumDecks = static_cast<int>(ControlObject::get(
+            ConfigKey(kAppGroup, QStringLiteral("num_decks"))));
     const int iNumPreviewDecks = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_preview_decks")));
+            ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_preview_decks"))));
 
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
@@ -1522,7 +1524,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
 
     if (microphoneControls) {
         const int kNumMicrophones = static_cast<int>(
-                ControlObject::get(ConfigKey("[Master]", "num_microphones")));
+                ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_microphones"))));
         for (int i = 1; i <= kNumMicrophones; ++i) {
             QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
@@ -1549,7 +1551,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
     }
 
     const int kNumAuxiliaries = static_cast<int>(
-            ControlObject::get(ConfigKey("[Master]", "num_auxiliaries")));
+            ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries"))));
     if (auxControls) {
         for (int i = 1; i <= kNumAuxiliaries; ++i) {
             QString prefix = m_auxStr.arg(i);

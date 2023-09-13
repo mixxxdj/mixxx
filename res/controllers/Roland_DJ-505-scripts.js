@@ -163,8 +163,8 @@ DJ505.init = function() {
     engine.makeConnection("[Channel3]", "track_loaded", DJ505.autoShowDecks);
     engine.makeConnection("[Channel4]", "track_loaded", DJ505.autoShowDecks);
 
-    if (engine.getValue("[Master]", "num_samplers") < 16) {
-        engine.setValue("[Master]", "num_samplers", 16);
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
     }
 
     // Send Serato SysEx messages to request initial state and unlock pads

@@ -376,7 +376,7 @@ ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status,
 };
 
 ReloopBeatmix24.SamplerVol = function(channel, control, value, _status, _group) {
-    for (let i = 1; i <= engine.getValue("[Master]", "num_samplers"); i++) {
+    for (let i = 1; i <= engine.getValue("[App]", "num_samplers"); i++) {
         engine.setValue("[Sampler" + i + "]", "volume", value / 127.0);
     }
 };

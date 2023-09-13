@@ -20,9 +20,12 @@
 using ::testing::_;
 using ::testing::Return;
 
-static int kDefaultTransitionTime = 10;
+namespace {
+const int kDefaultTransitionTime = 10;
 const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
 const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
 
 class FakeMixer {
   public:
@@ -124,10 +127,10 @@ class FakeDeck : public BaseTrackPlayer {
 class MockPlayerManager : public PlayerManagerInterface {
   public:
     MockPlayerManager()
-            : numDecks(ConfigKey("[Master]", "num_decks"), true),
-              numSamplers(ConfigKey("[Master]", "num_samplers"), true),
-              numPreviewDecks(ConfigKey("[Master]", "num_preview_decks"),
-                              true) {
+            : numDecks(ConfigKey(kAppGroup, QStringLiteral("num_decks")), true),
+              numSamplers(ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true),
+              numPreviewDecks(ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")),
+                      true) {
     }
 
     virtual ~MockPlayerManager() {
