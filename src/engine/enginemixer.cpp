@@ -28,6 +28,10 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+}
+
 EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
         const QString& group,
@@ -67,7 +71,9 @@ EngineMixer::EngineMixer(
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     // Main sample rate
-    m_pMainSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
+    m_pMainSampleRate = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("samplerate")), true, true);
+    m_pMainSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
     m_pMainSampleRate->set(44100.);
 
     // Latency control

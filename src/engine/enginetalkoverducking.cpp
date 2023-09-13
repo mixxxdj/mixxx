@@ -14,7 +14,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
         : EngineSideChainCompressor(group),
           m_pConfig(pConfig),
           m_group(group) {
-    m_pSampleRate = new ControlProxy(m_group, "samplerate", this);
+    m_pSampleRate = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("samplerate"), this);
     m_pSampleRate->connectValueChanged(this,
             &EngineTalkoverDucking::slotSampleRateChanged,
             Qt::DirectConnection);

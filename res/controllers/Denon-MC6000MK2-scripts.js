@@ -1333,14 +1333,14 @@ DenonMC6000MK2.getJogDeltaValue = function(value) {
 };
 
 DenonMC6000MK2.initValues = function() {
-    DenonMC6000MK2.backupSampleRate = engine.getValue(DenonMC6000MK2.group, "samplerate");
+    DenonMC6000MK2.backupSampleRate = engine.getValue("[App]", "samplerate");
     if (DenonMC6000MK2.backupSampleRate !== DenonMC6000MK2.SAMPLE_RATE) {
         DenonMC6000MK2.logInfo(
             "Adjusting sample rate: " +
             DenonMC6000MK2.backupSampleRate +
             " -> " +
             DenonMC6000MK2.SAMPLE_RATE);
-        DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.SAMPLE_RATE);
+        engine.setValue("[App]", "samplerate", DenonMC6000MK2.SAMPLE_RATE);
     }
     DenonMC6000MK2.backupNumDecks = DenonMC6000MK2.getValue("num_decks");
     if (DenonMC6000MK2.backupNumDecks !== DenonMC6000MK2.DECK_COUNT) {

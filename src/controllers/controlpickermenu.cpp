@@ -11,6 +11,10 @@
 #include "recording/defs_recording.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+}
+
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
     m_effectMainOutputStr = tr("Main Output");

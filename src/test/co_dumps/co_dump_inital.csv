@@ -1583,7 +1583,7 @@
 [EffectRack1_EffectUnit1_Effect2],parameter2_set_one,0
 [Microphone],talkover,0
 [Sampler4],hotcue_31_position,-1
-[Master],samplerate,44100
+[App],samplerate,44100
 [EffectRack1_EffectUnit4_Effect4],parameter10_set_default,0
 [EffectRack1_EffectUnit1_Effect3],parameter3_link_inverse,0
 [EffectRack1_EffectUnit3_Effect4],parameter8_link_inverse,0
