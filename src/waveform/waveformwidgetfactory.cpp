@@ -1187,7 +1187,11 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
 // static
 QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
     QSurfaceFormat format;
+    // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
     format.setVersion(2, 1);
+    // Core and Compatibility contexts have been introduced in openGL 3.2
+    // From 3.0 to 3.1 we have implicit the Core profile and Before 3.0 we have the
+    // Compatibility profile
     format.setProfile(QSurfaceFormat::CoreProfile);
 
     // setSwapInterval sets the application preferred swap interval
