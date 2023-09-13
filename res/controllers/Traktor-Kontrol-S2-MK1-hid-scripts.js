@@ -141,8 +141,6 @@ class DeckClass {
         config.hidReport.addControl(this.channel, name, config.offset, "B", config.mask, false, callback);
     }
     registerLed(name, config) {
-        console.log(name);
-        console.log(config.hidReport);
         config.hidReport.addOutput(this.channel, name, config.offset, "B");
     }
     linkLed(name, callback) {
