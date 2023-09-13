@@ -51,7 +51,7 @@ class DeckClass {
         this.eq = new Equalizer(this);
         this.lastTickTime = 0;
         this.lastTickValue = 0;
-        this.syncEnabledTime = {};
+        this.syncEnabledTime = NaN;
         this.calibration = null;
     }
     registerInputs(config) {
