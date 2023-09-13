@@ -352,10 +352,6 @@ void DlgPrefSound::addPath(const AudioOutput& output) {
             m_outputDevices,
             false,
             AudioPath::isIndexed(type) ? output.getIndex() : 0);
-    connect(this,
-            &DlgPrefSound::refreshOutputDevices,
-            pSoundItem,
-            &DlgPrefSoundItem::refreshDevices);
     insertItem(pSoundItem, outputVLayout);
     connectSoundItem(pSoundItem);
 
@@ -373,11 +369,6 @@ void DlgPrefSound::addPath(const AudioInput& input) {
             m_inputDevices,
             true,
             AudioPath::isIndexed(type) ? input.getIndex() : 0);
-
-    connect(this,
-            &DlgPrefSound::refreshInputDevices,
-            pSoundItem,
-            &DlgPrefSoundItem::refreshDevices);
     connectSoundItem(pSoundItem);
     insertItem(pSoundItem, inputVLayout);
 
@@ -395,7 +386,14 @@ void DlgPrefSound::connectSoundItem(DlgPrefSoundItem* pItem) {
             &DlgPrefSound::deviceChannelsChanged);
     connect(this, &DlgPrefSound::loadPaths, pItem, &DlgPrefSoundItem::loadPath);
     connect(this, &DlgPrefSound::writePaths, pItem, &DlgPrefSoundItem::writePath);
-    connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
+    if (pItem->isInput()) {
+        connect(this, &DlgPrefSound::refreshInputDevices, pItem, &DlgPrefSoundItem::refreshDevices);
+    } else {
+        connect(this,
+                &DlgPrefSound::refreshOutputDevices,
+                pItem,
+                &DlgPrefSoundItem::refreshDevices);
+    }
     connect(this, &DlgPrefSound::updatingAPI, pItem, &DlgPrefSoundItem::save);
     connect(this, &DlgPrefSound::updatedAPI, pItem, &DlgPrefSoundItem::reload);
 }
