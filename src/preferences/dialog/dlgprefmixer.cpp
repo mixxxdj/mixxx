@@ -787,9 +787,15 @@ void DlgPrefMixer::drawXfaderDisplay() {
     int sizeY = graphicsViewXfader->height() - 2 * frameWidth;
 
     // Initialize Scene
-    QGraphicsScene* pXfScene = new QGraphicsScene();
-    pXfScene->setSceneRect(0, 0, sizeX, sizeY);
-    pXfScene->setBackgroundBrush(Qt::black);
+    if (m_pxfScene) {
+        m_pxfScene->clear();
+    } else {
+        m_pxfScene = make_parented<QGraphicsScene>(this);
+        // The size of the QGraphicsView doesn't change so we need to do this only once
+        m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
+        m_pxfScene->setBackgroundBrush(Qt::black);
+        graphicsViewXfader->setScene(m_pxfScene);
+    }
 
     // Initialize QPens
     QPen gridPen(Qt::green);
@@ -797,11 +803,11 @@ void DlgPrefMixer::drawXfaderDisplay() {
 
     // Draw grid
     for (int i = 1; i < kGrindXLines; i++) {
-        pXfScene->addLine(
+        m_pxfScene->addLine(
                 QLineF(0, i * (sizeY / kGrindXLines), sizeX, i * (sizeY / kGrindXLines)), gridPen);
     }
     for (int i = 1; i < kGrindYLines; i++) {
-        pXfScene->addLine(
+        m_pxfScene->addLine(
                 QLineF(i * (sizeX / kGrindYLines), 0, i * (sizeX / kGrindYLines), sizeY), gridPen);
     }
 
@@ -833,9 +839,9 @@ void DlgPrefMixer::drawXfaderDisplay() {
         point2 = QPointF(i + 1, (1. - gain2) * (sizeY)-3);
 
         if (i > 0) {
-            pXfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
-            pXfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-            pXfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
+            m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
+            m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
+            m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
         }
 
         // Save old values
@@ -844,7 +850,6 @@ void DlgPrefMixer::drawXfaderDisplay() {
         point2Prev = point2;
     }
 
-    graphicsViewXfader->setScene(pXfScene);
     graphicsViewXfader->show();
     graphicsViewXfader->repaint();
 }

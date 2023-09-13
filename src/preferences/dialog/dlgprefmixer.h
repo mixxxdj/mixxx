@@ -6,6 +6,7 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmixerdlg.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT
@@ -80,6 +81,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     PollingControlProxy m_crossfader;
 
     bool m_xFaderReverse;
+    parented_ptr<QGraphicsScene> m_pxfScene;
 
     PollingControlProxy m_COLoFreq;
     PollingControlProxy m_COHiFreq;
