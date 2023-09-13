@@ -5,9 +5,9 @@ using namespace mixxx;
 void VinylQualityShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 texcoor;
-varying vec3 vTexcoor;
+attribute highp vec4 position;
+attribute highp vec3 texcoor;
+varying highp vec3 vTexcoor;
 void main()
 {
     vTexcoor = texcoor;
@@ -17,11 +17,11 @@ void main()
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D sampler;
-uniform vec4 color;
-varying vec3 vTexcoor;
+uniform highp vec4 color;
+varying highp vec3 vTexcoor;
 void main()
 {
-    gl_FragColor = vec4(color.xyz, texture2D(sampler, vTexcoor.xy) * 0.75);
+    gl_FragColor = vec4(color.xyz, texture2D(sampler, vTexcoor.xy) * 0.75f);
 }
 )--");
 

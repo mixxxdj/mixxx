@@ -5,9 +5,9 @@ using namespace mixxx;
 void TextureShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform mat4 matrix;
-attribute vec4 position;
-attribute vec3 texcoor;
-varying vec3 vTexcoor;
+attribute highp vec4 position;
+attribute highp vec3 texcoor;
+varying highp vec3 vTexcoor;
 void main()
 {
     vTexcoor = texcoor;
@@ -17,7 +17,7 @@ void main()
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D sampler;
-varying vec3 vTexcoor;
+varying highp vec3 vTexcoor;
 void main()
 {
     gl_FragColor = texture2D(sampler, vTexcoor.xy);
