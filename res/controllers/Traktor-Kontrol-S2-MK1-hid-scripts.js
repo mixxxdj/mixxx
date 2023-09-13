@@ -320,7 +320,7 @@ class DeckClass {
             }
             engine.scratchTick(this.number, tickDelta);
         } else {
-            const velocity = this.scalerJog(tickDelta, timeDelta, this.channel);
+            const velocity = this.scalerJog(tickDelta, timeDelta);
             engine.setValue(this.channel, "jog", velocity);
         }
     }
