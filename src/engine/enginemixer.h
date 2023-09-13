@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QVarLengthArray>
+#include <atomic>
 
 #include "audio/types.h"
 #include "control/controlobject.h"
@@ -305,7 +306,6 @@ class EngineMixer : public QObject, public AudioSource {
     ControlObject* m_pMainSampleRate;
     ControlObject* m_pMainLatency;
     ControlObject* m_pAudioLatencyOverloadCount;
-    ControlObject* m_pNumMicsConfigured;
     ControlPotmeter* m_pAudioLatencyUsage;
     ControlPotmeter* m_pAudioLatencyOverload;
     EngineTalkoverDucking* m_pTalkoverDucking;
@@ -336,6 +336,7 @@ class EngineMixer : public QObject, public AudioSource {
     CSAMPLE_GAIN m_headphoneGainOld;
     CSAMPLE_GAIN m_balleftOld;
     CSAMPLE_GAIN m_balrightOld;
+    std::atomic<unsigned int> m_numMicsConfigured;
     const ChannelHandleAndGroup m_mainHandle;
     const ChannelHandleAndGroup m_headphoneHandle;
     const ChannelHandleAndGroup m_mainOutputHandle;

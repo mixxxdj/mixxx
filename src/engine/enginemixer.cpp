@@ -46,6 +46,7 @@ EngineMixer::EngineMixer(
           m_headphoneGainOld(1.0),
           m_balleftOld(1.0),
           m_balrightOld(1.0),
+          m_numMicsConfigured(0),
           m_mainHandle(registerChannelGroup(group)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
@@ -116,7 +117,6 @@ EngineMixer::EngineMixer(
     m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
     m_pLatencyCompensationDelay = new EngineDelay(group,
         ConfigKey(group, "microphoneLatencyCompensation"));
-    m_pNumMicsConfigured = new ControlObject(ConfigKey(group, "num_mics_configured"));
 
     // Headphone volume
     m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
@@ -218,7 +218,6 @@ EngineMixer::~EngineMixer() {
     delete m_pHeadDelay;
     delete m_pBoothDelay;
     delete m_pLatencyCompensationDelay;
-    delete m_pNumMicsConfigured;
 
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
@@ -621,7 +620,7 @@ void EngineMixer::process(const int iBufferSize) {
             }
 
             // Mix talkover into main mix
-            if (m_pNumMicsConfigured->get() > 0) {
+            if (m_numMicsConfigured > 0) {
                 SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
             }
 
@@ -648,7 +647,7 @@ void EngineMixer::process(const int iBufferSize) {
             }
 
             // Mix talkover with main
-            if (m_pNumMicsConfigured->get() > 0) {
+            if (m_numMicsConfigured > 0) {
                 SampleUtil::add(m_pMain, m_pTalkover, iBufferSize);
             }
 
@@ -716,7 +715,7 @@ void EngineMixer::process(const int iBufferSize) {
             if (sidechainMixRequired()) {
                 SampleUtil::copy(m_pSidechainMix, m_pMain, iBufferSize);
 
-                if (m_pNumMicsConfigured->get() > 0) {
+                if (m_numMicsConfigured > 0) {
                     // The talkover signal Mixxx receives is delayed by the round trip latency.
                     // There is an output latency between the time Mixxx processes the audio
                     // and the user hears it. So if the microphone user plays on beat with
@@ -1025,7 +1024,7 @@ void EngineMixer::onOutputDisconnected(const AudioOutput& output) {
 void EngineMixer::onInputConnected(const AudioInput& input) {
     switch (input.getType()) {
     case AudioPathType::Microphone:
-        m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() + 1);
+        m_numMicsConfigured++;
         break;
     case AudioPathType::Auxiliary:
         // We don't track enabled auxiliary inputs.
@@ -1044,7 +1043,7 @@ void EngineMixer::onInputConnected(const AudioInput& input) {
 void EngineMixer::onInputDisconnected(const AudioInput& input) {
     switch (input.getType()) {
     case AudioPathType::Microphone:
-        m_pNumMicsConfigured->set(m_pNumMicsConfigured->get() - 1);
+        m_numMicsConfigured--;
         break;
     case AudioPathType::Auxiliary:
         // We don't track enabled auxiliary inputs.
