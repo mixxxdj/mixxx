@@ -240,7 +240,7 @@ jobs:
           WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
         run: |
-          iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+          iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/fc44f5c5f2fb184fe738814f373c16cb69c30929/install.ps1'))
           appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
           Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
           Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
@@ -299,11 +299,11 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@0.2.0
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@master
+        uses: ammaraskar/msvc-problem-matcher@0.2.0
 
       - name: "Build"
         run: cmake --build . --config RelWithDebInfo
