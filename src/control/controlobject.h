@@ -66,6 +66,10 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->getKbdRepeatable() : false;
     }
 
+    void addAlias(const ConfigKey& aliasKey) const {
+        ControlDoublePrivate::insertAlias(aliasKey, m_key);
+    }
+
     // Return the key of the object
     inline ConfigKey getKey() const {
         return m_key;

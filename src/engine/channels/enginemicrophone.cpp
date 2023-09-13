@@ -20,8 +20,7 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handleGroup,
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)) {
     // Make input_configured read-only.
     m_pInputConfigured->setReadOnly();
-    ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
-                                      ConfigKey(getGroup(), "input_configured"));
+    m_pInputConfigured->addAlias(ConfigKey(getGroup(), QStringLiteral("enabled")));
 
     setMainMix(false); // Use "talkover" button to enable microphones
 }

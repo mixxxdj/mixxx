@@ -57,8 +57,7 @@ SyncControl::SyncControl(const QString& group,
     m_pSyncLeaderEnabled->setStates(3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "sync_master"),
-            ConfigKey(group, "sync_leader"));
+    m_pSyncLeaderEnabled->addAlias(ConfigKey(group, QStringLiteral("sync_master")));
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));

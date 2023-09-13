@@ -101,8 +101,7 @@ EngineMixer::EngineMixer(
 
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "volume"),
-                                      ConfigKey(group, "gain"));
+    m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(group);
@@ -119,8 +118,7 @@ EngineMixer::EngineMixer(
 
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See issue #7413.
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "headVolume"),
-                                      ConfigKey(group, "headGain"));
+    m_pHeadGain->addAlias(ConfigKey(group, QStringLiteral("headVolume")));
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);

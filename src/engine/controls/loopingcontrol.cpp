@@ -97,8 +97,7 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
     m_pReloopToggleButton->set(0);
     // The old reloop_exit name was confusing. This CO does both entering and exiting.
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
-                                      ConfigKey(group, "reloop_toggle"));
+    m_pReloopToggleButton->addAlias(ConfigKey(group, QStringLiteral("reloop_exit")));
 
     m_pReloopAndStopButton = new ControlPushButton(ConfigKey(group, "reloop_andstop"));
     connect(m_pReloopAndStopButton, &ControlObject::valueChanged,
