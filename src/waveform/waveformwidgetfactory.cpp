@@ -173,10 +173,13 @@ WaveformWidgetFactory::WaveformWidgetFactory()
             m_openGLVersion = pContext->isOpenGLES() ? "ES " : "";
             m_openGLVersion += majorVersion == 0 ? QString("None") : versionString;
 
-            if (majorVersion * 100 + minorVersion >= 201) {
-                if (pContext->isOpenGLES()) {
+            // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+            if (pContext->isOpenGLES()) {
+                if (majorVersion * 100 + minorVersion >= 200) {
                     m_openGlesAvailable = true;
-                } else {
+                }
+            } else {
+                if (majorVersion * 100 + minorVersion >= 201) {
                     m_openGlAvailable = true;
                 }
             }
@@ -1188,11 +1191,11 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
 QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
-    format.setVersion(2, 1);
+    // format.setVersion(2, 1);
     // Core and Compatibility contexts have been introduced in openGL 3.2
     // From 3.0 to 3.1 we have implicit the Core profile and Before 3.0 we have the
     // Compatibility profile
-    format.setProfile(QSurfaceFormat::CoreProfile);
+    // format.setProfile(QSurfaceFormat::CoreProfile);
 
     // setSwapInterval sets the application preferred swap interval
     // in minimum number of video frames that are displayed before a buffer swap occurs
