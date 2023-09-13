@@ -177,7 +177,7 @@ EngineMixer::EngineMixer(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"));
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pKeylockEngine = new ControlObject(ConfigKey(group, "keylock_engine"), true, false, true);
+    m_pKeylockEngine = new ControlObject(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")));
     m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
             static_cast<double>(EngineBuffer::defaultKeylockEngine())));
 

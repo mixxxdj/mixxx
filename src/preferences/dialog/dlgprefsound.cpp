@@ -17,6 +17,8 @@
 
 namespace {
 
+const QString kAppGroup = QStringLiteral("[App]");
+
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
         const auto* pItem = qobject_cast<const DlgPrefSoundItem*>(pObj);
@@ -231,7 +233,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     m_pMainMonoMixdown->connectValueChanged(this, &DlgPrefSound::mainMonoMixdownChanged);
 
     m_pKeylockEngine =
-            new ControlProxy("[Master]", "keylock_engine", this);
+            new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();

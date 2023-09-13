@@ -1349,7 +1349,7 @@
 [EffectRack1_EffectUnit3_Effect2],parameter2_link_inverse,0
 [EqualizerRack1_[Channel1]_Effect1],parameter8_loaded,0
 [EffectRack1_EffectUnit4_Effect1],parameter9_link_type,0
-[Master],keylock_engine,0
+[App],keylock_engine,0
 [Sampler3],rateSearch_down,0
 [Channel3],beatloop_0.125_toggle,0
 [Channel2],duration,0

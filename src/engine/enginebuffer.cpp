@@ -260,7 +260,7 @@ EngineBuffer::EngineBuffer(const QString& group,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
-    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);
