@@ -118,8 +118,8 @@ class DeckClass {
         this.eq.calibrate(calibration.eq);
     }
     enableSoftTakeover() {
-        engine.softTakeover(this.group, "rate", true);
-        engine.softTakeover(this.group, "volume", true);
+        engine.softTakeover(this.channel, "rate", true);
+        engine.softTakeover(this.channel, "volume", true);
         this.eq.enableSoftTakeover();
     }
     registerButton(name, config, callback) {
