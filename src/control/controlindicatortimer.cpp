@@ -6,6 +6,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kLegacyGroup = QStringLiteral("[Master]");
 } // namespace
 
 namespace mixxx {
@@ -13,13 +14,17 @@ namespace mixxx {
 ControlIndicatorTimer::ControlIndicatorTimer(QObject* pParent)
         : QObject(pParent),
           m_pCOIndicator250millis(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("indicator_250millis")))),
+                  ConfigKey(kAppGroup, QStringLiteral("indicator_250ms")))),
           m_pCOIndicator500millis(std::make_unique<ControlObject>(
-                  ConfigKey(kAppGroup, QStringLiteral("indicator_500millis")))),
+                  ConfigKey(kAppGroup, QStringLiteral("indicator_500ms")))),
           m_nextSwitchTime(0.0),
           m_pCPGuiTick50ms(nullptr) {
     m_pCOIndicator250millis->setReadOnly();
+    m_pCOIndicator250millis->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("indicator_250millis")));
     m_pCOIndicator500millis->setReadOnly();
+    m_pCOIndicator500millis->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("indicator_500millis")));
     connect(&m_timer, &QTimer::timeout, this, &ControlIndicatorTimer::slotTimeout);
     m_timer.start(250);
 }

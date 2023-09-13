@@ -609,7 +609,7 @@ DJ505.Deck = function(deckNumbers, offset) {
             // indicator for the LED instead.
             if (value === 3) {
                 if (this.connections[1] === undefined) {
-                    this.connections[1] = engine.makeConnection("[Master]", "indicator_500millis", this.setLed.bind(this));
+                    this.connections[1] = engine.makeConnection("[App]", "indicator_500ms", this.setLed.bind(this));
                 }
                 return;
             }
@@ -1638,7 +1638,7 @@ DJ505.SavedLoopMode = function(deck, offset) {
         output: function(value, _group, _control) {
             this.stopBlinking();
             if (value === 2) {
-                this.connections[2] = engine.makeConnection("[Master]", "indicator_250millis", function(value, _group, _control) {
+                this.connections[2] = engine.makeConnection("[App]", "indicator_250ms", function(value, _group, _control) {
                     const colorValue = this.colorMapper.getValueForNearestColor(
                         engine.getValue(this.group, this.colorKey));
                     if (value) {
