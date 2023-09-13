@@ -6956,7 +6956,7 @@
 [EqualizerRack1_[Channel4]],num_effectslots,1
 [EffectRack1_EffectUnit3_Effect4],parameter9_down_small,0
 [EqualizerRack1_[Master]_Effect1],parameter1_set_zero,0
-[Master],guiTick50ms,18.5993
+[App],gui_tick_50ms_period_s,18.5993
 [EffectRack1_EffectUnit1_Effect2],parameter16_minus_toggle,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter11_up_small,0
 [EqualizerRack1_[Channel2]_Effect1],parameter9_toggle,0
@@ -9007,7 +9007,7 @@
 [QuickEffectRack1_[Channel3]_Effect1],button_parameter4_loaded,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter3_loaded,1
 [Channel1],stop,0
-[Master],guiTickTime,18.6325
+[App],gui_tick_full_period_s,18.6325
 [Sampler2],beatlooproll_2_activate,0
 [EffectRack1_EffectUnit4_Effect4],parameter4_link_inverse,0
 [EffectRack1_EffectUnit2_Effect4],parameter9_set_default,0

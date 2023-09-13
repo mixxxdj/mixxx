@@ -4,14 +4,18 @@
 #include "moc_controlindicatortimer.cpp"
 #include "util/math.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
+
 namespace mixxx {
 
 ControlIndicatorTimer::ControlIndicatorTimer(QObject* pParent)
         : QObject(pParent),
           m_pCOIndicator250millis(std::make_unique<ControlObject>(
-                  ConfigKey("[Master]", "indicator_250millis"))),
+                  ConfigKey(kAppGroup, QStringLiteral("indicator_250millis")))),
           m_pCOIndicator500millis(std::make_unique<ControlObject>(
-                  ConfigKey("[Master]", "indicator_500millis"))),
+                  ConfigKey(kAppGroup, QStringLiteral("indicator_500millis")))),
           m_nextSwitchTime(0.0),
           m_pCPGuiTick50ms(nullptr) {
     m_pCOIndicator250millis->setReadOnly();
@@ -43,7 +47,8 @@ void ControlIndicatorTimer::setLegacyVsyncEnabled(bool enabled) {
 
     if (enabled) {
         m_timer.stop();
-        m_pCPGuiTick50ms = std::make_unique<ControlProxy>(ConfigKey("[Master]", "guiTick50ms"));
+        m_pCPGuiTick50ms = std::make_unique<ControlProxy>(
+                ConfigKey(kAppGroup, QStringLiteral("gui_tick_50ms_period_s")));
         m_pCPGuiTick50ms->connectValueChanged(this, &ControlIndicatorTimer::slotGuiTick50ms);
     } else {
         m_pCPGuiTick50ms->disconnect(this);
@@ -58,7 +63,8 @@ void ControlIndicatorTimer::slotGuiTick50ms(double cpuTime) {
     }
 
     constexpr double duration = 0.25;
-    const double tickTime = ControlObject::get(ConfigKey("[Master]", "guiTickTime"));
+    const double tickTime = ControlObject::get(
+            ConfigKey(kAppGroup, QStringLiteral("gui_tick_full_period_s")));
     const double toggles = floor(tickTime / duration);
     m_nextSwitchTime = (toggles + 1) * duration;
     slotTimeout();

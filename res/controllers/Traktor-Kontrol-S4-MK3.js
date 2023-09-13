@@ -2885,7 +2885,7 @@ class S4MK3 {
 
         const that = this;
         /* eslint no-unused-vars: "off" */
-        const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
+        const meterConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", function(_value) {
             const deckMeters = new Uint8Array(78).fill(0);
             // Each column has 14 segments, but treat the top one specially for the clip indicator.
             const deckSegments = 13;

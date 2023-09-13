@@ -536,7 +536,7 @@ TraktorS3.Controller = class {
         this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.Controller.prototype.peakOutput.bind(this));
         this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.Controller.prototype.peakOutput.bind(this));
-        this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
+        this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
         for (let i = 1; i <= 8; ++i) {
