@@ -2,6 +2,7 @@
 
 #include <QButtonGroup>
 #include <QHBoxLayout>
+#include <QPainterPath>
 #include <QStandardItemModel>
 
 #include "control/controlobject.h"
@@ -50,6 +51,9 @@ const ConfigKey kXfaderReverseKey = ConfigKey(EngineXfader::kXfaderConfigKey,
 
 constexpr int kFrequencyUpperLimit = 20050;
 constexpr int kFrequencyLowerLimit = 16;
+
+constexpr int kXfaderGridHLines = 3;
+constexpr int kXfaderGridVLines = 5;
 
 bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
@@ -779,76 +783,91 @@ void DlgPrefMixer::slotUpdate() {
 // Draw the crossfader curve graph. Only needs to get drawn when a change
 // has been made.
 void DlgPrefMixer::drawXfaderDisplay() {
-    constexpr int kGrindXLines = 4;
-    constexpr int kGrindYLines = 6;
-
-    int frameWidth = graphicsViewXfader->frameWidth();
-    int sizeX = graphicsViewXfader->width() - 2 * frameWidth;
-    int sizeY = graphicsViewXfader->height() - 2 * frameWidth;
-
-    // Initialize Scene
+    // Initialize or clear scene
     if (m_pxfScene) {
         m_pxfScene->clear();
     } else {
         m_pxfScene = make_parented<QGraphicsScene>(this);
         // The size of the QGraphicsView doesn't change so we need to do this only once
+        graphicsViewXfader->setLineWidth(1); // frame width
+        int sizeX = graphicsViewXfader->width() - 2;
+        int sizeY = graphicsViewXfader->height() - 2;
         m_pxfScene->setSceneRect(0, 0, sizeX, sizeY);
         m_pxfScene->setBackgroundBrush(Qt::black);
+        graphicsViewXfader->setRenderHints(QPainter::Antialiasing);
         graphicsViewXfader->setScene(m_pxfScene);
     }
 
     // Initialize QPens
-    QPen gridPen(Qt::green);
-    QPen graphLinePen(Qt::white);
+    QPen gridPen(Qt::darkGray);
+    QPen gainPen(Qt::white);
+    QPen totalPen(Qt::red);
+    // In conjunction with anti-aliasing this gives smooth, solid lines.
+    totalPen.setWidth(2);
+    gainPen.setWidth(2);
+    // For some reason grid lines also appear 2px wide, with the nice side effect
+    // that gain curves now intersect 'exactly'at the grid center line.
 
-    // Draw grid
-    for (int i = 1; i < kGrindXLines; i++) {
-        m_pxfScene->addLine(
-                QLineF(0, i * (sizeY / kGrindXLines), sizeX, i * (sizeY / kGrindXLines)), gridPen);
+    const int sceneW = static_cast<int>(m_pxfScene->width());
+    const int sceneH = static_cast<int>(m_pxfScene->height());
+
+    // Draw grid.
+    // Height is (grid segments * n)+1, so subtract 1 in order to get int coordinates.
+    const double kGridHDist = ((sceneH - 1) / (kXfaderGridHLines + 1));
+    const double kGridVDist = ((sceneW - 1) / (kXfaderGridVLines + 1));
+    for (int i = 1; i <= kXfaderGridHLines; i++) {
+        // Shift by .5 to trick anti-aliasing and get sharp lines (1px instead 2px)
+        const double y = (i * kGridHDist) + .5;
+        m_pxfScene->addLine(QLineF(0, y, sceneW, y), gridPen);
     }
-    for (int i = 1; i < kGrindYLines; i++) {
-        m_pxfScene->addLine(
-                QLineF(i * (sizeX / kGrindYLines), 0, i * (sizeX / kGrindYLines), sizeY), gridPen);
+    for (int i = 1; i <= kXfaderGridVLines; i++) {
+        const double x = (i * kGridVDist) + .5;
+        m_pxfScene->addLine(QLineF(x, 0, x, sceneH), gridPen);
     }
 
-    // Draw graph lines
-    QPointF pointTotal, point1, point2;
-    QPointF pointTotalPrev, point1Prev, point2Prev;
-    int pointCount = sizeX - 4;
-    // reduced by 2 x 1 for border + 2 x 1 for inner distance to border
-    double xfadeStep = 2. / (pointCount - 1);
-    for (int i = 0; i < pointCount; i++) {
-        CSAMPLE_GAIN gain1, gain2;
-        EngineXfader::getXfadeGains((-1. + (xfadeStep * i)),
+    // Draw gain curves
+    // Required to make the curves fit in the view, i.e. not drawn on the left/right edge
+    const int pointCount = sceneW - 2;
+    const int vOffset = 1;
+    const double xfadeStep = 2. / pointCount;
+    // Align the curves with first (top) horizontal gridline.
+    const double scaleFactorToAlignWithGrid = static_cast<double>(
+                                                      kXfaderGridHLines) /
+            (kXfaderGridHLines + 1)
+            // Compensate for the added v-offset required to draw curves inside the view
+            // (not on the edge), especially the thicker, anti-aliased curves.
+            * (static_cast<double>(sceneH - vOffset) / (sceneH));
+    QPolygonF polylineTotal;
+    QPolygonF polylineL;
+    QPolygonF polylineR;
+    for (int x = 1; x <= pointCount + 1; x++) {
+        CSAMPLE_GAIN gainL, gainR;
+        EngineXfader::getXfadeGains((-1. + (xfadeStep * (x - 1))),
                 m_transform,
                 m_cal,
                 m_xFaderMode,
                 checkBoxReverse->isChecked(),
-                &gain1,
-                &gain2);
+                &gainL,
+                &gainR);
 
-        double gain = sqrt(gain1 * gain1 + gain2 * gain2);
-        // scale for graph
-        gain1 *= 0.71f;
-        gain2 *= 0.71f;
-        gain *= 0.71f;
+        const double gainTotal = sqrt(gainL * gainL + gainR * gainR) * scaleFactorToAlignWithGrid;
+        const double gainLScaled = gainL * scaleFactorToAlignWithGrid;
+        const double gainRScaled = gainR * scaleFactorToAlignWithGrid;
 
-        // draw it
-        pointTotal = QPointF(i + 1, (1. - gain) * (sizeY)-3);
-        point1 = QPointF(i + 1, (1. - gain1) * (sizeY)-3);
-        point2 = QPointF(i + 1, (1. - gain2) * (sizeY)-3);
-
-        if (i > 0) {
-            m_pxfScene->addLine(QLineF(pointTotal, pointTotalPrev), QPen(Qt::red));
-            m_pxfScene->addLine(QLineF(point1, point1Prev), graphLinePen);
-            m_pxfScene->addLine(QLineF(point2, point2Prev), graphLinePen);
-        }
-
-        // Save old values
-        pointTotalPrev = pointTotal;
-        point1Prev = point1;
-        point2Prev = point2;
+        polylineTotal.append(QPointF(x, (1. - gainTotal) * sceneH - 1));
+        polylineL.append(QPointF(x, (1. - gainLScaled) * sceneH - vOffset));
+        polylineR.append(QPointF(x, (1. - gainRScaled) * sceneH - vOffset));
     }
+
+    QPainterPath pathTotal;
+    QPainterPath pathL;
+    QPainterPath pathR;
+    pathTotal.addPolygon(polylineTotal);
+    pathL.addPolygon(polylineL);
+    pathR.addPolygon(polylineR);
+    m_pxfScene->addPath(pathTotal, totalPen);
+    m_pxfScene->addPath(pathL, gainPen);
+    m_pxfScene->addPath(pathR, gainPen);
 
     graphicsViewXfader->show();
     graphicsViewXfader->repaint();
