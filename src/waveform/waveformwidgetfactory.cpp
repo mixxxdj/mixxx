@@ -1171,13 +1171,16 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
         extras.push_back(tr("legacy"));
     }
     if (isOpenGlAvailable() || isOpenGlesAvailable()) {
-        if (WaveformT::useOpenGLShaders()) {
+        if (WaveformT::useOpenGles()) {
+            if (WaveformT::useOpenGLShaders()) {
+                extras.push_back(QStringLiteral("GLSL ES"));
+            } else {
+                extras.push_back(QStringLiteral("GLES"));
+            }
+        } else if (WaveformT::useOpenGLShaders()) {
             extras.push_back(QStringLiteral("GLSL"));
         } else if (WaveformT::useOpenGl()) {
             extras.push_back(QStringLiteral("GL"));
-        }
-        if (WaveformT::useOpenGles()) {
-            extras.push_back(QStringLiteral("ES"));
         }
     }
     QString name = WaveformT::getWaveformWidgetName();
