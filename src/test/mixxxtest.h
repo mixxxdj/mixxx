@@ -8,6 +8,7 @@
 
 #include "mixxxapplication.h"
 #include "preferences/usersettings.h"
+#include "util/cmdlineargs.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
@@ -48,6 +49,10 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
+    const CmdlineArgs& cmdLineArgs() {
+        return s_cmdLineArgs;
+    }
+
     UserSettingsPointer config() const {
         return m_pConfig;
     }
@@ -64,6 +69,7 @@ class MixxxTest : public testing::Test {
     }
 
   private:
+    static CmdlineArgs s_cmdLineArgs;
     static QScopedPointer<MixxxApplication> s_pApplication;
     static QDir s_TestDir;
     const QTemporaryDir m_testDataDir;

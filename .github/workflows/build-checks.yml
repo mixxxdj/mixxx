@@ -121,7 +121,7 @@ jobs:
           CLAZY_IGNORE_DIRS: lib/.*
       - name: "Test"
         if: matrix.name == 'coverage'
-        run: ctest --timeout 45
+        run: ctest --timeout 45 --exclude-regex '^CoreServicesTest\.'
         working-directory: build
         env:
           # Render analyzer waveform tests to an offscreen buffer
