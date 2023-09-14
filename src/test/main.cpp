@@ -24,8 +24,13 @@ int main(int argc, char **argv) {
         testing::InitGoogleTest(&argc, argv);
     }
 
+    int testArgc = 1;
+    char testProgName[] = "mixxxtest";
+    char testSafeMode[] = "--safe-mode";
+    char* testArgv[] = {testProgName, testSafeMode};
+
     // Otherwise, run the test suite:
-    MixxxTest::ApplicationScope applicationScope(argc, argv);
+    MixxxTest::ApplicationScope applicationScope(testArgc, testArgv);
 
     if (run_benchmarks) {
         benchmark::RunSpecifiedBenchmarks();
