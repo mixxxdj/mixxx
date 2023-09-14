@@ -25,7 +25,6 @@ class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
 class Library;
-class LV2Backend;
 
 namespace mixxx {
 
@@ -81,10 +80,6 @@ class CoreServices : public QObject {
         return m_pVCManager;
     }
 
-    LV2Backend* getLV2Backend() const {
-        return m_pLV2Backend;
-    }
-
     std::shared_ptr<EffectsManager> getEffectsManager() const {
         return m_pEffectsManager;
     }
@@ -128,8 +123,6 @@ class CoreServices : public QObject {
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
-    // owned by EffectsManager
-    LV2Backend* m_pLV2Backend;
     std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
