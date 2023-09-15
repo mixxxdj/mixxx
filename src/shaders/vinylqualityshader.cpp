@@ -21,7 +21,7 @@ uniform highp vec4 color;
 varying highp vec3 vTexcoor;
 void main()
 {
-    gl_FragColor = vec4(color.xyz, texture2D(sampler, vTexcoor.xy) * 0.75f);
+    gl_FragColor = vec4(color.xyz, texture2D(sampler, vTexcoor.xy) * 0.75);
 }
 )--");
 
