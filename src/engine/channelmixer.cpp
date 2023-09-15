@@ -39,7 +39,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMixer::GainCalculator&
         gainCache.m_gain = newGain;
         pEngineEffectsManager->processPostFaderAndMix(pChannelInfo->m_handle,
                 outputHandle,
-                pChannelInfo->m_pBuffer,
+                pChannelInfo->m_pBuffer.data(),
                 pOutput,
                 iBufferSize,
                 sampleRate,
@@ -85,13 +85,13 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(
         gainCache.m_gain = newGain;
         pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle,
                 outputHandle,
-                pChannelInfo->m_pBuffer,
+                pChannelInfo->m_pBuffer.data(),
                 iBufferSize,
                 sampleRate,
                 pChannelInfo->m_features,
                 oldGain,
                 newGain,
                 fadeout);
-        SampleUtil::add(pOutput, pChannelInfo->m_pBuffer, iBufferSize);
+        SampleUtil::add(pOutput, pChannelInfo->m_pBuffer.data(), iBufferSize);
     }
 }

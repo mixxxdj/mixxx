@@ -253,7 +253,6 @@ EngineMixer::~EngineMixer() {
 
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
-        SampleUtil::free(pChannelInfo->m_pBuffer);
         delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo->m_pMuteControl;
@@ -370,7 +369,8 @@ void EngineMixer::processChannels(int iBufferSize) {
              i < m_activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-        pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
+        DEBUG_ASSERT(pChannelInfo->m_pBuffer.size() >= iBufferSize);
+        pChannel->process(pChannelInfo->m_pBuffer.data(), iBufferSize);
 
         // Collect metadata for effects
         if (m_pEngineEffectsManager) {
@@ -882,8 +882,8 @@ void EngineMixer::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl = new ControlPushButton(
             ConfigKey(group, "mute"));
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
-    pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::clear(pChannelInfo->m_pBuffer, MAX_BUFFER_LEN);
+    pChannelInfo->m_pBuffer = mixxx::SampleBuffer(MAX_BUFFER_LEN);
+    pChannelInfo->m_pBuffer.clear();
     m_channels.append(pChannelInfo);
     constexpr GainCache gainCacheDefault = {0, false};
     m_channelHeadphoneGainCache.append(gainCacheDefault);
@@ -936,7 +936,7 @@ const CSAMPLE* EngineMixer::getOutputBusBuffer(unsigned int i) const {
 const CSAMPLE* EngineMixer::getChannelBuffer(const QString& group) const {
     for (const ChannelInfo* pChannelInfo : m_channels) {
         if (pChannelInfo->m_pChannel->getGroup() == group) {
-            return pChannelInfo->m_pBuffer;
+            return pChannelInfo->m_pBuffer.data();
         }
     }
     return nullptr;
