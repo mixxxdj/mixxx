@@ -1803,14 +1803,18 @@ if(MSVC)
   )
 endif()
 
-if(WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(WIN32)
   # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is on the ignore list.
   # It does not work with Debug, because the debug version is compiled without the a d suffix
   find_package(unofficial-angle CONFIG REQUIRED)
   install(IMPORTED_RUNTIME_ARTIFACTS
     unofficial::angle::libEGL
     unofficial::angle::libGLESv2
-    DESTINATION "${MIXXX_INSTALL_BINDIR}")
+    CONFIGURATIONS RelWithDebInfo Release
+    DESTINATION "${MIXXX_INSTALL_BINDIR}"
+    RUNTIME_DEPENDENCY_SET mixxx
+    COMPONENT applocal)
+  set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
 
 #
@@ -3188,6 +3192,14 @@ if(WAVPACK)
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
+endif()
+
+if (APPLOCAL_COMPONENT_DEFINED)
+    set(CPACK_COMPONENT_applocal_HIDDEN TRUE)
+    # In order to run Mixx from the build directory install applocal components
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
 endif()
 
 # Configure file with build options
