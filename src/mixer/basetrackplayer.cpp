@@ -27,6 +27,7 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
+const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
@@ -774,13 +775,16 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 }
 
 void BaseTrackPlayerImpl::setupEqControls() {
-    const QString group = getGroup();
-    m_pLowFilter = make_parented<ControlProxy>(group, "filterLow", this);
-    m_pMidFilter = make_parented<ControlProxy>(group, "filterMid", this);
-    m_pHighFilter = make_parented<ControlProxy>(group, "filterHigh", this);
-    m_pLowFilterKill = make_parented<ControlProxy>(group, "filterLowKill", this);
-    m_pMidFilterKill = make_parented<ControlProxy>(group, "filterMidKill", this);
-    m_pHighFilterKill = make_parented<ControlProxy>(group, "filterHighKill", this);
+    const QString group = kEffectGroupFormat.arg(getGroup());
+    m_pLowFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter1"), this);
+    m_pMidFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter2"), this);
+    m_pHighFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter3"), this);
+    m_pLowFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter1"), this);
+    m_pMidFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter2"), this);
+    m_pHighFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter3"), this);
 }
 
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {

@@ -54,7 +54,7 @@
       </WidgetGroup><!-- MicAuxContainer -->
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
