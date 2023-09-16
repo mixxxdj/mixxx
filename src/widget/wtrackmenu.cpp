@@ -51,6 +51,10 @@
 #include "widget/wstarrating.h"
 #include "widget/wwidget.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+}
+
 WTrackMenu::WTrackMenu(
         QWidget* parent,
         UserSettingsPointer pConfig,
@@ -65,12 +69,9 @@ WTrackMenu::WTrackMenu(
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
-    m_pNumSamplers = new ControlProxy(
-            "[Master]", "num_samplers", this);
-    m_pNumDecks = new ControlProxy(
-            "[Master]", "num_decks", this);
-    m_pNumPreviewDecks = new ControlProxy(
-            "[Master]", "num_preview_decks", this);
+    m_pNumSamplers = new ControlProxy(kAppGroup, QStringLiteral("num_samplers"), this);
+    m_pNumDecks = new ControlProxy(kAppGroup, QStringLiteral("num_decks"), this);
+    m_pNumPreviewDecks = new ControlProxy(kAppGroup, QStringLiteral("num_preview_decks"), this);
 
     // Warn if any of the chosen features depend on a TrackModel
     VERIFY_OR_DEBUG_ASSERT(trackModel || (m_eTrackModelFeatures & flags) == 0) {

@@ -3851,7 +3851,7 @@ var NLMK1 = (function () {
 	    type: 'binary'
 	  },
 	  num_samplers: {
-	    group: '[Master]',
+	    group: '[App]',
 	    name: 'num_samplers',
 	    type: 'number'
 	  }

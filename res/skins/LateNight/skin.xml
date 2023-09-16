@@ -37,8 +37,8 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
     <!-- Set skin defaults -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[App],num_decks">4</attribute>
+      <attribute config_key="[App],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
 

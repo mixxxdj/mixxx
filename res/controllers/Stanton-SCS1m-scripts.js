@@ -109,7 +109,7 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
 
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     // Set active deck to last available so the below will switch to #1.
-    StantonSCS1m.hotCueDeck = engine.getValue("[Master]","num_decks");
+    StantonSCS1m.hotCueDeck = engine.getValue("[App]", "num_decks");
     StantonSCS1m.hotCueDeckChange(StantonSCS1m.channel, 34, 0x7F, 0x90+StantonSCS1m.channel);
     StantonSCS1m.hotCueDeckChange(StantonSCS1m.channel, 34, 0x00, 0x80+StantonSCS1m.channel);
 
@@ -464,7 +464,7 @@ StantonSCS1m.hotCueDeckChange = function (channel, control, value, status) {
         if (StantonSCS1m.modifier["hotCueToggleTime"] != 0.0 && ((new Date() - StantonSCS1m.modifier["hotCueToggleTime"])>300)) return;
 
         StantonSCS1m.connectPresetSignals(channel,true);    // Disconnect previous ones
-        if (StantonSCS1m.hotCueDeck == engine.getValue("[Master]","num_decks")) StantonSCS1m.hotCueDeck=1;
+        if (StantonSCS1m.hotCueDeck == engine.getValue("[App]", "num_decks")) StantonSCS1m.hotCueDeck=1;
         else StantonSCS1m.hotCueDeck++;
         // Change bank button color
         if (StantonSCS1m.hotCueDeck % 2 == 0) midi.sendShortMsg(0x90 + channel,34,64);   // On

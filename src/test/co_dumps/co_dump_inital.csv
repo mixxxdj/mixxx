@@ -86,7 +86,7 @@
 [PreviewDeck1],playposition_down,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter7_up_small,0
 [Microphone],VuMeterL_down_small,0
-[Master],num_preview_decks,1
+[App],num_preview_decks,1
 [EffectRack1_EffectUnit3_Effect3],parameter3_minus_toggle,0
 [EqualizerRack1_[Master]_Effect1],button_parameter15_loaded,0
 [EffectRack1_EffectUnit1_Effect1],parameter5_minus_toggle,0
@@ -1349,7 +1349,7 @@
 [EffectRack1_EffectUnit3_Effect2],parameter2_link_inverse,0
 [EqualizerRack1_[Channel1]_Effect1],parameter8_loaded,0
 [EffectRack1_EffectUnit4_Effect1],parameter9_link_type,0
-[Master],keylock_engine,0
+[App],keylock_engine,0
 [Sampler3],rateSearch_down,0
 [Channel3],beatloop_0.125_toggle,0
 [Channel2],duration,0
@@ -1583,7 +1583,7 @@
 [EffectRack1_EffectUnit1_Effect2],parameter2_set_one,0
 [Microphone],talkover,0
 [Sampler4],hotcue_31_position,-1
-[Master],samplerate,44100
+[App],samplerate,44100
 [EffectRack1_EffectUnit4_Effect4],parameter10_set_default,0
 [EffectRack1_EffectUnit1_Effect3],parameter3_link_inverse,0
 [EffectRack1_EffectUnit3_Effect4],parameter8_link_inverse,0
@@ -6956,7 +6956,7 @@
 [EqualizerRack1_[Channel4]],num_effectslots,1
 [EffectRack1_EffectUnit3_Effect4],parameter9_down_small,0
 [EqualizerRack1_[Master]_Effect1],parameter1_set_zero,0
-[Master],guiTick50ms,18.5993
+[App],gui_tick_50ms_period_s,18.5993
 [EffectRack1_EffectUnit1_Effect2],parameter16_minus_toggle,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter11_up_small,0
 [EqualizerRack1_[Channel2]_Effect1],parameter9_toggle,0
@@ -7012,7 +7012,7 @@
 [QuickEffectRack1_[Channel1]_Effect1],parameter15_up_small,0
 [EffectRack1_EffectUnit3_Effect4],parameter7_set_minus_one,0
 [Sampler1],rate_up_small,0
-[Master],num_auxiliaries,4
+[App],num_auxiliaries,4
 [Master],audio_latency_overload_down_small,0
 [EffectRack1_EffectUnit3_Effect3],parameter15_set_minus_one,0
 [EqualizerRack1_[Channel1]_Effect1],parameter7_down,0
@@ -8568,7 +8568,7 @@
 [EffectRack1_EffectUnit1_Effect3],parameter6_up_small,0
 [EffectRack1_EffectUnit2_Effect3],parameter9_up_small,0
 [Channel2],loop_scale,0
-[Master],num_decks,4
+[App],num_decks,4
 [EffectRack1_EffectUnit1_Effect1],parameter13_link_type,0
 [EffectRack1_EffectUnit4_Effect4],parameter10_loaded,0
 [EffectRack1_EffectUnit3_Effect3],parameter6_link_type,0
@@ -9007,7 +9007,7 @@
 [QuickEffectRack1_[Channel3]_Effect1],button_parameter4_loaded,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter3_loaded,1
 [Channel1],stop,0
-[Master],guiTickTime,18.6325
+[App],gui_tick_full_period_s,18.6325
 [Sampler2],beatlooproll_2_activate,0
 [EffectRack1_EffectUnit4_Effect4],parameter4_link_inverse,0
 [EffectRack1_EffectUnit2_Effect4],parameter9_set_default,0
@@ -10621,7 +10621,7 @@
 [EffectRack1_EffectUnit1_Effect4],parameter16_toggle,0
 [EffectRack1_EffectUnit2_Effect4],parameter11_set_minus_one,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter4_link_inverse,0
-[Master],num_microphones,4
+[App],num_microphones,4
 [EffectRack1_EffectUnit3_Effect2],parameter15_toggle,0
 [Sampler3],loop_double,0
 [Channel4],LoadSelectedTrackAndPlay,0
@@ -11734,7 +11734,7 @@
 [EffectRack1_EffectUnit1_Effect2],parameter11_up_small,0
 [EffectRack1_EffectUnit2_Effect2],parameter12_up_small,0
 [EffectRack1_EffectUnit3_Effect2],parameter13_up_small,0
-[Master],num_samplers,4
+[App],num_samplers,4
 [Sampler2],hotcue_30_gotoandstop,0
 [Sampler4],hotcue_28_gotoandstop,0
 [EqualizerRack1_[Channel4]_Effect1],parameter4_set_minus_one,0

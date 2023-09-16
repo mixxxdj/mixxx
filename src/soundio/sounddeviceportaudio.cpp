@@ -74,6 +74,7 @@ int paV19CallbackClkRef(const void *inputBuffer, void *outputBuffer,
 
 const QRegularExpression kAlsaHwDeviceRegex("(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
 
+const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
 SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
@@ -385,7 +386,7 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
     }
