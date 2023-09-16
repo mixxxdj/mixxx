@@ -29,6 +29,9 @@ compile_commands.json
 /build*
 /install
 
+# clangd's index, and other analysis tools
+/.cache
+
 # Exclude unneeded files from GoogleTest library when updating our bundled
 # GoogleTest library in the lib/ directory
 lib/googletest/docs
