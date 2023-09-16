@@ -137,7 +137,7 @@
       <!-- T6_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key></key>
+        <key>pregain</key>
         <status>0xB0</status>
         <midino>0x72</midino>
         <options>
@@ -149,6 +149,15 @@
         <group>[Channel1]</group>
         <key>rate</key>
         <status>0xE0</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7_SHIFT = Pitch Fader -->
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xE2</status>
         <options>
           <normal />
         </options>
@@ -485,8 +494,8 @@
       </control>
       <!-- T22_SHIFT = ? -->
       <control>
-        <group>[Channel1]</group>
-        <key></key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x74</midino>
         <options>
@@ -505,8 +514,8 @@
       </control>
       <!-- T23_SHIFT = ? -->
       <control>
-        <group>[Channel1]</group>
-        <key></key>
+       <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x75</midino>
         <options>
@@ -525,8 +534,8 @@
       </control>
       <!-- T24_SHIFT = ? -->
       <control>
-        <group>[Channel1]</group>
-        <key></key>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x76</midino>
         <options>
@@ -566,7 +575,7 @@
       <!-- T26_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key></key>
+        <key>volume</key>
         <status>0xB0</status>
         <midino>0x77</midino>
         <options>
@@ -696,7 +705,7 @@
       <!-- T6_SHIFT = ? -->
       <control>
         <group>[Channel2]</group>
-        <key></key>
+        <key>pregain</key>
         <status>0xB0</status>
         <midino>0x78</midino>
         <options>
@@ -708,6 +717,15 @@
         <group>[Channel2]</group>
         <key>rate</key>
         <status>0xE1</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <!-- T7_SHIFT = Pitch Fader -->
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xE3</status>
         <options>
           <normal />
         </options>
@@ -1044,8 +1062,8 @@
       </control>
       <!-- T22_SHIFT = ? -->
       <control>
-        <group>[Channel2]</group>
-        <key></key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
         <status>0xB0</status>
         <midino>0x7A</midino>
         <options>
@@ -1064,8 +1082,8 @@
       </control>
       <!-- T23_SHIFT = ? -->
       <control>
-        <group>[Channel2]</group>
-        <key></key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
         <status>0xB0</status>
         <midino>0x7B</midino>
         <options>
@@ -1084,8 +1102,8 @@
       </control>
       <!-- T24_SHIFT = ? -->
       <control>
-        <group>[Channel2]</group>
-        <key></key>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
         <status>0xB0</status>
         <midino>0x7C</midino>
         <options>
@@ -1125,7 +1143,7 @@
       <!-- T26_SHIFT = ? -->
       <control>
         <group>[Channel2]</group>
-        <key></key>
+        <key>volume</key>
         <status>0xB0</status>
         <midino>0x7D</midino>
         <options>
