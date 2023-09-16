@@ -16,8 +16,8 @@
     <controls>
       <!-- CH 1 PC/LINE/PHONO -->
       <control>
-        <group>[Master]</group>
-        <key>NumarkScratch.setChannelInput</key>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].channelInputPC.input</key>
         <description>CH 1 PC</description>
         <status>0x8F</status>
         <midino>0x57</midino>
@@ -26,8 +26,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>NumarkScratch.setChannelInput</key>
+        <group>[Channel1]</group>
+        <key>NumarkScratch.deck[0].channelInputLinePhono.input</key>
         <description>CH 1 LINE/PHONO</description>
         <status>0x9F</status>
         <midino>0x57</midino>
@@ -37,8 +37,8 @@
       </control>
       <!-- CH 2 PC/LINE/PHONO -->
       <control>
-        <group>[Master]</group>
-        <key>NumarkScratch.setChannelInput</key>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].channelInputPC.input</key>
         <description>CH 2 PC</description>
         <status>0x8F</status>
         <midino>0x60</midino>
@@ -47,8 +47,8 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
-        <key>NumarkScratch.setChannelInput</key>
+        <group>[Channel2]</group>
+        <key>NumarkScratch.deck[1].channelInputLinePhono.input</key>
         <description>CH 2 LINE/PHONO</description>
         <status>0x9F</status>
         <midino>0x60</midino>

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-var
 var NumarkScratch = {};
 
 /*
@@ -194,26 +195,32 @@ NumarkScratch.XfaderContainer = function() {
 
 NumarkScratch.XfaderContainer.prototype = new components.ComponentContainer();
 
-NumarkScratch.setChannelInput = function(channel, control, value, _status, _group) {
-    const number = (control === 0x57) ? 1 : 2;
-    const channelgroup = "[Channel" + number + "]";
-
-    switch (value) {
-    case 0x00:  // PC and turn on vinyl control
-        engine.setValue(channelgroup, "passthrough", 0);
-        engine.setValue(channelgroup, "vinylcontrol_enabled", 1);
-        break;
-    case 0x02:  // PHONO/LINE and turn off vinyl control
-        engine.setValue(channelgroup, "passthrough", 1);
-        engine.setValue(channelgroup, "vinylcontrol_enabled", 0);
-        break;
-    }
-};
-
 NumarkScratch.Deck = function(number) {
     components.Deck.call(this, number);
 
     const channel = number;
+
+    this.channelInputPC = new components.Button({
+        group: "[Channel" + number + "]",
+        input: function(channel, control, value, status, group) {
+            if (value === 0x7F) {
+                // Set vinyl control enabled and passthrough disabled
+                engine.setValue(group, "vinylcontrol_enabled", 1);
+                engine.setValue(group, "passthrough", 0);
+            }
+        }
+    });
+
+    this.channelInputLinePhono = new components.Button({
+        group: "[Channel" + number + "]",
+        input: function(channel, control, value, status, group) {
+            if (value === 0x7F) {
+                // Set vinyl control disabled and passthrough enabled
+                engine.setValue(group, "vinylcontrol_enabled", 0);
+                engine.setValue(group, "passthrough", 1);
+            }
+        }
+    });
 
     this.pflButton = new components.Button({
         midi: [0x90 + channel, 0x1B],
