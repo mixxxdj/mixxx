@@ -37,8 +37,8 @@
   -->
     <attributes>
       <!-- Set skin defaults. -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute config_key="[App],num_decks">4</attribute>
+      <attribute config_key="[App],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>

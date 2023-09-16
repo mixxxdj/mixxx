@@ -57,7 +57,7 @@ VinylControlManager::~VinylControlManager() {
 }
 
 void VinylControlManager::init() {
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }

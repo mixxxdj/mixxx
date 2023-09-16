@@ -28,6 +28,8 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
+
+const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(
@@ -89,7 +91,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"),
                 requestedBufferTime.toDoubleMillis());
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_sampleRate);
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
 
         // Network stream was just started above so we have to wait until
         // we can pass one chunk.

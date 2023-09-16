@@ -4,9 +4,9 @@ using namespace mixxx;
 
 void EndOfTrackShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-attribute vec4 position;
-attribute float gradient;
-varying float vgradient;
+attribute highp vec4 position;
+attribute highp float gradient;
+varying highp float vgradient;
 void main()
 {
     vgradient = gradient;
@@ -15,8 +15,8 @@ void main()
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-uniform vec4 color;
-varying float vgradient;
+uniform highp vec4 color;
+varying highp float vgradient;
 void main()
 {
     float minAlpha = 0.5 * color.w;

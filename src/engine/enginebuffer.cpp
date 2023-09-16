@@ -62,6 +62,8 @@ constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
+const QString kAppGroup = QStringLiteral("[App]");
+
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -174,7 +176,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
@@ -258,7 +260,7 @@ EngineBuffer::EngineBuffer(const QString& group,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
-    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);

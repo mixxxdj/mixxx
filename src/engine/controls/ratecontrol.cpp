@@ -139,7 +139,8 @@ RateControl::RateControl(const QString& group,
 
     // We need the sample rate so we can guesstimate something close
     // what latency is.
-    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pSampleRate = ControlObject::getControl(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
 
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
