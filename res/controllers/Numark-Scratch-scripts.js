@@ -203,7 +203,7 @@ NumarkScratch.Deck = function(number) {
     this.channelInputPC = new components.Button({
         group: "[Channel" + number + "]",
         input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
+            if (value === 0x00) {
                 // Set vinyl control enabled and passthrough disabled
                 engine.setValue(group, "vinylcontrol_enabled", 1);
                 engine.setValue(group, "passthrough", 0);
@@ -214,7 +214,7 @@ NumarkScratch.Deck = function(number) {
     this.channelInputLinePhono = new components.Button({
         group: "[Channel" + number + "]",
         input: function(channel, control, value, status, group) {
-            if (value === 0x7F) {
+            if (value === 0x02) {
                 // Set vinyl control disabled and passthrough enabled
                 engine.setValue(group, "vinylcontrol_enabled", 0);
                 engine.setValue(group, "passthrough", 1);
