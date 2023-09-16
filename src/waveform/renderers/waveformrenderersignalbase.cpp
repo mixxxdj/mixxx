@@ -10,6 +10,10 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+namespace {
+const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
+}
+
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
@@ -84,18 +88,13 @@ bool WaveformRendererSignalBase::init() {
     //create controls
     m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLow");
-    m_pMidFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMid");
-    m_pHighFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHigh");
-    m_pLowKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLowKill");
-    m_pMidKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMidKill");
-    m_pHighKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHighKill");
+    const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
+    m_pLowFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter1"));
+    m_pMidFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter2"));
+    m_pHighFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter3"));
+    m_pLowKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter1"));
+    m_pMidKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
+    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
 
     return onInit();
 }
