@@ -85,7 +85,7 @@ TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel, postProcess(160000))
+    EXPECT_CALL(*pChannel, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
@@ -129,7 +129,7 @@ TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel, postProcess(160000))
+    EXPECT_CALL(*pChannel, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
@@ -179,7 +179,7 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel1, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(160000))
+    EXPECT_CALL(*pChannel1, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 2 to claim it is active, main and not PFL.
@@ -197,7 +197,7 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel2, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(160000))
+    EXPECT_CALL(*pChannel2, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
@@ -250,7 +250,7 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(160000))
+    EXPECT_CALL(*pChannel1, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 2 to claim it is active, main and PFL.
@@ -268,7 +268,7 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(160000))
+    EXPECT_CALL(*pChannel2, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
@@ -326,7 +326,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel1, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(160000))
+    EXPECT_CALL(*pChannel1, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 2 to claim it is active, main and not PFL.
@@ -344,7 +344,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel2, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(160000))
+    EXPECT_CALL(*pChannel2, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 3 to claim it is active, main and not PFL.
@@ -362,7 +362,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
             .WillOnce(Return(false));
     EXPECT_CALL(*pChannel3, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel3, postProcess(160000))
+    EXPECT_CALL(*pChannel3, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
@@ -423,7 +423,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel1, postProcess(160000))
+    EXPECT_CALL(*pChannel1, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 2 to claim it is active, main and not PFL.
@@ -441,7 +441,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel2, postProcess(160000))
+    EXPECT_CALL(*pChannel2, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct channel 3 to claim it is active, main and not PFL.
@@ -459,7 +459,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, collectFeatures(_))
             .Times(1);
-    EXPECT_CALL(*pChannel3, postProcess(160000))
+    EXPECT_CALL(*pChannel3, postProcess(MAX_BUFFER_LEN))
             .Times(1);
 
     // Instruct the mock to just return when process() gets called.
