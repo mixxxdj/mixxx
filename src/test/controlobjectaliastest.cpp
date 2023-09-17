@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
 #include "test/mixxxtest.h"
+#include "uicontrols.h"
 #include "waveform/guitick.h"
 
 namespace {
@@ -105,6 +106,16 @@ TEST_F(ControlObjectAliasTest, PlayerManager) {
     auto numSamplers = ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
     auto numSamplersLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("num_samplers")));
     EXPECT_DOUBLE_EQ(numSamplers.get(), numSamplersLegacy.get());
+}
+
+TEST_F(ControlObjectAliasTest, UIControls) {
+    auto uiControls = UIControls();
+
+    auto showMaximizedLibary = ControlProxy(ConfigKey(QStringLiteral("[Skin]"),
+            QStringLiteral("show_maximized_library")));
+    auto showMaximizedLibaryLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("maximize_library")));
+    EXPECT_DOUBLE_EQ(showMaximizedLibary.get(), showMaximizedLibaryLegacy.get());
 }
 
 } // namespace
