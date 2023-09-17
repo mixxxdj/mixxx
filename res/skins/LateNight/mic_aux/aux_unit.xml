@@ -114,7 +114,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey><Variable name="Group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="Group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
