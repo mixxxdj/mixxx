@@ -58,86 +58,57 @@ void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
 }
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
-        : m_pControl(new ControlProxy(key, this)),
+        : m_control(key, this),
+          m_controlUp(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_up"))),
+          m_controlDown(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_down"))),
+          m_controlUpSmall(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_up_small"))),
+          m_controlDownSmall(ConfigKey(key.group,
+                  QString(key.item) + QStringLiteral("_down_small"))),
+          m_controlSetDefault(ConfigKey(key.group,
+                  QString(key.item) + QStringLiteral("_set_default"))),
+          m_controlSetZero(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_set_zero"))),
+          m_controlSetOne(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_set_one"))),
+          m_controlSetMinusOne(ConfigKey(key.group,
+                  QString(key.item) + QStringLiteral("_set_minus_one"))),
+          m_controlToggle(ConfigKey(
+                  key.group, QString(key.item) + QStringLiteral("_toggle"))),
+          m_controlMinusToggle(ConfigKey(key.group,
+                  QString(key.item) + QStringLiteral("_minus_toggle"))),
           m_stepCount(10),
           m_smallStepCount(100) {
-    // These controls are deleted when the ControlPotmeter is since
-    // PotmeterControls is a member variable of the associated ControlPotmeter
-    // and the push-button controls are parented to the PotmeterControls.
-
-    ControlPushButton* controlUp = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_up"));
-    controlUp->setParent(this);
-    connect(controlUp,
-            &ControlPushButton::valueChanged,
-            this,
-            &PotmeterControls::incValue);
-
-    ControlPushButton* controlDown = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_down"));
-    controlDown->setParent(this);
-    connect(controlDown,
-            &ControlPushButton::valueChanged,
-            this,
-            &PotmeterControls::decValue);
-
-    ControlPushButton* controlUpSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_up_small"));
-    controlUpSmall->setParent(this);
-    connect(controlUpSmall,
+    connect(&m_controlUp, &ControlPushButton::valueChanged, this, &PotmeterControls::incValue);
+    connect(&m_controlDown, &ControlPushButton::valueChanged, this, &PotmeterControls::decValue);
+    connect(&m_controlUpSmall,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::incSmallValue);
-
-    ControlPushButton* controlDownSmall = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_down_small"));
-    controlDownSmall->setParent(this);
-    connect(controlDownSmall,
+    connect(&m_controlDownSmall,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::decSmallValue);
-
-    m_pControlDefault = new ControlPushButton(
-            ConfigKey(key.group, QString(key.item) + "_set_default"));
-    m_pControlDefault->setParent(this);
-    connect(m_pControlDefault,
+    connect(&m_controlSetDefault,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::setToDefault);
-
-    ControlPushButton* controlZero = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_zero"));
-    controlZero->setParent(this);
-    connect(controlZero,
+    connect(&m_controlSetZero,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::setToZero);
-
-    ControlPushButton* controlOne = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_one"));
-    controlOne->setParent(this);
-    connect(controlOne,
+    connect(&m_controlSetOne, &ControlPushButton::valueChanged, this, &PotmeterControls::setToOne);
+    connect(&m_controlSetMinusOne,
             &ControlPushButton::valueChanged,
             this,
-            &PotmeterControls::setToOne);
-
-    ControlPushButton* controlMinusOne = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_minus_one"));
-    controlMinusOne->setParent(this);
-    connect(controlMinusOne, &ControlPushButton::valueChanged, this, &PotmeterControls::setToMinusOne);
-
-    ControlPushButton* controlToggle = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_toggle"));
-    controlToggle->setParent(this);
-    connect(controlToggle,
+            &PotmeterControls::setToMinusOne);
+    connect(&m_controlToggle,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::toggleValue);
-
-    ControlPushButton* controlMinusToggle = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_minus_toggle"));
-    controlMinusToggle->setParent(this);
-    connect(controlMinusToggle,
+    connect(&m_controlMinusToggle,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::toggleMinusValue);
@@ -146,76 +117,95 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 PotmeterControls::~PotmeterControls() {
 }
 
+void PotmeterControls::addAlias(const ConfigKey& key) {
+    m_controlUp.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_up")));
+    m_controlDown.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_down")));
+    m_controlUpSmall.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_up_small")));
+    m_controlDownSmall.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_down_small")));
+    m_controlSetDefault.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_set_default")));
+    m_controlSetZero.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_set_zero")));
+    m_controlSetOne.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_set_one")));
+    m_controlSetMinusOne.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_set_minus_one")));
+    m_controlToggle.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_toggle")));
+    m_controlMinusToggle.addAlias(ConfigKey(
+            key.group, QString(key.item) + QStringLiteral("_minus_toggle")));
+}
+
 void PotmeterControls::incValue(double v) {
     if (v > 0) {
-        double parameter = m_pControl->getParameter();
+        double parameter = m_control.getParameter();
         parameter += 1.0 / m_stepCount;
-        m_pControl->setParameter(parameter);
+        m_control.setParameter(parameter);
     }
 }
 
 void PotmeterControls::decValue(double v) {
     if (v > 0) {
-        double parameter = m_pControl->getParameter();
+        double parameter = m_control.getParameter();
         parameter -= 1.0 / m_stepCount;
-        m_pControl->setParameter(parameter);
+        m_control.setParameter(parameter);
     }
 }
 
 void PotmeterControls::incSmallValue(double v) {
     if (v > 0) {
-        double parameter = m_pControl->getParameter();
+        double parameter = m_control.getParameter();
         parameter += 1.0 / m_smallStepCount;
-        m_pControl->setParameter(parameter);
+        m_control.setParameter(parameter);
     }
 }
 
 void PotmeterControls::decSmallValue(double v) {
     if (v > 0) {
-        double parameter = m_pControl->getParameter();
+        double parameter = m_control.getParameter();
         parameter -= 1.0 / m_smallStepCount;
-        m_pControl->setParameter(parameter);
+        m_control.setParameter(parameter);
     }
 }
 
 void PotmeterControls::setToZero(double v) {
     if (v > 0) {
-        m_pControl->set(0.0);
+        m_control.set(0.0);
     }
 }
 
 void PotmeterControls::setToOne(double v) {
     if (v > 0) {
-        m_pControl->set(1.0);
+        m_control.set(1.0);
     }
 }
 
 void PotmeterControls::setToMinusOne(double v) {
     if (v > 0) {
-        m_pControl->set(-1.0);
+        m_control.set(-1.0);
     }
 }
 
 void PotmeterControls::setToDefault(double v) {
     if (v > 0) {
-        m_pControl->reset();
+        m_control.reset();
     }
 }
 
 void PotmeterControls::toggleValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        m_pControl->set(value > 0.0 ? 0.0 : 1.0);
+        double value = m_control.get();
+        m_control.set(value > 0.0 ? 0.0 : 1.0);
     }
 }
 
 void PotmeterControls::toggleMinusValue(double v) {
     if (v > 0) {
-        double value = m_pControl->get();
-        m_pControl->set(value > 0.0 ? -1.0 : 1.0);
+        double value = m_control.get();
+        m_control.set(value > 0.0 ? -1.0 : 1.0);
     }
 }
 
 void PotmeterControls::setIsDefault(bool isDefault) {
-    m_pControlDefault->forceSet(isDefault ? 1.0 : 0.0);
+    m_controlSetDefault.forceSet(isDefault ? 1.0 : 0.0);
 }

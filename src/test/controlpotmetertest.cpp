@@ -199,4 +199,36 @@ TEST_F(ControlPotmeterTest, MinusToggle) {
     EXPECT_DOUBLE_EQ(-1.0, co->get());
 }
 
+TEST_F(ControlPotmeterTest, AddAlias) {
+    co->addAlias(ConfigKey("[AliasGroup]", "alias_controlpotmeter"));
+
+    auto alias = ControlProxy(ConfigKey("[AliasGroup]", "alias_controlpotmeter"));
+    EXPECT_DOUBLE_EQ(co->get(), alias.get());
+
+    co->set(1.0);
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+    EXPECT_DOUBLE_EQ(1.0, alias.get());
+
+    co->set(0.5);
+    EXPECT_DOUBLE_EQ(0.5, co->get());
+    EXPECT_DOUBLE_EQ(0.5, alias.get());
+
+    alias.set(0.25);
+    EXPECT_DOUBLE_EQ(0.25, co->get());
+    EXPECT_DOUBLE_EQ(0.25, alias.get());
+
+    auto aliasSetMinusOne = ControlProxy(
+            ConfigKey("[AliasGroup]", "alias_controlpotmeter_set_one"));
+    aliasSetMinusOne.set(1.0);
+    aliasSetMinusOne.set(0.0);
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+    EXPECT_DOUBLE_EQ(1.0, alias.get());
+
+    auto coSetZero = ControlProxy(ConfigKey(ck.group, ck.item + QStringLiteral("_set_zero")));
+    coSetZero.set(1.0);
+    coSetZero.set(0.0);
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    EXPECT_DOUBLE_EQ(0.0, alias.get());
+}
+
 } // namespace
