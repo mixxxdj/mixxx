@@ -430,85 +430,9 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
-    // The following UI controls must be created here so that controllers can bind to them
-    // on startup.
-    m_uiControls.clear();
-
-    struct UIControlConfig {
-        ConfigKey key;
-        ConfigKey aliasKey;
-        bool persist;
-        bool defaultValue;
-    };
-    const std::vector<UIControlConfig> uiControls = {
-            {ConfigKey(
-                     QStringLiteral("[Skin]"), QStringLiteral("show_settings")),
-                    ConfigKey(),
-                    false,
-                    false},
-            {ConfigKey(QStringLiteral("[Microphone]"),
-                     QStringLiteral("show_microphone")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(VINYL_PREF_KEY, QStringLiteral("show_vinylcontrol")),
-                    ConfigKey(),
-                    true,
-                    false},
-            {ConfigKey(QStringLiteral("[PreviewDeck]"),
-                     QStringLiteral("show_previewdeck")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(QStringLiteral("[Library]"),
-                     QStringLiteral("show_coverart")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(QStringLiteral("[Skin]"),
-                     QStringLiteral("show_maximized_library")),
-                    ConfigKey(QStringLiteral("[Master]"),
-                            QStringLiteral("maximize_library")),
-                    true,
-                    false},
-            {ConfigKey(QStringLiteral("[Samplers]"),
-                     QStringLiteral("show_samplers")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(QStringLiteral("[Skin]"),
-                     QStringLiteral("show_4effectunits")),
-                    ConfigKey(),
-                    true,
-                    false},
-            {ConfigKey(QStringLiteral("[Skin]"), QStringLiteral("show_mixer")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(
-                     QStringLiteral("[Skin]"), QStringLiteral("show_spinnies")),
-                    ConfigKey(),
-                    true,
-                    true},
-            {ConfigKey(
-                     QStringLiteral("[Skin]"), QStringLiteral("show_coverart")),
-                    ConfigKey(),
-                    true,
-                    true},
-    };
-    m_uiControls.reserve(uiControls.size());
-    for (const auto& row : uiControls) {
-        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
-                row.key, row.persist, row.defaultValue));
-        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
-        if (row.aliasKey.isValid()) {
-            m_uiControls.back()->addAlias(row.aliasKey);
-        }
-    }
+    // The UI controls must be created here so that controllers can bind to
+    // them on startup.
+    m_pUiControls = std::make_unique<UIControls>();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -684,7 +608,7 @@ void CoreServices::finalize() {
 
     m_pTouchShift.reset();
 
-    m_uiControls.clear();
+    m_pUiControls.reset();
 
     m_pControlIndicatorTimer.reset();
 

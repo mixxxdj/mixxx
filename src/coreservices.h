@@ -7,6 +7,7 @@
 #include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
 #include "soundio/sounddevicestatus.h"
+#include "uicontrols.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
@@ -151,7 +152,7 @@ class CoreServices : public QObject {
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
-    std::vector<std::unique_ptr<ControlPushButton>> m_uiControls;
+    std::unique_ptr<UIControls> m_pUiControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 
     Timer m_runtime_timer;
