@@ -1254,7 +1254,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("4 Effect Units Show/Hide"),
             tr("Switches between showing 2 and 4 effect units"),
             guiMenu);
-    addControl("[Master]",
+    addControl("[Skin]",
             "show_mixer",
             tr("Mixer Show/Hide"),
             tr("Show or hide the mixer."),
@@ -1264,8 +1264,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Library)"),
             tr("Show/hide cover art in the library"),
             guiMenu);
-    addControl("[Master]",
-            "maximize_library",
+    addControl("[Skin]",
+            "show_maximized_library",
             tr("Library Maximize/Restore"),
             tr("Maximize the track library to take up all the available screen "
                "space."),

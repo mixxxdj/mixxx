@@ -436,28 +436,78 @@ void CoreServices::initialize(QApplication* pApp) {
 
     struct UIControlConfig {
         ConfigKey key;
+        ConfigKey aliasKey;
         bool persist;
         bool defaultValue;
     };
     const std::vector<UIControlConfig> uiControls = {
-            {ConfigKey("[Master]", "skin_settings"), false, false},
-            {ConfigKey("[Microphone]", "show_microphone"), true, true},
-            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
-            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
-            {ConfigKey("[Library]", "show_coverart"), true, true},
-            {ConfigKey("[Master]", "maximize_library"), true, false},
-            {ConfigKey("[Samplers]", "show_samplers"), true, true},
-            {ConfigKey("[EffectRack1]", "show"), true, true},
-            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
-            {ConfigKey("[Master]", "show_mixer"), true, true},
-            {ConfigKey("[Skin]", "show_spinnies"), true, true},
-            {ConfigKey("[Skin]", "show_coverart"), true, true},
+            {ConfigKey(
+                     QStringLiteral("[Skin]"), QStringLiteral("show_settings")),
+                    ConfigKey(),
+                    false,
+                    false},
+            {ConfigKey(QStringLiteral("[Microphone]"),
+                     QStringLiteral("show_microphone")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(VINYL_PREF_KEY, QStringLiteral("show_vinylcontrol")),
+                    ConfigKey(),
+                    true,
+                    false},
+            {ConfigKey(QStringLiteral("[PreviewDeck]"),
+                     QStringLiteral("show_previewdeck")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(QStringLiteral("[Library]"),
+                     QStringLiteral("show_coverart")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(QStringLiteral("[Skin]"),
+                     QStringLiteral("show_maximized_library")),
+                    ConfigKey(QStringLiteral("[Master]"),
+                            QStringLiteral("maximize_library")),
+                    true,
+                    false},
+            {ConfigKey(QStringLiteral("[Samplers]"),
+                     QStringLiteral("show_samplers")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(QStringLiteral("[Skin]"),
+                     QStringLiteral("show_4effectunits")),
+                    ConfigKey(),
+                    true,
+                    false},
+            {ConfigKey(QStringLiteral("[Skin]"), QStringLiteral("show_mixer")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(
+                     QStringLiteral("[Skin]"), QStringLiteral("show_spinnies")),
+                    ConfigKey(),
+                    true,
+                    true},
+            {ConfigKey(
+                     QStringLiteral("[Skin]"), QStringLiteral("show_coverart")),
+                    ConfigKey(),
+                    true,
+                    true},
     };
     m_uiControls.reserve(uiControls.size());
     for (const auto& row : uiControls) {
         m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
                 row.key, row.persist, row.defaultValue));
         m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
+        if (row.aliasKey.isValid()) {
+            m_uiControls.back()->addAlias(row.aliasKey);
+        }
     }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player

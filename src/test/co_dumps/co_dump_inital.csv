@@ -6631,7 +6631,7 @@
 [Channel2],hotcue_16_clear,0
 [Sampler1],bpm_up_small,0
 [EqualizerRack1_[Channel1]],num_effectslots,1
-[Master],maximize_library,0
+[Skin],show_maximized_library,0
 [Auxiliary4],PeakIndicator_toggle,0
 [EffectRack1_EffectUnit1_Effect1],parameter15_set_zero,0
 [EffectRack1_EffectUnit2_Effect1],parameter16_set_zero,0

@@ -209,7 +209,7 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
     pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
-    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Skin]", "show_settings"));
     pViewMenu->addAction(pViewShowSkinSettings);
 
     // Microphone Section
@@ -284,7 +284,7 @@ void WMainMenuBar::initialize() {
                 tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Skin]", "show_maximized_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
     pViewMenu->addSeparator();
