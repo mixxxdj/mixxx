@@ -506,7 +506,7 @@ TraktorS2MK3.maximizeLibraryHandler = function(field) {
         return;
     }
 
-    script.toggleControl("[Master]", "maximize_library");
+    script.toggleControl("[Skin]", "show_maximized_library");
 };
 
 TraktorS2MK3.selectLoopHandler = function(field) {
