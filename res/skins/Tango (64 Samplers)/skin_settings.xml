@@ -46,7 +46,7 @@ Description:
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -407,7 +407,7 @@ Description:
                   </Label>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
@@ -474,7 +474,7 @@ Description:
               <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
                 <SetVariable name="text">Channel Mixer</SetVariable>
                 <SetVariable name="width">105</SetVariable>
-                <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
               </Template>
 
               <!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
@@ -495,7 +495,7 @@ Description:
                         <Size>8f,13min</Size>
                         <Text>!</Text>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </Label>
@@ -529,7 +529,7 @@ Description:
                 <MaximumSize>182,60</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -591,7 +591,7 @@ Description:
                 <MaximumSize>182,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -799,7 +799,7 @@ Description:
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],skin_settings</ConfigKey>
+      <ConfigKey>[Skin],show_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

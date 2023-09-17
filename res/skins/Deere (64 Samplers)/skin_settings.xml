@@ -38,7 +38,7 @@
               <Unpressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -137,7 +137,7 @@
       <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_mixer</SetVariable>
         <SetVariable name="text">Mixer</SetVariable>
-        <SetVariable name="skinsetting">[Master],show_mixer</SetVariable>
+        <SetVariable name="skinsetting">[Skin],show_mixer</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -374,7 +374,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],skin_settings</ConfigKey>
+      <ConfigKey>[Skin],show_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

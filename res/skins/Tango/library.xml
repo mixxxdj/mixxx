@@ -24,7 +24,7 @@ Description:
           <WidgetGroup>
             <Size>1me,2f</Size>
             <Connection>
-              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_maximized_library</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -84,7 +84,7 @@ Description:
                                   <Template src="skin:../Tango/controls/button_2state_persist.xml">
                                     <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                                     <SetVariable name="Size">19f,15f</SetVariable>
-                                    <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                                    <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>
                                   </Template>
                                 </Children>
                               </WidgetGroup>

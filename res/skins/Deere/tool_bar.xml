@@ -360,7 +360,7 @@
                 <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">MIXER</SetVariable>
                 <SetVariable name="state_1_text">MIXER</SetVariable>
-                <SetVariable name="left_connection_control">[Master],show_mixer</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -403,7 +403,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Skin],show_maximized_library</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -441,13 +441,13 @@
                   <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>

@@ -24,7 +24,7 @@
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_faders">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -50,7 +50,7 @@
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Skin],show_maximized_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
@@ -186,7 +186,7 @@
         <Template src="skin:../Deere/tool_bar.xml"/>
 
         <!-- regular or maximized library -->
-        <WidgetStack currentpage="[Master],maximize_library">
+        <WidgetStack currentpage="[Skin],show_maximized_library">
           <Children>
 
             <!-- regular library with decks etc. -->
@@ -226,7 +226,7 @@
             </Splitter><!-- regular library with decks etc. -->
 
             <!-- maximized Library with minimal decks -->
-            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+            <WidgetGroup trigger="[Skin],show_maximized_library" on_hide_select="0">
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>
@@ -246,7 +246,7 @@
       <Layout>vertical</Layout>
       <SizePolicy>min,me</SizePolicy>
       <Connection>
-        <ConfigKey>[Master],skin_settings</ConfigKey>
+        <ConfigKey>[Skin],show_settings</ConfigKey>
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>

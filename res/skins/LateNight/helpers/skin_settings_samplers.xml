@@ -10,7 +10,7 @@ Description:
   <Children>
     <!-- translucent cover when Library is maximized -->
     <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
-      <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+      <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
     </Template>
 
     <WidgetGroup>

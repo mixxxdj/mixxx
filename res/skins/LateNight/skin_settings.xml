@@ -82,7 +82,7 @@ Description:
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],maximize_library</ConfigKey>
+                      <ConfigKey>[Skin],show_maximized_library</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                     <Connection>
@@ -108,12 +108,12 @@ Description:
                       <Alignment>left</Alignment>
                     </State>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
                       <ButtonState>LeftButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </PushButton>
@@ -156,10 +156,10 @@ Description:
               when switching deck size -->
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetStack currentpage="[Master],maximize_library">
+              <WidgetStack currentpage="[Skin],show_maximized_library">
                 <Children>
               <!-- regular library -->
-                  <WidgetStack currentpage="[Master],show_mixer" persist="true" on_hide_select="0">
+                  <WidgetStack currentpage="[Skin],show_mixer" persist="true" on_hide_select="0">
                     <Children>
                   <!-- no mixer -->
                       <WidgetStack currentpage="[LateNight],deck_size_without_mixer" persist="true">
@@ -189,7 +189,7 @@ Description:
                         </Children>
                       </WidgetStack>
                   <!-- mixer shown = full deck -->
-                      <WidgetGroup trigger="[Master],show_mixer" on_hide_select="0">
+                      <WidgetGroup trigger="[Skin],show_mixer" on_hide_select="0">
                         <Layout>horizontal</Layout>
                         <Children>
                           <Template src="skin:../LateNight/helpers/skin_settings_full_deck.xml"/>
@@ -198,7 +198,7 @@ Description:
                     </Children>
                   </WidgetStack>
               <!-- maximized library -->
-                  <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                  <WidgetGroup trigger="[Skin],show_maximized_library" on_hide_select="0">
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when there are no decks above BIG Library-->
@@ -229,7 +229,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is not maximized -->
               <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -285,7 +285,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is maximized -->
               <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -294,7 +294,7 @@ Description:
                 <Children>
                   <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
                     <SetVariable name="Text">Mixer</SetVariable>
-                    <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
                     <SetVariable name="TooltipId">show_mixer</SetVariable>
                     <SetVariable name="Width">190me</SetVariable>
                   </Template>
@@ -306,7 +306,7 @@ Description:
                     <Children>
                       <!-- translucent cover when Channel Mixer is hidden -->
                       <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
                       </Template>
 
                       <WidgetGroup>
@@ -367,7 +367,7 @@ Description:
             <Children>
               <!-- translucent cover when Library is maximized -->
               <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
-                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
               <WidgetGroup>
@@ -487,7 +487,7 @@ Description:
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],skin_settings</ConfigKey>
+      <ConfigKey>[Skin],show_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

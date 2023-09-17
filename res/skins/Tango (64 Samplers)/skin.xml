@@ -72,7 +72,7 @@
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_mixer">0</attribute>
       <attribute persist="true" config_key="[Tango],main_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
@@ -98,7 +98,7 @@
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
 
       <!-- Library -->
-      <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute config_key="[Skin],show_maximized_library">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
@@ -407,7 +407,7 @@
                 <Template src="skin:../Tango/topbar.xml"/>
 
                 <!-- regular / maximized library -->
-                <WidgetStack currentpage="[Master],maximize_library">
+                <WidgetStack currentpage="[Skin],show_maximized_library">
                   <Children>
                     <!-- regular library
                         [stacked  waveforms]
@@ -421,7 +421,7 @@
                       <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Connection>
-                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <ConfigKey>[Skin],show_maximized_library</ConfigKey>
                         <Transform><Not/></Transform>
                         <BindProperty>visible</BindProperty>
                       </Connection>
@@ -509,7 +509,7 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <Connection>
-                        <ConfigKey>[Master],maximize_library</ConfigKey>
+                        <ConfigKey>[Skin],show_maximized_library</ConfigKey>
                         <BindProperty>visible</BindProperty>
                       </Connection>
                       <Children>
