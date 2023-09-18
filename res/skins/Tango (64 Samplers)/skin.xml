@@ -37,8 +37,8 @@
   -->
     <attributes>
       <!-- Set skin defaults. -->
-      <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">64</attribute>
+      <attribute config_key="[App],num_decks">4</attribute>
+      <attribute config_key="[App],num_samplers">64</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
@@ -73,7 +73,7 @@
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">0</attribute>
-      <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
+      <attribute persist="true" config_key="[Tango],main_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
@@ -321,7 +321,7 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>VuMeterMaster</ObjectName>
+      <ObjectName>VuMeterMain</ObjectName>
       <Children>
         <WidgetGroup>
           <Layout>vertical</Layout>
@@ -338,7 +338,7 @@
                 </Template>
                 <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
                 <WidgetGroup>
-                  <ObjectName>VUMeterLabelMaster</ObjectName>
+                  <ObjectName>VUMeterLabelMain</ObjectName>
                   <Size>16f,20f</Size>
                 </WidgetGroup>
                 <WidgetGroup><Size>0f,2f</Size></WidgetGroup>

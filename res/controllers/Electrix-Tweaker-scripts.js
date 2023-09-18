@@ -193,8 +193,8 @@ ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/;
 // ================================================= INITIALIZATION & SHUTDOWN ============================================
 
 ElectrixTweaker.init = function() {
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
     }
     for (const group in ElectrixTweaker.encoders) { // loop over each [Channel]
         //         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)

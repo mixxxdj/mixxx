@@ -23,7 +23,7 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
         return true;
     }
     static constexpr bool useOpenGles() {
-        return false;
+        return true;
     }
     static constexpr bool useOpenGLShaders() {
         return true;

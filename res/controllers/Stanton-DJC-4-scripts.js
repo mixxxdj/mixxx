@@ -86,8 +86,8 @@ DJC4.init = function() {
     engine.makeConnection("[Channel3]", "track_loaded", DJC4.autoShowDecks);
     engine.makeConnection("[Channel4]", "track_loaded", DJC4.autoShowDecks);
 
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
     }
 
     DJC4.browseEncoder = new components.Encoder({

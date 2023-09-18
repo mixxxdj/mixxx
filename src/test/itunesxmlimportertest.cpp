@@ -1,6 +1,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QDateTime>
 #include <QDir>
 #include <QString>
 #include <atomic>
@@ -79,6 +80,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .title = "Highway to Hell",
                     .album = "Highway to Hell",
                     .albumArtist = "AC/DC",
+                    .composer = "Angus Young, Bon Scott & Malcolm Young",
                     .genre = "Hard Rock",
                     .grouping = "",
                     .year = 1979,
@@ -90,24 +92,34 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
-    EXPECT_CALL(*dao, importTrack(ITunesTrack{
-                              .id = 482,
-                              .artist = "AC/DC",
-                              .title = "Play Ball",
-                              .album = "Rock or Bust",
-                              .albumArtist = "AC/DC",
-                              .genre = "Rock",
-                              .grouping = "",
-                              .year = 2014,
-                              .duration = 167,
-                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
-                              .rating = 0,
-                              .comment = "",
-                              .trackNumber = 2,
-                              .bpm = 0,
-                              .bitrate = 256,
-                      }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 482,
+                    .artist = "AC/DC",
+                    .title = "Play Ball",
+                    .album = "Rock or Bust",
+                    .albumArtist = "AC/DC",
+                    .composer = "Angus Young & Malcolm Young",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2014,
+                    .duration = 167,
+                    .location =
+                            musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 2,
+                    .bpm = 0,
+                    .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString(
+                            "2023-04-25T14:13:36Z", Qt::ISODate),
+            }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 476,
@@ -115,6 +127,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .title = "Are You Gonna Be My Girl",
                     .album = "Are You Gonna Be My Girl - Single",
                     .albumArtist = "Jet",
+                    .composer = "Cam Muncey & Nic Cester",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2003,
@@ -127,6 +140,9 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -135,6 +151,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .title = "What I'd Say",
                     .album = "What I'd Say",
                     .albumArtist = "Ray Charles",
+                    .composer = {},
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2012,
@@ -145,6 +162,9 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -154,6 +174,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .album = "Sweet Summer Sun, Live in Hyde Park 2013 (Live) "
                              "- Single",
                     .albumArtist = "The Rolling Stones",
+                    .composer = "Keith Richards & Mick Jagger",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2013,
@@ -167,6 +188,9 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -175,6 +199,7 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .title = "In the Summertime",
                     .album = "In the Summertime",
                     .albumArtist = "Mungo Jerry",
+                    .composer = "Dorset",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 1970,
@@ -187,6 +212,9 @@ TEST_F(ITunesXMLImporterTest, ParseMacOSMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{
@@ -265,6 +293,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .title = "Highway to Hell",
                     .album = "Highway to Hell",
                     .albumArtist = "AC/DC",
+                    .composer = "Angus Young, Bon Scott & Malcolm Young",
                     .genre = "Hard Rock",
                     .grouping = "",
                     .year = 1979,
@@ -276,24 +305,34 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
-    EXPECT_CALL(*dao, importTrack(ITunesTrack{
-                              .id = 79,
-                              .artist = "AC/DC",
-                              .title = "Play Ball",
-                              .album = "Rock or Bust",
-                              .albumArtist = "AC/DC",
-                              .genre = "Rock",
-                              .grouping = "",
-                              .year = 2014,
-                              .duration = 167,
-                              .location = musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
-                              .rating = 0,
-                              .comment = "",
-                              .trackNumber = 2,
-                              .bpm = 0,
-                              .bitrate = 256,
-                      }));
+    EXPECT_CALL(*dao,
+            importTrack(ITunesTrack{
+                    .id = 79,
+                    .artist = "AC/DC",
+                    .title = "Play Ball",
+                    .album = "Rock or Bust",
+                    .albumArtist = "AC/DC",
+                    .composer = "Angus Young & Malcolm Young",
+                    .genre = "Rock",
+                    .grouping = "",
+                    .year = 2014,
+                    .duration = 167,
+                    .location =
+                            musicRoot + "/AC_DC/Rock or Bust/02 Play Ball.m4a",
+                    .rating = 0,
+                    .comment = "",
+                    .trackNumber = 2,
+                    .bpm = 0,
+                    .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString(
+                            "2023-04-25T14:13:36Z", Qt::ISODate),
+            }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
                     .id = 81,
@@ -301,6 +340,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .title = "Are You Gonna Be My Girl",
                     .album = "Are You Gonna Be My Girl - Single",
                     .albumArtist = "Jet",
+                    .composer = "Cam Muncey & Nic Cester",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2003,
@@ -312,6 +352,9 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -320,6 +363,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .title = "What I'd Say",
                     .album = "What I'd Say",
                     .albumArtist = "Ray Charles",
+                    .composer = {},
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2012,
@@ -330,6 +374,9 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 1,
+                    .lastPlayedAt = QDateTime::fromString("2023-04-25T14:18:39Z", Qt::ISODate),
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -339,6 +386,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .album = "Sweet Summer Sun, Live in Hyde Park 2013 (Live) "
                              "- Single",
                     .albumArtist = "The Rolling Stones",
+                    .composer = "Keith Richards & Mick Jagger",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 2013,
@@ -352,6 +400,9 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
     EXPECT_CALL(*dao,
             importTrack(ITunesTrack{
@@ -360,6 +411,7 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .title = "In the Summertime",
                     .album = "In the Summertime",
                     .albumArtist = "Mungo Jerry",
+                    .composer = "Dorset",
                     .genre = "Rock",
                     .grouping = "",
                     .year = 1970,
@@ -372,6 +424,9 @@ TEST_F(ITunesXMLImporterTest, ParseITunesMusicXML) {
                     .trackNumber = 1,
                     .bpm = 0,
                     .bitrate = 256,
+                    .playCount = 0,
+                    .lastPlayedAt = {},
+                    .dateAdded = QDateTime::fromString("2023-04-25T14:13:36Z", Qt::ISODate),
             }));
 
     EXPECT_CALL(*dao, importPlaylist(ITunesPlaylist{

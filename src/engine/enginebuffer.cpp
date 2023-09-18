@@ -20,7 +20,7 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
@@ -62,12 +62,14 @@ constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 // Rate at which the playpos slider is updated
 constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
+const QString kAppGroup = QStringLiteral("[App]");
+
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
         UserSettingsPointer pConfig,
         EngineChannel* pChannel,
-        EngineMaster* pMixingEngine)
+        EngineMixer* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
           m_pLoopingControl(nullptr),
@@ -174,7 +176,7 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
+    m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
@@ -258,7 +260,7 @@ EngineBuffer::EngineBuffer(const QString& group,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
 
-    m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
+    m_pKeylockEngine = new ControlProxy(kAppGroup, QStringLiteral("keylock_engine"), this);
     m_pKeylockEngine->connectValueChanged(this,
             &EngineBuffer::slotKeylockEngineChanged,
             Qt::DirectConnection);
@@ -282,11 +284,11 @@ EngineBuffer::EngineBuffer(const QString& group,
     writer.setDevice(&df);
 #endif
 
-    // Now that all EngineControls have been created call setEngineMaster.
-    // TODO(XXX): Get rid of EngineControl::setEngineMaster and
+    // Now that all EngineControls have been created call setEngineMixer.
+    // TODO(XXX): Get rid of EngineControl::setEngineMixer and
     // EngineControl::setEngineBuffer entirely and pass them through the
     // constructor.
-    setEngineMaster(pMixingEngine);
+    setEngineMixer(pMixingEngine);
 }
 
 EngineBuffer::~EngineBuffer() {
@@ -382,9 +384,9 @@ void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
     return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
-void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
+void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {
     for (const auto& pControl: qAsConst(m_engineControls)) {
-        pControl->setEngineMaster(pEngineMaster);
+        pControl->setEngineMixer(pEngineMixer);
     }
 }
 
@@ -1000,9 +1002,9 @@ void EngineBuffer::processTrackLocked(
         m_tempo_ratio_old = tempoRatio;
         m_reverse_old = is_reverse;
 
-        // Now we need to update the scaler with the master sample rate, the
+        // Now we need to update the scaler with the main sample rate, the
         // base rate (ratio between sample rate of the source audio and the
-        // master samplerate), the deck speed, the pitch shift, and whether
+        // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
 
         m_pScale->setScaleParameters(baserate,
@@ -1168,7 +1170,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we can't predict when they will be in place.
         // If one does this, a click from breaking the last track is somehow
         // natural and he should know that such sound should not be played to
-        // the master (audience).
+        // the main (audience).
         // Workaround: Simply pause the track before.
 
         // TODO(XXX):
@@ -1389,7 +1391,6 @@ mixxx::audio::FramePos EngineBuffer::queuedSeekPosition() const {
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     if (!m_playPos.isValid() ||
             !m_trackSampleRateOld.isValid() ||
-            m_tempo_ratio_old == 0 ||
             m_pPassthroughEnabled->toBool()) {
         // Skip indicator updates with invalid values to prevent undefined behavior,
         // e.g. in WaveformRenderBeat::draw().

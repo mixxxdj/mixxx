@@ -174,8 +174,8 @@ void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     const float th = texture->height();
 
     // fill centered
-    const float posx2 = tw >= th ? 1.f : (th - tw) / th;
-    const float posy2 = th >= tw ? 1.f : (tw - th) / tw;
+    const float posx2 = tw >= th ? 1.f : tw / th;
+    const float posy2 = th >= tw ? 1.f : th / tw;
     const float posx1 = -posx2;
     const float posy1 = -posy2;
 

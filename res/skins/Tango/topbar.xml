@@ -2,7 +2,7 @@
 Description:
   Top bar containing
   * Logo
-  * Mixer for Master, Booth & Headphone
+  * Mixer for Main, Booth & Headphone
   * Crossfader (if enabled)
   * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
   * recording button with duration display
@@ -24,7 +24,7 @@ Description:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Logo + Master, Headphone & Booth Mixer -->
+          <WidgetGroup><!-- Logo + Main, Headphone & Booth Mixer -->
             <ObjectName>MixerBar</ObjectName>
             <Layout>horizontal</Layout>
             <Size>-1me,28f</Size>
@@ -52,24 +52,24 @@ Description:
               </PushButton>
 
               <Template src="skin:../Tango/controls/button_2state_persist.xml">
-                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <SetVariable name="ObjectName">MainHeadMixerToggle</SetVariable>
                 <!-- Size needs to be changed in size_detector_stars.xml, too -->
                 <SetVariable name="Size">15f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],main_mixer</SetVariable>
               </Template>
 
               <Label>
                 <Size>22f,28f</Size>
-                <ObjectName>MasterHeadMixerLabel</ObjectName>
+                <ObjectName>MainHeadMixerLabel</ObjectName>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </Label>
 
-              <!-- Master & Headphone mixer -->
-              <Template src="skin:../Tango/mixer/mixer_master.xml"/>
+              <!-- Main & Headphone mixer -->
+              <Template src="skin:../Tango/mixer/mixer_main.xml"/>
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
@@ -83,7 +83,7 @@ Description:
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Logo + Master, Headphone & Booth Mixer -->
+      </WidgetGroup><!-- /Logo + Main, Headphone & Booth Mixer -->
 
       <WidgetGroup><!-- Crossfader, hidden with maximized library -->
         <SizePolicy>min,min</SizePolicy>

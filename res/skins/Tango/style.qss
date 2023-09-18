@@ -286,11 +286,11 @@ WWidgetGroup {
     margin: 0px 8px;
   }
 
-#MasterHeadMixerLabel {
-  image: url(skin:/../Tango/buttons/btn_master_head_mixer.svg) no-repeat center center;
+#MainHeadMixerLabel {
+  image: url(skin:/../Tango/buttons/btn_main_head_mixer.svg) no-repeat center center;
   }
-  #MasterMixerLabel {
-    image: url(skin:/../Tango/buttons/btn_master.svg) no-repeat center center;
+  #MainMixerLabel {
+    image: url(skin:/../Tango/buttons/btn_main.svg) no-repeat center center;
   }
   #HeadphoneMixerLabel {
     image: url(skin:/../Tango/buttons/btn_head.svg) no-repeat center center;
@@ -856,19 +856,19 @@ WLabel#TrackComment {
 }
 
   #DeckControlsToggle_Left[displayValue="0"],
-  #MasterHeadMixerToggle[displayValue="0"] {
+  #MainHeadMixerToggle[displayValue="0"] {
     image: url(skin:/../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="0"]:hover,
-    #MasterHeadMixerToggle[displayValue="0"]:hover {
+    #MainHeadMixerToggle[displayValue="0"]:hover {
       image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="1"],
-    #MasterHeadMixerToggle[displayValue="1"] {
+    #MainHeadMixerToggle[displayValue="1"] {
       image: url(skin:/../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="1"]:hover,
-    #MasterHeadMixerToggle[displayValue="1"]:hover {
+    #MainHeadMixerToggle[displayValue="1"]:hover {
       image: url(skin:/../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
@@ -1500,8 +1500,8 @@ decks, samplers, mic, aux, fx */
     border: 1px solid #fff;
   }
 
-#VUMeterLabelMaster {
-  image: url(skin:/../Tango/buttons/btn_master_vu_label.svg) no-repeat center center;
+#VUMeterLabelMain {
+  image: url(skin:/../Tango/buttons/btn_main_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck1 {
   image: url(skin:/../Tango/buttons/btn_deck1_vu_label.svg) no-repeat center center;
@@ -2043,30 +2043,30 @@ decks, samplers, mic, aux, fx */
       border: 1px solid #fff;
     }
 
-/* Master FX buttons in top bar's mixer section are
+/* Main FX buttons in top bar's mixer section are
 styled differently because of their importance */
-#FxMasterToggles {
+#FxMainToggles {
   qproperty-layoutSpacing: 1;
 }
 
-#FxMasterButton {
+#FxMainButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
   border-radius: 1px;
   }
-  #FxMasterButton[displayValue="0"] {
+  #FxMainButton[displayValue="0"] {
     color: #888;
     background: #1e1e1e;
     }
-    #FxMasterButton[displayValue="0"]:hover {
+    #FxMainButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #FxMasterButton[displayValue="1"] {
+  #FxMainButton[displayValue="1"] {
     background-color: #ff8f00;
     color: #0f0f0f;
     }
-    #FxMasterButton[displayValue="1"]:hover {
+    #FxMainButton[displayValue="1"]:hover {
       border: 1px solid #fff;
     }
 
@@ -2660,7 +2660,6 @@ WLibrarySidebar::item:!selected {
   }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;

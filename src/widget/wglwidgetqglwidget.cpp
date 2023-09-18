@@ -20,10 +20,6 @@ bool WGLWidget::isContextValid() const {
     return context()->isValid();
 }
 
-bool WGLWidget::isContextSharing() const {
-    return context()->isSharing();
-}
-
 bool WGLWidget::shouldRender() const {
     return isValid() && isVisible() && windowHandle() && windowHandle()->isExposed();
 }

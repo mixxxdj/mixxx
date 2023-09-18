@@ -760,9 +760,10 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
             {QStringLiteral("cover-test-alac.caf"), 1166},
             {QStringLiteral("cover-test.flac"), 1166},
             {QStringLiteral("cover-test-itunes-12.3.0-aac.m4a"),
-#if defined(__WINDOWS__)
+#if defined(__WINDOWS__) || defined(__FAAD__)
                     1390}, // Media Foundation 10.0.17763.2989
                            // Media Foundation 10.0.20348.1
+                           // Nero FAAD2 2.64
 #else
                     1166}, // FFmpeg 4.2.7-0ubuntu0.1
                            // FFmpeg 4.4.2-0ubuntu0.22.04.1
@@ -782,6 +783,7 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
                            // FFmpeg 5.1.2 windows
                            // CoreAudio Version 11.7.8 (Build 20G1351)
                            // CoreAusio Version 12.6.7 (Build 21G651)
+                           // Nero FAAD2 2.64
 #endif
 
             {QStringLiteral("cover-test-itunes-12.7.0-alac.m4a"), 1166},

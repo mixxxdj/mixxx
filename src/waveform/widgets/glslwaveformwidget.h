@@ -23,12 +23,9 @@ class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
   protected:
     void castToQWidget() override;
     void paintEvent(QPaintEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent *) override;
     mixxx::Duration render() override;
 
   private:
-    GLSLWaveformRendererSignal* m_signalRenderer;
-
     friend class WaveformWidgetFactory;
 };
 

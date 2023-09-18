@@ -46,7 +46,7 @@ class EffectsManager {
         return m_pEngineEffectsManager.get();
     }
 
-    const ChannelHandle getMasterHandle() const {
+    const ChannelHandle getMainHandle() const {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 

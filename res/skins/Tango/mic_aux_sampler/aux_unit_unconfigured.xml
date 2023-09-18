@@ -42,7 +42,7 @@ Variables:
                 <SetVariable name="ObjectName">MicAuxAdd</SetVariable>
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_text">+</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,main_mix</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -53,7 +53,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>
