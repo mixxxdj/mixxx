@@ -277,7 +277,7 @@ PioneerDDJSB3.init = function() {
     PioneerDDJSB3.initDeck("[Channel4]");
 
     if (PioneerDDJSB3.twinkleVumeterAutodjOn) {
-        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle());
+        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle);
     }
 
     // request the positions of the knobs and faders from the controller
@@ -650,9 +650,8 @@ PioneerDDJSB3.bindDeckControlConnections = function(channelGroup, isUnbinding) {
             "pfl": PioneerDDJSB3.headphoneCueLed,
             "keylock": PioneerDDJSB3.keyLockLed,
             "loop_enabled": PioneerDDJSB3.autoLoopLed,
+            "slip_enabled": PioneerDDJSB3.slipLed,
         };
-
-    controlsToFunctions.slipEnabled = PioneerDDJSB3.slipLed;
 
     for (i = 1; i <= 8; i++) {
         controlsToFunctions["hotcue_" + i + "_enabled"] = PioneerDDJSB3.hotCueLeds;
@@ -767,7 +766,7 @@ PioneerDDJSB3.vinylButton = function(channel, control, value, status, group) {
 
 PioneerDDJSB3.slipButton = function(channel, control, value, status, group) {
     if (value) {
-        script.toggleControl(group, "slipEnabled");
+        script.toggleControl(group, "slip_enabled");
     }
 };
 
@@ -1206,11 +1205,11 @@ PioneerDDJSB3.jogTouch = function(channel, control, value, status, group) {
         } else {
             engine.scratchDisable(deck + 1, true);
 
-            if (engine.getValue(group, "slipEnabled")) {
-                engine.setValue(group, "slipEnabled", false);
+            if (engine.getValue(group, "slip_enabled")) {
+                engine.setValue(group, "slip_enabled", false);
 
                 engine.beginTimer(250, function() {
-                    engine.setValue(group, "slipEnabled", true);
+                    engine.setValue(group, "slip_enabled", true);
                 }, true);
             }
         }
@@ -1408,6 +1407,16 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
                     var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + focusedEffect + "]";
                     engine.setParameter(effectGroup, "meta", value / this.max);
                 }
+            };
+        },
+    });
+
+    this.shiftKnob = new components.Pot({
+        unshift: function() {
+            this.input = function(channel, control, value) {
+                value = (this.MSB << 7) + value;
+
+                engine.setValue(eu.group, "super1", value / this.max);
             };
         },
     });
