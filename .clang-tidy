@@ -1,5 +1,13 @@
 ---
-Checks: "-*,modernize-use-bool-literals,modernize-use-nullptr,modernize-use-override,readability-braces-around-statements,google-readability-namespace-comments,readability-non-const-parameter,readability-qualified-auto"
+Checks: >-
+  -*,
+  modernize-use-bool-literals,
+  modernize-use-nullptr,
+  modernize-use-override,
+  readability-braces-around-statements,
+  google-readability-namespace-comments,
+  readability-non-const-parameter,
+  readability-qualified-auto
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 AnalyzeTemporaryDtors: false
