@@ -172,6 +172,13 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButtonAddRandomTrack">
+        <property name="toolTip">
+         <string>Inserts on top of que a realated track.
+  If Auto DJs crates contains titles, add random from crates
+  If CTRL is pressed, add related to the playing track
+  If any track is selected, add realated to the selected
+  If no track is selected, add related to the last track in que</string>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::NoFocus</enum>
         </property>

@@ -1,8 +1,11 @@
 #pragma once
 
+#include <QList>
 #include <QObject>
 #include <QSqlDatabase>
+#include <QString>
 
+#include "library/autodj/audioscrobbler.h"
 #include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
@@ -24,7 +27,10 @@ class AutoDJCratesDAO : public QObject {
     TrackId getRandomTrackId();
 
     // Get random track Id from library
-    TrackId getRandomTrackIdFromLibrary(int iPlaylistId);
+    TrackId getRandomTrackIdFromLibrary(int iPlaylistId, QString sArtist = "");
+
+    bool existsArtist(const QString& sArtist);
+    QList<int> getAllUnplayedTracks(const QString& sArtist);
 
   private:
     // Disallow copy and assign.
@@ -119,4 +125,6 @@ class AutoDJCratesDAO : public QObject {
 
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;
+
+    CAudioscrobbler m_scobler;
 };

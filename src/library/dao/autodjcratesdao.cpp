@@ -1,6 +1,7 @@
 #include "library/dao/autodjcratesdao.h"
 
 #include <QRandomGenerator>
+#include <QThread>
 #include <QtDebug>
 #include <QtSql>
 
@@ -20,6 +21,8 @@
 // set to true for verbose debug logs
 #define VERBOSE_DEBUG_LOG false
 #endif
+
+#include "library/autodj/audioscrobbler.h"
 
 #define AUTODJCRATESTABLE_TRACKID "track_id"
 #define AUTODJCRATESTABLE_CRATEREFS "craterefs"
@@ -50,9 +53,11 @@ constexpr int kLeastPreferredPercentMin = 0;
 constexpr int kLeastPreferredPercentMax = 50;
 #endif
 
+#if 0
 int bounded_rand(int highest) {
     return QRandomGenerator::global()->bounded(highest);
 }
+#endif
 
 } // anonymous namespace
 
@@ -1144,6 +1149,54 @@ void AutoDJCratesDAO::playerInfoTrackUnloaded(const QString& group,
         }
     }
 }
+
+bool AutoDJCratesDAO::existsArtist(const QString& sArtist) {
+    QSqlQuery oQuery(m_database);
+
+    oQuery.prepare("SELECT count (*) from library where library.artist = :artist");
+    oQuery.bindValue(":artist", sArtist);
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        return false;
+    }
+
+    if (!oQuery.next())
+        return false;
+
+    return (oQuery.value(0).toInt() > 0);
+}
+
+QList<int> AutoDJCratesDAO::getAllUnplayedTracks(const QString& sArtist) {
+    QSqlQuery oQuery(m_database);
+
+    oQuery.prepare(
+            " SELECT id"
+            " FROM library"
+            " WHERE artist = :artist AND played = 0"
+            " AND id NOT IN"
+            " ( SELECT track_id "
+            " FROM PlaylistTracks"
+            " WHERE playlist_id = :id )"
+            " AND location NOT IN"
+            " ( SELECT id FROM track_locations"
+            " WHERE fs_deleted == 1 )"
+            " AND mixxx_deleted != 1");
+    oQuery.bindValue(":artist", sArtist);
+    oQuery.bindValue(":id", m_iAutoDjPlaylistId);
+
+    QList<int> liTitles;
+    VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        return liTitles;
+    }
+
+    while (oQuery.next()) {
+        liTitles.append(oQuery.value(0).toInt());
+    }
+
+    return liTitles;
+}
+
 // We are selecting the track in the following manner:
 // We divide the library tracks into three sections, for which
 // we sort the library according to times_played and select a
@@ -1160,10 +1213,53 @@ void AutoDJCratesDAO::playerInfoTrackUnloaded(const QString& group,
 // Furthermore this also does not restrict our function to only retrieve
 // not-played tracks (there is probably a reason they are not-played).
 
-TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
+TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId, QString sArtist) {
     DEBUG_ASSERT(kLeastPreferredPercent >= kLeastPreferredPercentMin);
     DEBUG_ASSERT(kLeastPreferredPercent <= kLeastPreferredPercentMax);
 
+#if 1 //the last.fm way
+    qInfo() << "AutoDJCratesDAO::getRandomTrackIdFromLibrary() with" << sArtist;
+
+    if (sArtist.size() == 0) {
+        //find latest artist in playlist
+        QSqlQuery oQuery(m_database);
+        oQuery.prepare("select " AUTODJCRATESTABLE_TRACKID
+                       " from PlaylistTracks where PlaylistTracks.playlist_id "
+                       "= :id order by position desc limit 1");
+        oQuery.bindValue(":id", iPlaylistId);
+        VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+            LOG_FAILED_QUERY(oQuery);
+            return TrackId();
+        }
+
+        if (oQuery.next()) {
+            int iLastTrack = oQuery.value(0).toInt();
+
+            oQuery.prepare("select artist from library where id = :id");
+            oQuery.bindValue(":id", iLastTrack);
+            VERIFY_OR_DEBUG_ASSERT(oQuery.exec()) {
+                LOG_FAILED_QUERY(oQuery);
+                return TrackId();
+            }
+
+            if (oQuery.next()) {
+                sArtist = oQuery.value(0).toString();
+            } else {
+                DEBUG_ASSERT(false); // We should have exit earlier
+                qWarning() << "Auto DJ empty, need at least one title!";
+                return TrackId();
+            }
+        }
+    }
+
+    //ask tunein
+    m_scobler.search_similar_artists(sArtist, this, m_pConfig);
+    while (m_scobler.isWorking())
+        qApp->processEvents();
+    //QThread::msleep(200);
+
+    return TrackId(m_scobler.getResult());
+#else
     // getRandomTrackId() would have already created the temporary auto-DJ-crates database.
     QSqlQuery oQuery(m_database);
     oQuery.prepare(" SELECT COUNT(*)"
@@ -1253,4 +1349,5 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
         qDebug() << "No random track available for Auto DJ in playlist" << iPlaylistId;
         return TrackId();
     }
+#endif
 }

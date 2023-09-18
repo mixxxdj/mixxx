@@ -815,6 +815,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
   src/library/autodj/autodjfeature.cpp
+  src/library/autodj/audioscrobbler.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
   src/library/autodj/dlgautodj.ui
