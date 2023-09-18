@@ -9,15 +9,16 @@
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
 #include "mixer/playermanager.h"
+#include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "test/mixxxtest.h"
-#include "uicontrols.h"
 #include "waveform/guitick.h"
 
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
+const QString kSkinGroup = QStringLiteral("[Skin]");
 
 class ControlObjectAliasTest : public MixxxTest {
 };
@@ -108,14 +109,44 @@ TEST_F(ControlObjectAliasTest, PlayerManager) {
     EXPECT_DOUBLE_EQ(numSamplers.get(), numSamplersLegacy.get());
 }
 
-TEST_F(ControlObjectAliasTest, UIControls) {
-    auto uiControls = UIControls();
+TEST_F(ControlObjectAliasTest, SkinControls) {
+    auto skinControls = SkinControls();
 
-    auto showMaximizedLibary = ControlProxy(ConfigKey(QStringLiteral("[Skin]"),
-            QStringLiteral("show_maximized_library")));
+    auto showMaximizedLibary = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     auto showMaximizedLibaryLegacy = ControlProxy(
             ConfigKey(kLegacyGroup, QStringLiteral("maximize_library")));
     EXPECT_DOUBLE_EQ(showMaximizedLibary.get(), showMaximizedLibaryLegacy.get());
+
+    auto showEffectRack = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")));
+    auto showEffectRackLegacy = ControlProxy(
+            ConfigKey(QStringLiteral("[EffectRack1]"), QStringLiteral("show")));
+    EXPECT_DOUBLE_EQ(showEffectRack.get(), showEffectRackLegacy.get());
+
+    auto showLibraryCoverArt = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
+    auto showLibraryCoverArtLegacy = ControlProxy(
+            ConfigKey(QStringLiteral("[Library]"), QStringLiteral("show_coverart")));
+    EXPECT_DOUBLE_EQ(showLibraryCoverArt.get(), showLibraryCoverArtLegacy.get());
+
+    auto showMicrophones = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_microphones")));
+    auto showMicrophonesLegacy = ControlProxy(
+            ConfigKey(QStringLiteral("[Microphone]"), QStringLiteral("show_microphone")));
+    EXPECT_DOUBLE_EQ(showMicrophones.get(), showMicrophonesLegacy.get());
+
+    auto showPreviewDecks = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_previewdecks")));
+    auto showPreviewDecksLegacy = ControlProxy(
+            ConfigKey(QStringLiteral("[PreviewDeck]"), QStringLiteral("show_previewdeck")));
+    EXPECT_DOUBLE_EQ(showPreviewDecks.get(), showPreviewDecksLegacy.get());
+
+    auto showSamplers = ControlProxy(
+            ConfigKey(kSkinGroup, QStringLiteral("show_samplers")));
+    auto showSamplersLegacy = ControlProxy(
+            ConfigKey(QStringLiteral("[Samplers]"), QStringLiteral("show_samplers")));
+    EXPECT_DOUBLE_EQ(showSamplers.get(), showSamplersLegacy.get());
 }
 
 } // namespace

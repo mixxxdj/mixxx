@@ -432,7 +432,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // The UI controls must be created here so that controllers can bind to
     // them on startup.
-    m_pUiControls = std::make_unique<UIControls>();
+    m_pSkinControls = std::make_unique<SkinControls>();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -608,7 +608,7 @@ void CoreServices::finalize() {
 
     m_pTouchShift.reset();
 
-    m_pUiControls.reset();
+    m_pSkinControls.reset();
 
     m_pControlIndicatorTimer.reset();
 

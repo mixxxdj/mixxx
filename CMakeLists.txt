@@ -1004,6 +1004,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
+  src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
@@ -1057,7 +1058,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp
-  src/uicontrols.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
