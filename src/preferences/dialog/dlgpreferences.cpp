@@ -37,6 +37,7 @@
 #include "preferences/dialog/dlgprefkey.h"
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
+#include "preferences/dialog/dlgprefrhythm.h"
 
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
@@ -224,6 +225,12 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Beat Detection"),
             "ic_preferences_bpmdetect.svg");
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefRhythm(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Rhythm Detection"),
+            "ic_preferences_rhythm.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefKey(this, m_pConfig),

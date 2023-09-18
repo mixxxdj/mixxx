@@ -34,6 +34,7 @@ class DlgPrefBroadcast;
 #endif // __BROADCAST__
 class DlgPrefRecord;
 class DlgPrefBeats;
+class DlgPrefRhythm;
 class DlgPrefKey;
 class DlgPrefReplayGain;
 class LV2Backend;

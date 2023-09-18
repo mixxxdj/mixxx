@@ -26,7 +26,7 @@ DFConfig makeDetectionFunctionConfig(int stepSizeFrames, int windowSize) {
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
     // 2.0.
     DFConfig config;
-    config.DFType = DF_COMPLEXSD;
+    config.DFType = dfComplexSd;
     config.stepSize = stepSizeFrames;
     config.frameLength = windowSize;
     config.dbRise = 3;
@@ -54,7 +54,7 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
             makeDetectionFunctionConfig(m_stepSizeFrames, m_windowSize));
     qDebug() << "input sample rate is " << m_sampleRate << ", step size is " << m_stepSizeFrames;
-
+    /*
     m_helper.initialize(
             m_windowSize, m_stepSizeFrames, [this](double* pWindow, size_t) {
                 // TODO(rryan) reserve?
@@ -62,6 +62,7 @@ bool AnalyzerQueenMaryBeats::initialize(mixxx::audio::SampleRate sampleRate) {
                         m_pDetectionFunction->processTimeDomain(pWindow));
                 return true;
             });
+            */
     return true;
 }
 
@@ -76,7 +77,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, SINT iLen) {
 
 bool AnalyzerQueenMaryBeats::finalize() {
     m_helper.finalize();
-
+    /*
     int nonZeroCount = static_cast<int>(m_detectionResults.size());
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
         --nonZeroCount;
@@ -110,7 +111,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
                 (beats.at(i) * m_stepSizeFrames) + m_stepSizeFrames / 2);
         m_resultBeats.push_back(result);
     }
-
+    */
     m_pDetectionFunction.reset();
     return true;
 }

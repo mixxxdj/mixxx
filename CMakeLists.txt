@@ -616,6 +616,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/analyzerkey.cpp
   src/analyzer/analyzerscheduledtrack.cpp
   src/analyzer/analyzersilence.cpp
+  src/analyzer/analyzerrhythm.cpp
+  src/analyzer/analyzerrhythmbpm.cpp
+  src/analyzer/analyzerrhythmstats.cpp
   src/analyzer/analyzerthread.cpp
   src/analyzer/analyzertrack.cpp
   src/analyzer/analyzerwaveform.cpp
@@ -981,6 +984,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
   src/preferences/dialog/dlgprefreplaygaindlg.ui
+  src/preferences/dialog/dlgprefrhythm.cpp
+  src/preferences/dialog/dlgprefrhythmdlg.ui
   src/preferences/dialog/dlgprefsound.cpp
   src/preferences/dialog/dlgprefsounddlg.ui
   src/preferences/dialog/dlgprefsounditem.cpp
