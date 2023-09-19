@@ -8,7 +8,7 @@
 
 namespace {
 const QString kEffectDefaultsDirectory = "/effects/defaults";
-}
+} // namespace
 
 EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)
