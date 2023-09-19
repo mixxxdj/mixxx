@@ -103,17 +103,17 @@ void Tooltips::addStandardTooltips() {
             << tr("Indicates when the right signal on the channel is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicator")
+    add("main_PeakIndicator")
             << tr("Main Output Peak Indicator")
             << tr("Indicates when the signal on the main output is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicatorL")
+    add("main_PeakIndicatorL")
             << tr("Main Output L Peak Indicator")
             << tr("Indicates when the left signal on the main output is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicatorR")
+    add("main_PeakIndicatorR")
             << tr("Main Output R Peak Indicator")
             << tr("Indicates when the right signal on the main output is clipping,")
             << clippingHelp;
@@ -166,11 +166,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Indicates when the signal on the Preview Deck is clipping,")
             << clippingHelp;
 
-    add("master_VuMeterL")
+    add("main_VuMeterL")
             << tr("Main Channel L Volume Meter")
             << tr("Shows the current volume for the left channel of the main output.");
 
-    add("master_VuMeterR")
+    add("main_VuMeterR")
             << tr("Main Channel R Volume Meter")
             << tr("Shows the current volume for the right channel of the main output.");
 
@@ -180,12 +180,12 @@ void Tooltips::addStandardTooltips() {
             << resetWithRightAndDoubleClick;
 
     // Legacy control.
-    add("master_volume")
+    add("main_volume")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
             << resetWithRightAndDoubleClick;
 
-    add("master_gain")
+    add("main_gain")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
             << resetWithRightAndDoubleClick;
@@ -534,7 +534,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Mute")
             << tr("Mutes the selected channel's audio in the main output.");
 
-    add("master_enable")
+    add("main_enable")
             << tr("Main mix enable")
             << tr("Hold or short click for latching to "
                   "mix this input into the main output.");
@@ -619,9 +619,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Repeat")
             << tr("When active the track will repeat if you go past the end or reverse before the start.");
 
-    add("eject")
-            << tr("Eject")
-            << tr("Ejects track from the player.");
+    add("eject") << tr("Eject") << tr("Ejects track from the player.")
+                 << tr("Un-ejects when no track is loaded, i.e. reloads the "
+                       "track that was ejected last (of any deck).")
+                 << QString("%1: %2").arg(doubleClick,
+                            "Reloads the last replaced track. "
+                            "If no track is loaded reloads the second-last "
+                            "ejected track.");
 
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
@@ -814,6 +818,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the musical key of the loaded track.")
             << trackTags;
 
+    add("track_comment")
+            << tr("Track Comment")
+            << tr("Displays the comment tag of the loaded track.")
+            << trackTags + "\n"
+            << dropTracksHere
+            << dragItem
+            << QString("%1: %2").arg(doubleClick, trackProperties)
+            << QString("%1: %2").arg(rightClick, trackMenu);
+
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
@@ -941,7 +954,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Route the headphone channel through this effect unit.")
             << effectsWithinUnit;
 
-    add("EffectUnit_master_enabled")
+    add("EffectUnit_main_enabled")
             << tr("Assign Effect Unit")
             << tr("Route the main mix through this effect unit.")
             << effectsWithinUnit;

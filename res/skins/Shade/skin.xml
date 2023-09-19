@@ -58,20 +58,20 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <attribute config_key="[Master],num_decks">2</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
-      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[App],num_decks">2</attribute>
+      <attribute config_key="[App],num_samplers">8</attribute>
+      <attribute config_key="[App],num_preview_decks">1</attribute>
       <!--Optionally, make elements visible on skin load-->
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1],show">0</attribute>
-      <attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <attribute persist="false" config_key="[Skin],show_effectrack">0</attribute>
+      <attribute persist="false" config_key="[Skin],show_microphones">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_previewdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library_coverart">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
 
@@ -388,7 +388,7 @@
 
           </Children>
           <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <ConfigKey>[Skin],show_maximized_library</ConfigKey>
             <BindProperty>visible</BindProperty>
             <Transform><Not/></Transform>
           </Connection>

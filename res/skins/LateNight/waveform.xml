@@ -149,7 +149,7 @@
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
               <!-- CurPos -->
-              <Template src="skin:/controls/button_1state_right.xml">
+              <Template src="skin:../LateNight/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurposLarge</SetVariable>
                 <SetVariable name="Size">26f,52f</SetVariable>
@@ -162,13 +162,13 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatsEarlier</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_earlier</SetVariable>
                   </Template>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatsFaster</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
@@ -181,14 +181,14 @@
                 <Layout>vertical</Layout>
                 <Size>26f,52f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatsLater</SetVariable>
                     <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="BtnSize">grid</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_translate_later</SetVariable>
                   </Template>
-                  <Template src="skin:/controls/button_1state.xml">
+                  <Template src="skin:../LateNight/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatsSlower</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
@@ -203,14 +203,14 @@
                 <Layout>vertical</Layout>
                   <Size>26f,52f</Size>
                   <Children>
-                    <Template src="skin:/controls/button_1state_right.xml">
+                    <Template src="skin:../LateNight/controls/button_1state_right.xml">
                       <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                       <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
                       <SetVariable name="Size">26f,26f</SetVariable>
                       <SetVariable name="ConfigKey"><Variable name="Group"/>,shift_cues_earlier</SetVariable>
                       <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,shift_cues_earlier_small</SetVariable>
                     </Template>
-                    <Template src="skin:/controls/button_1state_right.xml">
+                    <Template src="skin:../LateNight/controls/button_1state_right.xml">
                       <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                       <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                       <SetVariable name="Size">26f,26f</SetVariable>

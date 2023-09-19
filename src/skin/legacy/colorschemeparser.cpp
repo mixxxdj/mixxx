@@ -51,11 +51,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
 
-            // This calls SkinContext::updateVariables in skincontext.cpp which
-            // iterates over all <SetVariable> nodes in the selected color scheme node
+            // This calls SkinContext::updateVariables which iterates over all
+            // <SetVariable> nodes in the selected color scheme node.
             pContext->updateVariables(schemeNode);
 
             if (pStyle) {
+                // read scheme's stylesheet (node text or stylesheet file)
                 *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
             }
         }

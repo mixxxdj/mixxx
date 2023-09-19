@@ -28,6 +28,8 @@ constexpr int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
+
+const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(
@@ -37,7 +39,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
-          m_masterAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
           m_targetTime(0) {
@@ -89,7 +91,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
         // waveform view to properly correct for the latency.
         ControlObject::set(ConfigKey("[Master]", "latency"),
                 requestedBufferTime.toDoubleMillis());
-        ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
 
         // Network stream was just started above so we have to wait until
         // we can pass one chunk.
@@ -513,11 +515,11 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
     if (m_framesSinceAudioLatencyUsageUpdate
             > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_masterAudioLatencyUsage.set(secInAudioCb /
+        m_mainAudioLatencyUsage.set(secInAudioCb /
                 (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_timeInAudioCallback = mixxx::Duration::empty();
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        //qDebug() << m_pMasterAudioLatencyUsage->get();
+        // qDebug() << m_mainAudioLatencyUsage->get();
     }
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();

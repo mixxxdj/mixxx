@@ -4,6 +4,7 @@
 #include <QResizeEvent>
 
 #include "moc_openglwindow.cpp"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wglwidget.h"
@@ -11,10 +12,7 @@
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget),
           m_dirty(false) {
-    QSurfaceFormat format;
-    format.setVersion(2, 1);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    setFormat(format);
+    setFormat(WaveformWidgetFactory::getSurfaceFormat());
 }
 
 OpenGLWindow::~OpenGLWindow() {

@@ -13,8 +13,8 @@ WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
 
 WaveformWidget::~WaveformWidget() {
     makeCurrentIfNeeded();
-    for (auto renderer : std::as_const(m_rendererStack)) {
-        delete renderer;
+    for (auto* pRenderer : std::as_const(m_rendererStack)) {
+        delete pRenderer;
     }
     m_rendererStack.clear();
     doneCurrent();
@@ -37,25 +37,25 @@ void WaveformWidget::paintGL() {
             m_rendererStack[0]->allshaderWaveformRenderer()->paintGL();
         }
     } else {
-        for (auto renderer : std::as_const(m_rendererStack)) {
-            renderer->allshaderWaveformRenderer()->paintGL();
+        for (auto* pRenderer : std::as_const(m_rendererStack)) {
+            pRenderer->allshaderWaveformRenderer()->paintGL();
         }
     }
 }
 
 void WaveformWidget::initializeGL() {
-    for (auto renderer : std::as_const(m_rendererStack)) {
-        renderer->allshaderWaveformRenderer()->initializeGL();
+    for (auto* pRenderer : std::as_const(m_rendererStack)) {
+        pRenderer->allshaderWaveformRenderer()->initializeGL();
     }
 }
 
 void WaveformWidget::resizeGL(int w, int h) {
-    for (auto renderer : std::as_const(m_rendererStack)) {
-        renderer->allshaderWaveformRenderer()->resizeGL(w, h);
+    for (auto* pRenderer : std::as_const(m_rendererStack)) {
+        pRenderer->allshaderWaveformRenderer()->resizeGL(w, h);
     }
 }
 
-void WaveformWidget::wheelEvent(QWheelEvent* event) {
-    QApplication::sendEvent(parentWidget(), event);
-    event->accept();
+void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
+    QApplication::sendEvent(parentWidget(), pEvent);
+    pEvent->accept();
 }

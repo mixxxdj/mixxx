@@ -16,9 +16,6 @@ WaveformRendererFiltered::WaveformRendererFiltered(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-WaveformRendererFiltered::~WaveformRendererFiltered() {
-}
-
 void WaveformRendererFiltered::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }

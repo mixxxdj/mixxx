@@ -19,6 +19,10 @@
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+}
+
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),
           m_group(group) {
@@ -57,13 +61,14 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pFocusedWidget(FocusWidget::None),
+          m_focusedWidget(FocusWidget::None),
+          m_prevFocusedWidget(FocusWidget::None),
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
-          m_numDecks("[Master]", "num_decks", this),
-          m_numSamplers("[Master]", "num_samplers", this),
-          m_numPreviewDecks("[Master]", "num_preview_decks", this) {
+          m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
+          m_numSamplers(kAppGroup, QStringLiteral("num_samplers"), this),
+          m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks"), this) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
 
     slotNumDecksChanged(m_numDecks.get());
@@ -172,6 +177,17 @@ LibraryControl::LibraryControl(Library* pLibrary)
             });
 #endif
 
+    // Pure trigger control. Alternative for signal/slot since widgets that want
+    // to call refocusPrevLibraryWidget() are cumbersome to connect to.
+    // This CO is never actually set or read so the value just needs to be not 0
+    m_pRefocusPrevWidgetCO = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "refocus_prev_widget"));
+    m_pRefocusPrevWidgetCO->setButtonMode(ControlPushButton::TRIGGER);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    m_pRefocusPrevWidgetCO->connectValueChangeRequest(this,
+            &LibraryControl::refocusPrevLibraryWidget);
+#endif
+
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -183,6 +199,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+    m_pAutoDjAddTop->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddTop")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddTop.get(),
             &ControlPushButton::valueChanged,
@@ -191,6 +209,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 #endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+    m_pAutoDjAddBottom->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddBottom")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddBottom.get(),
             &ControlPushButton::valueChanged,
@@ -402,16 +422,13 @@ LibraryControl::LibraryControl(Library* pLibrary)
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
 
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
-
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QApplication* app = qApp;
     // Update controls if any widget in any Mixxx window gets or loses focus
     connect(app,
             &QApplication::focusChanged,
             this,
-            &LibraryControl::updateFocusedWidgetControls);
+            &LibraryControl::slotFocusedWidgetChanged);
     // Also update controls if the window focus changed.
     // Even though any new menu window has focus and will receive keypress events
     // it does NOT have a focused widget before the first click or keypress.
@@ -628,7 +645,7 @@ void LibraryControl::slotMoveVertical(double v) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
+    switch (m_focusedWidget) {
     case FocusWidget::Sidebar: {
         int i = static_cast<int>(v);
         slotSelectSidebarItem(i);
@@ -747,11 +764,8 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
-    case FocusWidget::None:
+    if (m_focusedWidget == FocusWidget::None) {
         return setLibraryFocus(FocusWidget::TracksTable);
-    default:
-        break;
     }
 
     // Send the event pointer to the currently focused widget
@@ -818,7 +832,7 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
     }
 
     // ignore no-op
-    if (newFocusWidget == m_pFocusedWidget) {
+    if (newFocusWidget == m_focusedWidget) {
         return;
     }
 
@@ -850,11 +864,30 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
     // to update [Library],focused_widget
 }
 
+void LibraryControl::slotFocusedWidgetChanged(QWidget* oldW, QWidget* newW) {
+    Q_UNUSED(newW);
+
+    // If one of the library widgets had focus store it so we can return to it,
+    // for example when we finish editing a WBeatSizeSpinBox.
+    if (m_pSearchbox && oldW == m_pSearchbox) {
+        m_prevFocusedWidget = FocusWidget::Searchbar;
+    } else if (m_pSidebarWidget && oldW == m_pSidebarWidget) {
+        m_prevFocusedWidget = FocusWidget::Sidebar;
+    } else if (m_pLibraryWidget && oldW == m_pLibraryWidget->currentWidget()) {
+        m_prevFocusedWidget = FocusWidget::TracksTable;
+    }
+    updateFocusedWidgetControls();
+}
+
 void LibraryControl::updateFocusedWidgetControls() {
-    m_pFocusedWidget = getFocusedWidget();
+    m_focusedWidget = getFocusedWidget();
     // Update "[Library], focused_widget" control
-    double newVal = static_cast<double>(m_pFocusedWidget);
+    double newVal = static_cast<double>(m_focusedWidget);
     m_pFocusedWidgetCO->setAndConfirm(newVal);
+}
+
+void LibraryControl::refocusPrevLibraryWidget() {
+    setLibraryFocus(m_prevFocusedWidget);
 }
 
 void LibraryControl::slotSelectSidebarItem(double v) {
@@ -895,7 +928,7 @@ void LibraryControl::slotGoToItem(double v) {
         return;
     }
 
-    switch (m_pFocusedWidget) {
+    switch (m_focusedWidget) {
     case FocusWidget::Sidebar:
         // Focus the library if this is a leaf node in the tree
         // Note that Tracks and AutoDJ always return 'false':

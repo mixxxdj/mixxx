@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSurfaceFormat>
 #include <QVector>
 #include <vector>
 
@@ -98,6 +99,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
 
+    /// Returns the desired surface format for the OpenGLWindow
+    static QSurfaceFormat getSurfaceFormat();
+
   protected:
     bool setWidgetType(
             WaveformWidgetType::Type type,
@@ -160,6 +164,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private:
     void evaluateWidgets();
+    template<typename WaveformT>
+    QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 

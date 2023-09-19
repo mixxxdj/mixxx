@@ -680,7 +680,7 @@ MC7000.loadButton = function(channel, control, value, status, group) {
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    const libraryMaximized = engine.getValue("[Master]", "maximize_library") > 0;
+    const libraryMaximized = engine.getValue("[Skin]", "show_maximized_library") > 0;
     if (MC7000.isVinylMode[deckIndex] && !libraryMaximized) {
         if (value === 0x7F) {
             engine.scratchEnable(deckNumber, MC7000.jogWheelTicksPerRevolution,
@@ -711,7 +711,7 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     const adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    const libraryMaximized = engine.getValue("[Master]", "maximize_library");
+    const libraryMaximized = engine.getValue("[Skin]", "show_maximized_library");
     if (libraryMaximized === 1 && numTicks > 0) {
         engine.setValue("[Library]", "MoveDown", 1);
     } else if (libraryMaximized === 1 && numTicks < 0) {

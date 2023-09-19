@@ -50,7 +50,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     smoothing->setRange(0.25, 0.50, 0.50); // There are two steps per period so max is half
 
-    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
+    // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to main,
     //                     make the scaleStartParameter for this be 1.
 
     // Width : applied on the channel with gain reducing.

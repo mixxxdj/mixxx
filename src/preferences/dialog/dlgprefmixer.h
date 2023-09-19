@@ -72,8 +72,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     void applySelectionsToDecks();
 
-    bool eventFilter(QObject* obj, QEvent* e) override;
-
     UserSettingsPointer m_pConfig;
 
     QGraphicsScene* m_pxfScene;

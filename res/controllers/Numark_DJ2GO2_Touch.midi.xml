@@ -892,29 +892,29 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.input</key>
+        <key>crossfader</key>
         <status>0xBF</status>
         <midino>0x08</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.input</key>
+        <key>gain</key>
         <status>0xBF</status>
         <midino>0x0A</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.input</key>
+        <key>headGain</key>
         <status>0xBF</status>
         <midino>0x0C</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>

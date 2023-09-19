@@ -1,0 +1,170 @@
+<!DOCTYPE template>
+<!-- Main level meter -->
+<Template>
+
+  <SingletonDefinition>
+    <ObjectName>StereoVUMeterMain</ObjectName>
+    <Children>
+      <Template src="skin:vumeter_main.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <ObjectName>MixerStrip_4Decks</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MixerStrip_4Decks_large</ObjectName>
+        <Layout>vertical</Layout>
+        <Connection>
+          <ConfigKey>[Skin],large_vu</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+          <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>60,300</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>StereoVUMeterMain</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Same size as deck VU meters -->
+      <WidgetGroup>
+        <ObjectName>MixerStrip_4Decks_small</ObjectName>
+        <Layout>vertical</Layout>
+        <Connection>
+          <ConfigKey>[Skin],large_vu</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+        <Children>
+
+          <Template src="skin:mixer_spacer_topbottom.xml" />
+
+          <!-- Gain knob spacer -->
+          <WidgetGroup><Size>0me,34f</Size></WidgetGroup>
+
+          <!-- EQ knobs spacer -->
+          <!-- 3 EQ knobs + QuickEffect knob, 34px each
+               QuickEffect selector 22px -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>0min,158f</Size>
+            <Children/>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+
+              <!-- Pfl button -->
+              <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
+
+              <!-- EQs -->
+              <WidgetGroup>
+                <GroupName>VolFader_VUMeter_4Decks</GroupName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,-1</MaximumSize>
+                <Children>
+                  <!-- Faders
+                  Vol fader next to mono VU meter
+                      when EQs are shown -->
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MaximumSize>60,180</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <!-- no Faders
+                      stereo VU meter -->
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MaximumSize>60,210</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <!-- no EQs -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MaximumSize>60,193</MaximumSize>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>StereoVUMeterMain</ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,me</SizePolicy>
+                    <MaximumSize>60,180</MaximumSize>
+                    <Connection>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
+
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:mixer_spacer_topbottom.xml" />
+
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

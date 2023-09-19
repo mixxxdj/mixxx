@@ -9,6 +9,7 @@
 #include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
+#include "library/multilineeditdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
@@ -394,6 +395,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
+        return new MultiLineEditDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
@@ -590,21 +593,9 @@ QVariant BaseTrackTableModel::roleValue(
             break;
         }
         M_FALLTHROUGH_INTENDED;
-    // Right align BPM, duraation and bitrate so big/small values can easily be
-    // spotted by length (number of digits)
-    case Qt::TextAlignmentRole: {
-        switch (field) {
-        case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
-        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
-        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
-            // We need to cast to int due to a bug similar to
-            // https://bugreports.qt.io/browse/QTBUG-67582
-            return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
-        }
-        default:
-            return QVariant(); // default AlignLeft for all other columns
-        }
-    }
+    // NOTE: for export we need to fall through to Qt::DisplayRole,
+    // so do not add any other role cases here, or the export
+    // will be empty
     case Qt::DisplayRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
@@ -871,6 +862,21 @@ QVariant BaseTrackTableModel::roleValue(
         } else {
             // Undecidable
             return Qt::PartiallyChecked;
+        }
+    }
+    // Right align BPM, duration and bitrate so big/small values can easily be
+    // spotted by length (number of digits)
+    case Qt::TextAlignmentRole: {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
+        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
+            // We need to cast to int due to a bug similar to
+            // https://bugreports.qt.io/browse/QTBUG-67582
+            return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+        }
+        default:
+            return QVariant(); // default AlignLeft for all other columns
         }
     }
     default:

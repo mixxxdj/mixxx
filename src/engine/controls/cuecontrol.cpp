@@ -636,7 +636,7 @@ void CueControl::loadCuesFromTrack() {
             }
 
             int hotcue = pCue->getHotCue();
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
 
             // Cue's hotcue doesn't have a hotcue control.
             if (pControl == nullptr) {
@@ -2450,8 +2450,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     m_pHotcueStatus->setReadOnly();
 
     // Add an alias for the legacy hotcue_X_enabled CO
-    ControlDoublePrivate::insertAlias(keyForControl(QStringLiteral("enabled")),
-            keyForControl(QStringLiteral("status")));
+    m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();

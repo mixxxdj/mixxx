@@ -441,18 +441,21 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                     pMark->m_text = newLabel;
                 }
             }
-
-            m_marksToRender.append(pMark);
         }
     }
 
-    // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
     for (const auto& pMark : m_marks) {
-        if (!m_marksToRender.contains(pMark) && pMark->isValid() && pMark->getSamplePosition() != Cue::kNoPosition && pMark->isVisible()) {
-            m_marksToRender.append(pMark);
+        if (pMark->isValid() && pMark->isVisible()) {
+            double samplePosition = pMark->getSamplePosition();
+            if (samplePosition != Cue::kNoPosition) {
+                // Create a stable key for sorting, because the WaveformMark's samplePosition is a
+                // ControlObject which can change at any time by other threads. Such a change causes
+                // another updateCues() call, rebuilding m_marksToRender.
+                auto key = WaveformMarkSortKey(samplePosition, pMark->getHotCue());
+                m_marksToRender.emplace(key, pMark);
+            }
         }
     }
-    std::sort(m_marksToRender.begin(), m_marksToRender.end());
 }
 
 // connecting the tracks cuesUpdated and onMarkChanged is not possible
@@ -497,8 +500,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
     // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
     // reverse and the loop breaks as soon as m_pHoveredMark is set.
-    for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
+    for (auto i = m_marksToRender.crbegin(); i != m_marksToRender.crend(); ++i) {
+        const WaveformMarkPointer& pMark = i->second;
         if (pMark->contains(e->pos(), m_orientation)) {
             m_pHoveredMark = pMark;
             break;
@@ -868,11 +871,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     // the view of labels is not obscured by the playhead.
 
     bool markHovered = false;
-    for (int i = 0; i < m_marksToRender.size(); ++i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
-        PainterScope painterScope(pPainter);
 
-        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
+    for (auto i = m_marksToRender.cbegin(); i != m_marksToRender.cend(); ++i) {
+        PainterScope painterScope(pPainter);
+        const WaveformMarkPointer& pMark = i->second;
+        double samplePosition = pMark->getSamplePosition();
         const float markPosition = math_clamp(
                 offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
@@ -890,7 +893,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         }
 
         QRectF rect;
-        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        double sampleEndPosition = pMark->getSampleEndPosition();
         if (sampleEndPosition > 0) {
             const float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
@@ -926,10 +929,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // hovering over it. Elide it if it would render over the next
             // label, but do not elide it if the next mark's label is not at the
             // same vertical position.
-            if (pMark != m_pHoveredMark && i < m_marksToRender.size() - 1) {
+
+            if (pMark != m_pHoveredMark) {
                 float nextMarkPosition = -1.0f;
-                for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
-                    WaveformMarkPointer otherMark = m_marksToRender.at(m);
+                for (auto m = std::next(i); m != m_marksToRender.cend(); ++m) {
+                    const WaveformMarkPointer& otherMark = m->second;
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
                     bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
@@ -1180,7 +1184,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
-    for (const auto& pMark : qAsConst(m_marksToRender)) {
+    for (const auto& pair : m_marksToRender) {
+        const WaveformMarkPointer& pMark = pair.second;
         if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
             if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
                 continue;

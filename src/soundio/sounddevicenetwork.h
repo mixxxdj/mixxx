@@ -62,7 +62,7 @@ class SoundDeviceNetwork : public SoundDevice {
     std::unique_ptr<FIFO<CSAMPLE>> m_inputFifo;
     bool m_inputDrift;
 
-    PollingControlProxy m_masterAudioLatencyUsage;
+    PollingControlProxy m_mainAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     std::unique_ptr<SoundDeviceNetworkThread> m_pThread;

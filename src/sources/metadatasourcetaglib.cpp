@@ -617,12 +617,10 @@ class AiffTagSaver : public TagSaver {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    // NOTE(uklotzde): Log unconditionally (with debug level) to
-    // identify files in the log file that might have caused a
-    // crash while exporting metadata.
-    kLogger.debug() << "Exporting track metadata"
-                    << "into file" << m_fileName
-                    << "with type" << m_fileType;
+    // Modifying an external file is a potentially dangerous operation.
+    // If this operation unexpectedly crashes or corrupts data we need
+    // to identify the file that is affected.
+    kLogger.info() << "Exporting track metadata into file:" << m_fileName;
 
     SafelyWritableFile safelyWritableFile(m_fileName,
             SafelyWritableFile::SafetyMode::Edit);

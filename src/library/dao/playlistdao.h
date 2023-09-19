@@ -62,7 +62,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool deleteUnlockedPlaylists(QStringList&& idStringList);
     /// Delete Playlists with fewer entries then "minNumberOfTracks"
     /// Needs to be called inside a transaction.
-    /// @return true on success, flase on error
+    /// @return true on success, false on error
     bool deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
             int minNumberOfTracks);
     // Rename a playlist

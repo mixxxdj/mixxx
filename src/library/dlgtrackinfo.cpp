@@ -62,6 +62,23 @@ void DlgTrackInfo::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
+    // Store tag edit widget pointers to allow focusing a specific widgets when
+    // this is opened by double-clicking a WTrackProperty label.
+    // Associate with property strings taken from library/dao/trackdao.h
+    m_propertyWidgets.insert("artist", txtArtist);
+    m_propertyWidgets.insert("title", txtTrackName);
+    m_propertyWidgets.insert("titleInfo", txtTrackName);
+    m_propertyWidgets.insert("album", txtAlbum);
+    m_propertyWidgets.insert("album_artist", txtAlbumArtist);
+    m_propertyWidgets.insert("composer", txtComposer);
+    m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("year", txtYear);
+    m_propertyWidgets.insert("bpm", spinBpm);
+    m_propertyWidgets.insert("tracknumber", txtTrackNumber);
+    m_propertyWidgets.insert("key", txtKey);
+    m_propertyWidgets.insert("grouping", txtGrouping);
+    m_propertyWidgets.insert("comment", txtComment);
+
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
     coverLayout->setContentsMargins(0, 0, 0, 0);
@@ -252,6 +269,14 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotReloadCoverArt);
 
+    connect(m_pWStarRating,
+            &WStarRating::ratingChanged,
+            this,
+            [this](int rating) {
+                m_pWStarRating->slotSetRating(rating);
+                m_trackRecord.setRating(rating);
+            });
+
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
     QMenu* pColorPickerMenu = new QMenu(this);
     pColorPickerMenu->addAction(m_pColorPicker);
@@ -338,7 +363,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 
     reloadTrackBeats(track);
 
-    m_pWStarRating->slotTrackLoaded(m_pLoadedTrack);
+    m_pWStarRating->slotSetRating(m_pLoadedTrack->getRating());
 }
 
 void DlgTrackInfo::replaceTrackRecord(
@@ -446,7 +471,7 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
     updateFromTrack(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
-    // We already listen to changed() so we don't need to listen to individual
+    // Listen to changed() so we don't need to listen to individual
     // signals such as cuesUpdates, coverArtUpdated(), etc.
     connect(pTrack.get(),
             &Track::changed,
@@ -476,15 +501,25 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     }
 }
 
+void DlgTrackInfo::focusField(const QString& property) {
+    if (property.isEmpty()) {
+        return;
+    }
+    auto it = m_propertyWidgets.constFind(property);
+    if (it != m_propertyWidgets.constEnd()) {
+        it.value()->setFocus();
+    }
+}
+
 void DlgTrackInfo::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
@@ -498,7 +533,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
     }
     slotCoverInfoSelected(
             CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+                    m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -557,10 +592,10 @@ void DlgTrackInfo::saveTrack() {
     // This hack makes a focused QLineEdit emit editingFinished() (clearFocus()
     // implicitly emits a focusOutEvent()
     if (this == QApplication::activeWindow()) {
-        auto focusWidget = QApplication::focusWidget();
-        if (focusWidget) {
-            focusWidget->clearFocus();
-            focusWidget->setFocus();
+        auto* pFocusWidget = QApplication::focusWidget();
+        if (pFocusWidget) {
+            pFocusWidget->clearFocus();
+            pFocusWidget->setFocus();
         }
     }
 
@@ -603,6 +638,8 @@ void DlgTrackInfo::clear() {
     updateSpinBpmFromBeats();
 
     txtLocation->setText("");
+
+    m_pWStarRating->slotSetRating(0);
 }
 
 void DlgTrackInfo::slotBpmScale(mixxx::Beats::BpmScale bpmScale) {
@@ -734,9 +771,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
-    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
     auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileAccess.info(),
+            fileInfo,
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
     trackRecord.replaceMetadataFromSource(
@@ -746,7 +783,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(guessedCoverInfo));
     replaceTrackRecord(
             std::move(trackRecord),
-            fileAccess.info().location());
+            fileInfo.location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

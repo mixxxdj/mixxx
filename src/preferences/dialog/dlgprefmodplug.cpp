@@ -40,6 +40,8 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
                             m_pLinkColor,
                             "OpenMPT manual",
                             "http://wiki.openmpt.org/Manual:_Setup/Player")));
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefModplug::~DlgPrefModplug() {

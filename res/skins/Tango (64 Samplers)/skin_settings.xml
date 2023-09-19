@@ -46,7 +46,7 @@ Description:
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
@@ -407,7 +407,7 @@ Description:
                   </Label>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /hint: enforced small cover/spinny with mixer-->
@@ -460,9 +460,9 @@ Description:
             <Text>Mixer</Text>
           </Label>
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
-            <SetVariable name="text">Master/Headphone Mixer</SetVariable>
+            <SetVariable name="text">Main/Headphone Mixer</SetVariable>
             <SetVariable name="width">105</SetVariable>
-            <SetVariable name="Setting">[Tango],master_mixer</SetVariable>
+            <SetVariable name="Setting">[Tango],main_mixer</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Channel mixer toggle + hint for big cover -->
@@ -474,7 +474,7 @@ Description:
               <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
                 <SetVariable name="text">Channel Mixer</SetVariable>
                 <SetVariable name="width">105</SetVariable>
-                <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
               </Template>
 
               <!-- Show hint when Big Cover was enabled but Channel mixer is visible -->
@@ -495,7 +495,7 @@ Description:
                         <Size>8f,13min</Size>
                         <Text>!</Text>
                         <Connection>
-                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </Label>
@@ -529,7 +529,7 @@ Description:
                 <MaximumSize>182,60</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -591,7 +591,7 @@ Description:
                 <MaximumSize>182,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -624,7 +624,7 @@ Description:
                 <SetVariable name="variant">Big</SetVariable>
                 <SetVariable name="text">Effect Units</SetVariable>
                 <SetVariable name="size">120f,18f</SetVariable>
-                <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
               <WidgetGroup><!-- 2 or 4 -->
@@ -636,7 +636,7 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Size>40f,20f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -676,7 +676,7 @@ Description:
                 <ObjectName>SubmenuCover</ObjectName>
                 <Size>182f,13me</Size>
                 <Connection>
-                  <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -710,12 +710,12 @@ Description:
 
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Preview Deck</SetVariable>
-            <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+            <SetVariable name="Setting">[Skin],show_previewdecks</SetVariable>
           </Template>
 
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Cover Art in Library</SetVariable>
-            <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+            <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Sampler rows -->
@@ -727,7 +727,7 @@ Description:
               <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
                 <SetVariable name="text">Samplers</SetVariable>
                 <SetVariable name="width">71</SetVariable>
-                <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
@@ -744,7 +744,7 @@ Description:
                     <MaximumSize>112,20</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_samplers</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -799,7 +799,7 @@ Description:
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],skin_settings</ConfigKey>
+      <ConfigKey>[Skin],show_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

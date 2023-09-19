@@ -38,7 +38,7 @@ bool isMixingEQ(EffectManifest* pManifest) {
 }
 
 bool isMainEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
+    return pManifest->isMainEQ();
 }
 } // anonymous namespace
 
@@ -91,16 +91,6 @@ DlgPrefMixer::DlgPrefMixer(
     connect(radioButtonAdditive, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdate);
     connect(radioButtonConstantPower, &QRadioButton::clicked, this, &DlgPrefMixer::slotUpdate);
 
-    // Set the focus policy for comboboxes and sliders and connect them to the
-    // custom event filter. See eventFilter() for details.
-    // Deck EQ & QuickEffect comboxboxes are set up accordingly in slotNumDecksChanged(),
-    // main EQ sliders in slotMainEqEffectChanged()
-    SliderHiEQ->setFocusPolicy(Qt::StrongFocus);
-    SliderHiEQ->installEventFilter(this);
-    SliderLoEQ->setFocusPolicy(Qt::StrongFocus);
-    SliderLoEQ->installEventFilter(this);
-    comboBoxMainEq->setFocusPolicy(Qt::StrongFocus);
-    comboBoxMainEq->installEventFilter(this);
     // Don't allow the xfader graph getting keyboard focus
     graphicsViewXfader->setFocusPolicy(Qt::NoFocus);
 
@@ -147,7 +137,7 @@ DlgPrefMixer::DlgPrefMixer(
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefMixer::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -157,6 +147,8 @@ DlgPrefMixer::DlgPrefMixer(
             &DlgPrefMixer::slotPopulateDeckEffectSelectors);
 
     setUpMainEQ();
+
+    setScrollSafeGuardForAllInputWidgets(this);
 
     slotUpdate();
     slotApply();
@@ -172,25 +164,6 @@ DlgPrefMixer::~DlgPrefMixer() {
     m_deckQuickEffectSelectors.clear();
 }
 
-// Catch scroll events and filter them if they addressed an unfocused combobox or
-// silder and send them to the scroll area instead.
-// This avoids undesired value changes of unfocused widget when scrolling the page.
-// Values can be changed only by explicit selection, dragging sliders and with
-// Up/Down (Left/Right respectively), PageUp/PageDown as well as Home/End keys.
-bool DlgPrefMixer::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QComboBox* combo = qobject_cast<QComboBox*>(obj);
-        QSlider* slider = qobject_cast<QSlider*>(obj);
-        if ((combo && !combo->hasFocus()) || (slider && !slider->hasFocus())) {
-            QApplication::sendEvent(verticalLayout, e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
-}
-
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     int oldDecks = m_deckEqEffectSelectors.size();
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
@@ -200,25 +173,21 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
 
         // Create the drop down list for deck EQs
         QComboBox* pEqComboBox = new QComboBox(this);
-        // Ignore scroll events if combobox is not focused.
-        // See eventFilter() for details.
-        pEqComboBox->setFocusPolicy(Qt::StrongFocus);
-        pEqComboBox->installEventFilter(this);
         m_deckEqEffectSelectors.append(pEqComboBox);
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotEffectChangedOnDeck);
+        setScrollSafeGuard(pEqComboBox);
 
         // Create the drop down list for Quick Effects
         QComboBox* pQuickEffectComboBox = new QComboBox(this);
-        pQuickEffectComboBox->setFocusPolicy(Qt::StrongFocus);
-        pQuickEffectComboBox->installEventFilter(this);
         m_deckQuickEffectSelectors.append(pQuickEffectComboBox);
         connect(pQuickEffectComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotQuickEffectChangedOnDeck);
+        setScrollSafeGuard(pQuickEffectComboBox);
 
         QString deckGroupName = PlayerManager::groupForDeck(deckNo - 1);
         QString unitGroup = QuickEffectChain::formatEffectChainGroup(deckGroupName);
@@ -422,7 +391,6 @@ void DlgPrefMixer::loadSettings() {
     checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
-    slotApply();
 
     // EQ ////////////////////////////////////////////////
     QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
@@ -483,6 +451,7 @@ void DlgPrefMixer::loadSettings() {
                 ConfigKey(kConfigGroup, kEnableEqs), "yes") == "yes") {
         CheckBoxBypass->setChecked(false);
     }
+    slotApply();
 }
 
 void DlgPrefMixer::setDefaultShelves() {
@@ -980,10 +949,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
-                    // Ignore scroll events if slider is not focused.
-                    // See eventFilter() for details.
-                    slider->setFocusPolicy(Qt::StrongFocus);
-                    slider->installEventFilter(this);
+                    setScrollSafeGuard(slider);
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_mainEQSliders.append(slider);
                     // catch drag event

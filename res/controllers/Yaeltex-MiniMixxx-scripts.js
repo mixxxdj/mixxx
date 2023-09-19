@@ -1426,7 +1426,7 @@ MiniMixxx.Controller = class {
             this.buttons[name].activeMode.setLights();
         }
 
-        this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", this.guiTickHandler.bind(this));
+        this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", this.guiTickHandler.bind(this));
     }
 
 

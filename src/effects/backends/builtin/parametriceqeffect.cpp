@@ -25,7 +25,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
             "An gentle 2-band parametric equalizer based on biquad filters.\n"
             "It is designed as a complement to the steep mixing equalizers."));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setIsMasterEQ(true);
+    pManifest->setIsMainEQ(true);
 
     EffectManifestParameterPointer gain1 = pManifest->addParameter();
     gain1->setId("gain1");

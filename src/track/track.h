@@ -78,14 +78,10 @@ class Track : public QObject {
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QDateTime sourceSynchronizedAt READ getSourceSynchronizedAt STORED false)
 
-    mixxx::FileAccess getFileAccess() const {
-        // Copying QFileInfo is thread-safe due to implicit sharing,
-        // i.e. no locking needed.
-        return m_fileAccess;
-    }
     mixxx::FileInfo getFileInfo() const {
-        // Copying QFileInfo is thread-safe due to implicit sharing,
+        // Copying mixxx::FileInfo based on QFileInfo is thread-safe due to implicit sharing,
         // i.e. no locking needed.
+        static_assert(mixxx::FileInfo::isQFileInfo());
         return m_fileAccess.info();
     }
 
@@ -442,6 +438,7 @@ class Track : public QObject {
     // adjusted in the opposite direction to compensate (no audible change).
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
+    void ratingUpdated(int rating);
     void cuesUpdated();
     void loopRemove();
     void analyzed();

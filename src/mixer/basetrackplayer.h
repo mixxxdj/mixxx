@@ -15,11 +15,13 @@
 #include "util/memory.h"
 #include "util/parented_ptr.h"
 
-class EngineMaster;
+class EngineMixer;
 class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+
+constexpr int kUnreplaceDelay = 500;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -44,6 +46,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
+    virtual void slotSetTrackRating(int rating) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -51,6 +54,7 @@ class BaseTrackPlayer : public BasePlayer {
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
     void noVinylControlInputConfigured();
+    void trackRatingChanged(int rating);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -58,11 +62,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public:
     BaseTrackPlayerImpl(PlayerManager* pParent,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
-            bool defaultMaster,
+            bool defaultMainMix,
             bool defaultHeadphones,
             bool primaryDeck);
     ~BaseTrackPlayerImpl() override;
@@ -70,7 +74,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer getLoadedTrack() const final;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
-    // connected. Delete me when EngineMaster supports AudioInput assigning.
+    // connected. Delete me when EngineMixer supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
     void setupEqControls() final;
@@ -90,6 +94,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // to compensate so there is no audible change in volume.
     void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
+    void slotSetTrackRating(int rating) final;
     void slotPlayToggled(double);
 
   private slots:
@@ -119,12 +124,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void disconnectLoadedTrack();
 
     UserSettingsPointer m_pConfig;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
+
+    PerformanceTimer m_ejectTimer;
 
     std::unique_ptr<ControlPushButton> m_pEject;
 

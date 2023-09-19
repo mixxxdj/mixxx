@@ -16,9 +16,6 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {
 }
 
-WaveformRenderBeat::~WaveformRenderBeat() {
-}
-
 void WaveformRenderBeat::initializeGL() {
     WaveformRenderer::initializeGL();
     m_shader.init();
@@ -51,7 +48,7 @@ void WaveformRenderBeat::paintGL() {
 
     m_color.setAlphaF(alpha / 100.0);
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }

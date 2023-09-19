@@ -134,12 +134,7 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSyncTrackMetadataToggled);
 
-    // Avoid undesired spinbox value changes while scrolling the preferences page
-    setFocusPolicyInstallEventFilter(spinbox_bpm_precision);
-    setFocusPolicyInstallEventFilter(spinbox_history_track_duplicate_distance);
-    setFocusPolicyInstallEventFilter(spinbox_history_min_tracks_to_keep);
-    setFocusPolicyInstallEventFilter(spinBoxRowHeight);
-    setFocusPolicyInstallEventFilter(searchDebouncingTimeoutSpinBox);
+    setScrollSafeGuardForAllInputWidgets(this);
 
     // Initialize the controls after all slots have been connected
     slotUpdate();
@@ -147,24 +142,6 @@ DlgPrefLibrary::DlgPrefLibrary(
 
 DlgPrefLibrary::~DlgPrefLibrary() = default;
 
-void DlgPrefLibrary::setFocusPolicyInstallEventFilter(QSpinBox* box) {
-    box->setFocusPolicy(Qt::StrongFocus);
-    box->installEventFilter(this);
-}
-
-// Catch scroll events over spinboxes and pass them to the scroll area instead.
-bool DlgPrefLibrary::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QSpinBox* spin = qobject_cast<QSpinBox*>(obj);
-        if (spin && !spin->hasFocus()) {
-            QApplication::sendEvent(verticalLayout, e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
-}
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
 }
@@ -264,6 +241,7 @@ void DlgPrefLibrary::slotUpdate() {
             m_pConfig->getValue(kSyncTrackMetadataConfigKey, false));
     checkBox_SeratoMetadataExport->setChecked(
             m_pConfig->getValue(kSyncSeratoMetadataConfigKey, false));
+    setSeratoMetadataEnabled(checkBox_SyncTrackMetadata->isChecked());
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             kUseRelativePathOnExportConfigKey, false));
 
@@ -597,7 +575,16 @@ void DlgPrefLibrary::slotBpmColumnPrecisionChanged(int bpmPrecision) {
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataToggled() {
-    if (isVisible() && checkBox_SyncTrackMetadata->isChecked()) {
+    bool shouldSyncTrackMetadata = checkBox_SyncTrackMetadata->isChecked();
+    if (isVisible() && shouldSyncTrackMetadata) {
         mixxx::DlgTrackMetadataExport::showMessageBoxOncePerSession();
+    }
+    setSeratoMetadataEnabled(shouldSyncTrackMetadata);
+}
+
+void DlgPrefLibrary::setSeratoMetadataEnabled(bool shouldSyncTrackMetadata) {
+    checkBox_SeratoMetadataExport->setEnabled(shouldSyncTrackMetadata);
+    if (!shouldSyncTrackMetadata) {
+        checkBox_SeratoMetadataExport->setChecked(false);
     }
 }

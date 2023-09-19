@@ -193,8 +193,8 @@ ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/;
 // ================================================= INITIALIZATION & SHUTDOWN ============================================
 
 ElectrixTweaker.init = function() {
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
     }
     for (const group in ElectrixTweaker.encoders) { // loop over each [Channel]
         //         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
@@ -506,7 +506,7 @@ ElectrixTweaker.bigEncoderButton = function(channel, control, value, _status, _g
         if (ElectrixTweaker.topShift) {
             engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
         } else {
-            engine.setValue("[Master]", "maximize_library", ! engine.getValue("[Master]", "maximize_library"));
+            engine.setValue("[Skin]", "show_maximized_library", ! engine.getValue("[Skin]", "show_maximized_library"));
         }
     }
 };
