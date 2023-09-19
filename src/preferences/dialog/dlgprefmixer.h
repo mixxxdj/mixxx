@@ -15,7 +15,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
             QWidget* parent,
             std::shared_ptr<EffectsManager> pEffectsManager,
             UserSettingsPointer _config);
-    virtual ~DlgPrefMixer();
 
     QUrl helpUrl() const override;
 
@@ -26,8 +25,9 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
   private slots:
     void slotNumDecksChanged(double numDecks);
-    void slotEQEffectChangedOnDeck(int effectIndex);
-    void slotQuickEffectChangedOnDeck(int effectIndex);
+    void slotEQEffectSelectionChanged(int effectIndex);
+    void slotQuickEffectSelectionChanged(int effectIndex);
+    void slotQuickEffectChangedOnDeck(const QString& group, const QString& presetName);
     void slotEqOnlyToggled(bool checked);
     void slotSingleEqToggled(bool checked);
     void slotEqAutoResetToggled(bool checked);
@@ -92,7 +92,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     EffectsBackendManagerPointer m_pBackendManager;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;
-    ControlProxy* m_pNumDecks;
+    parented_ptr<ControlProxy> m_pNumDecks;
 
     bool m_ignoreEqQuickEffectBoxSignals;
 

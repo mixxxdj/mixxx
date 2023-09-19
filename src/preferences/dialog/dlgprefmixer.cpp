@@ -86,7 +86,9 @@ DlgPrefMixer::DlgPrefMixer(
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pEffectsManager(pEffectsManager),
           m_pBackendManager(pEffectsManager->getBackendManager()),
-          m_pNumDecks(nullptr),
+          m_pNumDecks(make_parented<ControlProxy>(QStringLiteral("[App]"),
+                  QStringLiteral("num_decks"),
+                  this)),
           m_ignoreEqQuickEffectBoxSignals(false),
           m_singleEq(true),
           m_eqEffectsOnly(true),
@@ -160,7 +162,6 @@ DlgPrefMixer::DlgPrefMixer(
 
     // Add drop down lists for current decks and connect to num_decks control
     // so new lists are added if new decks are added.
-    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefMixer::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -176,24 +177,16 @@ DlgPrefMixer::DlgPrefMixer(
     m_initializing = false;
 }
 
-DlgPrefMixer::~DlgPrefMixer() {
-    qDeleteAll(m_deckEqEffectSelectors);
-    m_deckEqEffectSelectors.clear();
-
-    qDeleteAll(m_deckQuickEffectSelectors);
-    m_deckQuickEffectSelectors.clear();
-}
-
 // Create EQ & QuickEffect selectors and deck label for each added deck
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         int deckNo = m_deckEqEffectSelectors.size() + 1;
         QString deckGroup = PlayerManager::groupForDeck(deckNo - 1);
 
-        QLabel* label = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
+        auto pLabel = make_parented<QLabel>(QObject::tr("Deck %1").arg(deckNo), this);
 
         // Create the EQ selector //////////////////////////////////////////////
-        QComboBox* pEqComboBox = new QComboBox(this);
+        auto pEqComboBox = make_parented<QComboBox>(this);
         setScrollSafeGuard(pEqComboBox);
         m_deckEqEffectSelectors.append(pEqComboBox);
 
@@ -218,31 +211,34 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
-                &DlgPrefMixer::slotEQEffectChangedOnDeck);
+                &DlgPrefMixer::slotEQEffectSelectionChanged);
 
         // Create the QuickEffect selector /////////////////////////////////////
-        QComboBox* pQuickEffectComboBox = new QComboBox(this);
+        auto pQuickEffectComboBox = make_parented<QComboBox>(this);
         setScrollSafeGuard(pQuickEffectComboBox);
         m_deckQuickEffectSelectors.append(pQuickEffectComboBox);
         connect(pQuickEffectComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
-                &DlgPrefMixer::slotQuickEffectChangedOnDeck);
+                &DlgPrefMixer::slotQuickEffectSelectionChanged);
         // Change the QuickEffect when it was changed in WEffectChainPresetSelector
         // or with controllers
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
         DEBUG_ASSERT(pChain);
+        // TODO(xxx) Connecting the signal to a lambda that capture the parented_ptr
+        // pQuickEffectComboBox and sets the combobox index causes a crash in
+        // applyQuickEffects() even though the signal hasn_t been emitted, yet.
+        // Hence we just capture the deck group and the new preset's name and set
+        // the index in a separate slot for now.
         connect(pChain.data(),
                 &EffectChain::chainPresetChanged,
                 this,
-                [this, pQuickEffectComboBox](const QString& name) {
-                    m_ignoreEqQuickEffectBoxSignals = true;
-                    pQuickEffectComboBox->setCurrentIndex(pQuickEffectComboBox->findText(name));
-                    m_ignoreEqQuickEffectBoxSignals = false;
+                [this, deckGroup](const QString& name) {
+                    slotQuickEffectChangedOnDeck(deckGroup, name);
                 });
 
         // Add the new widgets
-        gridLayout_3->addWidget(label, deckNo, 0);
+        gridLayout_3->addWidget(pLabel, deckNo, 0);
         gridLayout_3->addWidget(pEqComboBox, deckNo, 1);
         gridLayout_3->addWidget(pQuickEffectComboBox, deckNo, 2);
         gridLayout_3->addItem(
@@ -268,7 +264,7 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
-        QComboBox* pBox = m_deckEqEffectSelectors[deck];
+        auto* pBox = m_deckEqEffectSelectors[deck];
         // Populate comboboxes with all available effects
         // Get currently loaded EQ effect
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
@@ -325,8 +321,8 @@ void DlgPrefMixer::slotPopulateQuickEffectSelectors() {
     QList<EffectChainPresetPointer> presetList =
             m_pChainPresetManager->getQuickEffectPresetsSorted();
 
-    for (QComboBox* pBox : qAsConst(m_deckQuickEffectSelectors)) {
-        int deck = m_deckQuickEffectSelectors.indexOf(pBox);
+    for (int deck = 0; deck < m_deckQuickEffectSelectors.size(); deck++) {
+        auto* pBox = m_deckQuickEffectSelectors[deck];
         pBox->clear();
         int currentIndex = 0; // preselect empty item '---' as default
 
@@ -370,7 +366,7 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
         for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
             // EQ //////////////////////////////////////////////////////////////
             int newIndex = 0;
-            QComboBox* eqBox = m_deckEqEffectSelectors[deck];
+            auto* eqBox = m_deckEqEffectSelectors[deck];
             int foundIndex = eqBox->findData(deck1EqId);
             if (foundIndex != -1) {
                 newIndex = foundIndex;
@@ -395,18 +391,18 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
             eqBox->setDisabled(true);
 
             // QUickEffect /////////////////////////////////////////////////////
-            QComboBox* quickBox = m_deckQuickEffectSelectors[deck];
+            auto* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setCurrentIndex(deck1QuickIndex);
             quickBox->setDisabled(true);
         }
         m_ignoreEqQuickEffectBoxSignals = false;
     } else {
         for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
-            QComboBox* eqBox = m_deckEqEffectSelectors[deck];
+            auto* eqBox = m_deckEqEffectSelectors[deck];
             eqBox->setEnabled(!m_eqBypass);
             slotPopulateDeckEqSelectors();
 
-            QComboBox* quickBox = m_deckQuickEffectSelectors[deck];
+            auto* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setEnabled(true);
             slotPopulateQuickEffectSelectors();
         }
@@ -460,7 +456,7 @@ void DlgPrefMixer::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefMixer::slotEQEffectChangedOnDeck(int effectIndex) {
+void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
     if (!c || m_ignoreEqQuickEffectBoxSignals) {
@@ -476,7 +472,7 @@ void DlgPrefMixer::slotEQEffectChangedOnDeck(int effectIndex) {
     }
 }
 
-void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
+void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
     if (!c || m_ignoreEqQuickEffectBoxSignals) {
@@ -490,11 +486,27 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
     }
 }
 
+/// The Quick Effect was changed via the GUI or controls, update the combobox
+void DlgPrefMixer::slotQuickEffectChangedOnDeck(const QString& deckGroup,
+        const QString& presetName) {
+    int deck;
+    if (PlayerManager::isDeckGroup(deckGroup, &deck)) {
+        deck -= 1; // decks indices are 0-based
+        auto* pBox = m_deckQuickEffectSelectors[deck];
+        VERIFY_OR_DEBUG_ASSERT(pBox) {
+            return;
+        }
+        pBox->blockSignals(true);
+        pBox->setCurrentIndex(pBox->findText(presetName));
+        pBox->blockSignals(false);
+    }
+}
+
 void DlgPrefMixer::applyDeckEQs() {
     m_ignoreEqQuickEffectBoxSignals = true;
 
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
-        QComboBox* pBox = m_deckEqEffectSelectors[deck];
+        auto* pBox = m_deckEqEffectSelectors[deck];
         int effectIndex = pBox->currentIndex();
 
         bool needLoad = true;
@@ -542,8 +554,8 @@ void DlgPrefMixer::applyDeckEQs() {
 void DlgPrefMixer::applyQuickEffects() {
     m_ignoreEqQuickEffectBoxSignals = true;
 
-    for (const auto& pBox : qAsConst(m_deckQuickEffectSelectors)) {
-        int deck = m_deckQuickEffectSelectors.indexOf(pBox);
+    for (int deck = 0; deck < m_deckQuickEffectSelectors.size(); deck++) {
+        auto* pBox = m_deckQuickEffectSelectors[deck];
         int effectIndex = pBox->currentIndex();
 
         bool needLoad = true;
@@ -906,7 +918,7 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
 
     // De/activate deck EQ comboboxes
     for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
-        QComboBox* pBox = m_deckEqEffectSelectors[deck];
+        auto* pBox = m_deckEqEffectSelectors[deck];
         if (deck == 0) {
             pBox->setEnabled(!m_eqBypass);
         } else {
@@ -1010,13 +1022,13 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
         }
         int i = param->index();
 
-        QLabel* pCenterFreqLabel = new QLabel(this);
+        auto pCenterFreqLabel = make_parented<QLabel>(this);
         QString labelText = param->name();
         pCenterFreqLabel->setText(labelText);
         m_mainEQLabels.append(pCenterFreqLabel);
         slidersGridLayout->addWidget(pCenterFreqLabel, 0, i + 1, Qt::AlignCenter);
 
-        QSlider* pSlider = new QSlider(this);
+        auto pSlider = make_parented<QSlider>(this);
         setScrollSafeGuard(pSlider);
         pSlider->setProperty("index", QVariant(i));
         pSlider->setMinimumHeight(90);
@@ -1052,7 +1064,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
                 this,
                 &DlgPrefMixer::slotMainEQParameterSliderChanged);
 
-        QLabel* pValueLabel = new QLabel(this);
+        auto pValueLabel = make_parented<QLabel>(this);
         QString valueText = QString::number((double)pSlider->value() / 100);
         pValueLabel->setText(valueText);
 
