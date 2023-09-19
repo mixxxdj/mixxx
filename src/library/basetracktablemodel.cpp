@@ -568,7 +568,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
                 this,
                 coverInfo,
                 absoluteHeightOfCoverartToolTip);
-        return QVariant();
+        return tr("Fetching image ...");
     }
     QByteArray data;
     QBuffer buffer(&data);

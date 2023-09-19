@@ -3,7 +3,9 @@
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
+#include <QHelpEvent>
 #include <QScrollBar>
+#include <QToolTip>
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
@@ -389,3 +391,23 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
 
     return QTableView::moveCursor(cursorAction, modifiers);
 }
+
+void WLibraryTableView::dataChanged(
+        const QModelIndex& topLeft,
+        const QModelIndex& bottomRight,
+        const QVector<int>& roles) {
+    for (auto& role : roles) {
+        // If the tooltip is still visible update with the loaded cover.
+        if (role == Qt::ToolTipRole && QToolTip::isVisible()) {
+            QPoint globalPos = QCursor::pos();
+            QWidget* pViewPort = QApplication::widgetAt(QCursor::pos());
+            if (pViewPort) {
+                QHelpEvent toolTipEvent(QEvent::ToolTip,
+                        pViewPort->mapFromGlobal(globalPos),
+                        globalPos);
+                viewportEvent(&toolTipEvent);
+            }
+        }
+    }
+    QAbstractItemView::dataChanged(topLeft, bottomRight, roles);
+};

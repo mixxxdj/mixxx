@@ -50,6 +50,11 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// @param optional: index, otherwise row/column member vars are used
     void restoreCurrentIndex(const QModelIndex& index = QModelIndex());
 
+    void dataChanged(
+            const QModelIndex& topLeft,
+            const QModelIndex& bottomRight,
+            const QVector<int>& roles = QVector<int>()) override;
+
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
