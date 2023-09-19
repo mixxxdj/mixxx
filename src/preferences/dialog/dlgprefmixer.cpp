@@ -285,8 +285,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
             // <b> makes the effect name bold. Also, like <span> it serves as hack
             // to get Qt to treat the string as rich text so it automatically wraps long lines.
             pBox->setItemData(i,
-                    QVariant(QStringLiteral("<b>") + pManifest->name() +
-                            QStringLiteral("</b><br/>") + pManifest->description()),
+                    QVariant(QStringLiteral("<b>%1</b><br/>%2")
+                                     .arg(pManifest->name(),
+                                             pManifest->description())),
                     Qt::ToolTipRole);
             if (pLoadedManifest &&
                     pLoadedManifest.data() == pManifest.data()) {
@@ -299,8 +300,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
                     QVariant(pLoadedManifest->uniqueId()));
             currentIndex = pBox->count() - 1;
             pBox->setItemData(currentIndex,
-                    QVariant(QStringLiteral("<b>") + pLoadedManifest->name() +
-                            QStringLiteral("</b><br/>") + pLoadedManifest->description()),
+                    QVariant(QStringLiteral("<b>%1</b><br/>%2")
+                                     .arg(pLoadedManifest->name(),
+                                             pLoadedManifest->description())),
                     Qt::ToolTipRole);
             // Deactivate item to hopefully clarify the item is not an EQ
             const QStandardItemModel* pModel =
@@ -376,8 +378,9 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
                         QVariant(pManifest->uniqueId()));
                 newIndex = eqBox->count() - 1;
                 eqBox->setItemData(newIndex,
-                        QVariant(QStringLiteral("<b>") + pManifest->name() +
-                                QStringLiteral("</b><br/>") + pManifest->description()),
+                        QVariant(QStringLiteral("<b>%1</b><br/>%2")
+                                         .arg(pManifest->name(),
+                                                 pManifest->description())),
                         Qt::ToolTipRole);
                 // Deactivate item to hopefully clarify the item is not an EQ
                 const QStandardItemModel* pModel =
@@ -950,8 +953,9 @@ void DlgPrefMixer::setUpMainEQ() {
         // <b> makes the effect name bold. Also, like <span> it serves as hack
         // to get Qt to treat the string as rich text so it automatically wraps long lines.
         comboBoxMainEq->setItemData(comboBoxMainEq->count() - 1,
-                QVariant(QStringLiteral("<b>") + pManifest->name() +
-                        QStringLiteral("</b><br/>") + pManifest->description()),
+                QVariant(QStringLiteral("<b>%1</b><br/>%2")
+                                 .arg(pManifest->name(),
+                                         pManifest->description())),
                 Qt::ToolTipRole);
     }
     comboBoxMainEq->setCurrentIndex(0);
