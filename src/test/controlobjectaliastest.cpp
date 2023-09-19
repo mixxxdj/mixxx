@@ -69,27 +69,11 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
             ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
     EXPECT_DOUBLE_EQ(audioLatencyUsage.get(), audioLatencyUsageLegacy.get());
 
-    // `audio_latency_usage` is a ControlPotMeter control. Check if its
-    // additional COs are also aliased correctly.
-    auto audioLatencyUsageSetOne = ControlProxy(
-            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage_set_one")));
-    auto audioLatencyUsageSetOneLegacy = ControlProxy(
-            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage_set_one")));
-    EXPECT_DOUBLE_EQ(audioLatencyUsageSetOne.get(), audioLatencyUsageSetOneLegacy.get());
-
     auto audioLatencyOverload = ControlProxy(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")));
     auto audioLatencyOverloadLegacy = ControlProxy(
             ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload")));
     EXPECT_DOUBLE_EQ(audioLatencyOverload.get(), audioLatencyOverloadLegacy.get());
-
-    // `audio_latency_overload` is a ControlPotMeter control. Check if its
-    // additional COs are also aliased correctly.
-    auto audioLatencyOverloadSetOne = ControlProxy(
-            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_set_one")));
-    auto audioLatencyOverloadSetOneLegacy = ControlProxy(
-            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload_set_one")));
-    EXPECT_DOUBLE_EQ(audioLatencyOverloadSetOne.get(), audioLatencyOverloadSetOneLegacy.get());
 
     auto audioLatencyOverloadCount = ControlProxy(ConfigKey(
             kAppGroup, QStringLiteral("audio_latency_overload_count")));

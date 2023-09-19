@@ -83,18 +83,13 @@ EngineMixer::EngineMixer(
             true,
             true); // reported latency (sometimes correct)
     m_pAudioLatencyOverloadCount = new ControlObject(
-            ConfigKey(
-                    kAppGroup, QStringLiteral("audio_latency_overload_count")),
-            true,
-            true);
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
     m_pAudioLatencyOverloadCount->addAlias(ConfigKey(
             kLegacyGroup, QStringLiteral("audio_latency_overload_count")));
-    m_pAudioLatencyUsage = new ControlPotmeter(
-            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")),
-            0.0,
-            0.25);
+    m_pAudioLatencyUsage = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
     m_pAudioLatencyUsage->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
-    m_pAudioLatencyOverload = new ControlPotmeter(
+    m_pAudioLatencyOverload = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")),
             0.0,
             1.0);
