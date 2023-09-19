@@ -440,11 +440,11 @@ void DlgPrefMixer::slotResetToDefaults() {
     checkBoxReverse->setChecked(false);
 
     // EQ //////////////////////////////////
-    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
+    for (const auto& pBox : std::as_const(m_deckEqEffectSelectors)) {
         pBox->setCurrentIndex(
                 pBox->findData(kDefaultEqId));
     }
-    for (const auto& pBox : qAsConst(m_deckQuickEffectSelectors)) {
+    for (const auto& pBox : std::as_const(m_deckQuickEffectSelectors)) {
         pBox->setCurrentIndex(
                 pBox->findText(kDefaultQuickEffectChainName));
     }
@@ -975,7 +975,7 @@ void DlgPrefMixer::updateMainEQ() {
     comboBoxMainEq->setCurrentIndex(mainEqIndex);
 
     // Load parameters from preferences and set sliders
-    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+    for (QSlider* pSlider : std::as_const(m_mainEQSliders)) {
         int paramIndex = pSlider->property("index").toInt();
         QString strValue = m_pConfig->getValueString(ConfigKey(kMixerProfile,
                 kMainEQParameterKey + QString::number(paramIndex + 1)));
@@ -1126,7 +1126,7 @@ void DlgPrefMixer::slotMainEQToDefault() {
         return;
     }
 
-    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+    for (QSlider* pSlider : std::as_const(m_mainEQSliders)) {
         int paramIndex = pSlider->property("index").toInt();
         auto pParam = pManifest->parameter(paramIndex);
         pSlider->setValue(static_cast<int>(pParam->getDefault() * 100));
@@ -1151,7 +1151,7 @@ void DlgPrefMixer::storeMainEQ() {
     }
 
     // store current parameters
-    for (QSlider* pSlider : qAsConst(m_mainEQSliders)) {
+    for (QSlider* pSlider : std::as_const(m_mainEQSliders)) {
         int paramIndex = pSlider->property("index").toInt();
         double dispValue = static_cast<double>(pSlider->value()) / 100;
         // TODO store this in effects.xml
