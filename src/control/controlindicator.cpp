@@ -6,7 +6,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),

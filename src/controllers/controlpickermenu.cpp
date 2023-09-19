@@ -13,7 +13,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {

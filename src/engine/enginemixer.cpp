@@ -30,7 +30,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
