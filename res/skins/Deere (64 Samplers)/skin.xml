@@ -31,11 +31,11 @@
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],large_vu">0</attribute>
       <!-- Effects -->
-      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_effectrack">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
       <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_samplers">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
@@ -47,13 +47,13 @@
       <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
       <attribute config_key="[Skin],show_maximized_library">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_previewdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>

@@ -373,7 +373,7 @@
                 <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">EFFECTS</SetVariable>
                 <SetVariable name="state_1_text">EFFECTS</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_effectrack</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -386,7 +386,7 @@
                 <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">SAMPLERS</SetVariable>
                 <SetVariable name="state_1_text">SAMPLERS</SetVariable>
-                <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_samplers</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -399,7 +399,7 @@
                 <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">MICS &amp; AUX</SetVariable>
                 <SetVariable name="state_1_text">MICS &amp; AUX</SetVariable>
-                <SetVariable name="left_connection_control">[Microphone],show_microphone</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_microphones</SetVariable>
               </Template>
             </Children>
             <Connection>

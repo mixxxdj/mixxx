@@ -181,7 +181,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_text">FX</SetVariable>
                 <SetVariable name="state_1_text">FX</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_effectrack</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -192,7 +192,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_samplers</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -203,7 +203,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>

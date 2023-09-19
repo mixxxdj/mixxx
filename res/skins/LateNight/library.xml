@@ -96,7 +96,7 @@
                           </CoverArt>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup><!--Cover Art-->

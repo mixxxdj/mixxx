@@ -49,7 +49,7 @@ Description:
                   <WidgetGroup>
                     <Size>1me,5f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_previewdecks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -100,7 +100,7 @@ Description:
                       <CoverArt>
                         <Size>30min,30min</Size>
                         <Connection>
-                          <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>

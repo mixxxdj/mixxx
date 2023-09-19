@@ -24,7 +24,7 @@ Description:
             <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
               <SetVariable name="TooltipId">show_samplers</SetVariable>
               <SetVariable name="Text">Samplers </SetVariable>
-              <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+              <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
               <SetVariable name="Width">115f</SetVariable>
             </Template>
 
@@ -34,7 +34,7 @@ Description:
               <Children>
                 <!-- translucent cover when samplers are hidden -->
                 <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
-                  <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+                  <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
                 </Template>
 
                 <WidgetGroup>
@@ -75,7 +75,7 @@ Description:
           <Children>
             <!-- translucent cover when samplers are hidden -->
             <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
-              <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+              <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
             </Template>
 
             <WidgetGroup>

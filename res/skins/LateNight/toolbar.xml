@@ -58,7 +58,7 @@
             <SetVariable name="Size">59f,20f</SetVariable>
             <SetVariable name="state_0_text">EFFECTS</SetVariable>
             <SetVariable name="state_1_text">EFFECTS</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_effectrack</SetVariable>
           </Template>
 
           <Template src="skin:../LateNight/controls/button_2state_persist.xml">
@@ -67,7 +67,7 @@
             <SetVariable name="Size">71f,20f</SetVariable>
             <SetVariable name="state_0_text">SAMPLERS</SetVariable>
             <SetVariable name="state_1_text">SAMPLERS</SetVariable>
-            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_samplers</SetVariable>
           </Template>
 
           <Template src="skin:../LateNight/controls/button_2state_persist.xml">
@@ -76,7 +76,7 @@
             <SetVariable name="Size">61f,20f</SetVariable>
             <SetVariable name="state_0_text">MIC/AUX</SetVariable>
             <SetVariable name="state_1_text">MIC/AUX</SetVariable>
-            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+            <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
           </Template>
 
         </Children>

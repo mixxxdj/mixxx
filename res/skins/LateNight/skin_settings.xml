@@ -380,7 +380,7 @@ Description:
                     <Children>
                       <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
                         <SetVariable name="Text">Effect Units</SetVariable>
-                        <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                         <SetVariable name="TooltipId">show_effects</SetVariable>
                         <SetVariable name="Width">130me</SetVariable>
                       </Template>
@@ -391,7 +391,7 @@ Description:
                         <Children>
                           <!-- translucent cover when effect rack is hidden -->
                           <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
-                            <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                           </Template>
 
                           <WidgetGroup>
@@ -426,7 +426,7 @@ Description:
                     <Children>
                       <!-- translucent cover when effect rack is hidden -->
                       <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
-                        <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                       </Template>
 
                       <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
@@ -470,14 +470,14 @@ Description:
               <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_previewdeck</SetVariable>
                 <SetVariable name="Text">Preview Deck</SetVariable>
-                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+                <SetVariable name="Setting">[Skin],show_previewdecks</SetVariable>
               </Template>
 
               <!-- Cover Art -->
               <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_coverart</SetVariable>
                 <SetVariable name="Text">Cover Art</SetVariable>
-                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+                <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>
               </Template>
 
             </Children>

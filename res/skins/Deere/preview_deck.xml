@@ -139,7 +139,7 @@
       </WidgetGroup><!-- /PreviewDeck -->
     </Children>
     <Connection>
-      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey>[Skin],show_previewdecks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
