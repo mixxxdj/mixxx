@@ -529,7 +529,7 @@ TraktorS3.Controller = class {
 
         engine.connectControl("[Microphone]", "pfl", this.pflOutput);
 
-        engine.connectControl("[Master]", "maximize_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
+        engine.connectControl("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
         // Master VuMeters
         this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
@@ -1145,7 +1145,7 @@ TraktorS3.Deck = class {
             return;
         }
 
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 
     selectLoopHandler(field) {

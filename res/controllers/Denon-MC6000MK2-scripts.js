@@ -1533,7 +1533,7 @@ DenonMC6000MK2.recvAreaButton = function(_channel, _control, value, _status, _gr
 
 DenonMC6000MK2.recvListButton = function(_channel, _control, value, _status, _group) {
     if (DenonMC6000MK2.isButtonPressed(value)) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 };
 

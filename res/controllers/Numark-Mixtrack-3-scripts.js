@@ -1091,7 +1091,7 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 	    } else {
 	        // Browse push : maximize/minimize library view
 	        if (value === ON) {
-	            script.toggleControl("[Master]", "maximize_library");
+	            script.toggleControl("[Skin]", "show_maximized_library");
 	        }
 	    }
     }

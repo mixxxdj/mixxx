@@ -3846,8 +3846,8 @@ var NLMK2 = (function () {
 	};
 	const masterControlDef = {
 	  maximize_library: {
-	    group: '[Master]',
-	    name: 'maximize_library',
+	    group: '[Skin]',
+	    name: 'show_maximized_library',
 	    type: 'binary'
 	  },
 	  num_samplers: {

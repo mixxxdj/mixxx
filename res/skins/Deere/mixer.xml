@@ -265,7 +265,7 @@
       </WidgetGroup><!-- Mixer -->
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_mixer</ConfigKey>
+      <ConfigKey>[Skin],show_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- MixerBorder -->

@@ -1004,6 +1004,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
+  src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp

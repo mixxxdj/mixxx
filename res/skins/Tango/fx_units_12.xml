@@ -56,7 +56,7 @@ Description:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetStack><!-- /EffectUnit 1 -->
@@ -98,7 +98,7 @@ Description:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_effectrack</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetStack><!-- /EffectUnit 2 -->

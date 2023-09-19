@@ -293,7 +293,7 @@
 [Channel1],hotcue_22_goto,0
 [EffectRack1_EffectUnit4_Effect1],parameter6_set_minus_one,0
 [Auxiliary3],VuMeterL_down_small,0
-[VinylControl],show_vinylcontrol,0
+[Skin],show_vinylcontrol,0
 [EffectRack1_EffectUnit3_Effect3],parameter7_minus_toggle,0
 [Sampler3],hotcue_13_goto,0
 [Sampler3],beatjump_0.5_forward,0
@@ -2095,7 +2095,7 @@
 [Channel3],hotcue_1_goto,0
 [Channel1],beatjump_0.03125_backward,0
 [Sampler4],loop_move_2_forward,0
-[PreviewDeck],show_previewdeck,0
+[Skin],show_previewdecks,0
 [EffectRack1_EffectUnit1_Effect2],parameter8_set_minus_one,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter14_toggle,0
 [Channel3],volume_set_default,0
@@ -2204,7 +2204,7 @@
 [Sampler2],loop_move_2_forward,0
 [Microphone],pregain_up_small,0
 [Sampler2],beatjump_32_backward,0
-[Microphone],show_microphone,0
+[Skin],show_microphones,0
 [Channel2],beatjump_64_backward,0
 [PreviewDeck1],beatloop_1_toggle,0
 [PreviewDeck1],hotcue_37_gotoandplay,0
@@ -6565,7 +6565,7 @@
 [EqualizerRack1_[Channel2]_Effect1],parameter12_up,0
 [QuickEffectRack1_[Channel2]_Effect1],button_parameter7_type,0
 [EffectRack1_EffectUnit3],insertion_type,0
-[Samplers],show_samplers,0
+[Skin],show_samplers,0
 [EffectRack1_EffectUnit4_Effect1],button_parameter3_type,0
 [Channel4],orientation_left,0
 [Sampler2],hotcue_5_clear,0
@@ -6631,7 +6631,7 @@
 [Channel2],hotcue_16_clear,0
 [Sampler1],bpm_up_small,0
 [EqualizerRack1_[Channel1]],num_effectslots,1
-[Master],maximize_library,0
+[Skin],show_maximized_library,0
 [Auxiliary4],PeakIndicator_toggle,0
 [EffectRack1_EffectUnit1_Effect1],parameter15_set_zero,0
 [EffectRack1_EffectUnit2_Effect1],parameter16_set_zero,0
@@ -7190,7 +7190,7 @@
 [EffectRack1_EffectUnit2_Effect2],button_parameter16_type,0
 [EqualizerRack1_[Channel2]_Effect1],parameter15_down_small,0
 [Master],PeakIndicator_set_zero,0
-[EffectRack1],show,1
+[Skin],show_effectrack,1
 [EffectRack1_EffectUnit2_Effect3],parameter8_set_default,0
 [EffectRack1_EffectUnit3_Effect2],parameter6_down,0
 [EffectRack1_EffectUnit3_Effect2],parameter2_down_small,0
@@ -14053,7 +14053,7 @@
 [Microphone],VuMeter_up,0
 [QuickEffectRack1_[Channel1]],clear,0
 [Channel4],hotcue_9_gotoandstop,0
-[Library],show_coverart,1
+[Skin],show_library_coverart,1
 [Sampler3],waveform_zoom_toggle,0
 [Channel1],hotcue_8_activate_preview,0
 [PreviewDeck1],rateSearch,0
@@ -14617,7 +14617,6 @@
 [EffectRack1_EffectUnit4_Effect1],parameter7_set_minus_one,0
 [Channel4],beats_translate_match_alignment,0
 [EffectRack1_EffectUnit4],group_[Microphone3]_enable,0
-[Vinylcontrol],show_vinylcontrol,0
 [EffectRack1_EffectUnit2_Effect4],parameter1_set_one,0
 [EffectRack1_EffectUnit3_Effect2],parameter16_set_zero,0
 [EffectRack1_EffectUnit3_Effect2],parameter8_up,0
