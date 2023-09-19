@@ -267,10 +267,10 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
     m_ignoreEqQuickEffectBoxSignals = true; // prevents a recursive call
 
     const QList<EffectManifestPointer> pManifestList = getDeckEqManifests();
-    for (QComboBox* pBox : qAsConst(m_deckEqEffectSelectors)) {
+    for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
+        QComboBox* pBox = m_deckEqEffectSelectors[deck];
         // Populate comboboxes with all available effects
         // Get currently loaded EQ effect
-        int deck = m_deckEqEffectSelectors.indexOf(pBox);
         auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
                 PlayerManager::groupForDeck(deck));
         DEBUG_ASSERT(pChainSlot);
@@ -367,10 +367,10 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
                 m_pBackendManager->getManifestFromUniqueId(deck1EqId);
         int deck1QuickIndex = m_deckQuickEffectSelectors[0]->currentIndex();
 
-        for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
+        for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
             // EQ //////////////////////////////////////////////////////////////
             int newIndex = 0;
-            QComboBox* eqBox = m_deckEqEffectSelectors[i - 1];
+            QComboBox* eqBox = m_deckEqEffectSelectors[deck];
             int foundIndex = eqBox->findData(deck1EqId);
             if (foundIndex != -1) {
                 newIndex = foundIndex;
@@ -389,24 +389,24 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
                 DEBUG_ASSERT(pModel);
                 auto pItem = pModel->item(newIndex);
                 DEBUG_ASSERT(pItem);
-                pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
+                pItem->setEnabled(false);
             }
             eqBox->setCurrentIndex(newIndex);
             eqBox->setDisabled(true);
 
             // QUickEffect /////////////////////////////////////////////////////
-            QComboBox* quickBox = m_deckQuickEffectSelectors[i - 1];
+            QComboBox* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setCurrentIndex(deck1QuickIndex);
             quickBox->setDisabled(true);
         }
         m_ignoreEqQuickEffectBoxSignals = false;
     } else {
-        for (int i = 1; i < m_deckEqEffectSelectors.size(); ++i) {
-            QComboBox* eqBox = m_deckEqEffectSelectors[i];
+        for (int deck = 1; deck < m_deckEqEffectSelectors.size(); ++deck) {
+            QComboBox* eqBox = m_deckEqEffectSelectors[deck];
             eqBox->setEnabled(!m_eqBypass);
             slotPopulateDeckEqSelectors();
 
-            QComboBox* quickBox = m_deckQuickEffectSelectors[i];
+            QComboBox* quickBox = m_deckQuickEffectSelectors[deck];
             quickBox->setEnabled(true);
             slotPopulateQuickEffectSelectors();
         }
@@ -493,8 +493,8 @@ void DlgPrefMixer::slotQuickEffectChangedOnDeck(int effectIndex) {
 void DlgPrefMixer::applyDeckEQs() {
     m_ignoreEqQuickEffectBoxSignals = true;
 
-    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
-        int deck = m_deckEqEffectSelectors.indexOf(pBox);
+    for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
+        QComboBox* pBox = m_deckEqEffectSelectors[deck];
         int effectIndex = pBox->currentIndex();
 
         bool needLoad = true;
@@ -905,8 +905,9 @@ void DlgPrefMixer::slotBypassEqToggled(bool checked) {
     m_eqBypass = checked;
 
     // De/activate deck EQ comboboxes
-    for (const auto& pBox : qAsConst(m_deckEqEffectSelectors)) {
-        if (m_deckEqEffectSelectors.indexOf(pBox) == 0) {
+    for (int deck = 0; deck < m_deckEqEffectSelectors.size(); deck++) {
+        QComboBox* pBox = m_deckEqEffectSelectors[deck];
+        if (deck == 0) {
             pBox->setEnabled(!m_eqBypass);
         } else {
             pBox->setEnabled(!m_eqBypass && !m_singleEq);
