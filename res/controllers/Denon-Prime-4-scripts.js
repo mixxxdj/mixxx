@@ -129,10 +129,10 @@ if (skipButtonBehaviour === "skip") {
 }
 
 // Beatjump sizes
-const jumpSizes = [1, 2, 4, 8, 16, 32, 64, 128];
+const jumpSizes = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
 
 // Beatloop sizes
-const loopSizes = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64, 128];
+const loopSizes = [1/32, 1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8, 16, 32, 64];
 
 // Component re-jigging for pad mode purposes
 components.ComponentContainer.prototype.reconnectComponents = function(operation, recursive) {
