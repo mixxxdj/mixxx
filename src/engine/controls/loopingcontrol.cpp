@@ -22,7 +22,7 @@ constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
     return a.isValid() && a > target - 1 && a < target + 1;
 }
-}
+} // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };

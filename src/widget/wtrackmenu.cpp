@@ -2345,7 +2345,7 @@ class ReloadCoverInfoTrackPointerOperation : public mixxx::TrackPointerOperation
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
-        m_coverInfoGuesser.guessAndSetCoverInfoForTrack(*pTrack);
+        m_coverInfoGuesser.guessAndSetCoverInfoForTrack(pTrack);
     }
 
     mutable CoverInfoGuesser m_coverInfoGuesser;

@@ -2079,8 +2079,8 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.libraryViewButton = new Button({
-            group: "[Master]",
-            key: "maximize_library",
+            group: "[Skin]",
+            key: "show_maximized_library",
             libraryEncoder: this.libraryEncoder,
             libraryEncoderPress: this.libraryEncoderPress,
             onShortRelease: function() {

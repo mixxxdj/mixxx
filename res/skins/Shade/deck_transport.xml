@@ -22,7 +22,7 @@
         </State>
         <Pos>5,0</Pos>
         <Connection>
-          <ConfigKey>[Microphone],show_microphone</ConfigKey>
+          <ConfigKey>[Skin],show_microphones</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -87,7 +87,7 @@
         </State>
         <Pos>53,0</Pos>
         <Connection>
-          <ConfigKey>[Samplers],show_samplers</ConfigKey>
+          <ConfigKey>[Skin],show_samplers</ConfigKey>
         </Connection>
       </PushButton>
 

@@ -336,8 +336,8 @@
 
 			<!--Browser section (Encoder button)-->
 			<control>
-				<group>[Master]</group>
-				<key>maximize_library</key>
+				<group>[Skin]</group>
+				<key>show_maximized_library</key>
 				<description>Browser button - Maximize Library view</description>
 				<status>0x93</status>
 				<midino>0x00</midino>
@@ -2206,8 +2206,8 @@
 				<off>0x07</off>
 			</output>
 			<output>
-				<group>[Master]</group>
-				<key>maximize_library</key>
+				<group>[Skin]</group>
+				<key>show_maximized_library</key>
 				<description>Browser LED (GREEN)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>

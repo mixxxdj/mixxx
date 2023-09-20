@@ -181,7 +181,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0E, "B", 0x02);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0E, "B", 0x01);
 
-    MessageShort.addControl("[Master]", "maximize_library", 0x0F, "B", 0x04, false, this.toggleButton);
+    MessageShort.addControl("[Skin]", "show_maximized_library", 0x0F, "B", 0x04, false, this.toggleButton);
 
     MessageShort.addControl("[Microphone]", "talkover", 0x0A, "B", 0x08, false, this.toggleButton);
 
