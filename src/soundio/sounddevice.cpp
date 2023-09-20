@@ -35,7 +35,7 @@ void SoundDevice::setSampleRate(mixxx::audio::SampleRate sampleRate) {
 }
 
 void SoundDevice::setConfigFramesPerBuffer(unsigned int framesPerBuffer) {
-    if (framesPerBuffer * 2 > MAX_BUFFER_LEN) {
+    if (framesPerBuffer > kMaxEngineFrames) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...

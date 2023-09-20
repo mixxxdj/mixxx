@@ -34,6 +34,7 @@ class EngineParameters final {
                       sampleRate),
               m_framesPerBuffer(framesPerBuffer) {
         DEBUG_ASSERT(framesPerBuffer > 0);
+        DEBUG_ASSERT(sampleRate > 0);
     }
 
   private:

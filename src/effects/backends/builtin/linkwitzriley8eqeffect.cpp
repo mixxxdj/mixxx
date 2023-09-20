@@ -41,9 +41,9 @@ LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
           m_oldSampleRate(engineParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
-    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMidBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLowBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pMidBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pHighBuf = SampleUtil::alloc(kMaxEngineSamples);
 
     m_low1 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupLoFreq);
     m_high1 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupLoFreq);

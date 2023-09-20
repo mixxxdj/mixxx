@@ -8,8 +8,8 @@
 
 EngineEffectsManager::EngineEffectsManager(std::unique_ptr<EffectsResponsePipe> pResponsePipe)
         : m_pResponsePipe(std::move(pResponsePipe)),
-          m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+          m_buffer1(kMaxEngineSamples),
+          m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 }

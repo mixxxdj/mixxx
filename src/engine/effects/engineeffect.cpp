@@ -40,7 +40,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
     const mixxx::EngineParameters engineParameters(
             kInitalSampleRate,
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+            kMaxEngineFrames);
     m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, engineParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
@@ -62,7 +62,7 @@ void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
     const mixxx::EngineParameters engineParameters(
             kInitalSampleRate,
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+            kMaxEngineFrames);
     m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 

@@ -139,23 +139,23 @@ EngineMixer::EngineMixer(
     m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
 
     // Allocate buffers
-    m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMain = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pBooth = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pTalkover = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pTalkoverHeadphones = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pSidechainMix = SampleUtil::alloc(MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pHead, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pMain, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pBooth, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pTalkover, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pTalkoverHeadphones, MAX_BUFFER_LEN);
-    SampleUtil::clear(m_pSidechainMix, MAX_BUFFER_LEN);
+    m_pHead = SampleUtil::alloc(kMaxEngineSamples);
+    m_pMain = SampleUtil::alloc(kMaxEngineSamples);
+    m_pBooth = SampleUtil::alloc(kMaxEngineSamples);
+    m_pTalkover = SampleUtil::alloc(kMaxEngineSamples);
+    m_pTalkoverHeadphones = SampleUtil::alloc(kMaxEngineSamples);
+    m_pSidechainMix = SampleUtil::alloc(kMaxEngineSamples);
+    SampleUtil::clear(m_pHead, kMaxEngineSamples);
+    SampleUtil::clear(m_pMain, kMaxEngineSamples);
+    SampleUtil::clear(m_pBooth, kMaxEngineSamples);
+    SampleUtil::clear(m_pTalkover, kMaxEngineSamples);
+    SampleUtil::clear(m_pTalkoverHeadphones, kMaxEngineSamples);
+    SampleUtil::clear(m_pSidechainMix, kMaxEngineSamples);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
-        m_pOutputBusBuffers[o] = SampleUtil::alloc(MAX_BUFFER_LEN);
-        SampleUtil::clear(m_pOutputBusBuffers[o], MAX_BUFFER_LEN);
+        m_pOutputBusBuffers[o] = SampleUtil::alloc(kMaxEngineSamples);
+        SampleUtil::clear(m_pOutputBusBuffers[o], kMaxEngineSamples);
     }
 
     // Starts a thread for recording and broadcast
@@ -882,7 +882,7 @@ void EngineMixer::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pMuteControl = new ControlPushButton(
             ConfigKey(group, "mute"));
     pChannelInfo->m_pMuteControl->setButtonMode(ControlPushButton::POWERWINDOW);
-    pChannelInfo->m_pBuffer = mixxx::SampleBuffer(MAX_BUFFER_LEN);
+    pChannelInfo->m_pBuffer = mixxx::SampleBuffer(kMaxEngineSamples);
     pChannelInfo->m_pBuffer.clear();
     m_channels.append(pChannelInfo);
     constexpr GainCache gainCacheDefault = {0, false};

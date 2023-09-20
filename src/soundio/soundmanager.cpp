@@ -370,7 +370,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
-            AudioInputBuffer aib(in, SampleUtil::alloc(MAX_BUFFER_LEN));
+            AudioInputBuffer aib(in, SampleUtil::alloc(kMaxEngineSamples));
             status = pDevice->addInput(aib);
             if (status != SoundDeviceStatus::Ok) {
                 SampleUtil::free(aib.getBuffer());
