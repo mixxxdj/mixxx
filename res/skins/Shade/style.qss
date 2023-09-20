@@ -36,6 +36,7 @@ WLibrarySidebar QMenu,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
@@ -109,6 +110,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -159,6 +162,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
@@ -239,6 +243,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -354,7 +359,8 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
-  QLineEdit QMenu::item:disabled {
+  QLineEdit QMenu::item:disabled,
+  QPlainTextEdit QMenu::item:disabled {
     color: #666;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled {
@@ -367,7 +373,8 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #71777a;
   }
 
@@ -475,7 +482,6 @@ WLibrarySidebar {
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;
@@ -498,6 +504,7 @@ WTrackTableView {
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
+  WLibrary QPlainTextEdit,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;

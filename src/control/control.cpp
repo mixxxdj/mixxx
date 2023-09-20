@@ -110,6 +110,10 @@ void ControlDoublePrivate::setUserConfig(const UserSettingsPointer& pConfig) {
 // static
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     MMutexLocker locker(&s_qCOHashMutex);
+    VERIFY_OR_DEBUG_ASSERT(alias != key) {
+        qWarning() << "cannot create alias with identical key" << key;
+        return;
+    }
 
     auto it = s_qCOHash.constFind(key);
     VERIFY_OR_DEBUG_ASSERT(it != s_qCOHash.constEnd()) {
@@ -148,10 +152,20 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         const MMutexLocker locker(&s_qCOHashMutex);
-        const auto it = s_qCOHash.find(key);
-        if (it != s_qCOHash.end()) {
+        const auto it = s_qCOHash.constFind(key);
+        if (it != s_qCOHash.constEnd()) {
             auto pControl = it.value().lock();
             if (pControl) {
+                auto actualKey = pControl->getKey();
+                if (actualKey != key) {
+                    qWarning()
+                            << "ControlObject accessed via deprecated key"
+                            << key.group << key.item
+                            << "- use"
+                            << actualKey.group << actualKey.item
+                            << "instead";
+                }
+
                 // Control object already exists
                 if (pCreatorCO) {
                     qWarning()
@@ -213,7 +227,7 @@ QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::getAllInstance
     QList<QSharedPointer<ControlDoublePrivate>> result;
     MMutexLocker locker(&s_qCOHashMutex);
     result.reserve(s_qCOHash.size());
-    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
+    for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
         auto pControl = it.value().lock();
         if (pControl) {
             result.append(std::move(pControl));

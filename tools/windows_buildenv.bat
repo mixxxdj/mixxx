@@ -22,12 +22,12 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.5-rel
-    SET BUILDENV_NAME=mixxx-deps-rel-2.5-x64-windows-c9e5580
-    SET BUILDENV_SHA256=85e4d7410ba01ab61e5ef609bd92779267eddee7e235557208d7cf602f49dc5f
+    SET BUILDENV_NAME=mixxx-deps-rel-2.5-x64-windows-0d9cf82
+    SET BUILDENV_SHA256=d251b9dd6368d594b14c4cddb63256b4616b7b82fd9f0f93a2066b870e72f5e8
 ) ELSE (
     SET BUILDENV_BRANCH=2.5
-    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-35a3f01
-    SET BUILDENV_SHA256=6cc95b57dbb8a3e91037dc2d9cf81cbd82602d441a1f5f4a8313bae9a0bace87
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-5f1e4ab
+    SET BUILDENV_SHA256=a3f24b72d2f61b0b0159e5dca0cd9d420d3ecc8cec1970b95da2351e1bc56e31
 )
 
 IF "%~1"=="" (
@@ -226,6 +226,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"

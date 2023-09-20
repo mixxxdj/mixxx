@@ -24,9 +24,6 @@ RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
     m_initSuccess = init();
 }
 
-RGBWaveformWidget::~RGBWaveformWidget() {
-}
-
 void RGBWaveformWidget::castToQWidget() {
     m_widget = this;
 }

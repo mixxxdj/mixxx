@@ -1,17 +1,16 @@
-#include <QRegularExpression>
-
 #include "soundio/soundmanagerconfig.h"
 
-#include "soundio/soundmanagerutil.h"
+#include <QRegularExpression>
+
+#include "audio/types.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
+#include "soundio/soundmanagerutil.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
 const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
-// Sample Rate even the cheap sound Devices will support most likely
-const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
@@ -68,7 +67,8 @@ bool SoundManagerConfig::readFromDisk() {
     file.close();
     rootElement = doc.documentElement();
     setAPI(rootElement.attribute(xmlAttributeApi));
-    setSampleRate(rootElement.attribute(xmlAttributeSampleRate, "0").toUInt());
+    setSampleRate(mixxx::audio::SampleRate(
+            rootElement.attribute(xmlAttributeSampleRate, "0").toUInt()));
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute(xmlAttributeBufferSize, "0").toUInt());
     setSyncBuffers(rootElement.attribute(xmlAttributeSyncBuffers, "2").toUInt());
@@ -176,7 +176,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) {
+            if (out.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -199,7 +199,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) {
+            if (in.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -223,7 +223,7 @@ bool SoundManagerConfig::writeToDisk() const {
     QDomDocument doc(xmlRootElement);
     QDomElement docElement(doc.createElement(xmlRootElement));
     docElement.setAttribute(xmlAttributeApi, m_api);
-    docElement.setAttribute(xmlAttributeSampleRate, m_sampleRate);
+    docElement.setAttribute(xmlAttributeSampleRate, m_sampleRate.value());
     docElement.setAttribute(xmlAttributeBufferSize, m_audioBufferSizeIndex);
     docElement.setAttribute(xmlAttributeSyncBuffers, m_syncBuffers);
     docElement.setAttribute(xmlAttributeForceNetworkClock, m_forceNetworkClock);
@@ -292,15 +292,14 @@ bool SoundManagerConfig::checkAPI() {
     return true;
 }
 
-unsigned int SoundManagerConfig::getSampleRate() const {
+mixxx::audio::SampleRate SoundManagerConfig::getSampleRate() const {
     return m_sampleRate;
 }
 
-void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
+void SoundManagerConfig::setSampleRate(mixxx::audio::SampleRate sampleRate) {
     // making sure we don't divide by zero elsewhere
-    m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
+    m_sampleRate = sampleRate.isValid() ? sampleRate : kFallbackSampleRate;
 }
-
 
 unsigned int SoundManagerConfig::getSyncBuffers() const {
     return m_syncBuffers;
@@ -350,9 +349,9 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if ((type == AudioInput::DECK ||
-                        type == AudioInput::VINYLCONTROL ||
-                        type == AudioInput::AUXILIARY) &&
+            if ((type == AudioPathType::Deck ||
+                        type == AudioPathType::VinylControl ||
+                        type == AudioPathType::Auxiliary) &&
                     index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = index + 1;
@@ -363,7 +362,7 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
+            if (type == AudioPathType::Deck && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
                 minimum_deck_count = index + 1;
             }
@@ -408,16 +407,9 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
-    unsigned int framesPerBuffer = 1;
-    double sampleRate = m_sampleRate; // need this to avoid int division
-    // first, get to the framesPerBuffer value corresponding to latency index 1
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
-    }
-    // then, keep going until we get to our desired latency index (if not 1)
-    for (unsigned int latencyIndex = 1; latencyIndex < audioBufferSizeIndex; ++latencyIndex) {
-        framesPerBuffer <<= 1; // *= 2
-    }
-    return framesPerBuffer;
+
+    const unsigned int sampleRateKhz = static_cast<unsigned int>(m_sampleRate / 1000);
+    return std::bit_ceil(sampleRateKhz) << (audioBufferSizeIndex - 1);
 }
 
 // Set the audio buffer size
@@ -438,9 +430,9 @@ void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutpu
 
 void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
     m_inputs.insert(device, in);
-    if (in.getType() == AudioPath::MICROPHONE) {
+    if (in.getType() == AudioPathType::Microphone) {
         m_iNumMicInputs++;
-    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+    } else if (in.getType() == AudioPathType::RecordBroadcast) {
         m_bExternalRecordBroadcastConnected = true;
     }
 }
@@ -472,11 +464,11 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
 }
 
 /**
- * Loads default values for API, master output, sample rate and/or latency.
+ * Loads default values for API, main output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
  * @param flags Bitfield to determine which defaults to load, use something
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
+ *              load default API and main device.
  */
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
@@ -509,7 +501,7 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
         }
     }
 
-    unsigned int defaultSampleRate = kFallbackSampleRate;
+    mixxx::audio::SampleRate defaultSampleRate = kFallbackSampleRate;
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
@@ -519,15 +511,18 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(pDevice->getDeviceId(), masterOut);
+                AudioOutput mainOut(AudioPathType::Main,
+                        0,
+                        mixxx::audio::ChannelCount::stereo(),
+                        0);
+                addOutput(pDevice->getDeviceId(), mainOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
-        QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
+        QList<mixxx::audio::SampleRate> sampleRates = soundManager->getSampleRates(m_api);
         if (sampleRates.contains(defaultSampleRate)) {
             m_sampleRate = defaultSampleRate;
         } else if (sampleRates.contains(kFallbackSampleRate)) {

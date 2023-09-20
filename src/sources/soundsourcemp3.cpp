@@ -161,12 +161,16 @@ bool decodeFrameHeader(
 } // anonymous namespace
 
 //static
-const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD");
 
 //static
 const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
+
+QString SoundSourceProviderMp3::getVersionString() const {
+    return QString(QString(mad_version) + QChar(' ') + QString(mad_build)).trimmed();
+}
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),
@@ -276,11 +280,11 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         }
 
         // Grab data from madHeader
-        const unsigned int madSampleRate = madHeader.samplerate;
+        const audio::SampleRate madSampleRate = audio::SampleRate(madHeader.samplerate);
 
         // MAD must not change its enum values!
         static_assert(MAD_UNITS_8000_HZ == 8000);
-        const mad_units madUnits = static_cast<mad_units>(madSampleRate);
+        const mad_units madUnits = static_cast<mad_units>(madSampleRate.value());
 
         const long madFrameLength = mad_timer_count(madHeader.duration, madUnits);
         if (0 >= madFrameLength) {
@@ -342,8 +346,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                     << m_file.fileName();
         }
 
-        const int sampleRateIndex = getIndexBySampleRate(
-                audio::SampleRate(madSampleRate));
+        const int sampleRateIndex = getIndexBySampleRate(madSampleRate);
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                               << madSampleRate;
@@ -487,7 +490,8 @@ void SoundSourceMp3::close() {
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     if (kLogger.debugEnabled()) {
-        kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
+        kLogger.info() << "restartDecoding for frame" << seekFrame.frameIndex << "@"
+                       << (seekFrame.pInputData - m_pFileData);
     }
 
     // Discard decoded output
@@ -675,6 +679,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                         // Don't bother the user with warnings from recoverable
                         // errors while skipping decoded samples or that even
                         // might occur for files that are perfectly ok.
+                        if (kLogger.debugEnabled()) {
+                            kLogger.debug()
+                                    << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
+                        }
+                    } else if (m_madStream.error == MAD_ERROR_BADDATAPTR &&
+                            m_curFrameIndex == firstFrameIndex) {
+                        // This is expected after starting decoding with an offset
                         if (kLogger.debugEnabled()) {
                             kLogger.debug()
                                     << "Recoverable MP3 frame decoding error:"

@@ -4,6 +4,7 @@
 
 #include <QtDebug>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_vinylcontrolxwax.cpp"
@@ -134,22 +135,23 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
         latency = 20;
     }
 
-    int iSampleRate = m_pConfig->getValueString(
-        ConfigKey("[Soundcard]","Samplerate")).toULong();
+    const auto sampleRate = mixxx::audio::SampleRate(
+            m_pConfig->getValueString(ConfigKey("[Soundcard]", "Samplerate"))
+                    .toUInt());
 
     // Set pitch ring size to 1/4 of one revolution -- a full revolution adds
     // too much stickiness to the pitch.
     m_iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
     m_pPitchRing.resize(m_iPitchRingSize);
 
-    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
+    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << sampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
 
     // Initialize the timecoder structure. Use the static mutex so that we only
     // do this once across the VinylControlXwax instances.
     s_xwaxLUTMutex.lock();
 
-    timecoder_init(&timecoder, tc_def, speed, iSampleRate, /* phono */ false);
+    timecoder_init(&timecoder, tc_def, speed, sampleRate.value(), /* phono */ false);
     timecoder_monitor_init(&timecoder, MIXXX_VINYL_SCOPE_SIZE);
     //Note that timecoder_init will not double-malloc the LUTs, and after this we are guaranteed
     //that the LUT has been generated unless we ran out of memory.
@@ -199,7 +201,7 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 
 
 void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
-    ScopedTimer t("VinylControlXwax::analyzeSamples");
+    ScopedTimer t(u"VinylControlXwax::analyzeSamples");
     auto gain = static_cast<CSAMPLE_GAIN>(m_pVinylControlInputGain->get());
 
     // We only support amplifying with the VC pre-amp.

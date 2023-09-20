@@ -75,7 +75,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     auto* pDisplayConnection = new ControlParameterWidgetConnection(
             this,
-            createConfigKey(QStringLiteral("enabled")),
+            createConfigKey(QStringLiteral("status")),
             nullptr,
             ControlParameterWidgetConnection::DIR_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_NEVER);

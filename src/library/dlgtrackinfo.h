@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QHash>
 #include <QModelIndex>
 #include <memory>
 
@@ -40,6 +41,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // directly!
     void loadTrack(TrackPointer pTrack);
     void loadTrack(const QModelIndex& index);
+    void focusField(const QString& property);
 
   signals:
     void next();
@@ -70,7 +72,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotColorButtonClicked();
 
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& info,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedCacheKey,
@@ -120,6 +122,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
+
+    QHash<QString, QWidget*> m_propertyWidgets;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;

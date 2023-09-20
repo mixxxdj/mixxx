@@ -176,7 +176,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
-        const unsigned int sampleRate,
+        const mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         bool fadeout) {
     // Compute the effective enable state from the channel input routing switch and

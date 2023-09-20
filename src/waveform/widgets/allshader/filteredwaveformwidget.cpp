@@ -24,9 +24,6 @@ FilteredWaveformWidget::FilteredWaveformWidget(const QString& group, QWidget* pa
     m_initSuccess = init();
 }
 
-FilteredWaveformWidget::~FilteredWaveformWidget() {
-}
-
 void FilteredWaveformWidget::castToQWidget() {
     m_widget = this;
 }

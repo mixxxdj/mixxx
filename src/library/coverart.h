@@ -4,6 +4,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "track/track_decl.h"
 #include "util/cache.h"
 #include "util/color/rgbcolor.h"
 #include "util/imageutils.h"
@@ -175,16 +176,14 @@ class CoverInfo : public CoverInfoRelative {
                 : result(result) {
         }
     };
-    LoadedImage loadImage(
-            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
+    LoadedImage loadImage(TrackPointer pTrack = {}) const;
 
     /// Verify the image digest and update it if necessary.
     /// If the corresponding image has already been loaded it
     /// could be provided as a parameter to avoid reloading
     /// if actually needed.
     bool refreshImageDigest(
-            const QImage& loadedImage = QImage(),
-            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
+            const QImage& loadedImage = QImage());
 
     QString trackLocation;
 };

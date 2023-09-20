@@ -1655,11 +1655,11 @@ ReloopBeatpad.init = function(id, debug) {
     ReloopBeatpad.initobjects();
 
     // Set soft-takeover for all Sampler volumes
-    for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_samplers"); i >= 1; i--) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "volume", true);
         engine.softTakeover("[Channel" + i + "]", "filterHigh", true);
         engine.softTakeover("[Channel" + i + "]", "filterMid", true);

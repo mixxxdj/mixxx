@@ -328,7 +328,7 @@ Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
 }
 
 QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) {
-    ScopedTimer timer("SkinLoader::parseSkin");
+    ScopedTimer timer(u"SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");

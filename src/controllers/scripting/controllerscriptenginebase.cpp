@@ -70,28 +70,24 @@ void ControllerScriptEngineBase::reload() {
 }
 
 bool ControllerScriptEngineBase::executeFunction(
-        QJSValue functionObject, const QJSValueList& args) {
+        QJSValue* pFunctionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pJSEngine) {
         return false;
     }
 
-    if (functionObject.isError()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toString();
-        return false;
-    }
-
-    // If it's not a function, we're done.
-    if (!functionObject.isCallable()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toVariant() << "Not a function";
+    const bool isError = pFunctionObject->isError();
+    const bool isCallable = pFunctionObject->isCallable();
+    if (isError || !isCallable) {
+        logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
+                                 : QStringLiteral("\"%1\" is not callable"))
+                                .arg(pFunctionObject->toString()));
         return false;
     }
 
     // If it does happen to be a function, call it.
-    QJSValue returnValue = functionObject.call(args);
+    QJSValue returnValue = pFunctionObject->call(args);
     if (returnValue.isError()) {
         showScriptExceptionDialog(returnValue);
         return false;
@@ -126,6 +122,14 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
+    }
+}
+
+void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
+    if (m_bAbortOnWarning) {
+        throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
     }
 }
 

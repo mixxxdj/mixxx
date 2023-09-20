@@ -527,14 +527,14 @@ void DlgTagFetcher::tagSelected() {
 }
 
 void DlgTagFetcher::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
@@ -544,9 +544,8 @@ void DlgTagFetcher::slotCoverFound(
 
 void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
     DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
-            static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
-                    m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
-                            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium)));
+            m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
+                    DlgPrefLibrary::CoverArtFetcherQuality::Medium);
 
     // Cover art links task can retrieve us variable number of links with different cover art sizes
     // Every single successful response has 2 links.

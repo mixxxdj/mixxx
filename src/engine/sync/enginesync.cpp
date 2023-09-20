@@ -252,10 +252,9 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
             stopped_deck_count++;
         }
     }
-
-    const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey("[BPM]", "sync_lock_algorithm"),
-                    PREFER_IMPLICIT_LEADER));
+    const SyncLockAlgorithm picker = m_pConfig->getValue(
+            ConfigKey("[BPM]", "sync_lock_algorithm"),
+            PREFER_IMPLICIT_LEADER);
     switch (picker) {
     case PREFER_IMPLICIT_LEADER:
         // Always pick a deck for a new leader.
@@ -304,7 +303,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
             continue;
         }
         // Skip non-leader decks, like preview decks.
-        if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
+        if (!pOtherSyncable->getChannel()->isMainMixEnabled()) {
             continue;
         }
         if (!pOtherSyncable->getChannel()->isPrimaryDeck()) {
@@ -505,7 +504,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
         // Only consider channels that have a track loaded, are in the leader
         // mix, and are primary decks.
-        if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
+        if (pChannel->isActive() && pChannel->isMainMixEnabled() && pChannel->isPrimaryDeck()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm().isValid()) {
                 if (pBuffer->getSpeed() != 0.0) {

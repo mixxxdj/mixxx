@@ -16,9 +16,6 @@ WaveformRendererSimple::WaveformRendererSimple(
         : WaveformRendererSignalBase(waveformWidget) {
 }
 
-WaveformRendererSimple::~WaveformRendererSimple() {
-}
-
 void WaveformRendererSimple::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }

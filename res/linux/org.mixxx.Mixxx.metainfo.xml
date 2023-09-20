@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.5.0" type="development" date="2023-09-10" timestamp="1694376244">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.4.0" type="development" date="2023-09-10" timestamp="1694376244">
       <description>
  <p>
   Cover Art
@@ -1925,31 +1925,115 @@
  </ul>
 </description>
     </release>
-    <release version="2.3.6" type="development" date="2023-06-17" timestamp="1687005677">
+    <release version="2.3.6" type="stable" date="2023-08-15" timestamp="1692057600">
       <description>
  <ul>
-  <li>
-   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
-   #11595
-  </li>
-  <li>
-   No longer stop a track with an active loop at the very end.
-   #11558
-   #11557
-  </li>
-  <li>
-   Shade: Fixed VU-Meter and other minor issues
-   #11598
-  </li>
   <li>
    Fixed possible crash when closing Mixxx while browsing the file system
    #11593
    #11589
   </li>
   <li>
+   No longer stop a track with an active loop at the very end
+   #11558
+   #11557
+  </li>
+  <li>
    Fixed resyncing when moving an active loop
    #11152
    #11381
+  </li>
+  <li>
+   Allow true gapless playback when repeating full tracks
+   #11532
+   #9842
+   #11704
+  </li>
+  <li>
+   Rhythmbox: Fixed bulk track imports from playlists
+   #11661
+  </li>
+  <li>
+   Console log spam reduced
+   #11690
+   #11691
+  </li>
+  <li>
+   Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+   #11595
+   #11659
+  </li>
+  <li>
+   Shade: Fixed VU-Meter and other minor issues
+   #11598
+  </li>
+  <li>
+   Fixed a rare crash when disabling quantize form a controller
+   #11744
+   #11709
+  </li>
+  <li>
+   Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+   #11756
+  </li>
+  <li>
+   Broadcast: Improved error message in case of timeout
+   #11775
+  </li>
+  <li>
+   Handle setting
+   loop_in
+   and
+   loop_out
+   to the same position
+   #11771
+   #10600
+  </li>
+  <li>
+   Fix build issues with Protobuf v23.4 and with clang 32
+   #11751
+   #11765
+   #11762
+  </li>
+  <li>
+   Disable GL VU-Meters on Windows by default. They can be re-enabled via the command line option
+   --enableVuMeterGL
+   .
+   #11787
+   #11785
+   #11789
+  </li>
+  <li>
+   Library preferences: Uncheck Serato metadata export when file metadata export is unchecked
+   #11782
+   #11226
+  </li>
+  <li>
+   Denon MC6000MK2: Delete mapping for main gain
+   #11792
+  </li>
+  <li>
+   Improve output in case of some failed file system operations
+   #11783
+  </li>
+  <li>
+   Fix overlapping buffers when decoding M4A files using FFmpeg before 4.4
+   #11760
+   #11545
+  </li>
+  <li>
+   Don't reject key values from file metadata with non-minor/-major scales.
+   #11001
+   #10995
+  </li>
+  <li>
+   Allow playing tracks with durations of more than 6 hours
+   #11511
+   #11504
+  </li>
+  <li>
+   Update latency compensation for Soundtouch version 2.1.1 to 2.3
+   #11154
   </li>
  </ul>
 </description>

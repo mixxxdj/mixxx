@@ -38,7 +38,7 @@ bool isMixingEQ(EffectManifest* pManifest) {
 }
 
 bool isMainEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
+    return pManifest->isMainEQ();
 }
 } // anonymous namespace
 
@@ -137,7 +137,7 @@ DlgPrefMixer::DlgPrefMixer(
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefMixer::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -391,7 +391,6 @@ void DlgPrefMixer::loadSettings() {
     checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
-    slotApply();
 
     // EQ ////////////////////////////////////////////////
     QString highEqCourse = m_pConfig->getValueString(ConfigKey(kConfigGroup, "HiEQFrequency"));
@@ -452,6 +451,7 @@ void DlgPrefMixer::loadSettings() {
                 ConfigKey(kConfigGroup, kEnableEqs), "yes") == "yes") {
         CheckBoxBypass->setChecked(false);
     }
+    slotApply();
 }
 
 void DlgPrefMixer::setDefaultShelves() {

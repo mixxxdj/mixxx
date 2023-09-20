@@ -13,7 +13,7 @@
 EngineDeck::EngineDeck(
         const ChannelHandleAndGroup& handleGroup,
         UserSettingsPointer pConfig,
-        EngineMaster* pMixingEngine,
+        EngineMixer* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         bool primaryDeck)
@@ -73,11 +73,10 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
         pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
-                m_pEffectsManager->getMasterHandle(),
+                m_pEffectsManager->getMainHandle(),
                 pOut,
                 iBufferSize,
-                // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                static_cast<unsigned int>(m_sampleRate.get()));
+                mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
     }
 
     // Update VU meter
@@ -132,7 +131,7 @@ void EngineDeck::receiveBuffer(
 }
 
 void EngineDeck::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
@@ -142,7 +141,7 @@ void EngineDeck::onInputConfigured(const AudioInput& input) {
 }
 
 void EngineDeck::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;

@@ -1,0 +1,29 @@
+<!--
+Description:
+  A button to assign an effect unit to main output.
+Variables:
+  Size
+  FxUnitNum      : [EffectRack1_EffectUnitN]
+-->
+<Template>
+  <PushButton>
+    <TooltipId>EffectUnit_main_enabled</TooltipId>
+    <ObjectName>FxMainButton</ObjectName>
+    <Size>26f,13f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey>[EffectRack1_EffectUnit<Variable name="FxUnit"/>],group_[Master]_enable</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

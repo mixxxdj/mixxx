@@ -160,7 +160,7 @@ Description:
       </WidgetGroup><!-- /MicAuxContainer -->
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_microphones</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

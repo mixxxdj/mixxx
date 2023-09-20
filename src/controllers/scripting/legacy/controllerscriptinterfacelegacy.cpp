@@ -7,6 +7,7 @@
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/fpclassify.h"
+#include "util/make_const_iterator.h"
 #include "util/time.h"
 
 #define SCRATCH_DEBUG_OUTPUT false
@@ -77,15 +78,15 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
 
     // Free all the ControlObjectScripts
     {
-        auto it = m_controlCache.begin();
-        while (it != m_controlCache.end()) {
+        auto it = m_controlCache.constBegin();
+        while (it != m_controlCache.constEnd()) {
             qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
             delete it.value();
             // Advance iterator
-            it = m_controlCache.erase(it);
+            it = constErase(&m_controlCache, it);
         }
     }
 }
@@ -110,7 +111,9 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral("Unknown control (%1, %2) returning 0.0").arg(group, name));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
     return coScript->get();
@@ -119,9 +122,9 @@ double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QSt
 void ControllerScriptInterfaceLegacy::setValue(
         const QString& group, const QString& name, double newValue) {
     if (util_isnan(newValue)) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting (%1, %2) to NotANumber (NaN)")
-                                .arg(group, name));
+                                                       .arg(group, name));
         return;
     }
 
@@ -141,7 +144,9 @@ void ControllerScriptInterfaceLegacy::setValue(
 double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral("Unknown control (%1, %2) returning 0.0").arg(group, name));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
     return coScript->getParameter();
@@ -150,9 +155,9 @@ double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const
 void ControllerScriptInterfaceLegacy::setParameter(
         const QString& group, const QString& name, double newParameter) {
     if (util_isnan(newParameter)) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting (%1, %2) to NotANumber (NaN)")
-                                .arg(group, name));
+                                                       .arg(group, name));
         return;
     }
 
@@ -170,16 +175,18 @@ void ControllerScriptInterfaceLegacy::setParameter(
 double ControllerScriptInterfaceLegacy::getParameterForValue(
         const QString& group, const QString& name, double value) {
     if (util_isnan(value)) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting (%1, %2) to NotANumber (NaN)")
-                                .arg(group, name));
+                                                       .arg(group, name));
         return 0.0;
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral("Unknown control (%1, %2) returning 0.0").arg(group, name));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -197,7 +204,9 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, co
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral("Unknown control (%1, %2) returning 0.0").arg(group, name));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -209,7 +218,9 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral("Unknown control (%1, %2) returning 0.0").arg(group, name));
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -238,7 +249,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
         // The test setups do not run all of Mixxx, so ControlObjects not
         // existing during tests is okay.
         if (!m_pScriptEngineLegacy->isTesting()) {
-            logOrThrowError(
+            m_pScriptEngineLegacy->logOrThrowError(
                     QStringLiteral("script tried to connect to ControlObject "
                                    "(%1, %2) which is non-existent.")
                             .arg(group, name));
@@ -247,10 +258,10 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
     }
 
     if (!callback.isCallable()) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Tried to connect (%1, %2) to an invalid callback. Make sure "
                 "that your code contains no syntax errors.")
-                                .arg(group, name));
+                                                       .arg(group, name));
         return QJSValue();
     }
 
@@ -291,10 +302,10 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried to trigger (%1, %2) which is non-existent.")
-                                .arg(connection.key.group,
-                                        connection.key.item));
+                                                       .arg(connection.key.group,
+                                                               connection.key.item));
         return;
     }
 
@@ -313,10 +324,10 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
         const QString& name,
         const QJSValue& passedCallback,
         bool disconnect) {
-    logOrThrowError(QStringLiteral(
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
             "Script tried to connect to (%1, %2) using `connectControl` which "
             "is deprecated. Use `makeConnection` instead!")
-                            .arg(group, name));
+                                                   .arg(group, name));
 
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
@@ -435,33 +446,31 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
 void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried to trigger (%1, %2) which is non-existent.")
-                                .arg(group, name));
+                                                       .arg(group, name));
         return;
     }
     coScript->emitValueChanged();
 }
 
-void ControllerScriptInterfaceLegacy::logOrThrowError(const QString& errorMessage) const {
-    if (m_pScriptEngineLegacy->willAbortOnWarning()) {
-        m_pScriptEngineLegacy->throwJSError(errorMessage);
-    } else {
-        qCWarning(m_logger) << errorMessage;
-    }
-}
-
 void ControllerScriptInterfaceLegacy::log(const QString& message) {
-    logOrThrowError(QStringLiteral("`engine.log` is deprecated. Use `console.log` instead!"));
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+            "`engine.log` is deprecated. Use `console.log` instead!"));
     qCDebug(m_logger) << message;
 }
 int ControllerScriptInterfaceLegacy::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
-        logOrThrowError(
+        m_pScriptEngineLegacy->logOrThrowError(
                 QStringLiteral("passed a string to `engine.beginTimer`, please "
                                "pass a function instead!"));
-        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(timerCallback.toString());
+        // wrap the code in a function to make the evaluation lazy.
+        // otherwise the code would be evaluated immediately instead of after
+        // the timer which is obviously undesired and could also cause
+        // issues when used recursively.
+        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(
+                QStringLiteral("()=>%1").arg(timerCallback.toString()));
     } else if (!timerCallback.isCallable()) {
         QString sErrorMessage(
                 "Invalid timer callback provided to engine.beginTimer. Valid "
@@ -489,7 +498,7 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
-        logOrThrowError(QStringLiteral("Script timer could not be created"));
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Script timer could not be created"));
     } else if (oneShot) {
         qCDebug(m_logger) << "Starting one-shot timer:" << timerId;
     } else {
@@ -500,9 +509,9 @@ int ControllerScriptInterfaceLegacy::beginTimer(
 
 void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
-        logOrThrowError(QStringLiteral(
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Tried to kill Timer \"%1\" that does not exists")
-                                .arg(timerId));
+                                                       .arg(timerId));
         return;
     }
     qCDebug(m_logger) << "Killing timer:" << timerId;
@@ -540,12 +549,12 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
     // why but this causes segfaults in ~QScriptValue while scratching if we
     // don't copy here -- even though internalExecute passes the QScriptValues
     // by value. *boggle*
-    const TimerInfo timerTarget = it.value();
+    TimerInfo timerTarget = it.value();
     if (timerTarget.oneShot) {
         stopTimer(timerId);
     }
 
-    m_pScriptEngineLegacy->executeFunction(timerTarget.callback);
+    m_pScriptEngineLegacy->executeFunction(&timerTarget.callback);
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(
