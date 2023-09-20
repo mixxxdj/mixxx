@@ -209,6 +209,11 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* pEvent) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Show the right-click menu
         m_pTrackMenu->popup(pEvent->globalPos());
+        // Unset the hover state manually (stuck state is probably a Qt bug)
+        // TODO(ronso0) Test whether this is still required with Qt6
+        QEvent lev = QEvent(QEvent::Leave);
+        qApp->sendEvent(this, &lev);
+        update();
     }
 }
 
