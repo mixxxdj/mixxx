@@ -126,11 +126,9 @@ void CoverArtDelegate::paintItem(
             return;
         }
         const double scaleFactor = qobject_cast<QWidget*>(parent())->devicePixelRatioF();
-        QPixmap pixmap = m_pCache->tryLoadCover(this,
+        QPixmap pixmap = CoverArtCache::getCachedCover(
                 coverInfo,
-                static_cast<int>(option.rect.width() * scaleFactor),
-                m_inhibitLazyLoading ? CoverArtCache::Loading::CachedOnly
-                                     : CoverArtCache::Loading::Default);
+                static_cast<int>(option.rect.width() * scaleFactor));
         if (pixmap.isNull()) {
             // Cache miss
             if (m_inhibitLazyLoading) {
@@ -139,8 +137,10 @@ void CoverArtDelegate::paintItem(
                 // non-cache we can request an update.
                 m_cacheMissRows.append(index.row());
             } else {
-                // If we asked for a non-cache image and got a null pixmap,
-                // then our request was queued.
+                CoverArtCache::requestCover(
+                        this,
+                        coverInfo,
+                        static_cast<int>(option.rect.width() * scaleFactor));
                 m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {

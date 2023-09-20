@@ -15,42 +15,24 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
   public:
     static void requestCover(
             const QObject* pRequester,
-            const CoverInfo& coverInfo) {
-        requestCover(pRequester, coverInfo, TrackPointer());
+            const CoverInfo& coverInfo,
+            int desiredWidth = 0) {
+        requestCover(pRequester, TrackPointer(), coverInfo, desiredWidth);
     }
+
     static void requestTrackCover(
             const QObject* pRequester,
             const TrackPointer& pTrack);
 
-    /* This method is used to request a cover art pixmap.
-     *
-     * @param pRequester : an arbitrary pointer (can be any number you'd like,
-     *      really) that will be provided in the coverFound signal for this
-     *      request. This allows you to match requests with their responses.
-     *
-     * @param onlyCached : if it is 'true', the method will NOT try to load
-     *      covers from the given 'coverLocation' and it will also NOT run the
-     *      search algorithm.
-     *      In this way, the method will just look into CoverCache and return
-     *      a Pixmap if it is already loaded in the QPixmapCache.
-     */
+    static QPixmap getCachedCover(
+            const CoverInfo& coverInfo,
+            int desiredWidth);
+
     enum class Loading {
         CachedOnly,
         NoSignal,
         Default, // signal when done
     };
-    QPixmap tryLoadCover(
-            const QObject* pRequester,
-            const CoverInfo& info,
-            int desiredWidth = 0, // <= 0: original size
-            Loading loading = Loading::Default) {
-        return tryLoadCover(
-                pRequester,
-                TrackPointer(),
-                info,
-                desiredWidth,
-                loading);
-    }
 
     // Only public for testing
     struct FutureResult {
@@ -106,8 +88,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
   private:
     static void requestCover(
             const QObject* pRequester,
+            const TrackPointer& /*optional*/ pTrack,
             const CoverInfo& coverInfo,
-            const TrackPointer& /*optional*/ pTrack);
+            int desiredWidth = 0);
 
     QPixmap tryLoadCover(
             const QObject* pRequester,

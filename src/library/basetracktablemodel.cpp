@@ -546,16 +546,16 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
-    // Get image from cover art cache
-    CoverArtCache* pCache = CoverArtCache::instance();
-    QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
-            absoluteHeightOfCoverartToolTip); // Height also used as default for the width, in assumption that covers are squares
-    pixmap = pCache->tryLoadCover(this,
-            getCoverInfo(index),
-            absoluteHeightOfCoverartToolTip,
-            CoverArtCache::Loading::NoSignal);
+    const auto coverInfo = getCoverInfo(index);
+    QPixmap pixmap = CoverArtCache::getCachedCover(
+            coverInfo,
+            absoluteHeightOfCoverartToolTip);
     if (pixmap.isNull()) {
         // Cache miss -> Don't show a tooltip
+        CoverArtCache::requestCover(
+                nullptr,
+                coverInfo,
+                absoluteHeightOfCoverartToolTip);
         return QVariant();
     }
     QByteArray data;

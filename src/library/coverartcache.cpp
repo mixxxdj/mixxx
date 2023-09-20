@@ -46,8 +46,9 @@ CoverArtCache::CoverArtCache() {
 //static
 void CoverArtCache::requestCover(
         const QObject* pRequester,
+        const TrackPointer& pTrack,
         const CoverInfo& coverInfo,
-        const TrackPointer& pTrack) {
+        int desiredWidth) {
     CoverArtCache* pCache = CoverArtCache::instance();
     VERIFY_OR_DEBUG_ASSERT(pCache) {
         return;
@@ -56,7 +57,7 @@ void CoverArtCache::requestCover(
             pRequester,
             pTrack,
             coverInfo,
-            0, // original size
+            desiredWidth, // original size
             Loading::Default);
 }
 
@@ -69,8 +70,35 @@ void CoverArtCache::requestTrackCover(
     }
     requestCover(
             pRequester,
-            pTrack->getCoverInfoWithLocation(),
-            pTrack);
+            pTrack,
+            pTrack->getCoverInfoWithLocation());
+}
+
+// static
+QPixmap CoverArtCache::getCachedCover(
+        const CoverInfo& coverInfo,
+        int desiredWidth) {
+    if (coverInfo.type == CoverInfo::NONE) {
+        return QPixmap();
+    }
+    const mixxx::cache_key_t requestedCacheKey = coverInfo.cacheKey();
+    QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
+
+    QPixmap pixmap;
+    if (QPixmapCache::find(cacheKey, &pixmap)) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "requestCover cache hit"
+                    << coverInfo;
+        }
+    } else {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "requestCover cache miss"
+                    << coverInfo;
+        }
+    }
+    return pixmap;
 }
 
 QPixmap CoverArtCache::tryLoadCover(
@@ -84,8 +112,7 @@ QPixmap CoverArtCache::tryLoadCover(
                 << "requestCover"
                 << pRequester
                 << coverInfo
-                << desiredWidth
-                << loading;
+                << desiredWidth;
     }
     DEBUG_ASSERT(!pTrack ||
                 pTrack->getLocation() == coverInfo.trackLocation);
