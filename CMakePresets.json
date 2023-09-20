@@ -1,0 +1,35 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "common",
+            "displayName": "Common",
+            "description": "Common configuration regardless of environment or platform",
+            "cacheVariables": {
+                "BATTERY": "ON",
+                "BROADCAST": "ON",
+                "DOWNLOAD_MANUAL": "ON",
+                "HID": "ON",
+                "KEYFINDER": "ON",
+                "LILV": "ON",
+                "OPUS": "ON",
+                "QTKEYCHAIN": "ON",
+                "VINYLCONTROL": "ON",
+                "MODPLUG": "ON",
+                "WAVPACK": "ON"
+            }
+        },
+        {
+            "name": "build-checks",
+            "displayName": "Build Checks",
+            "description": "Common configuration specific to the CI build environment",
+            "inherits": "common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "FFMPEG": "ON",
+                "LOCALECOMPARE": "ON",
+                "MAD": "ON"
+            }
+        }
+    ]
+}
