@@ -113,9 +113,24 @@ class SampleBuffer final {
         SampleUtil::clear(data(), size());
     }
 
+    void clear(SINT nsamples) noexcept {
+        DEBUG_ASSERT(nsamples <= size());
+        SampleUtil::clear(data(), nsamples);
+    }
+
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value) noexcept {
         SampleUtil::fill(data(), value, size());
+    }
+
+    void copy(const SampleBuffer& other, SINT nsamples) noexcept {
+        DEBUG_ASSERT(size() >= nsamples);
+        DEBUG_ASSERT(other.size() >= nsamples);
+        SampleUtil::copy(data(), other.data(), nsamples);
+    }
+
+    void copy(const SampleBuffer& other) noexcept {
+        SampleUtil::copy(data(), other.data(), std::min<SINT>(size(), other.size()));
     }
 
     class ReadableSlice final {

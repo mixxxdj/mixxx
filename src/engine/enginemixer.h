@@ -247,7 +247,7 @@ class EngineMixer : public QObject, public AudioSource {
 
   protected:
     // The main buffer is protected so it can be accessed by test subclasses.
-    CSAMPLE* m_pMain;
+    mixxx::SampleBuffer m_main;
 
     // ControlObjects for switching off unnecessary processing
     // These are protected so tests can set them
@@ -290,12 +290,12 @@ class EngineMixer : public QObject, public AudioSource {
     mixxx::audio::SampleRate m_sampleRate;
 
     // Mixing buffers for each output.
-    CSAMPLE* m_pOutputBusBuffers[3];
-    CSAMPLE* m_pBooth;
-    CSAMPLE* m_pHead;
-    CSAMPLE* m_pTalkover;
-    CSAMPLE* m_pTalkoverHeadphones;
-    CSAMPLE* m_pSidechainMix;
+    mixxx::SampleBuffer m_outputBusBuffers[3];
+    mixxx::SampleBuffer m_booth;
+    mixxx::SampleBuffer m_head;
+    mixxx::SampleBuffer m_talkover;
+    mixxx::SampleBuffer m_talkoverHeadphones;
+    mixxx::SampleBuffer m_sidechainMix;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pEngineSync;

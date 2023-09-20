@@ -35,6 +35,7 @@ class SampleUtil {
     // Sets every sample in pBuffer to zero
     inline
     static void clear(CSAMPLE* pBuffer, SINT numSamples) {
+        DEBUG_ASSERT(numSamples >= 0);
         // Special case: This works, because the binary representation
         // of 0.0f is 0!
         memset(pBuffer, 0, sizeof(*pBuffer) * numSamples);
