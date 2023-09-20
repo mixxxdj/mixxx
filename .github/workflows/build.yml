@@ -23,8 +23,6 @@ jobs:
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
@@ -45,8 +43,6 @@ jobs:
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
@@ -65,8 +61,6 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=x64-osx-min1012
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
             # TODO: Fix this broken test on macOS
@@ -87,8 +81,6 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100
               -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1012
             # TODO: Fix this broken test on macOS
@@ -116,8 +108,6 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
             cc: cl
             cxx: cl
             # TODO: Fix these broken tests on Windows
@@ -285,19 +275,11 @@ jobs:
 
       - name: "Configure"
         run: >-
-          cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+          cmake --preset=common
+          ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
           -DCMAKE_BUILD_TYPE=RelWithDebInfo
           -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
           -DDEBUG_ASSERTIONS_FATAL=OFF
-          -DBATTERY=ON
-          -DBROADCAST=ON
-          -DDOWNLOAD_MANUAL=ON
-          -DHID=ON
-          -DKEYFINDER=ON
-          -DLILV=ON
-          -DOPUS=ON
-          -DQTKEYCHAIN=ON
-          -DVINYLCONTROL=ON
           -DCMAKE_VERBOSE_MAKEFILE=OFF
           -L
           ..
