@@ -22,7 +22,8 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
     static void requestTrackCover(
             const QObject* pRequester,
-            const TrackPointer& pTrack);
+            const TrackPointer& pTrack,
+            int desiredWidth = 0);
 
     static QPixmap getCachedCover(
             const CoverInfo& coverInfo,

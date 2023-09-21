@@ -64,14 +64,16 @@ void CoverArtCache::requestCover(
 //static
 void CoverArtCache::requestTrackCover(
         const QObject* pRequester,
-        const TrackPointer& pTrack) {
+        const TrackPointer& pTrack,
+        int desiredWidth) {
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
     requestCover(
             pRequester,
             pTrack,
-            pTrack->getCoverInfoWithLocation());
+            pTrack->getCoverInfoWithLocation(),
+            desiredWidth);
 }
 
 // static

@@ -80,17 +80,6 @@ void CoverArtDelegate::slotCoverFound(
     if (pRequester != this) {
         return;
     }
-    if (coverInfoUpdated) {
-        // This happens after updating form legacy hash
-        const auto pTrack =
-                loadTrackByLocation(coverInfo.trackLocation);
-        if (pTrack) {
-            kLogger.info()
-                    << "Updating cover info of track"
-                    << coverInfo.trackLocation;
-            pTrack->setCoverInfo(coverInfo);
-        }
-    }
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
     if (pixmap.isNull()) {
@@ -138,10 +127,21 @@ void CoverArtDelegate::paintItem(
                 // non-cache we can request an update.
                 m_cacheMissRows.append(index.row());
             } else {
-                CoverArtCache::requestCover(
-                        this,
-                        coverInfo,
-                        static_cast<int>(option.rect.width() * scaleFactor));
+                if (coverInfo.imageDigest().isEmpty()) {
+                    // This happens if we have the legacy hash
+                    // The CoverArtCache will take care of the update
+                    const auto pTrack = loadTrackByLocation(coverInfo.trackLocation);
+                    CoverArtCache::requestTrackCover(
+                            this,
+                            pTrack,
+                            static_cast<int>(option.rect.width() * scaleFactor));
+                } else {
+                    // This is the fast path with an internal temporary track
+                    CoverArtCache::requestCover(
+                            this,
+                            coverInfo,
+                            static_cast<int>(option.rect.width() * scaleFactor));
+                }
                 m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {
