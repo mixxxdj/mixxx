@@ -170,7 +170,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // looking for cover in an directory with one image will select that one.
     expected2.coverLocation = "foo.jpg";
-    expected2.setImage(QImage(cLoc_foo));
+    expected2.setImageDigest(QImage(cLoc_foo));
     covers << QFileInfo(cLoc_foo);
     CoverInfoRelative res2 = CoverArtUtils::selectCoverArtForTrack(
             mixxx::FileInfo(trackBaseName), trackAlbum, covers);
@@ -238,11 +238,11 @@ TEST_F(CoverArtUtilTest, searchImage) {
         if (cover.baseName() == "other1") {
             expected2.type = CoverInfo::NONE;
             expected2.coverLocation = QString();
-            expected2.setImage();
+            expected2.setImageDigest(QImage());
         } else {
             expected2.type = CoverInfo::FILE;
             expected2.coverLocation = cover.fileName();
-            expected2.setImage(QImage(cover.filePath()));
+            expected2.setImageDigest(QImage(cover.filePath()));
         }
         res2 = CoverArtUtils::selectCoverArtForTrack(
                 mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
@@ -270,7 +270,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     res2 = CoverArtUtils::selectCoverArtForTrack(
             mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
-    expected2.setImage(QImage(cLoc_coverJPG));
+    expected2.setImageDigest(QImage(cLoc_coverJPG));
     expected2.coverLocation = "cover.JPG";
     EXPECT_EQ(expected2, res2);
 
@@ -287,7 +287,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     prefCovers.append(QFileInfo(cLoc_albumName));
     res2 = CoverArtUtils::selectCoverArtForTrack(
             mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
-    expected2.setImage(QImage(cLoc_albumName));
+    expected2.setImageDigest(QImage(cLoc_albumName));
     expected2.coverLocation = trackAlbum % ".jpg";
     EXPECT_EQ(expected2, res2);
 
@@ -298,7 +298,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res2 = CoverArtUtils::selectCoverArtForTrack(
             mixxx::FileInfo(trackBaseName), trackAlbum, prefCovers);
 
-    expected2.setImage(QImage(cLoc_filename));
+    expected2.setImageDigest(QImage(cLoc_filename));
     expected2.coverLocation = trackBaseName % ".jpg";
     EXPECT_EQ(expected2, res2);
 

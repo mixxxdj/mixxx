@@ -547,6 +547,9 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
     const auto coverInfo = getCoverInfo(index);
+    if (!coverInfo.hasImage()) {
+        return QPixmap();
+    }
     QPixmap pixmap = CoverArtCache::getCachedCover(
             coverInfo,
             absoluteHeightOfCoverartToolTip);

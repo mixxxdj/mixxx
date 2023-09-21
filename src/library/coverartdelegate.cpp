@@ -81,6 +81,7 @@ void CoverArtDelegate::slotCoverFound(
         return;
     }
     if (coverInfoUpdated) {
+        // This happens after updating form legacy hash
         const auto pTrack =
                 loadTrackByLocation(coverInfo.trackLocation);
         if (pTrack) {

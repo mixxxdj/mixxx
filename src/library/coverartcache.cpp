@@ -207,15 +207,23 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             signalWhenDone);
     DEBUG_ASSERT(!res.coverInfoUpdated);
 
-    auto loadedImage = coverInfo.loadImage(pTrack);
+    CoverInfo::LoadedImage loadedImage = coverInfo.loadImage(pTrack);
     if (!loadedImage.image.isNull()) {
-        // Refresh hash before resizing the original image!
-        res.coverInfoUpdated = coverInfo.refreshImageDigest(loadedImage.image);
-        if (pTrack && res.coverInfoUpdated) {
-            kLogger.info()
-                    << "Updating cover info of track"
-                    << coverInfo.trackLocation;
-            pTrack->setCoverInfo(coverInfo);
+        if (coverInfo.imageDigest().isEmpty()) {
+            // This happens if we have loaded the cover art via the legacy hash
+            // and during tests.
+            // Refresh hash before resizing the original image!
+            coverInfo.setImageDigest(loadedImage.image);
+            if (pTrack && pTrack->getId().isValid()) {
+                // Update Track if not a temporary track
+                kLogger.info()
+                        << "Updating cover info of track"
+                        << coverInfo.trackLocation;
+                pTrack->setCoverInfo(coverInfo);
+            } else {
+                // perform the track update at the requester 
+            	res.coverInfoUpdated = true;
+            }
         }
 
         // Resize image to requested size

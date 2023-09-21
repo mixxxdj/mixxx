@@ -577,9 +577,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     QPixmap fetchedCoverArtPixmap;
     fetchedCoverArtPixmap.loadFromData(data);
     CoverInfo coverInfo;
-    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
-    coverInfo.setImage();
 
     loadingProgressBar->setVisible(false);
     statusMessage->setText(tr("Cover art is ready to be applied"));
