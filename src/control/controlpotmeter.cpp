@@ -5,6 +5,14 @@
 #include "control/controlpushbutton.h"
 #include "moc_controlpotmeter.cpp"
 
+namespace {
+
+ConfigKey configKeyFromBaseKey(const ConfigKey& key, const QString& suffix) {
+    return ConfigKey(key.group, QString(key.item) + suffix);
+}
+
+} // namespace
+
 ControlPotmeter::ControlPotmeter(const ConfigKey& key,
         double dMinValue,
         double dMaxValue,
@@ -59,26 +67,16 @@ void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_control(key, this),
-          m_controlUp(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_up"))),
-          m_controlDown(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_down"))),
-          m_controlUpSmall(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_up_small"))),
-          m_controlDownSmall(ConfigKey(key.group,
-                  QString(key.item) + QStringLiteral("_down_small"))),
-          m_controlSetDefault(ConfigKey(key.group,
-                  QString(key.item) + QStringLiteral("_set_default"))),
-          m_controlSetZero(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_set_zero"))),
-          m_controlSetOne(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_set_one"))),
-          m_controlSetMinusOne(ConfigKey(key.group,
-                  QString(key.item) + QStringLiteral("_set_minus_one"))),
-          m_controlToggle(ConfigKey(
-                  key.group, QString(key.item) + QStringLiteral("_toggle"))),
-          m_controlMinusToggle(ConfigKey(key.group,
-                  QString(key.item) + QStringLiteral("_minus_toggle"))),
+          m_controlUp(configKeyFromBaseKey(key, QStringLiteral("_up"))),
+          m_controlDown(configKeyFromBaseKey(key, QStringLiteral("_down"))),
+          m_controlUpSmall(configKeyFromBaseKey(key, QStringLiteral("_up_small"))),
+          m_controlDownSmall(configKeyFromBaseKey(key, QStringLiteral("_down_small"))),
+          m_controlSetDefault(configKeyFromBaseKey(key, QStringLiteral("_set_default"))),
+          m_controlSetZero(configKeyFromBaseKey(key, QStringLiteral("_set_zero"))),
+          m_controlSetOne(configKeyFromBaseKey(key, QStringLiteral("_set_one"))),
+          m_controlSetMinusOne(configKeyFromBaseKey(key, QStringLiteral("_set_minus_one"))),
+          m_controlToggle(configKeyFromBaseKey(key, QStringLiteral("_toggle"))),
+          m_controlMinusToggle(configKeyFromBaseKey(key, QStringLiteral("_minus_toggle"))),
           m_stepCount(10),
           m_smallStepCount(100) {
     connect(&m_controlUp, &ControlPushButton::valueChanged, this, &PotmeterControls::incValue);
@@ -118,22 +116,16 @@ PotmeterControls::~PotmeterControls() {
 }
 
 void PotmeterControls::addAlias(const ConfigKey& key) {
-    m_controlUp.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_up")));
-    m_controlDown.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_down")));
-    m_controlUpSmall.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_up_small")));
-    m_controlDownSmall.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_down_small")));
-    m_controlSetDefault.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_set_default")));
-    m_controlSetZero.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_set_zero")));
-    m_controlSetOne.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_set_one")));
-    m_controlSetMinusOne.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_set_minus_one")));
-    m_controlToggle.addAlias(ConfigKey(key.group, QString(key.item) + QStringLiteral("_toggle")));
-    m_controlMinusToggle.addAlias(ConfigKey(
-            key.group, QString(key.item) + QStringLiteral("_minus_toggle")));
+    m_controlUp.addAlias(configKeyFromBaseKey(key, QStringLiteral("_up")));
+    m_controlDown.addAlias(configKeyFromBaseKey(key, QStringLiteral("_down")));
+    m_controlUpSmall.addAlias(configKeyFromBaseKey(key, QStringLiteral("_up_small")));
+    m_controlDownSmall.addAlias(configKeyFromBaseKey(key, QStringLiteral("_down_small")));
+    m_controlSetDefault.addAlias(configKeyFromBaseKey(key, QStringLiteral("_set_default")));
+    m_controlSetZero.addAlias(configKeyFromBaseKey(key, QStringLiteral("_set_zero")));
+    m_controlSetOne.addAlias(configKeyFromBaseKey(key, QStringLiteral("_set_one")));
+    m_controlSetMinusOne.addAlias(configKeyFromBaseKey(key, QStringLiteral("_set_minus_one")));
+    m_controlToggle.addAlias(configKeyFromBaseKey(key, QStringLiteral("_toggle")));
+    m_controlMinusToggle.addAlias(configKeyFromBaseKey(key, QStringLiteral("_minus_toggle")));
 }
 
 void PotmeterControls::incValue(double v) {
