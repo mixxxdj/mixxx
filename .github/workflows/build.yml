@@ -176,7 +176,7 @@ jobs:
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
-          cmake-version: "3.19.x"
+          cmake-version: "3.21.x"
 
       - name: "[Windows] Set up cmake"
         uses: jwlawson/actions-setup-cmake@v1.13
