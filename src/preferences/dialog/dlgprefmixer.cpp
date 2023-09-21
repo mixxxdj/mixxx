@@ -280,7 +280,11 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
         pBox->addItem(kNoEffectString);
         int currentIndex = 0; // store it as default selection
         for (const auto& pManifest : pManifestList) {
-            pBox->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
+            if (pManifest.isNull()) {
+                pBox->insertSeparator(pBox->count());
+                continue;
+            }
+            pBox->addItem(pManifest->displayName(), QVariant(pManifest->uniqueId()));
             int i = pBox->count() - 1;
             // <b> makes the effect name bold. Also, like <span> it serves as hack
             // to get Qt to treat the string as rich text so it automatically wraps long lines.
@@ -1169,6 +1173,10 @@ const QList<EffectManifestPointer> DlgPrefMixer::getDeckEqManifests() const {
             [](const auto& pManifest) { return isMixingEQ(pManifest.data()); });
     if (m_eqEffectsOnly) {
         allManifests.erase(nonEqsStartIt, allManifests.end());
+    } else {
+        // Add a null item between EQs and non-EQs. The combobox fill function
+        // will use this to insert a separator.
+        allManifests.insert(nonEqsStartIt, EffectManifestPointer());
     }
     return allManifests;
 }
