@@ -259,7 +259,7 @@ void WMainMenuBar::initialize() {
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     createVisibilityControl(pViewShowPreviewDeck,
-            ConfigKey(kSkinGroup, QStringLiteral("show_previewdecks")));
+            ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
 

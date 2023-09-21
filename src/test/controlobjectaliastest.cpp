@@ -137,7 +137,7 @@ TEST_F(ControlObjectAliasTest, SkinControls) {
     EXPECT_DOUBLE_EQ(showMicrophones.get(), showMicrophonesLegacy.get());
 
     auto showPreviewDecks = ControlProxy(
-            ConfigKey(kSkinGroup, QStringLiteral("show_previewdecks")));
+            ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")));
     auto showPreviewDecksLegacy = ControlProxy(
             ConfigKey(QStringLiteral("[PreviewDeck]"), QStringLiteral("show_previewdeck")));
     EXPECT_DOUBLE_EQ(showPreviewDecks.get(), showPreviewDecksLegacy.get());

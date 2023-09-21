@@ -470,7 +470,7 @@ Description:
               <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_previewdeck</SetVariable>
                 <SetVariable name="Text">Preview Deck</SetVariable>
-                <SetVariable name="Setting">[Skin],show_previewdecks</SetVariable>
+                <SetVariable name="Setting">[Skin],show_preview_decks</SetVariable>
               </Template>
 
               <!-- Cover Art -->
