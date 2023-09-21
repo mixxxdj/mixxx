@@ -1162,21 +1162,15 @@ void DlgPrefMixer::storeMainEQ() {
 }
 
 const QList<EffectManifestPointer> DlgPrefMixer::getDeckEqManifests() const {
-    const QList<EffectManifestPointer> allManifests =
+    QList<EffectManifestPointer> allManifests =
             m_pBackendManager->getManifests();
-    QList<EffectManifestPointer> eqs;
-    QList<EffectManifestPointer> nonEqs;
-    // Add EQs first, then append non-EQs
-    for (const auto& pManifest : allManifests) {
-        if (isMixingEQ(pManifest.data())) {
-            eqs.append(pManifest);
-        } else if (!m_eqEffectsOnly) {
-            nonEqs.append(pManifest);
-        }
+    auto nonEqsStartIt = std::stable_partition(allManifests.begin(),
+            allManifests.end(),
+            [](const auto& pManifest) { return isMixingEQ(pManifest.data()); });
+    if (m_eqEffectsOnly) {
+        allManifests.erase(nonEqsStartIt, allManifests.end());
     }
-    // Append non-EQs. No-op if 'EQs only' is unchecked.
-    eqs.append(nonEqs);
-    return eqs;
+    return allManifests;
 }
 
 const QList<EffectManifestPointer> DlgPrefMixer::getMainEqManifests() const {
