@@ -308,9 +308,9 @@ void DlgPrefMixer::slotPopulateDeckEqSelectors() {
             const QStandardItemModel* pModel =
                     qobject_cast<QStandardItemModel*>(pBox->model());
             DEBUG_ASSERT(pModel);
-            auto pItem = pModel->item(currentIndex);
+            auto* pItem = pModel->item(currentIndex);
             DEBUG_ASSERT(pItem);
-            pItem->setFlags(pItem->flags() & ~Qt::ItemIsEnabled);
+            pItem->setEnabled(false);
         }
         pBox->setCurrentIndex(currentIndex);
     }
@@ -386,7 +386,7 @@ void DlgPrefMixer::slotSingleEqToggled(bool checked) {
                 const QStandardItemModel* pModel =
                         qobject_cast<QStandardItemModel*>(eqBox->model());
                 DEBUG_ASSERT(pModel);
-                auto pItem = pModel->item(newIndex);
+                auto* pItem = pModel->item(newIndex);
                 DEBUG_ASSERT(pItem);
                 pItem->setEnabled(false);
             }
