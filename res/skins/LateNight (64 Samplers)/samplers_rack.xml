@@ -262,7 +262,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <ConfigKey>[Skin],show_samplers</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

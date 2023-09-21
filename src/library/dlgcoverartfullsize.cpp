@@ -229,8 +229,7 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
         return;
     }
     slotCoverInfoSelected(
-            CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+            CoverInfoGuesser().guessCoverInfoForTrack(m_pLoadedTrack));
 }
 
 void DlgCoverArtFullSize::slotCoverInfoSelected(

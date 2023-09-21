@@ -122,13 +122,13 @@ Description:
 		          </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Skin],show_maximized_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -181,7 +181,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_text">FX</SetVariable>
                 <SetVariable name="state_1_text">FX</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_effectrack</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -192,7 +192,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_samplers</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -203,7 +203,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
@@ -214,7 +214,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -239,7 +239,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Skin],show_maximized_library</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -369,13 +369,13 @@ Description:
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

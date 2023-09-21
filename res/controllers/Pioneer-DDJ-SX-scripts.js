@@ -2206,7 +2206,7 @@ PioneerDDJSX.backButton = function(channel, control, value, status) {
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
     if (value) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 };
 

@@ -4,7 +4,7 @@
 
 namespace {
 constexpr int kMaxNumOfRecursions = 128;
-}
+} // namespace
 
 // Event queue compressing proxy
 CompressingProxy::CompressingProxy(const ConfigKey& key,

@@ -506,7 +506,7 @@ ElectrixTweaker.bigEncoderButton = function(channel, control, value, _status, _g
         if (ElectrixTweaker.topShift) {
             engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
         } else {
-            engine.setValue("[Master]", "maximize_library", ! engine.getValue("[Master]", "maximize_library"));
+            engine.setValue("[Skin]", "show_maximized_library", ! engine.getValue("[Skin]", "show_maximized_library"));
         }
     }
 };

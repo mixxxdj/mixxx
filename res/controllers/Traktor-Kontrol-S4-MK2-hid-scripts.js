@@ -1239,8 +1239,8 @@ TraktorS4MK2.snapHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    library_maximized = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !library_maximized);
+    library_maximized = engine.getValue("[Skin]", "show_maximized_library");
+    engine.setValue("[Skin]", "show_maximized_library", !library_maximized);
 };
 
 TraktorS4MK2.FXButtonHandler = function(field) {

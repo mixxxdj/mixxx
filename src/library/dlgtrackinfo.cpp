@@ -533,7 +533,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
     }
     slotCoverInfoSelected(
             CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+                    m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -771,9 +771,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
-    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
     auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileAccess.info(),
+            fileInfo,
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
     trackRecord.replaceMetadataFromSource(
@@ -783,7 +783,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(guessedCoverInfo));
     replaceTrackRecord(
             std::move(trackRecord),
-            fileAccess.info().location());
+            fileInfo.location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

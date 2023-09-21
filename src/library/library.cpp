@@ -50,7 +50,7 @@ namespace {
 
 const mixxx::Logger kLogger("Library");
 
-} // anonymous namespace
+} // namespace
 
 using namespace mixxx::library::prefs;
 

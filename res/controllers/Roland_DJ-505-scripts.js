@@ -298,8 +298,8 @@ DJ505.addPrepareButton = new components.Button({
     shiftOffset: -7,
     sendShifted: true,
     shiftControl: true,
-    group: "[Master]",
-    key: "maximize_library",
+    group: "[Skin]",
+    key: "show_maximized_library",
     type: components.Button.prototype.types.toggle,
 });
 

@@ -24,17 +24,17 @@
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
       <!-- Mixer -->
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_faders">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
       <!-- Effects -->
-      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_effectrack">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
       <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_samplers">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
@@ -46,13 +46,13 @@
       <attribute persist="true" config_key="[Skin],sampler_row_7_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_8_expanded">0</attribute>
 
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_microphones">0</attribute>
 
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
-      <attribute config_key="[Master],maximize_library">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+      <attribute config_key="[Skin],show_maximized_library">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_previewdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library_coverart">1</attribute>
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
@@ -186,7 +186,7 @@
         <Template src="skin:../Deere/tool_bar.xml"/>
 
         <!-- regular or maximized library -->
-        <WidgetStack currentpage="[Master],maximize_library">
+        <WidgetStack currentpage="[Skin],show_maximized_library">
           <Children>
 
             <!-- regular library with decks etc. -->
@@ -226,7 +226,7 @@
             </Splitter><!-- regular library with decks etc. -->
 
             <!-- maximized Library with minimal decks -->
-            <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+            <WidgetGroup trigger="[Skin],show_maximized_library" on_hide_select="0">
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>
@@ -246,7 +246,7 @@
       <Layout>vertical</Layout>
       <SizePolicy>min,me</SizePolicy>
       <Connection>
-        <ConfigKey>[Master],skin_settings</ConfigKey>
+        <ConfigKey>[Skin],show_settings</ConfigKey>
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>

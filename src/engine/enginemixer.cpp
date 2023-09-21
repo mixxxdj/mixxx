@@ -31,7 +31,7 @@
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
-}
+} // namespace
 
 EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
