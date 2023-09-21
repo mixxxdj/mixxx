@@ -57,7 +57,7 @@ void CoverArtCache::requestCover(
             pRequester,
             pTrack,
             coverInfo,
-            desiredWidth, // original size
+            desiredWidth,
             Loading::Default);
 }
 
@@ -101,6 +101,23 @@ QPixmap CoverArtCache::getCachedCover(
         }
     }
     return pixmap;
+}
+
+// static
+void CoverArtCache::requestUncachedCover(
+        const QObject* pRequester,
+        const CoverInfo& coverInfo,
+        int desiredWidth) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    VERIFY_OR_DEBUG_ASSERT(pCache) {
+        return;
+    }
+    pCache->tryLoadCover(
+            pRequester,
+            TrackPointer(),
+            coverInfo,
+            desiredWidth,
+            Loading::Default);
 }
 
 QPixmap CoverArtCache::tryLoadCover(

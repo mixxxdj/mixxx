@@ -29,6 +29,11 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const CoverInfo& coverInfo,
             int desiredWidth);
 
+    static void requestUncachedCover(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            int desiredWidth);
+
     enum class Loading {
         CachedOnly,
         NoSignal,
