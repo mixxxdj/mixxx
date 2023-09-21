@@ -73,13 +73,12 @@ void CoverArtDelegate::slotInhibitLazyLoading(
 void CoverArtDelegate::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedImageHash,
-        bool coverInfoUpdated) {
+        const QPixmap& pixmap) {
     Q_UNUSED(pixmap);
     if (pRequester != this) {
         return;
     }
+    mixxx::cache_key_t requestedImageHash = coverInfo.cacheKey();
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
     if (pixmap.isNull()) {

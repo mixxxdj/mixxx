@@ -56,9 +56,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotCoverFound(
             const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotStartFetchCoverArt(const QList<QString>& allUrls);
     void slotLoadBytesToLabel(const QByteArray& data);
     void slotCoverArtLinkNotFound();

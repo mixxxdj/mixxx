@@ -30,9 +30,7 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
         EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
 
@@ -50,9 +48,7 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
 
         CoverArtCache::FutureResult res;
         res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0, false);
-        EXPECT_TRUE(res.coverInfoUpdated); // hash updated
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
-        EXPECT_EQ(CoverImageUtils::calculateDigest(img), res.coverArt.imageDigest());
         EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }
 };

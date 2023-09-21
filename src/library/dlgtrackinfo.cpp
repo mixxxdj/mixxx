@@ -514,11 +514,7 @@ void DlgTrackInfo::focusField(const QString& property) {
 void DlgTrackInfo::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+        const QPixmap& pixmap) {
     if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {

@@ -40,8 +40,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
         FutureResult()
                 : pRequester(nullptr),
                   requestedCacheKey(CoverImageUtils::defaultCacheKey()),
-                  signalWhenDone(false),
-                  coverInfoUpdated(false) {
+                  signalWhenDone(false) {
         }
         FutureResult(
                 const QObject* pRequestorArg,
@@ -49,8 +48,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
                 bool signalWhenDoneArg)
                 : pRequester(pRequestorArg),
                   requestedCacheKey(requestedCacheKeyArg),
-                  signalWhenDone(signalWhenDoneArg),
-                  coverInfoUpdated(false) {
+                  signalWhenDone(signalWhenDoneArg) {
         }
 
         const QObject* pRequester;
@@ -58,7 +56,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
         bool signalWhenDone;
 
         CoverArt coverArt;
-        bool coverInfoUpdated;
     };
     // Load cover from path indicated in coverInfo. WARNING: This is run in a
     // worker thread.
@@ -77,9 +74,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void coverFound(
             const QObject* requester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
 
   protected:
     CoverArtCache();

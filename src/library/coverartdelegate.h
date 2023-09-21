@@ -48,9 +48,7 @@ class CoverArtDelegate : public TableItemDelegate {
     void slotCoverFound(
             const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
 
   protected:
     TrackModel* const m_pTrackModel;

@@ -123,7 +123,7 @@ QPixmap CoverArtCache::tryLoadCover(
 
     if (coverInfo.type == CoverInfo::NONE) {
         if (loading == Loading::Default) {
-            emit coverFound(pRequester, coverInfo, QPixmap(), requestedCacheKey, false);
+            emit coverFound(pRequester, coverInfo, QPixmap());
         }
         return QPixmap();
     }
@@ -151,7 +151,7 @@ QPixmap CoverArtCache::tryLoadCover(
                     << loading;
         }
         if (loading == Loading::Default) {
-            emit coverFound(pRequester, coverInfo, pixmap, requestedCacheKey, false);
+            emit coverFound(pRequester, coverInfo, pixmap);
         }
         return pixmap;
     }
@@ -207,7 +207,6 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             pRequester,
             coverInfo.cacheKey(),
             signalWhenDone);
-    DEBUG_ASSERT(!res.coverInfoUpdated);
 
     CoverInfo::LoadedImage loadedImage = coverInfo.loadImage(pTrack);
     if (!loadedImage.image.isNull()) {
@@ -215,16 +214,14 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             // This happens if we have loaded the cover art via the legacy hash
             // and during tests.
             // Refresh hash before resizing the original image!
-            coverInfo.setImageDigest(loadedImage.image);
+            CoverInfo updatedCoverInfo = coverInfo;
+            updatedCoverInfo.setImageDigest(loadedImage.image);
             if (pTrack && pTrack->getId().isValid()) {
                 // Update Track if not a temporary track
                 kLogger.info()
                         << "Updating cover info of track"
                         << coverInfo.trackLocation;
-                pTrack->setCoverInfo(coverInfo);
-            } else {
-                // perform the track update at the requester 
-            	res.coverInfoUpdated = true;
+                pTrack->setCoverInfo(updatedCoverInfo);
             }
         }
 
@@ -307,8 +304,6 @@ void CoverArtCache::coverLoaded() {
         emit coverFound(
                 res.pRequester,
                 std::move(res.coverArt),
-                pixmap,
-                res.requestedCacheKey,
-                res.coverInfoUpdated);
+                pixmap);
     }
 }
