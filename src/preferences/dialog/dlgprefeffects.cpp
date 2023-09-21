@@ -356,11 +356,9 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
                 pEffectList->selectRow(currIndex.row());
             }
             return true;
-        } else {
-            return false;
         }
     }
-    return false;
+    return DlgPreferencePage::eventFilter(object, event);
 }
 
 QListView* DlgPrefEffects::unfocusedChainList() {
