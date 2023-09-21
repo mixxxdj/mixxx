@@ -117,7 +117,7 @@ jobs:
         run: cmake --build . -j $(nproc) -- --keep-going
         working-directory: build
         env:
-          CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression,no-missing-typeinfo,no-base-class-event
+          CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression
           CLAZY_IGNORE_DIRS: lib/.*
       - name: "Test"
         if: matrix.name == 'coverage'
