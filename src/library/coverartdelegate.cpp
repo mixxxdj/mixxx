@@ -130,13 +130,13 @@ void CoverArtDelegate::paintItem(
                     // This happens if we have the legacy hash
                     // The CoverArtCache will take care of the update
                     const auto pTrack = loadTrackByLocation(coverInfo.trackLocation);
-                    CoverArtCache::requestTrackCover(
+                    CoverArtCache::requestUncachedCover(
                             this,
                             pTrack,
                             static_cast<int>(option.rect.width() * scaleFactor));
                 } else {
                     // This is the fast path with an internal temporary track
-                    CoverArtCache::requestCover(
+                    CoverArtCache::requestUncachedCover(
                             this,
                             coverInfo,
                             static_cast<int>(option.rect.width() * scaleFactor));

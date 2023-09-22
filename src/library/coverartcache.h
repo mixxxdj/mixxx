@@ -15,15 +15,13 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
   public:
     static void requestCover(
             const QObject* pRequester,
-            const CoverInfo& coverInfo,
-            int desiredWidth = 0) {
-        requestCover(pRequester, TrackPointer(), coverInfo, desiredWidth);
+            const CoverInfo& coverInfo) {
+        requestCoverPrivate(pRequester, TrackPointer(), coverInfo);
     }
 
     static void requestTrackCover(
             const QObject* pRequester,
-            const TrackPointer& pTrack,
-            int desiredWidth = 0);
+            const TrackPointer& pTrack);
 
     static QPixmap getCachedCover(
             const CoverInfo& coverInfo,
@@ -32,33 +30,30 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     static void requestUncachedCover(
             const QObject* pRequester,
             const CoverInfo& coverInfo,
-            int desiredWidth);
+            int desiredWidth) {
+        requestUncachedCoverPrivate(pRequester, TrackPointer(), coverInfo, desiredWidth);
+    }
 
-    enum class Loading {
-        CachedOnly,
-        NoSignal,
-        Default, // signal when done
-    };
+    static void requestUncachedCover(
+            const QObject* pRequester,
+            const TrackPointer& pTrack,
+            int desiredWidth);
 
     // Only public for testing
     struct FutureResult {
         FutureResult()
                 : pRequester(nullptr),
-                  requestedCacheKey(CoverImageUtils::defaultCacheKey()),
-                  signalWhenDone(false) {
+                  requestedCacheKey(CoverImageUtils::defaultCacheKey()) {
         }
         FutureResult(
                 const QObject* pRequestorArg,
-                mixxx::cache_key_t requestedCacheKeyArg,
-                bool signalWhenDoneArg)
+                mixxx::cache_key_t requestedCacheKeyArg)
                 : pRequester(pRequestorArg),
-                  requestedCacheKey(requestedCacheKeyArg),
-                  signalWhenDone(signalWhenDoneArg) {
+                  requestedCacheKey(requestedCacheKeyArg) {
         }
 
         const QObject* pRequester;
         mixxx::cache_key_t requestedCacheKey;
-        bool signalWhenDone;
 
         CoverArt coverArt;
     };
@@ -68,8 +63,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const QObject* pRequester,
             TrackPointer pTrack,
             CoverInfo coverInfo,
-            int desiredWidth,
-            bool emitSignals);
+            int desiredWidth);
 
   private slots:
     // Called when loadCover is complete in the main thread.
@@ -87,23 +81,23 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     friend class Singleton<CoverArtCache>;
 
   private:
-    static void requestCover(
+    static void requestCoverPrivate(
             const QObject* pRequester,
             const TrackPointer& /*optional*/ pTrack,
             const CoverInfo& coverInfo,
-            int desiredWidth = 0);
+            int desiredWidth = 0); // <= 0: original size
 
-    QPixmap tryLoadCover(
+    static void requestUncachedCoverPrivate(
+            const QObject* pRequester,
+            const TrackPointer& /*optional*/ pTrack,
+            const CoverInfo& coverInfo,
+            int desiredWidth);
+
+    void tryLoadCover(
             const QObject* pRequester,
             const TrackPointer& pTrack,
             const CoverInfo& info,
-            int desiredWidth,
-            Loading loading);
+            int desiredWidth);
 
     QSet<QPair<const QObject*, mixxx::cache_key_t>> m_runningRequests;
 };
-
-inline
-QDebug operator<<(QDebug dbg, CoverArtCache::Loading loading) {
-    return dbg << static_cast<int>(loading);
-}

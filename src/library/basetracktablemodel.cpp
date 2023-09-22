@@ -554,8 +554,8 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
             coverInfo,
             absoluteHeightOfCoverartToolTip);
     if (pixmap.isNull()) {
-        // Cache miss -> Don't show a tooltip
-        CoverArtCache::requestCover(
+        // Cache miss -> Don't show a tooltip, refresh cache
+        CoverArtCache::requestUncachedCover(
                 nullptr,
                 coverInfo,
                 absoluteHeightOfCoverartToolTip);
