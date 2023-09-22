@@ -77,11 +77,11 @@
       <!-- T4_SHIFT = Loop in -->
       <control>
         <group>[Channel1]</group>
-        <key>loop_in</key>
+        <key>Mixage.handleLoopIn</key>
         <status>0x90</status>
         <midino>0x44</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T5_TURN = Loop Length -->
@@ -117,11 +117,11 @@
       <!-- T5_PRESS_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key></key>
+        <key>Mixage.clearLoop</key>
         <status>0x90</status>
         <midino>0x5F</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T6 = Gain Dial -->
@@ -175,11 +175,11 @@
       <!-- T8_SHIFT = Loop Out -->
       <control>
         <group>[Channel1]</group>
-        <key>loop_out</key>
+        <key>Mixage.handleLoopOut</key>
         <status>0x90</status>
         <midino>0x45</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T9 = FX Select Button -->
@@ -645,11 +645,11 @@
       <!-- T4_SHIFT = Loop in -->
       <control>
         <group>[Channel2]</group>
-        <key>loop_in</key>
+        <key>Mixage.handleLoopIn</key>
         <status>0x90</status>
         <midino>0x52</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T5_TURN = Loop Length -->
@@ -743,11 +743,11 @@
       <!-- T8_SHIFT = Loop Out -->
       <control>
         <group>[Channel2]</group>
-        <key>loop_out</key>
+        <key>Mixage.handleLoopOut</key>
         <status>0x90</status>
         <midino>0x53</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T9 = FX Select Button -->

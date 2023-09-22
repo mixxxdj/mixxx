@@ -18,7 +18,6 @@ var QUICK_PRESS = 1, DOUBLE_PRESS = 2;
 
 Mixage.vuMeterConnection = [];
 Mixage.loopConnection = [];
-Mixage.beatConnection = [];
 Mixage.fxOnConnection = [];
 Mixage.fxSelectConnection = [];
 Mixage.libraryHideTimer = 0;
@@ -53,15 +52,27 @@ Mixage.isBeatMovePressed = {
     "[Channel2]": false,
 };
 
+Mixage.adjustLoopIn = {
+    "[Channel1]": false,
+    "[Channel2]": false,
+};
+
+Mixage.adjustLoopOut = {
+    "[Channel1]": false,
+    "[Channel2]": false,
+};
+
+Mixage.blinkTimer = {
+    "[Channel1]": {},
+    "[Channel2]": {},
+};
+
 Mixage.init = function(_id, _debugging) {
 
     // all button LEDs off
     for (var i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
-
-    print(Mixage.numEffectSlots);
-    print(Mixage.numEffectUnits);
 
     // Bind controls and make engine connections for each channel in Mixage.channels
     // A predefined list with channels is used instead of a for loop to prevent engine connections to be overwritten
@@ -88,9 +99,9 @@ Mixage.init = function(_id, _debugging) {
         engine.softTakeover("[QuickEffectRack1_"+channel+"]", "super1", true);
 
         //make connections for status LEDs
-        Mixage.vuMeterConnection.push(engine.makeConnection(channel, "VuMeter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel]["vu_meter"], val * 7); }));
+        Mixage.vuMeterConnection.push(engine.makeConnection(channel, "VuMeter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
+        Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() {  Mixage.toggleReloopLED(0, channel); }));
         Mixage.fxSelectConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
-        Mixage.loopConnection.push(engine.makeConnection(channel, "loop_enabled", function(value) { Mixage.toggleLoopLED(value, channel); }));
 
         //get current status and set LEDs accordingly
         Mixage.toggleFxLED(channel);
@@ -103,7 +114,6 @@ Mixage.shutdown = function() {
     // Disconnect all engine connections that are present
     Mixage.vuMeterConnection.forEach(function(connection) { connection.disconnect(); });
     Mixage.loopConnection.forEach(function(connection) { connection.disconnect(); });
-    Mixage.beatConnection.forEach(function(connection) { connection.disconnect(); });
     Mixage.fxSelectConnection.forEach(function(connection) { connection.disconnect(); });
     Mixage.fxOnConnection.forEach(function(connection) { connection.disconnect(); });
 
@@ -125,7 +135,7 @@ Mixage.ledMap = {
         "load_indicator": 0x0D,
         "pfl": 0x0E,
         "loop": 0x05,
-        "loop_enabled": 0x06,
+        "reloop": 0x06,
         "sync_enabled": 0x09,
         "fx_on": 0x08,
         "fx_sel": 0x07,
@@ -140,7 +150,7 @@ Mixage.ledMap = {
         "load_indicator": 0x1B,
         "pfl": 0x1C,
         "loop": 0x13,
-        "loop_enabled": 0x14,
+        "reloop": 0x14,
         "sync_enabled": 0x17,
         "fx_on": 0x16,
         "fx_sel": 0x15,
@@ -157,7 +167,9 @@ Mixage.connectionMap = {
         "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
         "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
         "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-        "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "loop_enabled": [function(v, g) { Mixage.toggleReloopLED(v, g); }, null],
+        "loop_in": [function(v, g) { if (v === 1) { Mixage.toggleloopLED(g); } }, null],
+        "loop_out": [function(v, g) { if (v === 1) { Mixage.toggleloopLED(g); } }, null],
         "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
     },
     "[Channel2]": {
@@ -165,16 +177,17 @@ Mixage.connectionMap = {
         "cue_default": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
         "play_indicator": [function(v, g, c) { Mixage.handlePlay(v, g, c); }, null],
         "pfl": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
-        "loop_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
+        "loop_enabled": [function(v, g) { Mixage.toggleReloopLED(v, g); }, null],
+        "loop_in": [function(v, g) { if (v === 1) { Mixage.toggleloopLED(g); } }, null],
+        "loop_out": [function(v, g) { if (v === 1) { Mixage.toggleloopLED(g); } }, null],
         "sync_enabled": [function(v, g, c) { Mixage.toggleLED(v, g, c); }, null],
     },
 };
 
 // Set or remove functions to call when the state of a mixxx control changes
 Mixage.connectControlsToFunctions = function(group, remove) {
-    remove = (remove !== undefined) ? remove : false;
     for (var control in Mixage.connectionMap[group]) {
-        if (remove) {
+        if (remove !== undefined) {
             Mixage.connectionMap[group][control][1].disconnect();
         } else {
             Mixage.connectionMap[group][control][1] = engine.makeConnection(group, control, Mixage.connectionMap[group][control][0]);
@@ -203,19 +216,144 @@ Mixage.toggleFxLED = function(group) {
     }
 };
 
-// Flash the loop LED in time with the beat
-Mixage.toggleLoopLED = function(value, group) {
-    var conNumber = script.deckFromGroup(group) - 1;
-    if (value === 1) {
-        Mixage.beatConnection[conNumber] = engine.makeConnection(group, "beat_active", function(value) {
-            // if the loop length is less than 1/8 of a beat turn on LED to prevent excessive flashing
-            if (engine.getValue(group, "beatloop_size") > 0.125) { Mixage.toggleLED(value, group, "loop"); } else {
-                Mixage.toggleLED(ON, group, "loop");
-            }
-        });
-    } else {
-        Mixage.beatConnection[conNumber].disconnect();
+// Flash the Reloop LED if a loop is set but currently not active
+Mixage.toggleReloopLED = function(value, group) {
+    if (value === 0 && engine.getValue(group, "loop_start_position") !== -1 && engine.getValue(group, "loop_end_position") !== -1) {
+        Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 1000);
         Mixage.toggleLED(OFF, group, "loop");
+    } else {
+        Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 0);
+        Mixage.toggleloopLED(group);
+    }
+};
+
+//Turns the loop in and loop LEDs on if a loop end or start position is found, otherwise turn them off
+Mixage.toggleloopLED = function(group) {
+    if (engine.getValue(group, "loop_start_position") !== -1) {
+        Mixage.toggleLED(ON, group, "loop");
+    } else {
+        Mixage.toggleLED(OFF, group, "loop");
+    }
+
+    if (engine.getValue(group, "loop_end_position") !== -1) {
+        Mixage.toggleLED(ON, group, "reloop");
+    } else {
+        Mixage.toggleLED(OFF, group, "reloop");
+    }
+};
+
+//Removes any loop that is currently set on a track
+Mixage.clearLoop = function(_channel, _control, value, _status, group) {
+    if (value === DOWN) {
+        Mixage.stopLoopAdjust(group);
+        engine.setValue(group, "loop_end_position", -1);
+        engine.setValue(group, "loop_start_position", -1);
+        Mixage.toggleloopLED(group);
+    }
+};
+
+//Enable the adjustment of the loop end or start position with the jogwheel
+Mixage.startLoopAdjust = function(group, adjustpoint) {
+    if (adjustpoint === "start") {
+        Mixage.adjustLoopIn[group] = true;
+        Mixage.blinkLED(Mixage.ledMap[group].loop, group, 250);
+
+        if (Mixage.adjustLoopOut[group]) {
+            Mixage.adjustLoopOut[group] = false;
+            Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 0);
+            Mixage.toggleLED(ON, group, "reloop");
+        }
+    }
+
+    if (adjustpoint === "end") {
+        Mixage.adjustLoopOut[group] = true;
+        Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 250);
+
+        if (Mixage.adjustLoopIn[group]) {
+            Mixage.adjustLoopIn[group] = false;
+            Mixage.blinkLED(Mixage.ledMap[group].loop, group, 0);
+            Mixage.toggleLED(ON, group, "loop");
+        }
+    }
+
+    Mixage.toggleLED(OFF, group, "scratch_active");
+    Mixage.toggleLED(OFF, group, "scroll_active");
+    Mixage.scratchToggleState[group] = false;
+    Mixage.scrollToggleState[group] = false;
+};
+
+//Disable the adjustment of the loop end or start position with the jogwheel
+Mixage.stopLoopAdjust = function(group, adjustpoint) {
+    if (adjustpoint === "start" | typeof adjustpoint === "undefined") {
+        Mixage.adjustLoopIn[group] = false;
+        Mixage.blinkLED(Mixage.ledMap[group].loop, group, 0);
+    }
+
+    if (adjustpoint === "end" | typeof adjustpoint === "undefined") {
+        Mixage.adjustLoopOut[group] = false;
+        Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 0);
+    }
+
+    if (engine.getValue(group, "loop_enabled") === 1) {
+        Mixage.toggleLED(ON, group, "loop");
+        Mixage.toggleLED(ON, group, "reloop");
+    }
+};
+
+//set a loop in point if none is defined, otherwise enable adjustment of the start position with the jogwheel
+Mixage.handleLoopIn = function(_channel, _control, value, _status, group) {
+    if (value === DOWN) {
+        if (Mixage.adjustLoopIn[group]) {
+            Mixage.stopLoopAdjust(group, "start");
+        } else if (engine.getValue(group, "loop_enabled") === 0) {
+            engine.setValue(group, "loop_in", 1);
+        } else {
+            Mixage.startLoopAdjust(group, "start");
+        }
+    } else {
+        if (engine.getValue(group, "loop_in") === 1) {
+            engine.setValue(group, "loop_in", 0);
+        }
+    }
+};
+
+//set a loop in point if none is defined, otherwise enable adjustment of the start position with the jogwheel
+Mixage.handleLoopOut = function(_channel, _control, value, _status, group) {
+    if (value === DOWN) {
+        if (Mixage.adjustLoopOut[group]) {
+            Mixage.stopLoopAdjust(group, "end");
+        } else if (engine.getValue(group, "loop_enabled") === 0) {
+            engine.setValue(group, "loop_out", 1);
+        } else {
+            Mixage.startLoopAdjust(group, "end");
+        }
+    } else {
+        if (engine.getValue(group, "loop_out") === 1) {
+            engine.setValue(group, "loop_out", 0);
+        }
+    }
+};
+
+//Start blinking the LED for a given control based on the time parameter, stops blinking a control light if time is set to zero
+Mixage.blinkLED = function(control, group, time) {
+    if (time === 0) {
+        if (Object.prototype.hasOwnProperty.call(Mixage.blinkTimer[group], control)) {
+            engine.stopTimer(Mixage.blinkTimer[group][control][0]);
+            delete Mixage.blinkTimer[group][control];
+            midi.sendShortMsg(0x90, control, OFF);
+        }
+    } else {
+        if (Object.prototype.hasOwnProperty.call(Mixage.blinkTimer[group], control)) {
+            engine.stopTimer(Mixage.blinkTimer[group][control][0]);
+            midi.sendShortMsg(0x90, control, OFF);
+        }
+
+        Mixage.blinkTimer[group][control] = [];
+        Mixage.blinkTimer[group][control][1] = false;
+        Mixage.blinkTimer[group][control][0] = engine.beginTimer(time, function() {
+            midi.sendShortMsg(0x90, control, Mixage.blinkTimer[group][control][1] ? ON : OFF);
+            Mixage.blinkTimer[group][control][1] = !Mixage.blinkTimer[group][control][1];
+        });
     }
 };
 
@@ -424,6 +562,8 @@ Mixage.handleShift = function(_channel, _control, value, _status, group) {
         var unitNr = script.deckFromGroup(group);
         engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_"+group+"]", "super1");
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+unitNr+"]", "super1");
+    } else {
+        Mixage.stopLoopAdjust(group);
     }
 };
 
@@ -431,6 +571,7 @@ Mixage.handleShift = function(_channel, _control, value, _status, group) {
 Mixage.scratchToggle = function(_channel, _control, value, _status, group) {
     // check for pressed->release or released->press
     if (value === DOWN) {
+        Mixage.stopLoopAdjust(group);
         Mixage.scratchToggleState[group] = !Mixage.scratchToggleState[group];
         Mixage.toggleLED(Mixage.scratchToggleState[group], group, "scratch_active");
         if (Mixage.scrollToggleState[group]) {
@@ -444,6 +585,7 @@ Mixage.scratchToggle = function(_channel, _control, value, _status, group) {
 Mixage.scrollToggle = function(_channel, _control, value, _status, group) {
     // check for pressed->release or released->press
     if (value === DOWN) {
+        Mixage.stopLoopAdjust(group);
         Mixage.scrollToggleState[group] = !Mixage.scrollToggleState[group];
         Mixage.toggleLED(Mixage.scrollToggleState[group], group, "scroll_active");
         if (Mixage.scratchToggleState[group]) {
@@ -475,10 +617,20 @@ Mixage.wheelTouch = function(_channel, _control, value, _status, group) {
 Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
     // calculate deck number from MIDI control. 0x24 controls deck 1, 0x25 deck 2
     var deckNr = script.deckFromGroup(group);
+    var newValue = value - 64;
     // only enable wheel if functionality has been enabled
-    if (Mixage.scratchByWheelTouch || Mixage.scratchToggleState[group] || Mixage.scrollToggleState[group]) {
+    if (Mixage.adjustLoopIn[group]) {
+        var newStartPosition = engine.getValue(group, "loop_start_position") + (newValue * 50);
+        if (newStartPosition < engine.getValue(group, "loop_end_position")) {
+            engine.setValue(group, "loop_start_position", newStartPosition);
+        }
+    } else if (Mixage.adjustLoopOut[group]) {
+        var newEndPosition = engine.getValue(group, "loop_end_position") + (newValue * 50);
+        if (newEndPosition > engine.getValue(group, "loop_start_position")) {
+            engine.setValue(group, "loop_end_position", newEndPosition);
+        }
+    } else if (Mixage.scratchByWheelTouch || Mixage.scratchToggleState[group] || Mixage.scrollToggleState[group]) {
         // control centers on 0x40 (64), calculate difference to that value
-        var newValue = value - 64;
         if (Mixage.scrollToggleState[group]) { // scroll deck
             var currentPosition = engine.getValue(group, "playposition");
             var speedFactor = 0.00005;
@@ -492,14 +644,12 @@ Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
 };
 
 Mixage.handleBeatMove = function(_channel, _control, value, _status, group) {
-    // control centers on 0x40 (64), calculate difference to that
-    var diff = (value - 64);
-    var position = diff > 0 ? "beatjump_forward" : "beatjump_backward";
-    engine.setValue(group, position, true);
+    var beatjumpSize = (value - 64) * engine.getValue(group, "beatjump_size");
+    engine.setValue(group, "beatjump", beatjumpSize);
 };
 
 Mixage.handleBeatMovePressed = function(_channel, _control, value, _status, group) {
-    Mixage.isBeatMovePressed[group] = value === DOWN ? true : false;
+    Mixage.isBeatMovePressed[group] = value === DOWN;
 };
 
 Mixage.handleLoopLength = function(_channel, _control, value, _status, group) {
@@ -512,7 +662,6 @@ Mixage.handleLoopLength = function(_channel, _control, value, _status, group) {
     } else {
         var loopScale = diff > 0 ? "loop_double" : "loop_halve";
         engine.setValue(group, loopScale, true);
-        print(engine.getValue(group, "beatloop_size"));
     }
 };
 
