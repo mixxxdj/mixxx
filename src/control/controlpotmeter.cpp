@@ -67,6 +67,8 @@ void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
 
 PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_control(key, this),
+          // When adding an additional control here, do not forget to also add
+          // it to the `PotmeterControls::addAlias()` method, too.
           m_controlUp(configKeyFromBaseKey(key, QStringLiteral("_up"))),
           m_controlDown(configKeyFromBaseKey(key, QStringLiteral("_down"))),
           m_controlUpSmall(configKeyFromBaseKey(key, QStringLiteral("_up_small"))),
