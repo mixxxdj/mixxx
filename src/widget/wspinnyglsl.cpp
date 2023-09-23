@@ -90,6 +90,9 @@ void WSpinnyGLSL::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     m_textureShader.bind();
 
     int matrixLocation = m_textureShader.matrixLocation();
@@ -152,6 +155,8 @@ void WSpinnyGLSL::paintGL() {
 }
 
 void WSpinnyGLSL::initializeGL() {
+    initializeOpenGLFunctions();
+
     updateTextures();
 
     m_pQTexture.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
@@ -227,9 +232,9 @@ void WSpinnyGLSL::drawVinylQuality() {
 
     m_vinylQualityShader.setUniformValue(samplerLocation, 0);
 
-    m_textureShader.setAttributeArray(
+    m_vinylQualityShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_textureShader.setAttributeArray(
+    m_vinylQualityShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
     m_pQTexture->bind();
