@@ -637,7 +637,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     if (crateDir.cd(kCrateDirectory)) {
         QStringList filters;
         filters << kCrateFilter;
-        foreach (const QString& entry, crateDir.entryList(filters)) {
+        const auto entryList = crateDir.entryList(filters);
+        for (const QString& entry : entryList) {
             QString crateFilePath = crateDir.filePath(entry);
             QString crateName = parseCrate(
                     database,
@@ -716,7 +717,7 @@ QList<TreeItem*> findSeratoDatabases() {
 #endif
 
     QList<TreeItem*> foundDatabases;
-    foreach (QFileInfo databaseLocation, databaseLocations) {
+    for (const QFileInfo& databaseLocation : std::as_const(databaseLocations)) {
         QDir databaseDir = QDir(databaseLocation.filePath());
         if (!databaseDir.cd(kDatabaseDirectory)) {
             continue;
