@@ -60,7 +60,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     QRect layoutContentsMargins() const;
     void setLayoutContentsMargins(QRect rectMargins);
     Qt::Alignment layoutAlignment() const;
-    void setLayoutAlignment(int alignment);
+    void setLayoutAlignment(Qt::Alignment alignment);
     int getHighlight() const;
     void setHighlight(int highlight);
 
