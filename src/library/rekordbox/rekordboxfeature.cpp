@@ -737,7 +737,7 @@ void buildPlaylistTree(
                 " (playlist_id, track_id, position) "
                 "VALUES (:playlist_id, :track_id, :position)");
 
-        if (playlistTrackMap.count(childID)) {
+        if (playlistTrackMap.contains(childID)) {
             // Add playlist tracks for children
             for (uint32_t trackIndex = 1; trackIndex <=
                     static_cast<uint32_t>(playlistTrackMap[childID].size());

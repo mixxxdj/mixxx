@@ -108,7 +108,7 @@ bool PlaylistFeature::dropAcceptChild(
     // tracks already in the DB
     QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
                                       ->resolveTrackIdsFromUrls(urls, !pSource);
-    if (!trackIds.size()) {
+    if (trackIds.isEmpty()) {
         return false;
     }
 

@@ -347,7 +347,7 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     // the renderer state dirty in order trigger the render process. This is only
     // required for the background renderer since that's the only one that'll
     // be processed if passtrhough is active.
-    if (m_rendererStack.size()) {
+    if (!m_rendererStack.isEmpty()) {
         m_rendererStack[0]->setDirty(true);
     }
 }

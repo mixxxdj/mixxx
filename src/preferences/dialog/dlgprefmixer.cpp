@@ -330,7 +330,7 @@ void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
             do_hide ? QString("yes") : QString("no"));
-    if (m_deckEqEffectSelectors.size()) {
+    if (!m_deckEqEffectSelectors.isEmpty()) {
         int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
         for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
             if (do_hide) {
