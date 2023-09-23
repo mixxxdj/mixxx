@@ -67,7 +67,6 @@ bool MultiLineEditor::eventFilter(QObject* obj, QEvent* event) {
         if ((ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter) &&
                 ke->modifiers().testFlag(Qt::NoModifier)) {
             emit editingFinished();
-            return false; // clazy:exclude=base-class-event
         }
     }
     return QPlainTextEdit::eventFilter(obj, event);
