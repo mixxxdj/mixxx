@@ -49,7 +49,7 @@ Description:
                   <WidgetGroup>
                     <Size>1me,5f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_previewdecks</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

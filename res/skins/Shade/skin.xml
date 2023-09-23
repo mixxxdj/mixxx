@@ -69,7 +69,7 @@
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
       <attribute persist="false" config_key="[Skin],show_effectrack">0</attribute>
       <attribute persist="false" config_key="[Skin],show_microphones">0</attribute>
-      <attribute persist="true" config_key="[Skin],show_previewdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_preview_decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_library_coverart">0</attribute>
       <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>

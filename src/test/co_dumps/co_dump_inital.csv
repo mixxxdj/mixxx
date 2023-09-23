@@ -2095,7 +2095,7 @@
 [Channel3],hotcue_1_goto,0
 [Channel1],beatjump_0.03125_backward,0
 [Sampler4],loop_move_2_forward,0
-[Skin],show_previewdecks,0
+[Skin],show_preview_decks,0
 [EffectRack1_EffectUnit1_Effect2],parameter8_set_minus_one,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter14_toggle,0
 [Channel3],volume_set_default,0
