@@ -645,10 +645,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                     crateFilePath,
                     trackIdMap);
             if (!crateName.isEmpty()) {
-                QList<QVariant> data;
-                data << QVariant(crateFilePath)
-                     << QVariant(true);
-                TreeItem* crateItem = databaseItem->appendChild(crateName, data);
+                TreeItem* crateItem = databaseItem->appendChild(crateName,
+                        QList<QVariant>{
+                                QVariant(crateFilePath), QVariant(true)});
                 crateItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
             }
         }
@@ -732,14 +731,10 @@ QList<TreeItem*> findSeratoDatabases() {
             displayPath.chop(1);
         }
 
-
-        QList<QVariant> data;
-        data << QVariant(databaseDir.filePath(kDatabaseFilename))
-             << QVariant(false);
-
-        TreeItem* foundDatabase = new TreeItem(
-                std::move(displayPath),
-                QVariant(data));
+        TreeItem* foundDatabase = new TreeItem(std::move(displayPath),
+                QVariant(QList<QVariant>{
+                        QVariant(databaseDir.filePath(kDatabaseFilename)),
+                        QVariant(false)}));
 
         foundDatabases << foundDatabase;
     }

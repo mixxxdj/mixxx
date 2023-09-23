@@ -222,12 +222,9 @@ QList<TreeItem*> findRekordboxDevices() {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            QList<QString> data;
-            data << device.filePath();
-            data << IS_RECORDBOX_DEVICE;
             auto* pFoundDevice = new TreeItem(
                     device.fileName(),
-                    QVariant(data));
+                    QVariant(QList<QString>{device.filePath(), IS_RECORDBOX_DEVICE}));
             foundDevices << pFoundDevice;
         }
     }
@@ -694,12 +691,8 @@ void buildPlaylistTree(
 
         QString currentPath = playlistPath + kPLaylistPathDelimiter + playlistItemName;
 
-        QList<QString> data;
-
-        data << currentPath;
-        data << IS_NOT_RECORDBOX_DEVICE;
-
-        TreeItem* child = parent->appendChild(playlistItemName, QVariant(data));
+        TreeItem* child = parent->appendChild(playlistItemName,
+                QVariant(QList<QString>{currentPath, IS_NOT_RECORDBOX_DEVICE}));
 
         // Create a playlist for this child
         QSqlQuery queryInsertIntoPlaylist(database);
