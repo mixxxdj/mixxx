@@ -80,9 +80,9 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
     engine.connectControl("[Channel2]","VuMeter","StantonSCS1m.Channel2Vu");
 
         // Clipping LED
-    engine.connectControl("[Master]","PeakIndicator","StantonSCS1m.MasterClip");
-    engine.connectControl("[Channel1]","PeakIndicator","StantonSCS1m.Channel1Clip");
-    engine.connectControl("[Channel2]","PeakIndicator","StantonSCS1m.Channel2Clip");
+    engine.connectControl("[Master]","peak_indicator","StantonSCS1m.MasterClip");
+    engine.connectControl("[Channel1]","peak_indicator","StantonSCS1m.Channel1Clip");
+    engine.connectControl("[Channel2]","peak_indicator","StantonSCS1m.Channel2Clip");
 
         // Pitch displays
     engine.connectControl("[Channel1]","rate","StantonSCS1m.pitchDisplay1");

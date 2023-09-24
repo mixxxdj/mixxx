@@ -1393,7 +1393,7 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         || engine.getValue('[Channel3]', 'pfl')
         || engine.getValue('[Channel4]', 'pfl'))
     {
-        if (engine.getValue(group, "PeakIndicator")) {
+        if (engine.getValue(group, "peak_indicator")) {
             level = 81;
         }
 
@@ -1411,13 +1411,13 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         }
     }
     else if (group == '[Master]' && control == 'VuMeterL') {
-        if (engine.getValue(group, "PeakIndicatorL")) {
+        if (engine.getValue(group, "peak_indicator_left")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
     else if (group == '[Master]' && control == 'VuMeterR') {
-        if (engine.getValue(group, "PeakIndicatorR")) {
+        if (engine.getValue(group, "peak_indicator_right")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x45, level);

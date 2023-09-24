@@ -146,7 +146,7 @@ DJC4.init = function() {
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.
-                if (engine.getValue(group, "PeakIndicator") === 1) {
+                if (engine.getValue(group, "peak_indicator") === 1) {
                     value = 0x60;
                 } else {
                     value = Math.round(value * 0x54);
@@ -162,7 +162,7 @@ DJC4.init = function() {
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.
-                if (engine.getValue(group, "PeakIndicator") === 1) {
+                if (engine.getValue(group, "peak_indicator") === 1) {
                     value = 0x60;
                 } else {
                     value = Math.round(value * 0x54);
@@ -213,7 +213,7 @@ DJC4.Deck = function(deckNumber) {
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.
-                if (engine.getValue(group, "PeakIndicator") === 1) {
+                if (engine.getValue(group, "peak_indicator") === 1) {
                     value = 0x60;
                 } else {
                     value = Math.round(value * 0x54);

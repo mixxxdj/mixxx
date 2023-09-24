@@ -256,7 +256,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         engine.makeConnection(this.channel, "pregain", this.pregainIndicator.bind(this));
         engine.makeConnection(this.channel, "pfl", this.pflIndicator.bind(this));
         engine.makeUnbufferedConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
-        engine.makeConnection(this.channel, "PeakIndicator", this.peakIndicator.bind(this));
+        engine.makeConnection(this.channel, "peak_indicator", this.peakIndicator.bind(this));
     }
     handleSpin(velo) {
         engine.setValue(this.channel, "pregain", engine.getValue(this.channel, "pregain") + velo / 50.0);
@@ -278,7 +278,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         }
 
         let color = MiniMixxx.vuMeterColor(value);
-        color = engine.getValue(this.channel, "PeakIndicator") > 0 ? MiniMixxx.PeakColor : color;
+        color = engine.getValue(this.channel, "peak_indicator") > 0 ? MiniMixxx.PeakColor : color;
         const midiValue = value * 127.0;
         midi.sendShortMsg(0xBF, this.idx, color);
         midi.sendShortMsg(0xB0, this.idx, midiValue);

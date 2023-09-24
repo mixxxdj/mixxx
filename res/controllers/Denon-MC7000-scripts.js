@@ -1027,8 +1027,8 @@ MC7000.sortLibrary = function(channel, control, value) {
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
     const deckIndex = script.deckFromGroup(group) - 1;
-    // sends either PeakIndicator or scales value (0..1) to (0..117) while truncating to each LED
-    const vuLevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.floor(Math.pow(value, 2.5) * 9) * 13;
+    // sends either peak_indicator or scales value (0..1) to (0..117) while truncating to each LED
+    const vuLevelOutValue = engine.getValue(group, "peak_indicator") ? MC7000.VuMeterLEDPeakValue : Math.floor(Math.pow(value, 2.5) * 9) * 13;
     // only send Midi signal when LED value has changed
     if (MC7000.prevVuLevel[deckIndex] !== vuLevelOutValue) {
         midi.sendShortMsg(0xB0 + deckIndex, 0x1F, vuLevelOutValue);

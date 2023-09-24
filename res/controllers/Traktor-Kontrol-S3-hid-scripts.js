@@ -509,13 +509,13 @@ TraktorS3.Controller = class {
             outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets.VuMeterR + i, "B");
         }
 
-        outputB.addOutput("[Master]", "PeakIndicatorL", 0x45, "B");
-        outputB.addOutput("[Master]", "PeakIndicatorR", 0x4E, "B");
+        outputB.addOutput("[Main]", "peak_indicator_left", 0x45, "B");
+        outputB.addOutput("[Main]", "peak_indicator_right", 0x4E, "B");
 
-        outputB.addOutput("[Channel3]", "PeakIndicator", 0x0F, "B");
-        outputB.addOutput("[Channel1]", "PeakIndicator", 0x1E, "B");
-        outputB.addOutput("[Channel2]", "PeakIndicator", 0x2D, "B");
-        outputB.addOutput("[Channel4]", "PeakIndicator", 0x3C, "B");
+        outputB.addOutput("[Channel3]", "peak_indicator", 0x0F, "B");
+        outputB.addOutput("[Channel1]", "peak_indicator", 0x1E, "B");
+        outputB.addOutput("[Channel2]", "peak_indicator", 0x2D, "B");
+        outputB.addOutput("[Channel4]", "peak_indicator", 0x3C, "B");
 
         this.hid.registerOutputPacket(outputB);
 
@@ -534,8 +534,8 @@ TraktorS3.Controller = class {
         // Master VuMeters
         this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
-        this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.Controller.prototype.peakOutput.bind(this));
-        this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.Controller.prototype.peakOutput.bind(this));
+        this.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS3.Controller.prototype.peakOutput.bind(this));
+        this.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS3.Controller.prototype.peakOutput.bind(this));
         this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
@@ -1692,7 +1692,7 @@ TraktorS3.Channel = class {
 
     linkOutputs() {
         this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
-        this.clipConnection = engine.makeConnection(this.group, "PeakIndicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
+        this.clipConnection = engine.makeConnection(this.group, "peak_indicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
         this.controller.linkChannelOutput(this.group, "pfl", TraktorS3.Controller.prototype.pflOutput.bind(this.controller));
         for (let j = 1; j <= 8; j++) {
             this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_enabled",

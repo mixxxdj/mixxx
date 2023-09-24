@@ -293,8 +293,8 @@ TraktorS2MK2.registerOutputPackets = function() {
         }
     }
 
-    OutputTop.addOutput("[Channel1]", "PeakIndicator", 0x05, "B");
-    OutputTop.addOutput("[Channel2]", "PeakIndicator", 0x0A, "B");
+    OutputTop.addOutput("[Channel1]", "peak_indicator", 0x05, "B");
+    OutputTop.addOutput("[Channel2]", "peak_indicator", 0x0A, "B");
 
     OutputTop.addOutput("[Channel1]", "!flux_button", 0x20, "B");
     OutputTop.addOutput("[Channel1]", "loop_in", 0x21, "B");
@@ -389,8 +389,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.linkChannelOutput("[Channel2]", "pfl", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel1]", "track_loaded", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel2]", "track_loaded", TraktorS2MK2.outputChannelCallback);
-    TraktorS2MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
-    TraktorS2MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorS2MK2.outputChannelCallback);

@@ -916,7 +916,7 @@ PioneerDDJSB2.hotCueLeds = function(value, group, control) {
 PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
     // The red LED lights up with MIDI values 119 (0x77) and above. That should only light up when
     // the track is clipping.
-    if (engine.getValue(group, "PeakIndicator") === 1) {
+    if (engine.getValue(group, "peak_indicator") === 1) {
         value = 119;
     } else {
         // 117 was determined experimentally so the yellow LED only lights

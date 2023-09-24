@@ -673,7 +673,7 @@ Hercules4Mx.updateVumeterEvent = function(vumeter, value) {
     var newval = parseInt(value * 0x80);
     if (vumeter.lastvalue !== newval) {
         vumeter.lastvalue = newval;
-        if (engine.getValue(vumeter.source, "PeakIndicator") > 0) {
+        if (engine.getValue(vumeter.source, "peak_indicator") > 0) {
             // IF it clips, we put the top led on and the rest off, which gives a "flash" effect.
             midi.sendShortMsg(vumeter.midichan, vumeter.clip, 0x7F);
             newval = 0;

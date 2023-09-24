@@ -2656,7 +2656,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB0</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2712,7 +2712,7 @@
             </output>
             <output>
                 <group>[Channel3]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB1</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2768,7 +2768,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB2</status>
                 <midino>0x59</midino>
                 <on>0x01</on>
@@ -2776,7 +2776,7 @@
             </output>
             <output>
                 <group>[Channel4]</group>
-                <key>PeakIndicator</key>
+                <key>peak_indicator</key>
                 <status>0xB3</status>
                 <midino>0x59</midino>
                 <on>0x01</on>

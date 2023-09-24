@@ -87,7 +87,7 @@ class DeckClass {
         for (let i = 0; i < 4; i++) {
             this.registerLed("!VuMeter" + i, {hidReport: config.vuMeter.hidReport, offset: config.vuMeter.offset + i});
         }
-        this.registerLed("PeakIndicator", config.peak);
+        this.registerLed("peak_indicator", config.peak);
         this.registerLed("!reset_button", config.reset);
         this.registerLed("loop_in", config.loopIn);
         this.registerLed("loop_out",  config.loopOut);
@@ -109,7 +109,7 @@ class DeckClass {
         this.linkLed("loop_out", this.outputCallbackLoop);
         this.linkLed("pfl", this.outputCallback);
         this.linkLed("track_loaded", this.outputCallback);
-        this.linkLed("PeakIndicator", this.outputCallback);
+        this.linkLed("peak_indicator", this.outputCallback);
         engine.makeConnection(this.channel, "VuMeter", this.onVuMeterChanged.bind(this)).trigger();
         engine.makeConnection(this.channel, "loop_enabled", this.onLoopEnabledChanged.bind(this));
     }

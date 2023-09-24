@@ -2912,7 +2912,7 @@ class S4MK3 {
                         deckMeters[columnBaseIndex + segmentsToLightFully + 1] = 125;
                     }
                 }
-                if (engine.getValue(deckGroup, "PeakIndicator")) {
+                if (engine.getValue(deckGroup, "peak_indicator")) {
                     deckMeters[columnBaseIndex + deckSegments + 1] = 127;
                 }
             }

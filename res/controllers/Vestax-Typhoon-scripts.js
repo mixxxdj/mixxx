@@ -239,7 +239,7 @@ VestaxTyphoon.ch1_vu = function(value){
 		midi.sendShortMsg(0x90,0x2c,0x00)
 	}
 
-	if(engine.getValue("[Channel1]","PeakIndicator")==true){
+	if(engine.getValue("[Channel1]","peak_indicator")==true){
 		midi.sendShortMsg(0x90,0x2d,0x7f)
 	} else {
 		midi.sendShortMsg(0x90,0x2d,0x00)
@@ -271,7 +271,7 @@ VestaxTyphoon.ch2_vu = function(value){
 		midi.sendShortMsg(0x91,0x2c,0x00)
 	}
 
-	if(engine.getValue("[Channel2]","PeakIndicator")==true){
+	if(engine.getValue("[Channel2]","peak_indicator")==true){
 		midi.sendShortMsg(0x91,0x2d,0x7f)
 	} else {
 		midi.sendShortMsg(0x91,0x2d,0x00)
