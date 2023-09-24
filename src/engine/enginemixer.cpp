@@ -30,13 +30,13 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
 const QString kMainGroup = QStringLiteral("[Main]");
 } // namespace
 
 EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
-        const QString& group,
         EffectsManager* pEffectsManager,
         ChannelHandleFactoryPointer pChannelHandleFactory,
         bool bEnableSidechain)
@@ -49,7 +49,7 @@ EngineMixer::EngineMixer(
           m_balleftOld(1.0),
           m_balrightOld(1.0),
           m_numMicsConfigured(0),
-          m_mainHandle(registerChannelGroup(group)),
+          m_mainHandle(registerChannelGroup(kLegacyGroup)),
           m_headphoneHandle(registerChannelGroup("[Headphone]")),
           m_mainOutputHandle(registerChannelGroup("[MasterOutput]")),
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
@@ -106,47 +106,64 @@ EngineMixer::EngineMixer(
     ControlObject::set(ConfigKey("[InternalClock]", "bpm"), default_bpm);
 
     // Crossfader
-    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
+    m_pCrossfader = new ControlPotmeter(
+            ConfigKey(kMixerGroup, QStringLiteral("crossfader")), -1., 1.);
+    m_pCrossfader->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("crossfader")));
 
     // Balance
-    m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
+    m_pBalance = new ControlPotmeter(ConfigKey(kMixerGroup, QStringLiteral("balance")), -1., 1.);
+    m_pBalance->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("balance")));
 
     // Main gain
-    m_pMainGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
+    m_pMainGain = new ControlAudioTaperPot(
+            ConfigKey(kMixerGroup, QStringLiteral("main_gain")), -14, 14, 0.5);
+    m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("gain")));
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
     m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("volume")));
 
     // Booth gain
-    m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
+    m_pBoothGain = new ControlAudioTaperPot(
+            ConfigKey(kMixerGroup, QStringLiteral("booth_gain")), -14, 14, 0.5);
+    m_pBoothGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("booth_gain")));
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(kMainGroup, kLegacyGroup);
 
-    m_pMainDelay = new EngineDelay(ConfigKey(group, "delay"));
-    m_pHeadDelay = new EngineDelay(ConfigKey(group, "headDelay"));
-    m_pBoothDelay = new EngineDelay(ConfigKey(group, "boothDelay"));
-    m_pLatencyCompensationDelay =
-            new EngineDelay(ConfigKey(group, "microphoneLatencyCompensation"));
+    m_pMainDelay = new EngineDelay(ConfigKey(kMixerGroup, QStringLiteral("main_delay")));
+    m_pHeadDelay = new EngineDelay(ConfigKey(kMixerGroup, QStringLiteral("headphone_delay")));
+    m_pBoothDelay = new EngineDelay(ConfigKey(kMixerGroup, QStringLiteral("booth_delay")));
+    m_pMicrophoneDelay = new EngineDelay(ConfigKey(kMixerGroup, QStringLiteral("microphone_delay")));
 
     // Headphone volume
-    m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
-
+    m_pHeadGain = new ControlAudioTaperPot(
+            ConfigKey(kMixerGroup, QStringLiteral("headphone_gain")),
+            -14,
+            14,
+            0.5);
+    m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headGain")));
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See issue #7413.
     m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headVolume")));
 
     // Headphone mix (left/right)
-    m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
+    m_pHeadMix = new ControlPotmeter(
+            ConfigKey(kMixerGroup, QStringLiteral("headphone_mix")), -1., 1.);
+    m_pHeadMix->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headMix")));
     m_pHeadMix->setDefaultValue(-1.);
     m_pHeadMix->set(-1.);
 
     // Main / Headphone split-out mode (for devices with only one output).
-    m_pHeadSplitEnabled = new ControlPushButton(ConfigKey(group, "headSplit"));
+    m_pHeadSplitEnabled = new ControlPushButton(
+            ConfigKey(kMixerGroup, QStringLiteral("headphone_split")));
+    m_pHeadSplitEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headSplit")));
     m_pHeadSplitEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pHeadSplitEnabled->set(0.0);
 
-    m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, group);
+    m_pTalkoverDucking = new EngineTalkoverDucking(pConfig, kMixerGroup);
+    m_pTalkoverDucking->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("duckStrength")),
+            ConfigKey(kLegacyGroup, QStringLiteral("talkoverDucking")));
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -194,19 +211,27 @@ EngineMixer::EngineMixer(
 
     // TODO: Make this read only and make EngineMixer decide whether
     // processing the main mix is necessary.
-    m_pMainEnabled = new ControlObject(ConfigKey(group, "enabled"),
+    m_pMainEnabled = new ControlObject(ConfigKey(kMixerGroup, QStringLiteral("main_enabled")),
             true,
             false,
             true); // persist = true
-    m_pBoothEnabled = new ControlObject(ConfigKey(group, "booth_enabled"));
+    m_pMainEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("enabled")));
+    m_pBoothEnabled = new ControlObject(ConfigKey(kMixerGroup, QStringLiteral("booth_enabled")));
+    m_pBoothEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("booth_enabled")));
     m_pBoothEnabled->setReadOnly();
-    m_pMainMonoMixdown = new ControlObject(ConfigKey(group, "mono_mixdown"),
+    m_pMainMonoMixdown = new ControlObject(ConfigKey(kMixerGroup, "mono_mixdown"),
             true,
             false,
             true); // persist = true
-    m_pMicMonitorMode = new ControlObject(ConfigKey(group, "talkover_mix"),
-            true, false, true);  // persist = true
-    m_pHeadphoneEnabled = new ControlObject(ConfigKey(group, "headEnabled"));
+    m_pMainMonoMixdown->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("mono_mixdown")));
+    m_pMicMonitorMode = new ControlObject(
+            ConfigKey(kMixerGroup, QStringLiteral("talkover_mix")),
+            true,
+            false,
+            true); // persist = true
+    m_pMicMonitorMode->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("talkover_mix")));
+    m_pHeadphoneEnabled = new ControlObject(ConfigKey(kMixerGroup, "headphones_enabled"));
+    m_pHeadphoneEnabled->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headEnabled")));
     m_pHeadphoneEnabled->setReadOnly();
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
@@ -228,7 +253,7 @@ EngineMixer::~EngineMixer() {
     delete m_pMainDelay;
     delete m_pHeadDelay;
     delete m_pBoothDelay;
-    delete m_pLatencyCompensationDelay;
+    delete m_pMicrophoneDelay;
 
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
@@ -745,7 +770,7 @@ void EngineMixer::process(const int iBufferSize) {
 
                     // Copy the main mix to a separate buffer before delaying it
                     // to avoid delaying the main output.
-                    m_pLatencyCompensationDelay->process(m_pSidechainMix, iBufferSize);
+                    m_pMicrophoneDelay->process(m_pSidechainMix, iBufferSize);
                     SampleUtil::add(m_pSidechainMix, m_pTalkover, iBufferSize);
                 }
             }
