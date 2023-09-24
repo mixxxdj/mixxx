@@ -19,23 +19,19 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 } // namespace
 
 EngineVuMeter::EngineVuMeter(const QString& group)
-        : m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
-    // The VUmeter widget is controlled via a controlpotmeter, which means
-    // that it should react on the setValue(int) signal.
-    m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
-    // left channel VU meter
-    m_ctrlVuMeterL = new ControlPotmeter(ConfigKey(group, "VuMeterL"), 0., 1.);
-    // right channel VU meter
-    m_ctrlVuMeterR = new ControlPotmeter(ConfigKey(group, "VuMeterR"), 0., 1.);
-
-    // Used controlpotmeter as the example used it :/ perhaps someone with more
-    // knowledge could use something more suitable...
-    m_ctrlPeakIndicator = new ControlPotmeter(ConfigKey(group, "PeakIndicator"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorL = new ControlPotmeter(ConfigKey(group, "PeakIndicatorL"),
-                                              0., 1.);
-    m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
-                                              0., 1.);
+        : m_ctrlVuMeter(new ControlObject(
+                  ConfigKey(group, QStringLiteral("VuMeter")))),
+          m_ctrlVuMeterL(new ControlObject(
+                  ConfigKey(group, QStringLiteral("VuMeterL")))),
+          m_ctrlVuMeterR(new ControlObject(
+                  ConfigKey(group, QStringLiteral("VuMeterR")))),
+          m_ctrlPeakIndicator(new ControlObject(
+                  ConfigKey(group, QStringLiteral("PeakIndicator")))),
+          m_ctrlPeakIndicatorL(new ControlObject(
+                  ConfigKey(group, QStringLiteral("PeakIndicatorL")))),
+          m_ctrlPeakIndicatorR(new ControlObject(
+                  ConfigKey(group, QStringLiteral("PeakIndicatorR")))),
+          m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
     // Initialize the calculation:
     reset();
 }
