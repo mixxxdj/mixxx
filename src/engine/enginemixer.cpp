@@ -113,13 +113,12 @@ EngineMixer::EngineMixer(
 
     // Main gain
     m_pMainGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
-
-    // Booth gain
-    m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
-
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
     m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
+
+    // Booth gain
+    m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
 
     // VU meter:
     m_pVumeter = new EngineVuMeter(kMainGroup, kLegacyGroup);
