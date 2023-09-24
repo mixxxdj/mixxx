@@ -1,8 +1,13 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+
 name: Build
 
 on:
   push:
   pull_request:
+
+permissions:
+  contents: read #  to fetch code (actions/checkout)
 
 jobs:
   build:
@@ -10,10 +15,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 20.04 (gcc)
-            os: ubuntu-20.04
+          - name: Ubuntu 22.04
+            os: ubuntu-22.04
             cmake_args: >-
-              -DWARNINGS_FATAL=ON
+              -DQT6=ON
               -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON
@@ -21,42 +26,87 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
               -DINSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
-            cmake_build_type: RelWithDebInfo
-            ctest_args:
+            ctest_args: []
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
+            cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
+            artifacts_name: Ubuntu 22.04 DEB
+            artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-jammy
+            qt_qpa_platform: offscreen
+          - name: Ubuntu 22.04 (QML)
+            os: ubuntu-22.04
+            cmake_args: >-
+              -DQT6=ON
+              -DQML=ON
+              -DBULK=ON
+              -DFFMPEG=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+              -DINSTALL_USER_UDEV_RULES=OFF
+            ctest_args: []
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 20.04 DEB
+            artifacts_name: Ubuntu 22.04 Qt6 DEB
             artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-jammy
             qt_qpa_platform: offscreen
-          - name: macOS 10.15
-            os: macos-10.15
+          - name: macOS 11 x64
+            os: macos-11
             cmake_args: >-
               -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
-              -DMODPLUG=OFF
-              -DWAVPACK=OFF
-            cmake_generator: Unix Makefiles
-            cmake_build_type: RelWithDebInfo
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1015
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
             buildenv_basepath: /Users/runner/buildenv
-            buildenv_script: tools/macos_buildenv.sh
-            artifacts_name: macOS DMG
+            buildenv_script: tools/macos_release_buildenv.sh
+            artifacts_name: macOS Intel DMG
             artifacts_path: build/*.dmg
             artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
+          - name: macOS 11 arm64
+            os: macos-11
+            cmake_args: >-
+              -DBULK=ON
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+              -DMODPLUG=ON
+              -DQT6=ON
+              -DWAVPACK=ON
+              -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015
+            # TODO: Fix this broken test on macOS
+            crosscompile: true
+            cpack_generator: DragNDrop
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            buildenv_basepath: /Users/runner/buildenv
+            buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
+            artifacts_name: macOS ARM DMG
+            artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosarm
+            qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
-            # TODO: Reenable FFmpeg after licensing issues have been clarified
+            # TODO: Re-enable FFmpeg after licensing issues have been clarified
             # Attention: If you change the cmake_args for the Windows CI build,
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
@@ -68,25 +118,24 @@ jobs:
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
+              -DQT6=ON
               -DWAVPACK=ON
             cc: cl
             cxx: cl
-            cmake_generator: Ninja
-            cmake_build_type: RelWithDebInfo
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
             compiler_cache: sccache
             compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_buildenv.bat
+            buildenv_script: tools/windows_release_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
-            artifacts_slug: windows-windows64
+            artifacts_slug: windows-win64
             qt_qpa_platform: windows
 
     env:
-      SCCACHE_COMMIT: 3f318a8675e4c3de4f5e8ab2d086189f2ae5f5cf
+      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
       MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
@@ -94,300 +143,399 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
     outputs:
-      artifact-macos-macosintel: ${{ steps.generate_artifact_metadata.outputs.artifact-macos-macosintel }}
-      artifact-windows-windows64: ${{ steps.generate_artifact_metadata.outputs.artifact-windows-windows64 }}
+      artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
+      artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
+      artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
+      - name: "[Windows] Set up Cargo cache"
+        if: runner.os == 'Windows'
+        uses: actions/cache@v3
+        id: sccache-build-cache
+        with:
+          path: C:\Users\runneradmin\.cargo
+          key: sccache-${{ env.SCCACHE_VERSION }}
 
-    # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
-    # https://github.com/mozilla/sccache/issues/950
-    - name: "[Windows] Set up cargo cache"
-      if: runner.os == 'Windows'
-      uses: actions/cache@v2
-      id: sccache-build-cache
-      with:
-        path: C:\Users\runneradmin\.cargo
-        # hash of commit to build
-        key: sccache-${{ env.SCCACHE_COMMIT }}
+      # This needs to be done first because something later messes with $PATH in a way that breaks cargo
+      # by causing it to find link.exe from Git for Windows instead of MSVC.
+      - name: "[Windows] Build and install sccache"
+        shell: bash
+        if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
+        run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
 
-    # This needs to be done first because something later messes with $PATH in a way that breaks cargo
-    # by causing it to find link.exe from Git for Windows instead of MSVC.
-    - name: "[Windows] Build fixed sccache"
-      shell: bash
-      if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
-      run: cargo install --git https://github.com/mozilla/sccache.git --rev "${SCCACHE_COMMIT}"
+      - name: "Check out repository"
+        uses: actions/checkout@v4
+        with:
+          # This is necessary for making `git describe` work.
+          fetch-depth: 0
 
-    - name: "Check out repository"
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: "[Arch Linux] Workaround for the 'unsafe repository' issue caused by CVE-2022-24765"
+        if: matrix.container != null
+        # See https://github.com/actions/checkout/issues/760 for details
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-    - name: "Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.4
-      with:
-        # This should always match the mininum required version in
-        # our CMakeLists.txt
-        cmake-version: '3.16.x'
+      - name: "Ensure that all tags are fetched"
+        # Works around an issue where not the latest tag is not fetched when the
+        # workflow is triggered by a tag push event.
+        # Possibly related: actions/checkout#290
+        run: git fetch origin --force --tags
 
-    - name: "[Windows] Set up MSVC Developer Command Prompt"
-      if: runner.os == 'Windows'
-      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+      - name: "[macOS] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v1.14
+        # Ubuntu 22.04 should use the CMake version from the repos, and Visual
+        # Studio on Windows comes with its own CMake version anyway.
+        if: runner.os == 'macOS'
+        with:
+          # This should always match the minimum required version in
+          # our CMakeLists.txt
+          cmake-version: "3.21.x"
 
-    - name: "[macOS/Windows] Get build environment name"
-      if: runner.os != 'Linux'
-      id: buildenv_name
-      run: ${{ matrix.buildenv_script }} name
+      - name: "[Windows] Set up MSVC Developer Command Prompt"
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
 
-    - name: "[macOS/Windows] Set up build environment cache"
-      if: runner.os != 'Linux'
-      uses: actions/cache@v2
-      with:
-        path: ${{ matrix.buildenv_basepath }}
-        key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
+      - name: "[macOS] install ccache and make"
+        if: runner.os == 'macOS'
+        run: |
+          brew install ccache ninja
 
-    - name: "[macOS] Import Apple code signing identity"
-      id: apple_codesign
-      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: |
-        # Decrypt the certificate
-        openssl enc -aes-256-cbc -d -md sha512 \
-          -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
-          -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
-          -out ~/certificate.p12
+      - name: "[macOS/Windows] Get build environment name"
+        if: runner.os != 'Linux'
+        id: buildenv_name
+        run: ${{ matrix.buildenv_script }} name
 
-        # Create a temporary keychain for the certificate and import it.
-        security create-keychain -p mixxx Mixxx.keychain
-        security unlock-keychain -p mixxx Mixxx.keychain
-        security import ~/certificate.p12 -k Mixxx.keychain \
-          -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
-        security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
-        # Add keychain to search list
-        security list-keychains -s Mixxx.keychain
-        # Prevent keychain access from timing out
-        security set-keychain-settings Mixxx.keychain
-        echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
+      - name: "[macOS/Windows] Set up build environment cache"
+        if: runner.os != 'Linux'
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.buildenv_basepath }}
+          key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
 
-    - name: "[Windows] Set up Windows code signing"
-      env:
-        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
-        WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
-        WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
-        WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
-      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
-      run: |
-        iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
-        appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
+      - name: "[macOS] Import Apple code signing identity"
+        id: apple_codesign
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+        run: |
+          # Decrypt the certificate
+          openssl enc -aes-256-cbc -d -md sha512 \
+            -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
+            -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
+            -out ~/certificate.p12
 
-    - name: "Set up build environment"
-      id: buildenv
-      run: ${{ matrix.buildenv_script }} setup
-      env:
-        BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          # Create a temporary keychain for the certificate and import it.
+          security create-keychain -p mixxx Mixxx.keychain
+          security unlock-keychain -p mixxx Mixxx.keychain
+          security import ~/certificate.p12 -k Mixxx.keychain \
+            -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
+          security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
+          # Add keychain to search list
+          security list-keychains -s Mixxx.keychain
+          # Prevent keychain access from timing out
+          security set-keychain-settings Mixxx.keychain
+          echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-    - name: "[Ubuntu/macOS] Set compiler cache size limit"
-      # Set size to 2 GiB
-      run: ${{ matrix.compiler_cache }}  -M 2097152
-      if: runner.os != 'windows'
+      - name: "[Windows] Set up Windows code signing"
+        env:
+          WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
+          WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
+          WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
+          WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
+        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
+        run: |
+          iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/fc44f5c5f2fb184fe738814f373c16cb69c30929/install.ps1'))
+          appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
+          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
+          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
+          Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
 
-    - name: "Set up compiler cache"
-      uses: actions/cache@v2
-      with:
-        path: ${{ matrix.compiler_cache_path }}
-        key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
-        restore-keys: |
-          ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
-          ${{ matrix.os }}-${{ matrix.compiler_cache }}
+      - name: "Set up build environment"
+        id: buildenv
+        if: matrix.buildenv_script != null
+        run: ${{ matrix.buildenv_script }} setup
+        env:
+          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-    - name: "Create build directory"
-      run: mkdir build
+      - name: "[Ubuntu/macOS] Set compiler cache size limit"
+        # A full build without a cache fills the cache with about 300 MB.
+        # GitHub Actions gives us 5 GB of cache for free.
+        # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
+        # We use a new cache key for every job, so we would run out of
+        # space frequently if the cache was much bigger.
+        run: ${{ matrix.compiler_cache }} -M 524288
+        if: runner.os != 'windows'
 
-    - name: "Configure"
-      run: >-
-        cmake
-        -G "${{ matrix.cmake_generator }}"
-        -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
-        -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
-        -DDEBUG_ASSERTIONS_FATAL=ON
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
-        -DBATTERY=ON
-        -DBROADCAST=ON
-        -DHID=ON
-        -DKEYFINDER=ON
-        -DLILV=ON
-        -DOPUS=ON
-        -DQTKEYCHAIN=ON
-        -DVINYLCONTROL=ON
-        -DCMAKE_VERBOSE_MAKEFILE=OFF
-        -L
-        ..
-      working-directory: build
-      env:
-        CC: ${{ matrix.cc }}
-        CXX: ${{ matrix.cxx }}
+      - name: "Set up compiler cache"
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.compiler_cache_path }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
+          restore-keys: |
+            ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache }}
 
-    - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
-      if: runner.os != 'Windows'
-      uses: ammaraskar/gcc-problem-matcher@master
+      - name: "Create build directory"
+        run: mkdir build
 
-    - name: "[Windows] Set up MSVC problem matcher"
-      if: runner.os == 'Windows'
-      uses: ammaraskar/msvc-problem-matcher@master
+      - name: "Configure"
+        run: >-
+          cmake ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+          -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
+          -DWARNINGS_FATAL=ON
+          -DDEBUG_ASSERTIONS_FATAL=OFF
+          -DBATTERY=ON
+          -DBROADCAST=ON
+          -DDOWNLOAD_MANUAL=ON
+          -DHID=ON
+          -DKEYFINDER=ON
+          -DLILV=ON
+          -DOPUS=ON
+          -DQTKEYCHAIN=ON
+          -DVINYLCONTROL=ON
+          -DCMAKE_VERBOSE_MAKEFILE=OFF
+          -L
+          ..
+        working-directory: build
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
 
-    - name: "Build"
-      run: cmake --build . --config ${{ matrix.cmake_build_type }}
-      working-directory: build
-      env:
-        CC: ${{ matrix.cc }}
-        CXX: ${{ matrix.cxx }}
-        CMAKE_BUILD_PARALLEL_LEVEL: 2
-        # GitHub Actions automatically zstd compresses caches
-        CCACHE_NOCOMPRESS: true
-        SCCACHE_CACHE_SIZE: 2G
+      - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
+        if: runner.os != 'Windows'
+        uses: ammaraskar/gcc-problem-matcher@0.2.0
 
-    - name: "Print compiler cache stats"
-      run: ${{ matrix.compiler_cache }} -s
+      - name: "[Windows] Set up MSVC problem matcher"
+        if: runner.os == 'Windows'
+        uses: ammaraskar/msvc-problem-matcher@0.2.0
 
-    - name: "Test"
-      run: ctest --timeout 45 ${{ matrix.ctest_args }}
-      working-directory: build
-      env:
-        # Render analyzer waveform tests to an offscreen buffer
-        QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
-        GTEST_COLOR: 1
-        # Windows tests fail randomly if run in parallel
-        CTEST_PARALLEL_LEVEL: 1
-        CTEST_OUTPUT_ON_FAILURE: 1
+      - name: "Build"
+        run: cmake --build . --config RelWithDebInfo
+        working-directory: build
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+          CMAKE_BUILD_PARALLEL_LEVEL: 2
+          # GitHub Actions automatically zstd compresses caches
+          CCACHE_NOCOMPRESS: true
+          SCCACHE_CACHE_SIZE: 2G
 
-    - name: Benchmark
-      run: cmake --build . --target mixxx-benchmark --config ${{ matrix.cmake_build_type }}
-      working-directory: build
-      env:
-        # Render analyzer waveform tests to an offscreen buffer
-        QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
+      - name: "Print compiler cache stats"
+        run: ${{ matrix.compiler_cache }} -s
 
-    - name: "Package"
-      run: cpack -G ${{ matrix.cpack_generator }} -V
-      working-directory: build
+      - name: "Test"
+        if: matrix.crosscompile != true
+        run: ctest --timeout 45 ${{ matrix.ctest_args }}
+        working-directory: build
+        env:
+          # Render analyzer waveform tests to an offscreen buffer
+          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
+          GTEST_COLOR: 1
+          # Windows tests fail randomly if run in parallel
+          CTEST_PARALLEL_LEVEL: 1
+          CTEST_OUTPUT_ON_FAILURE: 1
 
-    - name: "[Ubuntu] Import PPA GPG key"
-      if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
-      run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
-      env:
-        RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+      - name: Benchmark
+        if: matrix.crosscompile != true
+        run: cmake --build . --target mixxx-benchmark --config RelWithDebInfo
+        working-directory: build
+        env:
+          # Render analyzer waveform tests to an offscreen buffer
+          QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
-    - name: "Package for PPA"
-      # No need to do the PPA build for both Ubuntu versions
-      if: matrix.os == 'ubuntu-20.04'
-      run: |
-        if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
-          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
-        else
-          # only build the source DEB, do not upload
-          CPACK_ARGS="-D DEB_SOURCEPKG=ON"
-        fi
-        cpack -G External $CPACK_ARGS
-      working-directory: build
+      - name: "Package"
+        if: matrix.cpack_generator != null
+        run: cpack -G ${{ matrix.cpack_generator }} -V
+        working-directory: build
 
-    - name: "[macOS] Sign, Notarize, and Staple Package"
-      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: packaging/macos/sign_notarize_staple.sh build/*.dmg
-      env:
-        APPLE_ID_USERNAME: rryan@mixxx.org
-        APPLE_BUNDLE_ID: org.mixxx.mixxx
-        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
-        ASC_PROVIDER: FLYL4D545V
+      - name: "[Ubuntu] Import PPA GPG key"
+        if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+        run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+        env:
+          RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
-    - name: "[Windows] Sign Package"
-      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
-      working-directory: build
+      - name: "Package for PPA"
+        # No need to do the PPA build for both Ubuntu versions
+        if: matrix.name == 'Ubuntu 22.04 (gcc)'
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"
+          elif [[ "${{ github.ref }}" == "refs/heads/2.4" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+          elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+            CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
+          else
+            # only build the source DEB, do not upload
+            CPACK_ARGS="-D DEB_SOURCEPKG=ON"
+          fi
+          cpack -G External $CPACK_ARGS
+        working-directory: build
 
-    - name: "[Windows] Install rsync and openssh"
-      env:
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-      if: runner.os == 'Windows' && env.SSH_PASSWORD != null
-      run: |
-        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
-        pacman -S --noconfirm coreutils bash rsync openssh
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+      - name: "[macOS] Sign, Notarize, and Staple Package"
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
+        run: packaging/macos/sign_notarize_staple.sh build/*.dmg
+        env:
+          APPLE_ID_USERNAME: rryan@mixxx.org
+          APPLE_BUNDLE_ID: org.mixxx.mixxx
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+          ASC_PROVIDER: FLYL4D545V
 
-    - name: "Generate Artifact Metadata"
-      # Generate metadata for file artifact and write it to the job output
-      # using the artifacts_slug value.  This also sets the DEPLOY_DIR
-      # environment variable that is used in the deploy.sh script in the next
-      # step.
-      id: generate_artifact_metadata
-      if: github.event_name == 'push'
-      run: python3 tools/generate_download_metadata.py artifact ${{ matrix.artifacts_path }} "${{ matrix.artifacts_slug }}"
-      env:
-        DEPLOY_BASEURL: "https://downloads.mixxx.org"
-        DESTDIR: builds/{git_branch}/${{ runner.os }}
+      - name: "[Windows] Sign Package"
+        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
+        run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+        working-directory: build
 
-    - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
-      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
-      env:
-        DESTDIR: public_html/downloads/
-        DEPLOY_ONLY: 0
-        SSH_HOST: downloads-hostgator.mixxx.org
-        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-        SSH_USER: mixxx
-        UPLOAD_ID: ${{ github.run_id }}
+      - name: "Prepare for deployment"
+        # Copy the desired directory structure to the deploy/ directory. This
+        # also generates metadata for file artifact and write it to the job
+        # output using the artifacts_slug value.
+        id: prepare_deploy
+        if: github.event_name == 'push' && matrix.artifacts_path != null
+        shell: bash
+        run: >
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+          then
+            export DEPLOY_PATH='releases/{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          else
+            export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
+          fi;
+          python3 tools/deploy.py prepare-deployment
+          --slug '${{ matrix.artifacts_slug }}'
+          --output-dir 'deploy/'
+          --dest-path "${DEPLOY_PATH}"
+          --dest-url 'https://downloads.mixxx.org'
+          ${{ matrix.artifacts_path }}
 
-    # Workaround for https://github.com/actions/cache/issues/531
-    - name: Use system tar & zstd from Chocolatey for caching
-      if: runner.os == 'Windows'
-      shell: bash
-      run: |
-        echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
+      # Warning: do not move this step before restoring caches or it will break caching due to
+      # https://github.com/actions/cache/issues/531
+      - name: "[Windows] Install rsync and openssh"
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+        if: runner.os == 'Windows' && github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        run: |
+          $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+          pacman -S --noconfirm coreutils bash rsync openssh
+          # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
+          # Bash) does not work properly and leads to errors like these:
+          #
+          #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
+          #
+          # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
+          # Actions will still pick the Git Bash executable over the MSYS2 one
+          # when using `shell: bash`. Since it's not feasible to set `shell` to
+          # an absolute path in a cross-platform build workflow, we overwrite the
+          # git bash executable with the MSYS2 one.
+          #
+          # Also see related issue:
+          # https://github.com/actions/virtual-environments/issues/594
+          Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+          # By default, MSYS2 uses an
+          # /etc/profile file that changes
+          # the current working directory
+          # when bash is started. We don't
+          # want this behavior,so we just
+          # delete it.
+          Remove-Item -Path "C:\msys64\etc\profile"
+          # Add MSYS2's tools to %PATH%.
+          Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
-    - name: "Upload GitHub Actions artifacts"
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ matrix.artifacts_name }}
-        path: ${{ matrix.artifacts_path }}
+      - name: "Set up SSH Agent"
+        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        shell: bash
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
+        # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+        if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+        shell: bash --login -eo pipefail "{0}"
+        run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+        env:
+          DESTDIR: public_html/downloads
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+
+      # Workaround for https://github.com/actions/cache/issues/531
+      - name: Use system tar & zstd from Chocolatey for caching
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
+
+      - name: "Upload GitHub Actions artifacts"
+        if: matrix.artifacts_path != null
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: ${{ matrix.artifacts_name }}
+          path: ${{ matrix.artifacts_path }}
 
   update_manifest:
     name: "Update manifest file on download server"
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: "Check out repository"
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: "Check out repository"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: "Collect Artifacts Metadata & Write Manifest"
-      # Retrieve the metadata from the matrix job's outputs, merge them into a
-      # single JSON document and then deploy to the server.
-      if: github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: python3 tools/generate_download_metadata.py manifest
-      env:
-        JOB_DATA: ${{ toJSON(needs.build) }}
-        MANIFEST_URL: "https://downloads.mixxx.org/builds/{git_branch}/manifest.json"
-        DESTDIR: "builds/{git_branch}"
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+      - name: "Ensure that all tags are fetched"
+        # Works around an issue where not the latest tag is not fetched when the
+        # workflow is triggered by a tag push event.
+        # Possibly related: actions/checkout#290
+        run: git fetch origin --force --tags
 
-    - name: "Deploy Manifest"
-      if: github.event_name == 'push' && env.SSH_PASSWORD != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-      run: bash tools/deploy.sh manifest.json
-      env:
-        DESTDIR: public_html/downloads/
-        DEPLOY_ONLY: 1
-        SSH_HOST: downloads-hostgator.mixxx.org
-        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-        SSH_USER: mixxx
-        UPLOAD_ID: ${{ github.run_id }}
+      - name: "Collect Artifacts Metadata & Write Manifest"
+        # Retrieve the metadata from the matrix job's outputs, merge them into a
+        # single JSON document and then deploy to the server.
+        if: github.event_name == 'push' && env.SSH_PASSWORD != null
+        run: >
+          if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+          then
+            export DEPLOY_PATH='releases/{git_describe}/manifest.json';
+          else
+            export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
+          fi;
+          python3 tools/deploy.py generate-manifest
+          --output-dir 'deploy/'
+          --dest-path "${DEPLOY_PATH}"
+          --dest-url 'https://downloads.mixxx.org'
+        env:
+          JOB_DATA: ${{ toJSON(needs.build) }}
+          SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
-    - name: "Trigger Netlify build"
-      if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-      run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
-      env:
-        NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+      - name: "Set up SSH Agent"
+        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+        shell: bash
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: "Deploy Manifest"
+        if: github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+        shell: bash
+        run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+        env:
+          DESTDIR: public_html/downloads
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx
+
+      - name: "Trigger Netlify build"
+        if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+        run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
+        env:
+          NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}

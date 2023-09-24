@@ -9,7 +9,7 @@
 
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 /// A general purpose status light for indicating boolean events.
 class WStatusLight : public WWidget  {

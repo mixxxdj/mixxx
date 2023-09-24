@@ -1,10 +1,11 @@
+#include "waveformmark.h"
+
+#include <QOpenGLTexture>
 #include <QtDebug>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/wskincolor.h"
-
-#include "waveformmark.h"
 
 namespace {
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
@@ -109,6 +110,8 @@ WaveformMark::WaveformMark(const QString& group,
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
 }
+
+WaveformMark::~WaveformMark() = default;
 
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     m_image = QImage();

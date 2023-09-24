@@ -15,10 +15,8 @@
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "mixxx.h"
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
-#include "util/compatibility.h"
 #include "util/duration.h"
 #include "widget/wnumberpos.h"
 
@@ -33,30 +31,31 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
+const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
-DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        UserSettingsPointer pConfig)
+DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
           m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "TimeFormat"))),
-          m_pNumDecks(
-                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
           m_pNumSamplers(make_parented<ControlProxy>(
-                  "[Master]", "num_samplers", this)),
+                  kAppGroup, QStringLiteral("num_samplers"), this)),
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
     // Create text color for the cue mode link "?" to the manual
     createLinkColor();
 
-    m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
+    m_pNumDecks->connectValueChanged(this, [=, this](double value) { slotNumDecksChanged(value); });
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
-    m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
+    m_pNumSamplers->connectValueChanged(
+            this, [=, this](double value) { slotNumSamplersChanged(value); });
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Set default value in config file and control objects, if not present
@@ -154,16 +153,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     comboBoxTimeFormat->setCurrentIndex(
                 comboBoxTimeFormat->findData(time_format));
 
-    // Override Playing Track on Track Load
-    // The check box reflects the opposite of the config value
-    m_bDisallowTrackLoadToPlayingDeck = !m_pConfig->getValue(
-            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false);
-    checkBoxDisallowLoadToPlayingDeck->setChecked(m_bDisallowTrackLoadToPlayingDeck);
-    connect(checkBoxDisallowLoadToPlayingDeck,
-            &QCheckBox::toggled,
-            this,
-            &DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox);
-
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
@@ -178,6 +167,31 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotSetTrackLoadMode);
+
+    comboBoxLoadWhenDeckPlaying->addItem(
+            tr("Reject"), static_cast<int>(LoadWhenDeckPlaying::Reject));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, but stop deck"),
+            static_cast<int>(LoadWhenDeckPlaying::AllowButStopDeck));
+    comboBoxLoadWhenDeckPlaying->addItem(tr("Allow, play from load point"),
+            static_cast<int>(LoadWhenDeckPlaying::Allow));
+    int loadWhenDeckPlaying;
+    if (m_pConfig->exists(kConfigKeyLoadWhenDeckPlaying)) {
+        loadWhenDeckPlaying = m_pConfig->getValueString(kConfigKeyLoadWhenDeckPlaying).toInt();
+    } else {
+        // upgrade from older versions
+        if (m_pConfig->getValue(kConfigKeyAllowTrackLoadToPlayingDeck, false)) {
+            loadWhenDeckPlaying = static_cast<int>(LoadWhenDeckPlaying::Allow);
+        } else {
+            loadWhenDeckPlaying = static_cast<int>(kDefaultLoadWhenDeckPlaying);
+        }
+    }
+    comboBoxLoadWhenDeckPlaying->setCurrentIndex(
+            comboBoxLoadWhenDeckPlaying->findData(loadWhenDeckPlaying));
+    m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(loadWhenDeckPlaying);
+    connect(comboBoxLoadWhenDeckPlaying,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged);
 
     // This option was introduced in Mixxx 2.3 with the intro & outro cues.
     // If the user has set main cue points with the intention of starting tracks
@@ -284,8 +298,101 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     }
 
     //
-    // Rate buttons configuration
+    // Cue Mode
     //
+
+    // Add "(?)" with a manual link to the label
+    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_CUE_MODES_URL));
+
+    //
+    // Speed / Pitch reset configuration
+    //
+
+    // Update "reset speed" and "reset pitch" check boxes
+    // TODO: All defaults should only be set in slotResetToDefaults.
+    int configSPAutoReset = m_pConfig->getValue<int>(
+                    ConfigKey("[Controls]", "SpeedAutoReset"),
+                    BaseTrackPlayer::RESET_PITCH);
+
+    m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
+                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+    m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH ||
+                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
+
+    checkBoxResetSpeed->setChecked(m_speedAutoReset);
+    checkBoxResetPitch->setChecked(m_pitchAutoReset);
+
+    connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
+    connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
+
+    //
+    // Ramping Temporary Rate Change configuration
+    //
+
+    // Rate Ramp Sensitivity slider & spinbox
+    connect(SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::valueChanged),
+            SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::setValue));
+    connect(SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::setValue));
+
+    m_iRateRampSensitivity =
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
+                    kDefaultRateRampSensitivity);
+    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
+    connect(SliderRateRampSensitivity,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefDeck::slotRateRampSensitivitySlider);
+
+    // Enable/disable permanent rate spinboxes when smooth ramping is selected
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            labelSpeedRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SliderRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SpinBoxRateRampSensitivity,
+            &QWidget::setEnabled);
+    // Enable/disable temporary rate spinboxes when abrupt ramping is selected
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            labelSpeedTemporary,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateCoarse,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateFine,
+            &QWidget::setEnabled);
+    // Set Ramp Rate On or Off
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefDeck::slotRateRampingModeLinearButton);
+    m_bRateRamping = static_cast<RateControl::RampMode>(
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
+                    static_cast<int>(kDefaultRampingMode)));
+    if (m_bRateRamping == RateControl::RampMode::Linear) {
+        radioButtonRateRampModeLinear->setChecked(true);
+    } else {
+        radioButtonRateRampModeStepping->setChecked(true);
+    }
+
+    // Rate buttons configuration
     connect(spinBoxTemporaryRateCoarse,
             QOverload<double>::of(&QDoubleSpinBox::valueChanged),
             this,
@@ -322,93 +429,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     RateControl::setPermanentRateChangeCoarseAmount(m_dRatePermCoarse);
     RateControl::setPermanentRateChangeFineAmount(m_dRatePermFine);
 
-    // Rate Ramp Sensitivity
-    m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), kDefaultRateRampSensitivity);
-    SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
-    connect(SliderRateRampSensitivity,
-            &QSlider::valueChanged,
-            this,
-            &DlgPrefDeck::slotRateRampSensitivitySlider);
-
-    //
-    // Cue Mode
-    //
-
-    // Add "(?)" with a manual link to the label
-    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
-            coloredLinkString(
-                    m_pLinkColor,
-                    QStringLiteral("(?)"),
-                    MIXXX_MANUAL_CUE_MODES_URL));
-
-    //
-    // Ramping Temporary Rate Change configuration
-    //
-
-    // Set Ramp Rate On or Off
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            this,
-            &DlgPrefDeck::slotRateRampingModeLinearButton);
-    m_bRateRamping = static_cast<RateControl::RampMode>(
-        m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
-                            static_cast<int>(kDefaultRampingMode)));
-    if (m_bRateRamping == RateControl::RampMode::Linear) {
-        radioButtonRateRampModeLinear->setChecked(true);
-    } else {
-        radioButtonRateRampModeStepping->setChecked(true);
-    }
-
-    // Update "reset speed" and "reset pitch" check boxes
-    // TODO: All defaults should only be set in slotResetToDefaults.
-    int configSPAutoReset = m_pConfig->getValue<int>(
-                    ConfigKey("[Controls]", "SpeedAutoReset"),
-                    BaseTrackPlayer::RESET_PITCH);
-
-    m_speedAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_SPEED ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
-    m_pitchAutoReset = (configSPAutoReset==BaseTrackPlayer::RESET_PITCH ||
-                        configSPAutoReset==BaseTrackPlayer::RESET_PITCH_AND_SPEED);
-
-    checkBoxResetSpeed->setChecked(m_speedAutoReset);
-    checkBoxResetPitch->setChecked(m_pitchAutoReset);
-
-    connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
-    connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
-
-    connect(SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::valueChanged),
-            SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::setValue));
-    connect(SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::setValue));
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            labelSpeedRampSensitivity,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            SliderRateRampSensitivity,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            SpinBoxRateRampSensitivity,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeStepping,
-            &QRadioButton::toggled,
-            labelSpeedTemporary,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeStepping,
-            &QRadioButton::toggled,
-            spinBoxTemporaryRateCoarse,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeStepping,
-            &QRadioButton::toggled,
-            spinBoxTemporaryRateFine,
-            &QWidget::setEnabled);
-
     slotUpdate();
 }
 
@@ -427,38 +447,35 @@ void DlgPrefDeck::slotUpdate() {
 
     slotSetTrackTimeDisplay(m_pControlTrackTimeDisplay->get());
 
-    checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
-            ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
-
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    double deck1RateRange = m_rateRangeControls[0]->get();
-    int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100.0));
+    double rateRange = m_rateRangeControls[0]->get();
+    int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
     if (index == -1) {
-        ComboBoxRateRange->addItem(QString::number(deck1RateRange * 100.).append("%"),
-                                   deck1RateRange * 100.);
+        ComboBoxRateRange->addItem(QString::number(rateRange * 100.).append("%"),
+                rateRange * 100.);
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
-    double deck1RateDirection = m_rateDirectionControls[0]->get();
-    checkBoxInvertSpeedSlider->setChecked(deck1RateDirection == kRateDirectionInverted);
+    double rateDirection = m_rateDirectionControls[0]->get();
+    checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double deck1CueMode = m_cueControls[0]->get();
-    index = ComboBoxCueMode->findData(static_cast<int>(deck1CueMode));
+    double cueMode = m_cueControls[0]->get();
+    index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
-    KeylockMode deck1KeylockMode =
-        static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
-    if (deck1KeylockMode == KeylockMode::LockCurrentKey) {
+    KeylockMode keylockMode =
+            static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
+    if (keylockMode == KeylockMode::LockCurrentKey) {
         radioButtonCurrentKey->setChecked(true);
     } else {
         radioButtonOriginalKey->setChecked(true);
     }
 
-    KeyunlockMode deck1KeyunlockMode =
-        static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
-    if (deck1KeyunlockMode == KeyunlockMode::KeepLockedKey) {
+    KeyunlockMode keyunlockMode =
+            static_cast<KeyunlockMode>(static_cast<int>(m_keyunlockModeControls[0]->get()));
+    if (keyunlockMode == KeyunlockMode::KeepLockedKey) {
         radioButtonKeepUnlockedKey->setChecked(true);
     } else {
         radioButtonResetUnlockedKey->setChecked(true);
@@ -478,6 +495,12 @@ void DlgPrefDeck::slotUpdate() {
     } else if (reset == BaseTrackPlayer::RESET_NONE) {
         checkBoxResetPitch->setChecked(false);
         checkBoxResetSpeed->setChecked(false);
+    }
+
+    if (m_bRateRamping == RateControl::RampMode::Linear) {
+        radioButtonRateRampModeLinear->setChecked(true);
+    } else {
+        radioButtonRateRampModeStepping->setChecked(true);
     }
 
     SliderRateRampSensitivity->setValue(
@@ -500,13 +523,14 @@ void DlgPrefDeck::slotResetToDefaults() {
     // 8% Rate Range
     ComboBoxRateRange->setCurrentIndex(ComboBoxRateRange->findData(kDefaultRateRangePercent));
 
-    // Don't load tracks into playing decks.
-    checkBoxDisallowLoadToPlayingDeck->setChecked(true);
-
     // Clone decks by double-tapping Load button.
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(kDefaultCloneDeckOnLoad);
+
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
+
+    // What to do if someone loads into a playing deck
+    comboBoxLoadWhenDeckPlaying->setCurrentIndex(static_cast<int>(kDefaultLoadWhenDeckPlaying));
 
     // Load at intro start
     comboBoxLoadPoint->setCurrentIndex(
@@ -583,10 +607,6 @@ void DlgPrefDeck::slotKeyUnlockModeSelected(QAbstractButton* pressedButton) {
     }
 }
 
-void DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox(bool checked) {
-    m_bDisallowTrackLoadToPlayingDeck = checked;
-}
-
 void DlgPrefDeck::slotCueModeCombobox(int index) {
     m_cueMode = static_cast<CueMode>(ComboBoxCueMode->itemData(index).toInt());
 }
@@ -657,6 +677,11 @@ void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
             comboBoxLoadPoint->itemData(comboboxIndex).toInt());
 }
 
+void DlgPrefDeck::slotLoadWhenDeckPlayingIndexChanged(int comboboxIndex) {
+    m_loadWhenDeckPlaying = static_cast<LoadWhenDeckPlaying>(
+            comboBoxLoadWhenDeckPlaying->itemData(comboboxIndex).toInt());
+}
+
 void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SetIntroStartAtMainCue"),
             ConfigValue(m_bSetIntroStartAtMainCue));
@@ -674,12 +699,11 @@ void DlgPrefDeck::slotApply() {
     for (ControlProxy* pControl : qAsConst(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
-                        !m_bDisallowTrackLoadToPlayingDeck);
+    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, m_loadWhenDeckPlaying);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
 
@@ -690,9 +714,9 @@ void DlgPrefDeck::slotApply() {
 
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-            static_cast<int>(m_bRateDownIncreasesSpeed));
+            m_bRateDownIncreasesSpeed);
 
-    int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
@@ -702,25 +726,25 @@ void DlgPrefDeck::slotApply() {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
 
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-                   ConfigValue(configSPAutoReset));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            configSPAutoReset);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
-                        static_cast<int>(m_keylockMode));
+            m_keylockMode);
     // Set key lock behavior for every group
     for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
-                        static_cast<int>(m_keyunlockMode));
+            m_keyunlockMode);
     // Set key un-lock behavior for every group
     for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), static_cast<int>(m_bRateRamping));
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
 
     RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);

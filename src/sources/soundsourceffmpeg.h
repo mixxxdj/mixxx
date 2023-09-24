@@ -40,7 +40,6 @@ class SoundSourceFFmpeg : public SoundSource {
             SINT startIndex);
 
     bool consumeNextAVPacket(
-            AVPacket* pavPacket,
             AVPacket** ppavNextPacket);
 
     // Takes ownership of an input format context and ensures that
@@ -175,8 +174,15 @@ class SoundSourceFFmpeg : public SoundSource {
     };
     SwrContextPtr m_pSwrContext;
 
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
+    AVChannelLayout m_avStreamChannelLayout;
+    AVChannelLayout m_avResampledChannelLayout;
+#else
     uint64_t m_avStreamChannelLayout;
     uint64_t m_avResampledChannelLayout;
+#endif
+
+    AVPacket* m_pavPacket;
 
     AVFrame* m_pavDecodedFrame;
     AVFrame* m_pavResampledFrame;
@@ -184,26 +190,30 @@ class SoundSourceFFmpeg : public SoundSource {
     FrameCount m_seekPrerollFrameCount;
 
     ReadAheadFrameBuffer m_frameBuffer;
+
+    const unsigned int m_avutilVersion;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
   public:
     static const QString kDisplayName;
 
-    SoundSourceProviderFFmpeg();
+    ~SoundSourceProviderFFmpeg() override = default;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QChar(' ') + getVersionString();
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileTypes() const override;
 
     SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override;
+            const QString& supportedFileType) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx

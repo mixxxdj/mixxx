@@ -1,9 +1,10 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QAtomicInt>
 #include <QAtomicPointer>
 #include <QList>
-#include <QMutex>
 
 #include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
@@ -11,6 +12,7 @@
 #include "preferences/usersettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 
 #define NUM_HOT_CUES 37
@@ -63,7 +65,7 @@ class HotcueControl : public QObject {
         Set = 1,
         /// Hotcue is currently active (this only applies to Saved Loop cues
         /// while their loop is enabled). This status can be used by skins or
-        /// controller mappings to highlight a the cue control that has saved the current loop,
+        /// controller mappings to highlight the cue control that has saved the current loop,
         /// because resizing or moving the loop will make persistent changes to
         /// the cue.
         Active = 2,
@@ -82,11 +84,11 @@ class HotcueControl : public QObject {
     void setCue(const CuePointer& pCue);
     void resetCue();
 
-    double getPosition() const;
-    void setPosition(double position);
+    mixxx::audio::FramePos getPosition() const;
+    void setPosition(mixxx::audio::FramePos position);
 
-    double getEndPosition() const;
-    void setEndPosition(double endPosition);
+    mixxx::audio::FramePos getEndPosition() const;
+    void setEndPosition(mixxx::audio::FramePos endPosition);
 
     void setType(mixxx::CueType type);
 
@@ -104,7 +106,7 @@ class HotcueControl : public QObject {
 
     /// Used for caching the preview state of this hotcue control
     /// for the case the cue is deleted during preview.
-    double getPreviewingPosition() const {
+    mixxx::audio::FramePos getPreviewingPosition() const {
         return m_previewingPosition.getValue();
     }
 
@@ -182,7 +184,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueClear;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
-    ControlValueAtomic<double> m_previewingPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;
 };
 
 class CueControl : public EngineControl {
@@ -192,7 +194,7 @@ class CueControl : public EngineControl {
             UserSettingsPointer pConfig);
     ~CueControl() override;
 
-    void hintReader(HintVector* pHintList) override;
+    void hintReader(gsl::not_null<HintVector*> pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
@@ -203,10 +205,13 @@ class CueControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
+  signals:
+    void loopRemove();
+
   public slots:
     void slotLoopReset();
     void slotLoopEnabledChanged(bool enabled);
-    void slotLoopUpdated(double startPosition, double endPosition);
+    void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
 
   private slots:
     void quantizeChanged(double v);
@@ -230,14 +235,18 @@ class CueControl : public EngineControl {
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
 
+    void passthroughChanged(double v);
+
     void cueSet(double v);
     void cueClear(double v);
     void cueGoto(double v);
     void cueGotoAndPlay(double v);
     void cueGotoAndStop(double v);
     void cuePreview(double v);
+    FRIEND_TEST(CueControlTest, SeekOnSetCueCDJ);
     void cueCDJ(double v);
     void cueDenon(double v);
+    FRIEND_TEST(CueControlTest, SeekOnSetCuePlay);
     void cuePlay(double v);
     void cueDefault(double v);
     void pause(double v);
@@ -265,16 +274,20 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
+    void connectControls();
+    void disconnectControls();
+
     void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
-    double quantizeCuePoint(double position);
-    double getQuantizedCurrentPosition();
+    mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
+    mixxx::audio::FramePos getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
-    void seekOnLoad(double seekOnLoadPosition);
+    void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
+    mixxx::RgbColor colorFromConfig(const ConfigKey& configKey);
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
@@ -289,7 +302,7 @@ class CueControl : public EngineControl {
     parented_ptr<ControlProxy> m_pBeatLoopActivate;
     parented_ptr<ControlProxy> m_pBeatLoopSize;
     bool m_bypassCueSetByPlay;
-    ControlValueAtomic<double> m_usedSeekOnLoadPosition;
+    ControlValueAtomic<mixxx::audio::FramePos> m_usedSeekOnLoadPosition;
 
     const int m_iNumHotCues;
     QList<HotcueControl*> m_hotcueControls;
@@ -297,50 +310,54 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
-    ControlPushButton* m_pCueSet;
-    ControlPushButton* m_pCueClear;
-    ControlPushButton* m_pCueCDJ;
-    ControlPushButton* m_pCueDefault;
-    ControlPushButton* m_pPlayStutter;
-    ControlIndicator* m_pCueIndicator;
-    ControlIndicator* m_pPlayIndicator;
-    ControlObject* m_pPlayLatched;
-    ControlPushButton* m_pCueGoto;
-    ControlPushButton* m_pCueGotoAndPlay;
-    ControlPushButton* m_pCuePlay;
-    ControlPushButton* m_pCueGotoAndStop;
-    ControlPushButton* m_pCuePreview;
+    std::unique_ptr<ControlPushButton> m_pCueSet;
+    std::unique_ptr<ControlPushButton> m_pCueClear;
+    std::unique_ptr<ControlPushButton> m_pCueCDJ;
+    std::unique_ptr<ControlPushButton> m_pCueDefault;
+    std::unique_ptr<ControlPushButton> m_pPlayStutter;
+    std::unique_ptr<ControlIndicator> m_pCueIndicator;
+    std::unique_ptr<ControlIndicator> m_pPlayIndicator;
+    std::unique_ptr<ControlObject> m_pPlayLatched;
+    std::unique_ptr<ControlPushButton> m_pCueGoto;
+    std::unique_ptr<ControlPushButton> m_pCueGotoAndPlay;
+    std::unique_ptr<ControlPushButton> m_pCuePlay;
+    std::unique_ptr<ControlPushButton> m_pCueGotoAndStop;
+    std::unique_ptr<ControlPushButton> m_pCuePreview;
 
-    ControlObject* m_pIntroStartPosition;
-    ControlObject* m_pIntroStartEnabled;
-    ControlPushButton* m_pIntroStartSet;
-    ControlPushButton* m_pIntroStartClear;
-    ControlPushButton* m_pIntroStartActivate;
+    std::unique_ptr<ControlObject> m_pIntroStartPosition;
+    std::unique_ptr<ControlObject> m_pIntroStartEnabled;
+    std::unique_ptr<ControlPushButton> m_pIntroStartSet;
+    std::unique_ptr<ControlPushButton> m_pIntroStartClear;
+    std::unique_ptr<ControlPushButton> m_pIntroStartActivate;
 
-    ControlObject* m_pIntroEndPosition;
-    ControlObject* m_pIntroEndEnabled;
-    ControlPushButton* m_pIntroEndSet;
-    ControlPushButton* m_pIntroEndClear;
-    ControlPushButton* m_pIntroEndActivate;
+    std::unique_ptr<ControlObject> m_pIntroEndPosition;
+    std::unique_ptr<ControlObject> m_pIntroEndEnabled;
+    std::unique_ptr<ControlPushButton> m_pIntroEndSet;
+    std::unique_ptr<ControlPushButton> m_pIntroEndClear;
+    std::unique_ptr<ControlPushButton> m_pIntroEndActivate;
 
-    ControlObject* m_pOutroStartPosition;
-    ControlObject* m_pOutroStartEnabled;
-    ControlPushButton* m_pOutroStartSet;
-    ControlPushButton* m_pOutroStartClear;
-    ControlPushButton* m_pOutroStartActivate;
+    std::unique_ptr<ControlObject> m_pOutroStartPosition;
+    std::unique_ptr<ControlObject> m_pOutroStartEnabled;
+    std::unique_ptr<ControlPushButton> m_pOutroStartSet;
+    std::unique_ptr<ControlPushButton> m_pOutroStartClear;
+    std::unique_ptr<ControlPushButton> m_pOutroStartActivate;
 
-    ControlObject* m_pOutroEndPosition;
-    ControlObject* m_pOutroEndEnabled;
-    ControlPushButton* m_pOutroEndSet;
-    ControlPushButton* m_pOutroEndClear;
-    ControlPushButton* m_pOutroEndActivate;
+    std::unique_ptr<ControlObject> m_pOutroEndPosition;
+    std::unique_ptr<ControlObject> m_pOutroEndEnabled;
+    std::unique_ptr<ControlPushButton> m_pOutroEndSet;
+    std::unique_ptr<ControlPushButton> m_pOutroEndClear;
+    std::unique_ptr<ControlPushButton> m_pOutroEndActivate;
 
-    ControlProxy* m_pVinylControlEnabled;
-    ControlProxy* m_pVinylControlMode;
+    ControlValueAtomic<double> m_n60dBSoundStartPosition;
 
-    ControlObject* m_pHotcueFocus;
-    ControlObject* m_pHotcueFocusColorNext;
-    ControlObject* m_pHotcueFocusColorPrev;
+    std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlMode;
+
+    std::unique_ptr<ControlObject> m_pHotcueFocus;
+    std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
+    std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
+
+    parented_ptr<ControlProxy> m_pPassthrough;
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 
@@ -348,7 +365,7 @@ class CueControl : public EngineControl {
     QMap<QObject*, int> m_controlMap;
 
     // Must be locked when using the m_pLoadedTrack and it's properties
-    QMutex m_trackMutex;
+    QT_RECURSIVE_MUTEX m_trackMutex;
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;

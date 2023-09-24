@@ -7,6 +7,8 @@
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
+class Library;
+
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
 
@@ -16,7 +18,6 @@ class SetlogFeature : public BasePlaylistFeature {
     virtual ~SetlogFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -26,8 +27,13 @@ class SetlogFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
+    void slotMarkAllTracksPlayed();
+    void slotLockAllChildPlaylists();
+    void slotUnlockAllChildPlaylists();
+    void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   protected:
     QModelIndex constructChildModel(int selectedId);
@@ -37,17 +43,27 @@ class SetlogFeature : public BasePlaylistFeature {
   private slots:
     void slotPlayingTrackChanged(TrackPointer currentPlayingTrack);
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotDeleteAllUnlockedChildPlaylists();
 
   private:
-    void reloadChildModel(int playlistId);
+    void deleteAllUnlockedPlaylistsWithFewerTracks();
+    void lockOrUnlockAllChildPlaylists(bool lock);
     QString getRootViewHtml() const override;
 
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
+    QAction* m_pMarkTracksPlayedAction;
     QAction* m_pStartNewPlaylist;
-    int m_playlistId;
-    WLibrary* m_libraryWidget;
-    const QIcon m_icon;
+    QAction* m_pLockAllChildPlaylists;
+    QAction* m_pUnlockAllChildPlaylists;
+    QAction* m_pDeleteAllChildPlaylists;
+
+    int m_currentPlaylistId;
+    int m_yearNodeId;
+
+    QPointer<WLibrary> m_libraryWidget;
+    Library* m_pLibrary;
+    UserSettingsPointer m_pConfig;
 };

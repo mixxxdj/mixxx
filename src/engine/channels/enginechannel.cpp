@@ -12,14 +12,17 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
         : m_group(handleGroup),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
-          m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
+          m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
-          m_bIsTalkoverChannel(isTalkoverChannel) {
+          m_active(false),
+          m_bIsTalkoverChannel(isTalkoverChannel),
+          m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
-    m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
+    m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
     m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
@@ -42,13 +45,12 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
 }
 
 EngineChannel::~EngineChannel() {
-    delete m_pMaster;
+    delete m_pMainMix;
     delete m_pPFL;
     delete m_pOrientation;
     delete m_pOrientationLeft;
     delete m_pOrientationRight;
     delete m_pOrientationCenter;
-    delete m_pSampleRate;
     delete m_pTalkover;
 }
 
@@ -60,12 +62,12 @@ bool EngineChannel::isPflEnabled() const {
     return m_pPFL->toBool();
 }
 
-void EngineChannel::setMaster(bool enabled) {
-    m_pMaster->set(enabled ? 1.0 : 0.0);
+void EngineChannel::setMainMix(bool enabled) {
+    m_pMainMix->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isMasterEnabled() const {
-    return m_pMaster->toBool();
+bool EngineChannel::isMainMixEnabled() const {
+    return m_pMainMix->toBool();
 }
 
 void EngineChannel::setTalkover(bool enabled) {
@@ -95,13 +97,20 @@ void EngineChannel::slotOrientationCenter(double v) {
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() const {
-    double dOrientation = m_pOrientation->get();
-    if (dOrientation == LEFT) {
-        return LEFT;
-    } else if (dOrientation == CENTER) {
+    const double dOrientation = m_pOrientation->get();
+    const int iOrientation = static_cast<int>(dOrientation);
+    if (dOrientation != iOrientation) {
         return CENTER;
-    } else if (dOrientation == RIGHT) {
+    }
+    switch (iOrientation) {
+    case LEFT:
+        return LEFT;
+    case CENTER:
+        return CENTER;
+    case RIGHT:
         return RIGHT;
+    default:
+        return CENTER;
     }
     return CENTER;
 }

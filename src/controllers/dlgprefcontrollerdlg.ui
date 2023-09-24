@@ -29,7 +29,13 @@
       <attribute name="title">
        <string>Controller Setup</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QGridLayout" name="infoTabLayout">
        <item row="0" column="0">
         <widget class="QLabel" name="labelDeviceName">
          <property name="enabled">
@@ -296,7 +302,7 @@
           <item row="2" column="1">
            <widget class="QLabel" name="labelLoadedMappingDescription">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -436,6 +442,20 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
+        <layout class="QHBoxLayout" name="layout_inputSearch">
+         <item>
+          <widget class="QLineEdit" name="inputControlSearch"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="inputControlSearchBtn">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QTableView" name="m_pInputMappingTableView">
          <property name="editTriggers">
           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
@@ -505,11 +525,26 @@
        </item>
       </layout>
      </widget>
+
      <widget class="QWidget" name="outputMappingsTab">
       <attribute name="title">
        <string>Output Mappings</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QHBoxLayout" name="layout_outputSearch">
+         <item>
+          <widget class="QLineEdit" name="outputControlSearch"/>
+         </item>
+         <item>
+          <widget class="QPushButton" name="outputControlSearchBtn">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QTableView" name="m_pOutputMappingTableView">
          <property name="enabled">

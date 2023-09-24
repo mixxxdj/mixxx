@@ -28,13 +28,13 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     QColor midCenter = mid;
     QColor highCenter = high;
 
-    low.setAlphaF(0.9);
-    mid.setAlphaF(0.9);
-    high.setAlphaF(0.9);
+    low.setAlphaF(0.9f);
+    mid.setAlphaF(0.9f);
+    high.setAlphaF(0.9f);
 
-    lowCenter.setAlphaF(0.5);
-    midCenter.setAlphaF(0.5);
-    highCenter.setAlphaF(0.5);
+    lowCenter.setAlphaF(0.5f);
+    midCenter.setAlphaF(0.5f);
+    highCenter.setAlphaF(0.5f);
 
     QLinearGradient gradientLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
     gradientLow.setColorAt(0.0, low);
@@ -60,9 +60,9 @@ void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
     gradientHigh.setColorAt(1.0, high);
     m_highBrush = QBrush(gradientHigh);
 
-    low.setAlphaF(0.3);
-    mid.setAlphaF(0.3);
-    high.setAlphaF(0.3);
+    low.setAlphaF(0.3f);
+    mid.setAlphaF(0.3f);
+    high.setAlphaF(0.3f);
 
     QLinearGradient gradientKilledLow(QPointF(0.0,-255.0/2.0),QPointF(0.0,255.0/2.0));
     gradientKilledLow.setColorAt(0.0,low.darker(80));
@@ -97,28 +97,37 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 int QtWaveformRendererFilteredSignal::buildPolygon() {
     // We have to check the track is present because it might have been unloaded
     // between the call to draw and the call to buildPolygon
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return 0;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return 0;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return 0;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return 0;
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return 0;
+    }
+
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     m_polygon[0].clear();
     m_polygon[1].clear();

@@ -19,24 +19,23 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~BansheeFeature();
+    ~BansheeFeature() override;
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
 
-    virtual QVariant title();
-    virtual QIcon getIcon();
+    QVariant title() override;
 
-    virtual TreeItemModel* getChildModel();
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
+    void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     QStringList m_playlists;
 
     //a new DB connection for the worker thread
@@ -49,8 +48,8 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
-    QIcon m_icon;
 
     static QString m_databaseFile;
 

@@ -21,7 +21,7 @@ class EncoderWave : public Encoder {
     EncoderWave(EncoderCallback* pCallback = nullptr);
     ~EncoderWave() override;
 
-    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
+    int initEncoder(mixxx::audio::SampleRate sampleRate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;

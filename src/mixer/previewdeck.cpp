@@ -2,9 +2,9 @@
 
 #include "moc_previewdeck.cpp"
 
-PreviewDeck::PreviewDeck(QObject* pParent,
+PreviewDeck::PreviewDeck(PlayerManager* pParent,
         UserSettingsPointer pConfig,
-        EngineMaster* pMixingEngine,
+        EngineMixer* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup)
@@ -14,7 +14,7 @@ PreviewDeck::PreviewDeck(QObject* pParent,
                   pEffectsManager,
                   defaultOrientation,
                   handleGroup,
-                  /*defaultMaster*/ false,
+                  /*defaultMainMix*/ false,
                   /*defaultHeadphones*/ true,
                   /*primaryDeck*/ false) {
 }

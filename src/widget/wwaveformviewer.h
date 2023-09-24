@@ -5,9 +5,8 @@
 #include <QDropEvent>
 #include <QEvent>
 #include <QList>
-#include <QMutex>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
@@ -33,6 +32,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     }
     void setup(const QDomNode& node, const SkinContext& context);
 
+    bool handleDragAndDropEventFromWindow(QEvent* ev) override;
+
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
@@ -44,6 +45,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+    void passthroughChanged(double value);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -78,6 +80,7 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
     ControlProxy* m_pPlayEnabled;
+    parented_ptr<ControlProxy> m_pPassthroughEnabled;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

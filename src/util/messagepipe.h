@@ -50,9 +50,7 @@ class MessagePipe {
     rigtorp::SPSCQueue<ReceiverMessageType>& m_sender_messages;
     QScopedPointer<BaseReferenceHolder> m_pTwoWayMessagePipeReference;
 
-#define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(MessagePipe<SenderMessageType COMMA ReceiverMessageType>);
-#undef COMMA
+    DISALLOW_COPY_AND_ASSIGN(MessagePipe);
 };
 
 // TwoWayMessagePipe is a bare-bones wrapper around the above rigtorp::SPSCQueue class that
@@ -73,22 +71,27 @@ class TwoWayMessagePipe {
     // the first is the sender's pipe (sends SenderMessageType and receives
     // ReceiverMessageType messages) and the second is the receiver's pipe
     // (sends ReceiverMessageType and receives SenderMessageType messages).
-    static QPair<MessagePipe<SenderMessageType, ReceiverMessageType>*,
-                 MessagePipe<ReceiverMessageType, SenderMessageType>*> makeTwoWayMessagePipe(
-                     int sender_fifo_size,
-                     int receiver_fifo_size) {
-        QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> > pipe(
-            new TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>(
-                sender_fifo_size, receiver_fifo_size));
+    static std::pair<
+            std::unique_ptr<MessagePipe<SenderMessageType, ReceiverMessageType>>,
+            std::unique_ptr<MessagePipe<ReceiverMessageType, SenderMessageType>>>
+    makeTwoWayMessagePipe(
+            int sender_fifo_size,
+            int receiver_fifo_size) {
+        QSharedPointer<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>> pipe(
+                new TwoWayMessagePipe<SenderMessageType, ReceiverMessageType>(
+                        sender_fifo_size, receiver_fifo_size));
 
-        return QPair<MessagePipe<SenderMessageType, ReceiverMessageType>*,
-                     MessagePipe<ReceiverMessageType, SenderMessageType>*>(
-                         new MessagePipe<SenderMessageType, ReceiverMessageType>(
-                             pipe->m_receiver_messages, pipe->m_sender_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)),
-                         new MessagePipe<ReceiverMessageType, SenderMessageType>(
-                             pipe->m_sender_messages, pipe->m_receiver_messages,
-                             new ReferenceHolder<TwoWayMessagePipe<SenderMessageType, ReceiverMessageType> >(pipe)));
+        return {
+                std::make_unique<MessagePipe<SenderMessageType, ReceiverMessageType>>(
+                        pipe->m_receiver_messages,
+                        pipe->m_sender_messages,
+                        new ReferenceHolder<TwoWayMessagePipe<SenderMessageType,
+                                ReceiverMessageType>>(pipe)),
+                std::make_unique<MessagePipe<ReceiverMessageType, SenderMessageType>>(
+                        pipe->m_sender_messages,
+                        pipe->m_receiver_messages,
+                        new ReferenceHolder<TwoWayMessagePipe<SenderMessageType,
+                                ReceiverMessageType>>(pipe))};
     }
 
   private:
@@ -102,9 +105,5 @@ class TwoWayMessagePipe {
     // Messages waiting to be delivered to the sender.
     rigtorp::SPSCQueue<ReceiverMessageType> m_sender_messages;
 
-    // This #define is because the macro gets confused by the template
-    // parameters.
-#define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
-#undef COMMA
+    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe);
 };

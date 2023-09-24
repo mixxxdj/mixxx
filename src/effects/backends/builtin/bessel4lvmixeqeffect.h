@@ -1,0 +1,58 @@
+#pragma once
+#include <QMap>
+
+#include "control/controlproxy.h"
+#include "effects/backends/builtin/lvmixeqbase.h"
+#include "effects/backends/effectprocessor.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbessel4.h"
+#include "engine/filters/enginefilterdelay.h"
+#include "util/class.h"
+#include "util/defs.h"
+#include "util/types.h"
+
+class Bessel4LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilterBessel4Low> {
+  public:
+    Bessel4LVMixEQEffectGroupState(const mixxx::EngineParameters& engineParameters)
+            : LVMixEQEffectGroupState<EngineFilterBessel4Low>(engineParameters) {
+    }
+};
+
+class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
+  public:
+    Bessel4LVMixEQEffect();
+    ~Bessel4LVMixEQEffect() override;
+
+    static QString getId();
+    static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+
+    void processChannel(
+            Bessel4LVMixEQEffectGroupState* pState,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const mixxx::EngineParameters& engineParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
+
+  private:
+    QString debugString() const {
+        return getId();
+    }
+
+    EngineEffectParameterPointer m_pPotLow;
+    EngineEffectParameterPointer m_pPotMid;
+    EngineEffectParameterPointer m_pPotHigh;
+
+    EngineEffectParameterPointer m_pKillLow;
+    EngineEffectParameterPointer m_pKillMid;
+    EngineEffectParameterPointer m_pKillHigh;
+
+    ControlProxy* m_pLoFreqCorner;
+    ControlProxy* m_pHiFreqCorner;
+
+    DISALLOW_COPY_AND_ASSIGN(Bessel4LVMixEQEffect);
+};

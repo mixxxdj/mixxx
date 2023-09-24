@@ -8,7 +8,7 @@ namespace {
 const QString kArtistTitleSeparatorWithSpaces = QStringLiteral(" - ");
 const QString kArtistTitleSeparator = QStringLiteral("_-_");
 
-const QChar kFileExtensionSeparator = '.';
+const QChar kFileSuffixSeparator = '.';
 
 } // anonymous namespace
 
@@ -30,9 +30,9 @@ bool TrackInfo::parseArtistTitleFromFileName(
         }
     }
     auto title = titleWithFileType;
-    if (titleWithFileType.contains(kFileExtensionSeparator)) {
+    if (titleWithFileType.contains(kFileSuffixSeparator)) {
         // Strip file extension starting at the right-most '.'
-        title = titleWithFileType.section(kFileExtensionSeparator, 0, -2);
+        title = titleWithFileType.section(kFileSuffixSeparator, 0, -2);
     }
     title = title.trimmed();
     if (!title.isEmpty()) {
@@ -61,7 +61,7 @@ bool TrackInfo::compareEq(
 #if defined(__EXTRA_METADATA__)
             (getISRC() == trackInfo.getISRC()) &&
 #endif // __EXTRA_METADATA__
-            (getKey() == trackInfo.getKey()) &&
+            (getKeyText() == trackInfo.getKeyText()) &&
 #if defined(__EXTRA_METADATA__)
             (getLanguage() == trackInfo.getLanguage()) &&
             (getLyricist() == trackInfo.getLyricist()) &&
@@ -105,7 +105,7 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
 #if defined(__EXTRA_METADATA__)
     arg.dbgISRC(dbg);
 #endif // __EXTRA_METADATA__
-    arg.dbgKey(dbg);
+    arg.dbgKeyText(dbg);
 #if defined(__EXTRA_METADATA__)
     arg.dbgLanguage(dbg);
     arg.dbgLyricist(dbg);

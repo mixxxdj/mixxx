@@ -1,6 +1,5 @@
 #include "widget/wmainmenubar.h"
 
-#include <QDesktopServices>
 #include <QUrl>
 
 #include "config.h"
@@ -14,7 +13,8 @@
 
 namespace {
 
-const int kMaxLoadToDeckActions = 4;
+constexpr int kMaxLoadToDeckActions = 4;
+const QString kSkinGroup = QStringLiteral("[Skin]");
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -134,6 +134,9 @@ void WMainMenuBar::initialize() {
     QString rescanTitle = tr("&Rescan Library");
     QString rescanText = tr("Rescans library folders for changes to tracks.");
     auto* pLibraryRescan = new QAction(rescanTitle, this);
+    pLibraryRescan->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+            ConfigKey("[KeyboardShortcuts]", "LibraryMenu_Rescan"),
+            tr("Ctrl+Shift+L"))));
     pLibraryRescan->setStatusTip(rescanText);
     pLibraryRescan->setWhatsThis(buildWhatsThis(rescanTitle, rescanText));
     pLibraryRescan->setCheckable(false);
@@ -145,7 +148,7 @@ void WMainMenuBar::initialize() {
 #ifdef __ENGINEPRIME__
     QString exportTitle = tr("E&xport Library to Engine Prime");
     QString exportText = tr("Export the library to the Engine Prime format");
-    auto pLibraryExport = new QAction(exportTitle, this);
+    auto* pLibraryExport = new QAction(exportTitle, this);
     pLibraryExport->setStatusTip(exportText);
     pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
     pLibraryExport->setCheckable(false);
@@ -188,7 +191,7 @@ void WMainMenuBar::initialize() {
     // when ever a menu "View" is present. QT (as of 5.12.3) does not handle this for us.
     // Add an invisible suffix to the View item string so it doesn't string-equal "View" ,
     // and the magic menu items won't get injected.
-    // https://bugs.launchpad.net/mixxx/+bug/1534292
+    // https://github.com/mixxxdj/mixxx/issues/8442
     QMenu* pViewMenu = new QMenu(tr("&View") + QStringLiteral("\u200C"), this);
 #else
     QMenu* pViewMenu = new QMenu(tr("&View"), this);
@@ -207,7 +210,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
     pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
-    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    createVisibilityControl(pViewShowSkinSettings,
+            ConfigKey(kSkinGroup, QStringLiteral("show_settings")));
     pViewMenu->addAction(pViewShowSkinSettings);
 
     // Microphone Section
@@ -222,7 +226,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     pViewShowMicrophone->setStatusTip(showMicrophoneText);
     pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
+    createVisibilityControl(pViewShowMicrophone,
+            ConfigKey(kSkinGroup, QStringLiteral("show_microphones")));
     pViewMenu->addAction(pViewShowMicrophone);
 
 #ifdef __VINYLCONTROL__
@@ -237,7 +242,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     pViewVinylControl->setStatusTip(showVinylControlText);
     pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    createVisibilityControl(pViewVinylControl,
+            ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")));
     pViewMenu->addAction(pViewVinylControl);
 #endif
 
@@ -252,7 +258,8 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
-    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    createVisibilityControl(pViewShowPreviewDeck,
+            ConfigKey(kSkinGroup, QStringLiteral("show_previewdecks")));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
 
@@ -267,7 +274,8 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
-    createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
+    createVisibilityControl(pViewShowCoverArt,
+            ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
     pViewMenu->addAction(pViewShowCoverArt);
 
 
@@ -282,7 +290,8 @@ void WMainMenuBar::initialize() {
                 tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    createVisibilityControl(pViewMaximizeLibrary,
+            ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
     pViewMenu->addSeparator();
@@ -303,7 +312,7 @@ void WMainMenuBar::initialize() {
     // key sequence to Mixxx for some reason.
     // Both adding an empty key sequence or the same sequence twice can render
     // the fullscreen shortcut nonfunctional.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474  PR #3011
+    // https://github.com/mixxxdj/mixxx/issues/10005  PR #3011
     if (!osShortcut.isEmpty() && !shortcuts.contains(osShortcut)) {
         shortcuts << osShortcut;
     }
@@ -517,7 +526,7 @@ void WMainMenuBar::initialize() {
                 &WMainMenuBar::slotDeveloperStatsBase);
         pDeveloperMenu->addAction(pDeveloperStatsBase);
 
-        // "D" cannont be used with Alt here as it is already by the Developer menu
+        // "D" cannot be used with Alt here as it is already by the Developer menu
         QString scriptDebuggerTitle = tr("Deb&ugger Enabled");
         QString scriptDebuggerText = tr("Enables the debugger during skin parsing");
         bool scriptDebuggerEnabled = m_pConfig->getValueString(
@@ -576,8 +585,9 @@ void WMainMenuBar::initialize() {
     auto* pHelpSupport = new QAction(supportTitle, this);
     pHelpSupport->setStatusTip(supportText);
     pHelpSupport->setWhatsThis(buildWhatsThis(supportTitle, supportText));
-    connect(pHelpSupport, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
+    connect(pHelpSupport, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_SUPPORT_URL));
+    });
     pHelpMenu->addAction(pHelpSupport);
 
     // User Manual
@@ -592,7 +602,7 @@ void WMainMenuBar::initialize() {
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
     connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
-        slotVisitUrl(manualUrl.toString());
+        slotVisitUrl(manualUrl);
     });
     pHelpMenu->addAction(pHelpManual);
 
@@ -612,9 +622,22 @@ void WMainMenuBar::initialize() {
             &QAction::triggered,
             this,
             [this, keyboardShortcutsUrl] {
-                slotVisitUrl(keyboardShortcutsUrl.toString());
+                slotVisitUrl(keyboardShortcutsUrl);
             });
     pHelpMenu->addAction(pHelpKbdShortcuts);
+
+    // User Settings Directory
+    const QString& settingsDirPath = m_pConfig->getSettingsPath();
+    QString settingsDirTitle = tr("&Settings directory");
+    QString settingsDirText = tr("Open the Mixxx user settings directory.");
+    auto* pHelpSettingsDir = new QAction(settingsDirTitle, this);
+    pHelpSettingsDir->setMenuRole(QAction::NoRole);
+    pHelpSettingsDir->setStatusTip(settingsDirText);
+    pHelpSettingsDir->setWhatsThis(buildWhatsThis(settingsDirTitle, settingsDirText));
+    connect(pHelpSettingsDir, &QAction::triggered, this, [this, settingsDirPath] {
+        slotVisitUrl(QUrl::fromLocalFile(settingsDirPath));
+    });
+    pHelpMenu->addAction(pHelpSettingsDir);
 
     // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
@@ -622,8 +645,9 @@ void WMainMenuBar::initialize() {
     auto* pHelpTranslation = new QAction(translateTitle, this);
     pHelpTranslation->setStatusTip(translateText);
     pHelpTranslation->setWhatsThis(buildWhatsThis(translateTitle, translateText));
-    connect(pHelpTranslation, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_TRANSLATION_URL); });
+    connect(pHelpTranslation, &QAction::triggered, this, [this] {
+        slotVisitUrl(QUrl(MIXXX_TRANSLATION_URL));
+    });
     pHelpMenu->addAction(pHelpTranslation);
 
     pHelpMenu->addSeparator();
@@ -682,8 +706,7 @@ void WMainMenuBar::onFullScreenStateChange(bool fullscreen) {
 }
 
 void WMainMenuBar::onVinylControlDeckEnabledStateChange(int deck, bool enabled) {
-    if (deck < 0 || deck >= m_vinylControlEnabledActions.size()) {
-        DEBUG_ASSERT(false);
+    VERIFY_OR_DEBUG_ASSERT(deck >= 0 && deck < m_vinylControlEnabledActions.size()) {
         return;
     }
     m_vinylControlEnabledActions.at(deck)->setChecked(enabled);
@@ -710,8 +733,8 @@ void WMainMenuBar::slotDeveloperDebugger(bool toggle) {
                    ConfigValue(toggle ? 1 : 0));
 }
 
-void WMainMenuBar::slotVisitUrl(const QString& url) {
-    QDesktopServices::openUrl(QUrl(url));
+void WMainMenuBar::slotVisitUrl(const QUrl& url) {
+    QDesktopServices::openUrl(url);
 }
 
 void WMainMenuBar::createVisibilityControl(QAction* pAction,
@@ -721,6 +744,14 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
             &WMainMenuBar::internalOnNewSkinLoaded,
             pConnection,
             &VisibilityControlConnection::slotReconnectControl);
+#ifdef __LINUX__
+    // reconnect when menu bar was recreated after toggling fullscreen
+    // so all hotkeys and menu actions continue to work
+    connect(this,
+            &WMainMenuBar::internalFullScreenStateChange,
+            pConnection,
+            &VisibilityControlConnection::slotReconnectControl);
+#endif
     connect(this,
             &WMainMenuBar::internalOnNewSkinAboutToLoad,
             pConnection,

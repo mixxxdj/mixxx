@@ -110,9 +110,19 @@
 			<!--Q A-->
 			<control>
 				<group>[Channel1]</group>
-				<key>keylock</key>
+				<key>quantize</key>
 				<description>Q button</description>
 				<status>0x91</status>
+				<midino>0x02</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>beats_translate_curpos</key>
+				<description>Shift + Q button</description>
+				<status>0x94</status>
 				<midino>0x02</midino>
 				<options>
 					<normal />
@@ -248,9 +258,19 @@
 			<!--Q B-->
 			<control>
 				<group>[Channel2]</group>
-				<key>keylock</key>
+				<key>quantize</key>
 				<description>Q button</description>
 				<status>0x92</status>
+				<midino>0x02</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>beats_translate_curpos</key>
+				<description>Shift + Q button</description>
+				<status>0x95</status>
 				<midino>0x02</midino>
 				<options>
 					<normal />
@@ -316,8 +336,8 @@
 
 			<!--Browser section (Encoder button)-->
 			<control>
-				<group>[Master]</group>
-				<key>maximize_library</key>
+				<group>[Skin]</group>
+				<key>show_maximized_library</key>
 				<description>Browser button - Maximize Library view</description>
 				<status>0x93</status>
 				<midino>0x00</midino>
@@ -364,7 +384,7 @@
 			<!--Sync-->
 			<control>
 				<group>[Channel1]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SHIFT + Sync: Sync Master</description>
 				<status>0x94</status>
 				<midino>0x05</midino>
@@ -443,7 +463,7 @@
 			<!--Sync-->
 			<control>
 				<group>[Channel2]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SHIFT + Sync: Sync Master</description>
 				<status>0x95</status>
 				<midino>0x05</midino>
@@ -648,6 +668,168 @@
 					<normal />
 				</options>
 			</control>
+			<!--FX Pads -->
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>enabled</key>
+				<description>FX Unit 1 - Slot 1 On/Off</description>
+				<status>0x96</status>
+				<midino>0x50</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>enabled</key>
+				<description>FX Unit 1 - Slot 2 On/Off</description>
+				<status>0x96</status>
+				<midino>0x51</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>enabled</key>
+				<description>FX Unit 1 - Slot 3 On/Off</description>
+				<status>0x96</status>
+				<midino>0x52</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 1 On/Off - Deck A</description>
+				<status>0x96</status>
+				<midino>0x53</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 1 next effect</description>
+				<status>0x96</status>
+				<midino>0x54</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 2 next effect</description>
+				<status>0x96</status>
+				<midino>0x55</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 1 - Slot 3 next effect</description>
+				<status>0x96</status>
+				<midino>0x56</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 2 On/Off - Deck A</description>
+				<status>0x96</status>
+				<midino>0x57</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<!--FX Pads (SHIFT mode) 0x58-0x5F -->
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>enabled</key>
+				<description>FX Unit 3 - Slot 1 On/Off</description>
+				<status>0x96</status>
+				<midino>0x58</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>enabled</key>
+				<description>FX Unit 3 - Slot 2 On/Off</description>
+				<status>0x96</status>
+				<midino>0x59</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>enabled</key>
+				<description>FX Unit 3 - Slot 3 On/Off</description>
+				<status>0x96</status>
+				<midino>0x5A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 3 On/Off - Deck A</description>
+				<status>0x96</status>
+				<midino>0x5B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 1 next effect</description>
+				<status>0x96</status>
+				<midino>0x5C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 2 next effect</description>
+				<status>0x96</status>
+				<midino>0x5D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 3 - Slot 3 next effect</description>
+				<status>0x96</status>
+				<midino>0x5E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX Unit 4 On/Off - Deck A</description>
+				<status>0x96</status>
+				<midino>0x5F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
 			<!--Roll-->
 			<control>
 				<group>[Channel1]</group>
@@ -702,7 +884,7 @@
 			<control>
 				<group>[Channel1]</group>
 				<key>beatlooproll_4_activate</key>
-				<description>Loop 2 Beat (Pad 6)</description>
+				<description>Loop 4 Beat (Pad 6)</description>
 				<status>0x96</status>
 				<midino>0x15</midino>
 				<options>
@@ -722,7 +904,7 @@
 			<control>
 				<group>[Channel1]</group>
 				<key>beatlooproll_16_activate</key>
-				<description>Loop 2 Beat (Pad 8)</description>
+				<description>Loop 16 Beat (Pad 8)</description>
 				<status>0x96</status>
 				<midino>0x17</midino>
 				<options>
@@ -1063,6 +1245,168 @@
 					<normal />
 				</options>
 			</control>
+			<!--FX Pads -->
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>enabled</key>
+				<description>FX Unit 2 - Slot 1 On/Off</description>
+				<status>0x97</status>
+				<midino>0x50</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>enabled</key>
+				<description>FX Unit 2 - Slot 2 On/Off</description>
+				<status>0x97</status>
+				<midino>0x51</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>enabled</key>
+				<description>FX Unit 2 - Slot 3 On/Off</description>
+				<status>0x97</status>
+				<midino>0x52</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 1 On/Off - Deck B</description>
+				<status>0x97</status>
+				<midino>0x53</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 1 next effect</description>
+				<status>0x97</status>
+				<midino>0x54</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 2 next effect</description>
+				<status>0x97</status>
+				<midino>0x55</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 2 - Slot 3 next effect</description>
+				<status>0x97</status>
+				<midino>0x56</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 2 On/Off - Deck B</description>
+				<status>0x97</status>
+				<midino>0x57</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<!--FX Pads (SHIFT mode) 0x58-0x5F -->
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>enabled</key>
+				<description>FX Unit 4 - Slot 1 On/Off</description>
+				<status>0x97</status>
+				<midino>0x58</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>enabled</key>
+				<description>FX Unit 4 - Slot 2 On/Off</description>
+				<status>0x97</status>
+				<midino>0x59</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>enabled</key>
+				<description>FX Unit 4 - Slot 3 On/Off</description>
+				<status>0x97</status>
+				<midino>0x5A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 3 On/Off - Deck B</description>
+				<status>0x97</status>
+				<midino>0x5B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 1 next effect</description>
+				<status>0x97</status>
+				<midino>0x5C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 2 next effect</description>
+				<status>0x97</status>
+				<midino>0x5D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX Unit 4 - Slot 3 next effect</description>
+				<status>0x97</status>
+				<midino>0x5E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX Unit 4 On/Off - Deck B</description>
+				<status>0x97</status>
+				<midino>0x5F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
 			<!--Roll-->
 			<control>
 				<group>[Channel2]</group>
@@ -1117,7 +1461,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>beatlooproll_4_activate</key>
-				<description>Loop 2 Beat (Pad 6)</description>
+				<description>Loop 4 Beat (Pad 6)</description>
 				<status>0x97</status>
 				<midino>0x15</midino>
 				<options>
@@ -1137,7 +1481,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>beatlooproll_16_activate</key>
-				<description>Loop 2 Beat (Pad 8)</description>
+				<description>Loop 16 Beat (Pad 8)</description>
 				<status>0x97</status>
 				<midino>0x17</midino>
 				<options>
@@ -1146,7 +1490,7 @@
 			</control>
 			<!--Sampler-->
 			<control>
-				<group>[Sampler1]</group>
+				<group>[Sampler9]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 1</description>
 				<status>0x97</status>
@@ -1156,7 +1500,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler2]</group>
+				<group>[Sampler10]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 2</description>
 				<status>0x97</status>
@@ -1166,7 +1510,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler3]</group>
+				<group>[Sampler11]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 3</description>
 				<status>0x97</status>
@@ -1176,7 +1520,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler4]</group>
+				<group>[Sampler12]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 1</description>
 				<status>0x97</status>
@@ -1186,7 +1530,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler5]</group>
+				<group>[Sampler13]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 5</description>
 				<status>0x97</status>
@@ -1196,7 +1540,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler6]</group>
+				<group>[Sampler14]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 6</description>
 				<status>0x97</status>
@@ -1206,7 +1550,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler7]</group>
+				<group>[Sampler15]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 7</description>
 				<status>0x97</status>
@@ -1216,7 +1560,7 @@
 				</options>
 			</control>
 			<control>
-				<group>[Sampler8]</group>
+				<group>[Sampler16]</group>
 				<key>cue_gotoandplay</key>
 				<description>PAD 8</description>
 				<status>0x97</status>
@@ -1333,6 +1677,19 @@
 				<key>MoveVertical</key>
 				<description>Move Vertical (Browser Knob)</description>
 				<status>0xB0</status>
+				<midino>0x01</midino>
+				<options>
+					<selectknob />
+				</options>
+			</control>
+
+			<!-- CC's MIDI Channel 4 (0xB3 Browser encoder SHIFT mode either one)-->
+			<!--Browser encoder-->
+			<control>
+				<group>[Library]</group>
+				<key>MoveHorizontal</key>
+				<description>Move Horizontal (Browser Knob)</description>
+				<status>0xB3</status>
 				<midino>0x01</midino>
 				<options>
 					<selectknob />
@@ -1617,7 +1974,7 @@
 				</options>
 			</control>
 
-			<!-- CC's MIDI Channel 5 (0xB4  Deck B - SHIFT mode)-->
+			<!-- CC's MIDI Channel 5 (0xB4  Deck A - SHIFT mode)-->
 			<!--Jog wheel-->
 			<control>
 				<group>[Channel1]</group>
@@ -1693,7 +2050,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SYNC LED Deck A(SHIFT mode)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -1715,7 +2072,7 @@
 			</output>
 			<output>
 				<group>[Channel1]</group>
-				<key>keylock</key>
+				<key>quantize</key>
 				<description>Q button Deck A</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -1759,7 +2116,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>sync_master</key>
+				<key>sync_leader</key>
 				<description>SYNC LED Deck B(SHIFT mode)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -1781,7 +2138,7 @@
 			</output>
 			<output>
 				<group>[Channel2]</group>
-				<key>keylock</key>
+				<key>quantize</key>
 				<description>Q button Deck B</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -1849,8 +2206,8 @@
 				<off>0x07</off>
 			</output>
 			<output>
-				<group>[Master]</group>
-				<key>maximize_library</key>
+				<group>[Skin]</group>
+				<key>show_maximized_library</key>
 				<description>Browser LED (GREEN)</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
@@ -1886,7 +2243,7 @@
 			<output>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
 				<key>enabled</key>
-				<description>Effect On/Off buttonn</description>
+				<description>Effect On/Off button</description>
 				<minimum>0.5</minimum>
 				<maximum>1</maximum>
 				<status>0x92</status>
@@ -2374,6 +2731,328 @@
 				<on>0x7F</on>
 				<minimum>0.5</minimum>
 			</output>
+			<!--LED FX Channel1 -->
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>enabled</key>
+				<description>FX1 Effect 1 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x50</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>enabled</key>
+				<description>FX1 Effect 2 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x51</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>enabled</key>
+				<description>FX1 Effect 3 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x52</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX1 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x53</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x54</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 2 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x55</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX1 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x56</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX2 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x57</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>enabled</key>
+				<description>FX3 Effect 1 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x58</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>enabled</key>
+				<description>FX3 Effect 2 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x59</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>enabled</key>
+				<description>FX3 Effect 3 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5A</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX3 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5B</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX3 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5C</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX3 Effect 2 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5D</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX3 Effect 3 next_effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5E</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>group_[Channel1]_enable</key>
+				<description>FX4 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x96</status>
+				<midino>0x5F</midino>
+				<on>0x7f</on>
+			</output>
+			<!--LED FX Channel2 -->
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>enabled</key>
+				<description>FX2 Effect 1 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x50</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>enabled</key>
+				<description>FX2 Effect 2 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x51</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>enabled</key>
+				<description>FX2 Effect 3 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x52</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit1]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX1 is active on Deck B</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x53</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x54</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 2 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x55</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX2 Effect 3 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x56</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit2]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX2 is active on Deck B</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x57</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>enabled</key>
+				<description>FX4 Effect 1 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x58</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>enabled</key>
+				<description>FX4 Effect 2 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x59</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>enabled</key>
+				<description>FX4 Effect 3 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5A</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit3]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX3 is active on Deck A</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5B</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect1]</group>
+				<key>next_effect</key>
+				<description>FX4 Effect 1 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5C</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect2]</group>
+				<key>next_effect</key>
+				<description>FX4 Effect 2 activate</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5D</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4_Effect3]</group>
+				<key>next_effect</key>
+				<description>FX4 Effect 3 next effect</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5E</midino>
+				<on>0x7f</on>
+			</output>
+			<output>
+				<group>[EffectRack1_EffectUnit4]</group>
+				<key>group_[Channel2]_enable</key>
+				<description>FX4 is active on Deck B</description>
+				<minimum>0.5</minimum>
+				<maximum>1</maximum>
+				<status>0x97</status>
+				<midino>0x5F</midino>
+				<on>0x7f</on>
+			</output>
 			<!--LED SAMPLE-->
 			<output>
 				<group>[Sampler1]</group>
@@ -2385,7 +3064,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Sampler9]</group>
 				<key>play_indicator</key>
 				<description>(Pad 1 DECK B)</description>
 				<status>0x97</status>
@@ -2403,7 +3082,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Sampler10]</group>
 				<key>play_indicator</key>
 				<description>(Pad 2 DECK B)</description>
 				<status>0x97</status>
@@ -2421,7 +3100,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler3]</group>
+				<group>[Sampler11]</group>
 				<key>play_indicator</key>
 				<description>(Pad 3 DECK B)</description>
 				<status>0x97</status>
@@ -2439,7 +3118,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler4]</group>
+				<group>[Sampler12]</group>
 				<key>play_indicator</key>
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>
@@ -2457,7 +3136,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler5]</group>
+				<group>[Sampler13]</group>
 				<key>play_indicator</key>
 				<description>(Pad 5 DECK B)</description>
 				<status>0x97</status>
@@ -2475,7 +3154,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler6]</group>
+				<group>[Sampler14]</group>
 				<key>play_indicator</key>
 				<description>(Pad 6 DECK B)</description>
 				<status>0x97</status>
@@ -2493,7 +3172,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler7]</group>
+				<group>[Sampler15]</group>
 				<key>play_indicator</key>
 				<description>(Pad 7 DECK B)</description>
 				<status>0x97</status>
@@ -2511,7 +3190,7 @@
 				<minimum>0.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler8]</group>
+				<group>[Sampler16]</group>
 				<key>play_indicator</key>
 				<description>(Pad 4 DECK B)</description>
 				<status>0x97</status>

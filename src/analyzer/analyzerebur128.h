@@ -3,6 +3,7 @@
 #include <ebur128.h>
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "preferences/replaygainsettings.h"
 
 class AnalyzerEbur128 : public Analyzer {
@@ -14,9 +15,11 @@ class AnalyzerEbur128 : public Analyzer {
         return rgSettings.isAnalyzerEnabled(2);
     }
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool processSamples(const CSAMPLE* pIn, const int iLen) override;
-    void storeResults(TrackPointer tio) override;
+    bool initialize(const AnalyzerTrack& track,
+            mixxx::audio::SampleRate sampleRate,
+            SINT frameLength) override;
+    bool processSamples(const CSAMPLE* pIn, SINT count) override;
+    void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
 
   private:

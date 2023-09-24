@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -61,12 +61,15 @@ find_library(wavpack_LIBRARY NAMES wavpack wv wavpackdll
 )
 mark_as_advanced(wavpack_LIBRARY)
 
+if(DEFINED PC_wavpack_VERSION AND NOT PC_wavpack_VERSION STREQUAL "")
+  set(wavpack_VERSION "${PC_wavpack_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   wavpack
-  DEFAULT_MSG
-  wavpack_LIBRARY
-  wavpack_INCLUDE_DIR
+  REQUIRED_VARS wavpack_LIBRARY wavpack_INCLUDE_DIR
+  VERSION_VAR wavpack_VERSION
 )
 
 if(wavpack_FOUND)

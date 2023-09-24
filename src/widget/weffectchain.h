@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QWidget>
-#include <QLabel>
 #include <QDomNode>
+#include <QLabel>
+#include <QWidget>
 
-#include "effects/effectchainslot.h"
+#include "effects/effectchain.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
 
 class EffectsManager;
 
@@ -18,12 +18,12 @@ class WEffectChain : public WLabel {
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   private slots:
-    void chainUpdated();
+    void chainPresetChanged(const QString& newName);
 
   private:
     // Set the EffectChain that should be monitored by this WEffectChain
-    void setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot);
+    void setEffectChain(EffectChainPointer pEffectChain);
 
     EffectsManager* m_pEffectsManager;
-    EffectChainSlotPointer m_pEffectChainSlot;
+    EffectChainPointer m_pEffectChain;
 };

@@ -2,6 +2,7 @@
 
 #include <QItemDelegate>
 #include <QList>
+#include <QUrl>
 #include <QVector>
 #include <QtSql>
 
@@ -24,7 +25,8 @@ class TrackModel {
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
-              m_eDefaultSortOrder(Qt::AscendingOrder) {
+              m_eDefaultSortOrder(Qt::AscendingOrder),
+              m_confirmHideRemoveTracks(true) {
     }
     virtual ~TrackModel() {}
 
@@ -48,6 +50,8 @@ class TrackModel {
         Purge = 1u << 13u,
         RemovePlaylist = 1u << 14u,
         RemoveCrate = 1u << 15u,
+        RemoveFromDisk = 1u << 16u,
+        Analyze = 1u << 17u,
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
@@ -88,6 +92,7 @@ class TrackModel {
         SampleRate = 29,
         Color = 30,
         LastPlayedAt = 31,
+        PlaylistDateTimeAdded = 32,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -100,6 +105,15 @@ class TrackModel {
     // or TrackRef in this result set.
     virtual TrackPointer getTrack(const QModelIndex& index) const = 0;
     virtual TrackPointer getTrackByRef(const TrackRef& trackRef) const = 0;
+
+    /// Get the URL of the track at the given QModelIndex.
+    ///
+    /// This function should be used in favor of getTrackId() to allow
+    /// decoupling the TrackModel from the internal database. It should
+    /// also be preferred over getTrackLocation() which implicitly
+    /// assumes that tracks are always stored on the local file system.
+    /// Using URLs for identifying tracks is more versatile.
+    virtual QUrl getTrackUrl(const QModelIndex& index) const = 0;
 
     // Gets the on-disk location of the track at the given location
     // with Qt separator "/".
@@ -115,14 +129,12 @@ class TrackModel {
     // empty list if the track ID is not present in the result set.
     virtual const QVector<int> getTrackRows(TrackId trackId) const = 0;
 
-    bool isTrackModel() { return true;}
     virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
     // reactivate them
     virtual bool isColumnHiddenByDefault(int column) = 0;
-    virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
 
     virtual void removeTracks(const QModelIndexList& indices) {
@@ -203,11 +215,33 @@ class TrackModel {
     virtual void select() {
     }
 
+    /// @brief modelKey returns a unique identifier for the model
+    /// @param noSearch don't include the current search in the key
+    /// @param baseOnly return only a identifier for the whole subsystem
+    virtual QString modelKey(bool noSearch) const = 0;
+
+    virtual bool getRequireConfirmationToHideRemoveTracks() {
+        return m_confirmHideRemoveTracks;
+    }
+    virtual void setRequireConfirmationToHideRemoveTracks(bool require) {
+        m_confirmHideRemoveTracks = require;
+    }
+
+    virtual bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const = 0;
+#if defined(__EXTRA_METADATA__)
+    virtual bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const = 0;
+#endif // __EXTRA_METADATA__
+
   private:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;
+    bool m_confirmHideRemoveTracks;
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackModel::Capabilities)

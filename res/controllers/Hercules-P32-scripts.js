@@ -16,6 +16,8 @@ var loopEnabledDot = false;
 var samplerCrossfaderAssign = true;
 // Toggle effect units between 1 & 3 on left and 2 & 4 on right when toggling decks
 var toggleEffectUnitsWithDecks = false;
+// Set the dry/wet knob as a pregain
+var dryWetKnobAsPregain = false;
 
 /**
  * Hercules P32 DJ controller script for Mixxx 2.1
@@ -45,8 +47,8 @@ P32.init = function() {
     components.Component.prototype.shiftChannel = true;
     components.Button.prototype.sendShifted = true;
 
-    if (engine.getValue("[Master]", "num_samplers") < 32) {
-        engine.setValue("[Master]", "num_samplers", 32);
+    if (engine.getValue("[App]", "num_samplers") < 32) {
+        engine.setValue("[App]", "num_samplers", 32);
     }
 
     P32.leftDeck = new P32.Deck([1, 3], 1);
@@ -378,7 +380,16 @@ P32.Deck = function(deckNumbers, channel) {
     this.effectUnit.knobs[1].midi = [0xB0 + channel, 0x06];
     this.effectUnit.knobs[2].midi = [0xB0 + channel, 0x07];
     this.effectUnit.knobs[3].midi = [0xB0 + channel, 0x08];
-    this.effectUnit.dryWetKnob.midi = [0xB0 + channel, 0x09];
+    if (dryWetKnobAsPregain) {
+        this.dryWetKnobOrPregain = new components.Pot({
+            midi: [0xB0 + channel, 0x09],
+            group: "[Channel" + channel + "]",
+            inKey: "pregain",
+        });
+    } else {
+        this.effectUnit.dryWetKnob.midi = [0xB0 + channel, 0x09];
+        this.dryWetKnobOrPregain = this.effectUnit.dryWetKnob;
+    }
     this.effectUnit.enableButtons[1].midi = [0x90 + channel, 0x03];
     this.effectUnit.enableButtons[2].midi = [0x90 + channel, 0x04];
     this.effectUnit.enableButtons[3].midi = [0x90 + channel, 0x05];

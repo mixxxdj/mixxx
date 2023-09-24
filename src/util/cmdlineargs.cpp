@@ -12,27 +12,37 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
-#include "util/version.h"
+#include "util/assert.h"
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
-          m_midiDebug(false),
+          m_controllerDebug(false),
+          m_controllerAbortOnWarning(false),
           m_developer(false),
           m_safeMode(false),
+          m_useVuMeterGL(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
+          m_scaleFactor(1.0),
           m_useColors(false),
+          m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
-// We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
-#ifdef __LINUX__
-          m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+// We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
+#ifdef MIXXX_SETTINGS_PATH
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
+#ifdef __LINUX__
+#error "We are not ready to switch to XDG folders under Linux"
+#endif
+
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
-                  QStandardPaths::writableLocation(QStandardPaths::DataLocation)
+                  QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
                           .append("/")) {
 #endif
 }
@@ -58,136 +68,245 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::parse(const QStringList& arguments) {
+bool CmdlineArgs::parse(int argc, char** argv) {
+    // Some command line parameters needs to be evaluated before
+    // The QCoreApplication is initialized.
+    DEBUG_ASSERT(!QCoreApplication::instance());
+    if (argc == 1) {
+        // Mixxx was run with the binary name only, nothing to do
+        return true;
+    }
+    QStringList arguments;
+    arguments.reserve(argc);
+    for (int a = 0; a < argc; ++a) {
+        arguments << QString::fromLocal8Bit(argv[a]);
+    }
+    return parse(arguments, ParseMode::Initial);
+}
+
+void CmdlineArgs::parseForUserFeedback() {
+    // For user feedback we need an initialized QCoreApplication because
+    // it add some QT specific command line parameters
+    DEBUG_ASSERT(QCoreApplication::instance());
+    // We need only execute the second parse for user feedback when the first run
+    // has produces an not yet displayed error or help text.
+    // Otherwise we can skip the second run.
+    // A parameter for the QCoreApplication will fail in the first run and
+    // m_parseForUserFeedbackRequired will be set as well.
+    if (!m_parseForUserFeedbackRequired) {
+        return;
+    }
+    parse(QCoreApplication::arguments(), ParseMode::ForUserFeedback);
+}
+
+bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mode) {
+    bool forUserFeedback = (mode == ParseMode::ForUserFeedback);
+
     QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main",
-            "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
-            "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
+    if (forUserFeedback) {
+        parser.setApplicationDescription(
+                QCoreApplication::translate("CmdlineArgs",
+                        "Mixxx is an open source DJ software. For more "
+                        "information, see: ") +
+                MIXXX_MANUAL_COMMANDLINEOPTIONS_URL);
+    }
     // add options
-    const QCommandLineOption fullscreen(QStringList() << "f"
-                                                      << "full-screen"
-                                                      << "fullScreen",
-            QCoreApplication::translate("main", "Starts Mixxx in full-screen mode"));
-    parser.addOption(fullscreen);
+    const QCommandLineOption fullScreen(
+            QStringList({QStringLiteral("f"), QStringLiteral("full-screen")}),
+            forUserFeedback ? QCoreApplication::translate(
+                                      "CmdlineArgs", "Starts Mixxx in full-screen mode")
+                            : QString());
+    QCommandLineOption fullScreenDeprecated(QStringLiteral("fullScreen"));
+    fullScreenDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    parser.addOption(fullScreen);
+    parser.addOption(fullScreenDeprecated);
 
     const QCommandLineOption locale(QStringLiteral("locale"),
-            QCoreApplication::translate("main",
-                    "Use a custom locale for loading translations. (e.g "
-                    "'fr')"));
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Use a custom locale for loading translations. (e.g "
+                                      "'fr')")
+                            : QString(),
+            QStringLiteral("locale"));
     parser.addOption(locale);
 
     // An option with a value
-    const QCommandLineOption settingsPath(QStringList() << "settings-path"
-                                                        << "settingsPath",
-            QCoreApplication::translate("main",
-                    "Top-level directory where Mixxx should look for settings. "
-                    "Default is:") +
-                    getSettingsPath().toLocal8Bit().constData(),
+    const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Top-level directory where Mixxx should look for settings. "
+                                      "Default is: ") +
+                            QDir::toNativeSeparators(getSettingsPath())
+                            : QString(),
+            QStringLiteral("path"));
+    QCommandLineOption settingsPathDeprecated(
             QStringLiteral("settingsPath"));
+    settingsPathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    settingsPathDeprecated.setValueName(settingsPath.valueName());
     parser.addOption(settingsPath);
+    parser.addOption(settingsPathDeprecated);
 
-    QCommandLineOption resourcePath(QStringList() << "resource-path"
-                                                  << "resourcePath",
-            QCoreApplication::translate("main",
-                    "Top-level directory where Mixxx should look for its "
-                    "resource files such as MIDI mappings, overriding the "
-                    "default installation location."),
+    QCommandLineOption resourcePath(QStringLiteral("resource-path"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Top-level directory where Mixxx should look for its "
+                                      "resource files such as MIDI mappings, overriding the "
+                                      "default installation location.")
+                            : QString(),
+            QStringLiteral("path"));
+    QCommandLineOption resourcePathDeprecated(
             QStringLiteral("resourcePath"));
+    resourcePathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    resourcePathDeprecated.setValueName(resourcePath.valueName());
     parser.addOption(resourcePath);
+    parser.addOption(resourcePathDeprecated);
 
-    const QCommandLineOption timelinePath(QStringList() << "timeline-path"
-                                                        << "timelinePath",
-            QCoreApplication::translate("main", "Path the timeline is written to"));
+    const QCommandLineOption timelinePath(QStringLiteral("timeline-path"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Path the debug statistics time line is written to")
+                            : QString(),
+            QStringLiteral("path"));
+    QCommandLineOption timelinePathDeprecated(
+            QStringLiteral("timelinePath"), timelinePath.description());
+    timelinePathDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    timelinePathDeprecated.setValueName(timelinePath.valueName());
     parser.addOption(timelinePath);
+    parser.addOption(timelinePathDeprecated);
 
-    const QCommandLineOption controllerDebug(QStringList() << "controller-debug"
-                                                           << "controllerDebug"
-                                                           << "midi-debug"
-                                                           << "midiDebug",
-            QCoreApplication::translate("main",
-                    "Causes Mixxx to display/log all of the controller data it "
-                    "receives and script functions it loads"));
+    const QCommandLineOption enableVuMeterGL(QStringLiteral("enable-vumetergl"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Use OpenGL vu meter")
+                            : QString());
+    parser.addOption(enableVuMeterGL);
+
+    const QCommandLineOption controllerDebug(QStringLiteral("controller-debug"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Causes Mixxx to display/log all of the controller data it "
+                                      "receives and script functions it loads")
+                            : QString());
+    QCommandLineOption controllerDebugDeprecated(
+            QStringList({QStringLiteral("controllerDebug"),
+                    QStringLiteral("midiDebug")}));
+    controllerDebugDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(controllerDebug);
+    parser.addOption(controllerDebugDeprecated);
+
+    const QCommandLineOption controllerAbortOnWarning(
+            QStringLiteral("controller-abort-on-warning"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "The controller mapping will issue more "
+                                      "aggressive warnings and errors when "
+                                      "detecting misuse of controller APIs. "
+                                      "New Controller Mappings should be "
+                                      "developed with this option enabled!")
+                            : QString());
+    parser.addOption(controllerAbortOnWarning);
 
     const QCommandLineOption developer(QStringLiteral("developer"),
-            QCoreApplication::translate("main",
-                    "Enables developer-mode. Includes extra log info, stats on "
-                    "performance, and a Developer tools menu."));
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Enables developer-mode. Includes extra log info, stats on "
+                                      "performance, and a Developer tools menu.")
+                            : QString());
     parser.addOption(developer);
 
-    const QCommandLineOption safeMode(QStringList() << "safe-mode"
-                                                    << "safeMode",
-            QCoreApplication::translate("main",
-                    "Enables safe-mode. Disables OpenGL waveforms, and "
-                    "spinning vinyl widgets. Try this option if Mixxx is "
-                    "crashing on startup."));
+    const QCommandLineOption safeMode(QStringLiteral("safe-mode"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Enables safe-mode. Disables OpenGL waveforms, and "
+                                      "spinning vinyl widgets. Try this option if Mixxx is "
+                                      "crashing on startup.")
+                            : QString());
+    QCommandLineOption safeModeDeprecated(QStringLiteral("safeMode"), safeMode.description());
+    safeModeDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(safeMode);
+    parser.addOption(safeModeDeprecated);
 
     const QCommandLineOption color(QStringLiteral("color"),
-            QCoreApplication::translate("main",
-                    "[auto|always|never] Use colors on the console output."),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "[auto|always|never] Use colors on the console output.")
+                            : QString(),
             QStringLiteral("color"),
             QStringLiteral("auto"));
     parser.addOption(color);
 
-    const QCommandLineOption logLevel(QStringList() << "log-level"
-                                                    << "logLevel",
-            QCoreApplication::translate("main",
-                    "Sets the verbosity of command line logging.\n"
-                    "critical - Critical/Fatal only\n"
-                    "warning  - Above + Warnings\n"
-                    "info     - Above + Informational messages\n"
-                    "debug    - Above + Debug/Developer messages\n"
-                    "trace    - Above + Profiling messages"),
-            QStringLiteral("logLevel"));
+    const QCommandLineOption logLevel(QStringLiteral("log-level"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sets the verbosity of command line logging.\n"
+                                      "critical - Critical/Fatal only\n"
+                                      "warning  - Above + Warnings\n"
+                                      "info     - Above + Informational messages\n"
+                                      "debug    - Above + Debug/Developer messages\n"
+                                      "trace    - Above + Profiling messages")
+                            : QString(),
+            QStringLiteral("level"));
+    QCommandLineOption logLevelDeprecated(QStringLiteral("logLevel"), logLevel.description());
+    logLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logLevelDeprecated.setValueName(logLevel.valueName());
     parser.addOption(logLevel);
+    parser.addOption(logLevelDeprecated);
 
-    const QCommandLineOption logFlushLevel(QStringList() << "log-flush-level"
-                                                         << "logFlushLevel",
-            QCoreApplication::translate("main",
-                    "Sets the the logging level at which the log buffer is "
-                    "flushed to mixxx.log. LEVEL is one of the values defined "
-                    "at --logLevel above."),
-            QStringLiteral("logFlushLevel"));
+    const QCommandLineOption logFlushLevel(QStringLiteral("log-flush-level"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Sets the the logging level at which the log buffer is "
+                                      "flushed to mixxx.log. <level> is one of the values defined "
+                                      "at --log-level above.")
+                            : QString(),
+            QStringLiteral("level"));
+    QCommandLineOption logFlushLevelDeprecated(
+            QStringLiteral("logFlushLevel"), logLevel.description());
+    logFlushLevelDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
+    logFlushLevelDeprecated.setValueName(logFlushLevel.valueName());
     parser.addOption(logFlushLevel);
+    parser.addOption(logFlushLevelDeprecated);
 
-#ifdef MIXXX_BUILD_DEBUG
-    QCommandLineOption debugAssertBreak(QStringList() << "debug-assert-break"
-                                                      << "debugAssertBreak",
-            QCoreApplication::translate("main",
-                    "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
-                    "false. Under a debugger you can continue afterwards."));
+    QCommandLineOption debugAssertBreak(QStringLiteral("debug-assert-break"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
+                                      "false. Under a debugger you can continue afterwards.")
+                            : QString());
+    QCommandLineOption debugAssertBreakDeprecated(
+            QStringLiteral("debugAssertBreak"), debugAssertBreak.description());
+    debugAssertBreakDeprecated.setFlags(QCommandLineOption::HiddenFromHelp);
     parser.addOption(debugAssertBreak);
-#endif
+    parser.addOption(debugAssertBreakDeprecated);
 
     const QCommandLineOption helpOption = parser.addHelpOption();
     const QCommandLineOption versionOption = parser.addVersionOption();
 
     parser.addPositionalArgument(QStringLiteral("file"),
-            QCoreApplication::translate("main",
-                    "Load the specified music file(s) at start-up. Each file "
-                    "you specify will be loaded into the next virtual deck."));
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Load the specified music file(s) at start-up. Each file "
+                                      "you specify will be loaded into the next virtual deck.")
+                            : QString());
+
+    if (forUserFeedback) {
+        // We know form the first path, that there will be likely an error message, check again.
+        // This is not the case if the user uses a Qt internal option that is unknown
+        // in the first path
+        puts(""); // Add a blank line to make the parser output more visible
+                  // This call does not return and calls exit() in case of help or an parser error
+        parser.process(arguments);
+        return true;
+    }
+
+    // From here, we are in in the initial parse mode
+    DEBUG_ASSERT(mode == ParseMode::Initial);
 
     // process all arguments
     if (!parser.parse(arguments)) {
-        qWarning() << parser.errorText();
+        // we have an misspelled argument or one that is processed
+        // in the not yet initialized QCoreApplication
+        m_parseForUserFeedbackRequired = true;
     }
 
-    if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
-        // we need to call process here otherwise there is no way to print the
-        // help-all information
-        parser.process(arguments);
-        return false;
-    }
-    if (parser.isSet(versionOption)) {
-        parser.showVersion();
-        return false;
+    if (parser.isSet(versionOption) ||
+            parser.isSet(helpOption)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            || parser.isSet(QStringLiteral("help-all"))
+#endif
+    ) {
+        m_parseForUserFeedbackRequired = true;
     }
 
-    m_startInFullscreen = parser.isSet(fullscreen);
+    m_startInFullscreen = parser.isSet(fullScreen) || parser.isSet(fullScreenDeprecated);
 
     if (parser.isSet(locale)) {
         m_locale = parser.value(locale);
@@ -199,31 +318,64 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
             m_settingsPath.append("/");
         }
         m_settingsPathSet = true;
+    } else if (parser.isSet(settingsPathDeprecated)) {
+        m_settingsPath = parser.value(settingsPathDeprecated);
+        if (!m_settingsPath.endsWith("/")) {
+            m_settingsPath.append("/");
+        }
+        m_settingsPathSet = true;
     }
 
     if (parser.isSet(resourcePath)) {
         m_resourcePath = parser.value(resourcePath);
+    } else if (parser.isSet(resourcePathDeprecated)) {
+        m_resourcePath = parser.value(resourcePathDeprecated);
     }
 
-    m_midiDebug = parser.isSet(controllerDebug);
-    m_developer = parser.isSet(developer);
-    m_safeMode = parser.isSet(safeMode);
+    if (parser.isSet(timelinePath)) {
+        m_timelinePath = parser.value(timelinePath);
+    } else if (parser.isSet(timelinePathDeprecated)) {
+        m_timelinePath = parser.value(timelinePathDeprecated);
+    }
 
-#ifdef MIXXX_BUILD_DEBUG
-    m_debugAssertBreak = parser.isSet(debugAssertBreak);
-#endif
+    m_useVuMeterGL = parser.isSet(enableVuMeterGL);
+    m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
+    m_developer = parser.isSet(developer);
+    m_safeMode = parser.isSet(safeMode) || parser.isSet(safeModeDeprecated);
+    m_debugAssertBreak = parser.isSet(debugAssertBreak) || parser.isSet(debugAssertBreakDeprecated);
 
     m_musicFiles = parser.positionalArguments();
 
     if (parser.isSet(logLevel)) {
         if (!parseLogLevel(parser.value(logLevel), &m_logLevel)) {
-            fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
-warnings and errors to the console unless this is set properly.\n",
+            fputs("\nlog-level wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only print warnings and critical messages to the console.\n",
+                    stdout);
+        }
+    } else if (parser.isSet(logLevelDeprecated)) {
+        if (!parseLogLevel(parser.value(logLevelDeprecated), &m_logLevel)) {
+            fputs("\nlogLevel wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only print warnings and critical messages to the console.\n",
                     stdout);
         }
     } else {
         if (m_developer) {
             m_logLevel = mixxx::LogLevel::Debug;
+        }
+    }
+
+    if (parser.isSet(logFlushLevel)) {
+        if (!parseLogLevel(parser.value(logFlushLevel), &m_logFlushLevel)) {
+            fputs("\nlog-flush-level wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only flush output after a critical message.\n",
+                    stdout);
+        }
+    } else if (parser.isSet(logFlushLevelDeprecated)) {
+        if (!parseLogLevel(parser.value(logFlushLevelDeprecated), &m_logFlushLevel)) {
+            fputs("\nlogFlushLevel wasn't 'trace', 'debug', 'info', 'warning', or 'critical'!\n"
+                  "Mixxx will only flush output after a critical message.\n",
+                    stdout);
         }
     }
 
@@ -248,7 +400,7 @@ warnings and errors to the console unless this is set properly.\n",
     } else if (parser.value(color).compare(QLatin1String("never"), Qt::CaseInsensitive) == 0) {
         m_useColors = false;
     } else {
-        qWarning() << "Unknown setting for color, ignoring";
+        fputs("Unknown argument for for color.\n", stdout);
     }
 
     return true;

@@ -7,7 +7,6 @@
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 
-class MixxxMainWindow;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
@@ -15,7 +14,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   public:
     DlgPrefWaveform(
             QWidget* pParent,
-            MixxxMainWindow* pMixxx,
             UserSettingsPointer pConfig,
             std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefWaveform();
@@ -42,6 +40,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
 
+  signals:
+    void reloadUserInterface();
+
   private:
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
@@ -49,5 +50,4 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
-    MixxxMainWindow* m_pMixxx;
 };

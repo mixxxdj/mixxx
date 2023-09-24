@@ -28,11 +28,13 @@ const bool sDebug = false;
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
 // Column 0 is skipped when calculating the the columns of the view table
-const int kIdColumn = 0;
-const int kMaxSortColumns = 3;
+constexpr int kIdColumn = 0;
+constexpr int kMaxSortColumns = 3;
 
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
+
+const QString kModelName = "table:";
 
 } // anonymous namespace
 
@@ -141,8 +143,8 @@ void BaseSqlTableModel::initSortColumnMapping() {
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
     m_columnIndexBySortColumnId[static_cast<int>(
-            TrackModel::SortColumnId::LastPlayedAt)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+            TrackModel::SortColumnId::PlaylistDateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -234,7 +236,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
@@ -250,15 +252,17 @@ void BaseSqlTableModel::select() {
         if (idColumn < 0) {
             idColumn = sqlRecord.indexOf(m_idColumn);
         }
+
+        // TODO(XXX): Can we get rid of the hard-coded assumption that
+        // the the first column always contains the id?
+        DEBUG_ASSERT(idColumn == kIdColumn);
+
         VERIFY_OR_DEBUG_ASSERT(idColumn >= 0) {
             qCritical()
                     << "ID column not available in database query results:"
                     << m_idColumn;
             return;
         }
-        // TODO(XXX): Can we get rid of the hard-coded assumption that
-        // the the first column always contains the id?
-        DEBUG_ASSERT(idColumn == kIdColumn);
 
         TrackId trackId(sqlRecord.value(idColumn));
         trackIds.insert(trackId);
@@ -326,7 +330,7 @@ void BaseSqlTableModel::select() {
     // number of total rows returned by the query
     DEBUG_ASSERT(trackIdToRows.size() <= rowInfos.size());
 
-    // We're done! Issue the update signals and replace the master maps.
+    // We're done! Issue the update signals and replace the main maps.
     replaceRows(
             std::move(rowInfos),
             std::move(trackIdToRows));
@@ -337,16 +341,16 @@ void BaseSqlTableModel::select() {
              << m_rowInfo.size();
 }
 
-void BaseSqlTableModel::setTable(const QString& tableName,
-        const QString& idColumn,
-        const QStringList& tableColumns,
+void BaseSqlTableModel::setTable(QString tableName,
+        QString idColumn,
+        QStringList tableColumns,
         QSharedPointer<BaseTrackCache> trackSource) {
     if (sDebug) {
         qDebug() << this << "setTable" << tableName << tableColumns << idColumn;
     }
-    m_tableName = tableName;
-    m_idColumn = idColumn;
-    m_tableColumns = tableColumns;
+    m_tableName = std::move(tableName);
+    m_idColumn = std::move(idColumn);
+    m_tableColumns = std::move(tableColumns);
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(),
@@ -359,7 +363,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that
         // will hit the cache again and cause dangerous reentry cycles
-        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // See https://github.com/mixxxdj/mixxx/issues/7569
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
@@ -426,7 +430,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
 
     if (column < 0 ||
-            column >= trackSourceColumnCount + m_sortColumns.size() - 1) {
+            column >= trackSourceColumnCount + m_tableColumns.size() - 1) {
         // -1 because id column is in both tables
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
@@ -613,6 +617,15 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     return tableIndex;
 }
 
+QString BaseSqlTableModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName + m_tableName;
+    }
+    return kModelName + m_tableName +
+            QStringLiteral("#") +
+            currentSearch();
+}
+
 QVariant BaseSqlTableModel::rawValue(
         const QModelIndex& index) const {
     DEBUG_ASSERT(index.isValid());
@@ -695,7 +708,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
-        pTrack->setGenre(value.toString());
+        updateTrackGenre(pTrack.get(), value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) == column) {
@@ -724,24 +737,24 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
-        pTrack->setKeyText(value.toString(),
+        pTrack->setKeyText(
+                value.toString(),
                 mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLocked(value.toBool());
     } else {
         // We never should get up to this point!
-        VERIFY_OR_DEBUG_ASSERT(false) {
-            qWarning() << "Column"
-                       << columnNameForFieldIndex(column)
-                       << "is not editable!";
-        }
+        qWarning() << "Column"
+                   << columnNameForFieldIndex(column)
+                   << "is not editable!";
+        DEBUG_ASSERT(false);
         return false;
     }
     return true;
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
@@ -762,6 +775,15 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
                     .data()
                     .toString();
     return QDir::fromNativeSeparators(nativeLocation);
+}
+
+QUrl BaseSqlTableModel::getTrackUrl(const QModelIndex& index) const {
+    const QString trackLocation = getTrackLocation(index);
+    DEBUG_ASSERT(trackLocation.trimmed() == trackLocation);
+    if (trackLocation.isEmpty()) {
+        return {};
+    }
+    return QUrl::fromLocalFile(trackLocation);
 }
 
 CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
@@ -842,8 +864,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

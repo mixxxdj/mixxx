@@ -169,7 +169,7 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
         /// internal errors of if the format of the content is not
         /// supported it should return Aborted.
         ///
-        /// Returing this error result gives other decoders with a
+        /// Returning this error result gives other decoders with a
         /// lower priority the chance to open the same file.
         /// Example: A SoundSourceProvider has been registered for
         /// files with a certain extension, but the corresponding
@@ -305,18 +305,20 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     explicit AudioSource(const QUrl& url);
 
     bool initChannelCountOnce(audio::ChannelCount channelCount);
-    bool initChannelCountOnce(SINT channelCount) {
+    bool initChannelCountOnce(int channelCount) {
         return initChannelCountOnce(audio::ChannelCount(channelCount));
     }
 
     bool initSampleRateOnce(audio::SampleRate sampleRate);
     bool initSampleRateOnce(SINT sampleRate) {
-        return initSampleRateOnce(audio::SampleRate(sampleRate));
+        DEBUG_ASSERT(sampleRate >= 0);
+        return initSampleRateOnce(audio::SampleRate(
+                static_cast<audio::SampleRate::value_t>(sampleRate)));
     }
 
     bool initBitrateOnce(audio::Bitrate bitrate);
     bool initBitrateOnce(SINT bitrate) {
-        return initBitrateOnce(audio::Bitrate(bitrate));
+        return initBitrateOnce(audio::Bitrate(static_cast<audio::Bitrate::value_t>(bitrate)));
     }
 
     bool initFrameIndexRangeOnce(

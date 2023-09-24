@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QCache>
 #include <QFont>
+#include <QItemSelectionModel>
 #include <QString>
 #include <QTableView>
 
@@ -13,25 +15,42 @@ class TrackModel;
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
 
+    struct ModelState {
+        int horizontalScrollPosition;
+        int verticalScrollPosition;
+        QModelIndexList selectedRows;
+        QModelIndex currentIndex;
+    };
+
   public:
     WLibraryTableView(QWidget* parent,
-            UserSettingsPointer pConfig,
-            const ConfigKey& vScrollBarPosKey);
+            UserSettingsPointer pConfig);
     ~WLibraryTableView() override;
 
     void moveSelection(int delta) override;
 
-    /**
-     * Saves current position of scrollbar using string key
-     * can be any value but should invariant for model
-     * @param key unique for trackmodel
-     */
-    void saveVScrollBarPos(TrackModel* key);
-    /**
-     * Finds scrollbar value associated with model by given key and restores it
-     * @param key unique for trackmodel
-     */
-    void restoreVScrollBarPos(TrackModel* key);
+    /// @brief saveTrackModelState function saves current positions of scrollbars,
+    /// current item selection and current index in a QCache using a unique
+    /// string key - can be any value but should invariant for model
+    /// @param key unique for trackmodel
+    void saveTrackModelState(const QAbstractItemModel* model, const QString& key);
+    /// @brief restoreTrackModelState function finds scrollbar positions,
+    /// item selection and current index values associated with model by given
+    /// key and restores it
+    /// @param key unique for trackmodel
+    /// @return true if restore succeeded
+    bool restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
+    void saveCurrentViewState() override;
+    /// @brief restores current view state.
+    /// @return true if restore succeeded
+    bool restoreCurrentViewState() override;
+    /// @brief store the current index
+    void saveCurrentIndex();
+    /// @brief restores the current index, meant to provide a starting point for
+    /// navigation after selected tracks have been manually removed from the view
+    /// via hide, remove or purge
+    /// @param optional: index, otherwise row/column member vars are used
+    void restoreCurrentIndex(const QModelIndex& index = QModelIndex());
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -47,20 +66,14 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   protected:
     void focusInEvent(QFocusEvent* event) override;
+    QModelIndex moveCursor(CursorAction cursorAction,
+            Qt::KeyboardModifiers modifiers) override;
+    virtual QString getModelStateKey() const = 0;
 
-    void saveNoSearchVScrollBarPos();
-    void restoreNoSearchVScrollBarPos();
+    int m_prevRow;
+    int m_prevColumn;
 
   private:
-    void loadVScrollBarPosState();
-    void saveVScrollBarPosState();
-
     const UserSettingsPointer m_pConfig;
-    const ConfigKey m_vScrollBarPosKey;
-
-    QMap<TrackModel*, int> m_vScrollBarPosValues;
-
-    // The position of the vertical scrollbar slider, eg. before a search is
-    // executed
-    int m_noSearchVScrollBarPos;
+    QCache<QString, ModelState> m_modelStateCache;
 };

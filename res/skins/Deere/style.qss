@@ -27,6 +27,10 @@
   background-color: #456789;  */
 }
 
+#QuickEffectSelectors_2Decks {
+  margin-top: 2px;
+}
+
 #CrossfaderContainer {
 }
 
@@ -202,9 +206,9 @@
  *******************************************************************************/
 
 /* sidebar, as well as root items for playlists, crates, and history */
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTableView,
-#LibraryContainer QTreeView {
+WLibraryTextBrowser,
+WTrackTableView,
+WLibrarySidebar {
   color: #d2d2d2;
   border: 1px solid #1A1A1A;
   background-color: #1F1F1F;
@@ -219,20 +223,24 @@
 }
 
 /* Selected rows in Tree and Tracks table */
-#LibraryContainer QTableView::item:selected,
-#LibraryContainer QTreeView::item:selected,
+WTrackTableView::item:selected,
+WLibrarySidebar::item:selected,
 #LibraryBPMButton::item:selected {
   color: #D6D6D6;
   background-color: #006596;
 }
-#LibraryContainer QTreeView::item:focus {
+WLibrarySidebar::item:selected:focus {
   outline: none;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
 }
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
-#LibraryContainer QTableView,
+WTrackTableView,
 /* This is for the BPM cell */
-#LibraryContainer QTableView QCheckBox:focus {
+WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
 /* This uses a custom qproperty to set the focus border
@@ -242,58 +250,48 @@ WTrackTableView {
   qproperty-focusBorderColor: #D6D6D6;
 }
 
-#LibraryContainer QTableView:focus,
-#LibraryContainer QTreeView:focus,
-#LibraryContainer QTextBrowser:focus {
+WTrackTableView:focus,
+WLibrarySidebar:focus,
+WLibraryTextBrowser:focus {
   border: 1px solid #FF6600;
+}
+
+WLibraryTextBrowser {
+  padding-left: 5px;
 }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 WBeatSpinBox,
-#LibraryBPMSpinBox {
-  selection-color: #000;
-  selection-background-color: #ccc;
-}
-WLibrary QLineEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
+  selection-color: #000;
+  selection-background-color: #ccc;
   border: 1px solid #006596;
 }
 
-
 /* checkbox in library "Played" column */
-#LibraryContainer QTableView::indicator {
-  width: 10px;
-  height: 10px;
-  margin: 0px;
-  padding: 0px;
-  border: 1px solid transparent;
+WTrackTableView::indicator:unchecked {
+  image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
 }
-
-#LibraryContainer QTableView::indicator:checked,
-#LibraryContainer QTableView::indicator:checked:selected {
-  image: url(skin:/icon/ic_library_checkmark.svg);
-  border: 1px solid #ff6600;
-}
-
-#LibraryContainer QTableView::indicator:unchecked {
-  background: none;
-  border: 1px solid rgba(151,151,151,128);
+WTrackTableView::indicator:checked {
+  image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
 /* focused BPM cell in the library "BPM" column */
-#LibraryBPMButton:focus {
+#LibraryBPMButton:focus
+#LibraryBPMButton::indicator:focus {
   outline: none;
 }
 /* BPM lock icon */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/icon/ic_library_bpm_locked.svg);
+  image: url(skin:/../Deere/icon/ic_library_bpm_locked.svg);
 }
 
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/icon/ic_library_bpm_unlocked.svg);
+  image: url(skin:/../Deere/icon/ic_library_bpm_unlocked.svg);
 }
 
 #LibraryBPMSpinBox {
@@ -306,15 +304,15 @@ WLibrary QLineEdit,
     background-color: #006596;
     }
     #LibraryBPMSpinBox::up-button {
-      image: url(skin:/icon/ic_lib_spinbox_up_white.svg) no-repeat;
+      image: url(skin:/../Deere/icon/ic_lib_spinbox_up_white.svg) no-repeat;
       }
     #LibraryBPMSpinBox::down-button {
-      image: url(skin:/icon/ic_lib_spinbox_down_white.svg) no-repeat;
+      image: url(skin:/../Deere/icon/ic_lib_spinbox_down_white.svg) no-repeat;
       }
 
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
-  background: transparent;
+  background-color: transparent;
   margin: 0px;
   padding: 0px;
   border: 1px solid transparent;
@@ -322,7 +320,7 @@ QPushButton#LibraryPreviewButton {
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/icon/ic_library_preview_play.svg);
+  image: url(skin:/../Deere/icon/ic_library_preview_play.svg);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -331,7 +329,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/icon/ic_library_preview_pause.svg);
+  image: url(skin:/../Deere/icon/ic_library_preview_pause.svg);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
@@ -341,35 +339,35 @@ QPushButton#LibraryPreviewButton:checked:hover {
 }
 
 /* library header row */
-#LibraryContainer QHeaderView {
+WTrackTableViewHeader {
+  /* Don't set a font size to pick up the system font size. */
   color: #d2d2d2;
-  background: #1A1A1A;
+  background-color: #1A1A1A;
   border-bottom: 1px solid #141414;
 }
 
-#LibraryContainer QHeaderView::section {
-  font-size: 12px/14px;
+WTrackTableViewHeader::section {
+  height: 1.1em;
   font-weight: bold;
-  padding: 2px;
-  background: #1A1A1A;
+  padding: 0.1em;
+  background-color: #1A1A1A;
   border-top: none;
   border-left: none;
   border-bottom: 1px solid #141414;
   border-right: 1px solid #141414;
 }
 
-#LibraryContainer QHeaderView::up-arrow,
-#LibraryContainer QHeaderView::down-arrow {
+WTrackTableViewHeader::up-arrow,
+WTrackTableViewHeader::down-arrow {
   background-color: rgba(26,26,26,220);
-  margin: 0px -1px 0px 0xp;
   padding: 0px;
 }
-#LibraryContainer QHeaderView::up-arrow {
-  image: url(skin:/image/style_sort_up.svg);
+WTrackTableViewHeader::up-arrow {
+  image: url(skin:/../Deere/image/style_sort_up.svg);
 }
 
-#LibraryContainer QHeaderView::down-arrow {
-  image: url(skin:/image/style_sort_down.svg);
+WTrackTableViewHeader::down-arrow {
+  image: url(skin:/../Deere/image/style_sort_down.svg);
 }
 
 /* library search bar */
@@ -419,8 +417,7 @@ WSearchLineEdit {
   qproperty-layoutSpacing: 0;
 }
 
-#LibraryContainer QTreeView,
-#LibraryContainer QTreeView::item:focus {
+WLibrarySidebar {
   outline: none;
 /* Spacing between treeview and preview deck/search bar */
   margin: 0px;
@@ -431,33 +428,33 @@ WSearchLineEdit {
 }
 
 /* triangle for closed/opened branches in treeview */
-#LibraryContainer QTreeView::branch:has-children:!has-siblings:closed,
-#LibraryContainer QTreeView::branch:closed:has-children:has-siblings {
-  border-image: none; image: url(skin:/image/style_branch_closed.png);
+WLibrarySidebar::branch:has-children:!has-siblings:closed,
+WLibrarySidebar::branch:closed:has-children:has-siblings {
+  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.svg);
 }
 
-#LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
-#LibraryContainer QTreeView::branch:open:has-children:has-siblings {
-  border-image: none; image: url(skin:/image/style_branch_open.png);
+WLibrarySidebar::branch:open:has-children:!has-siblings,
+WLibrarySidebar::branch:open:has-children:has-siblings {
+  border-image: none; image: url(skin:/../Deere/image/style_branch_open.svg);
 }
 
 /* space left of selected child item */
-#LibraryContainer QTreeView::branch:!has-children:!has-siblings:closed:selected,
-#LibraryContainer QTreeView::branch:closed:!has-children:has-siblings:selected,
-#LibraryContainer QTreeView::branch:open:!has-children:!has-siblings:selected,
-#LibraryContainer QTreeView::branch:open:!has-children:has-siblings:selected {
+WLibrarySidebar::branch:!has-children:!has-siblings:closed:selected,
+WLibrarySidebar::branch:closed:!has-children:has-siblings:selected,
+WLibrarySidebar::branch:open:!has-children:!has-siblings:selected,
+WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
   border-image: none;
   background-color: #1F1F1F;
 }
 
-/* QSplitter between LibrarySidebar and Library */
+/* QSplitter between WLibrarySidebar and WTrackTableView */
 #LibrarySplitter::handle {
-  image: url(skin:/image/style_handle_horizontal_unchecked.svg);
+  image: url(skin:/../Deere/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
 #LibrarySplitter::handle:pressed {
-  image: url(skin:/image/style_handle_horizontal_checked.svg);
+  image: url(skin:/../Deere/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
@@ -473,15 +470,15 @@ WSearchLineEdit {
 #LibraryCoverArtSplitter::handle,
 #LibraryVerticalSplitter::handle,
 #WaveformSplitter::handle {
-  image: url(skin:/image/style_handle_vertical_unchecked.svg);
-  background: #222;
+  image: url(skin:/../Deere/image/style_handle_vertical_unchecked.svg);
+  background-color: #222;
 }
 
 #LibraryCoverArtSplitter::handle:pressed,
 #LibraryVerticalSplitter::handle:pressed,
 #WaveformSplitter::handle:pressed {
-  image: url(skin:/image/style_handle_vertical_checked.svg);
-  background: #222;
+  image: url(skin:/../Deere/image/style_handle_vertical_checked.svg);
+  background-color: #222;
 }
 
 #LibraryCoverArtSplitter::handle:horizontal,
@@ -504,25 +501,25 @@ WSearchLineEdit {
 }
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
+#LibraryFeatureControls QLabel, #LibraryFeatureControls QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
   margin: 9px 5px 6px 0px;
   font-size: 12px;
 }
 
-WLibrary QRadioButton::indicator {
+#LibraryFeatureControls QRadioButton::indicator {
   margin: 0px 0px 0px 2px;
   width: 18px;
   height: 18px;
 }
 
-WLibrary QRadioButton::indicator:checked {
-  image: url(skin:/icon/ic_radio_button_on_18px.svg);
+#LibraryFeatureControls QRadioButton::indicator:checked {
+  image: url(skin:/../Deere/icon/ic_radio_button_on_18px.svg);
 }
 
-WLibrary QRadioButton::indicator:unchecked {
-  image: url(skin:/icon/ic_radio_button_off_18px.svg);
+#LibraryFeatureControls QRadioButton::indicator:unchecked {
+  image: url(skin:/../Deere/icon/ic_radio_button_off_18px.svg);
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
@@ -605,28 +602,28 @@ QPushButton#pushButtonRecording:checked:hover {
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ {
-  image: url(skin:/icon/ic_autodj_enable.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_enable.svg) no-repeat center center;
 }
 QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/icon/ic_autodj_fade_disabled.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/icon/ic_autodj_fade.svg) no-repeat center center;
+    image: url(skin:/../Deere/icon/ic_autodj_fade.svg) no-repeat center center;
   }
 QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/icon/ic_autodj_skip_disabled.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/icon/ic_autodj_skip.svg) no-repeat center center;
+    image: url(skin:/../Deere/icon/ic_autodj_skip.svg) no-repeat center center;
   }
 QPushButton#pushButtonShuffle {
-  image: url(skin:/icon/ic_autodj_shuffle.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_shuffle.svg) no-repeat center center;
 }
 QPushButton#pushButtonAddRandomTrack {
-  image: url(skin:/icon/ic_autodj_addrandom.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {
-  image: url(skin:/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
 
@@ -652,20 +649,24 @@ QPushButton#pushButtonRepeatPlaylist {
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
-  background: #222222;
+  background-color: #222222;
   padding: 3px;
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
-  background: #222222;
+  background-color: #222222;
   padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -673,23 +674,31 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-page,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-page,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background: none;
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
-  background: #5F5F5F;
+  background-color: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
-  background: #5F5F5F;
+  background-color: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
@@ -697,9 +706,13 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::handle:vertical:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal:hover,
+WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
-  background: #B3B3B3;
+  background-color: #B3B3B3;
 }
 
 /* Turn off buttons */
@@ -710,7 +723,15 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
-WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
+WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::add-line:vertical,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
+WEffectChainPresetSelector QAbstractScrollArea QScrollBar::sub-line:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::add-line:vertical,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:horizontal,
+WSearchLineEdit QAbstractScrollArea QScrollBar::sub-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
@@ -722,6 +743,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
+WEffectChainPresetSelector QAbstractScrollArea::corner,
+WSearchLineEdit QAbstractScrollArea::corner,
 #fadeModeCombobox QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
   border-left: 1px solid #141414;
@@ -783,7 +806,7 @@ WEffectSelector QAbstractScrollArea::corner,
 #SkinSettings > #h3 WPushButton:hover,
 #SkinSettingsButton:hover,
 #SkinSettingsCategoryButton:hover {
-  background: #222222;
+  background-color: #222222;
 }
 
 /*******************************************************************************
@@ -800,7 +823,7 @@ WEffectSelector QAbstractScrollArea::corner,
 
 #Mixxx, WWidget,
 QToolTip,
-WLabel, QLabel,
+WLabel, #LibraryFeatureControls QLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -811,32 +834,44 @@ WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
 WOverview #PassthroughLabel,
-WBeatSpinBox QMenu,
+/* all context menus */
+#MainMenu, #MainMenu QMenu,
+WLibrarySidebar,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader::section,
+WLibraryTextBrowser,
+WLibraryTextBrowser QMenu,
+QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
-WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
+WTrackMenu QMenu QCheckBox,
 WOverview /* Hotcue labels in the overview */,
-QComboBox,
-WEffect,
+WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit,
+WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea
-#LibraryContainer QPushButton,
-#LibraryContainer QLabel,
-#LibraryContainer QRadioButton,
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::item,
-#LibraryContainer QMenu {
+#fadeModeCombobox QAbstractScrollArea,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
   font-family: "Open Sans";
+  font-style: normal;
+  font-weight: normal;
 }
 
-WWidget,
-WLibrary QLabel,
-WLibrary QPushButton {
+WLabel, #LibraryFeatureControls QLabel,
+WPushButton, #LibraryFeatureControls QPushButton {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -925,7 +960,7 @@ WBeatSpinBox,
     padding: 2px;
   }
   #spinBoxTransition {
-    padding: 1px 2px 2px 2px;
+    padding: 0px 2px 0px 2px;
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
@@ -946,11 +981,11 @@ WBeatSpinBox,
   #spinBoxTransition::down-arrow {
     width: 9px;
     height: 7px;
-    image: url(skin:/icon/ic_chevron_down_selector.svg);
+    image: url(skin:/../Deere/icon/ic_chevron_down_selector.svg);
   }
   WBeatSpinBox::down-arrow:hover,
   #spinBoxTransition::down-arrow:hover {
-    image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
+    image: url(skin:/../Deere/icon/ic_chevron_down_selector_hover.svg);
   }
   WBeatSpinBox::up-button,
   #spinBoxTransition::up-button {
@@ -964,11 +999,11 @@ WBeatSpinBox,
   #spinBoxTransition::up-arrow {
     width: 9px;
     height: 7px;
-    image: url(skin:/icon/ic_chevron_up_selector.svg);
+    image: url(skin:/../Deere/icon/ic_chevron_up_selector.svg);
   }
   WBeatSpinBox::up-arrow:hover,
   #spinBoxTransition::up-arrow:hover {
-    image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
+    image: url(skin:/../Deere/icon/ic_chevron_up_selector_hover.svg);
   }
 
 /* End spacing for Deck controls row */
@@ -977,7 +1012,6 @@ WBeatSpinBox,
 #ToolBar {
   padding: 0px 4px 0px 4px;
   qproperty-layoutSpacing: 5;
-  background-color: #111111;
   border-width: 0px 0px 3px 0px;
   border-style: solid;
   border-color: #222;
@@ -995,7 +1029,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 4;
 }
 
-#MasterControls, #HeadphoneControls {
+#MainControls, #HeadphoneControls {
     qproperty-layoutSpacing: 10;
     margin-bottom: 1px;
     margin-top: 1px;
@@ -1069,7 +1103,7 @@ WBeatSpinBox,
 #BpmKeyEditRowExpanded {
   /* emphasize active widget */
   border: 1px solid #FF6600;
-  background: rgba(255, 102, 0, 64);
+  background-color: rgba(255, 102, 0, 64);
   color: #D6D6D6;
 }
 
@@ -1097,11 +1131,11 @@ WBeatSpinBox,
 }
 
 #BpmKeyInfoShow {
-  image: url(skin:/icon/ic_chevron_left_24x48px.svg) center center;
+  image: url(skin:/../Deere/icon/ic_chevron_left_24x48px.svg) center center;
 }
 
 #BpmKeyInfoHide {
-  image: url(skin:/icon/ic_chevron_right_24x48px.svg) center center;
+  image: url(skin:/../Deere/icon/ic_chevron_right_24x48px.svg) center center;
 }
 /* End editable widgets in decks */
 
@@ -1153,7 +1187,8 @@ WBeatSpinBox,
   text-align: left;
 }
 
-#EffectUnitLabel, #EffectRackCollapsed #EffectUnitNameContainer WLabel {
+#EffectUnitLabel,
+#EffectRackCollapsed #EffectUnitNameContainer WLabel {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
@@ -1234,14 +1269,14 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
-#EffectMetaKnob, WEffect {
+#EffectMetaKnob, WEffectName {
   font-size: 12px;
   background-color: none;
   border: none;
 }
 
 #EffectEnableButton {
-  image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_power_48px.svg) no-repeat center center;
 }
 
 #EffectKnob {
@@ -1275,6 +1310,7 @@ WBeatSpinBox,
 
 #EffectButton {
   font: 10px;
+  margin-right: 1px;
 }
 
 #EffectButtonLabel {
@@ -1297,7 +1333,7 @@ WBeatSpinBox,
   border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
-#MasterControls {
+#MainControls {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1405,7 +1441,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#master_VuMeter_Group {
+#main_VuMeter_Group {
   qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 5px;
@@ -1413,7 +1449,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#MasterVu {
+#MainVu {
   qproperty-layoutAlignment: 'AlignCenter';
   /* background-color: #582831; */
 }
@@ -1572,8 +1608,6 @@ WPushButton {
     border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
-    font-size: 12px;
-    font-weight: bold;
 }
 
 WPushButton:hover,
@@ -1614,12 +1648,12 @@ WPushButton[value="2"]:hover,
 }
 
 WPushButton#PlayToggle[value="0"] {
-  image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_play_48px.svg) no-repeat center center;
   background-color: transparent;
 }
 
 WPushButton#PlayToggle[value="1"] {
-  image: url(skin:/icon/ic_pause_48px.svg) no-repeat center center;
+  image: url(skin:/../Deere/icon/ic_pause_48px.svg) no-repeat center center;
 }
 WPushButton#PreviewIndicator {
   background-color: transparent;
@@ -1645,10 +1679,6 @@ WPushButton#PreviewIndicator[value="0"] {
     background-color: #5F5F5F;
     border: 3px solid #0080BE;
     border-radius: 3px;
-}
-
-WRecordingDuration {
-  font-weight: bold;
 }
 
 /* The effect unit mix mode button toggles between
@@ -1742,7 +1772,7 @@ do not highlight either state. */
 
 /* Special case SamplerPlayButtonRepeating controls
   When sampler is playing, displays same play icon as normal, but
-  background is red instead of blue.
+  background is purple instead of blue.
 */
 
 #SamplerPlayButtonRepeating[value="1"] {
@@ -1900,99 +1930,167 @@ do not highlight either state. */
 
 
 /* common styles for WEffectSelector, QMenu, QToolTip */
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
-QToolTip,
-#LibraryContainer QMenu,
-WBeatSpinBox QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
-WTrackMenu QMenu {
-  padding: 2px;
+WEffectSelector QAbstractScrollArea {
+  min-width: 160px;
 }
-WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea {
+  min-width: 140px;
+}
 #fadeModeCombobox QAbstractScrollArea {
-  padding: 2px;
-  font: 13px;
+  min-width: 185px;
 }
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea {
-  min-width: 180px;
-}
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 QToolTip,
-#LibraryContainer QMenu,
-#LibraryContainer QMenu::item,
-#LibraryContainer QMenu QCheckBox,
-WBeatSpinBox QMenu,
-WBeatSpinBox QMenu::item,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QLabel,
-WCueMenuPopup QMenu::item,
-WCoverArtMenu,
-WCoverArtMenu::item,
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+#ToolBar,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
+WLibraryTextBrowser QMenu,
+WLibraryTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
-WTrackMenu QCheckBox,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
-WTrackMenu QMenu QCheckBox {
+WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
+WCoverArtMenu,
+WCoverArtMenu::item,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
+WEffectSelector::item:!selected,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector::item:!selected,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit::item:!selected,
+WSearchLineEdit QAbstractScrollArea,
+#fadeModeCombobox::item:!selected,
+#fadeModeCombobox QAbstractScrollArea {
   color: #c1cabe;
   background-color: #201f1f;
 }
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
 QToolTip,
-#LibraryContainer QMenu,
-WBeatSpinBox QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
-WTrackMenu QMenu {
+WTrackMenu QMenu,
+QLineEdit QMenu,
+QPlainTextEdit QMenu,
+WCueMenuPopup,
+WCoverArtMenu,
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
+WSearchLineEdit QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
   border-width: 1px;
   border-style: solid;
   border-color: #aaa;
   border-radius: 1px;
 }
   /* hovered items */
-  WEffectSelector::item:selected,
-  #fadeModeCombobox::item:selected,
-  WBeatSpinBox QMenu::item:selected,
-  WCueMenuPopup QMenu::item:selected,
-  WCoverArtMenu::item:selected,
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
+  WLibrarySidebar QMenu::item:selected,
+  WLibrarySidebar QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu::item:selected,
+  WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+  WLibraryTextBrowser QMenu::item:selected,
   WTrackMenu::item:selected,
-  WTrackMenu QCheckBox:selected,
-  WTrackMenu QCheckBox:focus,
-  WTrackMenu QCheckBox:hover,
   WTrackMenu QMenu::item:selected,
   WTrackMenu QMenu QCheckBox:selected,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
-  #LibraryContainer QMenu::item:selected,
-  #LibraryContainer QMenu QCheckBox:selected,
-  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
-  #LibraryContainer QMenu QCheckBox:hover /* mouse hover */ {
-      background-color: #565353;
-      color: #fff;
-      /* remove OS focus indicator */
-      outline: none;
+  QLineEdit QMenu::item:selected,
+  QPlainTextEdit QMenu::item:selected,
+  WCoverArtMenu::item:selected,
+  WEffectSelector::item:selected,
+  WEffectSelector::indicator:unchecked:selected,
+  WEffectChainPresetSelector::item:selected,
+  WEffectChainPresetSelector::indicator:unchecked:selected,
+  WSearchLineEdit::item:selected,
+  WSearchLineEdit::indicator:unchecked:selected,
+  #fadeModeCombobox::item:selected,
+  #fadeModeCombobox::indicator:unchecked:selected {
+    background-color: #565353;
+    color: #fff;
+    /* remove OS focus indicator */
+    outline: none;
+    }
+    /* Remove 3D border from unchecked effects checkmark space */
+    WEffectSelector::item:selected,
+    WEffectChainPresetSelector::item:selected,
+    WSearchLineEdit::item:selected,
+    #fadeModeCombobox::item:selected {
+      border: 0px;
     }
 
+/* It is difficult to achieve identical styles WMainMenuBar #MainMenu
+  on Windows AND Linux because item and checkbox properties are rendered
+  slightly different.
+  For details see
+    * default-menu-styles-linux.qss
+    * default-menu-styles-windows.qss
+  Common styles are set here.
+  Luckily we don't need to care about macOS here -Woohoo!- because
+  there the menu bar is always styled natively. */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    image: url(skin:/../Deere/icon/ic_mainmenu_checkbox_checked.svg);
+  }
+  #MainMenu QMenu::indicator:unchecked,
+  #MainMenu QMenu::indicator:unchecked:selected {
+    image: url(skin:/../Deere/icon/ic_mainmenu_checkbox.svg);
+  }
+
+#MainMenu QMenu {
+  padding: 0.08em;
+  border: 1px solid #888;
+  border-radius: 2px;
+  }
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
+    width: 0.7em;
+    height: 0.7em;
+    image: url(skin:/../Deere/icon/ic_chevron_right_48px.svg);
+  }
 
 
-WEffectSelector,
-#fadeModeCombobox {
+WEffectSelector:!editable,
+WEffectChainPresetSelector:!editable,
+#fadeModeCombobox:!editable {
   color: #c1cabe;
   /* The 3D frame on the combo box becomes flat when you give it a border */
   border: 1px solid #444342;
   border-radius: 3px;
-  font: 15px;
-}
-WEffectSelector {
+  }
+  WEffectSelector:!editable,
+  #fadeModeCombobox:!editable {
+    font: 15px;
+  }
+  WEffectChainPresetSelector:!editable {
+    font: 13px;
+  }
+WEffectSelector:!editable,
+WEffectSelector:!editable:on,
+WEffectChainPresetSelector:!editable,
+WEffectChainPresetSelector:!editable:on {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -2007,11 +2105,15 @@ WEffectSelector {
   margin: 9px 3px 6px 3px;
 }
 
-  WEffectSelector:hover,
-  #fadeModeCombobox:hover {
+  WEffectSelector:!editable:hover,
+  WEffectChainPresetSelector:!editable:hover,
+  #fadeModeCombobox:!editable:hover {
     border: 1px ridge #015d8d;
   }
   WEffectSelector::drop-down,
+  WEffectChainPresetSelector::drop-down,
+  WSearchLineEdit::drop-down,
+  WEffectChainPresetSelector::drop-down,
   #fadeModeCombobox::drop-down {
     /* This causes the Qt theme's widget style to magically not apply. Go figure. */
     border: 0;
@@ -2020,180 +2122,164 @@ WEffectSelector {
   #fadeModeCombobox::down-arrow {
     width: 20px;
     height: 20px;
-    image: url(skin:/icon/ic_chevron_down_48px.svg);
   }
-  WEffectSelector::item:!selected,
-  #fadeModeCombobox::item:!selected {
-    background-color: #201f1f;
+  WEffectChainPresetSelector::down-arrow {
+    width: 16px;
+    height: 16px;
+  }
+  WEffectSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
+  WEffectChainPresetSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    image: url(skin:/../Deere/icon/ic_chevron_down_48px.svg);
   }
   /* currently loaded effect */
   WEffectSelector::checked,
+  WEffectChainPresetSelector::checked,
   #fadeModeCombobox::checked {
     color: #4495F4;
     font-weight: bold;
   }
   WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */
-    margin: 2px;
-    image: url(skin:/icon/ic_library_checkmark_blue.svg);
+    margin: 2px 0px 2px 5px;
   }
 
-  WEffectSelector::checked, /* selected item */
-  WEffectSelector::indicator, /* checkbox, tick mark */
-  WEffectSelector::drop-down,
-  WEffectSelector::indicator:!checked,
-  #fadeModeCombobox::checked, /* selected mode */
-  #fadeModeCombobox::indicator, /* checkbox, tick mark */
-  #fadeModeCombobox::drop-down,
-  #fadeModeCombobox::indicator:!checked,
-  #LibraryContainer QMenu::item,
-  WBeatSpinBox QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QCheckBox,
-  WTrackMenu QMenu::item,
-  WTrackMenu QMenu QCheckBox {
-    padding: 0px;
+  /* QuickEffect selector of left-hand decks and in 4-decks mixer
+    has it's down arrow on the left side, below the QuickEffect toggle */
+  WEffectChainPresetSelector#QuickEffectSelectorLeft {
+    padding: 0px -2px 0px -1px;
     margin: 0px;
-    image: none;
-    outline: none;
-    border: 0px solid transparent;
+    text-align: left;
     }
-  #LibraryContainer QMenu::separator,
-  WBeatSpinBox QMenu::separator,
-  WCueMenuPopup QMenu::separator,
-  WCoverArtMenu::separator,
-  WTrackMenu::separator,
-  WTrackMenu QMenu::separator {
-    height: 0px;
-    border-top: 1px solid #0a0a0a;
-    margin: 4px;
+    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: left center;
     }
-  #LibraryContainer QMenu::item,
-  WBeatSpinBox QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item {
-    /* right padding creates a margin to the menu expand arrow,
-    left padding should be bigger than menu icon width + menu icon
-    margin */
-    padding: 5px 13px 5px 26px;
+  WEffectChainPresetSelector#QuickEffectSelectorRight {
+    padding: 0px -1px 0px -2px;
+    margin: 0px;
+    text-align: right;
     }
-  /* icons in editline menu (searchbox, editable track properties) */
-  #LibraryContainer QMenu::icon,
-  #LibraryContainer QMenu QCheckBox::indicator,
-  #LibraryContainer QMenu::indicator,
-  WBeatSpinBox QMenu::icon,
-  WCueMenuPopup QMenu::icon,
-  WCoverArtMenu::icon,
-  WTrackMenu::icon,
-  WTrackMenu QCheckBox::indicator,
-  WTrackMenu::indicator,
-  WTrackMenu QMenu::icon,
-  WTrackMenu QMenu QCheckBox::indicator,
-  WTrackMenu QMenu::indicator,
-  WCoverArtMenu::indicator {
-    margin: 0px 4px 0px 2px;
-    padding: 1px;
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: right center;
     }
-  #LibraryContainer QMenu QCheckBox,
-  WTrackMenu QCheckBox,
-  WTrackMenu QMenu QCheckBox {
-    padding: 2px 10px 2px 3px;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator,
-  #LibraryContainer QMenu::indicator,
-  WTrackMenu QCheckBox::indicator,
-  WTrackMenu::indicator,
-  WTrackMenu QMenu QCheckBox::indicator,
-  WTrackMenu QMenu::indicator {
-    width: 13px;
-    height: 13px;
-    border: 1px solid #555;
-    border-radius: 1px;
-    background-color: #0f0f0f;
-    /* remove OS focus indicator */
-    outline: none;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:selected,
-  #LibraryContainer QMenu::indicator:selected,
-  WTrackMenu QCheckBox::indicator:selected,
-  WTrackMenu::indicator:selected,
-  WTrackMenu QMenu QCheckBox::indicator:selected,
-  WTrackMenu QMenu::indicator:selected {
-    border: 1px solid #999;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:checked,
-  #LibraryContainer QMenu::indicator:checked,
-  WTrackMenu QCheckBox::indicator:checked,
-  WTrackMenu::indicator:checked,
-  WTrackMenu QMenu QCheckBox::indicator:checked,
-  WTrackMenu QMenu::indicator:checked {
-    image: url(skin:/icon/ic_library_checkmark.svg);
-    }
-  /* disabled menu item and checkbox */
-  #LibraryContainer QMenu::item:!enabled,
-  WBeatSpinBox QMenu::item:!enabled,
-  WCueMenuPopup QMenu::item:!enabled,
-  WCoverArtMenu::item:!enabled,
-  WTrackMenu::item:!enabled,
-  WTrackMenu QCheckBox:!enabled,
-  WTrackMenu QMenu::item:!enabled,
-  WTrackMenu QMenu QCheckBox:!enabled,
-  #LibraryContainer QMenu QCheckBox:!enabled {
-    color: #555;
-  }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled {
-    border: 1px solid #222;
-    background-color: #333;
-  }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
-  #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
-  #LibraryContainer QCheckBox::indicator:indeterminate:!enabled,
-  WTrackMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QCheckBox::indicator:indeterminate,
-  WTrackMenu QCheckBox::indicator:indeterminate:!enabled,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate:!enabled {
-    image: url(skin:/icon/ic_library_checkmark_grey.svg);
-  }
 
-  #LibraryContainer QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    width: 16px;
-    height: 16px;
-    image: url(skin:/icon/ic_chevron_right_48px.svg);
-  }
+WEffectSelector::checked, /* selected item */
+WEffectSelector::indicator, /* checkbox, tick mark */
+WEffectSelector::drop-down,
+WEffectSelector::indicator:unchecked,
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::drop-down,
+WEffectChainPresetSelector::indicator:unchecked,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::drop-down,
+WSearchLineEdit::indicator:unchecked,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
+#fadeModeCombobox::drop-down,
+#fadeModeCombobox::indicator:unchecked {
+  padding: 0px;
+  margin: 0px;
+  image: none;
+  outline: none;
+  border: 0px solid transparent;
+}
 
-  #LibraryContainer QHeaderView QMenu::indicator:checked,
-  #LibraryContainer QHeaderView QMenu::indicator:checked:hover,
-  #LibraryContainer QHeaderView QMenu::indicator:!checked,
-  #LibraryContainer QHeaderView QMenu::indicator:!checked:hover,
-  WTrackMenu::indicator:checked,
-  WTrackMenu::indicator:checked:hover,
-  WTrackMenu::indicator:!checked,
-  WTrackMenu::indicator:!checked:hover,
-  WTrackMenu QMenu::indicator:checked,
-  WTrackMenu QMenu::indicator:checked:hover,
-  WTrackMenu QMenu::indicator:!checked,
-  WTrackMenu QMenu::indicator:!checked:hover {
-    width: 12px;
-    height: 10px;
-    margin-left: 2px;
-    border: none;
-    background: none;
-    }
-    #LibraryContainer QHeaderView QMenu::indicator:checked {
-      image: url(skin:/icon/ic_library_checkmark_blue.svg);
-    }
+#MainMenu QMenu::separator,
+WLibrarySidebar QMenu::separator,
+WTrackTableViewHeader QMenu::separator,
+WTrackMenu::separator,
+WTrackMenu QMenu::separator,
+WLibraryTextBrowser QMenu::separator,
+QLineEdit QMenu::separator,
+QPlainTextEdit QMenu::separator {
+  border-top: 1px solid #999;
+}
+
+WLibrarySidebar QMenu::indicator,
+WTrackTableViewHeader QMenu::indicator,
+WTrackMenu QMenu QCheckBox::indicator {
+  border: 1px solid #555;
+  border-radius: 1px;
+  background-color: #0f0f0f;
+  /* remove OS focus indicator */
+  outline: none;
+}
+
+QLineEdit QMenu::icon:selected,
+QPlainTextEdit QMenu::icon:selected,
+WLibrarySidebar QMenu::indicator:selected,
+WTrackTableViewHeader QMenu::indicator:selected,
+WTrackMenu QMenu QCheckBox::indicator:selected {
+  border: 1px solid #999;
+}
+/* disabled menu items and checkboxes */
+#MainMenu::item:disabled,
+#MainMenu QMenu::item:disabled,
+WLibrarySidebar QMenu::item:disabled,
+WTrackMenu::item:disabled,
+WTrackMenu QMenu::item:disabled,
+WTrackMenu QMenu QCheckBox:disabled,
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
+  color: #555;
+}
+WTrackMenu QMenu QCheckBox::indicator:disabled {
+  border: 1px solid #222;
+  background-color: #333;
+}
+WLibrarySidebar QMenu::indicator:checked,
+WTrackMenu QMenu QCheckBox::indicator:checked {
+  image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
+}
+WTrackTableViewHeader QMenu::indicator:checked,
+WEffectSelector::indicator:checked,
+WEffectChainPresetSelector::indicator:checked,
+#fadeModeCombobox::indicator:checked {
+  image: url(skin:/../Deere/icon/ic_library_checkmark_blue.svg);
+}
+
+/* disabled menu item and checkbox */
+WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+  background-color: #222;
+}
+WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
+  image: url(skin:/../Deere/icon/ic_library_checkmark_grey.svg);
+}
+WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+  image: url(skin:/../Deere/icon/ic_library_checkmark_indeterminate_orange.svg);
+}
+WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
+  image: url(skin:/../Deere/icon/ic_library_checkmark_indeterminate_grey.svg);
+}
+WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
+  border: 1px solid #222;
+}
+
+/* explicitly remove icons from unchecked items otherwise
+  selected, unchecked items would have a checkmark */
+WLibrarySidebar QMenu::indicator:unchecked,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu::indicator:unchecked,
+WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WEffectSelector::indicator:unchecked,
+WEffectSelector::indicator:unchecked:selected,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::indicator:unchecked:selected,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::indicator:unchecked:selected {
+  image: none;
+}
 /* common styles for WEffectSelector, QMenu, QToolTip */
 
 /* widgets in cue popup menu */
@@ -2212,7 +2298,7 @@ WEffectSelector {
   height: 46px;
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
-  qproperty-icon: url(skin:/icon/ic_delete.svg);
+  qproperty-icon: url(skin:/../Deere/icon/ic_delete.svg);
   background-color: #3B3B3B;
   border-radius: 2px;
   outline: none;

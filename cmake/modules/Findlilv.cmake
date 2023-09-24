@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -7,7 +7,7 @@
 Findlilv
 --------
 
-Finds the lilv library.
+Finds the lilv library and lv2-dev package containing 'units' headers.
 
 Imported Targets
 ^^^^^^^^^^^^^^^^
@@ -37,15 +37,17 @@ Cache Variables
 The following cache variables may also be set:
 
 ``lilv_INCLUDE_DIR``
-  The directory containing ``lilv-0/lilb/lilv.h``.
+  The directory containing ``lilv-0/lilv/lilv.h``.
 ``lilv_LIBRARY``
   The path to the lilv library.
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_lilv QUIET lilv-0)
+  pkg_check_modules(PC_lilv QUIET lilv-0 lv2)
 endif()
 
 find_path(lilv_INCLUDE_DIR
@@ -63,12 +65,15 @@ find_library(lilv_LIBRARY
 )
 mark_as_advanced(lilv_LIBRARY)
 
+if(DEFINED PC_lilv_VERSION AND NOT PC_lilv_VERSION STREQUAL "")
+  set(lilv_VERSION "${PC_lilv_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   lilv
-  DEFAULT_MSG
-  lilv_LIBRARY
-  lilv_INCLUDE_DIR
+  REQUIRED_VARS lilv_LIBRARY lilv_INCLUDE_DIR
+  VERSION_VAR lilv_VERSION
 )
 
 if(lilv_FOUND)
@@ -84,5 +89,12 @@ if(lilv_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_lilv_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${lilv_INCLUDE_DIR}"
     )
+    is_static_library(lilv_IS_STATIC lilv::lilv)
+    if(lilv_IS_STATIC)
+      find_package(sord CONFIG REQUIRED)
+      set_property(TARGET lilv::lilv APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          sord::sord
+      )
+    endif()
   endif()
 endif()

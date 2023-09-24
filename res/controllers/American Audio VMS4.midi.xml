@@ -3,7 +3,7 @@
    <info>
       <name>American Audio VMS4/4.1</name>
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
-      <description>2-deck control/4-deck mixer preset for Mixxx 2.1. 
+      <description>2-deck control/4-deck mixer preset for Mixxx 2.1.
 Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
       <manual>american_audio_vms4</manual>
    </info>
@@ -295,13 +295,13 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x91</status>
             <midino>0x0D</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x81</status>
             <midino>0x0D</midino>
          </control>
@@ -1000,13 +1000,13 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x91</status>
             <midino>0x2F</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>sync_master</key>
+            <key>sync_leader</key>
             <status>0x81</status>
             <midino>0x2F</midino>
          </control>
@@ -1615,7 +1615,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
                <Spread64 />
             </options>
          </control>
-         
+
          <!-- Mixer channel 3 -->
          <control>
              <group>[Channel3]</group>
@@ -1671,7 +1671,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
                  <Spread64 />
              </options>
          </control>
-         
+
          <!-- Mixer channel 4 -->
          <control>
              <group>[Channel4]</group>
@@ -1727,7 +1727,7 @@ Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
                  <Spread64 />
              </options>
          </control>
-         
+
          <!-- Samplers -->
          <!-- 1 -->
          <control>

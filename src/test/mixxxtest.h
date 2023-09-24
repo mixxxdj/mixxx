@@ -12,6 +12,13 @@
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
 
+namespace {
+
+// We assume that the test folder is a sibling to the res folder
+const QString kTestPath = QStringLiteral("../src/test");
+
+} // namespace
+
 class MixxxTest : public testing::Test {
   public:
     MixxxTest();
@@ -27,6 +34,14 @@ class MixxxTest : public testing::Test {
         ~ApplicationScope();
     };
     friend class ApplicationScope;
+
+    static const QDir& getOrInitTestDir() {
+        if (s_TestDir.path() == ".") {
+            s_TestDir.setPath(
+                    QDir::cleanPath(ConfigObject<ConfigValue>::computeResourcePath() + kTestPath));
+        }
+        return s_TestDir;
+    }
 
   protected:
     static QApplication* application() {
@@ -44,9 +59,13 @@ class MixxxTest : public testing::Test {
         return m_testDataDir.path();
     }
 
+    const QDir& getTestDir() const {
+        return getOrInitTestDir();
+    }
+
   private:
     static QScopedPointer<MixxxApplication> s_pApplication;
-
+    static QDir s_TestDir;
     const QTemporaryDir m_testDataDir;
 
   protected:
@@ -55,31 +74,6 @@ class MixxxTest : public testing::Test {
 
 namespace mixxxtest {
 
-/// Returns the full, non-empty file path on success.
-///
-/// For the format of fileNameTemplate refer to QTemporaryFile.
-QString generateTemporaryFileName(const QString& fileNameTemplate);
-
-/// Returns the full, non-empty file path on success.
-///
-/// For the format of fileNameTemplate refer to QTemporaryFile.
-QString createEmptyTemporaryFile(const QString& fileNameTemplate);
-
-bool copyFile(const QString& srcFileName, const QString& dstFileName);
-
-class FileRemover final {
-  public:
-    explicit FileRemover(const QString& fileName)
-            : m_fileName(fileName) {
-    }
-    ~FileRemover();
-
-    void keepFile() {
-        m_fileName = QString();
-    }
-
-  private:
-    QString m_fileName;
-};
+void copyFile(const QString& srcFileName, const QString& dstFileName);
 
 } // namespace mixxxtest

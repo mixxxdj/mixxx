@@ -9,7 +9,7 @@
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "library/coverartcache.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
@@ -37,7 +37,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
 
   private slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedCacheKey,

@@ -28,25 +28,26 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             RecordingManager* pRecordingManager);
-    virtual ~BrowseFeature();
+    ~BrowseFeature() override;
 
-    QVariant title();
-    QIcon getIcon();
+    QVariant title() override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* keyboard);
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
+            KeyboardEventFilter* keyboard) override;
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
-    TreeItemModel* getChildModel();
+    TreeItemModel* sidebarModel() const override;
+
+    void releaseBrowseThread();
 
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
     void slotAddToLibrary();
-    void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
-    void onLazyChildExpandation(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
+    void onLazyChildExpandation(const QModelIndex& index) override;
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
@@ -66,13 +67,15 @@ class BrowseFeature : public LibraryFeature {
 
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    FolderTreeModel m_childModel;
+    FolderTreeModel* m_pSidebarModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
+
+    // Caution: Make sure this is reset whenever the library tree is updated,
+    // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
-    QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

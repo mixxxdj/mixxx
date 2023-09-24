@@ -1,14 +1,18 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QList>
 #include <QMap>
-#include <QMutex>
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 
@@ -17,14 +21,13 @@ class BaseTrackPlayer;
 class ControlObject;
 class Deck;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class Library;
 class Microphone;
 class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class VisualsManager;
 class ControlProxy;
 
 // For mocking PlayerManager
@@ -58,7 +61,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            EngineMaster* pEngine);
+            EngineMixer* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -124,6 +127,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return numSamplers();
     }
 
+    // Returns the track that was last ejected or unloaded. Can return nullptr or
+    // invalid TrackId in case of error.
+    TrackPointer getLastEjectedTrack() const;
+    TrackPointer getSecondLastEjectedTrack() const;
+
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
 
@@ -179,12 +187,15 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
-    void slotLoadToPlayer(const QString& location, const QString& group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
+    void slotLoadLocationToPlayerMaybePlay(const QString& location, const QString& group);
+
     void slotCloneDeck(const QString& source_group, const QString& target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
+    void slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play = false);
     // Loads the location to the deck. deckNumber is 1-indexed
     void slotLoadToDeck(const QString& location, int deckNumber);
 
@@ -201,6 +212,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotChangeNumMicrophones(double v);
     void slotChangeNumAuxiliaries(double v);
 
+  protected slots:
+    FRIEND_TEST(PlayerManagerTest, UnEjectInvalidTrackIdTest);
+    void slotSaveEjectedTrack(TrackPointer track);
+
   private slots:
     void slotAnalyzeTrack(TrackPointer track);
 
@@ -208,14 +223,14 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void onTrackAnalysisFinished();
 
   signals:
-    void loadLocationToPlayer(const QString& location, const QString& group);
+    void loadLocationToPlayer(const QString& location, const QString& group, bool play);
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
-    // Emitted when the user tries to enable an auxiliary master control when
-    // there is no input configured.
+    // Emitted when the user tries to enable an auxiliary `main_mix` control
+    // when there is no input configured.
     void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
@@ -251,15 +266,16 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void addAuxiliaryInner();
 
     // Used to protect access to PlayerManager state across threads.
-    mutable QMutex m_mutex;
+    mutable QT_RECURSIVE_MUTEX m_mutex;
 
     PerformanceTimer m_cloneTimer;
     QString m_lastLoadedPlayer;
 
     UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    EngineMaster* m_pEngine;
+    EngineMixer* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
@@ -269,6 +285,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     parented_ptr<ControlProxy> m_pAutoDjEnabled;
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
+
+    TrackId m_secondLastEjectedTrackId;
+    TrackId m_lastEjectedTrackId;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

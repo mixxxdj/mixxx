@@ -160,10 +160,6 @@
               <ButtonState>RightButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
             </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],loop_enabled</ConfigKey>
-              <ConnectValueFromWidget>false</ConnectValueFromWidget>
-            </Connection>
           </PushButton>
 
           <PushButton>

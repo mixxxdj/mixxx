@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow
+#
 # This workflow will triage pull requests and apply a label based on the
 # paths that are modified in the pull request.
 #
@@ -7,18 +9,20 @@
 
 name: "Pull Request Labeler"
 on:
-- pull_request_target
+  - pull_request_target
+
+permissions:
+  contents: read
 
 jobs:
   triage:
+    permissions:
+      contents: read # for actions/labeler to determine modified files
+      pull-requests: write # for actions/labeler to add labels to PRs
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/labeler@main
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-        # This works around bug https://github.com/actions/labeler/issues/104.
-        # The workaround was proposed here:
-        # https://github.com/wesnoth/wesnoth/commit/958c82d0867568057caaf58356502ec8c87d8366
-        sync-labels: ""
+      - uses: actions/labeler@v4.3.0
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          sync-labels: false

@@ -88,6 +88,20 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     TrackPointer getTrackByRef(
             const TrackRef& trackRef) const override;
 
+    bool updateTrackGenre(
+            Track* pTrack,
+            const QString& genre) const override;
+#if defined(__EXTRA_METADATA__)
+    bool updateTrackMood(
+            Track* pTrack,
+            const QString& mood) const override;
+#endif // __EXTRA_METADATA__
+
+    static constexpr int kBpmColumnPrecisionDefault = 1;
+    static constexpr int kBpmColumnPrecisionMinimum = 0;
+    static constexpr int kBpmColumnPrecisionMaximum = 10;
+    static void setBpmColumnPrecision(int precision);
+
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;
@@ -221,9 +235,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     }
 
   private slots:
-    void slotTrackLoaded(
+    void slotTrackChanged(
             const QString& group,
-            TrackPointer pTrack);
+            TrackPointer pNewTrack,
+            TrackPointer pOldTrack);
 
     void slotRefreshCoverRows(
             const QList<int>& rows);
@@ -261,4 +276,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     int countValidColumnHeaders() const;
 
     TrackId m_previewDeckTrackId;
+
+    static int s_bpmColumnPrecision;
 };

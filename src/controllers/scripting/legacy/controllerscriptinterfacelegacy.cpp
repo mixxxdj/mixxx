@@ -2,26 +2,31 @@
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptinterfacelegacy.cpp"
-#include "util/math.h"
+#include "util/fpclassify.h"
+#include "util/make_const_iterator.h"
 #include "util/time.h"
 
+#define SCRATCH_DEBUG_OUTPUT false
+
 namespace {
-const int kDecks = 16;
+constexpr int kDecks = 16;
 
 // Use 1ms for the Alpha-Beta dt. We're assuming the OS actually gives us a 1ms
 // timer.
-const int kScratchTimerMs = 1;
-const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
-} // anonymous namespace
+constexpr int kScratchTimerMs = 1;
+constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
+// stop ramping at a rate which doesn't produce any audible output anymore
+constexpr double kBrakeRampToRate = 0.01;
+} // namespace
 
 ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
-        ControllerScriptEngineLegacy* m_pEngine)
-        : m_pScriptEngineLegacy(m_pEngine) {
+        ControllerScriptEngineLegacy* m_pEngine, const RuntimeLoggingCategory& logger)
+        : m_pScriptEngineLegacy(m_pEngine),
+          m_logger(logger) {
     // Pre-allocate arrays for average number of virtual decks
     m_intervalAccumulator.resize(kDecks);
     m_lastMovement.resize(kDecks);
@@ -31,21 +36,24 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
     m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
+    m_spinbackActive.resize(kDecks);
     m_softStartActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i = 0; i < kDecks; ++i) {
         m_dx[i] = 0.0;
         m_scratchFilters[i] = new AlphaBetaFilter();
         m_ramp[i] = false;
+        m_brakeActive[i] = false;
+        m_spinbackActive[i] = false;
+        m_softStartActive[i] = false;
     }
 }
 
 ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     // Stop all timers
-    QMutableHashIterator<int, TimerInfo> i(m_timers);
-    while (i.hasNext()) {
-        i.next();
-        stopTimer(i.key());
+    const auto timerIds = m_timers.keys();
+    for (const int timerId : timerIds) {
+        stopTimer(timerId);
     }
 
     // Prevents leaving decks in an unstable state
@@ -53,7 +61,7 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
     QHashIterator<int, int> it(m_scratchTimers);
     while (it.hasNext()) {
         it.next();
-        qDebug() << "Aborting scratching on deck" << it.value();
+        qCDebug(m_logger) << "Aborting scratching on deck" << it.value();
         // Clear scratch2_enable. PlayerManager::groupForDeck is 0-indexed.
         QString group = PlayerManager::groupForDeck(it.value() - 1);
         ControlObjectScript* pScratch2Enable =
@@ -70,15 +78,15 @@ ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
 
     // Free all the ControlObjectScripts
     {
-        auto it = m_controlCache.begin();
-        while (it != m_controlCache.end()) {
-            qDebug()
+        auto it = m_controlCache.constBegin();
+        while (it != m_controlCache.constEnd()) {
+            qCDebug(m_logger)
                     << "Deleting ControlObjectScript"
                     << it.key().group
                     << it.key().item;
             delete it.value();
             // Advance iterator
-            it = m_controlCache.erase(it);
+            it = constErase(&m_controlCache, it);
         }
     }
 }
@@ -89,7 +97,7 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
     ControlObjectScript* coScript = m_controlCache.value(key, nullptr);
     if (coScript == nullptr) {
         // create COT
-        coScript = new ControlObjectScript(key, this);
+        coScript = new ControlObjectScript(key, m_logger, this);
         if (coScript->valid()) {
             m_controlCache.insert(key, coScript);
         } else {
@@ -103,8 +111,9 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
     return coScript->get();
@@ -112,9 +121,10 @@ double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QSt
 
 void ControllerScriptInterfaceLegacy::setValue(
         const QString& group, const QString& name, double newValue) {
-    if (isnan(newValue)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(newValue)) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried setting (%1, %2) to NotANumber (NaN)")
+                                                       .arg(group, name));
         return;
     }
 
@@ -122,11 +132,11 @@ void ControllerScriptInterfaceLegacy::setValue(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
-            coScript->slotSet(newValue);
+            coScript->set(newValue);
         }
     }
 }
@@ -134,8 +144,9 @@ void ControllerScriptInterfaceLegacy::setValue(
 double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
     return coScript->getParameter();
@@ -143,9 +154,10 @@ double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const
 
 void ControllerScriptInterfaceLegacy::setParameter(
         const QString& group, const QString& name, double newParameter) {
-    if (isnan(newParameter)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(newParameter)) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried setting (%1, %2) to NotANumber (NaN)")
+                                                       .arg(group, name));
         return;
     }
 
@@ -153,7 +165,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::controlFlags());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -162,17 +174,19 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
 double ControllerScriptInterfaceLegacy::getParameterForValue(
         const QString& group, const QString& name, double value) {
-    if (isnan(value)) {
-        qWarning() << "script setting [" << group << ","
-                   << name << "] to NotANumber, ignoring.";
+    if (util_isnan(value)) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried setting (%1, %2) to NotANumber (NaN)")
+                                                       .arg(group, name));
         return 0.0;
     }
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -190,8 +204,9 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, co
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -203,8 +218,9 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
-        qWarning() << "Unknown control" << group << name
-                   << ", returning 0.0";
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown control (%1, %2) returning 0.0")
+                        .arg(group, name));
         return 0.0;
     }
 
@@ -213,6 +229,16 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
         const QString& group, const QString& name, const QJSValue& callback) {
+    return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, false);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::makeUnbufferedConnection(
+        const QString& group, const QString& name, const QJSValue& callback) {
+    return ControllerScriptInterfaceLegacy::makeConnectionInternal(group, name, callback, true);
+}
+
+QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
+        const QString& group, const QString& name, const QJSValue& callback, bool skipSuperseded) {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
@@ -223,19 +249,19 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
         // The test setups do not run all of Mixxx, so ControlObjects not
         // existing during tests is okay.
         if (!m_pScriptEngineLegacy->isTesting()) {
-            m_pScriptEngineLegacy->throwJSError(
-                    "script tried to connect to "
-                    "ControlObject (" +
-                    group + ", " + name + ") which is non-existent.");
+            m_pScriptEngineLegacy->logOrThrowError(
+                    QStringLiteral("script tried to connect to ControlObject "
+                                   "(%1, %2) which is non-existent.")
+                            .arg(group, name));
         }
         return QJSValue();
     }
 
     if (!callback.isCallable()) {
-        m_pScriptEngineLegacy->throwJSError("Tried to connect (" + group + ", " + name +
-                ")" +
-                " to an invalid callback. Make sure that your code contains no "
-                "syntax errors.");
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Tried to connect (%1, %2) to an invalid callback. Make sure "
+                "that your code contains no syntax errors.")
+                                                       .arg(group, name));
         return QJSValue();
     }
 
@@ -245,6 +271,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnection(
     connection.controllerEngine = m_pScriptEngineLegacy;
     connection.callback = callback;
     connection.id = QUuid::createUuid();
+    connection.skipSuperseded = skipSuperseded;
 
     if (coScript->addScriptConnection(connection)) {
         return pJsEngine->newQObject(
@@ -275,6 +302,10 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
     if (coScript == nullptr) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried to trigger (%1, %2) which is non-existent.")
+                                                       .arg(connection.key.group,
+                                                               connection.key.item));
         return;
     }
 
@@ -293,6 +324,11 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
         const QString& name,
         const QJSValue& passedCallback,
         bool disconnect) {
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+            "Script tried to connect to (%1, %2) using `connectControl` which "
+            "is deprecated. Use `makeConnection` instead!")
+                                                   .arg(group, name));
+
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QJSValue actualCallbackFunction;
@@ -358,7 +394,7 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
             // not break.
             ScriptConnection connection = coScript->firstConnection();
 
-            qWarning() << "Tried to make duplicate connection between (" +
+            qCWarning(m_logger) << "Tried to make duplicate connection between (" +
                             group + ", " + name + ") and " +
                             passedCallback.toString() +
                             " but this is not allowed when passing a callback "
@@ -380,8 +416,8 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
         QObject* qobject = passedCallback.toQObject();
         const QMetaObject* qmeta = qobject->metaObject();
 
-        qWarning() << "QObject passed to engine.connectControl. Assuming it is"
-                   << "a connection object to disconnect and returning false.";
+        qCWarning(m_logger) << "QObject passed to engine.connectControl. Assuming it is"
+                            << "a connection object to disconnect and returning false.";
         if (!strcmp(qmeta->className(), "ScriptConnectionJSProxy")) {
             ScriptConnectionJSProxy* proxy = (ScriptConnectionJSProxy*)qobject;
             proxy->disconnect();
@@ -409,18 +445,32 @@ QJSValue ControllerScriptInterfaceLegacy::connectControl(const QString& group,
 
 void ControllerScriptInterfaceLegacy::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
-    if (coScript != nullptr) {
-        coScript->emitValueChanged();
+    if (coScript == nullptr) {
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Script tried to trigger (%1, %2) which is non-existent.")
+                                                       .arg(group, name));
+        return;
     }
+    coScript->emitValueChanged();
 }
 
 void ControllerScriptInterfaceLegacy::log(const QString& message) {
-    controllerDebug(message);
+    m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+            "`engine.log` is deprecated. Use `console.log` instead!"));
+    qCDebug(m_logger) << message;
 }
 int ControllerScriptInterfaceLegacy::beginTimer(
         int intervalMillis, QJSValue timerCallback, bool oneShot) {
     if (timerCallback.isString()) {
-        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(timerCallback.toString());
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("passed a string to `engine.beginTimer`, please "
+                               "pass a function instead!"));
+        // wrap the code in a function to make the evaluation lazy.
+        // otherwise the code would be evaluated immediately instead of after
+        // the timer which is obviously undesired and could also cause
+        // issues when used recursively.
+        timerCallback = m_pScriptEngineLegacy->jsEngine()->evaluate(
+                QStringLiteral("()=>%1").arg(timerCallback.toString()));
     } else if (!timerCallback.isCallable()) {
         QString sErrorMessage(
                 "Invalid timer callback provided to engine.beginTimer. Valid "
@@ -434,8 +484,8 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     }
 
     if (intervalMillis < 20) {
-        qWarning() << "Timer request for" << intervalMillis
-                   << "ms is too short. Setting to the minimum of 20ms.";
+        qCWarning(m_logger) << "Timer request for" << intervalMillis
+                            << "ms is too short. Setting to the minimum of 20ms.";
         intervalMillis = 20;
     }
 
@@ -448,24 +498,35 @@ int ControllerScriptInterfaceLegacy::beginTimer(
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
-        qWarning() << "Script timer could not be created";
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral("Script timer could not be created"));
     } else if (oneShot) {
-        controllerDebug("Starting one-shot timer:" << timerId);
+        qCDebug(m_logger) << "Starting one-shot timer:" << timerId;
     } else {
-        controllerDebug("Starting timer:" << timerId);
+        qCDebug(m_logger) << "Starting timer:" << timerId;
     }
     return timerId;
 }
 
 void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
-        qWarning() << "Killing timer" << timerId
-                   << ": That timer does not exist!";
+        m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
+                "Tried to kill Timer \"%1\" that does not exists")
+                                                       .arg(timerId));
         return;
     }
-    controllerDebug("Killing timer:" << timerId);
+    qCDebug(m_logger) << "Killing timer:" << timerId;
     killTimer(timerId);
     m_timers.remove(timerId);
+}
+
+void ControllerScriptInterfaceLegacy::stopScratchTimer(int timerId) {
+    if (!m_scratchTimers.contains(timerId)) {
+        qCWarning(m_logger) << "Killing scratch timer" << timerId << ": That timer does not exist!";
+        return;
+    }
+    qCDebug(m_logger) << "Killing timer:" << timerId;
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
 }
 
 void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
@@ -479,8 +540,8 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 
     auto it = m_timers.constFind(timerId);
     if (it == m_timers.constEnd()) {
-        qWarning() << "Timer" << timerId
-                   << "fired but there's no function mapped to it!";
+        qCWarning(m_logger) << "Timer" << timerId
+                            << "fired but there's no function mapped to it!";
         return;
     }
 
@@ -488,18 +549,18 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
     // why but this causes segfaults in ~QScriptValue while scratching if we
     // don't copy here -- even though internalExecute passes the QScriptValues
     // by value. *boggle*
-    const TimerInfo timerTarget = it.value();
+    TimerInfo timerTarget = it.value();
     if (timerTarget.oneShot) {
         stopTimer(timerId);
     }
 
-    m_pScriptEngineLegacy->executeFunction(timerTarget.callback, QJSValueList());
+    m_pScriptEngineLegacy->executeFunction(&timerTarget.callback);
 }
 
 void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -513,7 +574,7 @@ void ControllerScriptInterfaceLegacy::softTakeover(
 void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
         const QString& group, const QString& name) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::controlFlags());
+            ConfigKey(group, name), ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         return;
     }
@@ -541,12 +602,36 @@ bool ControllerScriptInterfaceLegacy::isDeckPlaying(const QString& group) {
     ControlObjectScript* pPlay = getControlObjectScript(group, "play");
 
     if (pPlay == nullptr) {
-        QString error = QString("Could not getControlObjectScript()");
+        QString error = QString("Could not get ControlObjectScript(%1, play)").arg(group);
         m_pScriptEngineLegacy->scriptErrorDialog(error, error);
         return false;
     }
 
-    return pPlay->get() > 0.0;
+    return pPlay->toBool();
+}
+
+void ControllerScriptInterfaceLegacy::stopDeck(const QString& group) {
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+
+    if (pPlay == nullptr) {
+        QString error = QString("Could not get ControlObjectScript(%1, play)").arg(group);
+        m_pScriptEngineLegacy->scriptErrorDialog(error, error);
+        return;
+    }
+
+    pPlay->set(0.0);
+}
+
+bool ControllerScriptInterfaceLegacy::isTrackLoaded(const QString& group) {
+    ControlObjectScript* pTrackLoaded = getControlObjectScript(group, "track_loaded");
+
+    if (pTrackLoaded == nullptr) {
+        QString error = QString("Could not get ControlObjectScript(%1, track_loaded)").arg(group);
+        m_pScriptEngineLegacy->scriptErrorDialog(error, error);
+        return false;
+    }
+
+    return pTrackLoaded->toBool();
 }
 
 void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
@@ -557,10 +642,9 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
         bool ramp) {
     // If we're already scratching this deck, override that with this request
     if (static_cast<bool>(m_dx[deck])) {
-        //qDebug() << "Already scratching deck" << deck << ". Overriding.";
+        //qCDebug(m_logger) << "Already scratching deck" << deck << ". Overriding.";
         int timerId = m_scratchTimers.key(deck);
-        killTimer(timerId);
-        m_scratchTimers.remove(timerId);
+        stopScratchTimer(timerId);
     }
 
     // Controller resolution in intervals per second at normal speed.
@@ -568,8 +652,8 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
     double intervalsPerSecond = (rpm * intervalsPerRev) / 60.0;
 
     if (intervalsPerSecond == 0.0) {
-        qWarning() << "Invalid rpm or intervalsPerRev supplied to "
-                      "scratchEnable. Ignoring request.";
+        qCWarning(m_logger) << "Invalid rpm or intervalsPerRev supplied to "
+                               "scratchEnable. Ignoring request.";
         return;
     }
 
@@ -621,7 +705,7 @@ void ControllerScriptInterfaceLegacy::scratchEnable(int deck,
 
     // Set scratch2_enable
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(1);
+        pScratch2Enable->set(1);
     }
 }
 
@@ -631,16 +715,23 @@ void ControllerScriptInterfaceLegacy::scratchTick(int deck, int interval) {
 }
 
 void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
-    int deck = m_scratchTimers[timerId];
+#if SCRATCH_DEBUG_OUTPUT
+    qDebug() << "   .";
+    qDebug() << "   ControllerEngine::scratchProcess";
+    qDebug() << "   .";
+#endif
+    const int deck = m_scratchTimers[timerId];
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
+    const QString group = PlayerManager::groupForDeck(deck - 1);
     AlphaBetaFilter* filter = m_scratchFilters[deck];
     if (!filter) {
-        qWarning() << "Scratch filter pointer is null on deck" << deck;
+        qCWarning(m_logger) << "Scratch filter pointer is null on deck" << deck;
         return;
     }
 
+#if SCRATCH_DEBUG_OUTPUT
     const double oldRate = filter->predictedVelocity();
+#endif
 
     // Give the filter a data point:
 
@@ -649,13 +740,22 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     if (m_ramp[deck] && !m_softStartActive[deck] &&
             ((mixxx::Time::elapsed() - m_lastMovement[deck]) >=
                     mixxx::Duration::fromMillis(1))) {
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "     ramp && !softStart";
+#endif
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
     } else if (m_softStartActive[deck]) {
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "     softStart";
+#endif
         // pretend we have moved by (desired rate*default distance)
         filter->observation(m_rampTo[deck] * kAlphaBetaDt);
     } else {
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "     else";
+#endif
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
         filter->observation(m_dx[deck] * m_intervalAccumulator[deck]);
@@ -673,26 +773,32 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
+#if SCRATCH_DEBUG_OUTPUT
+    qDebug() << "     .";
+    qDebug() << "     oldRate " << oldRate;
+    qDebug() << "     newRate " << newRate;
+    qDebug() << "     fabs    " << fabs(trunc((m_rampTo[deck] - newRate) * 100000) / 100000);
+    qDebug() << "     .";
+#endif
     // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-            // or if we brake or softStart and have crossed over the desired value,
-            ((m_brakeActive[deck] || m_softStartActive[deck]) &&
-                    ((oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
-                            (oldRate < m_rampTo[deck] &&
-                                    newRate > m_rampTo[deck]))) ||
+            // or if we brake, spin back or softstart and have crossed over the desired value,
+            (m_brakeActive[deck] && newRate < m_rampTo[deck]) ||
+            ((m_spinbackActive[deck] || m_softStartActive[deck]) && newRate > m_rampTo[deck]) ||
             // or if the deck was stopped manually during brake or softStart
-            ((m_brakeActive[deck] || m_softStartActive[deck]) &&
-                    (!isDeckPlaying(group)))) {
+            ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group))) ||
+            // or if there is no track loaded (anymore)
+            !isTrackLoaded(group)) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
-        if (m_brakeActive[deck]) {
-            // If in brake mode, set scratch2 rate to 0 and turn off the play button.
-            pScratch2->slotSet(0.0);
-            ControlObjectScript* pPlay = getControlObjectScript(group, "play");
-            if (pPlay != nullptr) {
-                pPlay->slotSet(0.0);
-            }
+        if (m_brakeActive[deck] || m_spinbackActive[deck]) {
+#if SCRATCH_DEBUG_OUTPUT
+            qDebug() << "   brake || spinback, stop scratching, stop deck";
+#endif
+            // If in brake mode, set scratch2 rate to 0 and stop the deck.
+            pScratch2->set(0.0);
+            stopDeck(group);
         }
 
         // Clear scratch2_enable to end scratching.
@@ -701,15 +807,18 @@ void ControllerScriptInterfaceLegacy::scratchProcess(int timerId) {
         if (pScratch2Enable == nullptr) {
             return; // abort and maybe it'll work on the next pass
         }
-        pScratch2Enable->slotSet(0);
+        pScratch2Enable->set(0);
 
-        // Remove timer
-        killTimer(timerId);
-        m_scratchTimers.remove(timerId);
+        stopScratchTimer(timerId);
 
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
         m_softStartActive[deck] = false;
+#if SCRATCH_DEBUG_OUTPUT
+        qDebug() << "   DONE scratching";
+        qDebug() << "   .";
+#endif
     }
 }
 
@@ -724,7 +833,7 @@ void ControllerScriptInterfaceLegacy::scratchDisable(int deck, bool ramp) {
         // Clear scratch2_enable
         ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
         if (pScratch2Enable != nullptr) {
-            pScratch2Enable->slotSet(0);
+            pScratch2Enable->set(0);
         }
         // Can't return here because we need scratchProcess to stop the timer.
         // So it's still actually ramping, we just won't hear or see it.
@@ -745,39 +854,54 @@ bool ControllerScriptInterfaceLegacy::isScratching(int deck) {
 
 void ControllerScriptInterfaceLegacy::spinback(
         int deck, bool activate, double factor, double rate) {
-    // defaults for args set in header file
-    brake(deck, activate, factor, rate);
+    qDebug() << "ControllerEngine::spinback(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor << ", rate:" << rate;
+    brake(deck, activate, -factor, rate);
 }
 
 void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double factor, double rate) {
+    qDebug() << "ControllerEngine::brake(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor << ", rate:" << rate;
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
-
-    // kill timer when both enabling or disabling
-    int timerId = m_scratchTimers.key(deck);
-    killTimer(timerId);
-    m_scratchTimers.remove(timerId);
-
+    const QString group = PlayerManager::groupForDeck(deck - 1);
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behavior we need
-    m_brakeActive[deck] = activate;
-    double initRate = rate;
+    // Used for killing the current timer when both enabling or disabling
+    // Don't kill timer yet! This may be a brake init while currently spinning back
+    // and we don't want to interrupt that.
+    int timerId = m_scratchTimers.key(deck);
 
-    if (activate) {
-        // store the new values for this spinback/brake effect
-        if (initRate == 1.0) { // then rate is really 1.0 or was set to default
-            // in /res/common-controller-scripts.js so check for real value,
-            // taking pitch into account
-            initRate = getDeckRate(group);
+    if (!activate) {
+        m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
+        stopScratchTimer(timerId);
+        return;
+    }
+    // Distinguish spinback and brake. Both ramp to a very low rate to avoid a long,
+    // inaudible run out. For spinback that rate is negative so we don't cross 0.
+    // Spinback and brake also require different handling in scratchProcess.
+    double initRate;
+    if (rate < -kBrakeRampToRate) { // spinback
+        m_spinbackActive[deck] = true;
+        m_brakeActive[deck] = false;
+        m_rampTo[deck] = -kBrakeRampToRate;
+        initRate = rate;
+    } else if (rate > kBrakeRampToRate) { // brake
+        // It just doesn't make sense to allow brake to interrupt spinback or an
+        // already running brake process
+        if (m_spinbackActive[deck] || m_brakeActive[deck]) {
+            return;
         }
-        // stop ramping at a rate which doesn't produce any audible output anymore
-        m_rampTo[deck] = 0.01;
-        // if we are currently softStart()ing, stop it
+        m_brakeActive[deck] = true;
+        m_spinbackActive[deck] = false;
+        m_rampTo[deck] = kBrakeRampToRate;
+        // Let's fetch the current rate to create a seamless brake process
+        initRate = getDeckRate(group);
+        // If we are currently softStart'ing adopt the current scratch rate
         if (m_softStartActive[deck]) {
             m_softStartActive[deck] = false;
             AlphaBetaFilter* filter = m_scratchFilters[deck];
@@ -785,93 +909,105 @@ void ControllerScriptInterfaceLegacy::brake(int deck, bool activate, double fact
                 initRate = filter->predictedVelocity();
             }
         }
-
-        // setup timer and set scratch2
-        timerId = startTimer(kScratchTimerMs);
-        m_scratchTimers[timerId] = deck;
-
-        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
-        if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
-        }
-
-        // setup the filter with default alpha and beta*factor
-        double alphaBrake = 1.0 / 512;
-        // avoid decimals for fine adjusting
-        if (factor > 1) {
-            factor = ((factor - 1) / 10) + 1;
-        }
-        double betaBrake = ((1.0 / 512) / 1024) * factor; // default*factor
-        AlphaBetaFilter* filter = m_scratchFilters[deck];
-        if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
-        }
-
-        // activate the ramping in scratchProcess()
-        m_ramp[deck] = true;
+    } else { // -kBrakeRampToRate <= rate <= kBrakeRampToRate
+        // This filters stopped deck and rare case of very low initial rates
+        m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
+        stopScratchTimer(timerId);
+        stopDeck(group);
+        return;
     }
+    stopScratchTimer(timerId);
+
+    // setup timer and set scratch2
+    timerId = startTimer(kScratchTimerMs);
+    m_scratchTimers[timerId] = deck;
+
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+    if (pScratch2 != nullptr) {
+        pScratch2->set(initRate);
+    }
+
+    // setup the filter with default alpha and beta*factor
+    double alphaBrake = 1.0 / 512;
+    // avoid decimals for fine adjusting
+    if (factor > 1) {
+        factor = ((factor - 1) / 10) + 1;
+    }
+    double betaBrake = ((1.0 / 512) / 1024) * factor; // default*factor
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
+    if (filter != nullptr) {
+        filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+    }
+
+    // activate the ramping in scratchProcess()
+    m_ramp[deck] = true;
 }
 
 void ControllerScriptInterfaceLegacy::softStart(int deck, bool activate, double factor) {
+    qDebug() << "ControllerEngine::softStart(deck:" << deck << ", activate:" << activate
+             << ", factor:" << factor;
     // PlayerManager::groupForDeck is 0-indexed.
-    QString group = PlayerManager::groupForDeck(deck - 1);
+    const QString group = PlayerManager::groupForDeck(deck - 1);
 
     // kill timer when both enabling or disabling
     int timerId = m_scratchTimers.key(deck);
-    killTimer(timerId);
-    m_scratchTimers.remove(timerId);
+    stopScratchTimer(timerId);
 
     // enable/disable scratch2 mode
     ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
     if (pScratch2Enable != nullptr) {
-        pScratch2Enable->slotSet(activate ? 1 : 0);
+        pScratch2Enable->set(activate ? 1 : 0);
     }
 
     // used in scratchProcess for the different timer behavior we need
     m_softStartActive[deck] = activate;
-    double initRate = 0.0;
 
-    if (activate) {
-        // acquire deck rate
-        m_rampTo[deck] = getDeckRate(group);
-
-        // if brake()ing, get current rate from filter
-        if (m_brakeActive[deck]) {
-            m_brakeActive[deck] = false;
-
-            AlphaBetaFilter* filter = m_scratchFilters[deck];
-            if (filter != nullptr) {
-                initRate = filter->predictedVelocity();
-            }
-        }
-
-        // setup timer, start playing and set scratch2
-        timerId = startTimer(kScratchTimerMs);
-        m_scratchTimers[timerId] = deck;
-
-        ControlObjectScript* pPlay = getControlObjectScript(group, "play");
-        if (pPlay != nullptr) {
-            pPlay->slotSet(1.0);
-        }
-
-        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
-        if (pScratch2 != nullptr) {
-            pScratch2->slotSet(initRate);
-        }
-
-        // setup the filter like in brake(), with default alpha and beta*factor
-        double alphaSoft = 1.0 / 512;
-        // avoid decimals for fine adjusting
-        if (factor > 1) {
-            factor = ((factor - 1) / 10) + 1;
-        }
-        double betaSoft = ((1.0 / 512) / 1024) * factor; // default: (1.0/512)/1024
-        AlphaBetaFilter* filter = m_scratchFilters[deck];
-        if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
-            filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
-        }
-
-        // activate the ramping in scratchProcess()
-        m_ramp[deck] = true;
+    if (!activate) {
+        return;
     }
+
+    double initRate = 0.0;
+    // acquire deck rate
+    m_rampTo[deck] = getDeckRate(group);
+
+    // if braking or spinning back, get current rate from filter
+    if (m_brakeActive[deck] || m_spinbackActive[deck]) {
+        m_brakeActive[deck] = false;
+        m_spinbackActive[deck] = false;
+
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
+        if (filter != nullptr) {
+            initRate = filter->predictedVelocity();
+        }
+    }
+
+    // setup timer, start playing and set scratch2
+    timerId = startTimer(kScratchTimerMs);
+    m_scratchTimers[timerId] = deck;
+
+    ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+    if (pPlay != nullptr) {
+        pPlay->set(1.0);
+    }
+
+    ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+    if (pScratch2 != nullptr) {
+        pScratch2->set(initRate);
+    }
+
+    // setup the filter like in brake(), with default alpha and beta*factor
+    double alphaSoft = 1.0 / 512;
+    // avoid decimals for fine adjusting
+    if (factor > 1) {
+        factor = ((factor - 1) / 10) + 1;
+    }
+    double betaSoft = ((1.0 / 512) / 1024) * factor; // default: (1.0/512)/1024
+    AlphaBetaFilter* filter = m_scratchFilters[deck];
+    if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
+        filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
+    }
+
+    // activate the ramping in scratchProcess()
+    m_ramp[deck] = true;
 }

@@ -1,7 +1,5 @@
 <svg width="10" height="10" version="1.1" xmlns="http://www.w3.org/2000/svg">
-	<g transform="translate(0,-22)">
-		<g transform="matrix(.4151 0 0 .4151 -1.6604 19.547)">
-			<path d="m8.8184 20.364 4.8181 4.8181 9.6363-14.454" fill="none" stroke="#534f4c" stroke-linecap="round" stroke-linejoin="round" stroke-width="4.81809998"/>
-		</g>
-	</g>
+  <g transform="translate(0,-22)">
+    <path d="m2.00012 28.0001 1.99999 1.99999 4.00003-5.99986" fill="none" stroke="#505050" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.99999"/>
+  </g>
 </svg>

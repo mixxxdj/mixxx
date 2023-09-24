@@ -1,11 +1,11 @@
 #include "util/fileutils.h"
 
-#include <QRegExp>
+#include <QRegularExpression>
 
 namespace {
 // see https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
-const auto kIllegalCharacters = QRegExp("([<>:\"\\|\\?\\*]|[\x01-\x1F])");
-const auto kDirChars = QRegExp("[/\\\\]");
+const auto kIllegalCharacters = QRegularExpression("([<>:\"\\|\\?\\*]|[\x01-\x1F])");
+const auto kDirChars = QRegularExpression("[/\\\\]");
 } // namespace
 
 QString FileUtils::safeFilename(const QString& input, const QString& replacement) {

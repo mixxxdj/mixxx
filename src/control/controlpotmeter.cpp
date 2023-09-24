@@ -1,5 +1,6 @@
 #include "control/controlpotmeter.h"
 
+#include "control/control.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "moc_controlpotmeter.cpp"
@@ -20,10 +21,16 @@ ControlPotmeter::ControlPotmeter(const ConfigKey& key,
     if (!bPersist) {
         set(default_value);
     }
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
-}
+    //qDebug() << "" << this << ", min " << dMinValue << ", max " << dMaxValue << ", default " << default_value;
 
-ControlPotmeter::~ControlPotmeter() {
+    if (m_pControl) {
+        connect(m_pControl.data(),
+                &ControlDoublePrivate::valueChanged,
+                this,
+                &ControlPotmeter::privateValueChanged,
+                Qt::DirectConnection);
+    }
+    m_controls.setIsDefault(get() == default_value);
 }
 
 void ControlPotmeter::setStepCount(int count) {
@@ -44,6 +51,12 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue,
     }
 }
 
+// slot
+void ControlPotmeter::privateValueChanged(double dValue, QObject* pSender) {
+    Q_UNUSED(pSender);
+    m_controls.setIsDefault(dValue == defaultValue());
+}
+
 PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_pControl(new ControlProxy(key, this)),
           m_stepCount(10),
@@ -54,6 +67,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlUp = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up"));
+    controlUp->setKbdRepeatable(true);
     controlUp->setParent(this);
     connect(controlUp,
             &ControlPushButton::valueChanged,
@@ -62,6 +76,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlDown = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down"));
+    controlDown->setKbdRepeatable(true);
     controlDown->setParent(this);
     connect(controlDown,
             &ControlPushButton::valueChanged,
@@ -70,6 +85,7 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlUpSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up_small"));
+    controlUpSmall->setKbdRepeatable(true);
     controlUpSmall->setParent(this);
     connect(controlUpSmall,
             &ControlPushButton::valueChanged,
@@ -78,16 +94,17 @@ PotmeterControls::PotmeterControls(const ConfigKey& key)
 
     ControlPushButton* controlDownSmall = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_down_small"));
+    controlDownSmall->setKbdRepeatable(true);
     controlDownSmall->setParent(this);
     connect(controlDownSmall,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::decSmallValue);
 
-    ControlPushButton* controlDefault = new ControlPushButton(
-        ConfigKey(key.group, QString(key.item) + "_set_default"));
-    controlDefault->setParent(this);
-    connect(controlDefault,
+    m_pControlDefault = new ControlPushButton(
+            ConfigKey(key.group, QString(key.item) + "_set_default"));
+    m_pControlDefault->setParent(this);
+    connect(m_pControlDefault,
             &ControlPushButton::valueChanged,
             this,
             &PotmeterControls::setToDefault);
@@ -201,4 +218,8 @@ void PotmeterControls::toggleMinusValue(double v) {
         double value = m_pControl->get();
         m_pControl->set(value > 0.0 ? -1.0 : 1.0);
     }
+}
+
+void PotmeterControls::setIsDefault(bool isDefault) {
+    m_pControlDefault->forceSet(isDefault ? 1.0 : 0.0);
 }

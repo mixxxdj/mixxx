@@ -6,15 +6,8 @@
 #include <QMessageBox>
 #include <QHeaderView>
 
-// shout.h checks for WIN32 to see if we are on Windows
-#ifdef WIN64
-#define WIN32
-#endif
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -27,8 +20,8 @@
 
 namespace {
 const char* kSettingsGroupHeader = "Settings for %1";
-const int kColumnEnabled = 0;
-const int kColumnName = 1;
+constexpr int kColumnEnabled = 0;
+constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 } // namespace
 
@@ -158,6 +151,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              &QCheckBox::stateChanged,
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
+
+     setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -214,6 +209,7 @@ void DlgPrefBroadcast::slotApply() {
 
         QString profileName = profile->getProfileName();
         QString profileMountpoint = profile->getMountpoint();
+        bool profileEnabled = profile->getEnabled();
 
         for (auto it = mountpoints.constBegin(); it != mountpoints.constEnd(); ++it) {
             if (it.value() == profileMountpoint) {
@@ -221,16 +217,19 @@ void DlgPrefBroadcast::slotApply() {
                 BroadcastProfilePtr profileWithSameMountpoint =
                         m_pSettingsModel->getProfileByName(profileNameWithSameMountpoint);
 
-                if (!profileWithSameMountpoint.isNull()
-                    && profileWithSameMountpoint->getHost().toLower()
-                    == profile->getHost().toLower()
-                    && profileWithSameMountpoint->getPort()
-                    == profile->getPort() ) {
+                if (!profileWithSameMountpoint.isNull() &&
+                        profileWithSameMountpoint->getHost().toLower() ==
+                                profile->getHost().toLower() &&
+                        profileWithSameMountpoint->getPort() ==
+                                profile->getPort()
+                        // allow same mountpoint if not both connections are enabled
+                        && (profileEnabled && profileWithSameMountpoint->getEnabled())) {
                     QMessageBox::warning(this,
                             tr("Action failed"),
                             tr("'%1' has the same Icecast mountpoint as '%2'.\n"
                                "Two source connections to the same server "
-                               "can't have the same mountpoint.")
+                               "that have the same mountpoint can not be enabled "
+                               "simultaneously.")
                                     .arg(profileName,
                                             profileNameWithSameMountpoint));
                     return;

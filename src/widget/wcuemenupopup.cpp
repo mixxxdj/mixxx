@@ -83,13 +83,11 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) 
 
         QString positionText = "";
         Cue::StartAndEndPositions pos = m_pCue->getStartAndEndPosition();
-        if (pos.startPosition != Cue::kNoPosition) {
-            double startPositionSeconds = pos.startPosition /
-                    m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
+        if (pos.startPosition.isValid()) {
+            double startPositionSeconds = pos.startPosition.value() / m_pTrack->getSampleRate();
             positionText = mixxx::Duration::formatTime(startPositionSeconds, mixxx::Duration::Precision::CENTISECONDS);
-            if (pos.endPosition != Cue::kNoPosition) {
-                double endPositionSeconds = pos.endPosition /
-                        m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
+            if (pos.endPosition.isValid()) {
+                double endPositionSeconds = pos.endPosition.value() / m_pTrack->getSampleRate();
                 positionText = QString("%1 - %2").arg(
                     positionText,
                     mixxx::Duration::formatTime(endPositionSeconds, mixxx::Duration::Precision::CENTISECONDS)

@@ -13,6 +13,7 @@
 #include "library/treeitemmodel.h"
 
 class TraktorTrackModel : public BaseExternalTrackModel {
+    Q_OBJECT
   public:
     TraktorTrackModel(QObject* parent,
                       TrackCollectionManager* pTrackCollectionManager,
@@ -21,6 +22,7 @@ class TraktorTrackModel : public BaseExternalTrackModel {
 };
 
 class TraktorPlaylistModel : public BaseExternalPlaylistModel {
+    Q_OBJECT
   public:
     TraktorPlaylistModel(QObject* parent,
                          TrackCollectionManager* pTrackCollectionManager,
@@ -35,10 +37,9 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     virtual ~TraktorFeature();
 
     QVariant title() override;
-    QIcon getIcon() override;
     static bool isSupported();
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
     void activate() override;
@@ -47,7 +48,8 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
     TreeItem* importLibrary(const QString& file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
@@ -61,18 +63,18 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void clearTable(const QString& table_name);
     static QString getTraktorMusicDatabase();
     // private fields
-    TreeItemModel m_childModel;
+    parented_ptr<TreeItemModel> m_pSidebarModel;
     // A separate db connection for the worker parsing thread
     QSqlDatabase m_database;
     TraktorTrackModel* m_pTraktorTableModel;
     TraktorPlaylistModel* m_pTraktorPlaylistModel;
 
     bool m_isActivated;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
     QFutureWatcher<TreeItem*> m_future_watcher;
     QFuture<TreeItem*> m_future;
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-    QIcon m_icon;
 };

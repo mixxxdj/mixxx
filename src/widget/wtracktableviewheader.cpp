@@ -49,7 +49,7 @@ HeaderViewState::HeaderViewState(const QString& base64serialized) {
 QString HeaderViewState::saveState() const {
     // Serialize the proto to a byte array, then encode the array as Base64.
 #if GOOGLE_PROTOBUF_VERSION >= 3001000
-    size_t size = m_view_state.ByteSizeLong();
+    int size = static_cast<int>(m_view_state.ByteSizeLong());
 #else
     int size = m_view_state.ByteSize();
 #endif
@@ -103,6 +103,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
     m_menu.popup(event->globalPos());
 }
 

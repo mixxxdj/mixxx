@@ -35,6 +35,12 @@ class XmlParse {
                                    const QString& sNode, bool* ok = 0);
 
     // Searches for an element named sNode in the children of nodeHeader and
+    // parses the text value of its children as a bool. Returns false if sNode
+    // is not found in nodeHeader's children.
+    static bool selectNodeBool(const QDomNode& nodeHeader,
+            const QString& sNode);
+
+    // Searches for an element named sNode in the children of nodeHeader and
     // returns the text value of its children. Returns the empty string if sNode
     // is not found in nodeHeader's children.
     static QString selectNodeQString(const QDomNode& nodeHeader,

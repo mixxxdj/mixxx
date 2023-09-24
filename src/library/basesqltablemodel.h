@@ -49,6 +49,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId getTrackId(const QModelIndex& index) const override;
     QString getTrackLocation(const QModelIndex& index) const override;
 
+    QUrl getTrackUrl(const QModelIndex& index) const override;
+
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
 
     const QVector<int> getTrackRows(TrackId trackId) const override {
@@ -71,6 +73,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     int fieldIndex(
             ColumnCache::Column column) const final;
 
+    QString modelKey(bool noSearch) const override;
+
   protected:
     ///////////////////////////////////////////////////////////////////////////
     // Inherited from BaseTrackTableModel
@@ -84,9 +88,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             const QVariant& value,
             int role) final;
 
-    void setTable(const QString& tableName, const QString& trackIdColumn,
-                  const QStringList& tableColumns,
-                  QSharedPointer<BaseTrackCache> trackSource);
+    void setTable(QString tableName,
+            QString trackIdColumn,
+            QStringList tableColumns,
+            QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderProperties() override;
     virtual void initSortColumnMapping();
 
@@ -96,6 +101,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QList<TrackRef> getTrackRefs(const QModelIndexList& indices) const;
 
     QSqlDatabase m_database;
+    QString m_tableName;
 
     QString m_tableOrderBy;
     int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
@@ -138,7 +144,6 @@ class BaseSqlTableModel : public BaseTrackTableModel {
 
     QVector<RowInfo> m_rowInfo;
 
-    QString m_tableName;
     QString m_idColumn;
     QSharedPointer<BaseTrackCache> m_trackSource;
     QStringList m_tableColumns;
@@ -148,7 +153,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     TrackId2Rows m_trackIdToRows;
     QString m_currentSearch;
     QString m_currentSearchFilter;
-    QVector<QHash<int, QVariant> > m_headerInfo;
+    QVector<QHash<int, QVariant>> m_headerInfo;
     QString m_trackSourceOrderBy;
 
     DISALLOW_COPY_AND_ASSIGN(BaseSqlTableModel);

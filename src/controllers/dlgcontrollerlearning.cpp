@@ -6,7 +6,7 @@
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_dlgcontrollerlearning.cpp"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 namespace {
 typedef QPair<QString, ConfigKey> NamedControl;
@@ -16,14 +16,16 @@ bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
 } // namespace
 
 DlgControllerLearning::DlgControllerLearning(QWidget* parent,
-        Controller* controller)
+        Controller* controller,
+        ControlPickerMenu* pControlPickerMenu)
         : QDialog(parent),
           m_pController(controller),
-          m_controlPickerMenu(this),
+          m_pControlPickerMenu(pControlPickerMenu),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
     setupUi(this);
+    labelDescription->setWordWrap(true);
     labelMappedTo->setText("");
 
     QString helpTitle(tr("Click anywhere in Mixxx or choose a control to learn"));
@@ -64,7 +66,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-    connect(&m_controlPickerMenu,
+    connect(m_pControlPickerMenu,
             &ControlPickerMenu::controlPicked,
             this,
             &DlgControllerLearning::controlPicked);
@@ -149,11 +151,10 @@ void DlgControllerLearning::populateComboBox() {
     comboBoxChosenControl->clear();
     comboBoxChosenControl->addItem("", QVariant::fromValue(ConfigKey()));
     QList<NamedControl> sorted_controls;
-    foreach(ConfigKey key, m_controlPickerMenu.controlsAvailable())
-    {
+    foreach (ConfigKey key, m_pControlPickerMenu->controlsAvailable()) {
         sorted_controls.push_back(
-                NamedControl(m_controlPickerMenu.controlTitleForConfigKey(key),
-                             key));
+                NamedControl(m_pControlPickerMenu->controlTitleForConfigKey(key),
+                        key));
     }
     std::sort(sorted_controls.begin(), sorted_controls.end(),
           namedControlComparator);
@@ -258,11 +259,11 @@ void DlgControllerLearning::slotStartLearningPressed() {
 
 #ifdef CONTROLLERLESSTESTING
 void DlgControllerLearning::DEBUGFakeMidiMessage() {
-    slotMessageReceived(MIDI_CC, 0x20, 0x41);
+    slotMessageReceived(MidiOpCode::ControlChange, 0x20, 0x41);
 }
 
 void DlgControllerLearning::DEBUGFakeMidiMessage2() {
-    slotMessageReceived(MIDI_CC, 0x20, 0x3F);
+    slotMessageReceived(MidiOpCode::ControlChange, 0x20, 0x3F);
 }
 #endif
 
@@ -281,7 +282,7 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
 
     // NOTE(rryan): We intend to use MidiKey(status, control) here rather than
     // setting fields individually since we will use the MidiKey with an input
-    // mapping. See Bug #1532297
+    // mapping. See Issue #8432
     MidiKey key(status, control);
 
     // Ignore all standard MIDI System Real-Time Messages because they
@@ -312,11 +313,11 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // We got a message, so we can cancel the taking-too-long timeout.
     m_firstMessageTimer.stop();
 
-    // Unless this is a MIDI_CC and the progress bar is full, restart the
+    // Unless this is a MidiOpCode::ControlChange and the progress bar is full, restart the
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
-    if (opCode != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+    MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
+    if (opCode != MidiOpCode::ControlChange || progressBarWiggleFeedback->value() != 10) {
         m_lastMessageTimer.start();
     }
 }
@@ -362,28 +363,34 @@ void DlgControllerLearning::slotTimerExpired() {
     QString midiControl = "";
     bool first = true;
     foreach (const MidiInputMapping& mapping, m_mappings) {
-        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
+        MidiOpCode opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
         bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
-        QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
-                .arg(QString::number(mapping.key.status, 16).toUpper(),
-                     QString::number(mapping.key.control, 16).toUpper()
-                     .rightJustified(2, '0'),
-                     QString::number(mapping.options.all, 16).toUpper()
-                     .rightJustified(2, '0')) :
-                QString("0x%1 0x%2")
-                .arg(QString::number(mapping.key.status, 16).toUpper(),
-                     QString::number(mapping.options.all, 16).toUpper()
-                     .rightJustified(2, '0'));
+        QString mappingStr = twoBytes
+                ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
+                          .arg(QString::number(mapping.key.status, 16)
+                                          .toUpper(),
+                                  QString::number(mapping.key.control, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'),
+                                  QString::number(mapping.options, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'))
+                : QString("0x%1 0x%2")
+                          .arg(QString::number(mapping.key.status, 16)
+                                          .toUpper(),
+                                  QString::number(mapping.options, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'));
 
         // Set the debug string and "Advanced MIDI Options" group using the
         // first mapping.
         if (first) {
             midiControl = mappingStr;
             MidiOptions options = mapping.options;
-            midiOptionInvert->setChecked(options.invert);
-            midiOptionSelectKnob->setChecked(options.selectknob);
-            midiOptionSoftTakeover->setChecked(options.soft_takeover);
-            midiOptionSwitchMode->setChecked(options.sw);
+            midiOptionInvert->setChecked(options.testFlag(MidiOption::Invert));
+            midiOptionSelectKnob->setChecked(options.testFlag(MidiOption::SelectKnob));
+            midiOptionSoftTakeover->setChecked(options.testFlag(MidiOption::SoftTakeover));
+            midiOptionSwitchMode->setChecked(options.testFlag(MidiOption::Switch));
             first = false;
         }
 
@@ -417,10 +424,10 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
     for (MidiInputMappings::iterator it = m_mappings.begin();
          it != m_mappings.end(); ++it) {
         MidiOptions& options = it->options;
-        options.sw = midiOptionSwitchMode->isChecked();
-        options.soft_takeover = midiOptionSoftTakeover->isChecked();
-        options.invert = midiOptionInvert->isChecked();
-        options.selectknob = midiOptionSelectKnob->isChecked();
+        options.setFlag(MidiOption::Switch, midiOptionSwitchMode->isChecked());
+        options.setFlag(MidiOption::SoftTakeover, midiOptionSoftTakeover->isChecked());
+        options.setFlag(MidiOption::Invert, midiOptionInvert->isChecked());
+        options.setFlag(MidiOption::SelectKnob, midiOptionSelectKnob->isChecked());
     }
 
     emit learnTemporaryInputMappings(m_mappings);
@@ -445,7 +452,7 @@ DlgControllerLearning::~DlgControllerLearning() {
 }
 
 void DlgControllerLearning::showControlMenu() {
-    m_controlPickerMenu.exec(pushButtonChooseControl->mapToGlobal(QPoint(0,0)));
+    m_pControlPickerMenu->exec(pushButtonChooseControl->mapToGlobal(QPoint(0, 0)));
 }
 
 void DlgControllerLearning::loadControl(const ConfigKey& key,
@@ -476,23 +483,19 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
 }
 
 void DlgControllerLearning::controlPicked(const ConfigKey& control) {
-    QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
-    QString description = m_controlPickerMenu.descriptionForConfigKey(control);
+    QString title = m_pControlPickerMenu->controlTitleForConfigKey(control);
+    QString description = m_pControlPickerMenu->descriptionForConfigKey(control);
     loadControl(control, title, description);
 }
 
-void DlgControllerLearning::controlClicked(ControlObject* pControl) {
-    if (!pControl) {
-        return;
-    }
-
-    ConfigKey key = pControl->getKey();
-    if (!m_controlPickerMenu.controlExists(key)) {
+void DlgControllerLearning::controlClicked(const ConfigKey& controlKey) {
+    if (!m_pControlPickerMenu->controlExists(controlKey)) {
         qWarning() << "Mixxx UI element clicked for which there is no "
-                      "learnable control " << key.group << " " << key.item;
+                      "learnable control "
+                   << controlKey.group << " " << controlKey.item;
         QMessageBox::warning(
                 this,
-                Version::applicationName(),
+                VersionStore::applicationName(),
                 tr("The control you clicked in Mixxx is not learnable.\n"
                    "This could be because you are either using an old skin"
                    " and this control is no longer supported, "
@@ -500,12 +503,12 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
                    " and can only be mapped to outputs like LEDs via"
                    " scripts.\n"
                    "\nYou tried to learn: %1,%2")
-                        .arg(key.group, key.item),
+                        .arg(controlKey.group, controlKey.item),
                 QMessageBox::Ok,
                 QMessageBox::Ok);
         return;
     }
-    controlPicked(key);
+    controlPicked(controlKey);
 }
 
 void DlgControllerLearning::comboboxIndexChanged(int index) {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QListWidget>
 #include <QPoint>
 #include <QSize>
 #include <QWidget>
@@ -48,6 +49,15 @@ inline QScreen* getScreen(
     return pWindow->screen();
 #endif
 }
+
+/// QSize for stretching a list widget attempting to show entire column
+void growListWidget(QListWidget& listWidget, const QWidget& parent);
+
+// Get the base color of a widget, or recursively search the parent tree for one.
+//
+// Returns QColor(0,0,0) when none is found. As the recursion can go quite deep,
+// avoid calling repeatedly, but only when needed, e.g in a showEvent.
+QColor findBaseColor(QWidget* pWidget);
 
 } // namespace widgethelper
 

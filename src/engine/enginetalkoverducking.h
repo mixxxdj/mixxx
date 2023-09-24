@@ -35,7 +35,7 @@ class EngineTalkoverDucking : public QObject, public EngineSideChainCompressor {
     UserSettingsPointer m_pConfig;
     const QString m_group;
 
-    ControlProxy* m_pMasterSampleRate;
+    ControlProxy* m_pSampleRate;
     ControlPotmeter* m_pDuckStrength;
     ControlPushButton* m_pTalkoverDucking;
 };

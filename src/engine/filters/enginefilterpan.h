@@ -2,10 +2,9 @@
 
 #include <string.h>
 
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
-
-static const int numChannels = 2;
 
 template<unsigned int SIZE>
 class EngineFilterPan : public EngineObjectConstIn {
@@ -123,7 +122,7 @@ class EngineFilterPan : public EngineObjectConstIn {
     int m_leftDelayFrames;
     int m_oldLeftDelayFrames;
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * numChannels];
+    CSAMPLE m_buf[SIZE * mixxx::kEngineChannelCount];
     bool m_doRamping;
     bool m_doStart;
 };

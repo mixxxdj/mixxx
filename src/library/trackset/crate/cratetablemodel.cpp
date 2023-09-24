@@ -10,10 +10,19 @@
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
+namespace {
+
+const QString kModelName = "crate";
+
+} // anonymous namespace
+
 CrateTableModel::CrateTableModel(
         QObject* pParent,
         TrackCollectionManager* pTrackCollectionManager)
-        : TrackSetTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.crate") {
+        : TrackSetTableModel(
+                  pParent,
+                  pTrackCollectionManager,
+                  "mixxx.db.model.crate") {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
@@ -22,6 +31,16 @@ void CrateTableModel::selectCrate(CrateId crateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_selectedCrate.isValid()) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+        } else {
+            m_searchTexts.remove(m_selectedCrate.value());
+        }
+    }
+
     m_selectedCrate = crateId;
 
     QString tableName = QStringLiteral("crate_%1").arg(m_selectedCrate.toString());
@@ -56,7 +75,9 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             LIBRARYTABLE_ID,
             columns,
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
-    setSearch("");
+
+    // Restore search text
+    setSearch(m_searchTexts.value(m_selectedCrate.value()));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
@@ -64,7 +85,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location
     Q_UNUSED(index);
 
     // This will only succeed if the file actually exist.
-    TrackFile fileInfo(location);
+    mixxx::FileInfo fileInfo(location);
     if (!fileInfo.checkFileExists()) {
         qDebug() << "CrateTableModel::addTrack:"
                  << "File" << location << "not found";
@@ -109,7 +130,9 @@ TrackModel::Capabilities CrateTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::RemoveCrate |
-            Capability::ResetPlayed;
+            Capability::ResetPlayed |
+            Capability::RemoveFromDisk |
+            Capability::Analyze;
 
     if (m_selectedCrate.isValid()) {
         Crate crate;
@@ -132,8 +155,8 @@ int CrateTableModel::addTracks(
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()
-                                      ->resolveTrackIdsFromLocations(locations);
+    QList<TrackId> trackIds =
+            m_pTrackCollectionManager->resolveTrackIdsFromLocations(locations);
     if (!m_pTrackCollectionManager->internalCollection()->addCrateTracks(
                 m_selectedCrate, trackIds)) {
         qWarning() << "CrateTableModel::addTracks could not add"
@@ -177,4 +200,23 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     select();
+}
+
+QString CrateTableModel::modelKey(bool noSearch) const {
+    if (m_selectedCrate.isValid()) {
+        if (noSearch) {
+            return kModelName + QStringLiteral(":") +
+                    QString::number(m_selectedCrate.value());
+        }
+        return kModelName + QStringLiteral(":") +
+                QString::number(m_selectedCrate.value()) +
+                QStringLiteral("#") +
+                currentSearch();
+    } else {
+        if (noSearch) {
+            return kModelName;
+        }
+        return kModelName + QStringLiteral("#") +
+                currentSearch();
+    }
 }

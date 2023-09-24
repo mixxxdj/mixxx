@@ -9,8 +9,7 @@
 #include <future>
 
 #include "track/track.h"
-
-class QFileInfo;
+#include "util/fileinfo.h"
 
 namespace Grantlee {
 class Context;
@@ -119,12 +118,11 @@ class TrackExportWorker : public QThread {
     // exists, will emit an overwrite request signal to ask how to proceed.
     // On unrecoverable error, sets the error message and stops the export
     // process entirely.
-    void copyFile(const QFileInfo& source_fileinfo,
-                  const QString& dest_filename);
-    QMap<QString, TrackFile> createCopylist(
+    void copyFile(const mixxx::FileInfo& source_fileinfo,
+            const QString& dest_filename);
+    QMap<QString, mixxx::FileInfo> createCopylist(
             const TrackPointerList& tracks,
             TrackPointerList* skippedTracks);
-    void exportPlaylist();
     void updateTemplate();
 
     // Emit a signal requesting overwrite mode, and block until we get an

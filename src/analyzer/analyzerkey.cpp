@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QtDebug>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/constants.h"
 #if defined __KEYFINDER__
 #include "analyzer/plugins/analyzerkeyfinder.h"
@@ -32,17 +33,19 @@ mixxx::AnalyzerPluginInfo AnalyzerKey::defaultPlugin() {
 
 AnalyzerKey::AnalyzerKey(const KeyDetectionSettings& keySettings)
         : m_keySettings(keySettings),
-          m_iSampleRate(0),
-          m_iTotalSamples(0),
-          m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0),
+          m_sampleRate(0),
+          m_totalFrames(0),
+          m_maxFramesToProcess(0),
+          m_currentFrame(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
 }
 
-bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
-    if (totalSamples == 0) {
+bool AnalyzerKey::initialize(const AnalyzerTrack& track,
+        mixxx::audio::SampleRate sampleRate,
+        SINT frameLength) {
+    if (frameLength <= 0) {
         return false;
     }
 
@@ -57,10 +60,10 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 
     const auto plugins = availablePlugins();
     if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id;
+        m_pluginId = defaultPlugin().id();
         QString pluginId = m_keySettings.getKeyPluginId();
         for (const auto& info : plugins) {
-            if (info.id == pluginId) {
+            if (info.id() == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
             }
@@ -72,26 +75,26 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeEnabled
              << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
 
-    m_iSampleRate = sampleRate;
-    m_iTotalSamples = totalSamples;
+    m_sampleRate = sampleRate;
+    m_totalFrames = frameLength;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysisEnabled) {
-        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+        m_maxFramesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate;
     } else {
-        m_iMaxSamplesToProcess = m_iTotalSamples;
+        m_maxFramesToProcess = frameLength;
     }
-    m_iCurrentSample = 0;
+    m_currentFrame = 0;
 
     // if we can't load a stored track reanalyze it
-    bool bShouldAnalyze = shouldAnalyze(tio);
+    bool bShouldAnalyze = shouldAnalyze(track.getTrack());
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
-        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
+        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
 #if defined __KEYFINDER__
-        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id) {
+        } else if (m_pluginId == mixxx::AnalyzerKeyFinder::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerKeyFinder>();
 #endif
         } else {
@@ -101,7 +104,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         }
 
         if (m_pPlugin) {
-            if (m_pPlugin->initialize(sampleRate)) {
+            if (m_pPlugin->initialize(mixxx::audio::SampleRate(m_sampleRate))) {
                 qDebug() << "Key calculation started with plugin" << m_pluginId;
             } else {
                 qDebug() << "Key calculation will not start.";
@@ -115,15 +118,15 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     return bShouldAnalyze;
 }
 
-bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
+bool AnalyzerKey::shouldAnalyze(TrackPointer pTrack) const {
     bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     QString pluginID = m_keySettings.getKeyPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id;
+        pluginID = defaultPlugin().id();
     }
 
-    const Keys keys(tio->getKeys());
-    if (keys.isValid()) {
+    const Keys keys = pTrack->getKeys();
+    if (keys.getGlobalKey() != mixxx::track::io::key::INVALID) {
         QString version = keys.getVersion();
         QString subVersion = keys.getSubVersion();
 
@@ -148,17 +151,17 @@ bool AnalyzerKey::shouldAnalyze(TrackPointer tio) const {
     return true;
 }
 
-bool AnalyzerKey::processSamples(const CSAMPLE *pIn, const int iLen) {
+bool AnalyzerKey::processSamples(const CSAMPLE* pIn, SINT count) {
     VERIFY_OR_DEBUG_ASSERT(m_pPlugin) {
         return false;
     }
 
-    m_iCurrentSample += iLen;
-    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
+    m_currentFrame += count / mixxx::kAnalysisChannels;
+    if (m_currentFrame > m_maxFramesToProcess) {
         return true; // silently ignore remaining samples
     }
 
-    return m_pPlugin->processSamples(pIn, iLen);
+    return m_pPlugin->processSamples(pIn, count);
 }
 
 void AnalyzerKey::cleanup() {
@@ -179,7 +182,7 @@ void AnalyzerKey::storeResults(TrackPointer tio) {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(
-            key_changes, extraVersionInfo, m_iSampleRate, m_iTotalSamples);
+            key_changes, extraVersionInfo, m_sampleRate, m_totalFrames);
     tio->setKeys(track_keys);
 }
 

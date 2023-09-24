@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QFileInfo>
+#include <QFuture>
 #include <QImage>
 #include <QList>
 #include <QSize>
@@ -9,12 +9,17 @@
 
 #include "track/track_decl.h"
 #include "util/cache.h"
+#include "util/fileinfo.h"
 #include "util/imageutils.h"
-#include "util/sandbox.h"
 
 class CoverInfo;
 class CoverInfoRelative;
-class TrackFile;
+
+namespace mixxx {
+
+class FileAccess;
+
+} // namespace mixxx
 
 class CoverArtUtils {
   public:
@@ -24,8 +29,9 @@ class CoverArtUtils {
 
     // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
-            TrackFile trackFile,
-            SecurityTokenPointer pToken);
+            mixxx::FileAccess trackFileAccess);
+    static QImage extractEmbeddedCover(
+            TrackPointer pTrack);
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -56,7 +62,7 @@ class CoverArtUtils {
     // files. Assumes a SecurityTokenPointer is held by the caller for all files
     // in 'covers'.
     static CoverInfoRelative selectCoverArtForTrack(
-            const TrackFile& trackFile,
+            const mixxx::FileInfo& trackFile,
             const QString& albumName,
             const QList<QFileInfo>& covers);
 };
@@ -68,17 +74,16 @@ class CoverInfoGuesser {
     // Guesses the cover art for the provided track.
     // An embedded cover must be extracted beforehand and provided.
     CoverInfoRelative guessCoverInfo(
-            const TrackFile& trackFile,
+            const mixxx::FileInfo& trackFile,
             const QString& albumName,
             const QImage& embeddedCover);
 
     // Extracts an embedded cover image if available and guesses
     // the cover art for the provided track.
-    CoverInfoRelative guessCoverInfoForTrack(
-            const Track& track);
+    CoverInfoRelative guessCoverInfoForTrack(TrackPointer pTrack);
 
     void guessAndSetCoverInfoForTrack(
-            Track& track);
+            TrackPointer pTrack);
     void guessAndSetCoverInfoForTracks(
             const TrackPointerList& tracks);
 
@@ -90,7 +95,7 @@ class CoverInfoGuesser {
 // Guesses the cover art for the provided tracks by searching the tracks'
 // metadata and folders for image files. All I/O is done in a separate
 // thread.
-void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+[[nodiscard]] QFuture<void> guessTrackCoverInfoConcurrently(TrackPointer pTrack);
 
 // Concurrent guessing of track covers during short running
 // tests may cause spurious test failures due to timing issues.

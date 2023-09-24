@@ -170,22 +170,21 @@ const QModelIndex TreeItemModel::getRootIndex() {
 
 /**
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
- * make sure you have initialized
+ * make sure you have initialized.
  */
 void TreeItemModel::insertTreeItemRows(
-        QList<TreeItem*>& rows,
+        std::vector<std::unique_ptr<TreeItem>>&& rows,
         int position,
         const QModelIndex& parent) {
-    if (rows.isEmpty()) {
+    if (rows.empty()) {
         return;
     }
 
     TreeItem* pParentItem = getItem(parent);
     DEBUG_ASSERT(pParentItem != nullptr);
 
-    beginInsertRows(parent, position, position + rows.size() - 1);
-    pParentItem->insertChildren(position, rows);
-    DEBUG_ASSERT(rows.isEmpty());
+    beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
+    pParentItem->insertChildren(position, std::move(rows));
     endInsertRows();
 }
 

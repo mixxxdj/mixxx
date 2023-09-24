@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QTime>
-#include <QThread>
-#include <QSemaphore>
 #include <QPair>
-#include <QGLWidget>
+#include <QSemaphore>
+#include <QThread>
+#include <QTime>
 
 #include "util/performancetimer.h"
+#include "widget/wglwidget.h"
 
 class VSyncThread : public QThread {
     Q_OBJECT
@@ -25,7 +25,7 @@ class VSyncThread : public QThread {
 
     void run();
 
-    bool waitForVideoSync(QGLWidget* glw);
+    bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
     int toNextSyncMicros();
     void setSyncIntervalTimeMicros(int usSyncTimer);
@@ -34,10 +34,13 @@ class VSyncThread : public QThread {
     void setSwapWait(int sw);
     int fromTimerToNextSyncMicros(const PerformanceTimer& timer);
     void vsyncSlotFinished();
-    void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
-    void setupSync(QGLWidget* glw, int index);
-    void waitUntilSwap(QGLWidget* glw);
-
+    void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
+    void setupSync(WGLWidget* glw, int index);
+    void waitUntilSwap(WGLWidget* glw);
+    mixxx::Duration sinceLastSwap() const;
+    int getSyncIntervalTimeMicros() const {
+        return m_syncIntervalTimeMicros;
+    }
   signals:
     void vsyncRender();
     void vsyncSwap();
@@ -55,4 +58,5 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
+    mixxx::Duration m_sinceLastSwap;
 };

@@ -31,7 +31,6 @@
 #   libavformat
 #   libavfilter
 #   libavutil
-#   libpostproc
 #   libswscale
 #   libswresample
 #
@@ -128,7 +127,6 @@ find_component(libavdevice   libavdevice   avdevice libavdevice/avdevice.h)
 find_component(libavutil     libavutil     avutil   libavutil/avutil.h)
 find_component(libavfilter   libavfilter   avfilter libavfilter/avfilter.h)
 find_component(libswscale    libswscale    swscale  libswscale/swscale.h)
-find_component(libpostproc   libpostproc   postproc libpostproc/postprocess.h)
 find_component(libswresample libswresample swresample libswresample/swresample.h)
 
 set(FFMPEG_LIBRARIES "")

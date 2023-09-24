@@ -2,7 +2,6 @@
 
 #include <QAtomicInteger>
 #include <QList>
-#include <QMutex>
 #include <QQueue>
 #include <QSet>
 #include <QSharedPointer>

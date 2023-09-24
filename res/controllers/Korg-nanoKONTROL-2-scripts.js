@@ -41,7 +41,7 @@ if (NK2.numDecks==8){
 }else if (NK2.numDecks==4){
     NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Channel3]",4:"[Channel4]",5:"[Sampler1]",6:"[Sampler2]",7:"[Sampler3]",8:"[Sampler4]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (4 decks, 4 samplers)
 }else if (NK2.numDecks==2){
-    NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Sampler1]",4:"[Sampler2]",5:"[Sampler3]",6:"[Sampler4]",5:"[Sampler5]",6:"[Sampler6]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (2 decks, 6 samplers)
+    NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Sampler1]",4:"[Sampler2]",5:"[Sampler3]",6:"[Sampler4]",7:"[Sampler5]",8:"[Sampler6]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (2 decks, 6 samplers)
 }
 
 
@@ -61,11 +61,11 @@ NK2.beatloopLengths=new Array(0.03125,0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 
 
 NK2.init = function init() { // called when the device is opened & set up
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    engine.setValue("[Master]", "num_decks", NK2.numDecks);
+    engine.setValue("[App]", "num_decks", NK2.numDecks);
     NK2.setup()
 
     NK2.updateLEDs();
-    print("decks: "+engine.getValue("[Master]", "num_decks"))
+    print("decks: "+engine.getValue("[App]", "num_decks"))
     };
 
 NK2.shutdown = function shutdown() {

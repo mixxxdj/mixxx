@@ -2,9 +2,9 @@
 
 #include "moc_deck.cpp"
 
-Deck::Deck(QObject* pParent,
+Deck::Deck(PlayerManager* pParent,
         UserSettingsPointer pConfig,
-        EngineMaster* pMixingEngine,
+        EngineMixer* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup)
@@ -14,7 +14,7 @@ Deck::Deck(QObject* pParent,
                   pEffectsManager,
                   defaultOrientation,
                   handleGroup,
-                  /*defaultMaster*/ true,
+                  /*defaultMainMix*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ true) {
 }

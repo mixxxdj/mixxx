@@ -9,10 +9,8 @@
 
 namespace {
 
-const QDir kTestDir(QDir::current().absoluteFilePath("src/test/id3-test-data"));
-
-const TrackFile kTestFile(kTestDir.absoluteFilePath("cover-test.flac"));
-const TrackFile kTestFile2(kTestDir.absoluteFilePath("cover-test.ogg"));
+const QString kTestFile = QStringLiteral("id3-test-data/cover-test.flac");
+const QString kTestFile2 = QStringLiteral("id3-test-data/cover-test.ogg");
 
 class TrackTitleThread: public QThread {
   public:
@@ -35,7 +33,7 @@ class TrackTitleThread: public QThread {
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
-                // lp1744550: Accessing the track from multiple threads is
+                // #9097: Accessing the track from multiple threads is
                 // required to cause a SIGSEGV
                 if (track->getTitle().isEmpty()) {
                     track->setTitle(
@@ -97,7 +95,8 @@ TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
 
     TrackPointer track;
     {
-        GlobalTrackCacheResolver resolver(kTestFile);
+        auto testFileAccess = mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile)));
+        GlobalTrackCacheResolver resolver(testFileAccess);
         track = resolver.getTrack();
         EXPECT_TRUE(static_cast<bool>(track));
         EXPECT_EQ(2, track.use_count());
@@ -146,7 +145,9 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
     TrackTitleThread workerThread;
     workerThread.start();
 
-    // lp1744550: A decent number of iterations is needed to reliably
+    const auto testFile = mixxx::FileInfo(getTestDir().filePath(kTestFile));
+
+    // #9097: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
     // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
@@ -159,7 +160,8 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
         TrackPointer track;
         {
-            GlobalTrackCacheResolver resolver(kTestFile);
+            auto testFileAccess = mixxx::FileAccess(testFile);
+            GlobalTrackCacheResolver resolver(testFileAccess);
             track = resolver.getTrack();
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
@@ -172,7 +174,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         track = GlobalTrackCacheLocker().lookupTrackById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
 
-        // lp1744550: Accessing the track from multiple threads is
+        // #9097: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
         track->setArtist(QString("Artist %1").arg(QString::number(i)));
 
@@ -200,10 +202,14 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 TEST_F(GlobalTrackCacheTest, evictWhileMoving) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
-    TrackPointer track1 = GlobalTrackCacheResolver(kTestFile).getTrack();
+    TrackPointer track1 = GlobalTrackCacheResolver(
+            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile))))
+                                  .getTrack();
     EXPECT_TRUE(static_cast<bool>(track1));
 
-    TrackPointer track2 = GlobalTrackCacheResolver(kTestFile2).getTrack();
+    TrackPointer track2 = GlobalTrackCacheResolver(
+            mixxx::FileAccess(mixxx::FileInfo(getTestDir().filePath(kTestFile2))))
+                                  .getTrack();
     EXPECT_TRUE(static_cast<bool>(track2));
 
     track1 = std::move(track2);

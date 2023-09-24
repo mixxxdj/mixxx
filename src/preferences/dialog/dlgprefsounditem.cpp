@@ -5,7 +5,6 @@
 #include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
-#include "util/compatibility.h"
 
 /**
  * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
@@ -33,14 +32,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
 
-    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
-    // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page.
-    deviceComboBox->setFocusPolicy(Qt::StrongFocus);
-    deviceComboBox->installEventFilter(this);
-    channelComboBox->setFocusPolicy(Qt::StrongFocus);
-    channelComboBox->installEventFilter(this);
-
     connect(deviceComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -54,20 +45,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
 
-}
-
-// Catch scroll events over comboboxes and pass them to the scroll area instead.
-bool DlgPrefSoundItem::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QComboBox* combo = qobject_cast<QComboBox*>(obj);
-        if (combo && !combo->hasFocus()) {
-            QApplication::sendEvent(this->parentWidget(), e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
 }
 
 /**
@@ -102,7 +79,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
 void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
-    unsigned int numChannels = 0;
+    mixxx::audio::ChannelCount numChannels;
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
@@ -116,12 +93,12 @@ void DlgPrefSoundItem::deviceChanged(int index) {
             }
         }
     }
-    if (numChannels == 0) {
+    if (!numChannels.isValid()) {
         goto emitAndReturn;
     } else {
-        unsigned char minChannelsForType =
+        mixxx::audio::ChannelCount minChannelsForType =
                 AudioPath::minChannelsForType(m_type);
-        unsigned char maxChannelsForType =
+        mixxx::audio::ChannelCount maxChannelsForType =
                 AudioPath::maxChannelsForType(m_type);
 
         // Count down from the max so that stereo channels are first.
@@ -168,10 +145,8 @@ void DlgPrefSoundItem::channelChanged() {
  */
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
-        QMultiHash<SoundDeviceId, AudioInput> inputs(config.getInputs());
-        QHashIterator<SoundDeviceId, AudioInput> it(inputs);
-        while (it.hasNext()) {
-            it.next();
+        const auto inputDeviceMap = config.getInputs();
+        for (auto it = inputDeviceMap.cbegin(); it != inputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
@@ -180,10 +155,8 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
             }
         }
     } else {
-        QMultiHash<SoundDeviceId, AudioOutput> outputs(config.getOutputs());
-        QHashIterator<SoundDeviceId, AudioOutput> it(outputs);
-        while (it.hasNext()) {
-            it.next();
+        const auto ouputDeviceMap = config.getOutputs();
+        for (auto it = ouputDeviceMap.cbegin(); it != ouputDeviceMap.cend(); ++it) {
             if (it.value().getType() == m_type && it.value().getIndex() == m_index) {
                 setDevice(it.key());
                 setChannel(it.value().getChannelGroup().getChannelBase(),
@@ -212,8 +185,7 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     QPoint channelData = channelComboBox->itemData(
         channelComboBox->currentIndex()).toPoint();
     int channelBase = channelData.x();
-    int channelCount = channelData.y();
-
+    const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
     if (m_isInput) {
         config->addInput(
@@ -309,7 +281,7 @@ void DlgPrefSoundItem::setChannel(unsigned int channelBase,
  * Checks that a given device can act as a source/input for our type.
  */
 int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice& device) const {
-    unsigned char needed(AudioPath::minChannelsForType(m_type));
+    const auto needed = AudioPath::minChannelsForType(m_type);
 
     if (m_isInput) {
         return device.getNumInputChannels() >= needed;

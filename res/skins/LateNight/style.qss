@@ -4,8 +4,7 @@
 
 #Mixxx,
 WWidget,
-QToolTip,
-WLabel, QLabel,
+WLabel,
 WNumber, WNumberPos,
 WPushButton,
 WKey,
@@ -13,62 +12,54 @@ WTime,
 WTrackText,
 WTrackProperty,
 WRecordingDuration,
-WOverview #PassthroughLabel,
-WBeatSpinBox QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QLabel,
-WCoverArtMenu,
-WTrackMenu,
-WTrackMenu QMenu,
-WOverview /* Hotcue labels in the overview */,
 QSpinBox,
-WBeatSpinBox, #spinBoxTransition,
-QComboBox,
-WEffect,
+WBeatSpinBox,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
+WCueMenuPopup QLineEdit,
+WOverview, /* Hotcue labels in the overview */
+WEffectName,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#LibraryContainer QPushButton,
-#LibraryContainer QLabel,
-#LibraryContainer QRadioButton,
-#LibraryContainer QHeaderView,
-#LibraryContainer QHeaderView::item,
-#LibraryContainer QMenu {
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton,
+WTrackTableViewHeader,
+WTrackTableViewHeader::section {
   /* On Linux all weight variants of Open Sans are identified
   as "Open Sans".
   On Windows however, the semi-bold variant is identified as
-  "Open Sans Semibold", thus we need to set some font weights
-  in style_windows.qss */
-  font-family: "Open Sans";
+  "Open Sans Semibold", so look for that first. */
+  font-family: "Open Sans Semibold", "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
   text-transform: none;
 }
 
 /* Bold */
-#KnobLabel,
-/* Passthrough label on overview waveform */
-WOverview #PassthroughLabel,
-#EQKillButton,
-#FxUnitLabel,
-#MicAuxLabel, #MicAuxLabelUnconfigured,
-#LatencyLabel,
+/* QLabel / WLabel / WPushButton required to override styles set above */
+WLabel#KnobLabel,
+WLabel#FxUnitLabel,
+WLabel#MicAuxLabel, WLabel#MicAuxLabelUnconfigured,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
-#SamplerTitleMini,
-#GuiToggleButton,
-#RecFeedback, #RecDuration,
-#BroadcastButton,
-/* SKin settings & Library */
-#SkinSettingsToggle,
-#SkinSettingsNumToggle[value="1"],
+WPushButton#GuiToggleButton,
+WLabel#RecFeedback, WLabel#RecDuration,
+WPushButton#BroadcastButton,
+WPushButton#SkinSettingsToggle,
 #LibraryFeatureControls QPushButton,
-QLabel#labelRecFilename, /* needs QLabel to override previous QLabel font definition*/
-WEffectSelector,
-#fadeModeCombobox,
-WOverview #PassthroughLabel {
+/* Passthrough label on overview waveform */
+WPushButton#EQKillButton,
+WLabel#LatencyLabel,
+WLabel#SamplerTitleMini,
+/* SKin settings & Library */
+WPushButton#SkinSettingsNumToggle[value="1"],
+QLabel#labelRecFilename {
+  font-family: "Open Sans";
   font-weight: bold;
 }
 
@@ -91,213 +82,105 @@ WOverview #PassthroughLabel {
 #SkinSettingsMixerToggle,
 #SkinSettingsText,
 QToolTip,
-#LibraryContainer QMenu,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu,
+WLibrarySidebar QMenu,
+WTrackTableViewHeader QMenu,
+WLibraryTextBrowser,
+WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WBeatSpinBox QMenu,
+WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+WCoverArtMenu,
 QLabel#labelRecPrefix,
 QLabel#labelRecStatistics {
+  font-family: "Open Sans";
   font-weight: normal;
+  font-style: normal;
 }
 
-#LibraryContainer QMenu::indicator {
-  margin-right: 10px;
-}
-
-/* WMainMenuBar #MainMenu is difficult to style, at least when
-  it should look identical on Windows AND Linux.
-  Paddings and margins affect the item labels and checkboxes entirely
-  different so we need style_linux.qss and style_windows.qss to take
-  care of it individually.
+/* It is difficult to achieve identical styles WMainMenuBar #MainMenu
+  on Windows AND Linux because item and checkbox properties are rendered
+  slightly different.
+  For details see
+    * default-menu-styles-linux.qss
+    * default-menu-styles-windows.qss
+  Common styles are set here.
   Luckily we don't need to care about macOS here -Woohoo!- because
-  there the memnu bar is always styled natively. */
+  there the menu bar is always styled natively. */
 #MainMenu {
   margin-bottom: 0px;
   padding-bottom: 0px;
 }
-#MainMenu::item {
-  /* No big deal, just try to make it look like native menus */
-  padding: 0.1em 0.5em 0.1em 0.5em;
-  margin: 0em;
+
+#MainMenu QMenu::right-arrow,
+WTrackMenu::right-arrow,
+WTrackMenu QMenu::right-arrow {
+  width: 0.7em;
+  height: 0.7em;
 }
-#MainMenu QMenu::item {
-  /*  Xfce/Gnome:
-        padding(-left) is applied to entire item (text + opt. icon)
-        = icon may overlap text
-        = item labels are always aligned, with or without checkbox/icon
-      Fedora/Arch/Windows:
-        padding(-left) is applied to text only
-        = does NOT align items with and without checkboxes */
-  /* The style below SHOULD yield identical results on all target OS,
-    yet it looks slightly different, items are shifted by a few pixels.. go figure */
-  /*padding: 0.1em 0.3em 0.2em 0.3em;*/
-  /*margin: 0em 0em 0em 1.5em;*/
-  }
-  /* Checkbox preceeding menu items (Options, ) */
-  #MainMenu QMenu::indicator {
-    width: 1em;
-    height: 1em;
-    /* The indicator is by default aligned with the text
-      = overlaps first few characters.
-      > margin-left needs to be negative to push it left.
-      margin-right = space QMenu::item text <> shortcut wtf... */
-    /* padding = icon border <> fixed-size image
-      = expands the 'background' area
-      = padding-top/bottom:
-       * adjust to cover the row height so the indicator looks like
-         part of the text item
-       * clipped by item height
-      = padding- left: adjust to equalize the painted bg surrounding the image. */
-  }
-  #MainMenu QMenu::indicator,
-  #MainMenu QMenu::indicator:selected,
-  #MainMenu QMenu::indicator:checked,
-  #MainMenu QMenu::indicator:checked:selected {
-    /* checkbox is a SVG with optional checkmark.
-      In all other menus border(css) and checkmark(SVG) are separate
-      which allows to combine them in a flexible way for many states
-      (like indeterminate, checked:selected, checked:!enabled)
 
-      Here we need to work around certain 'rendering issues' on
-      multiple target OS, and we only need
-      * checked
-      * unchecked
-      * checked:selected
-      * unchecked:selected
-      so we can use graphics only, which in return gives somewhat
-      identical appearance on both Wind'ohs and Linux  */
-  }
-  #MainMenu QMenu::separator {
-    height: 0px;
-    margin: 0.25em;
-  }
-  #MainMenu QMenu::right-arrow {
-    width: 0.7em;
-    height: 0.7em;
-  }
-
-
-
-
-
-  WEffectSelector QAbstractScrollArea {
-    /* This would set the maximum width only. The minimum seems to be
-      defined by the widget itself. */
-    /* TODO(ronso0)
-      Unfortunately, text elide (center) is calculated from the widget's
-      width, not from the width set here... */
-    min-width: 160px;
-  }
-  #fadeModeCombobox QAbstractScrollArea {
-    min-width: 185px;
+WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea {
+  min-width: 160px;
+}
+#fadeModeCombobox QAbstractScrollArea {
+  min-width: 185px;
   }
   WEffectSelector::indicator:checked,
+  WEffectChainPresetSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     margin: 2px;
   }
   WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
+  WEffectChainPresetSelector::down-arrow,
+  WSearchLineEdit::down-arrow,
+  #fadeModeCombobox::down-arrow,
+  WTrackTableView::indicator {
     border: 0;
     padding: 0;
     margin: 0;
   }
 
-  WEffectSelector::checked, /* selected item */
-  WEffectSelector::indicator, /* checkbox, tick mark */
-  WEffectSelector::drop-down,
-  WEffectSelector::indicator:unchecked,
-  #fadeModeCombobox::checked, /* selected mode */
-  #fadeModeCombobox::indicator, /* checkbox, tick mark */
-  #fadeModeCombobox::drop-down,
-  #fadeModeCombobox::indicator:unchecked,
-  /* Don't use #LibraryContainer QMenu::item, that would catch
-    ALL menus incl.WTrackMenu in the table, search menu,
-    sidebar menu, table header menu, cover art menu.
-    And for some reason the item properties set here can not be
-    overwritten with WSearchLineEdit QMenu::item below. */
-  WLibrarySidebar QMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item,
-  WTrackMenu QMenu QCheckBox,
-  WBeatSpinBox QMenu::item,
-  WCueMenuPopup QMenu::item,
-  WCoverArtMenu::item {
-    padding: 0px;
-    margin: 0px;
-    image: none;
-    outline: none;
-    border: 0px solid transparent;
-    }
+WEffectSelector::checked, /* selected item */
+WEffectSelector::indicator, /* checkbox, tick mark */
+WEffectSelector::indicator:unchecked,
+WEffectSelector::drop-down,
+WEffectChainPresetSelector::checked,
+WEffectChainPresetSelector::indicator,
+WEffectChainPresetSelector::indicator:unchecked,
+WEffectChainPresetSelector::drop-down,
+WSearchLineEdit::checked,
+WSearchLineEdit::indicator,
+WSearchLineEdit::indicator:unchecked,
+WSearchLineEdit::drop-down,
+#fadeModeCombobox::checked,
+#fadeModeCombobox::indicator,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::drop-down {
+  padding: 0px;
+  margin: 0px;
+  image: none;
+  outline: none;
+  border: 0px solid transparent;
+}
+/* Remove 3D border from unchecked effects checkmark space */
+WEffectSelector::item:selected,
+WEffectChainPresetSelector:item:selected,
+WSearchLineEdit::item:selected,
+#fadeModeCombobox::item:selected {
+  border: 0px;
+}
 
-  WLibrarySidebar QMenu::separator,
-  WTrackMenu::separator,
-  WTrackMenu QMenu::separator,
-  QLineEdit QMenu::separator,
-  QTextBrowser QMenu::separator {
-    height: 0px;
-    margin: 4px;
-  }
-
-  WLibrarySidebar QMenu::item,
-  WLibrary QHeaderView QMenu::item,
-  WTrackMenu::item,
-  WTrackMenu QMenu::item {
-  /* padding-right reserves space for the submenu expand arrow
-    padding-left should be bigger than the menu icon width +
-    icon margin-left/-right */
-    padding: 5px 12px 5px 26px;
-  }
-  /* This catches context menus of
-    - property cells in the tracks table
-    - WCueMenuPopup cue label editor
-    - WBeatSpinBox
-    - AutoDJ transition QSpinBox*/
-  QLineEdit QMenu::item,
-  WCoverArtMenu::item,
-  /* for the sake of completeness: html root view of Crates, Rec etc. */
-  QTextBrowser QMenu::item {
-    padding: 5px 12px 5px 12px;
-  }
-  /* Icons in those menus (copy, paste, cut, delete) */
-  #LibraryContainer QMenu::icon,
-  QLineEdit QMenu::icon,
-  /* - checkbox in Crate name context menu
-        "[ ] Auto DJ Track Source"
-     - QHeaderView QMenu::indicator */
-  #LibraryContainer QMenu::indicator {
-    /* Linux: margin-right pushes the entire icon to the right !?? */
-    margin: 0px 4px 0px 5px;
-    }
-  /* items in Crate sub menu */
-  #LibraryContainer QMenu QCheckBox,
-  WTrackMenu QMenu QCheckBox {
-    padding: 3px 10px 3px 5px;
-    }
-
-  #MainMenu QMenu::right-arrow,
-  #LibraryContainer QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow,
-  #LibraryContainer QTableView::indicator {
-    width: 10px;
-    height: 10px;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator,
-  #LibraryContainer QMenu::indicator,
+  WLibrarySidebar QMenu::indicator,
+  WTrackTableViewHeader QMenu::indicator,
   WTrackMenu QMenu QCheckBox::indicator,
-  WTrackMenu QMenu::indicator,
-  WCueMenuPopup QMenu::indicator {
-    width: 13px;
-    height: 13px;
+  WEffectChainPresetButton QMenu QCheckBox::indicator {
     border: 1px solid #333;
     border-radius: 1px;
     background-color: #000;
     /* remove OS focus indicator */
     outline: none;
-    }
+  }
 
 /************** font sizes / alignment ****************************************/
 
@@ -308,6 +191,7 @@ QLabel#labelRecStatistics {
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
+  qproperty-alignment: AlignCenter;
 }
 
 WPushButton,
@@ -321,7 +205,6 @@ WPushButton,
 #RecDuration[highlight="2"],
 #SamplerTitleMini,
 #EQKillButton,
-#RateText,
 #SamplerBpmMini,
 #PreviewBPM,
 #LibraryFeatureControls QRadioButton {
@@ -329,9 +212,10 @@ WPushButton,
 }
 
 WKey,
-#DurationText,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+WEffectChainPresetSelector,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QLabel,
@@ -343,6 +227,8 @@ WEffectSelector QAbstractScrollArea,
 }
 
 #PlayPositionTextSmall,
+#DurationText,
+#RateText,
 #SamplerTitleMini, #SamplerBpm,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
@@ -400,32 +286,41 @@ WRecordingDuration {
   text-align: right;
 }
 
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
-}
-
-
-#LibraryContainer QHeaderView::item {
-  /* not applied: */
-  /* BROKEN
-  use relative font size, adjusts with OS font size */
-  font-size: 1em;
-  line-height: 1.2em;
+WTrackTableViewHeader::item {
+  /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
   }
-  #LibraryContainer QHeaderView::section {
-    height: 1.2em;
-    border: 0px;
-    padding: 0px 2px;
+  WTrackTableViewHeader::section {
+    height: 1.1em;
+    border: 0;
+    padding: 0.1em;
   }
-  #LibraryContainer QHeaderView::up-arrow,
-  #LibraryContainer QHeaderView::down-arrow {
+  WTrackTableViewHeader::up-arrow,
+  WTrackTableViewHeader::down-arrow {
     width: 0.8em;
-    padding: 0px 3px;
-    }
+    padding: 0 0.15em;
+  }
 
+
+#HotcueButton {
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+
+  font-size: tried a lot of integers as well as .5 values
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
 
 /* This does NOT style the cue labels in the overview
 WOverview {
@@ -537,14 +432,20 @@ WSpinny { /*
 
 #RateContainer,
 #RateContainerCompact,
-#BpmContainer,
+#BpmTapContainer,
 #RateButtons
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
+#BpmRateTapContainer {
+  margin: 1px;
+}
 
 #RateControls {
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+}
+#RateSliderBoxCompactSync {
+  margin-left: 5px;
 }
 /************** Decks  ********************************************************/
 
@@ -552,7 +453,7 @@ WSpinny { /*
 
 /************** Mixer  ********************************************************/
 #MixerContainer {
-  qproperty-layoutAlignment: 'AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #MixerDecks {
@@ -586,18 +487,17 @@ WSpinny { /*
   }
 
 #VuMeterBox,
-#VuMeterBoxMasterSingle {
+#VuMeterBoxMainSingle {
   /* gap in between clipping and Vu level */
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster,
-#LatencyMeterBox {
+#VuMeterBoxMain {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }
-#VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu
+#VuMeterBoxMain {
+  /* gap in between Main lft/right Vu
   qproperty-layoutSpacing: 1; */
   }
   #VuMeterBoxFull {
@@ -607,8 +507,8 @@ WSpinny { /*
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,
-  #VuMeterMaster_2Decks,
-  #VuMeterMaster_4Decks {
+  #VuMeterMain_2Decks,
+  #VuMeterMain_4Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
@@ -625,16 +525,16 @@ WSpinny { /*
       qproperty-layoutAlignment: 'AlignCenter';
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   }
-  #MasterControls,
+  #MainControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
     }
     #BoothLabelBox {
       qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
     }
-  #MasterHeadphoneSeparator {
+  #MainHeadphoneSeparator {
   }
 
 /************** Mixer  ********************************************************/
@@ -655,7 +555,14 @@ WSpinny { /*
 #FxUnitHeader {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
-#FxUnitControlsExpanded, #FxUnitControlsCollapsed {
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotContainer,
+#FxSlotControls,
+#FxFocusButtonBox,
+#FxMetaKnob,
+#FxParameterKnob,
+#LibExpandBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
@@ -663,14 +570,6 @@ WSpinny { /*
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
-
-#FxFocusButtonBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#FxMetaKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #FxParameterKnobBox {
@@ -678,7 +577,6 @@ WSpinny { /*
 }
 
 #FxParameterKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
 }
 
@@ -696,21 +594,48 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+WEffectChainPresetSelector {
+  border:  0px;
+}
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
   padding: 1px 0px 1px 4px;
   }
 
+  /* QuickEffect selector of left-hand decks and in 4-decks mixer
+    has it's down arrow on the left side, below the QuickEffect toggle */
+  WEffectChainPresetSelector#QuickEffectSelectorLeft {
+    padding: 0px -5px 0px -1px;
+    margin: 0px;
+    text-align: left;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorLeft::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: left center;
+    }
+  WEffectChainPresetSelector#QuickEffectSelectorRight {
+    padding: 0px -1px 0px -5px;
+    margin: 0px;
+    text-align: right;
+    }
+    WEffectChainPresetSelector#QuickEffectSelectorRight::drop-down {
+      subcontrol-origin: margin;
+      subcontrol-position: right center;
+    }
+
   WEffectSelector QAbstractScrollArea,
+  WEffectChainPresetSelector QAbstractScrollArea,
+  WSearchLineEdit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
-  /* selected item */
+  /* checked item */
   WEffectSelector:checked,
+  WEffectChainPresetSelector:checked,
   #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
@@ -720,15 +645,13 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  WEffectChainPresetSelector::item:selected,
+  WSearchLineEdit::item:selected,
   #fadeModeCombobox::item:selected {
-    background-color: #333;
   /* Already one of those properties destroys font config and
      puts tick mark behind text:
     margin: 0px;
     padding: 0px; */
-  /* This moves the tick mark behind item text,
-    text sits at left border now
-    border: 0; */
   }
   WEffectSelector::indicator,
   #fadeModeCombobox::indicator {
@@ -739,6 +662,18 @@ WEffectSelector {
     margin: 0px;
     padding: 0px;*/
   }
+
+WEffectChainPresetButton,
+WEffectChainPresetButton::menu-indicator {
+  background-color: transparent;
+  border:  0px;
+  margin:  0px;
+  padding: 0px;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-origin: margin;
+  subcontrol-position:  center center;
+}
 /************** Effects *******************************************************/
 
 
@@ -829,7 +764,7 @@ WEffectSelector {
 
 
 
-/************** Skin setttings ************************************************/
+/************** Skin settings *************************************************/
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
@@ -870,7 +805,6 @@ WEffectSelector {
   /* This doesn't work as expected:
   it appears LibrarySingleton is displayed twice (nested in itself),
   so padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
   padding-top: 5px;*/
 }
 
@@ -940,7 +874,7 @@ QLabel#labelRecStatistics {
   margin: 3px 0px 3px 0px;
 }
 
-#LibraryContainer QTreeView {
+WLibrarySidebar {
   show-decoration-selected: 0;
 }
 /************** Library *******************************************************/

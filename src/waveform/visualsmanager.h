@@ -12,9 +12,9 @@
 namespace {
 
 // Rate at which the playpos slider is updated
-const int kUpdateRate = 15; // updates per second
+constexpr int kUpdateRate = 15; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
+constexpr int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 updates per sec
 
 } // anonymous namespace
 
@@ -24,6 +24,10 @@ class DeckVisuals {
   public:
     DeckVisuals(const QString& group);
     void process(double remainingTimeTriggerSeconds);
+
+    const QString& getGroup() const {
+        return m_group;
+    }
 
   private:
     const QString m_group;
@@ -51,8 +55,20 @@ class VisualsManager {
     }
 
     void addDeck(const QString& group) {
+        VERIFY_OR_DEBUG_ASSERT(!group.trimmed().isEmpty()) {
+            return;
+        }
         m_deckVisuals.push_back(
                 std::make_unique<DeckVisuals>(group));
+    }
+
+    void addDeckIfNotExist(const QString& group) {
+        for (auto& pDeckVisuals : m_deckVisuals) {
+            if (pDeckVisuals->getGroup() == group) {
+                return;
+            }
+        }
+        addDeck(group);
     }
 
     void process(double remainingTimeTriggerSeconds) {
@@ -64,6 +80,6 @@ class VisualsManager {
         }
     }
   private:
-    std::vector<std::unique_ptr<DeckVisuals> > m_deckVisuals;
+    std::vector<std::unique_ptr<DeckVisuals>> m_deckVisuals;
     PerformanceTimer m_cpuTimer;
 };

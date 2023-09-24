@@ -9,7 +9,7 @@ const char* kConfigKey = "[ReplayGain]";
 const char* kReplayGainBoost = "ReplayGainBoost";
 const char* kDefaultBoost = "DefaultBoost";
 const char* kReplayGainEnabled = "ReplayGainEnabled";
-const int kReplayGainReferenceLUFS = -18;
+constexpr int kReplayGainReferenceLUFS = -18;
 } // anonymous namespace
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfig)
@@ -41,6 +41,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderReplayGainBoost);
+
     connect(SliderDefaultBoost,
             &QAbstractSlider::valueChanged,
             this,
@@ -49,6 +51,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderDefaultBoost);
+
     connect(checkBoxReanalyze,
             &QCheckBox::stateChanged,
             this,
@@ -150,11 +154,10 @@ void DlgPrefReplayGain::slotUpdateReplayGainBoost() {
 
 void DlgPrefReplayGain::setLabelCurrentReplayGainBoost(int value) {
     LabelCurrentReplayGainBoost->setText(
-        QString(tr("%1 LUFS (adjust by %2 dB)")).arg(
-              QString::number(value + kReplayGainReferenceLUFS),
-              (value < 0) ? QString() : (QString("+") + QString::number(value))
-        )
-    );
+            QString(tr("%1 LUFS (adjust by %2 dB)"))
+                    .arg(QString::number(value + kReplayGainReferenceLUFS),
+                            (value < 0 ? QString() : QString("+")) +
+                                    QString::number(value)));
 }
 
 void DlgPrefReplayGain::slotUpdateDefaultBoost() {

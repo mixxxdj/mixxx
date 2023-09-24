@@ -1,16 +1,15 @@
 #pragma once
 
-#include <QWidget>
-#include <QPaintEvent>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QWheelEvent>
+#include <QWidget>
 
-#include "skin/skincontext.h"
-#include "util/widgetrendertimer.h"
-#include "widget/wwidget.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 // This is used for knobs, if the knob value can be displayed
 // by rotating a single SVG image.
@@ -22,14 +21,16 @@ class WKnobComposed : public WWidget {
   public:
     explicit WKnobComposed(QWidget* pParent=nullptr);
 
-    void setup(const QDomNode& node, const SkinContext& context);
+    virtual void setup(const QDomNode& node, const SkinContext& context);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   protected:
     void wheelEvent(QWheelEvent *e) override;
+    void leaveEvent(QEvent* e) override;
     void mouseMoveEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
@@ -62,7 +63,6 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
-    WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QHash>
-#include <QSortFilterProxyModel>
 #include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
@@ -29,6 +28,7 @@ class DlgPrefController : public DlgPreferencePage {
     virtual ~DlgPrefController();
 
     QUrl helpUrl() const override;
+    void keyPressEvent(QKeyEvent* pEvent) override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
@@ -51,8 +51,11 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    void slotInputControlSearch();
+    void slotOutputControlSearch();
     /// Called when the Controller Learning Wizard is closed.
     void slotStopLearning();
+    void enableWizardAndIOTabs(bool enable);
 
     // Input mappings
     void addInputMapping();
@@ -77,7 +80,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingPathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
-    void saveMapping();
+    bool saveMapping();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
@@ -96,7 +99,7 @@ class DlgPrefController : public DlgPreferencePage {
     /// that can be applied or discarded.
     ///
     /// @param bDirty The new dialog's dirty state.
-    bool isDirty() {
+    bool isDirty() const {
         return m_bDirty;
     }
 
@@ -114,12 +117,14 @@ class DlgPrefController : public DlgPreferencePage {
     const QString m_pUserDir;
     std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
+    ControlPickerMenu* m_pControlPickerMenu;
     DlgControllerLearning* m_pDlgControllerLearning;
     std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
-    QSortFilterProxyModel* m_pInputProxyModel;
+    ControllerMappingTableProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
-    QSortFilterProxyModel* m_pOutputProxyModel;
+    ControllerMappingTableProxyModel* m_pOutputProxyModel;
+    bool m_GuiInitialized;
     bool m_bDirty;
 };

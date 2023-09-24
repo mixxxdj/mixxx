@@ -12,6 +12,7 @@
 #include <QPainter>
 #include <QTimerEvent>
 #include <QWidget>
+#include <vector>
 
 #include "vinylcontrol/vinylsignalquality.h"
 
@@ -36,7 +37,7 @@ class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListen
     int m_iSize;
 
     QImage m_qImage;
-    unsigned char * m_imageData;
+    std::vector<uchar> m_imageData;
     int m_iAngle;
     float m_fSignalQuality;
     bool m_bVinylActive;

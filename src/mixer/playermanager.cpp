@@ -1,13 +1,12 @@
 #include "mixer/playermanager.h"
 
-#include <QMutexLocker>
+#include <QRegularExpression>
 
+#include "audio/types.h"
 #include "control/controlobject.h"
-#include "effects/effectrack.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
-#include "library/library.h"
+#include "engine/enginemixer.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -19,16 +18,72 @@
 #include "soundio/soundmanager.h"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/compatibility/qatomic.h"
 #include "util/defs.h"
 #include "util/logger.h"
-#include "util/sleepableqthread.h"
 
 namespace {
 
 const mixxx::Logger kLogger("PlayerManager");
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kLegacyGroup = QStringLiteral("[Master]");
 
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
+
+const QRegularExpression kDeckRegex(QStringLiteral("^\\[Channel(\\d+)\\]$"));
+const QRegularExpression kSamplerRegex(QStringLiteral("^\\[Sampler(\\d+)\\]$"));
+const QRegularExpression kPreviewDeckRegex(QStringLiteral("^\\[PreviewDeck(\\d+)\\]$"));
+
+bool extractIntFromRegex(const QRegularExpression& regex, const QString& group, int* number) {
+    const QRegularExpressionMatch match = regex.match(group);
+    DEBUG_ASSERT(match.isValid());
+    if (!match.hasMatch()) {
+        return false;
+    }
+    // The regex is expected to contain a single capture group with the number
+    constexpr int capturedNumberIndex = 1;
+    DEBUG_ASSERT(match.lastCapturedIndex() <= capturedNumberIndex);
+    if (match.lastCapturedIndex() < capturedNumberIndex) {
+        qWarning() << "No number found in group" << group;
+        return false;
+    }
+    if (number) {
+        const QString capturedNumber = match.captured(capturedNumberIndex);
+        DEBUG_ASSERT(!capturedNumber.isNull());
+        bool okay = false;
+        const int numberFromMatch = capturedNumber.toInt(&okay);
+        VERIFY_OR_DEBUG_ASSERT(okay) {
+            return false;
+        }
+        *number = numberFromMatch;
+    }
+    return true;
+}
+
+/// Returns the first object from a list of `BaseTrackPlayer` instances where
+/// the corresponding `play` CO is set to 0.
+template<class T>
+T* findFirstStoppedPlayerInList(const QList<T*>& players) {
+    for (T* pPlayer : players) {
+        VERIFY_OR_DEBUG_ASSERT(pPlayer != nullptr) {
+            continue;
+        }
+
+        ControlObject* pPlayControl = ControlObject::getControl(
+                ConfigKey(pPlayer->getGroup(), "play"));
+        VERIFY_OR_DEBUG_ASSERT(pPlayControl != nullptr) {
+            continue;
+        }
+
+        if (!pPlayControl->toBool()) {
+            return pPlayer;
+        }
+    }
+
+    // There is no stopped player in the list.
+    return nullptr;
+}
 
 } // anonymous namespace
 
@@ -42,8 +97,8 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
-        : m_mutex(QMutex::Recursive),
+        EngineMixer* pEngine)
+        : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
@@ -51,29 +106,34 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_decks"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
           m_pCONumSamplers(new ControlObject(
-                  ConfigKey("[Master]", "num_samplers"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
           m_pCONumPreviewDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
           m_pCONumMicrophones(new ControlObject(
-                  ConfigKey("[Master]", "num_microphones"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
-                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+    m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
+    m_pCONumSamplers->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_samplers")));
     m_pCONumSamplers->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumSamplers, Qt::DirectConnection);
+    m_pCONumPreviewDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_preview_decks")));
     m_pCONumPreviewDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumPreviewDecks, Qt::DirectConnection);
+    m_pCONumMicrophones->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_microphones")));
     m_pCONumMicrophones->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumMicrophones, Qt::DirectConnection);
+    m_pCONumAuxiliaries->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_auxiliaries")));
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    m_pSamplerBank = new SamplerBank(this);
+    m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
     m_cloneTimer.start();
 }
@@ -81,7 +141,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 PlayerManager::~PlayerManager() {
     kLogger.debug() << "Destroying";
 
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
 
     m_pSamplerBank->saveSamplerBankToPath(
         m_pConfig->getSettingsPath() + "/samplers.xml");
@@ -110,7 +170,8 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
-    QMutexLocker locker(&m_mutex);
+    m_pLibrary = pLibrary;
+    const auto locker = lockMutex(&m_mutex);
     connect(pLibrary, &Library::loadTrackToPlayer, this, &PlayerManager::slotLoadTrackToPlayer);
     connect(pLibrary,
             &Library::loadTrack,
@@ -122,10 +183,8 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
             &Library::slotLoadLocationToPlayer);
 
     DEBUG_ASSERT(!m_pTrackAnalysisScheduler);
-    m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
-            pLibrary,
+    m_pTrackAnalysisScheduler = pLibrary->createTrackAnalysisScheduler(
             kNumberOfAnalyzerThreads,
-            m_pConfig,
             AnalyzerModeFlags::WithWaveform);
 
     connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::trackProgress,
@@ -171,53 +230,17 @@ QStringList PlayerManager::getVisualPlayerGroups() {
 
 // static
 bool PlayerManager::isDeckGroup(const QString& group, int* number) {
-    if (!group.startsWith("[Channel")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kDeckRegex, group, number);
 }
 
 // static
 bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
-    if (!group.startsWith("[Sampler")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kSamplerRegex, group, number);
 }
 
 // static
 bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
-    if (!group.startsWith("[PreviewDeck")) {
-        return false;
-    }
-
-    bool ok = false;
-    int deckNum = group.midRef(12,group.lastIndexOf("]")-12).toInt(&ok);
-    if (!ok || deckNum <= 0) {
-        return false;
-    }
-    if (number != nullptr) {
-        *number = deckNum;
-    }
-    return true;
+    return extractIntFromRegex(kPreviewDeckRegex, group, number);
 }
 
 // static
@@ -226,7 +249,7 @@ unsigned int PlayerManager::numDecks() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
         if (!pCOPNumDecks->valid()) {
             delete pCOPNumDecks;
             pCOPNumDecks = nullptr;
@@ -244,7 +267,7 @@ unsigned int PlayerManager::numSamplers() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
         if (!pCOPNumSamplers->valid()) {
             delete pCOPNumSamplers;
             pCOPNumSamplers = nullptr;
@@ -263,7 +286,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey("[Master]", "num_preview_decks"));
+                ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));
         if (!pCOPNumPreviewDecks->valid()) {
             delete pCOPNumPreviewDecks;
             pCOPNumPreviewDecks = nullptr;
@@ -276,7 +299,7 @@ unsigned int PlayerManager::numPreviewDecks() {
 }
 
 void PlayerManager::slotChangeNumDecks(double v) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     int num = (int)v;
 
     VERIFY_OR_DEBUG_ASSERT(num <= kMaxNumberOfDecks) {
@@ -306,7 +329,7 @@ void PlayerManager::slotChangeNumDecks(double v) {
 }
 
 void PlayerManager::slotChangeNumSamplers(double v) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     int num = (int)v;
     if (num < m_samplers.size()) {
         // The request was invalid -- don't set the value.
@@ -321,7 +344,7 @@ void PlayerManager::slotChangeNumSamplers(double v) {
 }
 
 void PlayerManager::slotChangeNumPreviewDecks(double v) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     int num = (int)v;
     if (num < m_previewDecks.size()) {
         // The request was invalid -- don't set the value.
@@ -335,7 +358,7 @@ void PlayerManager::slotChangeNumPreviewDecks(double v) {
 }
 
 void PlayerManager::slotChangeNumMicrophones(double v) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     int num = (int)v;
     if (num < m_microphones.size()) {
         // The request was invalid -- don't set the value.
@@ -349,7 +372,7 @@ void PlayerManager::slotChangeNumMicrophones(double v) {
 }
 
 void PlayerManager::slotChangeNumAuxiliaries(double v) {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     int num = (int)v;
     if (num < m_auxiliaries.size()) {
         // The request was invalid -- don't set the value.
@@ -363,7 +386,7 @@ void PlayerManager::slotChangeNumAuxiliaries(double v) {
 }
 
 void PlayerManager::addDeck() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     double count = m_pCONumDecks->get() + 1;
     slotChangeNumDecks(count);
 }
@@ -396,6 +419,10 @@ void PlayerManager::addDeckInner() {
             &BaseTrackPlayer::noVinylControlInputConfigured,
             this,
             &PlayerManager::noVinylControlInputConfigured);
+    connect(pDeck,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,
@@ -409,32 +436,25 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck,
+                    0,
+                    mixxx::audio::ChannelCount::stereo(),
+                    deckIndex),
+            m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-    m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
+    m_pSoundManager->registerInput(AudioInput(AudioPathType::VinylControl,
+                                           0,
+                                           mixxx::audio::ChannelCount::stereo(),
+                                           deckIndex),
+            pEngineDeck);
 
-    // Setup equalizer rack for this deck.
-    EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pEqRack) {
-        return;
-    }
-    pEqRack->setupForGroup(handleGroup.name());
+    // Setup equalizer and QuickEffect chain for this deck.
+    m_pEffectsManager->addDeck(handleGroup);
 
-    // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
-    // this deck to fetch the legacy EQ controls.
-    // TODO(rryan): Find a way to remove this cruft.
+    // Setup EQ ControlProxies used for resetting EQs on track load
     pDeck->setupEqControls();
-
-    // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack =
-            m_pEffectsManager->getQuickEffectRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
-        return;
-    }
-    pQuickEffectRack->setupForGroup(handleGroup.name());
 }
 
 void PlayerManager::loadSamplers() {
@@ -443,7 +463,7 @@ void PlayerManager::loadSamplers() {
 }
 
 void PlayerManager::addSampler() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     double count = m_pCONumSamplers->get() + 1;
     slotChangeNumSamplers(count);
 }
@@ -471,13 +491,17 @@ void PlayerManager::addSamplerInner() {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
+    connect(pSampler,
+            &BaseTrackPlayer::trackUnloaded,
+            this,
+            &PlayerManager::slotSaveEjectedTrack);
 
     m_players[handleGroup.handle()] = pSampler;
     m_samplers.append(pSampler);
 }
 
 void PlayerManager::addPreviewDeck() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     slotChangeNumPreviewDecks(m_pCONumPreviewDecks->get() + 1);
 }
 
@@ -510,7 +534,7 @@ void PlayerManager::addPreviewDeckInner() {
 }
 
 void PlayerManager::addMicrophone() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     slotChangeNumMicrophones(m_pCONumMicrophones->get() + 1);
 }
 
@@ -532,7 +556,7 @@ void PlayerManager::addMicrophoneInner() {
 }
 
 void PlayerManager::addAuxiliary() {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     slotChangeNumAuxiliaries(m_pCONumAuxiliaries->get() + 1);
 }
 
@@ -555,7 +579,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
 
     if (m_players.contains(handle)) {
         return m_players[handle];
@@ -564,7 +588,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(const ChannelHandle& handle) const {
 }
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     VERIFY_OR_DEBUG_ASSERT(deck > 0 && deck <= numDecks()) {
         qWarning() << "getDeck() called with invalid number:" << deck;
         return nullptr;
@@ -573,7 +597,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
 }
 
 PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
         kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
@@ -583,7 +607,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
 }
 
 Sampler* PlayerManager::getSampler(unsigned int sampler) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     if (sampler < 1 || sampler > numSamplers()) {
         kLogger.warning() << "Warning getSampler() called with invalid index: "
                    << sampler;
@@ -592,8 +616,22 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
+TrackPointer PlayerManager::getLastEjectedTrack() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
+    }
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_lastEjectedTrackId);
+}
+
+TrackPointer PlayerManager::getSecondLastEjectedTrack() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibrary != nullptr) {
+        return nullptr;
+    }
+    return m_pLibrary->trackCollectionManager()->getTrackById(m_secondLastEjectedTrackId);
+}
+
 Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
         kLogger.warning() << "Warning getMicrophone() called with invalid index: "
                    << microphone;
@@ -603,7 +641,7 @@ Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
 }
 
 Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     if (auxiliary < 1 || auxiliary > static_cast<unsigned int>(m_auxiliaries.size())) {
         kLogger.warning() << "Warning getAuxiliary() called with invalid index: "
                    << auxiliary;
@@ -663,57 +701,76 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     m_lastLoadedPlayer = group;
 }
 
-void PlayerManager::slotLoadToPlayer(const QString& location, const QString& group) {
+void PlayerManager::slotLoadLocationToPlayer(
+        const QString& location, const QString& group, bool play) {
     // The library will get the track and then signal back to us to load the
     // track via slotLoadTrackToPlayer.
-    emit loadLocationToPlayer(location, group);
+    emit loadLocationToPlayer(location, group, play);
+}
+
+void PlayerManager::slotLoadLocationToPlayerMaybePlay(
+        const QString& location, const QString& group) {
+    bool play = false;
+    LoadWhenDeckPlaying loadWhenDeckPlaying = m_pConfig->getValue(
+            kConfigKeyLoadWhenDeckPlaying, kDefaultLoadWhenDeckPlaying);
+    switch (loadWhenDeckPlaying) {
+    case LoadWhenDeckPlaying::AllowButStopDeck:
+    case LoadWhenDeckPlaying::Reject:
+        break;
+    case LoadWhenDeckPlaying::Allow:
+        if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+            // deck is currently playing, so immediately play new track
+            play = true;
+        }
+        break;
+    }
+    slotLoadLocationToPlayer(location, group, play);
 }
 
 void PlayerManager::slotLoadToDeck(const QString& location, int deck) {
-    slotLoadToPlayer(location, groupForDeck(deck-1));
+    slotLoadLocationToPlayer(location, groupForDeck(deck - 1), false);
 }
 
 void PlayerManager::slotLoadToPreviewDeck(const QString& location, int previewDeck) {
-    slotLoadToPlayer(location, groupForPreviewDeck(previewDeck-1));
+    slotLoadLocationToPlayer(location, groupForPreviewDeck(previewDeck - 1), false);
 }
 
 void PlayerManager::slotLoadToSampler(const QString& location, int sampler) {
-    slotLoadToPlayer(location, groupForSampler(sampler-1));
+    slotLoadLocationToPlayer(location, groupForSampler(sampler - 1), false);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
-    QMutexLocker locker(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pDeck->slotLoadTrack(pTrack, false);
-            // Test for a fixed race condition with fast loads
-            //SleepableQThread::sleep(1);
-            //pDeck->slotLoadTrack(TrackPointer(), false);
-            return;
-        }
-        ++it;
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
     }
+
+    pDeck->slotLoadTrack(pTrack, false);
+}
+
+void PlayerManager::slotLoadLocationIntoNextAvailableDeck(const QString& location, bool play) {
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pDeck = findFirstStoppedPlayerInList(m_decks);
+    if (pDeck == nullptr) {
+        qDebug() << "PlayerManager: No stopped deck found, not loading track!";
+        return;
+    }
+
+    slotLoadLocationToPlayer(location, pDeck->getGroup(), play);
 }
 
 void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
-    QMutexLocker locker(&m_mutex);
-    QList<Sampler*>::iterator it = m_samplers.begin();
-    while (it != m_samplers.end()) {
-        Sampler* pSampler = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pSampler->slotLoadTrack(pTrack, false);
-            return;
-        }
-        ++it;
+    auto locker = lockMutex(&m_mutex);
+    BaseTrackPlayer* pSampler = findFirstStoppedPlayerInList(m_samplers);
+    if (pSampler == nullptr) {
+        qDebug() << "PlayerManager: No stopped sampler found, not loading track!";
+        return;
     }
+    locker.unlock();
+
+    pSampler->slotLoadTrack(pTrack, false);
 }
 
 void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
@@ -721,7 +778,7 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+        if (m_pTrackAnalysisScheduler->scheduleTrack(track->getId())) {
             m_pTrackAnalysisScheduler->resume();
         }
         // The first progress signal will suspend a running batch analysis
@@ -729,6 +786,18 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         // before any signals from the analyzer queue arrive.
         emit trackAnalyzerProgress(track->getId(), kAnalyzerProgressUnknown);
     }
+}
+
+void PlayerManager::slotSaveEjectedTrack(TrackPointer track) {
+    VERIFY_OR_DEBUG_ASSERT(track) {
+        return;
+    }
+    const TrackId id = track->getId();
+    if (id == m_lastEjectedTrackId) {
+        return;
+    }
+    m_secondLastEjectedTrackId = m_lastEjectedTrackId;
+    m_lastEjectedTrackId = id;
 }
 
 void PlayerManager::onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress) {

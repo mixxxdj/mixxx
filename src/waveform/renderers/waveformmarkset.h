@@ -3,7 +3,7 @@
 #include <QList>
 
 #include "waveformmark.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/memory.h"
 
 class WaveformWidgetRenderer;

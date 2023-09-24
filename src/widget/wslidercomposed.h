@@ -8,8 +8,7 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 
-#include "skin/skincontext.h"
-#include "util/widgetrendertimer.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -42,6 +41,7 @@ class WSliderComposed : public WWidget  {
     void mouseMoveEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent* e) override;
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseDoubleClickEvent(QMouseEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
     void drawBar(QPainter* pPainter);
     void wheelEvent(QWheelEvent* e) override;
@@ -74,7 +74,6 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
-    WidgetRenderTimer m_renderTimer;
 
     friend class SliderEventHandler<WSliderComposed>;
 };

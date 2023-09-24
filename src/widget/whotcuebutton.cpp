@@ -75,7 +75,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     auto* pDisplayConnection = new ControlParameterWidgetConnection(
             this,
-            createConfigKey(QStringLiteral("enabled")),
+            createConfigKey(QStringLiteral("status")),
             nullptr,
             ControlParameterWidgetConnection::DIR_TO_WIDGET,
             ControlParameterWidgetConnection::EMIT_NEVER);
@@ -175,11 +175,7 @@ void WHotcueButton::slotColorChanged(double color) {
 }
 
 void WHotcueButton::slotTypeChanged(double type) {
-    // If the cast is put directly into the switch case, this seems to trigger
-    // a false positive warning on gcc 7.5.0 on Ubuntu 18.04.4 Bionic, so we cast
-    // it to int first and save to a local const variable.
-    const mixxx::CueType cueType = static_cast<mixxx::CueType>(static_cast<int>(type));
-    switch (cueType) {
+    switch (static_cast<mixxx::CueType>(static_cast<int>(type))) {
     case mixxx::CueType::Invalid:
         m_type = QLatin1String("");
         break;
@@ -204,8 +200,8 @@ void WHotcueButton::slotTypeChanged(double type) {
     case mixxx::CueType::Outro:
         m_type = QStringLiteral("outro");
         break;
-    case mixxx::CueType::AudibleSound:
-        m_type = QStringLiteral("audiblesound");
+    case mixxx::CueType::N60dBSound:
+        m_type = QStringLiteral("n60dbsound");
         break;
     default:
         DEBUG_ASSERT(!"Unknown cue type!");

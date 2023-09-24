@@ -3,6 +3,7 @@
 #include <QStyledItemDelegate>
 
 class MidiByteDelegate : public QStyledItemDelegate {
+    Q_OBJECT
   public:
     MidiByteDelegate(QObject* pParent);
     virtual ~MidiByteDelegate();

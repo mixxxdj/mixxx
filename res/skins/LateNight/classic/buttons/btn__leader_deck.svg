@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="46"
+   height="20"
+   version="1.1"
+   id="svg32"
+   sodipodi:docname="btn__leader_deck.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata38">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs36" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     id="namedview34"
+     showgrid="true"
+     inkscape:zoom="16"
+     inkscape:cx="23.740955"
+     inkscape:cy="16.667631"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg32">
+    <inkscape:grid
+       type="xygrid"
+       id="grid854" />
+  </sodipodi:namedview>
+  <g
+     id="g10"
+     style="display:inline;fill:none"
+     transform="translate(-2,-2)">
+    <path
+       d="M 16,8 H 9 v 4 h 5 v 2 H 9 v 1 h 7 V 11 H 11 V 9 h 5 V 8"
+       id="path2"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 26,8 v 7 h 2 V 9 h 3 v 6 h 2 V 8 h -7"
+       id="path4"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 34,8 v 7 h 7 V 14 H 36 V 9 h 5 V 8 h -7"
+       id="path6"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 20,15 v -3.5 l -3,-3 V 8 h 1.5 L 21,10.5 23.5,8 H 25 v 0.5 l -3,3 V 15 h -2"
+       id="path8"
+       inkscape:connector-curvature="0" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:11.27830696px;line-height:0%;font-family:'Latina Essential';-inkscape-font-specification:'Latina Essential';writing-mode:lr-tb;opacity:1;fill:#d2d2d1;fill-opacity:1;stroke:#000000;stroke-width:0.84600008;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     x="0.056735612"
+     y="14.086957"
+     id="text4532"
+     transform="scale(1.0060601,0.99397642)"><tspan
+       sodipodi:role="line"
+       id="tspan4530"
+       x="0.056735612"
+       y="14.086957"
+       style="stroke-width:0.84600008">LEADER</tspan></text>
+</svg>

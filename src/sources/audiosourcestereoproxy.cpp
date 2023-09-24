@@ -9,7 +9,7 @@ namespace {
 
 const Logger kLogger("AudioSourceStereoProxy");
 
-constexpr audio::ChannelCount kChannelCount = audio::ChannelCount(2);
+constexpr audio::ChannelCount kChannelCount = audio::ChannelCount::stereo();
 
 audio::SignalInfo proxySignalInfo(
         const audio::SignalInfo& signalInfo) {

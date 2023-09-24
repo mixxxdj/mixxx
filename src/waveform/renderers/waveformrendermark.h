@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "util/color/color.h"
 #include "waveform/renderers/waveformmarkset.h"

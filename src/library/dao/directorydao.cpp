@@ -4,8 +4,6 @@
 
 #include "library/queryutil.h"
 #include "util/db/fwdsqlquery.h"
-#include "util/db/sqllikewildcardescaper.h"
-#include "util/db/sqllikewildcards.h"
 #include "util/logger.h"
 
 namespace {
@@ -105,10 +103,11 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     }
 
     for (const auto& oldDir : obsoleteChildDirs) {
-        VERIFY_OR_DEBUG_ASSERT(RemoveResult::Ok == removeDirectory(oldDir)) {
+        if (RemoveResult::Ok != removeDirectory(oldDir)) {
             kLogger.warning()
                     << "Failed to remove obsolete child directory"
                     << oldDir;
+            DEBUG_ASSERT(!"removeDirectory failed");
             continue;
         }
     }
@@ -143,38 +142,36 @@ DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
 }
 
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
-        const QString& oldFolder,
-        const QString& newFolder) const {
+        const QString& oldDirectory,
+        const QString& newDirectory) const {
+    DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
+    DEBUG_ASSERT(newDirectory == mixxx::FileInfo(newDirectory).location());
     // TODO(rryan): This method could use error reporting. It can fail in
-    // mysterious ways for example if a track in the oldFolder also has a zombie
-    // track location in newFolder then the replace query will fail because the
+    // mysterious ways for example if a track in the oldDirectory also has a zombie
+    // track location in newDirectory then the replace query will fail because the
     // location column becomes non-unique.
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % kTable % " SET " % kLocationColumn %
-            "=:newFolder WHERE " % kLocationColumn % " = :oldFolder");
-    query.bindValue(":newFolder", newFolder);
-    query.bindValue(":oldFolder", oldFolder);
+            "=:newDirectory WHERE " % kLocationColumn % "=:oldDirectory");
+    query.bindValue(":newDirectory", newDirectory);
+    query.bindValue(":oldDirectory", oldDirectory);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate directory"
-                                << oldFolder << "to" << newFolder;
+                                << oldDirectory << "to" << newDirectory;
         return {};
     }
 
-    // on Windows the absolute path starts with the drive name
-    // we also need to check for that
-    QString startsWithOldFolder = SqlLikeWildcardEscaper::apply(
-                                          QDir(oldFolder).absolutePath() + "/", kSqlLikeMatchAll) +
-            kSqlLikeMatchAll;
-
-    // Also update information in the track_locations table. This is where mixxx
-    // gets the location information for a track. Put marks around %1 so that
-    // this also works on windows
-    query.prepare(QString(
-            "SELECT library.id, track_locations.id, track_locations.location "
+    // Appending '/' is required to disambiguate files from parent
+    // directories, e.g. "a/b.mp3" and "a/b/c.mp3" where "a/b" would
+    // match both instead of only files in the parent directory "a/b/".
+    DEBUG_ASSERT(!oldDirectory.endsWith('/'));
+    const QString oldDirectoryPrefix = oldDirectory + '/';
+    query.prepare(QStringLiteral(
+            "SELECT library.id,track_locations.id,track_locations.location "
             "FROM library INNER JOIN track_locations ON "
-            "track_locations.id = library.location WHERE "
-            "track_locations.location LIKE '%1' ESCAPE '%2'")
-                          .arg(startsWithOldFolder, kSqlLikeMatchAll));
+            "track_locations.id=library.location WHERE "
+            "INSTR(track_locations.location,:oldDirectoryPrefix)=1"));
+    query.bindValue(":oldDirectoryPrefix", oldDirectoryPrefix);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return {};
@@ -183,24 +180,25 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     QList<DbId> loc_ids;
     QList<RelocatedTrack> relocatedTracks;
     while (query.next()) {
+        const auto oldLocation = query.value(2).toString();
+        const int oldSuffixLen = oldLocation.size() - oldDirectory.size();
+        QString newLocation = newDirectory + oldLocation.right(oldSuffixLen);
+        DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix));
         loc_ids.append(DbId(query.value(1).toInt()));
-        auto trackId = TrackId(query.value(0));
-        auto oldLocation = query.value(2).toString();
-        auto missingTrackRef = TrackRef::fromFileInfo(
-                TrackFile(oldLocation),
+        const auto trackId = TrackId(query.value(0));
+        auto missingTrackRef = TrackRef::fromFilePath(
+                oldLocation,
                 std::move(trackId));
-        const int oldSuffixLen = oldLocation.size() - oldFolder.size();
-        QString newLocation = newFolder + oldLocation.right(oldSuffixLen);
-        auto addedTrackRef = TrackRef::fromFileInfo(
-                TrackFile(newLocation) /*without TrackId*/);
+        auto addedTrackRef = TrackRef::fromFilePath(
+                newLocation); // without TrackId, because no new track will be added!
         relocatedTracks.append(RelocatedTrack(
                 std::move(missingTrackRef),
                 std::move(addedTrackRef)));
     }
 
-    QString replacement =
-            "UPDATE track_locations SET location = :newloc "
-            "WHERE id = :id";
+    // Also update information in the track_locations table. This is where mixxx
+    // gets the location information for a track.
+    const QString replacement = "UPDATE track_locations SET location=:newloc WHERE id=:id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
         query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());

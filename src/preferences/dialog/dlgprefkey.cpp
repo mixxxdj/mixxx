@@ -5,8 +5,8 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/compatibility.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
@@ -45,16 +45,18 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
     for (const auto& info : qAsConst(m_availablePlugins)) {
-        plugincombo->addItem(info.name, info.id);
+        plugincombo->addItem(info.name(), info.id());
     }
 
-    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+    m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
 
     loadSettings();
 
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefKey::pluginSelected);
+    setScrollSafeGuard(plugincombo);
+
     connect(banalyzerenabled, &QCheckBox::stateChanged,
             this, &DlgPrefKey::analyzerEnabled);
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,
@@ -96,12 +98,12 @@ void DlgPrefKey::loadSettings() {
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
     if (notation_name == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
+        // Read the custom notation from the config and store it in a temp QMap
         for (auto it = m_keyLineEdits.constBegin();
                 it != m_keyLineEdits.constEnd(); ++it) {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
             notation[it.key()] = it.value()->text();
         }
-        setNotationCustom(true);
         notation_type = KeyUtils::KeyNotation::Custom;
     } else {
         if (notation_name == KEY_NOTATION_LANCELOT) {
@@ -128,8 +130,11 @@ void DlgPrefKey::loadSettings() {
         }
     }
 
-    setNotation(notation_type);
+    // Store notation map for later recall...
     KeyUtils::setNotation(notation);
+    // ... BEFORE invoking setNotation() which populates the QLineEdits from
+    // the map retrieved from KeyUtils.
+    setNotation(notation_type);
     m_pKeyNotation->set(static_cast<double>(notation_type));
 
     slotUpdate();
@@ -142,7 +147,7 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysisDefault();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     if (m_availablePlugins.size() > 0) {
-        m_selectedAnalyzerId = m_availablePlugins[0].id;
+        m_selectedAnalyzerId = m_availablePlugins[0].id();
     }
 
     KeyUtils::KeyNotation notation_type;
@@ -169,7 +174,7 @@ void DlgPrefKey::pluginSelected(int i) {
     if (i == -1) {
         return;
     }
-    m_selectedAnalyzerId = m_availablePlugins[i].id;
+    m_selectedAnalyzerId = m_availablePlugins[i].id();
     slotUpdate();
 }
 
@@ -252,7 +257,7 @@ void DlgPrefKey::slotUpdate() {
         bool found = false;
         for (int i = 0; i < m_availablePlugins.size(); ++i) {
             const auto& info = m_availablePlugins.at(i);
-            if (info.id == m_selectedAnalyzerId) {
+            if (info.id() == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
                 found = true;
                 break;
@@ -260,30 +265,25 @@ void DlgPrefKey::slotUpdate() {
         }
         if (!found) {
             plugincombo->setCurrentIndex(0);
-            m_selectedAnalyzerId = m_availablePlugins[0].id;
+            m_selectedAnalyzerId = m_availablePlugins[0].id();
         }
     }
-}
-
-void DlgPrefKey::setNotationCustom(bool active) {
-    if (!active) {
-        return;
-    }
-
-    for (auto it = m_keyLineEdits.constBegin();
-            it != m_keyLineEdits.constEnd(); ++it) {
-        it.value()->setEnabled(true);
-    }
-    slotUpdate();
 }
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
     for (auto it = m_keyLineEdits.constBegin();
             it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
-        it.value()->setEnabled(false);
+        // QLineEdits are only enabled for Custom notation.
+        it.value()->setEnabled(notation == KeyUtils::KeyNotation::Custom);
     }
     slotUpdate();
+}
+
+void DlgPrefKey::setNotationCustom(bool active) {
+    if (active) {
+        setNotation(KeyUtils::KeyNotation::Custom);
+    }
 }
 
 void DlgPrefKey::setNotationTraditional(bool active) {

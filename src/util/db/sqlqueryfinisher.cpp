@@ -1,19 +1,10 @@
 #include "util/db/sqlqueryfinisher.h"
 
-#include "util/assert.h"
-
-
-bool SqlQueryFinisher::finish() {
-    if (m_query.isActive()) {
-        m_query.finish();
-        release();
-        return true;
-    } else {
+bool SqlQueryFinisher::tryFinish() {
+    if (!m_pQuery || !m_pQuery->isActive()) {
         return false;
     }
-}
-
-void SqlQueryFinisher::release() {
-    m_query = QSqlQuery();
-    DEBUG_ASSERT(!m_query.isActive());
+    m_pQuery->finish();
+    m_pQuery = nullptr;
+    return true;
 }

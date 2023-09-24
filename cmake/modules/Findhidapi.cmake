@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_hidapi QUIET hidapi-libusb)
+  pkg_search_module(PC_hidapi QUIET hidapi-libusb hidapi)
 endif()
 
 find_path(hidapi_INCLUDE_DIR
@@ -62,28 +62,43 @@ find_library(hidapi_LIBRARY
 )
 mark_as_advanced(hidapi_LIBRARY)
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  find_library(hidapi-hidraw_LIBRARY
+    NAMES hidapi-hidraw
+    PATHS ${PC_hidapi_LIBRARY_DIRS}
+    DOC "hidap-hidraw library"
+  )
+  mark_as_advanced(hidapi-hidraw_LIBRARY)
+endif()
+
+# Version detection
+if(DEFINED PC_hidapi_VERSION AND NOT PC_hidapi_VERSION STREQUAL "")
+  set(hidapi_VERSION "${PC_hidapi_VERSION}")
+else()
+  if (EXISTS "${hidapi_LIBRARY}" AND EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
+      file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
+      string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+      set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
+      string(REGEX MATCH "#define HID_API_VERSION_MINOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+      set(hidapi_VERSION_MINOR "${CMAKE_MATCH_1}")
+      string(REGEX MATCH "#define HID_API_VERSION_PATCH ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+      set(hidapi_VERSION_PATCH "${CMAKE_MATCH_1}")
+      # hidapi_VERSION is only available starting with 0.10.0
+      # Simply using if(NOT) does not work because 0 is a valid value, so compare to empty string.
+    if (NOT hidapi_VERSION_MAJOR STREQUAL "" AND
+        NOT hidapi_VERSION_MINOR STREQUAL "" AND
+        NOT hidapi_VERSION_PATCH STREQUAL "")
+        set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
+      endif()
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   hidapi
-  DEFAULT_MSG
-  hidapi_LIBRARY
-  hidapi_INCLUDE_DIR
+  REQUIRED_VARS hidapi_LIBRARY hidapi_INCLUDE_DIR hidapi_VERSION
+  VERSION_VAR hidapi_VERSION
 )
-
-# Version detection
-if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
-    file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
-    string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
-    set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
-    string(REGEX MATCH "#define HID_API_VERSION_MINOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
-    set(hidapi_VERSION_MINOR "${CMAKE_MATCH_1}")
-    string(REGEX MATCH "#define HID_API_VERSION_PATCH ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
-    set(hidapi_VERSION_PATCH "${CMAKE_MATCH_1}")
-    # hidapi_VERSION is only available starting with 0.10.0
-    if (hidapi_VERSION_MAJOR AND hidapi_VERSION_MINOR AND hidapi_VERSION_PATCH)
-      set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
-    endif()
-endif ()
 
 if(hidapi_FOUND)
   set(hidapi_LIBRARIES "${hidapi_LIBRARY}")
@@ -98,5 +113,14 @@ if(hidapi_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
     )
+   if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+     add_library(hidapi::hidraw UNKNOWN IMPORTED)
+     set_target_properties(hidapi::hidraw
+       PROPERTIES
+         IMPORTED_LOCATION "${hidapi-hidraw_LIBRARY}"
+         INTERFACE_COMPILE_OPTIONS "${PC_hidapi_CFLAGS_OTHER}"
+         INTERFACE_INCLUDE_DIRECTORIES "${hidapi_INCLUDE_DIR}"
+      )
+    endif()
   endif()
 endif()

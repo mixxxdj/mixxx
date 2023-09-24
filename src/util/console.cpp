@@ -1,8 +1,10 @@
 #include "console.h"
 
 #include <stdio.h>
+
 #include <QtDebug>
-#include "util/version.h"
+
+#include "util/versionstore.h"
 
 #ifdef __WINDOWS__
 #include <io.h> // Debug Console
@@ -119,11 +121,17 @@ Console::Console()
             if (GetConsoleTitle(m_oldTitle, MAX_PATH)) {
                 // Build new console title string.
 #ifdef UNICODE
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
-                        m_oldTitle,  Version::applicationTitle().utf16());
+                StringCchPrintf(szNewTitle,
+                        MAX_PATH,
+                        TEXT("%s : %s"),
+                        m_oldTitle,
+                        VersionStore::applicationName().utf16());
 #else
-                StringCchPrintf(szNewTitle, MAX_PATH, TEXT("%s : %s"),
-                        m_oldTitle,  Version::applicationTitle().toLocal8Bit().data());
+                StringCchPrintf(szNewTitle,
+                        MAX_PATH,
+                        TEXT("%s : %s"),
+                        m_oldTitle,
+                        VersionStore::applicationName().toLocal8Bit().data());
 #endif
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {

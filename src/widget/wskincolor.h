@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QSharedPointer>
-#include "skin/imgsource.h"
+#include "skin/legacy/imgsource.h"
 
 class WSkinColor {
   public:

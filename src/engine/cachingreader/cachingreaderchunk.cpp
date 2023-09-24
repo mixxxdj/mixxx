@@ -13,7 +13,7 @@ namespace {
 
 mixxx::Logger kLogger("CachingReaderChunk");
 
-const SINT kInvalidChunkIndex = -1;
+constexpr SINT kInvalidChunkIndex = -1;
 
 } // anonymous namespace
 

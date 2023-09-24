@@ -14,7 +14,6 @@
 #include "control/controlpushbutton.h"
 #include "moc_wpushbutton.cpp"
 #include "util/debug.h"
-#include "util/math.h"
 #include "widget/wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget* pParent)
@@ -399,7 +398,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle through the states
             emitValue = getControlParameterLeft();
-            if (!isnan(emitValue) && m_iNoStates > 0) {
+            if (!util_isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
             }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
@@ -425,7 +424,7 @@ bool WPushButton::event(QEvent* e) {
     } else if (e->type() == QEvent::Leave) {
         if (m_bPressed) {
             // A Leave event is send instead of a mouseReleaseEvent()
-            // fake it to get not stucked in pressed state
+            // fake it to get not stuck in pressed state
             QMouseEvent mouseEvent = QMouseEvent(
                     QEvent::MouseButtonRelease,
                     QPointF(),
@@ -500,7 +499,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                if (!isnan(emitValue) && m_iNoStates > 0) {
+                if (!util_isnan(emitValue) && m_iNoStates > 0) {
                     emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
                 }
             } else {

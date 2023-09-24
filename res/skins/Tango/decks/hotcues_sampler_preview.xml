@@ -1,0 +1,111 @@
+<!--
+Description:
+  A widget containing hotcue buttons whose number can be set to 4 or 8.
+  They're laid out in a way that they either expand or get squeezed,
+  depending on available space.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>HotCues_Sampler_Preview</ObjectName>
+    <Layout>vertical</Layout>
+    <Size>0me,19f</Size>
+    <Children>
+      <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0me,18f</Size>
+        <Children>
+
+          <WidgetGroup><!-- 4 -->
+            <Layout>horizontal</Layout>
+            <MinimumSize>60,18</MinimumSize>
+            <MaximumSize>83,18</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">1</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">2</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">3</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">4</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- 4 -->
+
+          <WidgetGroup><!-- 8 -->
+            <Layout>horizontal</Layout>
+            <MinimumSize>120,18</MinimumSize>
+            <MaximumSize>167,18</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">1</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">2</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">3</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">4</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">5</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">6</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">7</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:../Tango/controls/button_hotcue_sam_pre.xml">
+                <SetVariable name="HotCue">8</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- 8 -->
+
+          <WidgetGroup><Size>1f,0me</Size></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

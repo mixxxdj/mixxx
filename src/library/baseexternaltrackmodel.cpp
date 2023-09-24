@@ -59,7 +59,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     if (pTrack) {
@@ -72,7 +72,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
             pTrack->setYear(year);
-            pTrack->setGenre(genre);
+            updateTrackGenre(pTrack.get(), genre);
             pTrack->trySetBpm(bpm);
         }
     } else {

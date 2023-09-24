@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QtDebug>
 
+#include "audio/frame.h"
+#include "audio/types.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
@@ -113,7 +115,7 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoaded(TrackPointer pTrack, mixxx::audio::SampleRate sampleRate, double numSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
@@ -128,17 +130,31 @@ class CachingReaderWorker : public EngineWorker {
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
     QMutex m_newTrackMutex;
-    bool m_newTrackAvailable;
+    QAtomicInt m_newTrackAvailable;
     TrackPointer m_pNewTrack;
 
-    // Internal method to load a track. Emits trackLoaded when finished.
+    void discardAllPendingRequests();
+
+    /// call to be prepare for new tracks
+    /// Make sure engine has been stopped before
+    void closeAudioSource();
+
+    /// Internal method to unload a track.
+    /// does not emit signals
+    void unloadTrack();
+
+    /// Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
 
     ReaderStatusUpdate processReadRequest(
             const CachingReaderChunkReadRequest& request);
 
+    void verifyFirstSound(const CachingReaderChunk* pChunk);
+
     // The current audio source of the track loaded
     mixxx::AudioSourcePointer m_pAudioSource;
+
+    mixxx::audio::FramePos m_firstSoundFrameToVerify;
 
     // Temporary buffer for reading samples from all channels
     // before conversion to a stereo signal.

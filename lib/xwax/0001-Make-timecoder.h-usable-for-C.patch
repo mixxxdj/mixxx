@@ -1,0 +1,36 @@
+From 9724c5dd0189d6eb567d1f0bd66f6386c01d231f Mon Sep 17 00:00:00 2001
+From: RJ Ryan <rryan@mixxx.org>
+Date: Sun, 2 Jan 2022 02:02:20 +0100
+Subject: [PATCH 1/5] Make timecoder.h usable for C++
+
+---
+ timecoder.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/timecoder.h b/timecoder.h
+index e8e0d1c..a2541dc 100644
+--- a/timecoder.h
++++ b/timecoder.h
+@@ -27,6 +27,10 @@
+ 
+ #define TIMECODER_CHANNELS 2
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif // __cplusplus
++
+ typedef unsigned int bits_t;
+ 
+ struct timecode_def {
+@@ -141,4 +145,8 @@ static inline double timecoder_revs_per_sec(struct timecoder *tc)
+     return (33.0 + 1.0 / 3) * tc->speed / 60;
+ }
+ 
++#ifdef __cplusplus
++};
++#endif // __cplusplus
++
+ #endif
+-- 
+2.25.1
+

@@ -26,13 +26,13 @@ static WavpackStreamReader s_streamReader = {
 const QString SoundSourceProviderWV::kDisplayName = QStringLiteral("WavPack");
 
 //static
-const QStringList SoundSourceProviderWV::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderWV::kSupportedFileTypes = {
         QStringLiteral("wv"),
 };
 
 SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // This reference decoder is supposed to produce more accurate
     // and reliable results than any other DEFAULT provider.
     return SoundSourceProviderPriority::Higher;

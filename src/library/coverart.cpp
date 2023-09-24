@@ -37,9 +37,15 @@ QString typeToString(CoverInfo::Type type) {
 
 quint16 calculateLegacyHash(
         const QImage& image) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    auto legacyHash = qChecksum(QByteArrayView(
+            reinterpret_cast<const char*>(image.constBits()),
+            image.sizeInBytes()));
+#else
     auto legacyHash = qChecksum(
             reinterpret_cast<const char*>(image.constBits()),
             image.sizeInBytes());
+#endif
     // In rare cases the calculated checksum could be equal to the
     // reserved value CoverInfo::defaultLegacyHash() which might cause
     // unexpected behavior. In this case we simply invert all bits to
@@ -81,10 +87,6 @@ bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
             lhs.coverLocation == rhs.coverLocation;
 }
 
-bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
-    return !(lhs == rhs);
-}
-
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
     const QDebugStateSaver saver(dbg);
     dbg = dbg.maybeSpace() << "CoverInfoRelative";
@@ -104,18 +106,21 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
             << '}';
 }
 
-CoverInfo::LoadedImage CoverInfo::loadImage(
-        const SecurityTokenPointer& pTrackLocationToken) const {
+CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
     LoadedImage loadedImage(LoadedImage::Result::ErrorUnknown);
     if (type == CoverInfo::METADATA) {
         VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
             loadedImage.result = LoadedImage::Result::ErrorMetadataWithEmptyTrackLocation;
             return loadedImage;
         }
-        loadedImage.filePath = trackLocation;
-        loadedImage.image = CoverArtUtils::extractEmbeddedCover(
-                TrackFile(trackLocation),
-                pTrackLocationToken);
+        loadedImage.location = trackLocation;
+        if (pTrack) {
+            DEBUG_ASSERT(trackLocation == pTrack->getLocation());
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(pTrack);
+        } else {
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(
+                    mixxx::FileAccess(mixxx::FileInfo(trackLocation)));
+        }
         if (loadedImage.image.isNull()) {
             // TODO: extractEmbeddedCover() should indicate if no image
             // is available or if loading the embedded image failed.
@@ -126,7 +131,7 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
             loadedImage.result = LoadedImage::Result::Ok;
         }
     } else if (type == CoverInfo::FILE) {
-        auto coverFile = QFileInfo(coverLocation);
+        auto coverFile = mixxx::FileInfo(coverLocation);
         if (coverFile.isRelative()) {
             VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
                 // This is not expected to happen, because every track
@@ -138,23 +143,21 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
                 return loadedImage;
             }
             // Compose track directory with relative path
-            const auto trackFile = TrackFile(trackLocation);
-            DEBUG_ASSERT(trackFile.asFileInfo().isAbsolute());
-            coverFile = QFileInfo(
-                    trackFile.directory(),
+            const auto fileInfo = mixxx::FileInfo(trackLocation);
+            coverFile = mixxx::FileInfo(
+                    fileInfo.locationPath(),
                     coverLocation);
         }
-        DEBUG_ASSERT(coverFile.isAbsolute());
-        loadedImage.filePath = coverFile.filePath();
+        loadedImage.location = coverFile.location();
         if (!coverFile.exists()) {
             loadedImage.result = LoadedImage::Result::ErrorFilePathDoesNotExist;
             return loadedImage;
         }
         SecurityTokenPointer pToken =
                 Sandbox::openSecurityToken(
-                        coverFile,
+                        &coverFile,
                         true);
-        if (loadedImage.image.load(loadedImage.filePath)) {
+        if (loadedImage.image.load(loadedImage.location)) {
             DEBUG_ASSERT(!loadedImage.image.isNull());
             loadedImage.result = LoadedImage::Result::Ok;
         } else {
@@ -170,8 +173,7 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
 }
 
 bool CoverInfo::refreshImageDigest(
-        const QImage& loadedImage,
-        const SecurityTokenPointer& pTrackLocationToken) {
+        const QImage& loadedImage) {
     if (!imageDigest().isEmpty()) {
         // Assume that a non-empty digest has been calculated from
         // the corresponding image. Otherwise we would refresh all
@@ -182,7 +184,7 @@ bool CoverInfo::refreshImageDigest(
     }
     QImage image = loadedImage;
     if (image.isNull()) {
-        image = loadImage(pTrackLocationToken).image;
+        image = loadImage(TrackPointer()).image;
     }
     if (image.isNull() && type != CoverInfo::NONE) {
         kLogger.warning()
@@ -242,7 +244,7 @@ QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage& loadedImage) {
     dbg = dbg.maybeSpace() << "CoverInfo::LoadedImage";
     return dbg.nospace()
             << '{'
-            << loadedImage.filePath
+            << loadedImage.location
             << ','
             << loadedImage.image.size()
             << ','

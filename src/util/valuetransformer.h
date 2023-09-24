@@ -3,7 +3,7 @@
 #include <QList>
 #include <QDomElement>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class TransformNode {
   public:

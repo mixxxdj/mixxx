@@ -1,9 +1,10 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-#include <QScopedPointer>
 #include <QByteArray>
+#include <QMetaProperty>
+#include <QObject>
+#include <QScopedPointer>
+#include <QString>
 
 #include "control/controlproxy.h"
 #include "util/valuetransformer.h"
@@ -137,5 +138,7 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     void slotControlValueChanged(double v) override;
 
   private:
-    QByteArray m_propertyName;
+    const QString m_propertyName;
+    const QMetaProperty m_property;
+    QVariant m_propertyValue;
 };

@@ -4,14 +4,17 @@
 #include <QContextMenuEvent>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QEvent>
 #include <QKeyEvent>
 #include <QModelIndex>
 #include <QPoint>
 #include <QTimerEvent>
 #include <QTreeView>
-#include <QEvent>
 
+#include "library/library_decl.h"
 #include "widget/wbasewidget.h"
+
+class LibraryFeature;
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT
@@ -23,9 +26,13 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void focusInEvent(QFocusEvent* event) override;
     void timerEvent(QTimerEvent* event) override;
     void toggleSelectedItem();
     bool isLeafNodeSelected();
+    bool isChildIndexSelected(const QModelIndex& index);
+    bool isFeatureRootIndexSelected(LibraryFeature* pFeature);
 
   public slots:
     void selectIndex(const QModelIndex&);
@@ -34,11 +41,17 @@ class WLibrarySidebar : public QTreeView, public WBaseWidget {
 
   signals:
     void rightClicked(const QPoint&, const QModelIndex&);
+    void renameItem(const QModelIndex&);
+    void deleteItem(const QModelIndex&);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   protected:
     bool event(QEvent* pEvent) override;
 
   private:
+    void focusSelectedIndex();
+    QModelIndex selectedIndex();
+
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
 };

@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "analyzer/analyzer.h"
+#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -19,8 +20,10 @@ class AnalyzerKey : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool processSamples(const CSAMPLE *pIn, const int iLen) override;
+    bool initialize(const AnalyzerTrack& track,
+            mixxx::audio::SampleRate sampleRate,
+            SINT frameLength) override;
+    bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 
@@ -33,10 +36,10 @@ class AnalyzerKey : public Analyzer {
     KeyDetectionSettings m_keySettings;
     std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
-    int m_iSampleRate;
-    int m_iTotalSamples;
-    int m_iMaxSamplesToProcess;
-    int m_iCurrentSample;
+    mixxx::audio::SampleRate m_sampleRate;
+    SINT m_totalFrames;
+    SINT m_maxFramesToProcess;
+    SINT m_currentFrame;
 
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;

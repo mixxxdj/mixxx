@@ -14,7 +14,7 @@ function NumarkV7() {}
 /////////////////////////////////
 
 NumarkV7.RateRanges = [ 0.0, 0.08, 0.1, 0.16, 0.5, 1.0 ];
-NumarkV7.MotorOnLoad = false; //set to "true" to diasble motor on load
+NumarkV7.MotorOnLoad = false; //set to "true" to disable motor on load
 NumarkV7.ScratchDisableDefault = false; //set to "true" to disable scratching when the motors are running.
 NumarkV7.loop_modeOnLoad = "Manual"; //("Manual", "Auto")
 NumarkV7.MotorSpeed = true; //Record RPM (true = "33 1/3",false = "45")
@@ -2127,4 +2127,3 @@ NumarkV7.ScratchB = function (channel, control, value, status, group) {
 //          :P           //
 //                       //
 ///////////////////////////
-

@@ -19,25 +19,23 @@
 #include "preferences/dialog/dlgprefvinyl.h"
 #endif // __VINYLCONTROL__
 
-#include "preferences/dialog/dlgprefcolors.h"
-#include "preferences/dialog/dlgprefcrossfader.h"
-#include "preferences/dialog/dlgprefdeck.h"
-#include "preferences/dialog/dlgprefeq.h"
-#include "preferences/dialog/dlgprefinterface.h"
-#include "preferences/dialog/dlgprefwaveform.h"
-#ifdef __LILV__
-#include "preferences/dialog/dlgpreflv2.h"
-#endif // __LILV__
-#include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefautodj.h"
+#include "preferences/dialog/dlgprefcolors.h"
+#include "preferences/dialog/dlgprefdeck.h"
+#include "preferences/dialog/dlgprefeffects.h"
+#include "preferences/dialog/dlgprefinterface.h"
+#include "preferences/dialog/dlgprefmixer.h"
+#ifndef MIXXX_USE_QML
+#include "preferences/dialog/dlgprefwaveform.h"
+#endif
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
 #endif // __BROADCAST__
 
-#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
+#include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
 
 #ifdef __MODPLUG__
@@ -47,33 +45,41 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "skin/skinloader.h"
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 
+#ifdef __APPLE__
+#include "util/darkappearance.h"
+#endif
+
 DlgPreferences::DlgPreferences(
-        MixxxMainWindow* mixxx,
-        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
+        std::shared_ptr<mixxx::skin::SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> pSoundManager,
-        std::shared_ptr<PlayerManager> pPlayerManager,
         std::shared_ptr<ControllerManager> pControllerManager,
         std::shared_ptr<VinylControlManager> pVCManager,
-        LV2Backend* pLV2Backend,
         std::shared_ptr<EffectsManager> pEffectsManager,
         std::shared_ptr<SettingsManager> pSettingsManager,
         std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
-#ifndef __VINYLCONTROL__
-    Q_UNUSED(pVCManager);
-#endif // __VINYLCONTROL__
-#ifndef __LILV__
-    Q_UNUSED(pLV2Backend);
-#endif // __LILV__
-    Q_UNUSED(pPlayerManager);
     setupUi(this);
+    fixSliderStyle();
     contentsTreeWidget->setHeaderHidden(true);
+
+    // Add '&' to default button labels to always have Alt shortcuts, indpependent
+    // of operating system.
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Help)->setText(tr("&Help"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("&Restore Defaults"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Apply)->setText(tr("&Apply"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&Ok"));
 
     connect(buttonBox,
             QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
@@ -107,7 +113,7 @@ DlgPreferences::DlgPreferences(
     DlgPrefLibrary* plibraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     connect(plibraryPage,
             &DlgPrefLibrary::scanLibrary,
-            pLibrary->trackCollections(),
+            pLibrary->trackCollectionManager(),
             &TrackCollectionManager::startLibraryScan);
     addPageWidget(PreferencesPage(plibraryPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -133,17 +139,41 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+    DlgPrefInterface* pInterfacePage = new DlgPrefInterface(this,
+            pScreensaverManager,
+            pSkinLoader,
+            m_pConfig);
+    connect(pInterfacePage,
+            &DlgPrefInterface::tooltipModeChanged,
+            this,
+            &DlgPreferences::tooltipModeChanged);
+    connect(pInterfacePage,
+            &DlgPrefInterface::reloadUserInterface,
+            this,
+            &DlgPreferences::reloadUserInterface,
+            Qt::DirectConnection);
+    addPageWidget(PreferencesPage(pInterfacePage,
+                          new QTreeWidgetItem(
+                                  contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Waveforms"),
-            "ic_preferences_waveforms.svg");
+#ifndef MIXXX_USE_QML
+    // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
+    if (pSkinLoader) {
+        DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
+        addPageWidget(PreferencesPage(
+                              pWaveformPage,
+                              new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+                tr("Waveforms"),
+                "ic_preferences_waveforms.svg");
+        connect(pWaveformPage,
+                &DlgPrefWaveform::reloadUserInterface,
+                this,
+                &DlgPreferences::reloadUserInterface,
+                Qt::DirectConnection);
+    }
+#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),
@@ -158,15 +188,9 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_decks.svg");
 
     addPageWidget(PreferencesPage(
-                          new DlgPrefEQ(this, pEffectsManager, m_pConfig),
+                          new DlgPrefMixer(this, pEffectsManager, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Equalizers"),
-            "ic_preferences_equalizers.svg");
-
-    addPageWidget(PreferencesPage(
-                          new DlgPrefCrossfader(this, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Crossfader"),
+            tr("Mixer"),
             "ic_preferences_crossfader.svg");
 
     addPageWidget(PreferencesPage(
@@ -174,14 +198,6 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Effects"),
             "ic_preferences_effects.svg");
-
-#ifdef __LILV__
-    addPageWidget(PreferencesPage(
-                          new DlgPrefLV2(this, pLV2Backend, m_pConfig, pEffectsManager),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("LV2 Plugins"),
-            "ic_preferences_lv2.svg");
-#endif // __LILV__
 
     addPageWidget(PreferencesPage(
                           new DlgPrefAutoDJ(this, m_pConfig),
@@ -258,8 +274,8 @@ DlgPreferences::DlgPreferences(
 DlgPreferences::~DlgPreferences() {
     // store last geometry in mixxx.cfg
     if (m_geometry.size() == 4) {
-        m_pConfig->set(ConfigKey("[Preferences]","geometry"),
-                       m_geometry.join(","));
+        m_pConfig->set(ConfigKey("[Preferences]", "geometry"),
+                m_geometry.join(","));
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
@@ -287,14 +303,14 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 
     for (PreferencesPage page : qAsConst(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
-            switchToPage(page.pDlg);
+            switchToPage(pCurrent->text(0), page.pDlg);
             break;
         }
     }
 }
 
 void DlgPreferences::showSoundHardwarePage() {
-    switchToPage(m_soundPage.pDlg);
+    switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
 }
 
@@ -309,7 +325,7 @@ bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     }
 
     // Standard event processing
-    return QWidget::eventFilter(o,e);
+    return QWidget::eventFilter(o, e);
 }
 
 void DlgPreferences::onHide() {
@@ -322,7 +338,8 @@ void DlgPreferences::onShow() {
     if (m_geometry.length() < 4) {
         // load default values (optimum size)
         m_geometry = m_pConfig->getValue(
-                    ConfigKey("[Preferences]", "geometry")).split(",");
+                                      ConfigKey("[Preferences]", "geometry"))
+                             .split(",");
         if (m_geometry.length() < 4) {
             // Warning! geometry does NOT include the frame/title.
             QRect defaultGeometry = getDefaultGeometry();
@@ -335,20 +352,43 @@ void DlgPreferences::onShow() {
     }
     int newX = m_geometry[0].toInt();
     int newY = m_geometry[1].toInt();
+    int newWidth = m_geometry[2].toInt();
+    int newHeight = m_geometry[3].toInt();
 
     const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
-    QSize screenSpace;
+    QRect screenAvailableGeometry;
     VERIFY_OR_DEBUG_ASSERT(pScreen) {
         qWarning() << "Assuming screen size of 800x600px.";
-        screenSpace = QSize(800, 600);
+        screenAvailableGeometry = QRect(0, 0, 800, 600);
     }
     else {
-        screenSpace = pScreen->size();
+        screenAvailableGeometry = pScreen->availableGeometry();
     }
-    newX = std::max(0, std::min(newX, screenSpace.width() - m_geometry[2].toInt()));
-    newY = std::max(0, std::min(newY, screenSpace.height() - m_geometry[3].toInt()));
+
+    // Make sure the entire window is visible on screen and is not occluded by taskbar
+    // Note: Window geometry excludes window decoration
+    int windowDecorationWidth = frameGeometry().width() - geometry().width();
+    int windowDecorationHeight = frameGeometry().height() - geometry().height();
+    if (windowDecorationWidth <= 0) {
+        windowDecorationWidth = 2;
+    }
+    if (windowDecorationHeight <= 0) {
+        windowDecorationHeight = 30;
+    }
+    int availableWidth = screenAvailableGeometry.width() - windowDecorationWidth;
+    int availableHeight = screenAvailableGeometry.height() - windowDecorationHeight;
+    newWidth = std::min(newWidth, availableWidth);
+    newHeight = std::min(newHeight, availableHeight);
+    int minX = screenAvailableGeometry.x();
+    int minY = screenAvailableGeometry.y();
+    int maxX = screenAvailableGeometry.x() + availableWidth - newWidth;
+    int maxY = screenAvailableGeometry.y() + availableHeight - newHeight;
+    newX = std::clamp(newX, minX, maxX);
+    newY = std::clamp(newY, minY, maxY);
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
+    m_geometry[2] = QString::number(newWidth);
+    m_geometry[3] = QString::number(newHeight);
 
     // Update geometry with last values
 #ifdef __WINDOWS__
@@ -363,10 +403,10 @@ void DlgPreferences::onShow() {
     int offsetY = geometry().top() - frameGeometry().top();
     newX += offsetX;
     newY += offsetY;
-    setGeometry(newX,  // x position
-                newY,  // y position
-                m_geometry[2].toInt(),  // width
-                m_geometry[3].toInt()); // height
+    setGeometry(newX,   // x position
+            newY,       // y position
+            newWidth,   // width
+            newHeight); // height
 #endif // __LINUX__ / __MACOS__
     // Move is also needed on linux.
     move(newX, newY);
@@ -379,35 +419,35 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
     QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(pButton);
     DlgPreferencePage* pCurrentPage = currentPage();
     switch (role) {
-        case QDialogButtonBox::ResetRole:
-            // Only reset to defaults on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotResetToDefaults();
-            }
-            break;
-        case QDialogButtonBox::ApplyRole:
-            // Only apply settings on the current page.
-            if (pCurrentPage) {
-                pCurrentPage->slotApply();
-            }
-            break;
-        case QDialogButtonBox::AcceptRole:
-            emit applyPreferences();
-            accept();
-            break;
-        case QDialogButtonBox::RejectRole:
-            emit cancelPreferences();
-            reject();
-            break;
-        case QDialogButtonBox::HelpRole:
-            if (pCurrentPage) {
-                QUrl helpUrl = pCurrentPage->helpUrl();
-                DEBUG_ASSERT(helpUrl.isValid());
-                QDesktopServices::openUrl(helpUrl);
-            }
-            break;
-        default:
-            break;
+    case QDialogButtonBox::ResetRole:
+        // Only reset to defaults on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotResetToDefaults();
+        }
+        break;
+    case QDialogButtonBox::ApplyRole:
+        // Only apply settings on the current page.
+        if (pCurrentPage) {
+            pCurrentPage->slotApply();
+        }
+        break;
+    case QDialogButtonBox::AcceptRole:
+        emit applyPreferences();
+        accept();
+        break;
+    case QDialogButtonBox::RejectRole:
+        emit cancelPreferences();
+        reject();
+        break;
+    case QDialogButtonBox::HelpRole:
+        if (pCurrentPage) {
+            QUrl helpUrl = pCurrentPage->helpUrl();
+            DEBUG_ASSERT(helpUrl.isValid());
+            QDesktopServices::openUrl(helpUrl);
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -467,7 +507,16 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
     contentsTreeWidget->expandItem(pItem);
 }
 
-void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
+void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* pWidget) {
+#ifdef __APPLE__
+    // According to Apple's Human Interface Guidelines, settings dialogs have to
+    // "Update the window’s title to reflect the currently visible pane."
+    // This also solves the problem of the changed in terminology, Settings instead
+    // of Preferences, since macOS Ventura.
+    setWindowTitle(pageTitle);
+#else
+    Q_UNUSED(pageTitle);
+#endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 
     QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
@@ -485,7 +534,7 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
 void DlgPreferences::moveEvent(QMoveEvent* e) {
     if (m_geometry.length() == 4) {
 #ifdef __WINDOWS__
-    Q_UNUSED(e);
+        Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
 #else
@@ -516,7 +565,7 @@ QRect DlgPreferences::getDefaultGeometry() {
     if (frameSize() == size()) {
         // This code is reached in Gnome 2.3
         qDebug() << "guess the size of the window decoration";
-        optimumSize -= QSize(2,30);
+        optimumSize -= QSize(2, 30);
     } else {
         optimumSize -= (frameSize() - size());
     }
@@ -528,4 +577,55 @@ QRect DlgPreferences::getDefaultGeometry() {
     optimumRect.setSize(optimumSize);
 
     return optimumRect;
+}
+
+void DlgPreferences::fixSliderStyle() {
+#ifdef __APPLE__
+    // Only used on macOS where the default slider style has several issues:
+    // - the handle is semi-transparent
+    // - the slider is higher than the space we give it, which causes that:
+    //   - the groove is not correctly centered vertically
+    //   - the handle is cut off at the top
+    // The style below is based on sliders in the macOS system settings dialogs.
+    if (darkAppearance()) {
+        setStyleSheet(R"--(
+QSlider::handle:horizontal {
+    background-color: #8f8c8b; 
+    border-radius: 4px;
+    width: 8px;
+    margin: -8px;
+} 
+QSlider::handle:horizontal::pressed {
+    background-color: #a9a7a7;
+}
+QSlider::groove:horizontal {
+    background: #1e1e1e; 
+    height: 4px;
+    border-radius: 2px;
+    margin-left: 8px; 
+    margin-right: 8px;
+}
+)--");
+    } else {
+        setStyleSheet(R"--(
+QSlider::handle:horizontal {
+    background-color: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #d4d3d3;
+    width: 7px;
+    margin: -8px;
+}
+QSlider::handle:horizontal::pressed {
+    background-color: #ececec;
+}
+QSlider::groove:horizontal {
+    background: #c6c5c5;
+    height: 4px;
+    border-radius: 2px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+)--");
+    }
+#endif // __APPLE__
 }

@@ -5,7 +5,7 @@
 #include <QtDebug>
 
 #include "util/math.h"
-#include "skin/imgloader.h"
+#include "skin/legacy/imgloader.h"
 
 // static
 QHash<QString, WeakPaintablePointer> WPixmapStore::m_paintableCache;

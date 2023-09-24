@@ -9,10 +9,9 @@
 
 #include <string.h>
 
+#include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
-
-static const int numChannels = 2;
 
 template<unsigned int SIZE>
 class EngineFilterPanSingle {
@@ -78,6 +77,6 @@ class EngineFilterPanSingle {
 
   protected:
     int m_delayFrame;
-    CSAMPLE m_buf[SIZE * numChannels];
+    CSAMPLE m_buf[SIZE * mixxx::kEngineChannelCount];
     bool m_doStart;
 };

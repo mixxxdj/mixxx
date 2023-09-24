@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -62,12 +62,15 @@ find_library(Upower_LIBRARY
 )
 mark_as_advanced(Upower_LIBRARY)
 
+if(DEFINED PC_Upower_VERSION AND NOT PC_Upower_VERSION STREQUAL "")
+  set(Upower_VERSION "${PC_Upower_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Upower
-  DEFAULT_MSG
-  Upower_LIBRARY
-  Upower_INCLUDE_DIR
+  REQUIRED_VARS Upower_LIBRARY Upower_INCLUDE_DIR
+  VERSION_VAR Upower_VERSION
 )
 
 if(Upower_FOUND)

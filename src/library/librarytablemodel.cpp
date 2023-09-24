@@ -45,7 +45,7 @@ void LibraryTableModel::setTableModel() {
     tableColumns << LIBRARYTABLE_COVERART;
     setTable(tableName,
             LIBRARYTABLE_ID,
-            tableColumns,
+            std::move(tableColumns),
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
@@ -58,7 +58,7 @@ void LibraryTableModel::setTableModel() {
 int LibraryTableModel::addTracks(const QModelIndex& index,
         const QList<QString>& locations) {
     Q_UNUSED(index);
-    QList<TrackId> trackIds = m_pTrackCollectionManager->internalCollection()->resolveTrackIdsFromLocations(
+    QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromLocations(
             locations);
     select();
     return trackIds.size();
@@ -96,5 +96,7 @@ TrackModel::Capabilities LibraryTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::Hide |
-            Capability::ResetPlayed;
+            Capability::ResetPlayed |
+            Capability::RemoveFromDisk |
+            Capability::Analyze;
 }

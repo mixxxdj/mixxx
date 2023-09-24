@@ -11,7 +11,7 @@ namespace mixxx {
 class CueInfoImporter {
   public:
     CueInfoImporter() = default;
-    explicit CueInfoImporter(const QList<CueInfo>& cueInfos);
+    explicit CueInfoImporter(QList<CueInfo> cueInfos);
     virtual ~CueInfoImporter() = default;
 
     /// Returns true if the importer has any cue(s) of the given cueType.
@@ -24,9 +24,6 @@ class CueInfoImporter {
             const QString& filePath,
             const audio::SignalInfo& signalInfo) const;
 
-    void append(const CueInfo& cueInfo);
-    void append(const QList<CueInfo>& cueInfos);
-
     int size() const;
     bool isEmpty() const;
 
@@ -37,7 +34,5 @@ class CueInfoImporter {
   private:
     QList<CueInfo> m_cueInfos;
 };
-
-typedef std::shared_ptr<CueInfoImporter> CueInfoImporterPointer;
 
 } // namespace mixxx

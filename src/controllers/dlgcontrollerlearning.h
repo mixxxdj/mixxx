@@ -26,7 +26,9 @@ class DlgControllerLearning : public QDialog,
     Q_OBJECT
 
   public:
-    DlgControllerLearning(QWidget *parent, Controller *controller);
+    DlgControllerLearning(QWidget* parent,
+            Controller* controller,
+            ControlPickerMenu* pControlPickerMenu);
     virtual ~DlgControllerLearning();
 
   signals:
@@ -47,7 +49,7 @@ class DlgControllerLearning : public QDialog,
     // Triggered when the user picks a control from the menu.
     void controlPicked(const ConfigKey& control);
     // Triggered when user clicks a control from the GUI
-    void controlClicked(ControlObject* pControl);
+    void controlClicked(const ConfigKey& controlKey);
     void comboboxIndexChanged(int index);
 
     void slotMessageReceived(unsigned char status,
@@ -66,7 +68,7 @@ class DlgControllerLearning : public QDialog,
     void showControlMenu();
 #ifdef CONTROLLERLESSTESTING
     void DEBUGFakeMidiMessage();
-    void DEBUGFakeMidiMessage2();
+    void DEBUGFakeMidiMessage();
 #endif
 
   private:
@@ -77,11 +79,11 @@ class DlgControllerLearning : public QDialog,
     void populateComboBox();
 
     Controller* m_pController;
-    ControlPickerMenu m_controlPickerMenu;
+    ControlPickerMenu* m_pControlPickerMenu;
     ConfigKey m_currentControl;
     bool m_messagesLearned;
     QTimer m_firstMessageTimer;
     QTimer m_lastMessageTimer;
-    QList<QPair<MidiKey, unsigned char> > m_messages;
+    QList<QPair<MidiKey, unsigned char>> m_messages;
     MidiInputMappings m_mappings;
 };

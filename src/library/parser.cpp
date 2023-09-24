@@ -1,16 +1,3 @@
-//
-// C++ Implementation: parser
-//
-// Description: superclass for external formats parsers
-//
-//
-// Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
-// Author: Tobias Rafreider trafreider@mixxx.org, (C) 2011
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "library/parser.h"
 
 #include <QDir>
@@ -21,6 +8,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "util/logger.h"
@@ -31,45 +19,48 @@ const mixxx::Logger kLogger("Parser");
 
 } // anonymous namespace
 
-Parser::Parser() {
+// static
+bool Parser::isPlaylistFilenameSupported(const QString& playlistFile) {
+    return ParserM3u::isPlaylistFilenameSupported(playlistFile) ||
+            ParserPls::isPlaylistFilenameSupported(playlistFile) ||
+            ParserCsv::isPlaylistFilenameSupported(playlistFile);
 }
 
-Parser::~Parser() {
+// static
+QList<QString> Parser::parseAllLocations(const QString& playlistFile) {
+    if (ParserM3u::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserM3u::parseAllLocations(playlistFile);
+    }
+
+    if (ParserPls::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserPls::parseAllLocations(playlistFile);
+    }
+
+    if (ParserCsv::isPlaylistFilenameSupported(playlistFile)) {
+        return ParserCsv::parseAllLocations(playlistFile);
+    }
+
+    return QList<QString>();
 }
 
-void Parser::clearLocations() {
-    m_sLocations.clear();
-}
+// static
+QList<QString> Parser::parse(const QString& playlistFile) {
+    const QList<QString> allLocations = parseAllLocations(playlistFile);
 
-long Parser::countParsed() {
-    return (long)m_sLocations.count();
-}
+    QFileInfo fileInfo(playlistFile);
 
-bool Parser::isBinary(const QString& filename) {
-    char firstByte;
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
-        // If starting byte is not an ASCII character then the file
-        // probably contains binary data.
-        if (firstByte >= 32 && firstByte <= 126) {
-            // Valid ASCII character
-            return false;
-        }
-        // Check for UTF-8 BOM
-        if (firstByte == '\xEF') {
-            char nextChar;
-            if (file.getChar(&nextChar) &&
-                    nextChar == '\xBB' &&
-                    file.getChar(&nextChar) &&
-                    nextChar == '\xBF') {
-                // UTF-8 text file
-                return false;
-            }
-            return true;
+    QList<QString> existingLocations;
+    for (const auto& location : allLocations) {
+        mixxx::FileInfo trackFile = Parser::playlistEntryToFileInfo(
+                location, fileInfo.canonicalPath());
+        if (trackFile.checkFileExists()) {
+            existingLocations.append(trackFile.location());
+        } else {
+            qInfo() << "File" << trackFile.location() << "from playlist"
+                    << playlistFile << "does not exist.";
         }
     }
-    qDebug() << "Parser: Error reading from" << filename;
-    return true; //should this raise an exception?
+    return existingLocations;
 }
 
 // The following public domain code is taken from
@@ -154,20 +145,21 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-TrackFile Parser::playlistEntryToTrackFile(
+// static
+mixxx::FileInfo Parser::playlistEntryToFileInfo(
         const QString& playlistEntry,
         const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
         // URLs are always absolute
-        return TrackFile::fromUrl(QUrl(playlistEntry));
+        return mixxx::FileInfo::fromQUrl(QUrl(playlistEntry));
     }
     auto filePath = QString(playlistEntry).replace('\\', '/');
-    auto trackFile = TrackFile(filePath);
-    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+    auto trackFile = mixxx::FileInfo(filePath);
+    if (basePath.isEmpty() || trackFile.isAbsolute()) {
         return trackFile;
     } else {
         // Fallback: Relative to base path
-        return TrackFile(QDir(basePath), filePath);
+        return mixxx::FileInfo(QDir(basePath), filePath);
     }
 }
 
@@ -199,12 +191,13 @@ bool Parser::exportPlaylistItemsIntoFile(
                     << "Appending .m3u and exporting to M3U.";
             playlistFilePath.append(QStringLiteral(".m3u"));
             if (QFileInfo::exists(playlistFilePath)) {
-                auto overwrite = QMessageBox::question(
-                        nullptr,
-                        tr("Overwrite File?"),
-                        tr("A playlist file with the name \"%1\" already exists.\n"
-                           "The default \"m3u\" extension was added because none was specified.\n\n"
-                           "Do you really want to overwrite it?")
+                auto overwrite = QMessageBox::question(nullptr,
+                        QObject::tr("Overwrite File?"),
+                        QObject::tr("A playlist file with the name \"%1\" "
+                                    "already exists.\n"
+                                    "The default \"m3u\" extension was added "
+                                    "because none was specified.\n\n"
+                                    "Do you really want to overwrite it?")
                                 .arg(playlistFilePath));
                 if (overwrite != QMessageBox::StandardButton::Yes) {
                     return false;

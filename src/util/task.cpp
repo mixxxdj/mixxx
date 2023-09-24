@@ -3,7 +3,7 @@
 #include <QtDebug>
 
 #include "moc_task.cpp"
-#include "util/compatibility.h"
+#include "util/compatibility/qatomic.h"
 
 TaskWatcher::TaskWatcher(QObject* pParent) : QObject(pParent) {
 }

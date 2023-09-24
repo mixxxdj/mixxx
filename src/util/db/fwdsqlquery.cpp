@@ -39,12 +39,29 @@ FwdSqlQuery::FwdSqlQuery(
           m_prepared(prepareQuery(*this, statement)) {
     if (!m_prepared) {
         DEBUG_ASSERT(!database.isOpen() || hasError());
-        kLogger.critical()
-                << "Failed to prepare"
-                << statement
-                << ":"
-                << lastError();
+        if (hasDuplicateColumnNameError()) {
+            // Special case: Errors caused by re-adding a column when
+            // re-appliying a schema migration are expected and we
+            // should not report them as an error.
+            kLogger.debug()
+                    << "Failed to prepare schema migration statement"
+                    << statement
+                    << ":"
+                    << lastError();
+        } else {
+            kLogger.critical()
+                    << "Failed to prepare statement"
+                    << statement
+                    << ":"
+                    << lastError();
+        }
     }
+}
+
+bool FwdSqlQuery::hasDuplicateColumnNameError() const {
+    return hasError() &&
+            lastError().databaseText().startsWith(
+                    QStringLiteral("duplicate column name: "));
 }
 
 bool FwdSqlQuery::execPrepared() {
@@ -121,7 +138,7 @@ inline bool boolFromQVariantInt(const QVariant& variant) {
                 << value;
     }
     // C-style conversion from int to bool
-    DEBUG_ASSERT(kBooleanFalse == 0);
+    static_assert(kBooleanFalse == 0);
     return value != kBooleanFalse;
 }
 

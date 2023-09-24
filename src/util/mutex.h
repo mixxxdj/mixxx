@@ -6,15 +6,13 @@
 
 #include <QMutex>
 #include <QReadWriteLock>
-#include <QMutexLocker>
 
+#include "util/compatibility/qmutex.h"
 #include "util/thread_annotations.h"
 
 class CAPABILITY("mutex") MMutex {
   public:
-    MMutex(QMutex::RecursionMode mode = QMutex::NonRecursive)
-            : m_mutex(mode) {
-    }
+    MMutex() = default;
 
     inline void lock() ACQUIRE() { m_mutex.lock(); }
     inline void unlock() RELEASE() { m_mutex.unlock(); }
@@ -59,7 +57,7 @@ class SCOPED_CAPABILITY MMutexLocker {
     inline void unlock() RELEASE() { m_locker.unlock(); }
 
   private:
-    QMutexLocker m_locker;
+    QT_MUTEX_LOCKER m_locker;
 };
 
 class SCOPED_CAPABILITY MWriteLocker {

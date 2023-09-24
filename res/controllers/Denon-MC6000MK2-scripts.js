@@ -640,7 +640,7 @@ DenonMC6000MK2.OldDeck.prototype.setValue = function(key, value) {
 };
 
 DenonMC6000MK2.OldDeck.prototype.toggleValue = function(key) {
-    this.setValue(key, !this.getValue(key));
+    script.toggleControl(this.group, key);
 };
 
 DenonMC6000MK2.OldDeck.prototype.setParameter = function(key, param) {
@@ -748,7 +748,7 @@ DenonMC6000MK2.OldDeck.prototype.onCueMixValue = function(pflValue) {
 /* Track Load */
 
 DenonMC6000MK2.isTrackLoaded = function(trackSamples) {
-    return 0 < trackSamples;
+    return trackSamples > 0;
 };
 
 DenonMC6000MK2.OldDeck.prototype.isTrackLoaded = function() {
@@ -1325,7 +1325,7 @@ DenonMC6000MK2.setValue = function(key, value) {
 };
 
 DenonMC6000MK2.getJogDeltaValue = function(value) {
-    if (0x00 === value) {
+    if (value === 0x00) {
         return 0x00;
     } else {
         return value - DenonMC6000MK2.MIDI_JOG_DELTA_BIAS;
@@ -1333,25 +1333,25 @@ DenonMC6000MK2.getJogDeltaValue = function(value) {
 };
 
 DenonMC6000MK2.initValues = function() {
-    DenonMC6000MK2.backupSampleRate = engine.getValue(DenonMC6000MK2.group, "samplerate");
+    DenonMC6000MK2.backupSampleRate = engine.getValue("[App]", "samplerate");
     if (DenonMC6000MK2.backupSampleRate !== DenonMC6000MK2.SAMPLE_RATE) {
         DenonMC6000MK2.logInfo(
             "Adjusting sample rate: " +
             DenonMC6000MK2.backupSampleRate +
             " -> " +
             DenonMC6000MK2.SAMPLE_RATE);
-        DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.SAMPLE_RATE);
+        engine.setValue("[App]", "samplerate", DenonMC6000MK2.SAMPLE_RATE);
     }
-    DenonMC6000MK2.backupNumDecks = DenonMC6000MK2.getValue("num_decks");
+    DenonMC6000MK2.backupNumDecks = engine.getValue("[App]", "num_decks");
     if (DenonMC6000MK2.backupNumDecks !== DenonMC6000MK2.DECK_COUNT) {
         DenonMC6000MK2.logInfo(
             "Adjusting number of decks: " +
             DenonMC6000MK2.backupNumDecks +
             " -> " +
             DenonMC6000MK2.DECK_COUNT);
-        DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.DECK_COUNT);
+        engine.setValue("[App]", "num_decks", DenonMC6000MK2.DECK_COUNT);
     }
-    DenonMC6000MK2.backupNumSamplers = DenonMC6000MK2.getValue("num_samplers");
+    DenonMC6000MK2.backupNumSamplers = engine.getValue("[App]", "num_samplers");
     var numSamplers = DenonMC6000MK2.SIDE_COUNT * DenonMC6000MK2.SAMPLER_COUNT_PER_SIDE;
     if (DenonMC6000MK2.backupNumSamplers !== numSamplers) {
         DenonMC6000MK2.logInfo(
@@ -1359,7 +1359,7 @@ DenonMC6000MK2.initValues = function() {
             DenonMC6000MK2.backupNumSamplers +
             " -> " +
             numSamplers);
-        DenonMC6000MK2.setValue("num_samplers", numSamplers);
+        engine.setValue("[App]", "num_samplers", numSamplers);
     }
 };
 
@@ -1521,11 +1521,6 @@ DenonMC6000MK2.recvPanelButton = function(_channel, _control, value, _status, _g
     this.logDebug("Panel button: " + DenonMC6000MK2.isButtonPressed(value));
 };
 
-DenonMC6000MK2.recvListButton = function(_channel, _control, value, _status, _group) {
-    // TODO
-    this.logDebug("List button: " + DenonMC6000MK2.isButtonPressed(value));
-};
-
 DenonMC6000MK2.recvViewButton = function(_channel, _control, value, _status, _group) {
     // TODO
     this.logDebug("View button: " + DenonMC6000MK2.isButtonPressed(value));
@@ -1534,6 +1529,12 @@ DenonMC6000MK2.recvViewButton = function(_channel, _control, value, _status, _gr
 DenonMC6000MK2.recvAreaButton = function(_channel, _control, value, _status, _group) {
     // TODO
     this.logDebug("Area button: " + DenonMC6000MK2.isButtonPressed(value));
+};
+
+DenonMC6000MK2.recvListButton = function(_channel, _control, value, _status, _group) {
+    if (DenonMC6000MK2.isButtonPressed(value)) {
+        script.toggleControl("[Skin]", "show_maximized_library");
+    }
 };
 
 DenonMC6000MK2.recvVinylButton = function(_channel, _control, value, _status, group) {

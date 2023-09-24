@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -53,12 +53,15 @@ find_library(Ogg_LIBRARY
 )
 mark_as_advanced(Ogg_LIBRARY)
 
+if(DEFINED PC_Ogg_VERSION AND NOT PC_Ogg_VERSION STREQUAL "")
+  set(Ogg_VERSION "${PC_Ogg_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Ogg
-  REQUIRED_VARS
-  Ogg_INCLUDE_DIR
-  Ogg_LIBRARY
+  REQUIRED_VARS Ogg_LIBRARY Ogg_INCLUDE_DIR
+  VERSION_VAR Ogg_VERSION
 )
 
 if(Ogg_FOUND)

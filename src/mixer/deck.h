@@ -7,9 +7,9 @@
 class Deck : public BaseTrackPlayerImpl {
     Q_OBJECT
   public:
-    Deck(QObject* pParent,
+    Deck(PlayerManager* pParent,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup);

@@ -10,8 +10,8 @@
 #include <QRectF>
 #include <QString>
 
-#include "skin/imgsource.h"
-#include "skin/pixmapsource.h"
+#include "skin/legacy/imgsource.h"
+#include "skin/legacy/pixmapsource.h"
 #include "widget/paintable.h"
 
 

@@ -3,12 +3,14 @@
 #include <QObject>
 #include <QString>
 
+#include "audio/frame.h"
 #include "control/controlobject.h"
 
 class VelocityController;
 class RateIIFilter;
 
 class PositionScratchController : public QObject {
+    Q_OBJECT
   public:
     PositionScratchController(const QString& group);
     virtual ~PositionScratchController();
@@ -17,13 +19,13 @@ class PositionScratchController : public QObject {
                  int iBufferSize, double baserate);
     bool isEnabled();
     double getRate();
-    void notifySeek(double currentSample);
+    void notifySeek(mixxx::audio::FramePos position);
 
   private:
     const QString m_group;
     ControlObject* m_pScratchEnable;
     ControlObject* m_pScratchPosition;
-    ControlObject* m_pMasterSampleRate;
+    ControlObject* m_pMainSampleRate;
     VelocityController* m_pVelocityController;
     RateIIFilter* m_pRateIIFilter;
     bool m_bScratching;

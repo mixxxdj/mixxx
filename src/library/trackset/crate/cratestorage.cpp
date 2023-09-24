@@ -52,12 +52,11 @@ const QString kCrateSummaryViewQuery =
                         CRATE_TABLE,
                         CRATETABLE_ID);
 
-class CrateQueryBinder {
+class CrateQueryBinder final {
   public:
     explicit CrateQueryBinder(FwdSqlQuery& query)
             : m_query(query) {
     }
-    virtual ~CrateQueryBinder() = default;
 
     void bindId(const QString& placeholder, const Crate& crate) const {
         m_query.bindValue(placeholder, crate.getId());
@@ -481,20 +480,21 @@ CrateTrackSelectResult CrateStorage::selectTrackCratesSorted(
 CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
         const QList<TrackId>& trackIds) const {
     FwdSqlQuery query(m_database,
-            QStringLiteral("SELECT *, "
-                           "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
-                           "%1.%5 in (%9)) AS %6, "
-                           "0 as %7 FROM %2 ORDER BY %8")
-                    .arg(
-                            CRATE_TRACKS_TABLE,
-                            CRATE_TABLE,
-                            CRATETABLE_ID,
-                            CRATETRACKSTABLE_CRATEID,
-                            CRATETRACKSTABLE_TRACKID,
-                            CRATESUMMARY_TRACK_COUNT,
-                            CRATESUMMARY_TRACK_DURATION,
-                            CRATETABLE_NAME,
-                            joinSqlStringList(trackIds)));
+            mixxx::DbConnection::collateLexicographically(
+                    QStringLiteral("SELECT *, "
+                                   "(SELECT COUNT(*) FROM %1 WHERE %2.%3 = %1.%4 and "
+                                   "%1.%5 in (%9)) AS %6, "
+                                   "0 as %7 FROM %2 ORDER BY %8")
+                            .arg(
+                                    CRATE_TRACKS_TABLE,
+                                    CRATE_TABLE,
+                                    CRATETABLE_ID,
+                                    CRATETRACKSTABLE_CRATEID,
+                                    CRATETRACKSTABLE_TRACKID,
+                                    CRATESUMMARY_TRACK_COUNT,
+                                    CRATESUMMARY_TRACK_DURATION,
+                                    CRATETABLE_NAME,
+                                    joinSqlStringList(trackIds))));
 
     if (query.execPrepared()) {
         return CrateSummarySelectResult(std::move(query));
@@ -505,6 +505,10 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(
 
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(
         const QString& crateNameLike) const {
+    // TODO: Do SQL LIKE wildcards in crateNameLike need to be escaped?
+    // Previously we used SqlLikeWildcardEscaper in the past for this
+    // purpose. This utility class has become obsolete but could be
+    // restored from the 2.3 branch if ever needed again.
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT %1,%2 FROM %3 "
                            "JOIN %4 ON %5 = %6 "

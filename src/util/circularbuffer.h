@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdlib.h>
+#include <cstdlib>
+#include <vector>
 
 // CircularBuffer is a basic implementation of a constant-length circular
 // buffer.
@@ -14,17 +15,14 @@ class CircularBuffer {
   public:
     CircularBuffer(unsigned int iLength)
             : m_iLength(iLength),
-              m_pBuffer(new T[m_iLength]),
+              m_pBuffer(m_iLength),
               m_iWritePos(0),
               m_iReadPos(0) {
         // No need to clear the buffer because we consider it to be empty right
         // now.
     }
 
-    virtual ~CircularBuffer() {
-        delete [] m_pBuffer;
-        m_pBuffer = NULL;
-    }
+    virtual ~CircularBuffer() = default;
 
     // Returns true if the buffer is full
     inline bool isFull() const {
@@ -42,7 +40,7 @@ class CircularBuffer {
     }
 
     // Returns the total capacity of the CircularBuffer in units of T
-    inline unsigned int length() const {
+    constexpr unsigned int length() const {
         return m_iLength;
     }
 
@@ -50,7 +48,7 @@ class CircularBuffer {
     // items written, which could be less than numItems if the buffer becomes
     // full.
     unsigned int write(const T* pBuffer, const unsigned int numItems) {
-        if (m_pBuffer == NULL)
+        if (m_pBuffer.empty())
             return 0;
 
         unsigned int itemsWritten = 0;
@@ -64,7 +62,7 @@ class CircularBuffer {
     // Read itemsToRead into pBuffer. Returns the total number of items read,
     // which may be less than itemsToRead if the buffer becomes empty.
     unsigned int read(T* pBuffer, const unsigned int itemsToRead) {
-        if (m_pBuffer == NULL)
+        if (m_pBuffer.empty())
             return 0;
 
         unsigned int itemsRead = 0;
@@ -76,7 +74,7 @@ class CircularBuffer {
     }
 
     unsigned int skip(const unsigned int itemsToRead) {
-        if (m_pBuffer == NULL)
+        if (m_pBuffer.empty())
             return 0;
         unsigned int itemsRead = 0;
         while (!isEmpty() && itemsRead < itemsToRead) {
@@ -88,7 +86,7 @@ class CircularBuffer {
 
   private:
     const unsigned int m_iLength;
-    T* m_pBuffer;
+    std::vector<T> m_pBuffer;
     unsigned int m_iWritePos;
     unsigned int m_iReadPos;
 };

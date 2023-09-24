@@ -10,7 +10,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
     PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool keepDeletedTracks = false);
     ~PlaylistTableModel() final = default;
 
-    void setTableModel(int playlistId = -1);
+    void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
@@ -30,6 +30,8 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     Capabilities getCapabilities() const final;
 
+    QString modelKey(bool noSearch) const override;
+
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
 
@@ -38,4 +40,5 @@ class PlaylistTableModel final : public TrackSetTableModel {
 
     int m_iPlaylistId;
     bool m_keepDeletedTracks;
+    QHash<int, QString> m_searchTexts;
 };

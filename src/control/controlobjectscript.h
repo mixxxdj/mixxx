@@ -2,14 +2,18 @@
 
 #include <QVector>
 
+#include "control/controlcompressingproxy.h"
 #include "control/controlproxy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
+#include "util/runtimeloggingcategory.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
     Q_OBJECT
   public:
-    explicit ControlObjectScript(const ConfigKey& key, QObject* pParent = nullptr);
+    explicit ControlObjectScript(const ConfigKey& key,
+            const RuntimeLoggingCategory& logger,
+            QObject* pParent = nullptr);
 
     bool addScriptConnection(const ScriptConnection& conn);
 
@@ -32,9 +36,13 @@ class ControlObjectScript : public ControlProxy {
     void trigger(double, QObject*);
 
   protected slots:
-    // Receives the value from the master control by a unique queued connection
-    void slotValueChanged(double v, QObject*);
+    // Receives the value from the primary control by a unique queued connection
+    // This is specified virtual, to allow gmock to replace it in the test case
+    virtual void slotValueChanged(double v, QObject*);
 
   private:
     QVector<ScriptConnection> m_scriptConnections;
+    const RuntimeLoggingCategory m_logger;
+    CompressingProxy m_proxy;
+    bool m_skipSuperseded; // This flag is combined for all connections of this Control Object
 };

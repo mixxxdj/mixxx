@@ -28,7 +28,7 @@ const auto kResultOk = QStringLiteral("ok");
 const auto kResultCantCreateDirectory = QStringLiteral("Could not create folder");
 const auto kResultCantCreateFile = QStringLiteral("Could not create file");
 const auto kDefaultPattern = QStringLiteral(
-        "{{ track.basename }}{% if dup %}-{{dup}}{% endif %}"
+        "{{track.baseName}}{% if dup %}-{{dup|zeropad:\"4\"}}{% endif %}"
         ".{{track.extension}}");
 const auto kEmptyMsg = QLatin1String("");
 } // namespace
@@ -53,40 +53,37 @@ TrackExportWorker::~TrackExportWorker() {
 // Iterate over a list of tracks and generate a minimal set of files to copy.
 // Finds duplicate filenames.  Munges filenames if they refer to different files,
 // and skips if they refer to the same disk location.  Returns a map from
-// QString (the destination possibly-munged filenames) to QFileinfo (the source
+// QString (the destination possibly-munged filenames) to QFileInfo (the source
 // file information).
 // Tracks for which a empty filename was generated will be added to the skippedTracks
 // list.
-QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerList& tracks,
+QMap<QString, mixxx::FileInfo> TrackExportWorker::createCopylist(const TrackPointerList& tracks,
         TrackPointerList* skippedTracks) {
     // QMap is a non-obvious return value, but it's easy for callers to use
     // in practice and is the best object for producing the final list
     // efficiently.
-    QMap<QString, TrackFile> copylist;
+    QMap<QString, mixxx::FileInfo> copylist;
     int index = 0;
-    for (auto& it : tracks) {
+    for (const auto& pTrack : tracks) {
         index++;
-        if (!it.get()) {
+        if (!pTrack.get()) {
             qWarning() << "nullptr in tracklist";
             continue;
         }
-        if (it->getCanonicalLocation().isEmpty()) {
+        auto fileInfo = pTrack->getFileInfo();
+        if (fileInfo.resolveCanonicalLocation().isEmpty()) {
             qWarning()
                     << "File not found or inaccessible while exporting"
-                    << it->getFileInfo();
+                    << fileInfo;
             // Skip file
             continue;
         }
 
-        // When obtaining the canonical location the file info of the
-        // track might have been refreshed. Get it now.
-        const auto trackFile = it->getFileInfo();
-
-        const auto fileName = trackFile.fileName();
-        QString destFileName = generateFilename(it, index, 0);
+        const auto fileName = fileInfo.fileName();
+        QString destFileName = generateFilename(pTrack, index, 0);
         if (destFileName.isEmpty()) {
             //qWarning() << "pattern generated empty filename for:" << it;
-            skippedTracks->append(it);
+            skippedTracks->append(pTrack);
             continue;
         }
         int duplicateCounter = 0;
@@ -94,10 +91,10 @@ QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerLis
             const auto duplicateIter = copylist.find(destFileName);
             if (duplicateIter == copylist.end()) {
                 // Usual case -- haven't seen this filename before, so add it.
-                copylist[destFileName] = trackFile;
+                copylist[destFileName] = fileInfo;
                 break;
             }
-            if (trackFile.canonicalLocation() == duplicateIter->canonicalLocation()) {
+            if (fileInfo.canonicalLocation() == duplicateIter->canonicalLocation()) {
                 // Silently ignore and skip duplicate files that point
                 // to the same location on disk
                 break;
@@ -107,11 +104,11 @@ QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerLis
                         << "Failed to generate a unique file name from"
                         << fileName
                         << "while exporting"
-                        << trackFile.location();
+                        << fileInfo.location();
                 break;
             }
             // Next round
-            destFileName = generateFilename(it, index, duplicateCounter);
+            destFileName = generateFilename(pTrack, index, duplicateCounter);
         } while (!destFileName.isEmpty());
     }
     return copylist;
@@ -159,7 +156,7 @@ void TrackExportWorker::run() {
     m_overwriteMode = OverwriteMode::ASK;
     int i = 0;
     auto skippedTracks = TrackPointerList();
-    QMap<QString, TrackFile> copy_list = createCopylist(m_tracks, &skippedTracks);
+    QMap<QString, mixxx::FileInfo> copy_list = createCopylist(m_tracks, &skippedTracks);
     int jobsTotal = copy_list.size();
 
     if (!m_playlist.isEmpty()) {
@@ -180,8 +177,8 @@ void TrackExportWorker::run() {
         QString fileName = it->fileName();
         QString target = it.key();
         emit progress(fileName, target, i, jobsTotal);
-        copyFile((*it).asFileInfo(), target);
-        if (atomicLoadAcquire(m_bStop)) {
+        copyFile((*it), target);
+        if (m_bStop.loadAcquire()) {
             emit canceled();
             m_running = false;
             return;
@@ -264,9 +261,10 @@ QString TrackExportWorker::applyPattern(
     return newName.trimmed();
 }
 
-void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
-                                 const QString& dest_filename) {
-    QString sourceFilename = source_fileinfo.canonicalFilePath();
+void TrackExportWorker::copyFile(
+        const mixxx::FileInfo& source_fileinfo,
+        const QString& dest_filename) {
+    QString sourceFilename = source_fileinfo.canonicalLocation();
     const QString dest_path = QDir(m_destDir).filePath(dest_filename);
     QFileInfo dest_fileinfo(dest_path);
 
@@ -344,7 +342,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
 
     // We can be either canceled from the other thread, or as a return value
     // from this call.  First check for a call from the other thread.
-    if (atomicLoadAcquire(m_bStop)) {
+    if (m_bStop.loadAcquire()) {
         return OverwriteAnswer::CANCEL;
     }
 

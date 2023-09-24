@@ -6,6 +6,8 @@
 #include <QSvgRenderer>
 
 #include "control/controlobject.h"
+#include "library/library_prefs.h"
+#include "moc_dlgkeywheel.cpp"
 
 using namespace mixxx::track::io::key;
 
@@ -46,7 +48,7 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
 
     // load the user configured setting as default
     const int notation = static_cast<int>(ControlObject::get(
-            ConfigKey("[Library]", "key_notation")));
+            mixxx::library::prefs::kKeyNotationConfigKey));
     m_notation = static_cast<KeyUtils::KeyNotation>(notation);
     // Display the current or next valid notation
     switchNotation(0);
@@ -154,7 +156,12 @@ void DlgKeywheel::updateSvg() {
 
             if (text.isText()) {
                 QDomText textNode = text.toText();
-                ChromaticKey key = static_cast<ChromaticKey>(id.midRef(2).toInt());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                const int keyInt = QStringView(id).sliced(2).toInt();
+#else
+                const int keyInt = id.midRef(2).toInt();
+#endif
+                ChromaticKey key = static_cast<ChromaticKey>(keyInt);
                 QString keyString = KeyUtils::keyToString(key, m_notation);
                 textNode.setData(keyString);
             }

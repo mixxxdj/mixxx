@@ -26,58 +26,65 @@
 #include "widget/wlibrarysidebar.h"
 #endif
 
-namespace {
-
-const QStringList DEFAULT_COLUMNS = {
-        LIBRARYTABLE_ID,
-        LIBRARYTABLE_PLAYED,
-        LIBRARYTABLE_TIMESPLAYED,
-        LIBRARYTABLE_LAST_PLAYED_AT,
-        //has to be up here otherwise Played and TimesPlayed are not shown
-        LIBRARYTABLE_ALBUMARTIST,
-        LIBRARYTABLE_ALBUM,
-        LIBRARYTABLE_ARTIST,
-        LIBRARYTABLE_TITLE,
-        LIBRARYTABLE_YEAR,
-        LIBRARYTABLE_RATING,
-        LIBRARYTABLE_GENRE,
-        LIBRARYTABLE_COMPOSER,
-        LIBRARYTABLE_GROUPING,
-        LIBRARYTABLE_TRACKNUMBER,
-        LIBRARYTABLE_KEY,
-        LIBRARYTABLE_KEY_ID,
-        LIBRARYTABLE_BPM,
-        LIBRARYTABLE_BPM_LOCK,
-        LIBRARYTABLE_DURATION,
-        LIBRARYTABLE_BITRATE,
-        LIBRARYTABLE_REPLAYGAIN,
-        LIBRARYTABLE_FILETYPE,
-        LIBRARYTABLE_DATETIMEADDED,
-        TRACKLOCATIONSTABLE_LOCATION,
-        TRACKLOCATIONSTABLE_FSDELETED,
-        LIBRARYTABLE_COMMENT,
-        LIBRARYTABLE_MIXXXDELETED,
-        LIBRARYTABLE_COLOR,
-        LIBRARYTABLE_COVERART_SOURCE,
-        LIBRARYTABLE_COVERART_TYPE,
-        LIBRARYTABLE_COVERART_LOCATION,
-        LIBRARYTABLE_COVERART_COLOR,
-        LIBRARYTABLE_COVERART_DIGEST,
-        LIBRARYTABLE_COVERART_HASH};
-
-} // namespace
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
-                                         UserSettingsPointer pConfig)
-        : LibraryFeature(pLibrary, pConfig),
+        UserSettingsPointer pConfig)
+        : LibraryFeature(pLibrary, pConfig, QStringLiteral("tracks")),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
-          m_icon(":/images/library/ic_library_tracks.svg"),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_pLibraryTableModel(nullptr),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
-    QStringList columns = DEFAULT_COLUMNS;
+    QString idColumn = LIBRARYTABLE_ID;
+    QStringList columns = {
+            LIBRARYTABLE_ID,
+            LIBRARYTABLE_PLAYED,
+            LIBRARYTABLE_TIMESPLAYED,
+            LIBRARYTABLE_LAST_PLAYED_AT,
+            // has to be up here otherwise Played and TimesPlayed are not shown
+            LIBRARYTABLE_ALBUMARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_YEAR,
+            LIBRARYTABLE_RATING,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_COMPOSER,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_TRACKNUMBER,
+            LIBRARYTABLE_KEY,
+            LIBRARYTABLE_KEY_ID,
+            LIBRARYTABLE_BPM,
+            LIBRARYTABLE_BPM_LOCK,
+            LIBRARYTABLE_DURATION,
+            LIBRARYTABLE_BITRATE,
+            LIBRARYTABLE_REPLAYGAIN,
+            LIBRARYTABLE_FILETYPE,
+            LIBRARYTABLE_DATETIMEADDED,
+            TRACKLOCATIONSTABLE_LOCATION,
+            TRACKLOCATIONSTABLE_FSDELETED,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_MIXXXDELETED,
+            LIBRARYTABLE_COLOR,
+            LIBRARYTABLE_COVERART_SOURCE,
+            LIBRARYTABLE_COVERART_TYPE,
+            LIBRARYTABLE_COVERART_LOCATION,
+            LIBRARYTABLE_COVERART_COLOR,
+            LIBRARYTABLE_COVERART_DIGEST,
+            LIBRARYTABLE_COVERART_HASH};
+    QStringList searchColumns = {
+            LIBRARYTABLE_ARTIST,
+            LIBRARYTABLE_ALBUM,
+            LIBRARYTABLE_ALBUMARTIST,
+            TRACKLOCATIONSTABLE_LOCATION,
+            LIBRARYTABLE_GROUPING,
+            LIBRARYTABLE_COMMENT,
+            LIBRARYTABLE_TITLE,
+            LIBRARYTABLE_GENRE,
+            LIBRARYTABLE_CRATE};
+
     QStringList qualifiedTableColumns;
     for (const auto& col : columns) {
         qualifiedTableColumns.append(mixxx::trackschema::tableForColumn(col) +
@@ -96,19 +103,25 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
         LOG_FAILED_QUERY(query);
     }
 
-    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-            m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+    BaseTrackCache* pBaseTrackCache = new BaseTrackCache(m_pTrackCollection,
+            std::move(tableName),
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            true);
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->connectTrackSource(m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pLibrary->trackCollections(), "mixxx.db.model.library");
+    m_pLibraryTableModel = new LibraryTableModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.library");
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     pRootItem->appendChild(kMissingTitle);
     pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(std::move(pRootItem));
+    m_pSidebarModel->setRootItem(std::move(pRootItem));
 
 #ifdef __ENGINEPRIME__
     m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
@@ -142,12 +155,8 @@ QVariant MixxxLibraryFeature::title() {
     return tr("Tracks");
 }
 
-QIcon MixxxLibraryFeature::getIcon() {
-    return m_icon;
-}
-
-TreeItemModel* MixxxLibraryFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* MixxxLibraryFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
@@ -178,12 +187,15 @@ void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 #endif
 
 void MixxxLibraryFeature::activate() {
+    //qDebug() << "MixxxLibraryFeature::activate()";
+    emit saveModelState();
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
+    emit saveModelState();
     emit switchToView(itemName);
     if (m_pMissingView && itemName == kMissingTitle) {
         emit restoreSearch(m_pMissingView->currentSearch());
@@ -197,7 +209,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     if (pSource) {
         return false;
     } else {
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+        QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                 urls, true);
         return trackIds.size() > 0;
     }

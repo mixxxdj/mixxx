@@ -8,6 +8,7 @@
 #include <QFileInfo>
 #include <QUrl>
 #include <QtDebug>
+#include <type_traits>
 
 #include "util/assert.h"
 
@@ -26,7 +27,7 @@ namespace mixxx {
 /// All single-argument are declared as explicit to prevent implicit conversions.
 ///
 /// Implementation note: Inheriting from QFileInfo would violate the
-/// Liskov Substition Principle. It is also invalid, because QFileInfo
+/// Liskov Substution Principle. It is also invalid, because QFileInfo
 /// has a non-virtual destructor and we cannot override non-virtual
 /// member functions.
 class FileInfo final {
@@ -99,7 +100,7 @@ class FileInfo final {
     }
 
     /// Check that the given QFileInfo is context-insensitive to avoid
-    /// implicitly acccessing any transient working directory when
+    /// implicitly accessing any transient working directory when
     /// resolving relative paths. We need to exclude these unintended
     /// side-effects!
     static bool hasLocation(const QFileInfo& fileInfo) {
@@ -203,6 +204,9 @@ class FileInfo final {
     QString baseName() const {
         return m_fileInfo.baseName();
     }
+    QString completeBaseName() const {
+        return m_fileInfo.completeBaseName();
+    }
 
     QDateTime birthTime() const {
         return m_fileInfo.birthTime();
@@ -250,6 +254,15 @@ class FileInfo final {
     /// has been chosen deliberately.
     qint64 sizeInBytes() const {
         return m_fileInfo.size();
+    }
+
+    // This can be used to assert that the object is thread-safe copyable like QFileInfo
+    static constexpr bool isQFileInfo() {
+        // This only works because Qt's implicit sharing allows copies to be
+        // threadsafe and this class only consists of a single QFileInfo member.
+        // Additional member variables will violate this assumption
+        return (sizeof(QFileInfo) == sizeof(mixxx::FileInfo) &&
+                std::is_same_v<decltype(m_fileInfo), QFileInfo>);
     }
 
     friend bool operator==(const FileInfo& lhs, const FileInfo& rhs) {

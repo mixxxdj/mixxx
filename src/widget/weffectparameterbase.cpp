@@ -31,10 +31,10 @@ void WEffectParameterBase::parameterUpdated() {
             setText(m_pEffectParameterSlot->name());
         }
         setBaseTooltip(QString("%1\n%2").arg(
-                       m_pEffectParameterSlot->name(),
-                       m_pEffectParameterSlot->description()));
+                m_pEffectParameterSlot->name(),
+                m_pEffectParameterSlot->description()));
     } else {
         setText(EffectsManager::kNoEffectString);
-        setBaseTooltip(tr("No effect loaded."));
+        setBaseTooltip(kNoEffectString);
     }
 }

@@ -11,7 +11,6 @@
 #include "engine/controls/enginecontrol.h"
 #include "engine/positionscratchcontroller.h"
 #include "moc_ratecontrol.cpp"
-#include "util/math.h"
 #include "util/rotary.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -58,7 +57,7 @@ RateControl::RateControl(const QString& group,
             this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
-    // Allow rate slider to go out of bounds so that master sync rate
+    // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(
             ConfigKey(group, "rate"), -1.0, 1.0, true);
@@ -105,24 +104,28 @@ RateControl::RateControl(const QString& group,
     connect(m_pButtonRatePermDown, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDown,
             Qt::DirectConnection);
+    m_pButtonRatePermDown->setKbdRepeatable(true);
 
     m_pButtonRatePermDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
     connect(m_pButtonRatePermDownSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermDownSmall,
             Qt::DirectConnection);
+    m_pButtonRatePermDownSmall->setKbdRepeatable(true);
 
     m_pButtonRatePermUp =
         new ControlPushButton(ConfigKey(group,"rate_perm_up"));
     connect(m_pButtonRatePermUp, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUp,
             Qt::DirectConnection);
+    m_pButtonRatePermUp->setKbdRepeatable(true);
 
     m_pButtonRatePermUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
     connect(m_pButtonRatePermUpSmall, &ControlObject::valueChanged,
             this, &RateControl::slotControlRatePermUpSmall,
             Qt::DirectConnection);
+    m_pButtonRatePermUpSmall->setKbdRepeatable(true);
 
     // Temporary rate-change buttons
     m_pButtonRateTempDown =
@@ -136,7 +139,8 @@ RateControl::RateControl(const QString& group,
 
     // We need the sample rate so we can guesstimate something close
     // what latency is.
-    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pSampleRate = ControlObject::getControl(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
 
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
@@ -365,7 +369,7 @@ double RateControl::getWheelFactor() const {
 
 double RateControl::getJogFactor() const {
     // FIXME: Sensitivity should be configurable separately?
-    const double jogSensitivity = 0.1;  // Nudges during playback
+    constexpr double jogSensitivity = 0.1; // Nudges during playback
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.
@@ -376,7 +380,7 @@ double RateControl::getJogFactor() const {
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
 
-    if (isnan(jogValue) || isnan(jogFactor)) {
+    if (util_isnan(jogValue) || util_isnan(jogFactor)) {
         jogFactor = 0.0;
     }
 
@@ -423,7 +427,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2
-            if (isnan(scratchFactor)) {
+            if (util_isnan(scratchFactor)) {
                 scratchFactor = 0.0;
             }
             if (paused) {
@@ -454,7 +458,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
 
-        double currentSample = getSampleOfTrack().current;
+        double currentSample = frameInfo().currentPosition.toEngineSamplePos();
         m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
 
         // If waveform scratch is enabled, override all other controls
@@ -462,11 +466,11 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             rate = m_pScratchController->getRate();
             *pReportScratching = true;
         } else {
-            // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-            if (isFollower(getSyncMode()) && !paused &&
+            // If sync lock is on, respond to it -- but vinyl and scratch mode always override.
+            if (toSynchronized(getSyncMode()) && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
                 if (m_pBpmControl == nullptr) {
-                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                    qDebug() << "ERROR: calculateRate m_pBpmControl is null during sync lock";
                     return 1.0;
                 }
 
@@ -536,26 +540,24 @@ void RateControl::processTempRate(const int bufferSamples) {
                 }
             }
         } else if (m_eRateRampMode == RampMode::Linear) {
-            if (rampDirection != RampDirection::None) {
-                if (!m_bTempStarted) {
-                    m_bTempStarted = true;
-                    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-                    m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
-                }
+            if (!m_bTempStarted) {
+                m_bTempStarted = true;
+                double latrate = bufferSamples / m_pSampleRate->get();
+                m_dRateTempRampChange = latrate / (m_iRateRampSensitivity / 100.0);
+            }
 
-                switch (rampDirection) {
-                case RampDirection::Up:
-                case RampDirection::UpSmall:
-                    addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::Down:
-                case RampDirection::DownSmall:
-                    subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-                    break;
-                case RampDirection::None:
-                default:
-                    DEBUG_ASSERT(false);
-                }
+            switch (rampDirection) {
+            case RampDirection::Up:
+            case RampDirection::UpSmall:
+                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::Down:
+            case RampDirection::DownSmall:
+                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                break;
+            case RampDirection::None:
+            default:
+                DEBUG_ASSERT(false);
             }
         }
     } else if (m_bTempStarted) {
@@ -575,7 +577,7 @@ void RateControl::setRateTemp(double v) {
         m_tempRateRatio = -1.0;
     } else if (m_tempRateRatio > 1.0) {
         m_tempRateRatio = 1.0;
-    } else if (isnan(m_tempRateRatio)) {
+    } else if (util_isnan(m_tempRateRatio)) {
         m_tempRateRatio = 0;
     }
 }
@@ -593,11 +595,6 @@ void RateControl::subRateTemp(double v)
 void RateControl::resetRateTemp(void)
 {
     setRateTemp(0.0);
-}
-
-void RateControl::notifySeek(double playPos) {
-    m_pScratchController->notifySeek(playPos);
-    EngineControl::notifySeek(playPos);
 }
 
 bool RateControl::isReverseButtonPressed() {

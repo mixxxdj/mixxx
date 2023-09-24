@@ -2,7 +2,7 @@
 
 #include <QColor>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 

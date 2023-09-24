@@ -8,7 +8,6 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "controllers/controllerdebug.h"
 #include "controllers/softtakeover.h"
 #include "preferences/usersettings.h"
 #include "test/mixxxtest.h"
@@ -16,6 +15,8 @@
 #include "util/time.h"
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
+
+const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
 class ControllerScriptEngineLegacyTest : public MixxxTest {
   protected:
@@ -32,9 +33,8 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerScriptEngineLegacy(nullptr);
+        cEngine = new ControllerScriptEngineLegacy(nullptr, logger);
         cEngine->initialize();
-        ControllerDebug::setTesting(true);
     }
 
     void TearDown() override {
@@ -69,7 +69,8 @@ class ControllerScriptEngineLegacyTest : public MixxxTest {
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
-    QFileInfo commonScript("./res/controllers/common-controller-scripts.js");
+    QFileInfo commonScript(config()->getResourcePath() +
+            QStringLiteral("/controllers/common-controller-scripts.js"));
     EXPECT_TRUE(evaluateScriptFile(commonScript));
 }
 
@@ -80,29 +81,17 @@ TEST_F(ControllerScriptEngineLegacyTest, setValue) {
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidKey) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, setValue_InvalidControl) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Nothing]', 'nothing', 1.0);"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidControl) {
-    ControllerDebug::setEnabled(false);
-    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Nothing]', 'nothing');"));
-    ControllerDebug::setTesting(true);
-    ControllerDebug::setEnabled(true);
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, setValue_IgnoresNaN) {

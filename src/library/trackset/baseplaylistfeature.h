@@ -13,7 +13,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
 #include "library/trackset/playlistsummary.h"
-#include "track/track_decl.h"
+#include "track/trackid.h"
 
 class WLibrary;
 class KeyboardEventFilter;
@@ -22,8 +22,6 @@ class TrackCollectionManager;
 class TreeItem;
 class WLibrarySidebar;
 
-constexpr int kInvalidPlaylistId = -1;
-
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT
 
@@ -31,10 +29,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     BasePlaylistFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
-            const QString& rootViewName);
+            const QString& rootViewName,
+            const QString& iconName);
     ~BasePlaylistFeature() override = default;
 
-    TreeItemModel* getChildModel() override;
+    TreeItemModel* sidebarModel() const override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -56,12 +55,14 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
         slotPlaylistTableChanged(playlistId);
         selectPlaylistInSidebar(playlistId, false);
     };
+    virtual void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
-    virtual void slotPlaylistContentChanged(QSet<int> playlistIds) = 0;
     void slotCreatePlaylist();
+    void renameItem(const QModelIndex& index) override;
+    void deleteItem(const QModelIndex& index) override;
 
   protected slots:
-    void slotDeletePlaylist();
+    virtual void slotDeletePlaylist();
     void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
@@ -69,7 +70,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlist_file);
+    void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
@@ -77,10 +78,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotAnalyzePlaylist();
 
   protected:
-
-    virtual void updateChildModel(int selected_id);
+    virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
     virtual QString fetchPlaylistLabel(int playlistId) = 0;
+
+    /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
     virtual void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);
 
@@ -88,8 +90,10 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     // Get the QModelIndex of a playlist based on its id.  Returns QModelIndex()
     // on failure.
     QModelIndex indexFromPlaylistId(int playlistId);
+    bool isChildIndexSelectedInSidebar(const QModelIndex& index);
 
     PlaylistDAO& m_playlistDao;
+    QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
@@ -111,13 +115,14 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QSet<int> m_playlistIdsOfSelectedTrack;
 
   private slots:
-    void slotTrackSelected(TrackPointer pTrack);
+    void slotTrackSelected(TrackId trackId);
     void slotResetSelectedTrack();
 
   private:
     void initActions();
+    void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
 
-    TrackPointer m_pSelectedTrack;
+    TrackId m_selectedTrackId;
 };

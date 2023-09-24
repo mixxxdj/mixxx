@@ -70,7 +70,7 @@ var bendConst = 1/4; // Adjust to suit.
  * 2015-11-24 - Make some code reusable (lights : LED object; Special Buttons, iCUT)
  *            - pfl hidden bug fixed
  *            - removed line duplicate in JumpBtn : deck.controls.jump.onOff(true);
- *              (Mixxx bug was fixed : https://bugs.launchpad.net/mixxx/+bug/1504503)
+ *              (Mixxx bug was fixed : https://github.com/mixxxdj/mixxx/issues/8249)
  *            - More comment in code
  *            - Moved scratching constants with the global constants
  *            - Fixed Jog Bending and fast search
@@ -961,7 +961,7 @@ Jogger.prototype.onWheelMove = function(value, Do_iCut) {
 // The jogwheel has 4 RGB leds , so there is 4 slots for each show.
 // let's that we have toggle an Effect of the effect rack (show 1), the jog wheel
 // will illuminate magenta, yellow, cyan or green depending of the effect.
-// If above that we turn the lp/hp filter button to the right (High passs),
+// If above that we turn the lp/hp filter button to the right (High pass),
 // the right part will illuminate white (show 2), leaving the left part with the color of the effect.
 // The left part of (slots 1 and 2), set to "null", will be considered as being transparent for the layer show n°2,
 // leaving the corresponding slots below (show1) in order to be displayed.
@@ -1655,11 +1655,11 @@ ReloopBeatpad.init = function(id, debug) {
     ReloopBeatpad.initobjects();
 
     // Set soft-takeover for all Sampler volumes
-    for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_samplers"); i >= 1; i--) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "volume", true);
         engine.softTakeover("[Channel" + i + "]", "filterHigh", true);
         engine.softTakeover("[Channel" + i + "]", "filterMid", true);

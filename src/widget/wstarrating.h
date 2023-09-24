@@ -6,7 +6,7 @@
 
 #include "control/controlpushbutton.h"
 #include "library/starrating.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "widget/wwidget.h"
@@ -23,10 +23,12 @@ class WStarRating : public WWidget {
     QSize sizeHint() const override;
 
   public slots:
-    void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
+    void slotSetRating(int starCount);
+
+  signals:
+    void ratingChanged(int starCount);
 
   private slots:
-    void slotTrackChanged(TrackId);
     void slotStarsUp(double v);
     void slotStarsDown(double v);
 
@@ -37,15 +39,18 @@ class WStarRating : public WWidget {
     void leaveEvent(QEvent * /*unused*/) override;
     void fillDebugTooltip(QStringList* debug) override;
 
-    StarRating m_starRating;
-    const QString m_group;
-    TrackPointer m_pCurrentTrack;
-    bool m_focused;
+  private:
+    int m_starCount;
+
+    StarRating m_visualStarRating;
     mutable QRect m_contentRect;
 
-  private:
-    void updateRating();
-    int starAtPosition(int x);
+    int starAtPosition(int x) const;
+    void updateVisualRating(int starCount);
+    void resetVisualRating() {
+        updateVisualRating(m_starCount);
+    }
+
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 };

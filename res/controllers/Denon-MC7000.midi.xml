@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset mixxxVersion="2.3" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.3.1" schemaVersion="1">
     <info>
     	<name>Denon MC7000</name>
-    	<author>OsZ</author>
-    	<description>Denon MC7000 mapping. Check your Linux Kernel version to get the Audio Interface working - see WIKI</description>
+    	<author>OsZ, JL</author>
+    	<description>A professional 4-channel DJ controller featuring 2 separate audio interfaces. Please refer to the Mixxx user manual to get the audio interfaces working on Linux.</description>
     	<forums>https://mixxx.discourse.group/t/denon-mc7000-mapping/18235</forums>
     	<wiki>https://github.com/mixxxdj/mixxx/wiki/Denon-MC7000</wiki>
         <manual>denon_mc7000</manual>
@@ -860,6 +860,47 @@
                     <script-binding/>
                 </options>
             </control>
+    <!--  DECK BUTTONS  -->
+            <control>
+                <group>[Channel1]</group>
+                <key>MC7000.switchDeck</key>
+                <description>Switch to deck 1</description>
+                <status>0x90</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>MC7000.switchDeck</key>
+                <description>Switch to deck 2</description>
+                <status>0x91</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>MC7000.switchDeck</key>
+                <description>Switch to deck 3</description>
+                <status>0x92</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>MC7000.switchDeck</key>
+                <description>Switch to deck 4</description>
+                <status>0x93</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
     <!--  FX WET/DRY + SAMPLER + CROSS FADER CURVE  -->
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
@@ -939,7 +980,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel1]</group>
                 <key>MC7000.wheelTouch</key>
                 <description>MIDI Learned from 759 messages.</description>
@@ -1314,42 +1355,42 @@
 <!--  PLAY / CUE / SYNC  -->
 			<control>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch1</description>
                 <status>0x90</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch2</description>
                 <status>0x91</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch3</description>
                 <status>0x92</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>play</key>
+                <key>MC7000.play</key>
                 <description>Play Ch4</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1886,22 +1927,22 @@
 <!-- PARAMETER BUTTONS -->
 			<control>
                 <group>[Channel1]</group>
-                <key>stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x94</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1926,22 +1967,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x95</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1966,22 +2007,22 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2006,22 +2047,22 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_down</key>
+                <key>MC7000.StarsDown</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x28</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>stars_up</key>
+                <key>MC7000.StarsUp</key>
                 <description></description>
                 <status>0x97</status>
                 <midino>0x29</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2156,8 +2197,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Full screen Library</description>
                 <status>0x9F</status>
                 <midino>0x0F</midino>

@@ -2,6 +2,8 @@
 
 #include <QVariant>
 
+#include "library/searchqueryparser.h"
+#include "moc_proxytrackmodel.cpp"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
@@ -36,6 +38,13 @@ TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
     return m_pTrackModel ? m_pTrackModel->getTrackId(indexSource) : TrackId();
 }
 
+QUrl ProxyTrackModel::getTrackUrl(const QModelIndex& index) const {
+    if (!m_pTrackModel) {
+        return {};
+    }
+    return m_pTrackModel->getTrackUrl(mapToSource(index));
+}
+
 CoverInfo ProxyTrackModel::getCoverInfo(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel ? m_pTrackModel->getCoverInfo(indexSource) : CoverInfo();
@@ -67,6 +76,17 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     } else if (m_pTrackModel) {
         m_pTrackModel->search(searchText);
     }
+}
+
+QString ProxyTrackModel::modelKey(bool noSearch) const {
+    if (m_pTrackModel) {
+        if (m_bHandleSearches) {
+            return m_pTrackModel->modelKey(true) + QStringLiteral("#") + currentSearch();
+        } else {
+            return m_pTrackModel->modelKey(noSearch);
+        }
+    }
+    return QString();
 }
 
 const QString ProxyTrackModel::currentSearch() const {
@@ -112,6 +132,20 @@ TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
     return m_pTrackModel ? m_pTrackModel->getCapabilities() : Capability::None;
 }
 
+bool ProxyTrackModel::updateTrackGenre(
+        Track* pTrack,
+        const QString& genre) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackGenre(pTrack, genre) : false;
+}
+
+#if defined(__EXTRA_METADATA__)
+bool ProxyTrackModel::updateTrackMood(
+        Track* pTrack,
+        const QString& mood) const {
+    return m_pTrackModel ? m_pTrackModel->updateTrackMood(pTrack, mood) : false;
+}
+#endif // __EXTRA_METADATA__
+
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         const QModelIndex& sourceParent) const {
     if (!m_bHandleSearches) {
@@ -122,26 +156,41 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         return false;
     }
 
+    const QString currSearch = m_currentSearch.trimmed();
+    if (currSearch.isEmpty()) {
+        return true;
+    }
+
+    QStringList tokens = SearchQueryParser::splitQueryIntoWords(currSearch);
+    tokens.removeDuplicates();
+
     const QList<int>& filterColumns = m_pTrackModel->searchColumns();
     QAbstractItemModel* itemModel =
             dynamic_cast<QAbstractItemModel*>(m_pTrackModel);
-    bool rowMatches = false;
 
-    QRegExp filter = filterRegExp();
-    QListIterator<int> iter(filterColumns);
-
-    while (!rowMatches && iter.hasNext()) {
-        int i = iter.next();
-        QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
-        QVariant data = itemModel->data(index);
-        if (data.canConvert(QMetaType::QString)) {
-            QString strData = data.toString();
-            if (strData.contains(filter)) {
-                rowMatches = true;
+    for (const auto& token : std::as_const(tokens)) {
+        bool tokenMatch = false;
+        for (const auto column : std::as_const(filterColumns)) {
+            QModelIndex index = itemModel->index(sourceRow, column, sourceParent);
+            QString strData = itemModel->data(index).toString();
+            if (!strData.isEmpty()) {
+                QString tokNoQuotes = token;
+                tokNoQuotes.remove('\"');
+                if (strData.contains(tokNoQuotes, Qt::CaseInsensitive)) {
+                    tokenMatch = true;
+                    tokens.removeOne(token);
+                }
+            }
+            if (tokenMatch) {
+                break;
             }
         }
     }
-    return rowMatches;
+
+    if (tokens.length() > 0) {
+        return false;
+    }
+    return true;
 }
 
 QString ProxyTrackModel::getModelSetting(const QString& name) {

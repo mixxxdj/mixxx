@@ -211,9 +211,11 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
-        const QList<TrackFile>& trackFiles,
+        const QList<mixxx::FileInfo>& trackFiles,
         TrackDAO::ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(trackFiles, flags);
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
+            trackFiles,
+            flags);
     if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
         unhideTracks(trackIds);
     }
@@ -221,8 +223,9 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
-        const QList<QUrl>& urls, bool addMissing) {
-    QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+        const QList<QUrl>& urls,
+        bool addMissing) {
+    QList<mixxx::FileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
     if (files.isEmpty()) {
         return QList<TrackId>();
     }
@@ -237,14 +240,14 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
         const QList<QString>& locations) {
-    QList<TrackFile> trackFiles;
-    trackFiles.reserve(locations.size());
+    QList<mixxx::FileInfo> fileInfos;
+    fileInfos.reserve(locations.size());
     for (const QString& location : locations) {
-        trackFiles.append(TrackFile(location));
+        fileInfos.append(mixxx::FileInfo(location));
     }
-    return resolveTrackIds(trackFiles,
-            TrackDAO::ResolveTrackIdFlag::UnhideHidden
-                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
+    return resolveTrackIds(
+            fileInfos,
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden | TrackDAO::ResolveTrackIdFlag::AddMissing);
 }
 
 bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
@@ -529,10 +532,10 @@ bool TrackCollection::updateAutoDjCrate(
     return updateCrate(crate);
 }
 
-void TrackCollection::saveTrack(Track* pTrack) {
+bool TrackCollection::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    m_trackDao.saveTrack(pTrack);
+    return m_trackDao.saveTrack(pTrack);
 }
 
 TrackPointer TrackCollection::getTrackById(

@@ -5,7 +5,7 @@
 #include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WComboBox : public QComboBox, public WBaseWidget {
     Q_OBJECT

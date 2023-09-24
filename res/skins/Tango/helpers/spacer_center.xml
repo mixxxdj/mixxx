@@ -1,0 +1,42 @@
+<!--
+Description:
+  Spacer in between decks 3/4 and elsewhere.
+  Size depends on i.e. if the channel mixer is shown.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup><!-- with mixer and Main VU -->
+        <Layout>vertical</Layout>
+        <Size>16f,0f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- without mixer, levels meters always visible -->
+        <Layout>vertical</Layout>
+        <SizePolicy>min,f</SizePolicy>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>16f,0f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

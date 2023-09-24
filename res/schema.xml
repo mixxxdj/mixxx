@@ -80,6 +80,8 @@ reapplying those migrations.
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         track_id INTEGER NOT NULL REFERENCES library(id),
         type INTEGER DEFAULT 0 NOT NULL,
+        <!-- Positions and lengths are actually stored as SQLite REAL (double) frame values.
+        This allows for bpm-accurate sub-sample accuracy positions and lengths. -->
         position INTEGER DEFAULT -1 NOT NULL,
         length INTEGER DEFAULT 0 NOT NULL,
         hotcue INTEGER DEFAULT -1 NOT NULL,
@@ -444,7 +446,7 @@ reapplying those migrations.
       Reset replay gain info for all FLAC files after fixing a decoding bug in version 2.1.0.
       <!-- The value of 'replaygain_peak' is not yet calculated by any Mixxx analyzer, -->
       <!-- so we should leave it untouched and don't need to reset it here!            -->
-      <!-- See also: https://bugs.launchpad.net/mixxx/+bug/1766042                     -->
+      <!-- See also: https://github.com/mixxxdj/mixxx/issues/9255                     -->
     </description>
     <sql>
       <!-- Reset replay gain to default value -->
@@ -455,7 +457,7 @@ reapplying those migrations.
     <description>
       This was used in the development of 2.3 to track whether cues were placed
       manually or automatically. However, this turned out to be unnecessary.
-      This version is left as a placeholder so users who were using the master
+      This version is left as a placeholder so users who were using the main
       branch will have their database updated correctly for the subsequent
       schema change.
     </description>
@@ -555,6 +557,31 @@ reapplying those migrations.
           WHERE PlaylistTracks.track_id=library.id
           AND Playlists.hidden=2
           GROUP BY PlaylistTracks.track_id);
+    </sql>
+  </revision>
+  <revision version="37" min_compatible="3">
+    <description>
+      Add source_synchronized_ms column to library table
+    </description>
+    <!-- source_synchronized_ms: in milliseconds since 1970-01-01T00:00:00.000 UTC -->
+    <sql>
+      ALTER TABLE library ADD COLUMN source_synchronized_ms INTEGER DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="38" min_compatible="3">
+    <description>
+      Fix 0/NULL issue after upgrade to schema version 37.
+    </description>
+    <sql>
+      UPDATE library SET source_synchronized_ms=NULL WHERE source_synchronized_ms=0;
+    </sql>
+  </revision>
+  <revision version="39" min_compatible="3">
+    <description>
+      Replace file type "aif" with "aiff".
+    </description>
+    <sql>
+      UPDATE library SET filetype='aiff' WHERE filetype='aif';
     </sql>
   </revision>
 </schema>

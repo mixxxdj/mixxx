@@ -16,8 +16,9 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_dlglibraryexport.cpp"
 
-namespace el = djinterop::enginelibrary;
+namespace e = djinterop::engine;
 
 namespace mixxx {
 
@@ -192,19 +193,19 @@ void DlgLibraryExport::exportRequested() {
 
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
     const auto musicDirectory = baseExportDirectory.filePath(kDefaultMixxxExportDirName);
 
     // Work out what version was requested.
     // If there is an existing database, the version does not matter.
     int versionIndex = m_pVersionCombo->currentData().toInt();
-    djinterop::semantic_version exportVersion =
-            versionIndex == -1 ? el::version_latest_firmware : el::all_versions[versionIndex];
+    e::engine_version exportVersion =
+            versionIndex == -1 ? e::latest_os : e::all_versions[versionIndex];
 
     // Construct a request to export the library/crates.
     auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
-    pRequest->engineLibraryDbDir = QDir{databaseDirectory};
-    pRequest->musicFilesDir = QDir{musicDirectory};
+    pRequest->engineLibraryDbDir.setPath(databaseDirectory);
+    pRequest->musicFilesDir.setPath(musicDirectory);
     pRequest->exportVersion = exportVersion;
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
@@ -221,58 +222,45 @@ void DlgLibraryExport::exportRequested() {
 void DlgLibraryExport::checkExistingDatabase() {
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
     const auto databaseDirectory = baseExportDirectory.filePath(
-            el::default_database_dir_name);
+            e::default_database_dir_name);
 
     try {
         // See if an EL DB exists in the chosen dir already.
-        bool exists = el::database_exists(databaseDirectory.toStdString());
+        bool exists = e::database_exists(databaseDirectory.toStdString());
         if (!exists) {
             // The user can freely choose a schema version for their new database.
             m_pExistingDatabaseLabel->setText("");
             m_pVersionCombo->clear();
             m_pVersionCombo->setEnabled(true);
-            int versionIndex = 0;
-            for (const djinterop::semantic_version& version : el::all_versions) {
+            for (int versionIndex = 0;
+                    versionIndex < static_cast<int>(e::all_versions.size());
+                    ++versionIndex) {
+                e::engine_version version = e::all_versions[versionIndex];
                 m_pVersionCombo->insertItem(0,
-                        QString::fromStdString(el::version_name(version)),
+                        QString::fromStdString(version.name),
                         QVariant{versionIndex});
-                if (version == el::version_latest_firmware) {
+                if (version == e::latest_os) {
                     // Latest firmware version is the default selection.
                     m_pVersionCombo->setCurrentIndex(0);
                 }
-
-                ++versionIndex;
             }
             return;
         }
 
-        // Find out version of the existing database, and set the displayed
-        // version widget accordingly.  Changing the schema version of existing
-        // databases is not currently supported.
-        djinterop::database db = el::load_database(databaseDirectory.toStdString());
-        const auto version = db.version();
-
-        const auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
-        if (result == el::all_versions.end()) {
-            // Unknown database version.
-            m_pExistingDatabaseLabel->setText(
-                    tr("A database already exists in the chosen directory, "
-                       "but it is of an unsupported version. Export is not "
-                       "guaranteed to succeed in this situation."));
-            m_pVersionCombo->clear();
-            m_pVersionCombo->setEnabled(false);
-        } else {
-            int versionIndex = std::distance(el::all_versions.begin(), result);
-            m_pExistingDatabaseLabel->setText(
-                    tr("A database already exists in the chosen directory. "
-                       "Exported tracks will be added into this database."));
-            m_pVersionCombo->clear();
-            m_pVersionCombo->insertItem(
-                    0, QString::fromStdString(el::version_name(version)), QVariant{versionIndex});
-            m_pVersionCombo->setEnabled(false);
-        }
+        // Load the existing database, and set the displayed version widget
+        // accordingly.  Changing the schema version of existing databases is
+        // not currently supported.
+        djinterop::database db = e::load_database(databaseDirectory.toStdString());
+        m_pExistingDatabaseLabel->setText(
+                tr("A database already exists in the chosen directory. "
+                   "Exported tracks will be added into this database."));
+        m_pVersionCombo->clear();
+        m_pVersionCombo->insertItem(
+                0, QString::fromStdString(db.version_name()), QVariant{-1});
+        m_pVersionCombo->setEnabled(false);
 
     } catch (std::exception& e) {
+        Q_UNUSED(e);
         m_pExistingDatabaseLabel->setText(
                 tr("A database already exists in the chosen directory, "
                    "but there was a problem loading it. Export is not "

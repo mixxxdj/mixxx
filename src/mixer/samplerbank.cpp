@@ -2,6 +2,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStandardPaths>
 
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
@@ -9,9 +10,22 @@
 #include "moc_samplerbank.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/file.h"
 
-SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
+namespace {
+
+const ConfigKey kConfigkeyLastImportExportDirectory(
+        "[Samplers]", "last_import_export_directory");
+// This is used in multiple tr() calls below which accepts const char* as a key.
+// lupdate finds the single string here.
+const char kSamplerFileType[] = QT_TRANSLATE_NOOP("SamplerBank", "Mixxx Sampler Banks (*.xml)");
+
+} // anonymous namespace
+
+SamplerBank::SamplerBank(UserSettingsPointer pConfig,
+        PlayerManager* pPlayerManager)
         : QObject(pPlayerManager),
+          m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager) {
     DEBUG_ASSERT(m_pPlayerManager);
 
@@ -27,7 +41,9 @@ SamplerBank::SamplerBank(PlayerManager* pPlayerManager)
             this,
             &SamplerBank::slotSaveSamplerBank);
 
-    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
+    m_pCONumSamplers = new ControlProxy(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_samplers")),
+            this);
 }
 
 SamplerBank::~SamplerBank() {
@@ -38,23 +54,30 @@ void SamplerBank::slotSaveSamplerBank(double v) {
         return;
     }
 
-    const QString xmlSuffix = QStringLiteral(".xml");
-    QString fileFilter = tr("Mixxx Sampler Banks (*%1)").arg(xmlSuffix);
-    QString samplerBankPath = QFileDialog::getSaveFileName(nullptr,
+    QString lastImportExportDirectory = m_pConfig->getValue(
+            kConfigkeyLastImportExportDirectory,
+            // When Mixxx exits samplers are auto-exported to the config directory.
+            // Let's choose a different location to avoid confusion.
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+
+    // Open a dialog to let the user choose the file location for crate export.
+    // The location is set to the last used directory for import/export and the file
+    // name to the playlist name.
+    const QString samplerBankPath = getFilePathWithVerifiedExtensionFromFileDialog(
             tr("Save Sampler Bank"),
-            QString(),
-            fileFilter,
-            &fileFilter);
-    if (samplerBankPath.isNull() || samplerBankPath.isEmpty()) {
+            lastImportExportDirectory.append("/").append("samplers").append(".xml"),
+            tr(kSamplerFileType),
+            tr(kSamplerFileType));
+    // Exit method if user cancelled the open dialog.
+    if (samplerBankPath.isEmpty()) {
         return;
     }
 
-    // Manually add extension due to bug in QFileDialog
-    // via https://bugreports.qt-project.org/browse/QTBUG-27186
-    QFileInfo fileName(samplerBankPath);
-    if (fileName.suffix().isEmpty() || !fileName.suffix().endsWith(xmlSuffix)) {
-        samplerBankPath.append(xmlSuffix);
-    }
+    // Update the import/export directory
+    QString fileDirectory(samplerBankPath);
+    fileDirectory.truncate(samplerBankPath.lastIndexOf("/"));
+    m_pConfig->set(kConfigkeyLastImportExportDirectory,
+            ConfigValue(fileDirectory));
 
     if (!saveSamplerBankToPath(samplerBankPath)) {
         QMessageBox::warning(nullptr,
@@ -117,13 +140,25 @@ void SamplerBank::slotLoadSamplerBank(double v) {
         return;
     }
 
+    QString lastImportExportDirectory = m_pConfig->getValue(
+            kConfigkeyLastImportExportDirectory,
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+
+    QString fileFilter(tr(kSamplerFileType));
     QString samplerBankPath = QFileDialog::getOpenFileName(nullptr,
             tr("Load Sampler Bank"),
-            QString(),
-            tr("Mixxx Sampler Banks (*.xml)"));
+            lastImportExportDirectory,
+            fileFilter,
+            &fileFilter);
     if (samplerBankPath.isEmpty()) {
         return;
     }
+
+    // Update the import/export directory
+    QString fileDirectory(samplerBankPath);
+    fileDirectory.truncate(samplerBankPath.lastIndexOf("/"));
+    m_pConfig->set(kConfigkeyLastImportExportDirectory,
+            ConfigValue(fileDirectory));
 
     if (!loadSamplerBankFromPath(samplerBankPath)) {
         QMessageBox::warning(nullptr,
@@ -181,9 +216,9 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                     }
 
                     if (location.isEmpty()) {
-                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group);
+                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
                     } else {
-                        m_pPlayerManager->slotLoadToPlayer(location, group);
+                        m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }
                 }
 

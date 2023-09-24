@@ -3,7 +3,7 @@
 // This was copied from the gcc header pmmintrin.h which requires SSE3
 // According to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=21408
 // the DAZ bit is also available on SSE2
-// There is probably a crasher risk for "Initial steppings of Pentium® 4
+// There is probably a crash risk for "Initial steppings of Pentium® 4
 // processors" which did not support DAZ
 // But we take the risk, since if it crashes, it will crash immediately after
 // start. Effected users can switch to a legacy i386 build.

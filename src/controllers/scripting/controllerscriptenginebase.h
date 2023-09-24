@@ -8,6 +8,7 @@
 
 #include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
+#include "util/runtimeloggingcategory.h"
 
 class Controller;
 class EvaluationException;
@@ -18,17 +19,22 @@ class EvaluationException;
 class ControllerScriptEngineBase : public QObject {
     Q_OBJECT
   public:
-    explicit ControllerScriptEngineBase(Controller* controller);
+    explicit ControllerScriptEngineBase(
+            Controller* controller, const RuntimeLoggingCategory& logger);
     virtual ~ControllerScriptEngineBase() override = default;
 
     virtual bool initialize();
 
-    bool executeFunction(QJSValue functionObject, const QJSValueList& arguments);
+    bool executeFunction(QJSValue* pFunctionObject, const QJSValueList& arguments = {});
 
     /// Shows a UI dialog notifying of a script evaluation error.
     /// Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
     void throwJSError(const QString& message);
+
+    bool willAbortOnWarning() const {
+        return m_bAbortOnWarning;
+    }
 
     inline void setTesting(bool testing) {
         m_bTesting = testing;
@@ -42,11 +48,15 @@ class ControllerScriptEngineBase : public QObject {
     virtual void shutdown();
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
+    void logOrThrowError(const QString& errorMessage);
 
     bool m_bDisplayingExceptionDialog;
     std::shared_ptr<QJSEngine> m_pJSEngine;
 
     Controller* m_pController;
+    const RuntimeLoggingCategory m_logger;
+
+    bool m_bAbortOnWarning;
 
     bool m_bTesting;
 

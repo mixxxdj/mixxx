@@ -13,11 +13,11 @@ namespace mixxx {
 // Class for reading tracker files using libmodplug.
 // The whole file is decoded at once and saved
 // in RAM to allow seeking and smooth operation in Mixxx.
-class SoundSourceModPlug : public SoundSource {
+class SoundSourceModPlug final : public SoundSource {
   public:
-    static constexpr SINT kChannelCount = 2;
-    static constexpr SINT kSampleRate = 44100;
-    static constexpr SINT kBitsPerSample = 16;
+    static constexpr auto kChannelCount = mixxx::audio::ChannelCount::stereo();
+    static constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
+    static constexpr int kBitsPerSample = 16;
 
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
@@ -28,7 +28,8 @@ class SoundSourceModPlug : public SoundSource {
 
     std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const override;
+            QImage* pCoverArt,
+            bool resetMissingTagMetadata) const override;
 
     void close() override;
 
@@ -58,7 +59,7 @@ class SoundSourceProviderModPlug : public SoundSourceProvider {
         return kDisplayName;
     }
 
-    QStringList getSupportedFileExtensions() const override;
+    QStringList getSupportedFileTypes() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceModPlug>(url);

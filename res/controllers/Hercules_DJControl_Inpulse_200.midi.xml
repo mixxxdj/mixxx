@@ -237,8 +237,8 @@
             <!-- NN's MIDI Channel 4 (0x93 - SHIFT MODE)-->
             <!--Browser section (Encoder button)-->
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Browser button - Maximize Library view</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
@@ -283,7 +283,7 @@
             <!--Sync-->
             <control>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>sync_leader</key>
                 <description>SHIFT + Sync: Sync Master</description>
                 <status>0x94</status>
                 <midino>0x05</midino>
@@ -349,7 +349,7 @@
             <!--Sync-->
             <control>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>sync_leader</key>
                 <description>SHIFT + Sync: Sync Master</description>
                 <status>0x95</status>
                 <midino>0x05</midino>
@@ -1181,7 +1181,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>sync_leader</key>
                 <description>SYNC LED Deck A(SHIFT mode)</description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1225,7 +1225,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>sync_leader</key>
                 <description>SYNC LED Deck B(SHIFT mode)</description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1293,8 +1293,8 @@
                 <off>0x07</off>
             </output>
             <output>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>Browser LED (GREEN)</description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1303,7 +1303,7 @@
                 <on>0x07</on>
                 <off>0x05</off>
             </output>
-            <!-- LED Assitant button-->
+            <!-- LED Assistant button-->
             <output>
                 <group>[AutoDJ]</group>
                 <key>enabled</key>

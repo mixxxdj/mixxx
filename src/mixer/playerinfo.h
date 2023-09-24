@@ -27,8 +27,7 @@ class PlayerInfo : public QObject {
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
-    void trackLoaded(const QString& group, TrackPointer pTrack);
-    void trackUnloaded(const QString& group, TrackPointer pTrack);
+    void trackChanged(const QString& group, TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   private:
     class DeckControls {

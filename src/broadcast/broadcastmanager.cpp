@@ -1,15 +1,9 @@
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
-#include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
-
 #include "broadcast/broadcastmanager.h"
+
+#include <shoutidjc/shout.h>
+
 #include "broadcast/defs_broadcast.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "moc_broadcastmanager.cpp"
@@ -92,8 +86,7 @@ void BroadcastManager::slotControlEnabled(double v) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        m_pBroadcastEnabled->set(0.0);
-        emit broadcastEnabled(false);
+        v = 0.0;
     }
 
     if (v > 0.0) {
@@ -116,6 +109,7 @@ void BroadcastManager::slotControlEnabled(double v) {
 
         slotProfilesChanged();
     } else {
+        m_pBroadcastEnabled->set(false);
         m_pStatusCO->forceSet(STATUSCO_UNCONNECTED);
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
         for(BroadcastProfilePtr profile : profiles) {

@@ -29,10 +29,10 @@ LibLoader::LibLoader()
           m_neAACDecGetVersion(nullptr) {
     // Load shared library
     QStringList libnames;
-#ifdef __WINDOWS__
+#if defined(__WINDOWS__)
     // http://www.rarewares.org/aac-decoders.php
     libnames << "libfaad2.dll";
-#elif __APPLE__
+#elif defined(__APPLE__)
     // First try default location
     libnames << "libfaad2.dylib";
     // Using Homebrew ('brew install faad2' command):

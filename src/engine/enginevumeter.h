@@ -1,9 +1,9 @@
 #pragma once
 
+#include "control/pollingcontrolproxy.h"
 #include "engine/engineobject.h"
 
 class ControlPotmeter;
-class ControlProxy;
 
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
@@ -25,7 +25,7 @@ class EngineVuMeter : public EngineObject {
     CSAMPLE m_fRMSvolumeSumL;
     CSAMPLE m_fRMSvolumeR;
     CSAMPLE m_fRMSvolumeSumR;
-    int m_iSamplesCalculated;
+    unsigned int m_samplesCalculated;
 
     ControlPotmeter* m_ctrlPeakIndicator;
     ControlPotmeter* m_ctrlPeakIndicatorL;
@@ -33,5 +33,5 @@ class EngineVuMeter : public EngineObject {
     int m_peakDurationL;
     int m_peakDurationR;
 
-    ControlProxy* m_pSampleRate;
+    PollingControlProxy m_sampleRate;
 };

@@ -385,7 +385,7 @@ Hercules4Mx.shutdown = function() {
 //Set all leds to off
 Hercules4Mx.allLedsOff = function() {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.allLedsOff: switching leds off");
+        console.log("Hercules4Mx.allLedsOff: switching leds off");
     }
     // Switch off all LEDs
     // +0x20 -> the other deck
@@ -433,7 +433,7 @@ Hercules4Mx.allLedsOff = function() {
 
 // The jog wheel sensitivity setting has changed. This is reported in two scenarios:
 // when the setting is changed in the tray icon, and when the crossfader curve is changed to beatmix.
-Hercules4Mx.sensitivityChanged = function(value, group, control, status, group) {
+Hercules4Mx.sensitivityChanged = function(value, group, control, status) {
     Hercules4Mx.userSettings.sensitivity = 1 / value;
 };
 
@@ -471,7 +471,7 @@ Hercules4Mx.onEnableLed = function(value, group, control) {
 //A change in the loop position or loop state has happened.
 Hercules4Mx.onLoopStateChange = function(value, group, control) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.onLoopStateChange: value, group, control: " + value + ", " + group + ", " + control);
+        console.log("Hercules4Mx.onLoopStateChange: value, group, control: " + value + ", " + group + ", " + control);
     }
     var deck = script.deckFromGroup(group);
     var messageto = (deck === 1 || deck === 2) ? Hercules4Mx.NOnC1 : Hercules4Mx.NOnC2;
@@ -705,7 +705,7 @@ Hercules4Mx.onKillOrSourceChange4 = function(value, group, control) {
 //Any of the shift buttons for effects has been pressed. This button simply changes
 //the controller internal state, but we can use it for other reasons while the user maintains it pressed.
 Hercules4Mx.pressEffectShift = function(midichan, control, value, status, group) {
-    // I don't diferentiate between decks. I don't expect two shift buttons being pressed at the same time.
+    // I don't differentiate between decks. I don't expect two shift buttons being pressed at the same time.
     Hercules4Mx.shiftStatus.pressed = (value) ? true : false;
 };
 //Indicator of the shift effect state change. This happens always after shift is released
@@ -1210,20 +1210,20 @@ Hercules4Mx.effectKnob = function(midichan, control, value, status, group) {
 //This is used in conjunction with the keypad button mapping. It's the default "no-operation" action.
 Hercules4Mx.FxActionNoOp = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxActionNoOp");
+        console.log("entering Hercules4Mx.FxActionNoOp");
     }
 };
 //This is used in conjunction with the keypad button mapping. A keypad button has been pushed
 Hercules4Mx.buttonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.buttonPush");
+        console.log("entering Hercules4Mx.buttonPush");
     }
     engine.setValue(group, extraparam, value);
 };
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been pushed
 Hercules4Mx.FxSwitchDown = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSwitchDown");
+        console.log("entering Hercules4Mx.FxSwitchDown");
     }
     if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
         Hercules4Mx.deactivateEditModeAction();
@@ -1234,7 +1234,7 @@ Hercules4Mx.FxSwitchDown = function(group, fxbutton, value, extraparam) {
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been released
 Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSwitchUp");
+        console.log("entering Hercules4Mx.FxSwitchUp");
     }
     if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
@@ -1246,7 +1246,7 @@ Hercules4Mx.FxSwitchUp = function(group, fxbutton, value, extraparam) {
 //This is used in conjunction with the keypad button mapping. A keypad button for an audio effect has been released
 Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.FxSamplerPush");
+        console.log("entering Hercules4Mx.FxSamplerPush");
     }
     var deck = script.deckFromGroup(group);
     //Since the sampler does not depend on the deck, buttons on deck
@@ -1296,7 +1296,7 @@ Hercules4Mx.FxSamplerPush = function(group, fxbutton, value, extraparam) {
 */
 Hercules4Mx.LoopEditPress = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.LoopEditPress");
+        console.log("entering Hercules4Mx.LoopEditPress");
     }
     if (Hercules4Mx.editModeStatus.mode !== Hercules4Mx.editModes.disabled) {
         Hercules4Mx.deactivateEditModeAction();
@@ -1306,7 +1306,7 @@ Hercules4Mx.LoopEditPress = function(group, fxbutton, value, extraparam) {
 };
 Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("entering Hercules4Mx.LoopEditRelease");
+        console.log("entering Hercules4Mx.LoopEditRelease");
     }
     if (Hercules4Mx.editModeStatus.used === false) {
         var deck = script.deckFromGroup(group);
@@ -1315,8 +1315,8 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
                 Hercules4Mx.deactivateEditModeAction();
             }
             Hercules4Mx.activateEditModeAction(Hercules4Mx.editModes.loop, deck);
-            var splitted = extraparam.split(";");
-            if (splitted[0] === "roll") {
+            var split = extraparam.split(";");
+            if (split[0] === "roll") {
                 engine.setValue(group, "slip_enabled", 1);
             } else {
                 engine.setValue(group, "slip_enabled", 0);
@@ -1333,7 +1333,7 @@ Hercules4Mx.LoopEditRelease = function(group, fxbutton, value, extraparam) {
 };
 Hercules4Mx.LoopEditComplete = function(group, button) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.LoopEditComplete");
+        console.log("Hercules4Mx.LoopEditComplete");
     }
     switch (button) {
         case 1:
@@ -1362,15 +1362,15 @@ Hercules4Mx.LoopEditComplete = function(group, button) {
 };
 Hercules4Mx.LoopButtonPush = function(group, fxbutton, value, extraparam) {
     if (Hercules4Mx.debuglog) {
-        engine.log("Hercules4Mx.LoopButtonPush");
+        console.log("Hercules4Mx.LoopButtonPush");
     }
-    var splitted = extraparam.split(";");
-    if (splitted[0] === "roll" && splitted.length === 2) {
+    var split = extraparam.split(";");
+    if (split[0] === "roll" && split.length === 2) {
         if (engine.getValue(group, "loop_enabled") === 0 && value > 0) {
             engine.setValue(group, "slip_enabled", 1);
         }
-        Hercules4Mx.buttonPush(group, fxbutton, value, splitted[1]);
-    } else if (splitted.length === 1) {
+        Hercules4Mx.buttonPush(group, fxbutton, value, split[1]);
+    } else if (split.length === 1) {
         engine.setValue(group, "slip_enabled", 0);
         Hercules4Mx.buttonPush(group, fxbutton, value, extraparam);
     }
@@ -1405,8 +1405,8 @@ Hercules4Mx.FXButton = function(midichan, control, value, status, groupInitial) 
         }
     } else if (value) {
         if (Hercules4Mx.debuglog === true) {
-            engine.log(JSON.stringify(mapping));
-            engine.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
+            console.log(JSON.stringify(mapping));
+            console.log(JSON.stringify(Hercules4Mx.noActionButtonMap));
         }
         mapping.buttonPressAction(group, fxbutton, 1, mapping.extraParameter);
     } else if (mapping.buttonReleaseAction !== null) {

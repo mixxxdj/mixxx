@@ -4,8 +4,9 @@
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
-#include "preferences/effectsettingsmodel.h"
+#include "preferences/effectmanifesttablemodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class EffectsManager;
 
@@ -22,12 +23,34 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void slotResetToDefaults() override;
 
   private slots:
-    void availableEffectsListItemSelected(const QModelIndex& selected);
+    void effectsTableItemSelected(const QModelIndex& selected);
+    void slotChainPresetSelected(const QModelIndex& selected);
+    void slotImportPreset();
+    void slotExportPreset();
+    void slotRenamePreset();
+    void slotDeletePreset();
 
   private:
-    void clear();
+    void setupManifestTableView(QTableView* pTableView);
+    void setupChainListView(QListView* pListView);
 
-    EffectSettingsModel m_availableEffectsModel;
+    void clearEffectInfo();
+    void clearChainInfoDisableButtons();
+    void loadChainPresetLists();
+    void saveChainPresetLists();
+
+    bool eventFilter(QObject* pChainList, QEvent* event) override;
+    QListView* m_pFocusedChainList;
+    QListView* unfocusedChainList();
+    QTableView* m_pFocusedEffectList;
+    QTableView* unfocusedEffectList();
+
+    QList<QLabel*> m_effectsLabels;
+
     UserSettingsPointer m_pConfig;
-    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    VisibleEffectsListPointer m_pVisibleEffectsList;
+    EffectChainPresetManagerPointer m_pChainPresetManager;
+    EffectsBackendManagerPointer m_pBackendManager;
+    parented_ptr<EffectManifestTableModel> m_pVisibleEffectsModel;
+    parented_ptr<EffectManifestTableModel> m_pHiddenEffectsModel;
 };

@@ -1,8 +1,9 @@
 #include "sources/soundsourcecoreaudio.h"
-#include "sources/mp3decoding.h"
 
 #include "engine/engine.h"
+#include "sources/mp3decoding.h"
 #include "util/logger.h"
+#include "util/macosversion.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -27,10 +28,10 @@ constexpr SINT kMp3MaxSeekPrefetchFrames =
 } // namespace
 
 //static
-const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple Core Audio");
+const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple CoreAudio");
 
 //static
-const QStringList SoundSourceProviderCoreAudio::kSupportedFileExtensions = {
+const QStringList SoundSourceProviderCoreAudio::kSupportedFileTypes = {
         QStringLiteral("aac"),
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
@@ -41,11 +42,15 @@ const QStringList SoundSourceProviderCoreAudio::kSupportedFileExtensions = {
 };
 
 SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    Q_UNUSED(supportedFileExtension)
+        const QString& supportedFileType) const {
+    Q_UNUSED(supportedFileType)
     // On macOS SoundSourceCoreAudio is the preferred decoder for all
     // supported audio formats.
     return SoundSourceProviderPriority::Higher;
+}
+
+QString SoundSourceProviderCoreAudio::getVersionString() const {
+    return getMacOsVersion();
 }
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
@@ -193,7 +198,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     if (m_bFileIsMp3) {
         // Use the maximum value for MP3 files to ensure that all decoded samples
-        // are accurate. Otherwise the deocding tests for MP3 files fail!
+        // are accurate. Otherwise the decoding tests for MP3 files fail!
         m_seekPrefetchFrames = math_max(m_leadingFrames, kMp3MaxSeekPrefetchFrames);
     } else {
         m_seekPrefetchFrames = m_leadingFrames;

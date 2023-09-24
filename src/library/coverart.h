@@ -4,6 +4,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "track/track_decl.h"
 #include "util/cache.h"
 #include "util/color/rgbcolor.h"
 #include "util/imageutils.h"
@@ -105,7 +106,7 @@ class CoverInfoRelative {
     Source source;
     Type type;
 
-    /// An otional color that is calculated from the cover art
+    /// An optional color that is calculated from the cover art
     /// image if available. Supposed to be used as a background
     /// color when displaying a placeholder for the actual
     /// image.
@@ -120,7 +121,11 @@ class CoverInfoRelative {
 };
 
 bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
-bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
+
+inline bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
+    return !(lhs == rhs);
+}
+
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
 class CoverInfo : public CoverInfoRelative {
@@ -158,8 +163,8 @@ class CoverInfo : public CoverInfoRelative {
         QImage image;
 
         /// Either the track location if the image was embedded in
-        /// the metadata or the (absolute) path of the image file.
-        QString filePath;
+        /// the metadata or the location of the image file.
+        QString location;
 
         /// The result of the operation.
         Result result;
@@ -171,16 +176,14 @@ class CoverInfo : public CoverInfoRelative {
                 : result(result) {
         }
     };
-    LoadedImage loadImage(
-            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer()) const;
+    LoadedImage loadImage(TrackPointer pTrack = {}) const;
 
     /// Verify the image digest and update it if necessary.
     /// If the corresponding image has already been loaded it
     /// could be provided as a parameter to avoid reloading
     /// if actually needed.
     bool refreshImageDigest(
-            const QImage& loadedImage = QImage(),
-            const SecurityTokenPointer& pTrackLocationToken = SecurityTokenPointer());
+            const QImage& loadedImage = QImage());
 
     QString trackLocation;
 };

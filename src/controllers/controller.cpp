@@ -2,14 +2,26 @@
 
 #include <QApplication>
 #include <QJSValue>
+#include <QRegularExpression>
+#include <algorithm>
 
-#include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_controller.cpp"
 #include "util/screensaver.h"
 
-Controller::Controller()
-        : m_pScriptEngineLegacy(nullptr),
+namespace {
+QString loggingCategoryPrefix(const QString& deviceName) {
+    return QStringLiteral("controller.") +
+            RuntimeLoggingCategory::removeInvalidCharsFromCategory(deviceName.toLower());
+}
+} // namespace
+
+Controller::Controller(const QString& deviceName)
+        : m_sDeviceName(deviceName),
+          m_logBase(loggingCategoryPrefix(deviceName)),
+          m_logInput(loggingCategoryPrefix(deviceName) + QStringLiteral(".input")),
+          m_logOutput(loggingCategoryPrefix(deviceName) + QStringLiteral(".output")),
+          m_pScriptEngineLegacy(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
@@ -28,18 +40,18 @@ ControllerJSProxy* Controller::jsProxy() {
 
 void Controller::startEngine()
 {
-    controllerDebug("  Starting engine");
+    qCInfo(m_logBase) << "  Starting engine";
     if (m_pScriptEngineLegacy) {
-        qWarning() << "Controller: Engine already exists! Restarting:";
+        qCWarning(m_logBase) << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this);
+    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
 }
 
 void Controller::stopEngine() {
-    controllerDebug("  Shutting down engine");
+    qCInfo(m_logBase) << "  Shutting down engine";
     if (!m_pScriptEngineLegacy) {
-        qWarning() << "Controller::stopEngine(): No engine exists!";
+        qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
         return;
     }
     delete m_pScriptEngineLegacy;
@@ -47,19 +59,21 @@ void Controller::stopEngine() {
 }
 
 bool Controller::applyMapping() {
-    qDebug() << "Applying controller mapping...";
+    qCInfo(m_logBase) << "Applying controller mapping...";
 
     const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
 
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {
-        qWarning() << "Controller::applyMapping(): No engine exists!";
+        qCWarning(m_logBase) << "Controller::applyMapping(): No engine exists!";
         return false;
     }
 
     QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
     if (scriptFiles.isEmpty()) {
-        qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
+        qCWarning(m_logBase)
+                << "No script functions available! Did the XML file(s) load "
+                   "successfully? See above for any errors.";
         return true;
     }
 
@@ -68,7 +82,7 @@ bool Controller::applyMapping() {
 }
 
 void Controller::startLearning() {
-    qDebug() << m_sDeviceName << "started learning";
+    qCDebug(m_logBase) << m_sDeviceName << "started learning";
     m_bLearning = true;
 }
 
@@ -82,13 +96,13 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     // If you change this implementation, also change it in HidController (That
     // function is required due to HID devices having report IDs)
 
+    Q_UNUSED(length);
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    length = data.size();
-    QByteArray msg(length, 0);
-    for (unsigned int i = 0; i < length; ++i) {
-        msg[i] = data.at(i);
-    }
+
+    QByteArray msg;
+    msg.resize(data.size());
+    std::copy(data.cbegin(), data.cend(), msg.begin());
     sendBytes(msg);
 }
 
@@ -110,11 +124,10 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (ControllerDebug::isEnabled()) {
+    if (m_logInput().isDebugEnabled()) {
         // Formatted packet display
-        QString message = QString("%1: t:%2, %3 bytes:\n")
-                                  .arg(m_sDeviceName,
-                                          timestamp.formatMillisWithUnit(),
+        QString message = QString("t:%2, %3 bytes:\n")
+                                  .arg(timestamp.formatMillisWithUnit(),
                                           QString::number(length));
         for (int i = 0; i < length; i++) {
             QString spacer;
@@ -131,7 +144,7 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
                                .rightJustified(2, QChar('0')) +
                     spacer;
         }
-        controllerDebug(message);
+        qCDebug(m_logInput).noquote() << message;
     }
 
     m_pScriptEngineLegacy->handleIncomingData(data);

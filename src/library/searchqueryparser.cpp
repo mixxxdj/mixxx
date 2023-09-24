@@ -1,14 +1,20 @@
 #include "library/searchqueryparser.h"
 
-#include "util/compatibility.h"
+#include <QRegularExpression>
 
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
+// see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
+const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
+        QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
 
-SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
-    : m_pTrackCollection(pTrackCollection) {
+SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
+        : m_pTrackCollection(pTrackCollection),
+          m_searchCrates(false) {
+    setSearchColumns(std::move(searchColumns));
+
     m_textFilters << "artist"
                   << "album_artist"
                   << "album"
@@ -19,19 +25,18 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                   << "comment"
                   << "location"
                   << "crate";
-    m_numericFilters << "year"
-                     << "track"
+    m_numericFilters << "track"
                      << "bpm"
                      << "played"
                      << "rating"
                      << "bitrate";
-    m_specialFilters << "key"
+    m_specialFilters << "year"
+                     << "key"
                      << "duration"
                      << "added"
                      << "dateadded"
                      << "datetime_added"
                      << "date_added";
-    m_ignoredColumns << "crate";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -58,13 +63,28 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_allFilters.append(m_numericFilters);
     m_allFilters.append(m_specialFilters);
 
-    m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
-    m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
-    m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
-    m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
+    m_fuzzyMatcher = QRegularExpression(QString("^~(%1)$").arg(m_allFilters.join("|")));
+    m_textFilterMatcher = QRegularExpression(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_numericFilterMatcher = QRegularExpression(
+            QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
+    m_specialFilterMatcher = QRegularExpression(
+            QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
 SearchQueryParser::~SearchQueryParser() {
+}
+
+void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
+    m_queryColumns = std::move(searchColumns);
+
+    // we need to create a filtered columns list that are handled differently
+    for (int i = 0; i < m_queryColumns.size(); ++i) {
+        if (m_queryColumns[i] == "crate") {
+            m_searchCrates = true;
+            m_queryColumns.removeAt(i);
+            break;
+        }
+    }
 }
 
 QString SearchQueryParser::getTextArgument(QString argument,
@@ -117,20 +137,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
 }
 
 void SearchQueryParser::parseTokens(QStringList tokens,
-                                    QStringList searchColumns,
                                     AndNode* pQuery) const {
-    // we need to create a filtered columns list that are handled differently
-    auto queryColumns = QStringList();
-    queryColumns.reserve(searchColumns.count());
-
-    for (const auto& column: qAsConst(searchColumns)) {
-        if (m_ignoredColumns.contains(column)) {
-            continue;
-        }
-        queryColumns << column;
-    }
-
-
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -140,12 +147,16 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
 
-        if (m_fuzzyMatcher.indexIn(token) != -1) {
+        const QRegularExpressionMatch fuzzyMatch = m_fuzzyMatcher.match(token);
+        const QRegularExpressionMatch textFilterMatch = m_textFilterMatcher.match(token);
+        const QRegularExpressionMatch numericFilterMatch = m_numericFilterMatcher.match(token);
+        const QRegularExpressionMatch specialFilterMatch = m_specialFilterMatcher.match(token);
+        if (fuzzyMatch.hasMatch()) {
             // TODO(XXX): implement this feature.
-        } else if (m_textFilterMatcher.indexIn(token) != -1) {
-            QString field = m_textFilterMatcher.cap(1);
+        } else if (textFilterMatch.hasMatch()) {
+            QString field = textFilterMatch.captured(1);
             QString argument = getTextArgument(
-                    m_textFilterMatcher.cap(2), &tokens);
+                    textFilterMatch.captured(2), &tokens);
 
             if (argument == kMissingFieldSearchTerm) {
                 qDebug() << "argument explicit empty";
@@ -168,10 +179,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             m_fieldToSqlColumns[field], argument);
                 }
             }
-        } else if (m_numericFilterMatcher.indexIn(token) != -1) {
-            QString field = m_numericFilterMatcher.cap(1);
+        } else if (numericFilterMatch.hasMatch()) {
+            QString field = numericFilterMatch.captured(1);
             QString argument = getTextArgument(
-                m_numericFilterMatcher.cap(2), &tokens).trimmed();
+                    numericFilterMatch.captured(2), &tokens)
+                                       .trimmed();
 
             if (!argument.isEmpty()) {
                 if (argument == kMissingFieldSearchTerm) {
@@ -182,11 +194,12 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                          m_fieldToSqlColumns[field], argument);
                 }
             }
-        } else if (m_specialFilterMatcher.indexIn(token) != -1) {
+        } else if (specialFilterMatch.hasMatch()) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
-            QString field = m_specialFilterMatcher.cap(1);
+            QString field = specialFilterMatch.captured(1);
             QString argument = getTextArgument(
-                m_specialFilterMatcher.cap(2), &tokens).trimmed();
+                    specialFilterMatch.captured(2), &tokens)
+                                       .trimmed();
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
@@ -205,10 +218,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 } else if (field == "duration") {
                     pNode = std::make_unique<DurationFilterNode>(
                             m_fieldToSqlColumns[field], argument);
+                } else if (field == "year") {
+                    pNode = std::make_unique<YearFilterNode>(
+                            m_fieldToSqlColumns[field], argument);
                 } else if (field == "date_added" ||
-                           field == "datetime_added" ||
-                           field == "added" ||
-                           field == "dateadded") {
+                        field == "datetime_added" ||
+                        field == "added" ||
+                        field == "dateadded") {
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
@@ -225,18 +241,16 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 // For untagged strings we search the track fields as well
                 // as the crate names the track is in. This allows the user
                 // to use crates like tags
-                if (searchColumns.contains("crate")) {
-                    std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
-
+                if (m_searchCrates) {
+                    auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
                                     &m_pTrackCollection->crates(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
-                                    m_pTrackCollection->database(), queryColumns, argument));
-
+                            m_pTrackCollection->database(), m_queryColumns, argument));
                     pNode = std::move(gNode);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
-                             m_pTrackCollection->database(), queryColumns, argument);
+                            m_pTrackCollection->database(), m_queryColumns, argument);
                 }
             }
         }
@@ -249,9 +263,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
     }
 }
 
-std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
-                                         const QStringList& searchColumns,
-                                         const QString& extraFilter) const {
+std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
+        const QString& query,
+        const QString& extraFilter) const {
     auto pQuery(std::make_unique<AndNode>());
 
     if (!extraFilter.isEmpty()) {
@@ -260,8 +274,53 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
 
     if (!query.isEmpty()) {
         QStringList tokens = query.split(" ");
-        parseTokens(tokens, searchColumns, pQuery.get());
+        parseTokens(tokens, pQuery.get());
     }
 
     return pQuery;
+}
+
+QStringList SearchQueryParser::splitQueryIntoWords(const QString& query) {
+    QStringList queryWordList = query.split(kSplitIntoWordsRegexp,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            Qt::SkipEmptyParts);
+#else
+            QString::SkipEmptyParts);
+#endif
+    return queryWordList;
+}
+
+bool SearchQueryParser::queryIsLessSpecific(const QString& original, const QString& changed) {
+    // separate search query into tokens
+    QStringList oldWordList = SearchQueryParser::splitQueryIntoWords(original);
+    QStringList newWordList = SearchQueryParser::splitQueryIntoWords(changed);
+
+    // we sort the lists for length so the comperator will pop the longest match first
+    std::sort(oldWordList.begin(), oldWordList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+    std::sort(newWordList.begin(), newWordList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+
+    for (int i = 0; i < oldWordList.length(); i++) {
+        const QString& oldWord = oldWordList.at(i);
+        for (int j = 0; j < newWordList.length(); j++) {
+            const QString& newWord = newWordList.at(j);
+            // Note(ronso0) Look for missing '~' in newWord (fuzzy matching)?
+            if ((oldWord.startsWith("-") && oldWord.startsWith(newWord)) ||
+                    (!newWord.contains(":") && oldWord.contains(newWord)) ||
+                    (newWord.contains(":") && oldWord.startsWith(newWord))) {
+                // we found a match and can remove the search term list
+                newWordList.removeAt(j);
+                break;
+            }
+        }
+    }
+    // if the new search query list contains no more terms, we have a reduced
+    // search term
+    if (newWordList.empty()) {
+        return true;
+    }
+    return false;
 }

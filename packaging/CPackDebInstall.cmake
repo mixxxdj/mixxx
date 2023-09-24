@@ -9,7 +9,7 @@ endif()
 
 find_program( CPACK_DEBIAN_MARKDOWN markdown )
 if( NOT CPACK_DEBIAN_MARKDOWN )
-   message( FATAL_ERROR "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
+   message( FATAL_ERROR "markdown not found, required for cpack -G DEB" )
 endif()
 
 find_program( CPACK_DEBIAN_DOCBOOK_TO_MAN docbook-to-man )
@@ -17,12 +17,17 @@ if( NOT CPACK_DEBIAN_DOCBOOK_TO_MAN )
     message( FATAL_ERROR "docbook-to-man not found, required for cpack -G DEB" )
 endif()
 
+find_program(CPACK_DEBIAN_DEBCHANGE debchange)
+if(NOT CPACK_DEBIAN_DEBCHANGE)
+  message(FATAL_ERROR "debchange not found, required for cpack -G DEB" )
+endif()
+
 # We create a temporary debian folder that the debhelper below run as usual.
-# The final debian folder is created indipendently by cpack
+# The final debian folder is created independently by cpack
 message( NOTICE "Creating temporary debian folder for debhelper" )
 file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/packaging/debian
     DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
-set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavcodec-dev, libavutil-dev,")
+set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavformat-dev, ")
 configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in
                ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control
                @ONLY)
@@ -54,9 +59,9 @@ if(DEB_BUILD)
   )
 endif()
 
-execute_process(COMMAND ${CPACK_DEBIAN_DEBCHANGE} -v "${CPACK_DEBIAN_UPSTREAM_VERSION}-${CPACK_DEBIAN_DEBIAN_VERSION}~${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}~${RELEASE}" -M "Build of ${CPACK_DEBIAN_UPSTREAM_VERSION}"
+execute_process(COMMAND ${CPACK_DEBIAN_DEBCHANGE} -v "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}" -M "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
-execute_process(COMMAND ${CPACK_DEBIAN_DEBCHANGE} -r -D ${RELEASE} -M "Build of ${CPACK_DEBIAN_UPSTREAM_VERSION}"
+execute_process(COMMAND ${CPACK_DEBIAN_DEBCHANGE} -r -M "Build of ${CPACK_DEBIAN_PACKAGE_VERSION}"
     WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
 
 function(run_dh DH_COMMAND)
@@ -64,7 +69,7 @@ function(run_dh DH_COMMAND)
         WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
         RESULT_VARIABLE CPACK_DEBIAN_DH_RET)
     if(NOT CPACK_DEBIAN_DH_RET EQUAL "0")
-        message(FATAL_ERROR "${DH_COMMAND} retuned exit code ${CPACK_DEBIAN_DH_RET}")
+        message(FATAL_ERROR "${DH_COMMAND} returned exit code ${CPACK_DEBIAN_DH_RET}")
     endif()
 endfunction()
 

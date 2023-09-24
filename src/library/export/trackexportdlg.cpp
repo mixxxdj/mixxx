@@ -1,11 +1,11 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
 #include <QScrollBar>
+#include <QStandardPaths>
 
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
@@ -319,10 +319,10 @@ void TrackExportDlg::slotAskOverwriteMode(
             QMessageBox::Cancel | QMessageBox::No | QMessageBox::NoToAll
             | QMessageBox::Yes | QMessageBox::YesToAll);
     question_box.setDefaultButton(QMessageBox::No);
-    question_box.setButtonText(QMessageBox::Yes, tr("&Overwrite"));
-    question_box.setButtonText(QMessageBox::YesToAll, tr("Over&write All"));
-    question_box.setButtonText(QMessageBox::No, tr("&Skip"));
-    question_box.setButtonText(QMessageBox::NoToAll, tr("Skip &All"));
+    question_box.addButton(tr("&Overwrite"), QMessageBox::YesRole);
+    question_box.addButton(tr("Over&write All"), QMessageBox::YesRole);
+    question_box.addButton(tr("&Skip"), QMessageBox::NoRole);
+    question_box.addButton(tr("Skip &All"), QMessageBox::NoRole);
 
     switch (question_box.exec()) {
     case QMessageBox::No:

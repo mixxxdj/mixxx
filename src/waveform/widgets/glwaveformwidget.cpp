@@ -1,14 +1,13 @@
 #include "waveform/widgets/glwaveformwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
 #include <QtDebug>
 
 #include "moc_glwaveformwidget.cpp"
 #include "util/performancetimer.h"
+#include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrendererfilteredsignal.h"
 #include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
-#include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
@@ -19,24 +18,15 @@
 
 GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-
-    addRenderer<WaveformRenderBackground>();
+    addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    m_pGlRenderer = addRenderer<GLWaveformRendererFilteredSignal>();
+    addRenderer<GLWaveformRendererFilteredSignal>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
-
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }
@@ -59,7 +49,7 @@ mixxx::Duration GLWaveformWidget::render() {
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
-    QPainter painter(this);
+    QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

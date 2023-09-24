@@ -17,7 +17,7 @@
 #endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
-#include "library/library_preferences.h"
+#include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
@@ -50,10 +50,9 @@ namespace {
 
 const mixxx::Logger kLogger("Library");
 
-} // anonymous namespace
+} // namespace
 
-//static
-const QString Library::kConfigGroup("[Library]");
+using namespace mixxx::library::prefs;
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
@@ -75,13 +74,15 @@ Library::Library(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_pSidebarModel(make_parented<SidebarModel>(this)),
           m_pLibraryControl(make_parented<LibraryControl>(this)),
+          m_pLibraryWidget(nullptr),
           m_pMixxxLibraryFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
-    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
+    qRegisterMetaType<LibraryRemovalType>("LibraryRemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
+    m_pKeyNotation.reset(
+            new ControlObject(mixxx::library::prefs::kKeyNotationConfigKey));
 
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
@@ -103,6 +104,7 @@ Library::Library(
 #endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
 
@@ -121,23 +123,24 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    BrowseFeature* browseFeature = new BrowseFeature(
+    m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
-    connect(browseFeature,
+    connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
             &TrackCollectionManager::startLibraryScan);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanStarted,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanStarted);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-    addFeature(browseFeature);
+    addFeature(m_pBrowseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
+
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
@@ -147,6 +150,10 @@ Library::Library(
             &AnalysisFeature::analyzeTracks);
     connect(m_pCrateFeature,
             &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    connect(this,
+            &Library::analyzeTracks,
             m_pAnalysisFeature,
             &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
@@ -218,14 +225,14 @@ Library::Library(
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
     const auto rootDirs = m_pTrackCollectionManager->internalCollection()->loadRootDirs();
-    for (const mixxx::FileInfo& dirInfo : rootDirs) {
+    for (mixxx::FileInfo dirInfo : rootDirs) {
         if (!dirInfo.exists() || !dirInfo.isDir()) {
             kLogger.warning()
                     << "Skipping access check for missing or invalid directory"
                     << dirInfo;
             continue;
         }
-        if (Sandbox::askForAccess(dirInfo.canonicalLocation())) {
+        if (Sandbox::askForAccess(&dirInfo)) {
             kLogger.info()
                     << "Access to directory"
                     << dirInfo
@@ -249,24 +256,52 @@ Library::Library(
     }
 
     m_editMetadataSelectedClick = m_pConfig->getValue(
-            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
-            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
+            kEditMetadataSelectedClickConfigKey,
+            kEditMetadataSelectedClickDefault);
 }
 
-Library::~Library() {
-    // Empty but required due to forward declarations in header file!
-}
+Library::~Library() = default;
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
+}
+
+namespace {
+class TrackAnalysisSchedulerEnvironmentImpl final : public TrackAnalysisSchedulerEnvironment {
+  public:
+    explicit TrackAnalysisSchedulerEnvironmentImpl(const Library* pLibrary)
+            : m_pLibrary(pLibrary) {
+        DEBUG_ASSERT(m_pLibrary);
+    }
+    ~TrackAnalysisSchedulerEnvironmentImpl() final = default;
+
+    TrackPointer loadTrackById(TrackId trackId) const final {
+        return m_pLibrary->trackCollectionManager()->getTrackById(trackId);
+    }
+
+  private:
+    // TODO: Use std::shared_ptr or std::weak_ptr instead of a plain pointer?
+    const Library* const m_pLibrary;
+};
+} // namespace
+
+TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
+        int numWorkerThreads,
+        AnalyzerModeFlags modeFlags) const {
+    return TrackAnalysisScheduler::createInstance(
+            std::make_unique<const TrackAnalysisSchedulerEnvironmentImpl>(this),
+            numWorkerThreads,
+            m_pDbConnectionPool,
+            m_pConfig,
+            modeFlags);
 }
 
 void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();
-        m_pAnalysisFeature = nullptr;
     }
+    m_pBrowseFeature->releaseBrowseThread();
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
@@ -288,6 +323,10 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
     m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
+    connect(pSearchboxWidget,
+            &WSearchLineEdit::setLibraryFocus,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -317,6 +356,19 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             &WLibrarySidebar::rightClicked,
             m_pSidebarModel,
             &SidebarModel::rightClicked);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::renameItem,
+            m_pSidebarModel,
+            &SidebarModel::renameItem);
+    connect(pSidebarWidget,
+            &WLibrarySidebar::deleteItem,
+            m_pSidebarModel,
+            &SidebarModel::deleteItem);
+
+    connect(pSidebarWidget,
+            &WLibrarySidebar::setLibraryFocus,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
 
     pSidebarWidget->slotSetFont(m_trackTableFont);
     connect(this,
@@ -331,10 +383,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindLibraryWidget(
         WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget,
+    m_pLibraryWidget = pLibraryWidget;
+    WTrackTableView* pTrackTableView = new WTrackTableView(m_pLibraryWidget,
             m_pConfig,
             this,
-            pLibraryWidget->getTrackTableBackgroundColorOpacity(),
+            m_pLibraryWidget->getTrackTableBackgroundColorOpacity(),
             true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
@@ -349,13 +402,24 @@ void Library::bindLibraryWidget(
             &WTrackTableView::loadTrackToPlayer,
             this,
             &Library::slotLoadTrackToPlayer);
-    pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
+    m_pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this,
             &Library::switchToView,
-            pLibraryWidget,
+            m_pLibraryWidget,
             &WLibrary::switchToView);
-
+    connect(this,
+            &Library::saveModelState,
+            pTrackTableView,
+            &WTrackTableView::slotSaveCurrentViewState);
+    connect(this,
+            &Library::restoreModelState,
+            pTrackTableView,
+            &WTrackTableView::slotRestoreCurrentViewState);
+    connect(this,
+            &Library::selectTrack,
+            m_pLibraryWidget,
+            &WLibrary::slotSelectTrackInActiveTrackView);
     connect(pTrackTableView,
             &WTrackTableView::trackSelected,
             this,
@@ -374,10 +438,19 @@ void Library::bindLibraryWidget(
             pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
+    m_pLibraryControl->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
+
+    connect(m_pLibraryControl,
+            &LibraryControl::showHideTrackMenu,
+            pTrackTableView,
+            &WTrackTableView::slotShowHideTrackMenu);
+    connect(pTrackTableView,
+            &WTrackTableView::trackMenuVisible,
+            m_pLibraryControl,
+            &LibraryControl::slotUpdateTrackMenuControl);
 
     for (const auto& feature : qAsConst(m_features)) {
-        feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
+        feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 
     // Set the current font and row height on all the WTrackTableViews that were
@@ -425,6 +498,14 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::saveModelState,
+            this,
+            &Library::saveModelState);
+    connect(feature,
+            &LibraryFeature::restoreModelState,
+            this,
+            &Library::restoreModelState);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(
@@ -460,11 +541,11 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
-    auto trackRef = TrackRef::fromFileInfo(location);
+void Library::slotLoadLocationToPlayer(const QString& location, const QString& group, bool play) {
+    auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
-        emit loadTrackToPlayer(pTrack, group);
+        emit loadTrackToPlayer(pTrack, group, play);
     }
 }
 
@@ -510,26 +591,26 @@ void Library::slotRequestAddDir(const QString& dir) {
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
-    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
+    if (m_pConfig->getValueString(kLegacyDirectoryConfigKey).length() < 1) {
+        m_pConfig->set(kLegacyDirectoryConfigKey, dir);
     }
 }
 
-void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
     // Remove the directory from the directory list.
     if (!m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir))) {
         return;
     }
 
     switch (removalType) {
-    case RemovalType::KeepTracks:
+    case LibraryRemovalType::KeepTracks:
         break;
-    case RemovalType::HideTracks:
+    case LibraryRemovalType::HideTracks:
         // Mark all tracks in this directory as deleted but DON'T purge them
         // in case the user re-adds them manually.
         m_pTrackCollectionManager->hideAllTracks(dir);
         break;
-    case RemovalType::PurgeTracks:
+    case LibraryRemovalType::PurgeTracks:
         // The user requested that we purge all metadata.
         m_pTrackCollectionManager->purgeAllTracks(dir);
         break;
@@ -539,7 +620,7 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
 
     // Also update the config file if necessary so that downgrading is still
     // possible.
-    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString confDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
 
     if (QDir(dir) == QDir(confDir)) {
         const QList<mixxx::FileInfo> dirList =
@@ -547,9 +628,9 @@ void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) 
         if (dirList.isEmpty()) {
             // Save empty string so that an old version of mixxx knows it has to
             // ask for a new directory.
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+            m_pConfig->set(kLegacyDirectoryConfigKey, QString());
         } else {
-            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first().location());
+            m_pConfig->set(kLegacyDirectoryConfigKey, dirList.first().location());
         }
     }
 }
@@ -559,9 +640,9 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
 
     // also update the config file if necessary so that downgrading is still
     // possible
-    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    QString conDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
     if (oldDir == conDir) {
-        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
+        m_pConfig->set(kLegacyDirectoryConfigKey, newDir);
     }
 }
 
@@ -590,12 +671,6 @@ void Library::setEditMedatataSelectedClick(bool enabled) {
     emit setSelectedClick(enabled);
 }
 
-TrackCollection& Library::trackCollection() {
-    DEBUG_ASSERT(m_pTrackCollectionManager);
-    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
-    return *m_pTrackCollectionManager->internalCollection();
-}
-
 void Library::searchTracksInCollection(const QString& query) {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
         return;
@@ -612,3 +687,22 @@ std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
             parent, m_pConfig, m_pTrackCollectionManager);
 }
 #endif
+
+bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
+    if (m_pLibraryWidget) {
+        return m_pLibraryWidget->isTrackInCurrentView(trackId);
+    } else {
+        return false;
+    }
+}
+
+LibraryTableModel* Library::trackTableModel() const {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return nullptr;
+    }
+
+    return m_pMixxxLibraryFeature->trackTableModel();
+}

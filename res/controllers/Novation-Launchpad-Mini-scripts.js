@@ -400,7 +400,7 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        NLM.numofdecks = engine.getValue("[App]", "num_decks");
         // For testing NLM.numofdecks = 4;
 
         //Init hw
@@ -565,7 +565,6 @@ NLM.incomingData = function(channel, control, value, status, group)
             y = 8; x = 0;
         }
 
-        print( "COO: " + NLM.page + ":" + x + ":" + y);
         NLM.btns[NLM.page][x][y].pressed = pressed;
         NLM.btns[NLM.page][x][y].callback();
 };
@@ -577,4 +576,3 @@ NLM.drawPage = function() {
         }
     }
 }
-

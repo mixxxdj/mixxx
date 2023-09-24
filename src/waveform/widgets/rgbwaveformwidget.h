@@ -2,9 +2,9 @@
 
 #include <QWidget>
 
-#include "waveformwidgetabstract.h"
+#include "nonglwaveformwidgetabstract.h"
 
-class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
+class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     virtual ~RGBWaveformWidget();
@@ -15,7 +15,9 @@ class RGBWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Software;
+    }
 
   protected:
     virtual void castToQWidget();

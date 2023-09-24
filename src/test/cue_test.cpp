@@ -5,6 +5,7 @@
 #include "engine/engine.h"
 #include "test/mixxxtest.h"
 #include "util/color/color.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 namespace mixxx {
 
@@ -12,8 +13,9 @@ TEST(CueTest, NewCueIsDirty) {
     const auto cue = Cue(
             mixxx::CueType::HotCue,
             1,
-            0.0,
-            Cue::kNoPosition);
+            mixxx::audio::kStartFramePos,
+            mixxx::audio::kInvalidFramePos,
+            mixxx::PredefinedColorPalettes::kDefaultCueColor);
     EXPECT_TRUE(cue.isDirty());
 }
 
@@ -36,7 +38,7 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
     const auto cueInfo1 = CueInfo(
             CueType::HotCue,
             std::make_optional(1.0 * 44100 * mixxx::kEngineChannelCount),
-            std::make_optional(2.0 * 44100 * mixxx::kEngineChannelCount),
+            std::nullopt,
             std::make_optional(3),
             QStringLiteral("label"),
             RgbColor::optional(0xABCDEF));

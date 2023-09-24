@@ -1,15 +1,15 @@
 #include "engine/enginevumeter.h"
 
+#include "audio/types.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
 #include "moc_enginevumeter.cpp"
-#include "util/math.h"
 #include "util/sample.h"
 
 namespace {
 
 // Rate at which the vumeter is updated (using a sample rate of 44100 Hz):
-constexpr int kVuUpdateRate = 30;  // in 1/s, fits to display frame rate
+constexpr unsigned int kVuUpdateRate = 30; // in Hz (1/s), fits to display frame rate
 constexpr int kPeakDuration = 500; // in ms
 
 // Smoothing Factors
@@ -19,7 +19,8 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(const QString& group) {
+EngineVuMeter::EngineVuMeter(const QString& group)
+        : m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
@@ -36,9 +37,6 @@ EngineVuMeter::EngineVuMeter(const QString& group) {
                                               0., 1.);
     m_ctrlPeakIndicatorR = new ControlPotmeter(ConfigKey(group, "PeakIndicatorR"),
                                               0., 1.);
-
-    m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
-
     // Initialize the calculation:
     reset();
 }
@@ -56,23 +54,21 @@ EngineVuMeter::~EngineVuMeter()
 void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
     CSAMPLE fVolSumL, fVolSumR;
 
-    int sampleRate = (int)m_pSampleRate->get();
+    const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
 
     SampleUtil::CLIP_STATUS clipped = SampleUtil::sumAbsPerChannel(&fVolSumL,
             &fVolSumR, pIn, iBufferSize);
     m_fRMSvolumeSumL += fVolSumL;
     m_fRMSvolumeSumR += fVolSumR;
 
-    m_iSamplesCalculated += iBufferSize / 2;
+    m_samplesCalculated += static_cast<unsigned int>(iBufferSize / 2);
 
     // Are we ready to update the VU meter?:
-    if (m_iSamplesCalculated > (sampleRate / kVuUpdateRate)) {
+    if (m_samplesCalculated > (sampleRate / kVuUpdateRate)) {
         doSmooth(m_fRMSvolumeL,
-                log10(SHRT_MAX * m_fRMSvolumeSumL
-                                / (m_iSamplesCalculated * 1000) + 1));
+                std::log10(SHRT_MAX * m_fRMSvolumeSumL / (m_samplesCalculated * 1000) + 1));
         doSmooth(m_fRMSvolumeR,
-                log10(SHRT_MAX * m_fRMSvolumeSumR
-                                / (m_iSamplesCalculated * 1000) + 1));
+                std::log10(SHRT_MAX * m_fRMSvolumeSumR / (m_samplesCalculated * 1000) + 1));
 
         const double epsilon = .0001;
 
@@ -93,7 +89,7 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         }
 
         // Reset calculation:
-        m_iSamplesCalculated = 0;
+        m_samplesCalculated = 0;
         m_fRMSvolumeSumL = 0;
         m_fRMSvolumeSumR = 0;
     }
@@ -145,7 +141,7 @@ void EngineVuMeter::reset() {
     m_ctrlPeakIndicatorL->set(0);
     m_ctrlPeakIndicatorR->set(0);
 
-    m_iSamplesCalculated = 0;
+    m_samplesCalculated = 0;
     m_fRMSvolumeL = 0;
     m_fRMSvolumeSumL = 0;
     m_fRMSvolumeR = 0;

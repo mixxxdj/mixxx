@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "moc_enginebufferscalelinear.cpp"
 #include "track/keyutils.h"
 #include "util/assert.h"
 #include "util/math.h"
@@ -219,7 +220,6 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
     SINT unscaled_frames_needed = static_cast<SINT>(frames +
             m_dNextFrame - floor(m_dNextFrame));
 
-    int read_failed_count = 0;
     CSAMPLE floor_sample[2];
     CSAMPLE ceil_sample[2];
 
@@ -288,14 +288,9 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 m_bufferIntSize = m_pReadAheadManager->getNextSamples(
                         rate_new == 0 ? rate_old : rate_new,
                         m_bufferInt, samples_to_read);
-
-                if (m_bufferIntSize == 0) {
-                    if (++read_failed_count > 1) {
-                        break;
-                    } else {
-                        continue;
-                    }
-                }
+                // Note we may get 0 samples once if we just hit a loop trigger,
+                // e.g. when reloop_toggle jumps back to loop_in, or when
+                // moving a loop causes the play position to be moved along.
 
                 frames_read += getOutputSignal().samples2frames(m_bufferIntSize);
                 unscaled_frames_needed -= getOutputSignal().samples2frames(m_bufferIntSize);
@@ -304,11 +299,6 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 m_dCurrentFrame -= getOutputSignal().samples2frames(old_bufsize);
                 currentFrameFloor = static_cast<SINT>(floor(m_dCurrentFrame));
             } while (getOutputSignal().frames2samples(currentFrameFloor) + 3 >= m_bufferIntSize);
-
-            // I guess?
-            if (read_failed_count > 1) {
-                break;
-            }
 
             // Now that the buffer is up to date, we can get the value of the sample
             // at the floor of our position.

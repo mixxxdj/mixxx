@@ -238,9 +238,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             FwdSqlQuery query(m_settingsDao.database(), statement);
             result = query.isPrepared() && query.execPrepared();
             if (!result &&
-                    query.hasError() &&
-                    query.lastError().databaseText().startsWith(
-                            QStringLiteral("duplicate column name: "))) {
+                    query.hasDuplicateColumnNameError()) {
                 // New columns may have already been added during a previous
                 // migration to a different (= preceding) schema version. This
                 // is a very common situation during development when switching
@@ -249,10 +247,10 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 // handle those errors here after they occurred.
                 // If the remaining migration finishes without other errors this
                 // is probably ok.
-                kLogger.warning()
-                        << "Ignoring failed statement"
+                kLogger.info()
+                        << "Safely ignoring failed statement"
                         << statement
-                        << "and continuing with schema migration";
+                        << "while re-applying a schema migration";
                 result = true;
             }
         }

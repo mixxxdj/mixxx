@@ -40,10 +40,10 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     query.bindValue(QStringLiteral(":name"), name);
     if (query.exec() && query.first()) {
         QVariant value = query.value(query.record().indexOf(kColumnValue));
-        VERIFY_OR_DEBUG_ASSERT(value.isValid()) {
+        if (!value.isValid()) {
             kLogger.warning() << "Invalid value:" << value;
-        }
-        else {
+            DEBUG_ASSERT("!Invalid value");
+        } else {
             return value.toString();
         }
     }
@@ -51,7 +51,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
 }
 
 bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
-    VERIFY_OR_DEBUG_ASSERT(value.canConvert(QMetaType::QString)) {
+    VERIFY_OR_DEBUG_ASSERT(value.canConvert<QString>()) {
         return false;
     }
 
@@ -69,10 +69,11 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
     }
     query.bindValue(QStringLiteral(":name"), name);
     query.bindValue(QStringLiteral(":value"), value.toString());
-    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+    if (!query.exec()) {
         kLogger.warning()
                 << "Failed to set" << name << "=" << value
                 << query.lastError();
+        DEBUG_ASSERT(!"Failed query");
         return false;
     }
     return true;

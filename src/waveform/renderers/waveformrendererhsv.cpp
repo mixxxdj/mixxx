@@ -1,13 +1,14 @@
 #include "waveformrendererhsv.h"
 
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
 #include "track/track.h"
-#include "widget/wwidget.h"
+#include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/painterscope.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
+#include "widget/wwidget.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -21,25 +22,31 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void WaveformRendererHSV::draw(QPainter* painter,
-                                          QPaintEvent* /*event*/) {
-    const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+void WaveformRendererHSV::draw(
+        QPainter* painter,
+        QPaintEvent* /*event*/) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
+        return;
+    }
+
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
         return;
     }
 
@@ -55,8 +62,12 @@ void WaveformRendererHSV::draw(QPainter* painter,
         painter->setTransform(QTransform(0, 1, 1, 0, 0, 0));
     }
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double firstVisualIndex =
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio;
+    const double lastVisualIndex =
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples /
+            audioVisualRatio;
 
     const double offset = firstVisualIndex;
 
@@ -67,13 +78,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
     float allGain(1.0);
     getGains(&allGain, nullptr, nullptr, nullptr);
 
-    // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
-    // important we use qreal here and not double or float or else we will get
-    // build failures on ARM.
-    qreal h, s, v;
-
     // Get base color of waveform in the HSV format (s and v isn't use)
-    m_pColors->getLowColor().getHsvF(&h, &s, &v);
+    float h, s, v;
+    getHsvF(m_pColors->getLowColor(), &h, &s, &v);
 
     QColor color;
     float lo, hi, total;
@@ -155,11 +162,11 @@ void WaveformRendererHSV::draw(QPainter* painter,
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
             } else {
-                lo = hi = 0.0;
+                lo = hi = 0.0f;
             }
 
             // Set color
-            color.setHsvF(h, 1.0-hi, 1.0-lo);
+            color.setHsvF(h, 1.0f - hi, 1.0f - lo);
 
             pen.setColor(color);
 

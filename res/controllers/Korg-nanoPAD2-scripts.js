@@ -196,6 +196,3 @@ NANOPAD2RK.muteOff = function (channel, control, value, status, group) {
 
     if (NANOPAD2RK.debug){print("MUTE");}
     };
-
-
-

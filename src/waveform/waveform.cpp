@@ -1,11 +1,12 @@
+#include "waveform/waveform.h"
+
 #include <QtDebug>
 
-#include "waveform/waveform.h"
+#include "analyzer/constants.h"
+#include "engine/engine.h"
 #include "proto/waveform.pb.h"
 
 using namespace mixxx::track;
-
-const int kNumChannels = 2;
 
 // Return the smallest power of 2 which is greater than the desired size when
 // squared.
@@ -28,8 +29,11 @@ Waveform::Waveform(const QByteArray& data)
     readByteArray(data);
 }
 
-Waveform::Waveform(int audioSampleRate, int audioSamples,
-                   int desiredVisualSampleRate, int maxVisualSamples)
+Waveform::Waveform(
+        int audioSampleRate,
+        SINT frameLength,
+        int desiredVisualSampleRate,
+        int maxVisualSamples)
         : m_id(-1),
           m_saveState(SaveState::NotSaved),
           m_dataSize(0),
@@ -49,15 +53,18 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             }
         } else {
             // Waveform Summary (Overview)
-            if (audioSamples > maxVisualSamples) {
-                m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
+            if (frameLength > maxVisualSamples / mixxx::kAnalysisChannels) {
+                m_visualSampleRate = static_cast<double>(audioSampleRate) *
+                        maxVisualSamples / mixxx::kAnalysisChannels / frameLength;
             } else {
                 m_visualSampleRate = audioSampleRate;
             }
         }
         m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
-        numberOfVisualSamples = static_cast<int>(audioSamples / m_audioVisualRatio) + 1;
+        numberOfVisualSamples =
+                static_cast<int>(frameLength / m_audioVisualRatio *
+                        mixxx::kAnalysisChannels) +
+                1;
         numberOfVisualSamples += numberOfVisualSamples%2;
     }
     assign(numberOfVisualSamples, 0);
@@ -96,15 +103,14 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
-    int numChannels = kNumChannels;
     all->set_units(io::Waveform::RMS);
-    all->set_channels(numChannels);
+    all->set_channels(mixxx::kEngineChannelCount);
     low->set_units(io::Waveform::RMS);
-    low->set_channels(numChannels);
+    low->set_channels(mixxx::kEngineChannelCount);
     mid->set_units(io::Waveform::RMS);
-    mid->set_channels(numChannels);
+    mid->set_channels(mixxx::kEngineChannelCount);
     high->set_units(io::Waveform::RMS);
-    high->set_channels(numChannels);
+    high->set_channels(mixxx::kEngineChannelCount);
 
     int dataSize = getDataSize();
     for (int i = 0; i < dataSize; ++i) {

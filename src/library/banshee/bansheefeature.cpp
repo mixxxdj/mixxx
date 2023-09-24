@@ -17,11 +17,12 @@ const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
 
 BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
-        : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_cancelImport(false),
-          m_icon(":/images/library/ic_library_banshee.svg") {
+        : BaseExternalLibraryFeature(pLibrary, pConfig, QStringLiteral("banshee")),
+          m_pSidebarModel(make_parented<TreeItemModel>(this)),
+          m_cancelImport(false) {
     Q_UNUSED(pConfig);
-    m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
+    m_pBansheePlaylistModel = new BansheePlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), &m_connection);
     m_isActivated = false;
     m_title = tr("Banshee");
 }
@@ -57,10 +58,6 @@ QVariant BansheeFeature::title() {
     return m_title;
 }
 
-QIcon BansheeFeature::getIcon() {
-    return m_icon;
-}
-
 void BansheeFeature::activate() {
     //qDebug("BansheeFeature::activate()");
 
@@ -79,7 +76,9 @@ void BansheeFeature::activate() {
             qDebug() << m_databaseFile << "does not exist";
         }
 
-        if (!Sandbox::askForAccess(m_databaseFile) || !m_connection.open(m_databaseFile)) {
+        mixxx::FileInfo fileInfo(m_databaseFile);
+        if (!Sandbox::askForAccess(&fileInfo) ||
+                !m_connection.open(m_databaseFile)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Error loading Banshee database"),
@@ -99,7 +98,7 @@ void BansheeFeature::activate() {
             // append the playlist to the child model
             pRootItem->appendChild(playlist.name, playlist.playlistId);
         }
-        m_childModel.setRootItem(std::move(pRootItem));
+        m_pSidebarModel->setRootItem(std::move(pRootItem));
 
         if (m_isActivated) {
             activate();
@@ -111,7 +110,7 @@ void BansheeFeature::activate() {
         emit featureLoadingFinished(this);
     }
 
-    m_pBansheePlaylistModel->setTableModel(0); // Gets the master playlist
+    m_pBansheePlaylistModel->selectPlaylist(0); // Loads the main playlist
     emit showTrackModel(m_pBansheePlaylistModel);
     emit enableCoverArtDisplay(false);
 }
@@ -121,14 +120,14 @@ void BansheeFeature::activateChild(const QModelIndex& index) {
     int playlistID = item->getData().toInt();
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
-        m_pBansheePlaylistModel->setTableModel(playlistID);
+        m_pBansheePlaylistModel->selectPlaylist(playlistID);
         emit showTrackModel(m_pBansheePlaylistModel);
         emit enableCoverArtDisplay(false);
     }
 }
 
-TreeItemModel* BansheeFeature::getChildModel() {
-    return &m_childModel;
+TreeItemModel* BansheeFeature::sidebarModel() const {
+    return m_pSidebarModel;
 }
 
 void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
@@ -138,8 +137,11 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
         int playlistID = item->getData().toInt();
         qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
-            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
-            pPlaylistModelToAdd->setTableModel(playlistID);
+            BansheePlaylistModel* pPlaylistModelToAdd =
+                    new BansheePlaylistModel(this,
+                            m_pLibrary->trackCollectionManager(),
+                            &m_connection);
+            pPlaylistModelToAdd->selectPlaylist(playlistID);
             pPlaylistModelToAdd->select();
 
             // Copy Tracks
@@ -147,7 +149,7 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
             for (int i = 0; i < rows; ++i) {
                 QModelIndex index = pPlaylistModelToAdd->index(i,0);
                 if (index.isValid()) {
-                    //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+                    //qDebug() << pPlaylistModelToAdd->getTrackUrl(index);
                     TrackPointer track = pPlaylistModelToAdd->getTrack(index);
                     trackIds->append(track->getId());
                 }

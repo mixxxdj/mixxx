@@ -1,3 +1,39 @@
+mixxx (2.3.5-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.5
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 10 May 2023 20:28:25 +0000
+
+mixxx (2.3.4-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.4
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Fri, 03 Mar 2023 15:00:16 +0000
+
+mixxx (2.3.3-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.3
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Tue, 21 Jun 2022 21:24:47 +0000
+
+mixxx (2.3.2-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.2
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Sun, 30 Jan 2022 20:37:54 +0000
+
+mixxx (2.3.1-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.1
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Wed, 29 Sep 2021 19:08:14 +0000
+
+mixxx (2.3.0-1~bionic) bionic; urgency=medium
+
+  * Build of 2.3.0
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Mon, 28 Jun 2021 20:45:05 +0000
+
 mixxx (2.2.4-0ubuntu3) bionic; urgency=medium
 
   * Bugfix release

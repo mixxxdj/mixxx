@@ -12,7 +12,7 @@ class CrateStorageTest : public LibraryTest {
 };
 
 TEST_F(CrateStorageTest, persistentLifecycle) {
-    const uint kNumCrates = 10;
+    constexpr uint kNumCrates = 10;
 
     // Insert some crates
     for (auto i = kNumCrates; i > 0; --i) {

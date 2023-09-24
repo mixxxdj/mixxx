@@ -1,8 +1,13 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
+#ifdef MIXXX_USE_QOPENGL
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLShaderProgram>
+#else
 #include <QGLFramebufferObject>
 #include <QGLShaderProgram>
+#endif
 
 #include "moc_glslwaveformrenderersignal.cpp"
 #include "track/track.h"
@@ -13,7 +18,7 @@
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
         ColorType colorType,
         const QString& fragShader)
-        : WaveformRendererSignalBase(waveformWidgetRenderer),
+        : GLWaveformRendererSignal(waveformWidgetRenderer),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
@@ -49,14 +54,16 @@ bool GLSLWaveformRendererSignal::loadShaders() {
     m_frameShaderProgram->removeAllShaders();
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":/shaders/passthrough.vert")) {
+                Shader::Vertex,
+                ":/shaders/passthrough.vert")) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
     }
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-                QGLShader::Fragment, m_pFragShader)) {
+                Shader::Fragment,
+                m_pFragShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
@@ -78,18 +85,14 @@ bool GLSLWaveformRendererSignal::loadShaders() {
 }
 
 bool GLSLWaveformRendererSignal::loadTexture() {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    ConstWaveformPointer waveform;
     int dataSize = 0;
     const WaveformData* data = nullptr;
 
-    if (trackInfo) {
-        waveform = trackInfo->getWaveform();
-        if (waveform) {
-            dataSize = waveform->getDataSize();
-            if (dataSize > 1) {
-                data = waveform->data();
-            }
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform) {
+        dataSize = pWaveform->getDataSize();
+        if (dataSize > 1) {
+            data = pWaveform->data();
         }
     }
 
@@ -114,11 +117,11 @@ bool GLSLWaveformRendererSignal::loadTexture() {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    if (waveform != nullptr && data != nullptr) {
+    if (pWaveform != nullptr && data != nullptr) {
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
-        int textureWidth = waveform->getTextureStride();
-        int textureHeight = waveform->getTextureSize() / waveform->getTextureStride();
+        int textureWidth = pWaveform->getTextureStride();
+        int textureHeight = pWaveform->getTextureSize() / pWaveform->getTextureStride();
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -182,20 +185,21 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
             static_cast<int>(
                     m_waveformRenderer->getHeight() * devicePixelRatio);
 
-    m_framebuffer = std::make_unique<QGLFramebufferObject>(bufferWidth,
-                                                           bufferHeight);
+    m_framebuffer = std::make_unique<FrameBufferObject>(bufferWidth,
+            bufferHeight);
 
     if (!m_framebuffer->isValid()) {
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
     }
 }
 
-void GLSLWaveformRendererSignal::onInitializeGL() {
-    initializeOpenGLFunctions();
+void GLSLWaveformRendererSignal::initializeGL() {
+    GLWaveformRenderer::initializeGL();
+
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
-        m_frameShaderProgram = std::make_unique<QGLShaderProgram>();
+        m_frameShaderProgram = std::make_unique<ShaderProgram>();
     }
 
     if (!loadShaders()) {
@@ -222,7 +226,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 
     slotWaveformUpdated();
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
     }
@@ -239,7 +243,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -248,7 +252,7 @@ void GLSLWaveformRendererSignal::onResize() {
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
-    // onInitializeGL not called yet
+    // initializeGL not called yet
     if (!m_frameShaderProgram) {
         return;
     }
@@ -256,34 +260,37 @@ void GLSLWaveformRendererSignal::slotWaveformUpdated() {
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = trackInfo->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    int dataSize = waveform->getDataSize();
+    int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }
 
-    maybeInitializeGL();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return;
+    }
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
 
     // NOTE(vRince): completion can change during loadTexture
     // do not remove currenCompletion temp variable !
-    const int currentCompletion = waveform->getCompletion();
+    const int currentCompletion = pWaveform->getCompletion();
     if (m_textureRenderedWaveformCompletion < currentCompletion) {
         loadTexture();
         m_textureRenderedWaveformCompletion = currentCompletion;
@@ -294,9 +301,10 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     getGains(&allGain, &lowGain, &midGain, &highGain);
 
     const auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * dataSize / 2.0);
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples /
+            audioVisualRatio / 2.0);
     const auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * dataSize / 2.0);
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio / 2.0);
 
     // const int firstIndex = int(firstVisualIndex+0.5);
     // firstVisualIndex = firstIndex - firstIndex%2;
@@ -329,8 +337,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         m_frameShaderProgram->setUniformValue("framebufferSize", QVector2D(
             m_framebuffer->width(), m_framebuffer->height()));
         m_frameShaderProgram->setUniformValue("waveformLength", dataSize);
-        m_frameShaderProgram->setUniformValue("textureSize", waveform->getTextureSize());
-        m_frameShaderProgram->setUniformValue("textureStride", waveform->getTextureStride());
+        m_frameShaderProgram->setUniformValue("textureSize", pWaveform->getTextureSize());
+        m_frameShaderProgram->setUniformValue("textureStride", pWaveform->getTextureStride());
 
         m_frameShaderProgram->setUniformValue("firstVisualIndex", firstVisualIndex);
         m_frameShaderProgram->setUniformValue("lastVisualIndex", lastVisualIndex);

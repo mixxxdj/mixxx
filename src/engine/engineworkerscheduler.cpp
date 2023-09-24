@@ -4,6 +4,7 @@
 
 #include "engine/engineworker.h"
 #include "moc_engineworkerscheduler.cpp"
+#include "util/compatibility/qmutex.h"
 #include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
@@ -24,7 +25,7 @@ void EngineWorkerScheduler::workerReady() {
 
 void EngineWorkerScheduler::addWorker(EngineWorker* pWorker) {
     DEBUG_ASSERT(pWorker);
-    QMutexLocker locker(&m_mutex);
+    const auto locker = lockMutex(&m_mutex);
     m_workers.push_back(pWorker);
 }
 
@@ -43,14 +44,14 @@ void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         Event::start(tag);
         {
-            QMutexLocker lock(&m_mutex);
+            const auto locker = lockMutex(&m_mutex);
             for(const auto& pWorker: m_workers) {
                 pWorker->wakeIfReady();
             }
         }
         Event::end(tag);
         {
-            QMutexLocker lock(&m_mutex);
+            const auto lock = lockMutex(&m_mutex);
             if (!m_bQuit) {
                 // Wait for next runWorkers() call
                 m_waitCondition.wait(&m_mutex); // unlock mutex and wait

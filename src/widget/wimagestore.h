@@ -5,8 +5,8 @@
 #include <QSharedPointer>
 #include <unordered_map>
 
-#include "skin/imgsource.h"
-#include "skin/pixmapsource.h"
+#include "skin/legacy/imgsource.h"
+#include "skin/legacy/pixmapsource.h"
 #include "util/memory.h"
 
 class WImageStore {
@@ -24,6 +24,6 @@ class WImageStore {
     static void deleteImage(QImage* p);
 
     // Dictionary of Images already instantiated
-    static QHash<QString, std::weak_ptr<QImage> > m_dictionary;
+    static QHash<QString, std::weak_ptr<QImage>> m_dictionary;
     static QSharedPointer<ImgSource> m_loader;
 };

@@ -1,5 +1,6 @@
 #include "library/searchquery.h"
 
+#include <QRegularExpression>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"
@@ -9,6 +10,19 @@
 #include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/sqllikewildcards.h"
+
+namespace {
+
+const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)?s?$"));
+
+// The ordering of operator alternatives separated by '|' is crucial to avoid incomplete
+// partial matches, e.g. by capturing "<" + "=" + <arg>  instead of "<=" + <arg>!
+//
+// See also: https://perldoc.perl.org/perlre
+// > Alternatives are tried from left to right, so the first alternative found for which
+// > the entire expression matches, is the one that is chosen. This means that alternatives
+// > are not necessarily greedy.
+const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -20,7 +34,9 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     } else if (column == LIBRARYTABLE_ALBUMARTIST) {
         return pTrack->getAlbumArtist();
     } else if (column == LIBRARYTABLE_YEAR) {
-        return pTrack->getYear();
+        // We use only the year that is part of the first four digits
+        // In all possible formats.
+        return pTrack->getYear().left(4);
     } else if (column == LIBRARYTABLE_DATETIMEADDED) {
         return pTrack->getDateAdded();
     } else if (column == LIBRARYTABLE_GENRE) {
@@ -62,8 +78,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
     return QVariant();
 }
 
-//static
-QString QueryNode::concatSqlClauses(
+QString concatSqlClauses(
         const QStringList& sqlClauses, const QString& sqlConcatOp) {
     switch (sqlClauses.size()) {
     case 0:
@@ -74,9 +89,14 @@ QString QueryNode::concatSqlClauses(
         // The component terms need to be wrapped into parentheses,
         // but the whole expression does not. The composite node is
         // always responsible for proper wrapping into parentheses!
-        return "(" % sqlClauses.join(") " % sqlConcatOp % " (") % ")";
+        return QChar('(') +
+                sqlClauses.join(
+                        QStringLiteral(") ") + sqlConcatOp + QStringLiteral(" (")) +
+                QChar(')');
     }
 }
+
+} // namespace
 
 bool AndNode::match(const TrackPointer& pTrack) const {
     for (const auto& pNode : m_nodes) {
@@ -158,7 +178,7 @@ TextFilterNode::TextFilterNode(const QSqlDatabase& database,
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+        if (!value.isValid() || !value.canConvert<QString>()) {
             continue;
         }
 
@@ -194,7 +214,7 @@ bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
-        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+        if (!value.isValid() || !value.canConvert<QString>()) {
             return true;
         }
         return value.toString().isEmpty();
@@ -287,10 +307,10 @@ void NumericFilterNode::init(QString argument) {
         return;
     }
 
-    QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
-    if (operatorMatcher.indexIn(argument) != -1) {
-        m_operator = operatorMatcher.cap(1);
-        argument = operatorMatcher.cap(2);
+    QRegularExpressionMatch match = kNumericOperatorRegex.match(argument);
+    if (match.hasMatch()) {
+        m_operator = match.captured(1);
+        argument = match.captured(2);
     }
 
     bool parsed = false;
@@ -320,7 +340,7 @@ double NumericFilterNode::parse(const QString& arg, bool* ok) {
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn : m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+        if (!value.isValid() || !value.canConvert<double>()) {
             if (m_bNullQuery) {
                 return true;
             }
@@ -368,10 +388,10 @@ QString NumericFilterNode::toSql() const {
     if (m_bRangeQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn : m_sqlColumns) {
-            QStringList rangeClauses;
-            rangeClauses << QString("%1 >= %2").arg(sqlColumn, QString::number(m_dRangeLow));
-            rangeClauses << QString("%1 <= %2").arg(sqlColumn, QString::number(m_dRangeHigh));
-            searchClauses << concatSqlClauses(rangeClauses, "AND");
+            searchClauses << QString(QStringLiteral("%1 BETWEEN %2 AND %3"))
+                                     .arg(sqlColumn,
+                                             QString::number(m_dRangeLow),
+                                             QString::number(m_dRangeHigh));
         }
         return concatSqlClauses(searchClauses, "OR");
     }
@@ -387,7 +407,7 @@ bool NullNumericFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
-        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+        if (!value.isValid() || !value.canConvert<double>()) {
             return true;
         }
     }
@@ -411,8 +431,8 @@ DurationFilterNode::DurationFilterNode(
 }
 
 double DurationFilterNode::parse(const QString& arg, bool* ok) {
-    QRegExp regex("^(\\d*)(m|:)?([0-6]?\\d)?s?$");
-    if (regex.indexIn(arg) == -1) {
+    QRegularExpressionMatch match = kDurationRegex.match(arg);
+    if (!match.hasMatch()) {
         *ok = false;
         return 0;
     }
@@ -421,15 +441,14 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
     // seconds are in the 4th entry. If you don't believe me or this doesn't
     // work anymore because we changed our Qt version just have a look at caps.
     // -- (kain88, Aug 2014)
-    QStringList caps = regex.capturedTexts();
     double m = 0;
     double s = 0;
     // if only a number is entered parse as seconds
-    if (caps.at(3).isEmpty() && caps.at(2).isEmpty()) {
-        s = caps.at(1).toDouble(ok);
+    if (match.captured(3).isEmpty() && match.captured(2).isEmpty()) {
+        s = match.captured(1).toDouble(ok);
     } else {
-        m = caps.at(1).toDouble(ok);
-        s = caps.at(3).toDouble();
+        m = match.captured(1).toDouble(ok);
+        s = match.captured(3).toDouble();
     }
 
     if (!*ok) {
@@ -459,4 +478,30 @@ QString KeyFilterNode::toSql() const {
         searchClauses << QString("key_id IS %1").arg(QString::number(matchKey));
     }
     return concatSqlClauses(searchClauses, "OR");
+}
+
+YearFilterNode::YearFilterNode(
+        const QStringList& sqlColumns, const QString& argument)
+        : NumericFilterNode(sqlColumns, argument) {
+}
+
+QString YearFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        return QStringLiteral("year IS NULL");
+    }
+
+    if (m_bOperatorQuery) {
+        return QString(
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) %1 %2"))
+                .arg(m_operator, QString::number(m_dOperatorArgument));
+    }
+
+    if (m_bRangeQuery) {
+        return QString(
+                QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
+                .arg(QString::number(m_dRangeLow),
+                        QString::number(m_dRangeHigh));
+    }
+
+    return QString();
 }

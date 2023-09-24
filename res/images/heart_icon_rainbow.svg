@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="svg4023" width="32" height="32" version="1.1" viewBox="0 -256 32 32" xmlns="http://www.w3.org/2000/svg">
+ <defs id="defs4007">
+  <clipPath id="a">
+   <path id="path4004" d="m9.6837-251.25c-1.9155-0.0269-3.7919 0.71916-5.2091 2.1185-2.8337 2.7979-2.8705 7.421 0.25504 10.506h0.00174l0.86294 0.85257 8.4809 8.3718c0.52372 0.51731 1.3716 0.51731 1.8953 0l8.4791-8.3718 0.86468-0.85257c3.1259-3.0852 3.0899-7.7097 0.25504-10.508-2.8071-2.7705-7.4077-2.809-10.532 0.18675l0.06813 0.0675c-0.02542-0.0251-0.05823-0.0324-0.08385-0.0572-0.02568 0.0247-0.05837 0.0319-0.08385 0.0572l0.06813-0.0675c-1.5469-1.4851-3.4441-2.2771-5.3226-2.3035z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stop-color="#000000"/>
+  </clipPath>
+  <linearGradient id="linearGradient5112" x1="31.353" x2="9.5991" y1="5.2467" y2="28.121" gradientUnits="userSpaceOnUse">
+   <stop id="stop3959" stop-color="#39B54A" offset=".478"/>
+   <stop id="stop3961" stop-color="#1B75BC" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient5120" x1="29.922" x2=".67965" y1="-2.316" y2="27.251" gradientUnits="userSpaceOnUse">
+   <stop id="stop3964" stop-color="#130E1E" offset="0"/>
+   <stop id="stop3970" stop-color="#652966" offset=".2552"/>
+   <stop id="stop3972" stop-color="#7C287A" offset=".3511"/>
+   <stop id="stop3974" stop-color="#8B2688" offset=".4286"/>
+   <stop id="stop3976" stop-color="#91278F" offset=".478"/>
+   <stop id="stop3978" stop-color="#ED1C24" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient5146" x1="18.644" x2="1.899" y1="-1.0535" y2="17.441" gradientUnits="userSpaceOnUse">
+   <stop id="stop5148" stop-color="#381F1F" offset="0"/>
+   <stop id="stop5164" stop-color="#E81F25" offset=".3438"/>
+   <stop id="stop5166" stop-color="#ED1C24" offset=".478"/>
+   <stop id="stop5168" stop-color="#F7931E" offset="1"/>
+  </linearGradient>
+ </defs>
+ <script id="script4009"/>
+ <path id="path4011" d="m8.6751-251.73c-2.2162-0.0315-4.3872 0.84047-6.0269 2.4758-3.2786 3.2699-3.3212 8.6727 0.29508 12.278h0.00201l0.99842 0.99639 9.8124 9.784c0.60595 0.60456 1.5869 0.60456 2.1929 0l9.8104-9.784 1.0004-0.99639c3.6167-3.6056 3.575-9.0102 0.29508-12.28-3.2478-3.2378-8.5707-3.2828-12.185 0.21825l0.07883 0.0789c-0.0294-0.0292-0.06738-0.0378-0.09701-0.0669-0.02972 0.0288-0.06753 0.0373-0.09701 0.0669l0.07881-0.0789c-1.7898-1.7356-3.9848-2.6612-6.1583-2.692z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="#fff" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stop-color="#000000" stroke-width="1.1264"/>
+ <g id="g4021" transform="matrix(1.0368 0 0 1.0368 -.72262 10.188)" clip-path="url(#a)" shape-rendering="auto" stroke-width="1.0864">
+  <path id="path5101" transform="matrix(1.0864 0 0 1.0864 -.65039 -258.02)" d="m24.895 8.4492-14.834 14.83 3.4707 3.459c0.49518 0.49405 1.2958 0.49405 1.791 0l8.0176-7.9941 0.81641-0.81445c2.7592-2.7508 2.911-6.7828 0.73828-9.4805z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#linearGradient5112)" image-rendering="auto" solid-color="#000000"/>
+  <path id="path5064" transform="matrix(1.0864 0 0 1.0864 -.65039 -258.02)" d="m19.531 5.918c-1.1565 0.011445-2.3268 0.31517-3.4102 0.91211l-11.264 11.26 0.6543 0.6543 4.5469 4.5312 14.834-14.83c-0.15381-0.19073-0.31715-0.37434-0.49414-0.55078-1.327-1.323-3.0787-1.9943-4.8672-1.9766z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#linearGradient5120)" image-rendering="auto" solid-color="#000000"/>
+  <path id="path5062" transform="matrix(1.0864 0 0 1.0864 -.65039 -258.02)" d="m9.3789 5.873c-1.339-0.018986-2.6569 0.36759-3.7949 1.1094l-2.0391 2.0391c-1.7269 2.6717-1.4222 6.3454 1.1484 8.9082h0.00195l0.12891 0.12891h0.072266l11.238-11.236c-0.59689 0.32729-1.1675 0.74066-1.6934 1.25l0.06445 0.064453c-0.02403-0.023932-0.05586-0.031032-0.08008-0.054688-0.02428 0.023564-0.05599 0.030572-0.08008 0.054688l0.06445-0.064453c-1.4626-1.4184-3.2551-2.174-5.0312-2.1992z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill="url(#linearGradient5146)" image-rendering="auto" solid-color="#000000"/>
+ </g>
+</svg>

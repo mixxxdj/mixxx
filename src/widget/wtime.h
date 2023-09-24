@@ -6,7 +6,7 @@
 #include <QTimer>
 
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class WTime: public WLabel {
     Q_OBJECT
@@ -24,10 +24,10 @@ class WTime: public WLabel {
 
     QTimer* m_pTimer;
     QString m_sTimeFormat;
-    // m_iInterval defines how often the time will be updated
-    short m_iInterval;
-    // m_iInterval is set to s_iSecondInterval if seconds are shown
-    // otherwise, m_iInterval = s_iMinuteInterval
-    static const short s_iSecondInterval = 100;
-    static const short s_iMinuteInterval = 1000;
+    // m_interval defines how often the time will be updated
+    short m_interval;
+    // m_interval is set to s_iSecondInterval if seconds are shown
+    // otherwise, m_interval = s_iMinuteInterval
+    static constexpr short s_iSecondInterval = 100;
+    static constexpr short s_iMinuteInterval = 1000;
 };

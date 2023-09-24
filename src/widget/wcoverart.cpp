@@ -14,15 +14,14 @@
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverart.cpp"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "widget/wskincolor.h"
 
 WCoverArt::WCoverArt(QWidget* parent,
-                     UserSettingsPointer pConfig,
-                     const QString& group,
-                     BaseTrackPlayer* pPlayer)
+        UserSettingsPointer pConfig,
+        const QString& group,
+        BaseTrackPlayer* pPlayer)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
@@ -30,7 +29,7 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
           m_pPlayer(pPlayer),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer, m_pMenu)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -100,7 +99,9 @@ void WCoverArt::slotReloadCoverArt() {
     if (!m_loadedTrack) {
         return;
     }
-    guessTrackCoverInfoConcurrently(m_loadedTrack);
+    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    // Don't wait for the result and keep running in the background
+    Q_UNUSED(future)
 }
 
 void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -148,18 +149,18 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
     if (!m_bEnable) {
         return;
     }
 
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_lastRequestedCover = coverInfo;
@@ -199,9 +200,10 @@ QPixmap WCoverArt::scaledCoverArt(const QPixmap& normal) {
         return QPixmap();
     }
     QPixmap scaled;
-    scaled = normal.scaled(size() * getDevicePixelRatioF(this),
-            Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    scaled.setDevicePixelRatio(getDevicePixelRatioF(this));
+    scaled = normal.scaled(size() * devicePixelRatioF(),
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation);
+    scaled.setDevicePixelRatio(devicePixelRatioF());
     return scaled;
 }
 

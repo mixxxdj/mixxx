@@ -43,10 +43,11 @@ class BaseTrackCache : public QObject {
     /// The order of the `columns` list parameter defines the initial/default
     /// order of columns in the library view.
     BaseTrackCache(TrackCollection* pTrackCollection,
-                   const QString& tableName,
-                   const QString& idColumn,
-                   const QStringList& columns,
-                   bool isCaching);
+            QString tableName,
+            QString idColumn,
+            QStringList columns,
+            QStringList searchColumns,
+            bool isCaching);
     ~BaseTrackCache() override;
 
     // Rebuild the BaseTrackCache index from the SQL table. This can be
@@ -73,7 +74,6 @@ class BaseTrackCache : public QObject {
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
     virtual void ensureCached(const QSet<TrackId>& trackIds);
-    virtual void setSearchColumns(const QStringList& columns);
 
   signals:
     void tracksChanged(const QSet<TrackId>& trackIds);
@@ -108,7 +108,7 @@ class BaseTrackCache : public QObject {
             const QVariant& val1,
             const QVariant& val2) const;
     bool trackMatches(const TrackPointer& pTrack,
-                      const QRegExp& matcher) const;
+            const QRegularExpression& matcher) const;
     bool trackMatchesNumeric(const TrackPointer& pTrack,
                              const QStringList& numberMatchers) const;
     bool trackMatchesNamedString(const TrackPointer& pTrack,
@@ -125,9 +125,6 @@ class BaseTrackCache : public QObject {
     const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
     const mixxx::StringCollator m_collator;
-
-    QStringList m_searchColumns;
-    QVector<int> m_searchColumnIndices;
 
     // Temporary storage for filterAndSort()
 
@@ -147,7 +144,7 @@ class BaseTrackCache : public QObject {
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;
-    QHash<TrackId, QVector<QVariant> > m_trackInfo;
+    QHash<TrackId, QVector<QVariant>> m_trackInfo;
     QSqlDatabase m_database;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);

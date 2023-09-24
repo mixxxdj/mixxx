@@ -57,4 +57,22 @@ double Bpm::normalizeValue(double value) {
     }
 }
 
+//static
+QString Bpm::displayValueText(double value) {
+    if (!isValidValue(value)) {
+        return QString();
+    }
+    return QString("%1").arg(value, 3, 'f', 1);
+}
+
+QDebug operator<<(QDebug dbg, Bpm arg) {
+    if (arg.isValid()) {
+        QDebugStateSaver saver(dbg);
+        dbg.nospace() << "Bpm(" << arg.value() << ")";
+    } else {
+        dbg << "Bpm(Invalid)";
+    }
+    return dbg;
+}
+
 } // namespace mixxx

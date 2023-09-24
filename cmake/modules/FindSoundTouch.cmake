@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_SoundTouch QUIET SoundTouch>=2.1.1)
+  pkg_check_modules(PC_SoundTouch QUIET soundtouch)
 endif()
 
 find_path(SoundTouch_INCLUDE_DIR
@@ -61,12 +61,22 @@ find_library(SoundTouch_LIBRARY
 )
 mark_as_advanced(SoundTouch_LIBRARY)
 
+# Version detection
+if(DEFINED PC_SoundTouch_VERSION AND NOT PC_SoundTouch_VERSION STREQUAL "")
+  set(SoundTouch_VERSION "${PC_SoundTouch_VERSION}")
+else()
+  if(EXISTS "${SoundTouch_INCLUDE_DIR}/soundtouch/SoundTouch.h")
+    file(READ "${SoundTouch_INCLUDE_DIR}/soundtouch/SoundTouch.h" SoundTouch_H_CONTENTS)
+    string(REGEX MATCH "#define SOUNDTOUCH_VERSION[ \t]+\"([0-9]+\.[0-9]+\.[0-9]+)\"" _dummy "${SoundTouch_H_CONTENTS}")
+    set(SoundTouch_VERSION "${CMAKE_MATCH_1}")
+  endif()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   SoundTouch
-  DEFAULT_MSG
-  SoundTouch_LIBRARY
-  SoundTouch_INCLUDE_DIR
+  REQUIRED_VARS SoundTouch_LIBRARY SoundTouch_INCLUDE_DIR
+  VERSION_VAR SoundTouch_VERSION
 )
 
 if(SoundTouch_FOUND)

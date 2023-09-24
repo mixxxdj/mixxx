@@ -8,6 +8,12 @@
 #include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
+namespace {
+
+const QString kModelName = "external:";
+
+} // anonymous namespace
+
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
         const char* settingsNamespace,
@@ -17,7 +23,8 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource) {
+          m_trackSource(trackSource),
+          m_currentPlaylistId(kInvalidPlaylistId) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -34,7 +41,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -54,7 +61,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->setYear(year);
 
         QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-        pTrack->setGenre(genre);
+        updateTrackGenre(pTrack.get(), genre);
 
         float bpm = index.sibling(
                 index.row(), fieldIndex("bpm")).data().toString().toFloat();
@@ -93,15 +100,29 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
     }
 
     // TODO(XXX): Why not last-insert id?
-    int playlistId = -1;
+    int playlistId = kInvalidPlaylistId;
     QSqlRecord finder_query_record = finder_query.record();
     while (finder_query.next()) {
         playlistId = finder_query.value(finder_query_record.indexOf("id")).toInt();
     }
 
-    if (playlistId == -1) {
+    if (playlistId == kInvalidPlaylistId) {
         qWarning() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
         return;
+    }
+
+    setPlaylistById(playlistId);
+}
+
+void BaseExternalPlaylistModel::setPlaylistById(int playlistId) {
+    // Store search text
+    QString currSearch = currentSearch();
+    if (m_currentPlaylistId != kInvalidPlaylistId) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_currentPlaylistId, currSearch);
+        } else {
+            m_searchTexts.remove(m_currentPlaylistId);
+        }
     }
 
     const auto playlistIdNumber =
@@ -134,11 +155,13 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    m_currentPlaylistId = playlistId;
     playlistViewColumns.last() = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, playlistViewColumns.first(), playlistViewColumns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
-    setSearch("");
+    // Restore search text
+    setSearch(m_searchTexts.value(m_currentPlaylistId));
 }
 
 TrackId BaseExternalPlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
@@ -162,4 +185,15 @@ TrackModel::Capabilities BaseExternalPlaylistModel::getCapabilities() const {
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
             Capability::LoadToSampler;
+}
+
+QString BaseExternalPlaylistModel::modelKey(bool noSearch) const {
+    if (noSearch) {
+        return kModelName +
+                QString::number(m_currentPlaylistId);
+    }
+    return kModelName +
+            QString::number(m_currentPlaylistId) +
+            QStringLiteral("#") +
+            currentSearch();
 }

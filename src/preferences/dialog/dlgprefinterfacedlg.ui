@@ -14,6 +14,19 @@
    <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="3" column="0">
+    <spacer name="verticalSpacer2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBoxSkinOptions">
      <property name="title">
@@ -154,6 +167,19 @@
         </property>
        </spacer>
       </item>
+      <item row="8" column="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
 
       <item row="9" column="0">
        <widget class="QLabel" name="textLabelLocale">
@@ -178,42 +204,46 @@
         <property name="text">
          <string>HiDPI / Retina scaling</string>
         </property>
-        <property name="buddy">
-         <cstring>checkBoxScaleFactorAuto</cstring>
-        </property>
        </widget>
       </item>
       <item row="10" column="1">
-       <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
-        <property name="toolTip">
-         <string>Change the size of text, buttons, and other items.</string>
-        </property>
-        <property name="suffix">
-         <string notr="true"> %</string>
-        </property>
-        <property name="decimals">
-         <number>0</number>
-        </property>
-        <property name="minimum">
-         <double>50.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>400.000000000000000</double>
-        </property>
-        <property name="singleStep">
-         <double>25.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="2">
-       <widget class="QCheckBox" name="checkBoxScaleFactorAuto">
-        <property name="toolTip">
-         <string>Adopt scale factor from the operating system</string>
-        </property>
-        <property name="text">
-         <string>Auto Scaling</string>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxScaleFactor">
+          <property name="toolTip">
+           <string>Change the size of text, buttons, and other items.</string>
+          </property>
+          <property name="suffix">
+           <string notr="true"> %</string>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>50.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>400.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>25.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
       </item>
 
       <item row="11" column="0">
@@ -298,23 +328,10 @@
       <item row="13" column="1" colspan="2">
        <widget class="QComboBox" name="comboBoxScreensaver"/>
       </item>
+
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
-    <spacer name="verticalSpacer2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -322,6 +339,7 @@
   <tabstop>ComboBoxSkinconf</tabstop>
   <tabstop>ComboBoxSchemeconf</tabstop>
   <tabstop>ComboBoxLocale</tabstop>
+  <tabstop>spinBoxScaleFactor</tabstop>
   <tabstop>checkBoxStartFullScreen</tabstop>
   <tabstop>radioButtonTooltipsOff</tabstop>
   <tabstop>radioButtonTooltipsLibrary</tabstop>

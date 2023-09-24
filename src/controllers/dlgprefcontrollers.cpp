@@ -23,7 +23,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     createLinkColor();
     setupControllerWidgets();
 
-    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+    connect(btnOpenUserMappings, &QPushButton::clicked, this, [=, this]() {
         QString mappingsPath = userMappingsPath(m_pConfig);
         openLocalFile(mappingsPath);
     });
@@ -80,9 +80,6 @@ void DlgPrefControllers::openLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
-        pControllerDlg->slotUpdate();
-    }
 }
 
 void DlgPrefControllers::slotCancel() {
@@ -112,13 +109,16 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     if (controllerIndex >= 0) {
         DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
         if (pControllerDlg) {
-            m_pDlgPreferences->switchToPage(pControllerDlg);
+            const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
+                    clickedItem->text(0);
+            m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         }
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
         m_pDlgPreferences->expandTreeItem(clickedItem);
-        m_pDlgPreferences->switchToPage(this);
+        const QString pageTitle = clickedItem->text(0);
+        m_pDlgPreferences->switchToPage(pageTitle, this);
         return true;
     }
     return false;
@@ -130,6 +130,14 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
+    // NOTE: this assumes that the list of controllers does not change during the lifetime of Mixxx.
+    // This is currently true, but once we support hotplug, we will need better lifecycle management
+    // to keep this dialog and the controllermanager consistent.
+    QList<Controller*> controllerList =
+            m_pControllerManager->getControllerList(false, true);
+    for (auto* pController : controllerList) {
+        pController->disconnect(this);
+    }
     while (!m_controllerPages.isEmpty()) {
         DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
         m_pDlgPreferences->removePageWidget(pControllerDlg);
@@ -173,6 +181,7 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         connect(pController,
                 &Controller::openChanged,
+                this,
                 [this, pControllerDlg](bool bOpen) {
                     slotHighlightDevice(pControllerDlg, bOpen);
                 });

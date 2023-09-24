@@ -2,6 +2,7 @@
 
 #include <gtest/gtest_prod.h>
 
+#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
@@ -22,31 +23,29 @@ class EngineSync : public SyncableListener {
     /// Syncable::notifySyncModeChanged.
     void requestSyncMode(Syncable* pSyncable, SyncMode state) override;
 
-    /// Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    /// (master/follower).
-    void requestEnableSync(Syncable* pSyncable, bool enabled) override;
-
     /// Syncables notify EngineSync directly about various events. EngineSync
     /// does not have a say in whether these succeed or not, they are simply
     /// notifications.
-    void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) override;
-    void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
+    void notifyBaseBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
+    void notifyRateChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
+    void requestBpmUpdate(Syncable* pSyncable, mixxx::Bpm bpm) override;
 
     /// Instantaneous BPM refers to the actual, honest-to-god speed of playback
     /// at any moment, including any scratching that may be happening.
-    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) override;
+    void notifyInstantaneousBpmChanged(Syncable* pSyncable, mixxx::Bpm bpm) override;
 
     /// the beat distance is updated on every callback.
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
 
     /// Notify the engine that a syncable has started or stopped playing
-    void notifyPlaying(Syncable* pSyncable, bool playing) override;
+    void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
+    void notifySeek(Syncable* pSyncable, mixxx::audio::FramePos position) override;
 
-    /// Used to pick a sync target for cases where master sync mode is not sufficient.
+    /// Used to pick a sync target for cases where Leader sync mode is not sufficient.
     /// Guaranteed to pick a Syncable that is a real deck and has an EngineBuffer,
     /// but can return nullptr if there are no choices.
-    /// First choice is master sync, if it's a real deck,
+    /// First choice is Leader sync, if it's a real deck,
     /// then it will fall back to the first playing syncable deck,
     /// then it will fall back to the first playing deck,
     /// then it will fall back to the first non-playing deck.
@@ -54,89 +53,117 @@ class EngineSync : public SyncableListener {
     Syncable* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
 
     /// Used to test whether changing the rate of a Syncable would change the rate
-    /// of other Syncables that are playing
+    /// of other Syncables that are playing. Returns true even if the other decks
+    /// are not audible.
     bool otherSyncedPlaying(const QString& group);
 
     void addSyncableDeck(Syncable* pSyncable);
-    EngineChannel* getMaster() const;
-    void onCallbackStart(int sampleRate, int bufferSize);
-    void onCallbackEnd(int sampleRate, int bufferSize);
+    EngineChannel* getLeaderChannel() const;
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private:
-    /// Iterate over decks, and based on sync and play status, pick a new master.
+    /// Iterate over decks, and based on sync and play status, pick a new Leader.
     /// if enabling_syncable is not null, we treat it as if it were enabled because we may
     /// be in the process of enabling it.
-    Syncable* pickMaster(Syncable* enabling_syncable);
+    Syncable* pickLeader(Syncable* enabling_syncable);
 
-    /// Find a deck to match against, used in the case where there is no sync master.
+    /// Find a deck to match against, used in the case where there is no sync Leader.
     /// Looks first for a playing deck, and falls back to the first non-playing deck.
     /// If the requester is playing, don't match against a non-playing deck because
     /// that would be strange behavior for the user.
     /// Returns nullptr if none can be found.
     Syncable* findBpmMatchTarget(Syncable* requester);
 
-    /// Activate a specific syncable as master.
-    void activateMaster(Syncable* pSyncable, bool explicitMaster);
+    /// Activate a specific syncable as Leader.
+    void activateLeader(Syncable* pSyncable, bool explicitLeader);
 
     /// Activate a specific channel as Follower. Sets the syncable's bpm and
-    /// beatDistance to match the master.
+    /// beatDistance to match the Leader.
     void activateFollower(Syncable* pSyncable);
+
+    // Activate a specific syncable as Leader, with the appropriate submode.
+    void activateLeader(Syncable* pSyncable, SyncMode leaderType);
 
     /// Unsets all sync state on a Syncable.
     void deactivateSync(Syncable* pSyncable);
 
-    /// This utility method returns true if it finds a deck not in SYNC_NONE mode.
+    /// This utility method returns true if it finds a deck not in SyncMode::None.
     bool syncDeckExists() const;
 
-    /// Return the current BPM of the master Syncable. If no master syncable is
+    /// Return the current BPM of the Leader Syncable. If no Leader syncable is
     /// set then returns the BPM of the internal clock.
-    double masterBpm() const;
+    mixxx::Bpm leaderBpm() const;
 
-    /// Returns the current beat distance of the master Syncable. If no master
+    /// Returns the current beat distance of the Leader Syncable. If no Leader
     /// Syncable is set, then returns the beat distance of the internal clock.
-    double masterBeatDistance() const;
+    double leaderBeatDistance() const;
 
-    /// Returns the overall average BPM of the master Syncable if it were playing
+    /// Returns the overall average BPM of the Leader Syncable if it were playing
     /// at 1.0 rate. This is used to calculate half/double multipliers and whether
-    /// the master has a bpm at all.
-    double masterBaseBpm() const;
+    /// the Leader has a bpm at all.
+    mixxx::Bpm leaderBaseBpm() const;
 
     /// Set the BPM on every sync-enabled Syncable except pSource.
-    void setMasterBpm(Syncable* pSource, double bpm);
+    void updateLeaderBpm(Syncable* pSource, mixxx::Bpm bpm);
 
-    /// Set the master instantaneous BPM on every sync-enabled Syncable except
+    /// Set the Leader instantaneous BPM on every sync-enabled Syncable except
     /// pSource.
-    void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
+    void updateLeaderInstantaneousBpm(Syncable* pSource, mixxx::Bpm bpm);
 
-    /// Set the master beat distance on every sync-enabled Syncable except
+    /// Set the Leader beat distance on every sync-enabled Syncable except
     /// pSource.
-    void setMasterBeatDistance(Syncable* pSource, double beatDistance);
+    void updateLeaderBeatDistance(Syncable* pSource, double beatDistance);
 
-    void setMasterParams(Syncable* pSource, double beatDistance, double baseBpm, double bpm);
+    /// Initialize the leader parameters using the provided syncable as the source.
+    /// This should only be called for "major" updates, like a new track or change in
+    /// leader. Should not be called on every buffer callback.
+    void reinitLeaderParams(Syncable* pSource);
 
-    /// Check if there is only one playing syncable deck, and notify it if so.
-    void checkUniquePlayingSyncable();
+    /// Iff there is a single playing syncable in sync mode, return it.
+    /// This is used to initialize leader params.
+    Syncable* getUniquePlayingSyncedDeck() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
 
     /// Only for testing. Do not use.
-    Syncable* getMasterSyncable() override {
-        return m_pMasterSyncable;
+    Syncable* getLeaderSyncable() override {
+        return m_pLeaderSyncable;
     }
 
-    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);
-    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesMaster);
+    bool isSyncLeader(Syncable* pSyncable) {
+        if (isLeader(pSyncable->getSyncMode())) {
+            DEBUG_ASSERT(m_pLeaderSyncable == pSyncable);
+            return true;
+        }
+        return false;
+    }
+
+    // TODO: Remove pick algorithms during 2.4 development phase when new beatgrid detection
+    // and editing code is committed and we no longer need the lock bpm fallback option.
+    // If this code makes it to release we will all be very sad.
+    enum SyncLockAlgorithm {
+        // New behavior, which should work if beatgrids are reliable.
+        PREFER_IMPLICIT_LEADER,
+        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
+        // for auto DJ mode.
+        PREFER_LOCK_BPM
+    };
+
+    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsLeader);
+    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesLeader);
     FRIEND_TEST(EngineSyncTest, SyncToNonSyncDeck);
     FRIEND_TEST(EngineSyncTest, SetFileBpmUpdatesLocalBpm);
     FRIEND_TEST(EngineSyncTest, BpmAdjustFactor);
+    FRIEND_TEST(EngineSyncTest, MomentarySyncAlgorithmTwo);
     friend class EngineSyncTest;
 
     UserSettingsPointer m_pConfig;
     /// The InternalClock syncable.
     InternalClock* m_pInternalClock;
     /// The current Syncable that is the leader.
-    Syncable* m_pMasterSyncable;
+    Syncable* m_pLeaderSyncable;
     /// The list of all Syncables registered via addSyncableDeck.
     QList<Syncable*> m_syncables;
 };

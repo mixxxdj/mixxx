@@ -11,7 +11,6 @@
 #include "library/trackcollection.h"
 #include "moc_dlgprefcolors.cpp"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/compatibility.h"
 #include "util/math.h"
 #include "util/memory.h"
 
@@ -37,7 +36,7 @@ DlgPrefColors::DlgPrefColors(
           m_pReplaceCueColorDlg(new DlgReplaceCueColor(
                   pConfig,
                   pLibrary->dbConnectionPool(),
-                  pLibrary->trackCollections(),
+                  pLibrary->trackCollectionManager(),
                   this)) {
     setupUi(this);
     comboBoxHotcueColors->setIconSize(kPalettePreviewSize);
@@ -46,7 +45,7 @@ DlgPrefColors::DlgPrefColors(
     m_pReplaceCueColorDlg->setHidden(true);
     connect(m_pReplaceCueColorDlg,
             &DlgReplaceCueColor::databaseTracksChanged,
-            &(pLibrary->trackCollections()->internalCollection()->getTrackDAO()),
+            &(pLibrary->trackCollectionManager()->internalCollection()->getTrackDAO()),
             &TrackDAO::slotDatabaseTracksChanged);
 
     connect(comboBoxHotcueColors,
@@ -69,17 +68,15 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
-    loadSettings();
+    setScrollSafeGuardForAllInputWidgets(this);
+
+    slotUpdate();
 }
 
 DlgPrefColors::~DlgPrefColors() {
 }
 
 void DlgPrefColors::slotUpdate() {
-    loadSettings();
-}
-
-void DlgPrefColors::loadSettings() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
     for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {

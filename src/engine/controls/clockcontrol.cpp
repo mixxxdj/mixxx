@@ -16,23 +16,22 @@ constexpr double kSignificiantRateThreshold =
 } // namespace
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
-    m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
+        : EngineControl(group, pConfig),
+          m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
+          m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
+          m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
+          m_pLoopEndPosition(std::make_unique<ControlProxy>(group, "loop_end_position", this)),
+          m_lastPlayDirectionWasForwards(true),
+          m_lastEvaluatedPosition(mixxx::audio::kStartFramePos),
+          m_prevBeatPosition(mixxx::audio::kStartFramePos),
+          m_nextBeatPosition(mixxx::audio::kStartFramePos),
+          m_blinkIntervalFrames(0.0),
+          m_internalState(StateMachine::outsideIndicationArea) {
     m_pCOBeatActive->setReadOnly();
     m_pCOBeatActive->forceSet(0.0);
-    m_lastEvaluatedSample = 0;
-    m_PrevBeatSamples = 0;
-    m_InternalState = StateMachine::outsideIndicationArea;
-    m_NextBeatSamples = 0;
-    m_blinkIntervalSamples = 0;
-    m_pLoopEnabled = new ControlProxy(group, "loop_enabled", this);
-    m_pLoopStartPosition = new ControlProxy(group, "loop_start_position", this);
-    m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
 }
 
-ClockControl::~ClockControl() {
-    delete m_pCOBeatActive;
-}
+ClockControl::~ClockControl() = default;
 
 // called from an engine worker thread
 void ClockControl::trackLoaded(TrackPointer pNewTrack) {
@@ -49,150 +48,159 @@ void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
 }
 
-void ClockControl::process(const double dRate,
-        const double currentSample,
-        const int iBuffersize) {
-    Q_UNUSED(dRate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(iBuffersize);
-}
-
 void ClockControl::updateIndicators(const double dRate,
-        const double currentSample,
-        const double sampleRate) {
+        mixxx::audio::FramePos currentPosition,
+        mixxx::audio::SampleRate sampleRate) {
     /* This method sets the control beat_active is set to the following values:
-    *  0.0 --> No beat indication (ouside 20% area or play direction changed while indication was on)
+    *  0.0 --> No beat indication (outside 20% area or play direction changed while indication was on)
     *  1.0 --> Forward playing, set at the beat and set back to 0.0 at 20% of beat distance
     *  2.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
     */
 
     // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
-    // The kSignificiantRateThreshold condition ensures an immidiate indicator update, when the play/cue button is pressed
-    if ((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
-            (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate)) &&
+    // The kSignificiantRateThreshold condition ensures an immediate indicator update, when the play/cue button is pressed
+    if ((currentPosition <= (m_lastEvaluatedPosition + kStandStillTolerance * sampleRate)) &&
+            (currentPosition >= (m_lastEvaluatedPosition - kStandStillTolerance * sampleRate)) &&
             (fabs(dRate) <= kSignificiantRateThreshold)) {
         return;
     }
 
     // Position change more significiantly, but rate is zero. Occurs when pressing a cue point
-    // The m_InternalState needs to be taken into account here to prevent uneccessary events (state 0 -> state 0)
-    if ((dRate == 0.0) && (m_InternalState != StateMachine::outsideIndicationArea)) {
-        m_InternalState = StateMachine::outsideIndicationArea;
+    // The m_internalState needs to be taken into account here to prevent unnecessary events (state 0 -> state 0)
+    if ((dRate == 0.0) && (m_internalState != StateMachine::outsideIndicationArea)) {
+        m_internalState = StateMachine::outsideIndicationArea;
         m_pCOBeatActive->forceSet(0.0);
     }
 
-    double prevIndicatorSamples;
-    double nextIndicatorSamples;
+    mixxx::audio::FramePos prevIndicatorPosition;
+    mixxx::audio::FramePos nextIndicatorPosition;
 
     const mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        if ((currentSample >= m_NextBeatSamples) ||
-                (currentSample <= m_PrevBeatSamples)) {
-            pBeats->findPrevNextBeats(currentSample,
-                    &m_PrevBeatSamples,
-                    &m_NextBeatSamples,
+        if (!m_prevBeatPosition.isValid() || !m_nextBeatPosition.isValid() ||
+                currentPosition >= m_nextBeatPosition ||
+                currentPosition <= m_prevBeatPosition) {
+            pBeats->findPrevNextBeats(currentPosition,
+                    &m_prevBeatPosition,
+                    &m_nextBeatPosition,
                     false); // Precise compare without tolerance needed
         }
     } else {
-        m_PrevBeatSamples = -1;
-        m_NextBeatSamples = -1;
+        m_prevBeatPosition = mixxx::audio::kInvalidFramePos;
+        m_nextBeatPosition = mixxx::audio::kInvalidFramePos;
     }
 
     // Loops need special handling
     if (m_pLoopEnabled->toBool()) {
-        const double loop_start_position = m_pLoopStartPosition->get();
-        const double loop_end_position = m_pLoopEndPosition->get();
+        const auto loopStartPosition =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_pLoopStartPosition->get());
+        const auto loopEndPosition =
+                mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                        m_pLoopEndPosition->get());
 
-        if ((m_PrevBeatSamples < loop_start_position) && (m_NextBeatSamples >= loop_end_position)) {
+        if (m_prevBeatPosition.isValid() && m_nextBeatPosition.isValid() &&
+                loopStartPosition.isValid() && loopEndPosition.isValid() &&
+                m_prevBeatPosition < loopStartPosition &&
+                m_nextBeatPosition >= loopEndPosition) {
             // No beat inside loop -> show beat indication at loop_start_position
-            prevIndicatorSamples = loop_start_position;
-            nextIndicatorSamples = loop_end_position;
+            prevIndicatorPosition = loopStartPosition;
+            nextIndicatorPosition = loopEndPosition;
         } else {
-            prevIndicatorSamples = m_PrevBeatSamples;
-            nextIndicatorSamples = m_NextBeatSamples;
+            prevIndicatorPosition = m_prevBeatPosition;
+            nextIndicatorPosition = m_nextBeatPosition;
         }
 
-        if ((m_PrevBeatSamples != -1) && (m_NextBeatSamples != -1)) {
+        if (m_prevBeatPosition.isValid() && m_nextBeatPosition.isValid()) {
             // Don't overwrite interval at begin/end of track
-            if ((loop_end_position - loop_start_position) <
-                    (m_NextBeatSamples - m_PrevBeatSamples)) {
-                // Loops smaller than beat distance -> Set m_blinkIntervalSamples based on loop period
-                m_blinkIntervalSamples =
-                        (loop_end_position - loop_start_position) *
-                        kBlinkInterval;
+            if ((loopEndPosition - loopStartPosition) < (m_nextBeatPosition - m_prevBeatPosition)) {
+                // Loops smaller than beat distance -> Set m_blinkIntervalFrames based on loop period
+                m_blinkIntervalFrames = (loopEndPosition - loopStartPosition) * kBlinkInterval;
             } else {
-                m_blinkIntervalSamples =
-                        (nextIndicatorSamples - prevIndicatorSamples) *
+                m_blinkIntervalFrames =
+                        (nextIndicatorPosition - prevIndicatorPosition) *
                         kBlinkInterval;
             }
         }
     } else {
-        prevIndicatorSamples = m_PrevBeatSamples;
-        nextIndicatorSamples = m_NextBeatSamples;
+        prevIndicatorPosition = m_prevBeatPosition;
+        nextIndicatorPosition = m_nextBeatPosition;
 
-        if ((prevIndicatorSamples != -1) && (nextIndicatorSamples != -1)) {
+        if (prevIndicatorPosition.isValid() && nextIndicatorPosition.isValid()) {
             // Don't overwrite interval at begin/end of track
-            m_blinkIntervalSamples =
-                    (nextIndicatorSamples - prevIndicatorSamples) *
+            m_blinkIntervalFrames =
+                    (nextIndicatorPosition - prevIndicatorPosition) *
                     kBlinkInterval;
         }
     }
 
-    // The m_InternalState needs to be taken into account, to show a reliable beat indication for loops
+    // The m_internalState needs to be taken into account, to show a reliable beat indication for loops
     if (dRate > 0.0) {
-        if (m_lastPlayDirection == true) {
-            if ((currentSample > prevIndicatorSamples) &&
-                    (currentSample <
-                            prevIndicatorSamples + m_blinkIntervalSamples) &&
-                    (m_InternalState != StateMachine::afterBeatActive) &&
-                    (m_InternalState != StateMachine::afterBeatDirectionChanged)) {
-                m_InternalState = StateMachine::afterBeatActive;
+        if (m_lastPlayDirectionWasForwards) {
+            if (prevIndicatorPosition.isValid() &&
+                    currentPosition > prevIndicatorPosition &&
+                    currentPosition <
+                            (prevIndicatorPosition + m_blinkIntervalFrames) &&
+                    (m_internalState != StateMachine::afterBeatActive) &&
+                    (m_internalState !=
+                            StateMachine::afterBeatDirectionChanged)) {
+                m_internalState = StateMachine::afterBeatActive;
                 m_pCOBeatActive->forceSet(1.0);
-            } else if ((currentSample > prevIndicatorSamples +
-                                       m_blinkIntervalSamples) &&
-                    ((m_InternalState == StateMachine::afterBeatActive) ||
-                            (m_InternalState == StateMachine::afterBeatDirectionChanged))) {
-                m_InternalState = StateMachine::outsideIndicationArea;
+            } else if (prevIndicatorPosition.isValid() &&
+                    currentPosition >
+                            (prevIndicatorPosition + m_blinkIntervalFrames) &&
+                    (m_internalState == StateMachine::afterBeatActive ||
+                            m_internalState ==
+                                    StateMachine::afterBeatDirectionChanged)) {
+                m_internalState = StateMachine::outsideIndicationArea;
                 m_pCOBeatActive->forceSet(0.0);
             }
         } else {
             // Play direction changed while beat indicator was on and forward playing
-            if ((currentSample < nextIndicatorSamples) &&
-                    (currentSample >=
-                            nextIndicatorSamples - m_blinkIntervalSamples) &&
-                    (m_InternalState != StateMachine::beforeBeatDirectionChanged)) {
-                m_InternalState = StateMachine::beforeBeatDirectionChanged;
+            if (nextIndicatorPosition.isValid() &&
+                    currentPosition < nextIndicatorPosition &&
+                    currentPosition >=
+                            nextIndicatorPosition - m_blinkIntervalFrames &&
+                    m_internalState !=
+                            StateMachine::beforeBeatDirectionChanged) {
+                m_internalState = StateMachine::beforeBeatDirectionChanged;
                 m_pCOBeatActive->forceSet(0.0);
             }
         }
-        m_lastPlayDirection = true; // Forward
+        m_lastPlayDirectionWasForwards = true;
     } else if (dRate < 0.0) {
-        if (m_lastPlayDirection == false) {
-            if ((currentSample < nextIndicatorSamples) &&
-                    (currentSample >
-                            nextIndicatorSamples - m_blinkIntervalSamples) &&
-                    (m_InternalState != StateMachine::beforeBeatActive) &&
-                    (m_InternalState != StateMachine::beforeBeatDirectionChanged)) {
-                m_InternalState = StateMachine::beforeBeatActive;
+        if (!m_lastPlayDirectionWasForwards) {
+            if (nextIndicatorPosition.isValid() &&
+                    currentPosition < nextIndicatorPosition &&
+                    currentPosition >
+                            (nextIndicatorPosition - m_blinkIntervalFrames) &&
+                    m_internalState != StateMachine::beforeBeatActive &&
+                    m_internalState !=
+                            StateMachine::beforeBeatDirectionChanged) {
+                m_internalState = StateMachine::beforeBeatActive;
                 m_pCOBeatActive->forceSet(2.0);
-            } else if ((currentSample < nextIndicatorSamples -
-                                       m_blinkIntervalSamples) &&
-                    ((m_InternalState == StateMachine::beforeBeatActive) ||
-                            (m_InternalState == StateMachine::beforeBeatDirectionChanged))) {
-                m_InternalState = StateMachine::outsideIndicationArea;
+            } else if (nextIndicatorPosition.isValid() &&
+                    currentPosition <
+                            (nextIndicatorPosition - m_blinkIntervalFrames) &&
+                    (m_internalState == StateMachine::beforeBeatActive ||
+                            m_internalState ==
+                                    StateMachine::beforeBeatDirectionChanged)) {
+                m_internalState = StateMachine::outsideIndicationArea;
                 m_pCOBeatActive->forceSet(0.0);
             }
         } else {
             // Play direction changed while beat indicator was on and reverse playing
-            if ((currentSample > prevIndicatorSamples) &&
-                    (currentSample <=
-                            prevIndicatorSamples + m_blinkIntervalSamples) &&
-                    (m_InternalState != StateMachine::afterBeatDirectionChanged)) {
-                m_InternalState = StateMachine::afterBeatDirectionChanged;
+            if (prevIndicatorPosition.isValid() &&
+                    currentPosition > prevIndicatorPosition &&
+                    currentPosition <=
+                            (prevIndicatorPosition + m_blinkIntervalFrames) &&
+                    m_internalState !=
+                            StateMachine::afterBeatDirectionChanged) {
+                m_internalState = StateMachine::afterBeatDirectionChanged;
                 m_pCOBeatActive->forceSet(0.0);
             }
         }
-        m_lastPlayDirection = false; // Reverse
+        m_lastPlayDirectionWasForwards = false;
     }
-    m_lastEvaluatedSample = currentSample;
+    m_lastEvaluatedPosition = currentPosition;
 }

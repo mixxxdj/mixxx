@@ -6,7 +6,9 @@
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerprogress.h"
+#include "analyzer/analyzerscheduledtrack.h"
+#include "analyzer/trackanalysisscheduler.h"
+#include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
 #endif
@@ -17,6 +19,7 @@
 #include "util/parented_ptr.h"
 
 class AnalysisFeature;
+class BrowseFeature;
 class ControlObject;
 class CrateFeature;
 class ExternalTrackCollection;
@@ -48,8 +51,6 @@ class Library: public QObject {
     Q_OBJECT
 
   public:
-    static const QString kConfigGroup;
-
     Library(QObject* parent,
             UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
@@ -64,10 +65,11 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
-    TrackCollectionManager* trackCollections() const;
+    TrackCollectionManager* trackCollectionManager() const;
 
-    // Deprecated: Obtain directly from TrackCollectionManager
-    TrackCollection& trackCollection();
+    TrackAnalysisScheduler::Pointer createTrackAnalysisScheduler(
+            int numWorkerThreads,
+            AnalyzerModeFlags modeFlags) const;
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
@@ -75,6 +77,11 @@ class Library: public QObject {
                     KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
+
+    /// Needed for exposing models to QML
+    LibraryTableModel* trackTableModel() const;
+
+    bool isTrackIdInCurrentLibraryView(const TrackId& trackId);
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -85,12 +92,6 @@ class Library: public QObject {
     }
 
     //static Library* buildDefaultLibrary();
-
-    enum class RemovalType {
-        KeepTracks,
-        HideTracks,
-        PurgeTracks
-    };
 
     static const int kDefaultRowHeightPx;
 
@@ -111,17 +112,17 @@ class Library: public QObject {
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
-    void slotLoadLocationToPlayer(const QString& location, const QString& group);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group, bool play);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
     void slotRequestAddDir(const QString& directory);
-    void slotRequestRemoveDir(const QString& directory, Library::RemovalType removalType);
+    void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
+    void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -130,11 +131,15 @@ class Library: public QObject {
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
+    void selectTrack(const TrackId&);
     void trackSelected(TrackPointer pTrack);
+    void analyzeTracks(const QList<AnalyzerScheduledTrack>& tracks);
 #ifdef __ENGINEPRIME__
     void exportLibrary();
     void exportCrate(CrateId crateId);
 #endif
+    void saveModelState();
+    void restoreModelState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
@@ -158,10 +163,12 @@ class Library: public QObject {
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
+    WLibrary* m_pLibraryWidget;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;

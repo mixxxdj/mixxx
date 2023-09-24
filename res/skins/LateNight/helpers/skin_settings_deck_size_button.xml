@@ -1,0 +1,30 @@
+<!--
+Description:
+  2-state button for skin settings menu.
+  Can be squeezed so that all skin settings categories fit on small screens.
+Variables:
+  width         :
+  state_X_text  : label text for state X
+  Setting       : persistent left-click control
+-->
+<Template>
+  <PushButton>
+    <ObjectName>SkinSettingsNumToggle</ObjectName>
+    <Size><Variable name="Width"/>,18f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="Text"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="Text"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true">[LateNight],show_<Variable name="Size"/>_deck</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

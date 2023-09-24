@@ -1,5 +1,4 @@
 #pragma once
-
 #include <QDomNode>
 #include <QImage>
 
@@ -14,6 +13,12 @@ class WaveformSignalColors;
 
 class WOverview;
 
+class QOpenGLTexture;
+
+namespace allshader {
+class WaveformRenderMark;
+}
+
 class WaveformMark {
   public:
     WaveformMark(
@@ -22,6 +27,7 @@ class WaveformMark {
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+    ~WaveformMark();
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
@@ -85,7 +91,7 @@ class WaveformMark {
         return m_labelColor;
     }
 
-    // Check if a point (in image co-ordinates) lies on drawn image.
+    // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
     QColor m_textColor;
@@ -101,6 +107,8 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by allshader::WaveformRenderMark
+    friend class allshader::WaveformRenderMark;
     int m_iHotCue;
     QImage m_image;
 
@@ -113,21 +121,34 @@ class WaveformMark {
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
-inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    double leftPosition = lhs->getSamplePosition();
-    int leftHotcue = lhs->getHotCue();
-    double rightPosition = rhs->getSamplePosition();
-    int rightHotcue = rhs->getHotCue();
-    if (leftPosition == rightPosition) {
-        // Sort WaveformMarks without hotcues before those with hotcues;
-        // if both have hotcues, sort numerically by hotcue number.
-        if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
-            return true;
-        } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
-            return false;
-        } else {
-            return leftHotcue < rightHotcue;
-        }
+// This class provides an immutable sortkey for the WaveformMark using sample
+// position and hotcue number. IMPORTANT: The Mark's position may be changed after
+// a key's creation, and those updates will not be reflected in these sortkeys.
+// Currently they are used to render marks on the Overview, a situation where
+// temporarily incorrect sort order is acceptable.
+class WaveformMarkSortKey {
+  public:
+    WaveformMarkSortKey(double samplePosition, int hotcue)
+            : m_samplePosition(samplePosition),
+              m_hotcue(hotcue) {
     }
-    return leftPosition < rightPosition;
-}
+
+    bool operator<(const WaveformMarkSortKey& other) const {
+        if (m_samplePosition == other.m_samplePosition) {
+            // Sort WaveformMarks without hotcues before those with hotcues;
+            // if both have hotcues, sort numerically by hotcue number.
+            if (m_hotcue == Cue::kNoHotCue && other.m_hotcue != Cue::kNoHotCue) {
+                return true;
+            } else if (m_hotcue != Cue::kNoHotCue && other.m_hotcue == Cue::kNoHotCue) {
+                return false;
+            } else {
+                return m_hotcue < other.m_hotcue;
+            }
+        }
+        return m_samplePosition < other.m_samplePosition;
+    }
+
+  private:
+    double m_samplePosition;
+    int m_hotcue;
+};

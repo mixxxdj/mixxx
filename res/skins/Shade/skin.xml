@@ -58,20 +58,20 @@
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <attribute config_key="[Master],num_decks">2</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
-      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute config_key="[App],num_decks">2</attribute>
+      <attribute config_key="[App],num_samplers">8</attribute>
+      <attribute config_key="[App],num_preview_decks">1</attribute>
       <!--Optionally, make elements visible on skin load-->
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1],show">0</attribute>
-      <attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <attribute persist="false" config_key="[Skin],show_effectrack">0</attribute>
+      <attribute persist="false" config_key="[Skin],show_microphones">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_previewdecks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library_coverart">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
 
@@ -80,10 +80,6 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel1]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel3]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Channel4]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Sampler3]_enable">0</attribute>
@@ -100,10 +96,6 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel1]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel3]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Channel4]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[Sampler3]_enable">0</attribute>
@@ -120,10 +112,6 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel1]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel3]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Channel4]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[Sampler3]_enable">0</attribute>
@@ -140,10 +128,6 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel1]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel2]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel3]_enable">0</attribute>
-      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Channel4]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler1]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler2]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Sampler3]_enable">0</attribute>
@@ -216,7 +200,9 @@
   ############################################################################################
   -->
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style_mac.qss"/>
+  <Style src="skin:style.qss"
+         src-linux="skin:../default-menu-styles-linux.qss"
+         src-windows="skin:../default-menu-styles-windows.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
     <LaunchImageStyle>
@@ -255,6 +241,14 @@
     ############################################################################################
     ############################################################################################
     -->
+    <SetVariable name="PassthroughLabelColor">#55F764</SetVariable>
+    <!-- Shade has overview and waveform very close, so it would be redundant and distracting
+        to paint the 'Passthrough' labels on both with an alarming color.
+        This is the regular background color, so the label will be invisible: -->
+    <SetVariable name="PassthroughLabelColorWaveform">#8d98a3</SetVariable>
+    <!-- This is slightly brighter that the background: -->
+    <!-- <SetVariable name="PassthroughLabelColorWaveform">#9fabb7</SetVariable> -->
+
     <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
@@ -394,7 +388,7 @@
 
           </Children>
           <Connection>
-            <ConfigKey>[Master],maximize_library</ConfigKey>
+            <ConfigKey>[Skin],show_maximized_library</ConfigKey>
             <BindProperty>visible</BindProperty>
             <Transform><Not/></Transform>
           </Connection>

@@ -16,11 +16,15 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
         WTrackMenu::Feature::Reset |
+        WTrackMenu::Feature::Analyze |
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Export |
-        WTrackMenu::Feature::Properties;
+        WTrackMenu::Feature::Properties |
+        WTrackMenu::Feature::UpdateReplayGainFromPregain |
+        WTrackMenu::Feature::FindOnWeb |
+        WTrackMenu::Feature::SelectInLibrary;
 } // namespace
 
 WTrackText::WTrackText(QWidget* pParent,
@@ -83,7 +87,7 @@ void WTrackText::mouseMoveEvent(QMouseEvent *event) {
 void WTrackText::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         m_pTrackMenu->slotShowDlgTrackInfo();
     }
 }
@@ -99,7 +103,7 @@ void WTrackText::dropEvent(QDropEvent *event) {
 void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack);
+        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
     }

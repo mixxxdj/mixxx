@@ -19,6 +19,14 @@ class ControlPickerMenu : public QMenu {
     QString descriptionForConfigKey(const ConfigKey& key) const;
     QString controlTitleForConfigKey(const ConfigKey& key) const;
 
+    // share translated group strings
+    QMap<QString, QString> getNumGroupsTrMap() const {
+        return m_numGroupsTrMap;
+    }
+    QMap<QString, QString> getOtherGroupsTrMap() const {
+        return m_otherGroupsTrMap;
+    }
+
   signals:
     // Emitted when the user selects a control from the menu.
     void controlPicked(const ConfigKey& control);
@@ -28,7 +36,7 @@ class ControlPickerMenu : public QMenu {
     void controlChosen(int controlIndex);
 
   private:
-    QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
+    QMenu* addSubmenu(QString title, QMenu* pParent = NULL);
     void addSingleControl(const QString& group,
             const QString& control,
             const QString& title,
@@ -88,10 +96,14 @@ class ControlPickerMenu : public QMenu {
             bool microphoneControls,
             bool auxControls,
             bool addReset = false);
+    void addLibraryControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu);
 
     int addAvailableControl(const ConfigKey& key, const QString& title, const QString& description);
 
-    QString m_effectMasterOutputStr;
+    QString m_effectMainOutputStr;
     QString m_effectHeadphoneOutputStr;
     QString m_deckStr;
     QString m_previewdeckStr;
@@ -103,9 +115,13 @@ class ControlPickerMenu : public QMenu {
     QString m_effectUnitStr;
     QString m_effectStr;
     QString m_parameterStr;
+    QString m_buttonParameterStr;
     QString m_libraryStr;
 
     QList<ConfigKey> m_controlsAvailable;
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;
+
+    QMap<QString, QString> m_numGroupsTrMap;
+    QMap<QString, QString> m_otherGroupsTrMap;
 };

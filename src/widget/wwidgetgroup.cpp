@@ -6,7 +6,7 @@
 #include <QStylePainter>
 
 #include "moc_wwidgetgroup.cpp"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
@@ -120,6 +120,8 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 
     QLayout* pLayout = nullptr;
     QString layout;
+    bool layoutIsStacked = false;
+
     if (context.hasNodeSelectString(node, "Layout", &layout)) {
         if (layout == "vertical") {
             pLayout = new QVBoxLayout();
@@ -129,12 +131,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
             auto* pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
-            // Adding a zero-size dummy widget as index 0 here before
-            // any child is added in the xml template works around
-            // https://bugs.launchpad.net/mixxx/+bug/1627859
-            QWidget *dummyWidget = new QWidget();
-            dummyWidget->setFixedSize(0, 0);
-            pLayout->addWidget(dummyWidget);
+            layoutIsStacked = true;
         }
 
         // Set common layout parameters.
@@ -152,6 +149,16 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 
     if (pLayout) {
         setLayout(pLayout);
+
+        if (layoutIsStacked) {
+            // Without this zero-sized dummy widget being added before
+            // any child widgets, the stacked layout would force-show
+            // the top item, i.e. ignore the state of its 'visible' connection.
+            // See https://github.com/mixxxdj/mixxx/issues/8655
+            QWidget* dummyWidget = new QWidget();
+            dummyWidget->setFixedSize(0, 0);
+            pLayout->addWidget(dummyWidget);
+        }
     }
 }
 

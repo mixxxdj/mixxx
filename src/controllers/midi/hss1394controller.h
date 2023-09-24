@@ -39,8 +39,7 @@ class Hss1394Controller : public MidiController {
   public:
     Hss1394Controller(
             const hss1394::TNodeInfo& deviceInfo,
-            int deviceIndex,
-            UserSettingsPointer pConfig);
+            int deviceIndex);
     ~Hss1394Controller() override;
 
   private slots:

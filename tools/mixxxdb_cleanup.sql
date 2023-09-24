@@ -47,9 +47,6 @@ DELETE FROM PlaylistTracks WHERE track_id NOT IN (SELECT id FROM library);
 -- Analysis
 DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations);
 
--- Custom Tags (scheduled for 2.4.0)
---DELETE FROM track_custom_tags WHERE track_id NOT IN (SELECT id FROM library);
-
 -----------------------------------------------------------------------
 -- Fix referential integrity issues in external libraries (optional) --
 -- Enable conditionally depending on the contents of mixxxdb.sqlite  --
@@ -79,6 +76,13 @@ DELETE FROM track_analysis WHERE track_id NOT IN (SELECT id FROM track_locations
 -- Post-cleanup maintenance                                          --
 -----------------------------------------------------------------------
 
+-- Rebuild the entire database file
+-- https://www.sqlite.org/lang_vacuum.html
 VACUUM;
 
-PRAGMA optimize;
+-- According to Richard Hipp himself executing VACUUM before ANALYZE is the
+-- recommended order: https://sqlite.org/forum/forumpost/62fb63a29c5f7810?t=h
+
+-- Update statistics for the query planner
+-- https://www.sqlite.org/lang_analyze.html
+ANALYZE;

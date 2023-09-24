@@ -26,7 +26,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     ~PlaylistFeature() override = default;
 
     QVariant title() override;
-    QIcon getIcon() override;
 
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
@@ -39,7 +38,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private slots:
     void slotPlaylistTableChanged(int playlistId) override;
-    void slotPlaylistContentChanged(QSet<int> playlistIds) override;
+    void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   protected:
@@ -49,5 +48,4 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const override;
-    const QIcon m_icon;
 };

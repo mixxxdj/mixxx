@@ -11,6 +11,7 @@ namespace {
 constexpr double kdMaxDelayPot = 500;
 const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
         mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
+const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
 EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist)
@@ -23,7 +24,7 @@ EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bo
     connect(m_pDelayPot, &ControlObject::valueChanged, this,
             &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 
-    m_pSampleRate = new ControlProxy(group, "samplerate", this);
+    m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
     m_pSampleRate->connectValueChanged(this, &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 }
 
@@ -50,6 +51,11 @@ void EngineDelay::slotDelayChanged() {
 
 void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
+        // The "+ kiMaxDelay" addition ensures positive values for the modulo calculation.
+        // From a mathematical point of view, this addition can be removed. Anyway,
+        // from the cpp point of view, the modulo operator for negative values
+        // (for example, x % y, where x is a negative value) produces negative results
+        // (but in math the result value is positive).
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
         VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0) {

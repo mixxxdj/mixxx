@@ -501,7 +501,7 @@ midi_for_light.sendMidiMtcFullFrame = function(value, group, control) { // sends
     midi.sendSysexMsg(fullframe, 10);
 };
 
-midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send midi note for beat and the BPM vaelue
+midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send midi note for beat and the BPM value
     var deck = parseInt(group.substring(8, 9)) - 1;
     var deck_bpm = parseInt(engine.getValue(group, "bpm")) - 50;
 

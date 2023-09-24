@@ -9,3 +9,7 @@ WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
 bool WLibraryTextBrowser::hasFocus() const {
     return QWidget::hasFocus();
 }
+
+void WLibraryTextBrowser::setFocus() {
+    QWidget::setFocus();
+}

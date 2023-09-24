@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_KeyFinder QUIET libKeyFinder>=2.0)
@@ -61,12 +63,15 @@ find_library(KeyFinder_LIBRARY
 )
 mark_as_advanced(KeyFinder_LIBRARY)
 
+if(DEFINED PC_KeyFinder_VERSION AND NOT PC_KeyFinder_VERSION STREQUAL "")
+  set(KeyFinder_VERSION "${PC_KeyFinder_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   KeyFinder
-  DEFAULT_MSG
-  KeyFinder_LIBRARY
-  KeyFinder_INCLUDE_DIR
+  REQUIRED_VARS KeyFinder_LIBRARY KeyFinder_INCLUDE_DIR
+  VERSION_VAR KeyFinder_VERSION
 )
 
 if(KeyFinder_FOUND)
@@ -82,5 +87,12 @@ if(KeyFinder_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_KeyFinder_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${KeyFinder_INCLUDE_DIR}"
     )
+    is_static_library(KeyFinder_IS_STATIC KeyFinder::KeyFinder)
+    if(KeyFinder_IS_STATIC)
+      find_package(FFTW REQUIRED)
+      set_property(TARGET KeyFinder::KeyFinder APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        FFTW::FFTW
+      )
+    endif()
   endif()
 endif()

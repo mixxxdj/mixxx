@@ -99,6 +99,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         comboBoxSplitting->setCurrentIndex(4);
     }
 
+    setScrollSafeGuard(comboBoxSplitting);
+
     // Do the one-time connection of signals here.
     connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
     connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
@@ -328,13 +330,11 @@ void DlgPrefRecord::updateTextQuality() {
     bool isVbr = false;
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        int i=0;
         for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
                 }
-                i++;
             }
         }
     }

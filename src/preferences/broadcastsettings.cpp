@@ -9,6 +9,7 @@
 #include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
 #include "util/logger.h"
+#include "util/make_const_iterator.h"
 #include "util/memory.h"
 
 namespace {
@@ -68,7 +69,7 @@ void BroadcastSettings::loadProfiles() {
         loadLegacySettings(defaultProfile);
 
         addProfile(defaultProfile);
-        saveProfile(defaultProfile);
+        saveProfile(&*defaultProfile);
     }
 }
 
@@ -97,13 +98,13 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
             &BroadcastProfile::connectionStatusChanged,
             this,
             &BroadcastSettings::onConnectionStatusChanged);
-    m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
+    m_profiles.insert(profile->getProfileName(), profile);
 
     emit profileAdded(profile);
     return true;
 }
 
-bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
+bool BroadcastSettings::saveProfile(BroadcastProfile* profile) {
     if (!profile) {
         return false;
     }
@@ -135,20 +136,12 @@ QString BroadcastSettings::filePathForProfile(const QString& profileName) {
     return QDir(getProfilesFolder()).absoluteFilePath(filename);
 }
 
-QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
-    if (!profile) {
-        return QString();
-    }
-
-    return filePathForProfile(profile->getProfileName());
+QString BroadcastSettings::filePathForProfile(const BroadcastProfile& profile) {
+    return filePathForProfile(profile.getProfileName());
 }
 
-bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
-    if (!profile) {
-        return false;
-    }
-
-    QString filename = profile->getLastFilename();
+bool BroadcastSettings::deleteFileForProfile(const BroadcastProfile& profile) {
+    QString filename = profile.getLastFilename();
     if (filename.isEmpty()) {
         // no file was saved, there is no file to delete
         return false;
@@ -168,8 +161,9 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& kv : qAsConst(m_profiles)) {
-        saveProfile(kv);
+    for (const auto& pProfile : qAsConst(m_profiles)) {
+        DEBUG_ASSERT(pProfile);
+        saveProfile(&*pProfile);
     }
     emit profilesChanged();
 }
@@ -184,8 +178,8 @@ void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QStri
         m_profiles.insert(newName, profile);
         emit profileRenamed(oldName, profile);
 
-        deleteFileForProfile(profile);
-        saveProfile(profile);
+        deleteFileForProfile(*profile);
+        saveProfile(&*profile);
     }
 }
 
@@ -194,8 +188,8 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    auto it = m_profiles.begin() + index;
-    return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
+    auto it = std::next(m_profiles.begin(), index);
+    return it != m_profiles.end() ? it.value() : nullptr;
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
@@ -209,14 +203,15 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+    for (auto profileIter = m_profiles.constBegin(); profileIter != m_profiles.constEnd();) {
         QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
             const auto removedProfile = *profileIter;
-            deleteFileForProfile(removedProfile);
-            profileIter = m_profiles.erase(profileIter);
+            DEBUG_ASSERT(removedProfile);
+            deleteFileForProfile(*removedProfile);
+            profileIter = constErase(&m_profiles, profileIter);
             emit profileRemoved(removedProfile);
         } else {
             ++profileIter;

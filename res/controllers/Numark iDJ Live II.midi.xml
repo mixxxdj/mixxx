@@ -47,8 +47,8 @@
 	</options>
       </control>
       <control>
-	<group>[Master]</group>
-	<key>maximize_library</key>
+	<group>[Skin]</group>
+	<key>show_maximized_library</key>
 	<status>0x90</status>
 	<midino>0x4F</midino>
       </control>

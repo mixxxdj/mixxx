@@ -29,9 +29,12 @@
         <file>images/library/ic_library_traktor.svg</file>
         <file>images/library/ic_library_rekordbox.svg</file>
         <file>images/library/ic_library_serato.svg</file>
-      <!-- logo and icon for 'About' dialog -->
+      <!-- logo and icons for 'About' dialog -->
         <file>images/mixxx_logo.svg</file>
-        <file>images/mixxx_icon.svg</file>
+        <file>images/icons/scalable/apps/mixxx.svg</file>
+        <file>images/heart_icon_light.svg</file>
+        <file>images/heart_icon_dark.svg</file>
+        <file>images/heart_icon_rainbow.svg</file>
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
@@ -84,6 +87,8 @@
         <file>images/preferences/light/ic_custom.svg</file>
         <file>images/preferences/light/ic_mixxx_symbolic.svg</file>
         <file>images/preferences/light/ic_none.svg</file>
+        <!-- skin oversize warning -->
+        <file>images/preferences/ic_preferences_warning.svg</file>
         <file>schema.xml</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>

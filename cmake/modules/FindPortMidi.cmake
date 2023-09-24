@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2020 Mixxx Development Team
+# Copyright (C) 2001-2023 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -61,13 +61,15 @@ find_library(PortTime_LIBRARY
 )
 mark_as_advanced(PortTime_LIBRARY)
 
+if(DEFINED PC_PortMidi_VERSION AND NOT PC_PortMidi_VERSION STREQUAL "")
+  set(PortMidi_VERSION "${PC_PortMidi_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   PortMidi
-  DEFAULT_MSG
-  PortMidi_LIBRARY
-  PortMidi_INCLUDE_DIR
-  PortTime_INCLUDE_DIR
+  REQUIRED_VARS PortMidi_LIBRARY PortMidi_INCLUDE_DIR PortTime_INCLUDE_DIR
+  VERSION_VAR PortMidi_VERSION
 )
 
 if(PortMidi_FOUND)

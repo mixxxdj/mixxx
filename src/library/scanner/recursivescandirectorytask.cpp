@@ -1,7 +1,8 @@
 #include "library/scanner/recursivescandirectorytask.h"
 
 #include <QCryptographicHash>
-#include <QDirIterator>
+#include <QDir>
+#include <QFileInfo>
 
 #include "library/scanner/importfilestask.h"
 #include "library/scanner/libraryscanner.h"
@@ -19,7 +20,7 @@ RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
 }
 
 void RecursiveScanDirectoryTask::run() {
-    ScopedTimer timer("RecursiveScanDirectoryTask::run");
+    ScopedTimer timer(u"RecursiveScanDirectoryTask::run");
     if (m_scannerGlobal->shouldCancel()) {
         setSuccess(false);
         return;
@@ -34,8 +35,10 @@ void RecursiveScanDirectoryTask::run() {
     // Filter from the QDir so we have to set it first. If the QDir has not done
     // any FS operations yet then this should be lightweight.
     auto dir = m_dirAccess.info().toQDir();
-    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator it(dir);
+    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot | QDir::System);
+    // sort directory by file name to increase chance that files are sorted sensible
+    dir.setSorting(QDir::SortFlag::DirsFirst | QDir::SortFlag::Name);
+    const QFileInfoList children = dir.entryInfoList();
 
     std::list<QFileInfo> filesToImport;
     std::list<QFileInfo> possibleCovers;
@@ -43,24 +46,29 @@ void RecursiveScanDirectoryTask::run() {
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
-    // TODO(rryan) benchmark QRegExp copy versus QMutex/QRegExp in ScannerGlobal
+    // TODO(rryan) benchmark QRegularExpression copy versus QMutex/QRegularExpression in ScannerGlobal
     // versus slicing the extension off and checking for set/list containment.
-    QRegExp supportedExtensionsRegex =
+    QRegularExpression supportedExtensionsRegex =
             m_scannerGlobal->supportedExtensionsRegex();
-    QRegExp supportedCoverExtensionsRegex =
+    QRegularExpression supportedCoverExtensionsRegex =
             m_scannerGlobal->supportedCoverExtensionsRegex();
 
-    while (it.hasNext()) {
-        QString currentFile = it.next();
-        QFileInfo currentFileInfo = it.fileInfo();
+    for (const auto& currentFileInfo : children) {
+        QString currentFile = currentFileInfo.filePath();
 
         if (currentFileInfo.isFile()) {
             const QString& fileName = currentFileInfo.fileName();
-            if (supportedExtensionsRegex.indexIn(fileName) != -1) {
+            const QRegularExpressionMatch supportedExtensionsMatch =
+                    supportedExtensionsRegex.match(fileName);
+            if (supportedExtensionsMatch.hasMatch()) {
                 hasher.addData(currentFile.toUtf8());
                 filesToImport.push_back(currentFileInfo);
-            } else if (supportedCoverExtensionsRegex.indexIn(fileName) != -1) {
-                possibleCovers.push_back(currentFileInfo);
+            } else {
+                const QRegularExpressionMatch supportedCoverExtensionsMatch =
+                        supportedCoverExtensionsRegex.match(fileName);
+                if (supportedCoverExtensionsMatch.hasMatch()) {
+                    possibleCovers.push_back(currentFileInfo);
+                }
             }
         } else {
             // File is a directory

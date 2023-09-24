@@ -1,17 +1,19 @@
 #pragma once
 
 #include <QObject>
+#include <QSurfaceFormat>
 #include <QVector>
 #include <vector>
 
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
-class WVuMeter;
+class WVuMeterLegacy;
+class WVuMeterBase;
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class VSyncThread;
@@ -92,6 +94,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     /// dialog.
     bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
     WaveformWidgetType::Type getType() const { return m_type;}
+    int getHandleIndex() {
+        return findHandleIndexFromType(m_type);
+    }
+    int findHandleIndexFromType(WaveformWidgetType::Type type);
+
+    /// Returns the desired surface format for the OpenGLWindow
+    static QSurfaceFormat getSurfaceFormat();
 
   protected:
     bool setWidgetType(
@@ -115,10 +124,11 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
-    void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
+    void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void destroyWidgets();
 
-    void addTimerListener(WVuMeter* pWidget);
+    void addVuMeter(WVuMeterLegacy* pWidget);
+    void addVuMeter(WVuMeterBase* pWidget);
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
@@ -136,6 +146,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void waveformMeasured(float frameRate, int droppedFrames);
     void renderSpinnies(VSyncThread*);
     void swapSpinnies();
+    void renderVuMeters(VSyncThread*);
+    void swapVuMeters();
 
   public slots:
     void slotSkinLoaded();
@@ -152,11 +164,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private:
     void evaluateWidgets();
+    template<typename WaveformT>
+    QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
-    int findHandleIndexFromType(WaveformWidgetType::Type type);
 
     //All type of available widgets
 

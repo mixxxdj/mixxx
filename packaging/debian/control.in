@@ -56,7 +56,15 @@ Build-Depends: debhelper (>= 11),
                libmodplug-dev,
                libmp3lame-dev,
                libebur128-dev,
+               libwavpack-dev,
+               libudev-dev,
+# Note: libdjinterop is available within the Mixxx PPA
+               libdjinterop-dev,
+               libmsgsl-dev,
 # for running mixxx-test
+               libgtest-dev,
+               libgmock-dev,
+               libbenchmark-dev,
                xvfb
 Rules-Requires-Root: no
 Standards-Version: 4.1.4

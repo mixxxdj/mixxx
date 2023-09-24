@@ -1,14 +1,13 @@
 #pragma once
 
-#include "waveform/renderers/glwaveformrenderer.h"
+#include "waveform/renderers/glwaveformrenderersignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveform/renderers/waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderersignal.h"
 
 class ControlObject;
 
-class GLVSyncTestRenderer : public WaveformRendererSignalBase,
-                            public GLWaveformRenderer {
+class GLVSyncTestRenderer : public GLWaveformRendererSignal {
   public:
     explicit GLVSyncTestRenderer(
             WaveformWidgetRenderer* waveformWidgetRenderer);
