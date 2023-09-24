@@ -90,9 +90,7 @@ EngineMixer::EngineMixer(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
     m_pAudioLatencyUsage->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
     m_pAudioLatencyOverload = new ControlObject(
-            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")),
-            0.0,
-            1.0);
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")));
     m_pAudioLatencyOverload->addAlias(
             ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload")));
 
