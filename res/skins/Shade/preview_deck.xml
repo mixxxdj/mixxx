@@ -208,7 +208,7 @@
                     <Layout>horizontal</Layout>
                     <Children>
                       <StatusLight>
-                        <TooltipId>preview_PeakIndicator</TooltipId>
+                        <TooltipId>preview_peak_indicator</TooltipId>
                         <PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
                         <PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
                         <Connection>

@@ -18,13 +18,13 @@
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="side">L</SetVariable>
             <SetVariable name="tooltip_meter">main_VuMeterL</SetVariable>
-            <SetVariable name="tooltip_clip">main_PeakIndicatorL</SetVariable>
+            <SetVariable name="tooltip_clip">main_peak_indicator_left</SetVariable>
           </Template>
           <Template src="skin:vumeter_v.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="side">R</SetVariable>
             <SetVariable name="tooltip_meter">main_VuMeterR</SetVariable>
-            <SetVariable name="tooltip_clip">main_PeakIndicatorR</SetVariable>
+            <SetVariable name="tooltip_clip">main_peak_indicator_right</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

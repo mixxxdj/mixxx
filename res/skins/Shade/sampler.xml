@@ -379,7 +379,7 @@
             <Pos>3,7</Pos>
             <Children>
               <StatusLight>
-                <TooltipId>sampler_PeakIndicator</TooltipId>
+                <TooltipId>sampler_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
                 <Connection>

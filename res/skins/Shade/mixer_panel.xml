@@ -917,7 +917,7 @@
               **********************************************
               -->
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>107,57</Pos>
@@ -926,7 +926,7 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>143,57</Pos>
@@ -935,7 +935,7 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>main_PeakIndicatorL</TooltipId>
+                <TooltipId>main_peak_indicator_left</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
@@ -944,7 +944,7 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>main_PeakIndicatorR</TooltipId>
+                <TooltipId>main_peak_indicator_right</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>

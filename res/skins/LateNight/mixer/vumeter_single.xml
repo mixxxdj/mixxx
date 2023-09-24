@@ -19,7 +19,7 @@
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <StatusLight>
-        <TooltipId><Variable name="ChannelType"/>_PeakIndicator</TooltipId>
+        <TooltipId><Variable name="ChannelType"/>_peak_indicator</TooltipId>
         <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
         <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_active.png</PathStatusLight>
         <Connection>

@@ -10,7 +10,7 @@
       **********************************************
       -->
       <StatusLight>
-        <TooltipId>auxiliary_PeakIndicator</TooltipId>
+        <TooltipId>auxiliary_peak_indicator</TooltipId>
         <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>99,6</Pos>

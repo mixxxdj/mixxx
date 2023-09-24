@@ -88,32 +88,32 @@ void Tooltips::addStandardTooltips() {
             << resetWithRightAndDoubleClick;
 
     QString clippingHelp = tr("(too loud for the hardware and is being distorted).");
-    add("channel_PeakIndicator")
+    add("channel_peak_indicator")
             << tr("Channel Peak Indicator")
             << tr("Indicates when the signal on the channel is clipping,")
             << clippingHelp;
 
-    add("channel_PeakIndicatorL")
+    add("channel_peak_indicator_left")
             << tr("Channel L Peak Indicator")
             << tr("Indicates when the left signal on the channel is clipping,")
             << clippingHelp;
 
-    add("channel_PeakIndicatorR")
+    add("channel_peak_indicator_right")
             << tr("Channel R Peak Indicator")
             << tr("Indicates when the right signal on the channel is clipping,")
             << clippingHelp;
 
-    add("main_PeakIndicator")
+    add("main_peak_indicator")
             << tr("Main Output Peak Indicator")
             << tr("Indicates when the signal on the main output is clipping,")
             << clippingHelp;
 
-    add("main_PeakIndicatorL")
+    add("main_peak_indicator_left")
             << tr("Main Output L Peak Indicator")
             << tr("Indicates when the left signal on the main output is clipping,")
             << clippingHelp;
 
-    add("main_PeakIndicatorR")
+    add("main_peak_indicator_right")
             << tr("Main Output R Peak Indicator")
             << tr("Indicates when the right signal on the main output is clipping,")
             << clippingHelp;
@@ -134,7 +134,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Microphone Volume Meter")
             << tr("Shows the current microphone volume.");
 
-    add("microphone_PeakIndicator")
+    add("microphone_peak_indicator")
             << tr("Microphone Peak Indicator")
             << tr("Indicates when the signal on the microphone is clipping,")
             << clippingHelp;
@@ -143,7 +143,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Auxiliary Volume Meter")
             << tr("Shows the current auxiliary volume.");
 
-    add("auxiliary_PeakIndicator")
+    add("auxiliary_peak_indicator")
             << tr("Auxiliary Peak Indicator")
             << tr("Indicates when the signal on the auxiliary is clipping,")
             << clippingHelp;
@@ -152,7 +152,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Sampler Volume Meter")
             << tr("Shows the current sampler volume.");
 
-    add("sampler_PeakIndicator")
+    add("sampler_peak_indicator")
             << tr("Sampler Peak Indicator")
             << tr("Indicates when the signal on the sampler is clipping,")
             << clippingHelp;
@@ -161,7 +161,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Preview Deck Volume Meter")
             << tr("Shows the current Preview Deck volume.");
 
-    add("preview_PeakIndicator")
+    add("preview_peak_indicator")
             << tr("Preview Deck Peak Indicator")
             << tr("Indicates when the signal on the Preview Deck is clipping,")
             << clippingHelp;

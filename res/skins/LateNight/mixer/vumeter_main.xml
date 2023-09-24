@@ -24,7 +24,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>main_PeakIndicatorL</TooltipId>
+            <TooltipId>main_peak_indicator_left</TooltipId>
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
@@ -53,7 +53,7 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>main_PeakIndicatorR</TooltipId>
+            <TooltipId>main_peak_indicator_right</TooltipId>
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
