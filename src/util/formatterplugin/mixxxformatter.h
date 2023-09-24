@@ -38,7 +38,7 @@ class ZeroPad : public Filter {
     };
 };
 
-/// Rounds a double to n precission (default = 0)
+/// Rounds a double to n precision (default = 0)
 class Rounder : public Filter {
   public:
     Rounder(){};

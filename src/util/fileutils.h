@@ -7,7 +7,8 @@ const QString kDefaultDirReplacementCharacter = QString("-");
 
 class FileUtils {
   public:
-    // returns a filename that is safe on all platforms and does not contain unwanted characters like newline
+    // returns a filename that is safe on all platforms and does not contain
+    // unwanted characters like newline
     static QString safeFilename(const QString& input,
             const QString& replacement = kDefaultFileReplacementCharacter);
     static QString replaceDirChars(const QString& input,

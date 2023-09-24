@@ -82,7 +82,7 @@ QMap<QString, mixxx::FileInfo> TrackExportWorker::createCopylist(const TrackPoin
         const auto fileName = fileInfo.fileName();
         QString destFileName = generateFilename(pTrack, index, 0);
         if (destFileName.isEmpty()) {
-            //qWarning() << "pattern generated empty filename for:" << it;
+            // qWarning() << "pattern generated empty filename for:" << it;
             skippedTracks->append(pTrack);
             continue;
         }

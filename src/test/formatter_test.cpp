@@ -14,7 +14,7 @@ TEST_F(FormatterTest, TestRangeGroupFilter) {
     // Generate a file name for the temporary file
     auto engine = Formatter::getEngine(nullptr);
     auto context = new Context();
-    //context->insert("x1", "122");
+    // context->insert("x1", "122");
     Template t1 = engine->newTemplate(QStringLiteral("{{143|rangegroup}}"), QStringLiteral("t1"));
 
     auto pattern = t1->render(context);
@@ -59,7 +59,7 @@ TEST_F(FormatterTest, TestZeropadFilter) {
     // Generate a file name for the temporary file
     auto engine = Formatter::getEngine(nullptr);
     auto context = new Context();
-    //context->insert("x1", "122");
+    // context->insert("x1", "122");
     Template t1 = engine->newTemplate(QStringLiteral("{{1|zeropad}}"), QStringLiteral("t1"));
 
     EXPECT_EQ(t1->render(context),
@@ -81,7 +81,7 @@ TEST_F(FormatterTest, TestRoundFilter) {
     // Generate a file name for the temporary file
     auto engine = Formatter::getEngine(nullptr);
     auto context = new Context();
-    //context->insert("x1", "122");
+    // context->insert("x1", "122");
     Template t1 = engine->newTemplate(QStringLiteral("{{x1|round}}"), QStringLiteral("t1"));
     context->insert("x1", QVariant(1.49));
     EXPECT_EQ(t1->render(context),
