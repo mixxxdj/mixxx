@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QOpenGLFunctions>
 #include <QOpenGLTexture>
 #include <memory>
 
@@ -8,7 +9,7 @@
 #include "widget/wvumeterbase.h"
 #include "widget/wwidget.h"
 
-class WVuMeterGLSL : public WVuMeterBase {
+class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     Q_OBJECT
   public:
     explicit WVuMeterGLSL(QWidget* pParent = nullptr);

@@ -85,7 +85,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
-    ControlProxy* m_pMainAudioLatencyOverloadCount;
+    ControlProxy* m_pAudioLatencyOverloadCount;
     ControlProxy* m_pMainLatency;
     ControlProxy* m_pHeadDelay;
     ControlProxy* m_pMainDelay;

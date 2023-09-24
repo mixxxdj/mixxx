@@ -178,12 +178,12 @@
                     <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[App],audio_latency_overload</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup><!-- LatencyMeterBox -->

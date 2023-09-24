@@ -1845,6 +1845,7 @@ add_executable(mixxx-test
   src/test/controlobjecttest.cpp
   src/test/controlobjectaliastest.cpp
   src/test/controlobjectscripttest.cpp
+  src/test/controlpotmetertest.cpp
   src/test/coreservicestest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp

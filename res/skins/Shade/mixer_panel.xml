@@ -518,7 +518,7 @@
                 <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
                 <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[App],audio_latency_overload</ConfigKey>
                 </Connection>
               </StatusLight>
 
@@ -537,7 +537,7 @@
                     <PeakFallStep>1</PeakFallStep>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>

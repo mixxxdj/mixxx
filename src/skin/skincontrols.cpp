@@ -16,7 +16,7 @@ SkinControls::SkinControls()
           m_showMicrophones(ConfigKey(kSkinGroup, QStringLiteral("show_microphones")),
                   true,
                   true),
-          m_showPreviewDecks(ConfigKey(kSkinGroup, QStringLiteral("show_previewdecks")),
+          m_showPreviewDecks(ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")),
                   true,
                   true),
           m_showSamplers(ConfigKey(kSkinGroup, QStringLiteral("show_samplers")),

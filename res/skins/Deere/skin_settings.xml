@@ -293,7 +293,7 @@
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_previewdeck</SetVariable>
             <SetVariable name="text">Preview Deck</SetVariable>
-            <SetVariable name="skinsetting">[Skin],show_previewdecks</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_preview_decks</SetVariable>
           </Template>
 
           <Template src="skin:../Deere/skinsettings_button.xml">

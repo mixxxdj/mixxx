@@ -710,7 +710,7 @@ Description:
 
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">
             <SetVariable name="text">Preview Deck</SetVariable>
-            <SetVariable name="Setting">[Skin],show_previewdecks</SetVariable>
+            <SetVariable name="Setting">[Skin],show_preview_decks</SetVariable>
           </Template>
 
           <Template src="skin:../Tango/controls/skin_settings_button_2state.xml">

@@ -39,7 +39,7 @@ SoundDeviceNetwork::SoundDeviceNetwork(
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
-          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
           m_targetTime(0) {
@@ -517,11 +517,11 @@ void SoundDeviceNetwork::updateAudioLatencyUsage(SINT framesPerBuffer) {
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate > (m_sampleRate.toDouble() / CPU_USAGE_UPDATE_RATE)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_mainAudioLatencyUsage.set(secInAudioCb /
+        m_audioLatencyUsage.set(secInAudioCb /
                 (m_framesSinceAudioLatencyUsageUpdate / m_sampleRate.toDouble()));
         m_timeInAudioCallback = mixxx::Duration::empty();
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        // qDebug() << m_mainAudioLatencyUsage->get();
+        // qDebug() << m_audioLatencyUsage->get();
     }
 
     qint64 currentTime = m_pNetworkStream->getInputStreamTimeUs();

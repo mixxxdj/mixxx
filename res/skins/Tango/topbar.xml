@@ -343,7 +343,7 @@ Description:
                     <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter><!-- /latency usage -->
                 </Children>

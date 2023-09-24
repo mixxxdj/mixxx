@@ -22,6 +22,8 @@ void WVuMeterGLSL::draw() {
 }
 
 void WVuMeterGLSL::initializeGL() {
+    initializeOpenGLFunctions();
+
     m_pTextureBack.reset(createTexture(m_pPixmapBack));
     m_pTextureVu.reset(createTexture(m_pPixmapVu));
     m_textureShader.init();
