@@ -922,7 +922,7 @@
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>107,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel1],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
@@ -931,7 +931,7 @@
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>143,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel2],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
@@ -940,7 +940,7 @@
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_left</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
@@ -949,7 +949,7 @@
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_right</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>

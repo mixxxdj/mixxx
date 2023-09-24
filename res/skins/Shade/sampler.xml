@@ -383,7 +383,7 @@
                 <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>

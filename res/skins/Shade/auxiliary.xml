@@ -15,7 +15,7 @@
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>99,6</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
 

@@ -23,7 +23,7 @@
         <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
         <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_active.png</PathStatusLight>
         <Connection>
-          <ConfigKey><Variable name="Group"/>,PeakIndicator</ConfigKey>
+          <ConfigKey><Variable name="Group"/>,peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
       <VuMeter>
