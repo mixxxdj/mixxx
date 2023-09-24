@@ -61,8 +61,9 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
 
     DEBUG_ASSERT(n > 0);
     const int beatOffset = m_beatOffset + n;
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     const auto origValue = m_value;
-    (void)origValue;
+#endif
 
     // Detect integer overflow
     if (beatOffset < m_beatOffset) {
@@ -108,8 +109,9 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
 
     DEBUG_ASSERT(n > 0);
     const int beatOffset = m_beatOffset - n;
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     const auto origValue = m_value;
-    (void)origValue;
+#endif
 
     // Detect integer overflow
     if (beatOffset > m_beatOffset) {
