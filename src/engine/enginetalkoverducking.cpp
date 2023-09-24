@@ -54,6 +54,12 @@ EngineTalkoverDucking::~EngineTalkoverDucking() {
     delete m_pTalkoverDucking;
 }
 
+void EngineTalkoverDucking::addAlias(
+        const ConfigKey& duckStrengthKey, const ConfigKey& talkoverDuckingKey) {
+    m_pDuckStrength->addAlias(duckStrengthKey);
+    m_pTalkoverDucking->addAlias(talkoverDuckingKey);
+}
+
 void EngineTalkoverDucking::slotSampleRateChanged(double samplerate) {
     setParameters(
             kDuckThreshold,
