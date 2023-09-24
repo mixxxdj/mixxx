@@ -56,7 +56,6 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
     auto pEngineMixer = std::make_shared<EngineMixer>(
             m_pConfig,
-            "[Master]",
             pEffectsManager.get(),
             pChannelHandleFactory,
             true);
@@ -121,7 +120,6 @@ TEST_F(ControlObjectAliasTest, PlayerManager) {
     auto pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
     auto pEngineMixer = std::make_shared<EngineMixer>(
             m_pConfig,
-            "[Master]",
             pEffectsManager.get(),
             pChannelHandleFactory,
             true);

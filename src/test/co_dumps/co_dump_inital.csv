@@ -43,7 +43,7 @@
 [Channel2],beatloop_16_enabled,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter2_toggle,0
 [EffectRack1_EffectUnit4_Effect3],parameter4_set_default,0
-[Master],headDelay_set_one,0
+[Mixer],headphone_delay_set_one,0
 [EffectRack1_EffectUnit2_Effect2],parameter4_set_default,0
 [Channel3],hotcue_15_enabled,0
 [EffectRack1_EffectUnit3_Effect4],parameter4_minus_toggle,0
@@ -57,7 +57,7 @@
 [QuickEffectRack1_[Channel2]],mix_up_small,0
 [EffectRack1_EffectUnit2_Effect1],parameter4_set_default,0
 [EffectRack1_EffectUnit3_Effect1],parameter4_minus_toggle,0
-[Master],duckStrength_up,0
+[Mixer],talkover_ducking_strength_up,0
 [EffectRack1_EffectUnit2_Effect4],parameter3_type,0
 [EqualizerRack1_[Master]_Effect1],button_parameter16_loaded,0
 [Sampler2],hotcue_16_gotoandstop,0
@@ -70,7 +70,7 @@
 [QuickEffectRack1_[Channel3]_Effect1],parameter1_set_zero,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter7_toggle,0
 [EffectRack1_EffectUnit3_Effect2],parameter4_minus_toggle,0
-[Master],balance_minus_toggle,0
+[Mixer],balance_minus_toggle,0
 [EffectRack1_EffectUnit1_Effect4],parameter3_minus_toggle,0
 [EffectRack1_EffectUnit4_Effect1],parameter2_link_type,0
 [Channel3],beatloop_16_enabled,0
@@ -164,14 +164,14 @@
 [EqualizerRack1_[Channel3]_Effect1],parameter14_down,0
 [EffectRack1_EffectUnit2_Effect1],parameter3_type,0
 [Sampler3],hotcue_16_gotoandstop,0
-[Master],balance_up_small,0
+[Mixer],balance_up_small,0
 [EffectRack1_EffectUnit2_Effect1],parameter3_link_type,0
 [EffectRack1_EffectUnit1_Effect4],parameter9_minus_toggle,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter9_type,0
 [EqualizerRack1_[Channel1]_Effect1],button_parameter4_type,0
 [Channel3],volume_minus_toggle,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter8_set_one,0
-[Master],headGain_set_one,0
+[Mixer],headphone_gain_set_one,0
 [Sampler4],hotcue_27_gotoandplay,0
 [EffectRack1_EffectUnit4_Effect2],num_parameters,0
 [Channel4],sync_leader,0
@@ -183,7 +183,7 @@
 [Sampler1],playposition_up,0
 [Sampler1],rate_dir,1
 [EffectRack1_EffectUnit1_Effect1],parameter7_minus_toggle,0
-[Master],delay_set_default,0
+[Mixer],main_delay_set_default,0
 [EffectRack1_EffectUnit2_Effect3],parameter2_link_type,0
 [Channel4],volume_minus_toggle,0
 [Sampler1],hotcue_37_gotoandplay,0
@@ -237,7 +237,7 @@
 [EffectRack1_EffectUnit3_Effect3],parameter8_minus_toggle,0
 [EffectRack1_EffectUnit2_Effect2],parameter6_set_minus_one,0
 [EffectRack1_EffectUnit2_Effect4],button_parameter11_type,0
-[Master],headGain_up,0
+[Mixer],headphone_gain_up,0
 [PreviewDeck1],hotcue_26_goto,0
 [EffectRack1_EffectUnit1_Effect1],parameter8_minus_toggle,0
 [EqualizerRack1_[Channel1]_Effect1],parameter5_set_one,0
@@ -439,7 +439,7 @@
 [EqualizerRack1_[Master]_Effect1],parameter1_set_one,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter10_down_small,0
 [Sampler3],vinylcontrol_enabled,0
-[Master],balance_set_default,0
+[Mixer],balance_set_default,0
 [EffectRack1_EffectUnit1_Effect3],parameter14_loaded,0
 [Channel2],loop_move_0.03125_backward,0
 [Sampler3],hotcue_21_enabled,0
@@ -578,7 +578,7 @@
 [Channel3],hotcue_8_gotoandstop,0
 [Channel1],waveform_zoom_set_minus_one,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter9_set_one,0
-[Master],delay_up,0
+[Mixer],main_delay_up,0
 [EffectRack1_EffectUnit1_Effect1],parameter11_type,0
 [Sampler3],beatjump_0.0625_backward,0
 [EffectRack1_EffectUnit1_Effect2],parameter15_loaded,0
@@ -814,7 +814,7 @@
 [EffectRack1_EffectUnit3_Effect4],parameter3_up_small,0
 [EffectRack1_EffectUnit4_Effect4],parameter8_up_small,0
 [EqualizerRack1_[Master]_Effect1],parameter11_down_small,0
-[Master],headGain_toggle,0
+[Mixer],headphone_gain_toggle,0
 [EffectRack1_EffectUnit4_Effect2],parameter13_link_type,0
 [EffectRack1_EffectUnit3_Effect2],parameter10_loaded,0
 [EffectRack1_EffectUnit1_Effect3],parameter16_down_small,0
@@ -1098,7 +1098,7 @@
 [QuickEffectRack1_[Channel4]_Effect1],parameter6_set_one,0
 [Sampler4],hotcue_17_position,-1
 [EffectRack1_EffectUnit1_Effect2],parameter16_down_small,0
-[Master],duckStrength_toggle,0
+[Mixer],talkover_ducking_strength_toggle,0
 [Sampler2],visual_key_distance_set_zero,0
 [Channel3],beatloop_2_enabled,0
 [EffectRack1_EffectUnit2_Effect4],parameter7_link_type,0
@@ -1214,7 +1214,7 @@
 [Channel1],beatlooproll_8_activate,0
 [Channel4],hotcue_15_gotoandplay,0
 [Sampler1],hotcue_31_activate_preview,0
-[Master],balance_set_minus_one,0
+[Mixer],balance_set_minus_one,0
 [PreviewDeck1],playposition,0.5
 [EqualizerRack1_[Master]_Effect1],parameter7_down,0
 [Sampler3],hotcue_11_position,-1
@@ -1273,7 +1273,7 @@
 [PreviewDeck1],hotcue_33_activate_preview,0
 [PreviewDeck1],pregain_toggle,0
 [EffectRack1_EffectUnit3_Effect3],parameter5_link_inverse,0
-[Master],headMix_set_one,0
+[Mixer],headphone_mix_set_one,0
 [EffectRack1_EffectUnit3_Effect4],parameter1_set_minus_one,0
 [EqualizerRack1_[Master]],num_effects,0
 [Sampler4],rateSearch_down,0
@@ -1316,7 +1316,7 @@
 [Channel2],replaygain,0
 [EffectRack1_EffectUnit3_Effect2],parameter15_down,0
 [Sampler3],hotcue_26_clear,0
-[Master],headMix_minus_toggle,0
+[Mixer],headphone_mix_minus_toggle,0
 [Sampler3],beatloop_64_enabled,0
 [EffectRack1_EffectUnit3_Effect4],parameter13_set_minus_one,0
 [Microphone3],volume_up,0
@@ -1499,7 +1499,7 @@
 [EffectRack1_EffectUnit3_Effect1],parameter1_set_zero,0
 [EffectRack1_EffectUnit1_Effect1],parameter3_link_inverse,0
 [EffectRack1_EffectUnit3_Effect2],parameter6_link_inverse,0
-[Master],crossfader_set_minus_one,0
+[Mixer],crossfader_set_minus_one,0
 [EffectRack1_EffectUnit2_Effect1],parameter10_set_default,0
 [Channel4],beatloop_1_enabled,0
 [EffectRack1_EffectUnit3_Effect4],parameter9_set_default,0
@@ -1650,7 +1650,7 @@
 [PreviewDeck1],hotcue_14_position,-1
 [PreviewDeck1],hotcue_19_enabled,0
 [Channel1],hotcue_21_activate_preview,0
-[Master],balance_set_zero,0
+[Mixer],balance_set_zero,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter7_set_one,0
 [Sampler1],visual_key_distance_up_small,0
 [EffectRack1_EffectUnit4_Effect4],enabled,1
@@ -1689,7 +1689,7 @@
 [EffectRack1_EffectUnit3_Effect3],parameter3_set_zero,0
 [EffectRack1_EffectUnit4_Effect3],parameter8_set_zero,0
 [Channel3],playposition,0.5
-[Master],headGain_set_default,0
+[Mixer],headphone_gain_set_default,0
 [EffectRack1_EffectUnit3_Effect1],parameter2_set_one,0
 [EffectRack1_EffectUnit2_Effect2],enabled,1
 [PreviewDeck1],hotcue_10_position,-1
@@ -1720,7 +1720,7 @@
 [EffectRack1_EffectUnit1_Effect4],parameter8_link_inverse,0
 [EffectRack1_EffectUnit3_Effect1],parameter9_link_inverse,0
 [EffectRack1_EffectUnit3_Effect3],parameter10_down_small,0
-[Master],headDelay_set_default,0
+[Mixer],headphone_delay_set_default,0
 [PreviewDeck1],hotcue_26_position,-1
 [Channel2],hotcue_31_set,0
 [EffectRack1_EffectUnit2_Effect4],enabled,1
@@ -1854,7 +1854,7 @@
 [Sampler4],hotcue_21_gotoandstop,0
 [Sampler2],hotcue_15_activate_preview,0
 [Channel2],hotcue_35_clear,0
-[Master],headGain_set_zero,0
+[Mixer],headphone_gain_set_zero,0
 [EffectRack1_EffectUnit4_Effect1],button_parameter8_type,0
 [EffectRack1_EffectUnit1_Effect4],parameter6_link_inverse,0
 [Channel4],hotcue_19_enabled,0
@@ -1871,7 +1871,7 @@
 [Channel3],hotcue_19_enabled,0
 [EqualizerRack1_[Channel3]],super1_down_small,0
 [EqualizerRack1_[Channel1]_Effect1],parameter2_loaded,1
-[Master],enabled,1
+[Mixer],main_enabled,1
 [Sampler2],hotcue_31_gotoandstop,0
 [Sampler4],hotcue_29_gotoandstop,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter9_down_small,0
@@ -1904,7 +1904,7 @@
 [ReplayGain],DefaultBoost,0.501187
 [Channel3],hotcue_32_set,0
 [Sampler3],hotcue_32_gotoandplay,0
-[Master],headGain,1
+[Mixer],headphone_gain,1
 [Sampler1],hotcue_21_gotoandstop,0
 [EffectRack1_EffectUnit3_Effect3],parameter8_set_minus_one,0
 [EqualizerRack1_[Channel1]_Effect1],parameter9_up,0
@@ -1944,7 +1944,7 @@
 [EqualizerRack1_[Channel4]],mix_set_default,0
 [PreviewDeck1],back,0
 [Microphone3],vu_meter_right,0
-[Master],headDelay_toggle,0
+[Mixer],headphone_delay_toggle,0
 [Mixer Profile],HiEQFrequency_set_default,0
 [EffectRack1_EffectUnit3_Effect2],parameter10_down_small,0
 [EffectRack1_EffectUnit1_Effect3],button_parameter15,0
@@ -2087,10 +2087,10 @@
 [InternalClock],bpm_up,0
 [EffectRack1_EffectUnit3_Effect4],parameter11_down_small,0
 [EqualizerRack1_[Channel4]_Effect1],parameter5_up,0
-[Master],headMix_set_minus_one,0
+[Mixer],headphone_mix_set_minus_one,0
 [Sampler2],beat_next,-1
 [QuickEffectRack1_[Channel3]_Effect1],button_parameter13_type,0
-[Master],gain_minus_toggle,0
+[Mixer],main_gain_minus_toggle,0
 [Channel1],rateSearch_set_default,0
 [PreviewDeck1],hotcue_9_gotoandplay,0
 [Channel4],playposition_down_small,0
@@ -2326,7 +2326,7 @@
 [EffectRack1_EffectUnit3_Effect4],num_parameterslots,16
 [Channel2],waveform_zoom_set_zero,0
 [Sampler3],hotcue_8_position,-1
-[Master],headMix,-1
+[Mixer],headphone_mix,-1
 [Sampler4],hotcue_21_goto,0
 [EffectRack1_EffectUnit4_Effect1],parameter5_down_small,0
 [EqualizerRack1_[Channel2]_Effect1],parameter9_up,0
@@ -2431,7 +2431,7 @@
 [Sampler3],hotcue_8_gotoandstop,0
 [Channel1],pitch_adjust,0
 [Sampler3],beatloop_4_enabled,0
-[Master],duckStrength_up_small,0
+[Mixer],talkover_ducking_strength_up_small,0
 [Channel2],hotcue_37_enabled,0
 [Sampler3],beats_adjust_faster,0
 [EffectRack1_EffectUnit4_Effect4],parameter13_link_inverse,0
@@ -2467,7 +2467,7 @@
 [Channel2],reverseroll,0
 [Channel2],hotcue_33_set,0
 [Channel4],reverse,0
-[Master],crossfader_set_one,0
+[Mixer],crossfader_set_one,0
 [EqualizerRack1_[Channel4]_Effect1],parameter4_set_zero,0
 [ReplayGain],DefaultBoost_toggle,0
 [Sampler1],start_play,0
@@ -2570,7 +2570,7 @@
 [Master],rate_down,0
 [Mixer Profile],LoEQFrequency_down,0
 [Sampler3],beatloop_0.5_toggle,0
-[Master],crossfader_up,0
+[Mixer],crossfader_up,0
 [EffectRack1_EffectUnit3_Effect2],parameter11_up,0
 [EffectRack1_EffectUnit4_Effect2],parameter13_up,0
 [EffectRack1_EffectUnit4_Effect1],parameter16_link_inverse,0
@@ -2599,7 +2599,7 @@
 [QuickEffectRack1_[Channel2]],group_[Channel2]_enable,1
 [EffectRack1_EffectUnit2_Effect3],parameter16_link_inverse,0
 [EqualizerRack1_[Channel2]_Effect1],parameter13_up,0
-[Master],delay_up_small,0
+[Mixer],main_delay_up_small,0
 [Channel2],hotcue_8_gotoandplay,0
 [Channel2],reverse,0
 [Sampler2],cue_gotoandplay,0
@@ -2703,7 +2703,7 @@
 [EffectRack1_EffectUnit4_Effect4],button_parameter15_type,0
 [EffectRack1_EffectUnit4_Effect3],parameter14_type,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter13,0
-[Master],crossfader_minus_toggle,0
+[Mixer],crossfader_minus_toggle,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter12,0
 [Sampler1],hotcue_20_activate_preview,0
 [Channel4],beatlooproll_16_activate,0
@@ -2732,7 +2732,7 @@
 [EffectRack1_EffectUnit2_Effect4],parameter5_up,0
 [Channel2],hotcue_7_clear,0
 [PreviewDeck1],hotcue_22_activate,0
-[Master],crossfader_set_zero,0
+[Mixer],crossfader_set_zero,0
 [EffectRack1_EffectUnit2_Effect3],parameter5_type,0
 [EffectRack1_EffectUnit1_Effect3],parameter3_up,0
 [EffectRack1_EffectUnit2_Effect3],parameter9_up,0
@@ -2770,7 +2770,7 @@
 [EffectRack1_EffectUnit4_Effect4],parameter11_link_inverse,0
 [Channel1],waveform_zoom_up_small,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter14_type,0
-[Master],headGain_minus_toggle,0
+[Mixer],headphone_gain_minus_toggle,0
 [Channel1],hotcue_12_clear,0
 [PreviewDeck1],hotcue_24_activate_preview,0
 [Channel4],beatloop_32_activate,0
@@ -3145,7 +3145,7 @@
 [EffectRack1_EffectUnit3_Effect4],button_parameter6_type,0
 [Channel3],visual_key_distance,0
 [Sampler1],end_of_track,0
-[Master],duckStrength,0.9
+[Mixer],talkover_ducking_strength,0.9
 [Channel2],pitch_adjust_down_small,0
 [EffectRack1_EffectUnit3_Effect1],parameter11_set_minus_one,0
 [EffectRack1_EffectUnit1_Effect2],parameter2_toggle,0
@@ -3830,7 +3830,7 @@
 [Channel3],hotcue_28_set,0
 [Channel2],hotcue_15_position,-1
 [EffectRack1_EffectUnit3_Effect4],parameter2_set_default,0
-[Master],gain_down,0
+[Mixer],main_gain_down,0
 [EffectRack1_EffectUnit1_Effect2],parameter12_up_small,0
 [EffectRack1_EffectUnit2_Effect2],parameter11_up_small,0
 [Channel1],rateRange,0.1
@@ -4470,7 +4470,7 @@
 [Sampler2],visual_key_distance_set_default,0
 [PreviewDeck1],hotcue_6_activate_preview,0
 [EffectRack1_EffectUnit1_Effect4],parameter9_type,0
-[Master],headDelay_up,0
+[Mixer],headphone_delay_up,0
 [EqualizerRack1_[Master]_Effect1],parameter13_type,0
 [Channel3],visual_key_distance_minus_toggle,0
 [EffectRack1_EffectUnit3_Effect4],parameter8_set_one,0
@@ -4681,14 +4681,14 @@
 [EffectRack1_EffectUnit3_Effect4],parameter12_type,0
 [EffectRack1_EffectUnit1_Effect1],button_parameter16_loaded,0
 [Channel1],hotcue_37_gotoandplay,0
-[Master],gain,1
+[Mixer],main_gain,1
 [EffectRack1_EffectUnit2_Effect2],parameter5_set_minus_one,0
 [Channel4],eject,0
 [Channel1],cue_default,0
 [PreviewDeck1],cue_goto,0
 [Channel4],rate_temp_up_small,0
 [EffectRack1_EffectUnit3_Effect1],button_parameter10_loaded,0
-[Master],duckStrength_down_small,0
+[Mixer],talkover_ducking_strength_down_small,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter11_up_small,0
 [EqualizerRack1_[Channel3]_Effect1],parameter9_toggle,0
 [Channel4],hotcue_7_activate_preview,0
@@ -4725,7 +4725,7 @@
 [EffectRack1_EffectUnit3_Effect1],button_parameter7_type,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter2_up,0
 [Channel4],hotcue_30_clear,0
-[Master],duckStrength_set_one,0
+[Mixer],talkover_ducking_strength_set_one,0
 [EffectRack1_EffectUnit4_Effect4],parameter16_set_one,0
 [Channel2],beatloop_1_activate,0
 [EffectRack1_EffectUnit3_Effect1],button_parameter13_loaded,0
@@ -4799,7 +4799,7 @@
 [InternalClock],bpm_set_one,0
 [EffectRack1_EffectUnit1_Effect1],button_parameter12_loaded,0
 [EffectRack1_EffectUnit2],group_[Channel4]_enable,0
-[Master],crossfader_down,0
+[Mixer],crossfader_down,0
 [Sampler3],volume_up,0
 [EffectRack1_EffectUnit1_Effect1],parameter12_type,0
 [Channel1],hotcue_17_gotoandplay,0
@@ -4971,7 +4971,7 @@
 [Sampler4],beatjump_2_forward,0
 [EqualizerRack1_[Channel3]_Effect1],button_parameter2_loaded,1
 [QuickEffectRack1_[Channel3]_Effect1],parameter15_set_default,0
-[Master],balance,0
+[Mixer],balance,0
 [Sampler3],hotcue_4_activate,0
 [Channel3],visual_key_distance_set_default,0
 [Sampler1],hotcue_6_activate,0
@@ -5121,7 +5121,7 @@
 [QuickEffectRack1_[Channel2]_Effect1],parameter15_set_default,0
 [Channel3],hotcue_11_activate_preview,0
 [Channel4],hotcue_34_goto,0
-[Master],gain_set_minus_one,0
+[Mixer],main_gain_set_minus_one,0
 [Channel2],hotcue_29_clear,0
 [Channel1],hotcue_31_enabled,0
 [EffectRack1_EffectUnit2_Effect1],parameter1_minus_toggle,0
@@ -5249,7 +5249,7 @@
 [EffectRack1_EffectUnit1_Effect4],parameter14_down,0
 [Sampler1],hotcue_30_gotoandplay,0
 [Sampler3],hotcue_28_gotoandplay,0
-[Master],delay_down,0
+[Mixer],main_delay_down,0
 [EffectRack1_EffectUnit4_Effect3],parameter13_down_small,0
 [EqualizerRack1_[Master]_Effect1],parameter5_link_type,0
 [Microphone],volume_up,0
@@ -5258,7 +5258,7 @@
 [EffectRack1_EffectUnit4_Effect4],parameter4_down_small,0
 [Channel2],hotcue_30_gotoandstop,0
 [Channel4],hotcue_28_gotoandstop,0
-[Master],headDelay_down_small,0
+[Mixer],headphone_delay_down_small,0
 [Sampler3],hotcue_7_set,0
 [EffectRack1_EffectUnit4_Effect2],parameter1_minus_toggle,0
 [EffectRack1_EffectUnit2_Effect1],parameter2_down,0
@@ -5303,7 +5303,7 @@
 [EqualizerRack1_[Channel1]_Effect1],clear,0
 [Channel1],beatloop_32_enabled,0
 [Channel3],hotcue_18_gotoandstop,0
-[Master],balance_toggle,0
+[Mixer],balance_toggle,0
 [Sampler1],beatlooproll_0.5_activate,0
 [ReplayGain],DefaultBoost_minus_toggle,0
 [Channel4],hotcue_19_clear,0
@@ -5729,7 +5729,7 @@
 [Sampler1],hotcue_37_gotoandstop,0
 [EffectRack1_EffectUnit3_Effect2],parameter5,0
 [EqualizerRack1_[Channel1]],mix_up,0
-[Master],gain_set_default,0
+[Mixer],main_gain_set_default,0
 [EffectRack1_EffectUnit3_Effect2],parameter4,0
 [EffectRack1_EffectUnit3_Effect2],parameter7,0
 [EffectRack1_EffectUnit1_Effect1],parameter16_set_minus_one,0
@@ -6068,7 +6068,7 @@
 [EffectRack1_EffectUnit1_Effect3],parameter15_set_one,0
 [Sampler2],hotcue_1_gotoandplay,0
 [Channel2],hotcue_34_activate,0
-[Master],duckStrength_set_default,0
+[Mixer],talkover_ducking_strength_set_default,0
 [Channel3],pitch_adjust_set_minus_one,0
 [Channel4],hotcue_30_activate,0
 [EffectRack1_EffectUnit1_Effect4],parameter15_set_one,0
@@ -6154,7 +6154,7 @@
 [EffectRack1_EffectUnit4_Effect3],effect_selector,0
 [Channel2],beatjump_0.0625_backward,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter7_loaded,0
-[Master],headMix_up,0
+[Mixer],headphone_mix_up,0
 [Channel2],beatjump_8_backward,0
 [Mixer Profile],LoEQFrequency_down_small,0
 [Channel2],hotcue_20_goto,0
@@ -6389,7 +6389,7 @@
 [Sampler1],pregain_minus_toggle,0
 [Sampler4],total_gain,0
 [EffectRack1_EffectUnit4_Effect3],parameter8_up,0
-[Master],balance_set_one,0
+[Mixer],balance_set_one,0
 [PreviewDeck1],beatloop_64_enabled,0
 [EqualizerRack1_[Channel1]_Effect1],parameter15_type,0
 [EffectRack1_EffectUnit1_Effect3],parameter13_set_zero,0
@@ -6598,7 +6598,7 @@
 [QuickEffectRack1_[Channel1]_Effect1],parameter12_link_type,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter15_link_type,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter13_link_type,0
-[Master],headDelay_minus_toggle,0
+[Mixer],headphone_delay_minus_toggle,0
 [Channel4],hotcue_33_goto,0
 [QuickEffectRack1_[Channel4]_Effect1],clear,0
 [EffectRack1_EffectUnit3_Effect4],parameter15_set_zero,0
@@ -7018,7 +7018,7 @@
 [EffectRack1_EffectUnit4_Effect1],parameter8_set_default,0
 [EffectRack1_EffectUnit1_Effect3],parameter2_down_small,0
 [EffectRack1_EffectUnit4],group_[Microphone2]_enable,0
-[Master],headGain_down,0
+[Mixer],headphone_gain_down,0
 [Sampler1],loop_enabled,0
 [Sampler1],hotcue_23_gotoandplay,0
 [EqualizerRack1_[Channel3]_Effect1],parameter10_link_inverse,0
@@ -7089,7 +7089,7 @@
 [EqualizerRack1_[Master]],mix,1
 [EffectRack1_EffectUnit4_Effect2],clear,0
 [Sampler1],hotcue_33_gotoandplay,0
-[Master],delay_minus_toggle,0
+[Mixer],main_delay_minus_toggle,0
 [Channel4],hotcue_7_activate,0
 [Channel2],hotcue_33_gotoandstop,0
 [Channel1],hotcue_26_gotoandplay,0
@@ -7153,7 +7153,7 @@
 [Channel4],hotcue_3_activate,0
 [Channel4],hotcue_16_gotoandplay,0
 [EffectRack1_EffectUnit2_Effect4],parameter5_minus_toggle,0
-[Master],delay,0
+[Mixer],main_delay,0
 [Channel4],hotcue_17_clear,0
 [EqualizerRack1_[Channel4]_Effect1],parameter14_link_inverse,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter2_up_small,0
@@ -7219,7 +7219,7 @@
 [Sampler3],hotcue_14_activate_preview,0
 [PreviewDeck1],hotcue_1_clear,0
 [EffectRack1_EffectUnit3],group_[Channel1]_enable,0
-[Master],duckStrength_down,0
+[Mixer],talkover_ducking_strength_down,0
 [Channel3],loop_move_0.5_forward,0
 [EqualizerRack1_[Channel4]_Effect1],parameter2_toggle,0
 [EffectRack1_EffectUnit4_Effect3],parameter12_down,0
@@ -7447,7 +7447,7 @@
 [EqualizerRack1_[Channel2]_Effect1],button_parameter11_loaded,0
 [EffectRack1_EffectUnit3_Effect2],parameter3_link_type,0
 [Sampler2],track_samples,0
-[Master],duckStrength_set_zero,0
+[Mixer],talkover_ducking_strength_set_zero,0
 [EffectRack1_EffectUnit1_Effect3],parameter6_set_minus_one,0
 [Channel3],bpm,0
 [EffectRack1_EffectUnit4_Effect3],parameter10_set_one,0
@@ -7479,7 +7479,7 @@
 [Auxiliary4],pregain_down,0
 [Channel1],loop_double,0
 [EqualizerRack1_[Channel3]_Effect1],parameter16_up_small,0
-[Master],talkover_mix,0
+[Mixer],talkover_mix,0
 [EffectRack1_EffectUnit3_Effect3],parameter1_type,0
 [EqualizerRack1_[Master]_Effect1],parameter2_up,0
 [Channel4],loop_move_0.125_forward,0
@@ -7581,7 +7581,7 @@
 [EffectRack1_EffectUnit2_Effect1],parameter14_set_minus_one,0
 [EqualizerRack1_[Master]_Effect1],button_parameter2_loaded,0
 [Sampler1],vu_meter_left,0
-[Master],headMix_down_small,0
+[Mixer],headphone_mix_down_small,0
 [Channel2],waveform_zoom_down,0
 [EffectRack1_EffectUnit3_Effect2],parameter6_set_minus_one,0
 [Channel1],bpm,0
@@ -7703,7 +7703,7 @@
 [Channel3],waveform_zoom_down,0
 [EqualizerRack1_[Channel1]],prev_chain,0
 [EqualizerRack1_[Channel4]],super1_set_default,0
-[Master],balance_down_small,0
+[Mixer],balance_down_small,0
 [Sampler2],hotcue_12_gotoandstop,0
 [EffectRack1_EffectUnit4_Effect1],parameter14_loaded,0
 [Channel2],loop_move_1_backward,0
@@ -8483,12 +8483,12 @@
 [PreviewDeck1],orientation,1
 [EffectRack1_EffectUnit4_Effect4],parameter13_set_minus_one,0
 [Sampler2],pitch_adjust_up_small,0
-[Master],headMix_down,0
+[Mixer],headphone_mix_down,0
 [Channel2],hotcue_3_enabled,0
 [EqualizerRack1_[Channel1]_Effect1],button_parameter3_loaded,1
 [Channel2],playposition_set_default,0
 [EffectRack1_EffectUnit4_Effect4],parameter1_set_minus_one,0
-[Master],headDelay_set_minus_one,0
+[Mixer],headphone_delay_set_minus_one,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter16_set_one,0
 [Channel4],stop,0
 [Channel4],volume_up_small,0
@@ -8772,7 +8772,7 @@
 [PreviewDeck1],rate_perm_up_small,0
 [EffectRack1_EffectUnit2_Effect3],parameter3_link_inverse,0
 [EffectRack1_EffectUnit2_Effect3],parameter15_down,0
-[Master],mono_mixdown,0
+[Mixer],mono_mixdown,0
 [Channel2],beatloop_4,0
 [Channel3],rate_up,0
 [Sampler4],hotcue_11_goto,0
@@ -8887,7 +8887,7 @@
 [EffectRack1_EffectUnit2_Effect1],parameter5_link_inverse,0
 [EffectRack1_EffectUnit1_Effect3],parameter6_set_zero,0
 [EffectRack1_EffectUnit2_Effect3],parameter9_set_zero,0
-[Master],duckStrength_minus_toggle,0
+[Mixer],talkover_ducking_strength_minus_toggle,0
 [EffectRack1_EffectUnit4_Effect4],parameter8_link_inverse,0
 [EffectRack1_EffectUnit1_Effect2],parameter2_type,0
 [PreviewDeck1],pregain_set_default,0
@@ -9064,7 +9064,7 @@
 [Channel2],loop_halve,0
 [EffectRack1_EffectUnit4_Effect4],parameter6_link_inverse,0
 [Channel4],bpm_toggle,0
-[Master],crossfader_up_small,0
+[Mixer],crossfader_up_small,0
 [EqualizerRack1_[Channel1]_Effect1],button_parameter2_loaded,1
 [Channel4],start_play,0
 [QuickEffectRack1_[Channel4]_Effect1],button_parameter2_loaded,0
@@ -9175,7 +9175,7 @@
 [Microphone2],pregain_up_small,0
 [Channel2],rate_down,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter8_down,0
-[Master],talkoverDucking,0
+[Mixer],talkover_ducking_mode,0
 [EqualizerRack1_[Channel1]_Effect1],parameter6_set_minus_one,0
 [Sampler2],hotcue_22_set,0
 [EqualizerRack1_[Channel1]_Effect1],parameter7_up,0
@@ -9237,7 +9237,7 @@
 [EffectRack1_EffectUnit2_Effect4],button_parameter12,0
 [EffectRack1_EffectUnit1_Effect4],button_parameter8_type,0
 [EffectRack1_EffectUnit3_Effect1],parameter13_type,0
-[Master],delay_toggle,0
+[Mixer],main_delay_toggle,0
 [EffectRack1_EffectUnit2_Effect1],button_parameter5_type,0
 [EffectRack1_EffectUnit4_Effect4],parameter8_set_minus_one,0
 [Microphone3],orientation_right,0
@@ -9265,7 +9265,7 @@
 [EqualizerRack1_[Master]_Effect1],parameter3,0
 [EqualizerRack1_[Master]_Effect1],parameter2,0
 [Channel4],hotcue_28_activate_preview,0
-[Master],gain,1
+[Mixer],main_gain,1
 [EqualizerRack1_[Channel3]_Effect1],parameter9_set_default,0
 [Sampler2],hotcue_26_enabled,0
 [EffectRack1_EffectUnit2_Effect4],parameter11_down_small,0
@@ -9385,7 +9385,7 @@
 [EffectRack1_EffectUnit1_Effect3],parameter14_link_inverse,0
 [EqualizerRack1_[Channel3]_Effect1],parameter14_toggle,0
 [Sampler4],hotcue_8_goto,0
-[Master],gain_down_small,0
+[Mixer],main_gain_down_small,0
 [Sampler2],rateSearch_minus_toggle,0
 [EffectRack1_EffectUnit2_Effect4],button_parameter5_type,0
 [EffectRack1_EffectUnit3_Effect2],parameter8_down_small,0
@@ -9413,7 +9413,7 @@
 [Channel3],rate_up_small,0
 [EffectRack1_EffectUnit4_Effect3],parameter12_set_minus_one,0
 [Channel2],pitch_adjust_up,0
-[Master],headDelay_up_small,0
+[Mixer],headphone_delay_up_small,0
 [Sampler3],rate_temp_down,0
 [EffectRack1_EffectUnit1],super1_set_minus_one,0
 [Sampler1],beatjump_8_backward,0
@@ -9829,7 +9829,7 @@
 [Channel3],hotcue_27_enabled,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter2_link_inverse,0
 [PreviewDeck1],visual_key_distance_down,0
-[Master],balance_up,0
+[Mixer],balance_up,0
 [Sampler2],hotcue_3_activate_preview,0
 [PreviewDeck1],hotcue_29_activate,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter9_down,0
@@ -9845,8 +9845,8 @@
 [EffectRack1_EffectUnit4_Effect2],parameter11_up,0
 [Channel4],volume_down,0
 [EqualizerRack1_[Channel1]_Effect1],parameter7_set_zero,0
-[Master],headMix_toggle,0
-[Master],gain_up,0
+[Mixer],headphone_mix_toggle,0
+[Mixer],main_gain_up,0
 [Sampler3],beatjump_4_backward,0
 [Sampler3],vinylcontrol_rate,0
 [EffectRack1_EffectUnit1_Effect2],parameter16_link_inverse,0
@@ -10343,7 +10343,7 @@
 [QuickEffectRack1_[Channel3]_Effect1],parameter5_link_inverse,0
 [Channel1],hotcue_15_gotoandstop,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter12_set_default,0
-[Master],headDelay_set_zero,0
+[Mixer],headphone_delay_set_zero,0
 [Channel4],hotcue_18_gotoandplay,0
 [Sampler1],beatloop_8,0
 [Sampler3],hotcue_1_clear,0
@@ -10649,7 +10649,7 @@
 [EffectRack1_EffectUnit2_Effect4],parameter3_toggle,0
 [Sampler4],hotcue_16_activate,0
 [EffectRack1_EffectUnit1_Effect3],parameter10_type,0
-[Master],delay_down_small,0
+[Mixer],main_delay_down_small,0
 [Channel1],vinylcontrol_signal_enabled,1
 [Sampler4],hotcue_19_gotoandplay,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter15_link_inverse,0
@@ -10681,7 +10681,7 @@
 [QuickEffectRack1_[Channel1]_Effect1],parameter11_set_minus_one,0
 [EffectRack1_EffectUnit1_Effect2],parameter6_set_default,0
 [PreviewDeck1],hotcue_3_set,0
-[Master],duckStrength_set_minus_one,0
+[Mixer],talkover_ducking_strength_set_minus_one,0
 [EffectRack1_EffectUnit3_Effect3],parameter13_set_one,0
 [Channel2],loop_enabled,0
 [EffectRack1_EffectUnit4_Effect2],parameter9_toggle,0
@@ -10810,7 +10810,7 @@
 [EffectRack1_EffectUnit4_Effect1],parameter7_loaded,0
 [EffectRack1_EffectUnit4_Effect3],parameter4_loaded,0
 [Channel4],volume_toggle,0
-[Master],delay_set_zero,0
+[Mixer],main_delay_set_zero,0
 [EffectRack1_EffectUnit2_Effect2],parameter8_loaded,0
 [EffectRack1_EffectUnit2_Effect4],parameter3_loaded,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter15_set_zero,0
@@ -10832,7 +10832,7 @@
 [EffectRack1_EffectUnit2_Effect3],parameter3_loaded,0
 [Auxiliary3],pregain_set_default,0
 [Channel1],loop_move_0.0625_backward,0
-[Master],headDelay,0
+[Mixer],headphone_delay,0
 [EffectRack1_EffectUnit4_Effect3],button_parameter4_type,0
 [EqualizerRack1_[Channel1]],mix_minus_toggle,0
 [EffectRack1_EffectUnit4_Effect1],parameter11_set_default,0
@@ -11498,9 +11498,9 @@
 [QuickEffectRack1_[Channel4]_Effect1],parameter10_loaded,0
 [EffectRack1_EffectUnit3_Effect2],parameter14,0
 [EffectRack1_EffectUnit4_Effect3],parameter3_down_small,0
-[Master],gain_toggle,0
+[Mixer],main_gain_toggle,0
 [EqualizerRack1_[Channel1]_Effect1],num_button_parameterslots,16
-[Master],headMix_set_zero,0
+[Mixer],headphone_mix_set_zero,0
 [EqualizerRack1_[Channel3]_Effect1],parameter2_minus_toggle,0
 [EffectRack1_EffectUnit3_Effect2],parameter16,0
 [EffectRack1_EffectUnit3_Effect2],parameter11,0
@@ -11660,7 +11660,7 @@
 [EqualizerRack1_[Channel2]_Effect1],button_parameter3,0
 [EqualizerRack1_[Channel2]_Effect1],button_parameter2,0
 [Sampler1],beatloop_4_activate,0
-[Master],delay_set_minus_one,0
+[Mixer],main_delay_set_minus_one,0
 [EffectRack1_EffectUnit3_Effect1],parameter4_type,0
 [EqualizerRack1_[Master]],num_effectslots,1
 [Channel4],hotcue_34_activate_preview,0
@@ -12040,7 +12040,7 @@
 [EqualizerRack1_[Channel1]_Effect1],parameter12_set_one,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter11_set_default,0
 [EffectRack1_EffectUnit2_Effect1],button_parameter16_loaded,0
-[Master],crossfader_down_small,0
+[Mixer],crossfader_down_small,0
 [EqualizerRack1_[Channel2]_Effect1],parameter8_minus_toggle,0
 [Sampler4],main_mix,1
 [Channel2],hotcue_20_enabled,0
@@ -12204,7 +12204,7 @@
 [EffectRack1_EffectUnit2_Effect4],button_parameter7_type,0
 [Playlist],ToggleSelectedSidebarItem,0
 [EffectRack1_EffectUnit4_Effect1],parameter12_type,0
-[Master],gain_set_one,0
+[Mixer],main_gain_set_one,0
 [EqualizerRack1_[Master]_Effect1],parameter6_set_minus_one,0
 [Auxiliary2],vu_meter,0
 [Auxiliary2],pregain_up,0
@@ -12225,7 +12225,7 @@
 [EffectRack1_EffectUnit4_Effect4],button_parameter12_loaded,0
 [QuickEffectRack1_[Channel1]_Effect1],button_parameter6_type,0
 [EffectRack1_EffectUnit4_Effect2],parameter12_type,0
-[Master],crossfader_set_default,0
+[Mixer],crossfader_set_default,0
 [PreviewDeck1],beatloop_1_enabled,0
 [Sampler1],beatloop_2_toggle,0
 [EffectRack1_EffectUnit1_Effect3],num_button_parameters,0
@@ -12280,7 +12280,7 @@
 [Sampler3],cue_mode,0
 [Channel4],beats_adjust_slower,0
 [Channel1],pfl,0
-[Master],delay_set_one,0
+[Mixer],main_delay_set_one,0
 [QuickEffectRack1_[Channel2]_Effect1],parameter2_down,0
 [Channel3],hotcue_34_gotoandstop,0
 [Channel4],hotcue_23_gotoandplay,0
@@ -12479,7 +12479,7 @@
 [EffectRack1_EffectUnit2_Effect2],parameter12_set_default,0
 [Channel3],play_stutter,0
 [PreviewDeck1],hotcue_11_enabled,0
-[Master],headGain_down_small,0
+[Mixer],headphone_gain_down_small,0
 [Channel1],loop_move_1_forward,0
 [EqualizerRack1_[Channel3]],super1,0
 [Channel1],hotcue_18_activate_preview,0
@@ -12677,7 +12677,7 @@
 [Sampler1],vinylcontrol_mode,0
 [EffectRack1_EffectUnit1_Effect4],parameter4_down_small,0
 [EffectRack1_EffectUnit4_Effect3],parameter7_down,0
-[Master],headSplit,0
+[Mixer],headphone_split,0
 [Sampler1],rate_temp_down_small,0
 [Sampler2],beats_translate_later,0
 [Channel1],hotcue_9_position,-1
@@ -12754,7 +12754,7 @@
 [EffectRack1_EffectUnit2_Effect2],parameter7_down,0
 [EffectRack1_EffectUnit3_Effect4],button_parameter13_type,0
 [EffectRack1_EffectUnit4_Effect2],parameter16_down,0
-[Master],balance_down,0
+[Mixer],balance_down,0
 [Channel1],beatjump_2_forward,0
 [Channel3],beatloop,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter7_minus_toggle,0
@@ -13251,7 +13251,7 @@
 [Channel3],hotcue_13_activate,0
 [EqualizerRack1_[Channel1]_Effect1],button_parameter3_type,4
 [EqualizerRack1_[Master]_Effect1],parameter2,0
-[Master],headGain_set_minus_one,0
+[Mixer],headphone_gain_set_minus_one,0
 [Channel2],wheel,0
 [Sampler1],hotcue_31_set,0
 [EqualizerRack1_[Channel3]_Effect1],parameter2_loaded,1
@@ -13344,7 +13344,7 @@
 [Auxiliary4],pregain_minus_toggle,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter7_minus_toggle,0
 [Channel1],hotcue_9_gotoandstop,0
-[Master],crossfader,0
+[Mixer],crossfader,0
 [Sampler2],pitch_adjust_minus_toggle,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter3_down,0
 [Channel2],repeat,0
@@ -13474,7 +13474,7 @@
 [QuickEffectRack1_[Channel2]_Effect1],parameter12_up,0
 [EqualizerRack1_[Channel4]_Effect1],button_parameter1_loaded,1
 [Sampler2],waveform_zoom_toggle,0
-[Master],headDelay_down,0
+[Mixer],headphone_delay_down,0
 [Sampler1],beatloop_16,0
 [Library],font_size_knob,0
 [Channel4],repeat,0
@@ -13482,7 +13482,7 @@
 [Channel2],beatloop_0.03125_activate,0
 [Channel4],beatloop_8_toggle,0
 [Sampler3],hotcue_1_enabled,0
-[Master],crossfader_toggle,0
+[Mixer],crossfader_toggle,0
 [EqualizerRack1_[Channel3]_Effect1],button_parameter1_loaded,1
 [Sampler1],pregain_set_minus_one,0
 [QuickEffectRack1_[Channel1]_Effect1],parameter6_down_small,0
@@ -13500,7 +13500,7 @@
 [EffectRack1_EffectUnit4_Effect1],parameter14_up,0
 [Sampler2],pregain_set_minus_one,0
 [Sampler4],beatloop_64,0
-[Master],headGain_up_small,0
+[Mixer],headphone_gain_up_small,0
 [EqualizerRack1_[Channel1]_Effect1],parameter2,1
 [Mixer Profile],HiEQFrequency_set_minus_one,0
 [Sampler1],beatloop_32,0
@@ -13601,7 +13601,7 @@
 [EqualizerRack1_[Channel1]_Effect1],parameter1,1
 [Sampler3],pregain_toggle,0
 [EffectRack1_EffectUnit1_Effect1],effect_selector,0
-[Master],headMix_up_small,0
+[Mixer],headphone_mix_up_small,0
 [EqualizerRack1_[Channel2]_Effect1],parameter10_up,0
 [Sampler3],hotcue_10_activate_preview,0
 [EffectRack1_EffectUnit4_Effect1],parameter15_type,0
@@ -13743,7 +13743,7 @@
 [Channel4],vu_meter_right,0
 [QuickEffectRack1_[Channel3]_Effect1],button_parameter15_type,0
 [Channel4],vu_meter_left,0
-[Master],headGain,1
+[Mixer],headphone_gain,1
 [Sampler1],beatloop_32_enabled,0
 [Sampler2],beatjump_0.03125_backward,0
 [Channel1],hotcue_6_gotoandplay,0
@@ -13768,7 +13768,7 @@
 [QuickEffectRack1_[Channel3]_Effect1],parameter9_minus_toggle,0
 [QuickEffectRack1_[Channel4]_Effect1],parameter2_set_one,0
 [PreviewDeck1],hotcue_8_activate,0
-[Master],gain_up_small,0
+[Mixer],main_gain_up_small,0
 [EqualizerRack1_[Channel4]_Effect1],parameter3_down_small,0
 [Channel2],hotcue_6_gotoandplay,0
 [Microphone4],volume_set_minus_one,0
@@ -13964,7 +13964,7 @@
 [EffectRack1_EffectUnit2_Effect3],parameter11_set_zero,0
 [EffectRack1_EffectUnit1_Effect3],parameter13_set_default,0
 [EffectRack1_EffectUnit2_Effect2],parameter15_minus_toggle,0
-[Master],headEnabled,0
+[Mixer],headphones_enabled,0
 [EffectRack1_EffectUnit4_Effect3],button_parameter9_loaded,0
 [EffectRack1_EffectUnit4_Effect3],parameter1_set_one,0
 [EqualizerRack1_[Channel3]_Effect1],parameter2_set_one,0
@@ -14216,7 +14216,7 @@
 [EffectRack1_EffectUnit1_Effect3],parameter14_set_zero,0
 [Channel4],keylock,0
 [EqualizerRack1_[Channel4]_Effect1],parameter8_down_small,0
-[Master],headMix_set_default,0
+[Mixer],headphone_mix_set_default,0
 [Channel2],hotcue_5_activate_preview,0
 [EffectRack1_EffectUnit1_Effect3],parameter8_set_default,0
 [EffectRack1_EffectUnit2_Effect4],parameter15_down_small,0
@@ -14422,7 +14422,7 @@
 [Channel4],hotcue_5_activate_preview,0
 [Channel2],beatloop_0.125_enabled,0
 [Sampler2],hotcue_35_set,0
-[Master],gain_set_zero,0
+[Mixer],main_gain_set_zero,0
 [EffectRack1_EffectUnit2_Effect3],parameter2_down_small,0
 [EffectRack1_EffectUnit2_Effect2],parameter15_down_small,0
 [Channel3],hotcue_8_activate,0
