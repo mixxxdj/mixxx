@@ -76,7 +76,7 @@ EngineMixer::EngineMixer(
     // Main sample rate
     m_pSampleRate = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("samplerate")), true, true);
-    m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
+    m_pSampleRate->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("samplerate")));
     m_pSampleRate->set(44100.);
 
     // Latency control
@@ -115,7 +115,7 @@ EngineMixer::EngineMixer(
     m_pMainGain = new ControlAudioTaperPot(ConfigKey(group, "gain"), -14, 14, 0.5);
     // Legacy: the main "gain" control used to be named "volume" in Mixxx
     // 1.11.0 and earlier. See issue #7413.
-    m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
+    m_pMainGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("volume")));
 
     // Booth gain
     m_pBoothGain = new ControlAudioTaperPot(ConfigKey(group, "booth_gain"), -14, 14, 0.5);
@@ -134,7 +134,7 @@ EngineMixer::EngineMixer(
 
     // Legacy: the headphone "headGain" control used to be named "headVolume" in
     // Mixxx 1.11.0 and earlier. See issue #7413.
-    m_pHeadGain->addAlias(ConfigKey(group, QStringLiteral("headVolume")));
+    m_pHeadGain->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("headVolume")));
 
     // Headphone mix (left/right)
     m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
@@ -189,7 +189,7 @@ EngineMixer::EngineMixer(
     m_pXFaderReverse->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pKeylockEngine = new ControlObject(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")));
-    m_pKeylockEngine->set(pConfig->getValue(ConfigKey(group, "keylock_engine"),
+    m_pKeylockEngine->set(pConfig->getValue(ConfigKey(kLegacyGroup, "keylock_engine"),
             static_cast<double>(EngineBuffer::defaultKeylockEngine())));
 
     // TODO: Make this read only and make EngineMixer decide whether
