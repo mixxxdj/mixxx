@@ -61,6 +61,8 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
 
     DEBUG_ASSERT(n > 0);
     const int beatOffset = m_beatOffset + n;
+    const auto origValue = m_value;
+    (void)origValue;
 
     // Detect integer overflow
     if (beatOffset < m_beatOffset) {
@@ -69,6 +71,7 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
         m_it = m_beats->m_markers.cend();
         m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
         updateValue();
+        DEBUG_ASSERT(m_value > origValue);
         return *this;
     }
 
@@ -78,6 +81,7 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
         m_it++;
     }
     updateValue();
+    DEBUG_ASSERT(m_value > origValue);
     return *this;
 }
 
@@ -104,6 +108,8 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
 
     DEBUG_ASSERT(n > 0);
     const int beatOffset = m_beatOffset - n;
+    const auto origValue = m_value;
+    (void)origValue;
 
     // Detect integer overflow
     if (beatOffset > m_beatOffset) {
@@ -112,6 +118,7 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
         m_it = m_beats->m_markers.cbegin();
         m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
         updateValue();
+        DEBUG_ASSERT(m_value < origValue);
         return *this;
     }
 
@@ -121,6 +128,7 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
         m_beatOffset += m_it->beatsTillNextMarker();
     }
     updateValue();
+    DEBUG_ASSERT(m_value < origValue);
     return *this;
 }
 
@@ -452,8 +460,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }
     DEBUG_ASSERT(it == cbegin() || it == cend() || *it >= position);
-    DEBUG_ASSERT(it == cbegin() || it == cend() ||
-            (*it >= position && *std::prev(it) < position));
+    DEBUG_ASSERT(it == cbegin() || it == cend() || *it > *std::prev(it));
     return it;
 }
 
