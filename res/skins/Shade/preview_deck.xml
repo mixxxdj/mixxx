@@ -232,7 +232,7 @@
                         <PeakFallTime>50</PeakFallTime>
                         <PeakFallStep>2</PeakFallStep>
                         <Connection>
-                          <ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
+                          <ConfigKey>[PreviewDeck1],vu_meter</ConfigKey>
                         </Connection>
                       </VuMeter>
                     </Children>

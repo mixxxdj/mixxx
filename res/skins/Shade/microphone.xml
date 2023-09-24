@@ -39,7 +39,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],vu_meter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

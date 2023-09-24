@@ -38,7 +38,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],vu_meter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

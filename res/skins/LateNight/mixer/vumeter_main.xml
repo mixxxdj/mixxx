@@ -41,7 +41,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterL</ConfigKey>
+              <ConfigKey>[Main],vu_meter_left</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -70,7 +70,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterR</ConfigKey>
+              <ConfigKey>[Main],vu_meter_right</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

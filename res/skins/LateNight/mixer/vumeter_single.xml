@@ -36,7 +36,7 @@
         <PeakFallTime>10</PeakFallTime>
         <PeakFallStep>2</PeakFallStep>
         <Connection>
-          <ConfigKey><Variable name="Group"/>,VuMeter</ConfigKey>
+          <ConfigKey><Variable name="Group"/>,vu_meter</ConfigKey>
         </Connection>
       </VuMeter>
     </Children>

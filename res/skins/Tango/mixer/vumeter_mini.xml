@@ -32,7 +32,7 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
         <PeakFallTime>50</PeakFallTime>
         <PeakFallStep>2</PeakFallStep>
         <Connection>
-          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+          <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
         </Connection>
       </VuMeter>
     </Children>

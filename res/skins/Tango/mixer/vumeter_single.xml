@@ -29,7 +29,7 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
             <PeakFallTime>200</PeakFallTime>
             <PeakFallStep>5</PeakFallStep>
             <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
+              <ConfigKey><Variable name="group"/>,vu_meter_left</ConfigKey>
             </Connection>
           </VuMeter>
           <VuMeter>
@@ -42,7 +42,7 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
             <PeakFallTime>200</PeakFallTime>
             <PeakFallStep>5</PeakFallStep>
             <Connection>
-              <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
+              <ConfigKey><Variable name="group"/>,vu_meter_right</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
