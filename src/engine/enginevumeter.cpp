@@ -18,16 +18,23 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(const QString& group)
-        : m_vuMeter(ConfigKey(group, QStringLiteral("VuMeter"))),
-          m_vuMeterLeft(ConfigKey(group, QStringLiteral("VuMeterL"))),
-          m_vuMeterRight(ConfigKey(group, QStringLiteral("VuMeterR"))),
-          m_peakIndicator(ConfigKey(group, QStringLiteral("PeakIndicator"))),
-          m_peakIndicatorLeft(ConfigKey(group, QStringLiteral("PeakIndicatorL"))),
-          m_peakIndicatorRight(ConfigKey(group, QStringLiteral("PeakIndicatorR"))),
+EngineVuMeter::EngineVuMeter(const QString& group, const QString& legacyGroup)
+        : m_vuMeter(ConfigKey(group, QStringLiteral("vu_meter"))),
+          m_vuMeterLeft(ConfigKey(group, QStringLiteral("vu_meter_left"))),
+          m_vuMeterRight(ConfigKey(group, QStringLiteral("vu_meter_right"))),
+          m_peakIndicator(ConfigKey(group, QStringLiteral("peak_indicator"))),
+          m_peakIndicatorLeft(ConfigKey(group, QStringLiteral("peak_indicator_left"))),
+          m_peakIndicatorRight(ConfigKey(group, QStringLiteral("peak_indicator_right"))),
           m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")) {
-    // Initialize the calculation:
-    reset();
+    const QString& aliasGroup = legacyGroup.isEmpty() ? group : legacyGroup;
+    m_vuMeter.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeter"))),
+            m_vuMeterLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterL"))),
+            m_vuMeterRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("VuMeterR"))),
+            m_peakIndicator.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicator"))),
+            m_peakIndicatorLeft.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorL"))),
+            m_peakIndicatorRight.addAlias(ConfigKey(aliasGroup, QStringLiteral("PeakIndicatorR"))),
+            // Initialize the calculation:
+            reset();
 }
 
 void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {

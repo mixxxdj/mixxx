@@ -31,6 +31,7 @@
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
+const QString kMainGroup = QStringLiteral("[Main]");
 } // namespace
 
 EngineMixer::EngineMixer(
@@ -119,7 +120,7 @@ EngineMixer::EngineMixer(
     m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
 
     // VU meter:
-    m_pVumeter = new EngineVuMeter(group);
+    m_pVumeter = new EngineVuMeter(kMainGroup, kLegacyGroup);
 
     m_pMainDelay = new EngineDelay(group, ConfigKey(group, "delay"));
     m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));

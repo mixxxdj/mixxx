@@ -9,7 +9,7 @@ class ControlPotmeter;
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:
-    EngineVuMeter(const QString& group);
+    EngineVuMeter(const QString& group, const QString& legacyGroup = QString());
 
     virtual void process(CSAMPLE* pInOut, const int iBufferSize);
 
