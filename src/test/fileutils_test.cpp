@@ -10,7 +10,7 @@ class FileUtilsTest : public testing::Test {
 TEST_F(FileUtilsTest, TestSafeFilename) {
     // Generate a file name for the temporary file
     const auto fileName = QStringLiteral("broken/ <> :\"\\|ok?*!.mp3");
-    const auto expected = QStringLiteral("broken/ ## ##\\#ok##!.mp3");
+    const auto expected = QStringLiteral("broken/ ## ##/#ok##!.mp3");
     auto output = FileUtils::safeFilename(fileName);
     ASSERT_EQ(expected, output);
 
