@@ -401,8 +401,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit1]");
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit2]");
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
 
     engine.makeConnection("[Channel1]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
     engine.makeConnection("[Channel2]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);

@@ -204,10 +204,10 @@ MC7000.init = function() {
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
     // VU meters
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter", MC7000.VuMeter);
 
     // Switch to active decks
     midi.sendShortMsg(MC7000.topDeckActive[0] ? 0x90 : 0x92, 0x08, 0x7F);

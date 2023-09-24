@@ -975,7 +975,7 @@ NumarkMixtrack3.connectDeckControls = function(group, remove) {
         "hotcue_3_enabled": "NumarkMixtrack3.OnHotcueChange",
         "hotcue_4_enabled": "NumarkMixtrack3.OnHotcueChange",
         "track_samples": "NumarkMixtrack3.OnTrackLoaded",
-        "VuMeter": "NumarkMixtrack3.OnVuMeterChange",
+        "vu_meter": "NumarkMixtrack3.OnVuMeterChange",
         "playposition": "NumarkMixtrack3.OnPlaypositionChange",
         "volume": "NumarkMixtrack3.OnVolumeChange",
         "pfl": "NumarkMixtrack3.OnPFLStatusChange",

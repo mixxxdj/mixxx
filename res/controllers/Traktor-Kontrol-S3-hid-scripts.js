@@ -532,8 +532,8 @@ TraktorS3.Controller = class {
         engine.connectControl("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
         // Master VuMeters
-        this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
-        this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+        this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Main]", "vu_meter_left", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+        this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Main]", "vu_meter_right", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS3.Controller.prototype.peakOutput.bind(this));
         this.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS3.Controller.prototype.peakOutput.bind(this));
         this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
@@ -1691,7 +1691,7 @@ TraktorS3.Channel = class {
     }
 
     linkOutputs() {
-        this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
+        this.vuConnection = engine.makeConnection(this.group, "vu_meter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
         this.clipConnection = engine.makeConnection(this.group, "peak_indicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
         this.controller.linkChannelOutput(this.group, "pfl", TraktorS3.Controller.prototype.pflOutput.bind(this.controller));
         for (let j = 1; j <= 8; j++) {

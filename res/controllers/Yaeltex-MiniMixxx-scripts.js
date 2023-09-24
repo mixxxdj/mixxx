@@ -208,7 +208,7 @@ MiniMixxx.EncoderModeJog = class extends MiniMixxx.Mode {
 
         let midiColor = this.loopColor;
         if (engine.getValue(this.channel, "loop_enabled") === 0) {
-            midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "VuMeter"));
+            midiColor = MiniMixxx.vuMeterColor(engine.getValue(this.channel, "vu_meter"));
         }
 
         // Angles between 0 and .4 and .6 and 1.0 are in the indicator so no output.
@@ -255,7 +255,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.showGain = false;
         engine.makeConnection(this.channel, "pregain", this.pregainIndicator.bind(this));
         engine.makeConnection(this.channel, "pfl", this.pflIndicator.bind(this));
-        engine.makeUnbufferedConnection(this.channel, "VuMeter", this.vuIndicator.bind(this));
+        engine.makeUnbufferedConnection(this.channel, "vu_meter", this.vuIndicator.bind(this));
         engine.makeConnection(this.channel, "peak_indicator", this.peakIndicator.bind(this));
     }
     handleSpin(velo) {
@@ -287,7 +287,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         if (this !== this.parent.activeMode || this.showGain) {
             return;
         }
-        this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
+        this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
     }
     pregainIndicator(value, _group, _control) {
         if (this !== this.parent.activeMode) {
@@ -299,7 +299,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         this.showGain = true;
         this.idleTimer = engine.beginTimer(1000, function() {
             this.showGain = false;
-            this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
+            this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
         }.bind(this), true);
         midi.sendShortMsg(0xBF, this.idx, this.color);
         midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
@@ -312,7 +312,7 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
         midi.sendShortMsg(0x90, this.idx, color);
     }
     setLights() {
-        this.vuIndicator(engine.getValue(this.channel, "VuMeter"));
+        this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
         this.pflIndicator(engine.getValue(this.channel, "pfl"));
     }
 };

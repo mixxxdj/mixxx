@@ -110,7 +110,7 @@ class DeckClass {
         this.linkLed("pfl", this.outputCallback);
         this.linkLed("track_loaded", this.outputCallback);
         this.linkLed("peak_indicator", this.outputCallback);
-        engine.makeConnection(this.channel, "VuMeter", this.onVuMeterChanged.bind(this)).trigger();
+        engine.makeConnection(this.channel, "vu_meter", this.onVuMeterChanged.bind(this)).trigger();
         engine.makeConnection(this.channel, "loop_enabled", this.onLoopEnabledChanged.bind(this));
     }
     calibrate(calibration) {

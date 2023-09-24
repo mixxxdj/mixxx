@@ -825,8 +825,8 @@ TraktorS2MK3.registerOutputPackets = function() {
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
-    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
-    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
+    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
+    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
     this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler);
     this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler);
 

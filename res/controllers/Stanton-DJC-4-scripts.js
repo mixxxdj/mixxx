@@ -142,7 +142,7 @@ DJC4.init = function() {
         DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x03],
             group: "[Master]",
-            outKey: "VuMeterL",
+            outKey: "vu_meter_left",
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.
@@ -158,7 +158,7 @@ DJC4.init = function() {
         DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x04],
             group: "[Master]",
-            outKey: "VuMeterR",
+            outKey: "vu_meter_right",
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.
@@ -209,7 +209,7 @@ DJC4.Deck = function(deckNumber) {
         DJC4.vuMeter = new components.Component({
             midi: [0xB0+deckNumber-1, 0x02],
             group: "[Channel" + deckNumber + "]",
-            outKey: "VuMeter",
+            outKey: "vu_meter",
             output: function(value, group) {
                 // The red LEDs light up with MIDI values greater than 0x60.
                 // The Red LEDs should only be illuminated if the track is clipping.

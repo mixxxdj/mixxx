@@ -571,10 +571,10 @@ TraktorS4MK2.registerOutputPackets = function() {
     engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
     // VU meters get special attention
-    engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel3]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel4]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel1]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel2]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel3]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel4]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
 
     engine.connectControl("[Channel1]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
     engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
