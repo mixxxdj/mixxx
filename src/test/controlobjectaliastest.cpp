@@ -21,6 +21,7 @@ const QString kAppGroup = QStringLiteral("[App]");
 const QString kMainGroup = QStringLiteral("[Main]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
 const QString kSkinGroup = QStringLiteral("[Skin]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 
 class ControlObjectAliasTest : public MixxxTest {
 };
@@ -113,6 +114,75 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto peakIndicatorRightLegacy = ControlProxy(
             ConfigKey(kLegacyGroup, QStringLiteral("PeakIndicatorR")));
     EXPECT_DOUBLE_EQ(peakIndicatorRight.get(), peakIndicatorRightLegacy.get());
+
+    auto crossfader = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("crossfader")));
+    auto crossfaderLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("crossfader")));
+    EXPECT_DOUBLE_EQ(crossfader.get(), crossfaderLegacy.get());
+
+    auto balance = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("balance")));
+    auto balanceLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("balance")));
+    EXPECT_DOUBLE_EQ(balance.get(), balanceLegacy.get());
+
+    auto mainGain = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("main_gain")));
+    auto mainGainLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("gain")));
+    auto mainGainLegacy2 = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("volume")));
+    EXPECT_DOUBLE_EQ(mainGain.get(), mainGainLegacy.get());
+    EXPECT_DOUBLE_EQ(mainGain.get(), mainGainLegacy2.get());
+
+    auto boothGain = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("booth_gain")));
+    auto boothGainLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("booth_gain")));
+    EXPECT_DOUBLE_EQ(boothGain.get(), boothGainLegacy.get());
+
+    auto headphoneGain = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("headphone_gain")));
+    auto headphoneGainLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("headGain")));
+    auto headphoneGainLegacy2 = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("headVolume")));
+    EXPECT_DOUBLE_EQ(headphoneGain.get(), headphoneGainLegacy.get());
+    EXPECT_DOUBLE_EQ(headphoneGain.get(), headphoneGainLegacy2.get());
+
+    auto headphoneMix = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("headphone_mix")));
+    auto headphoneMixLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("headMix")));
+    EXPECT_DOUBLE_EQ(headphoneMix.get(), headphoneMixLegacy.get());
+
+    auto headphoneSplit = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("headphone_split")));
+    auto headphoneSplitLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("headSplit")));
+    EXPECT_DOUBLE_EQ(headphoneSplit.get(), headphoneSplitLegacy.get());
+
+    auto talkoverDuckingStrength = ControlProxy(ConfigKey(
+            kMixerGroup, QStringLiteral("talkover_ducking_strength")));
+    auto talkoverDuckingStrengthLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("duckStrength")));
+    EXPECT_DOUBLE_EQ(talkoverDuckingStrength.get(), talkoverDuckingStrengthLegacy.get());
+
+    auto talkoverDuckingMode = ControlProxy(
+            ConfigKey(kMixerGroup, QStringLiteral("talkover_ducking_mode")));
+    auto talkoverDuckingModeLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("talkoverDucking")));
+    EXPECT_DOUBLE_EQ(talkoverDuckingMode.get(), talkoverDuckingModeLegacy.get());
+
+    auto mainEnabled = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("main_enabled")));
+    auto mainEnabledLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("enabled")));
+    EXPECT_DOUBLE_EQ(mainEnabled.get(), mainEnabledLegacy.get());
+
+    auto boothEnabled = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("booth_enabled")));
+    auto boothEnabledLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("booth_enabled")));
+    EXPECT_DOUBLE_EQ(boothEnabled.get(), boothEnabledLegacy.get());
+
+    auto headphonesEnabled = ControlProxy(
+            ConfigKey(kMixerGroup, QStringLiteral("headphones_enabled")));
+    auto headphonesEnabledLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("headEnabled")));
+    EXPECT_DOUBLE_EQ(headphonesEnabled.get(), headphonesEnabledLegacy.get());
+
+    auto monoMixdown = ControlProxy(ConfigKey(kMixerGroup, QStringLiteral("mono_mixdown")));
+    auto monoMixdownLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("mono_mixdown")));
+    EXPECT_DOUBLE_EQ(monoMixdown.get(), monoMixdownLegacy.get());
+
+    auto microphoneMonitorMode = ControlProxy(
+            ConfigKey(kMixerGroup, QStringLiteral("talkover_mix")));
+    auto microphoneMonitorModeLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("talkover_mix")));
+    EXPECT_DOUBLE_EQ(microphoneMonitorMode.get(), microphoneMonitorModeLegacy.get());
 }
 
 TEST_F(ControlObjectAliasTest, PlayerManager) {
