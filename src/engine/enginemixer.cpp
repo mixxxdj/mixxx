@@ -30,6 +30,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kLegacyGroup = QStringLiteral("[Master]");
 } // namespace
 
 EngineMixer::EngineMixer(
@@ -81,9 +82,17 @@ EngineMixer::EngineMixer(
     m_pMainLatency = new ControlObject(ConfigKey(group, "latency"),
             true,
             true); // reported latency (sometimes correct)
-    m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group, "audio_latency_overload_count"), true, true);
-    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
-    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
+    m_pAudioLatencyOverloadCount = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
+    m_pAudioLatencyOverloadCount->addAlias(ConfigKey(
+            kLegacyGroup, QStringLiteral("audio_latency_overload_count")));
+    m_pAudioLatencyUsage = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
+    m_pAudioLatencyUsage->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
+    m_pAudioLatencyOverload = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")));
+    m_pAudioLatencyOverload->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload")));
 
     // Sync controller
     m_pEngineSync = new EngineSync(pConfig);

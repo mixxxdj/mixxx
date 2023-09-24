@@ -869,7 +869,7 @@ SCS3M.Agent = function(device) {
         }
 
         // Light the logo and let it go out to signal an overload
-        watch("[Master]", 'audio_latency_overload', binarylight(
+        watch("[App]", 'audio_latency_overload', binarylight(
             device.logo.on,
             device.logo.off
         ));

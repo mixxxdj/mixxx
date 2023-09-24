@@ -64,6 +64,24 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto sampleRate = ControlProxy(ConfigKey(kAppGroup, QStringLiteral("samplerate")));
     auto sampleRateLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("samplerate")));
     EXPECT_DOUBLE_EQ(sampleRate.get(), sampleRateLegacy.get());
+
+    auto audioLatencyUsage = ControlProxy(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
+    auto audioLatencyUsageLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
+    EXPECT_DOUBLE_EQ(audioLatencyUsage.get(), audioLatencyUsageLegacy.get());
+
+    auto audioLatencyOverload = ControlProxy(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")));
+    auto audioLatencyOverloadLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload")));
+    EXPECT_DOUBLE_EQ(audioLatencyOverload.get(), audioLatencyOverloadLegacy.get());
+
+    auto audioLatencyOverloadCount = ControlProxy(ConfigKey(
+            kAppGroup, QStringLiteral("audio_latency_overload_count")));
+    auto audioLatencyOverloadCountLegacy = ControlProxy(ConfigKey(
+            kLegacyGroup, QStringLiteral("audio_latency_overload_count")));
+    EXPECT_DOUBLE_EQ(audioLatencyOverloadCount.get(), audioLatencyOverloadCountLegacy.get());
 }
 
 TEST_F(ControlObjectAliasTest, PlayerManager) {

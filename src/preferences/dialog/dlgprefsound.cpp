@@ -203,9 +203,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 loadSettings();
             });
 
-    m_pMainAudioLatencyOverloadCount =
-            new ControlProxy("[Master]", "audio_latency_overload_count", this);
-    m_pMainAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
+    m_pAudioLatencyOverloadCount =
+            new ControlProxy(kAppGroup, QStringLiteral("audio_latency_overload_count"), this);
+    m_pAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
 
     m_pMainLatency = new ControlProxy("[Master]", "latency", this);
     m_pMainLatency->connectValueChanged(this, &DlgPrefSound::mainLatencyChanged);
