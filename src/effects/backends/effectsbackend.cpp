@@ -3,7 +3,9 @@
 namespace {
 const QString backendTypeNameLV2 = QStringLiteral("LV2");
 // QString::tr requires const char[] rather than QString
+//: Backend type for effects that are built into Mixxx.
 constexpr char backendTypeNameBuiltIn[] = QT_TR_NOOP("Built-In");
+//: Backend type for effects were the backend is unknown.
 constexpr char backendTypeNameUnknown[] = QT_TR_NOOP("Unknown");
 } // anonymous namespace
 
@@ -29,7 +31,6 @@ QString EffectsBackend::backendTypeToString(EffectBackendType backendType) {
 QString EffectsBackend::translatedBackendName(EffectBackendType backendType) {
     switch (backendType) {
     case EffectBackendType::BuiltIn:
-        // Used for effects that are built into Mixxx.
         // Clazy's `tr-non-literal` check is a false positive, because the
         // source string has been marked `QT_TR_NOOP`.
         return QObject::tr(backendTypeNameBuiltIn); // clazy:exclude=tr-non-literal
