@@ -12,6 +12,10 @@
 #include "util/datetime.h"
 #include "util/trace.h"
 
+namespace {
+constexpr int kRowBatchSize = 10;
+} // namespace
+
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
 
@@ -135,6 +139,9 @@ void BrowseThread::populateModel() {
     emit clearModel(thisModelObserver);
 
     QList<QList<QStandardItem*>> rows;
+    rows.reserve(kRowBatchSize);
+    QList<QStandardItem*> row_data;
+    row_data.reserve(NUM_COLUMNS);
 
     int row = 0;
     // Iterate over the files
@@ -150,8 +157,6 @@ void BrowseThread::populateModel() {
             populateModel();
             return;
         }
-
-        QList<QStandardItem*> row_data;
 
         QStandardItem* item = new QStandardItem("0");
         item->setData("0", Qt::UserRole);
@@ -293,10 +298,11 @@ void BrowseThread::populateModel() {
         }
 
         rows.append(row_data);
+        row_data.clear();
         ++row;
         // If 10 tracks have been analyzed, send it to GUI
         // Will limit GUI freezing
-        if (row % 10 == 0) {
+        if (row % kRowBatchSize == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
             qDebug() << "Append" << rows.count() << "tracks from "

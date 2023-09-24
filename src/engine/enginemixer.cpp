@@ -515,7 +515,7 @@ void EngineMixer::process(const int iBufferSize) {
         m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
         break;
     case EngineTalkoverDucking::MANUAL:
-        m_pTalkoverDucking->setAboveThreshold(m_activeTalkoverChannels.size());
+        m_pTalkoverDucking->setAboveThreshold(!m_activeTalkoverChannels.isEmpty());
         break;
     default:
         DEBUG_ASSERT("!Unknown Ducking mode");
