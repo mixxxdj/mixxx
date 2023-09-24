@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <MixxxControllerPreset mixxxVersion="2.4.0+" schemaVersion="1">
+    <info>
+        <name>Denon Prime GO - Mixxx Mapping</name>
+        <author>Levi "Whanake" Williams</author>
+        <description>This is a Work-In-Progress mapping to allow the Denon Prime GO to be used with Mixxx, ideally with the same (if not more) functionality than the Prime GO provides as a standalone device.</description>
+        <wiki>Encoded URL to Mixxx wiki page documenting this controller mapping</wiki>
+        <forums>Encoded URL to Mixxx discussion forums page for this controller mapping</forums>
+    </info>
+    <controller id="primego"><!-- Many controllers in one file supported. A controller should only appear once -->
+        <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
+            <file filename="midi-components-0.0.js"/>
+            <file filename="Denon-Prime-GO.scripts.js" functionprefix="PrimeGo"/>
+        </scriptfiles>
+
+        <controls>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Load Button ON</description>
+                <status>0x9F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Load Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x01</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Load Button ON</description>
+                <status>0x9F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Load Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Back Button ON</description>
+                <status>0x9F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Back Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Fwd Button ON</description>
+                <status>0x9F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Fwd Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX Knob</description>
+                <status>0xB0</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Browse Encoder</description>
+                <status>0xBF</status>
+                <midino>0x05</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Browse Encoder Button ON</description>
+                <status>0x9F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Browse Encoder Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX A Button ON</description>
+                <status>0x90</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX A Button OFF</description>
+                <status>0x80</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX A Button ON</description>
+                <status>0x91</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX A Button OFF</description>
+                <status>0x81</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX B Button ON</description>
+                <status>0x90</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Sweep FX B Button OFF</description>
+                <status>0x80</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX B Button ON</description>
+                <status>0x91</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX B Button OFF</description>
+                <status>0x81</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Sweep FX Knob</description>
+                <status>0xB1</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Volume Fader</description>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Volume Fader</description>
+                <status>0xB1</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Crossfader</description>
+                <status>0xBF</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>View Button ON</description>
+                <status>0x9F</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>View Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Shift Button ON</description>
+                <status>0x9F</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Shift Button OFF</description>
+                <status>0x8F</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+        </controls>
+
+        <outputs>
+        </outputs>
+    </controller>
+</MixxxControllerPreset>
