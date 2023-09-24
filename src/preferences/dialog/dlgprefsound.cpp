@@ -207,7 +207,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             new ControlProxy(kAppGroup, QStringLiteral("audio_latency_overload_count"), this);
     m_pAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
 
-    m_pMainLatency = new ControlProxy("[Master]", "latency", this);
+    m_pMainLatency = new ControlProxy(kAppGroup, QStringLiteral("output_latency_ms"), this);
     m_pMainLatency->connectValueChanged(this, &DlgPrefSound::mainLatencyChanged);
 
     // TODO: remove this option by automatically disabling/enabling the main mix
