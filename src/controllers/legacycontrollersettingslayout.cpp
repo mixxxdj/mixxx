@@ -11,6 +11,7 @@
 #include <QWindow>
 
 #include "controllers/legacycontrollersettings.h"
+#include "moc_legacycontrollersettingslayout.cpp"
 #include "util/parented_ptr.h"
 
 void LegacyControllerSettingsLayoutContainer::addItem(

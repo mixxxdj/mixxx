@@ -138,7 +138,7 @@ bool ControllerScriptEngineLegacy::initialize() {
         settingsObject.setProperty(std::get<0>(setting), std::get<1>(setting));
     }
     engineGlobalObject.setProperty(
-            "mixxxControllerSettings", settingsObject);
+            "controllerSettings", settingsObject);
 
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));

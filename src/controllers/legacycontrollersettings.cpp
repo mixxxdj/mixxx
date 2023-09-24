@@ -6,6 +6,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 
+#include "moc_legacycontrollersettings.cpp"
 #include "util/parented_ptr.h"
 
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::__self = nullptr;
@@ -204,7 +205,7 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
             LegacyControllerNumberSetting::buildInputWidget(pParent));
     VERIFY_OR_DEBUG_ASSERT(spinBox != nullptr) {
         qWarning() << "Unable to set precision on the input widget "
-                      "input: it does not appear to be a valid QDoubleSpinBox";
+                      "input. It does not appear to be a valid QDoubleSpinBox";
         return spinBox;
     }
     spinBox->setDecimals(m_precisionValue);
@@ -265,7 +266,7 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     for (const auto& value : qAsConst(m_options)) {
         comboBox->addItem(std::get<1>(value));
     }
-    comboBox->setCurrentIndex(m_currentValue);
+    comboBox->setCurrentIndex(static_cast<int>(m_currentValue));
 
     connect(comboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),

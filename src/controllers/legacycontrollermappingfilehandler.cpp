@@ -67,8 +67,6 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
     std::shared_ptr<LegacyControllerMapping> pMapping = pHandler->load(
             mappingFile.absoluteFilePath(), systemMappingsPath);
 
-    // FIXME(acolombier): is `delete pHandler;` not missing?
-
     if (pMapping) {
         pMapping->setDirty(false);
     }

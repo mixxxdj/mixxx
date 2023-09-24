@@ -40,7 +40,7 @@ class LegacyControllerSettingBuilder {
     /// @param match the match function of the new setting
     /// @param creator the creator function of the new setting
     /// @return Always true
-    inline bool registerType(bool (*match)(const QDomElement&),
+    bool registerType(bool (*match)(const QDomElement&),
             AbstractLegacyControllerSetting* (*creator)(const QDomElement&)) {
         m_supportedSettings.append(std::make_tuple(match, creator));
         return true;

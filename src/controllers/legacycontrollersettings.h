@@ -23,7 +23,7 @@
 class AbstractLegacyControllerSetting : public QObject {
     Q_OBJECT
   public:
-    virtual ~AbstractLegacyControllerSetting() = default;
+    ~AbstractLegacyControllerSetting() override = default;
 
     /// @brief Build a widget that can be used to interact with this setting. It
     /// shouldn't mutate the state of the setting.
@@ -339,7 +339,7 @@ class LegacyControllerEnumSetting
     }
 
     QString stringify() const override {
-        return std::get<0>(m_options.value((int)m_currentValue));
+        return std::get<0>(m_options.value(static_cast<int>(m_currentValue)));
     }
     void parse(const QString& in, bool* ok) override;
     bool isDefault() const override {
@@ -358,14 +358,14 @@ class LegacyControllerEnumSetting
         m_dirtyValue = m_defaultValue;
     }
 
-    /// @brief Whether of not this setting definition and its current state are
+    /// @brief Whether or not this setting definition and its current state are
     /// valid. Validity scope includes a known default/current/dirty option.
     /// @return true if valid
     bool valid() const override {
         return AbstractLegacyControllerSetting::valid() &&
-                (int)m_defaultValue < m_options.size() &&
-                (int)m_currentValue < m_options.size() &&
-                (int)m_dirtyValue < m_options.size();
+                static_cast<int>(m_defaultValue) < m_options.size() &&
+                static_cast<int>(m_currentValue) < m_options.size() &&
+                static_cast<int>(m_dirtyValue) < m_options.size();
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
