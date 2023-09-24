@@ -80,9 +80,10 @@ EngineMixer::EngineMixer(
     m_pMainSampleRate->set(44100.);
 
     // Latency control
-    m_pMainLatency = new ControlObject(ConfigKey(group, "latency"),
+    m_pMainLatency = new ControlObject(ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
             true,
             true); // reported latency (sometimes correct)
+    m_pMainLatency->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
     m_pAudioLatencyOverloadCount = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
     m_pAudioLatencyOverloadCount->addAlias(ConfigKey(
