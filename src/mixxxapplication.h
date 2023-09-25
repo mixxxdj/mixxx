@@ -12,6 +12,8 @@ class MixxxApplication : public QApplication {
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     bool notify(QObject*, QEvent*) override;
+    bool hasTimeSensitiveEvents() const;
+    void processTimeSensitiveEvents();
 #endif
 
   private:

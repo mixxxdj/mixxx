@@ -8,6 +8,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
+#include "library/defaultdelegate.h"
 #include "library/locationdelegate.h"
 #include "library/multilineeditdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -416,7 +417,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
     }
-    return nullptr;
+    return new DefaultDelegate(pTableView);
 }
 
 QVariant BaseTrackTableModel::data(

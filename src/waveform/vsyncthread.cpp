@@ -53,6 +53,7 @@ void VSyncThread::run() {
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
             emit vsyncRender(); // renders the new waveform.
+            setHasPendingRender(true);
 
             // wait until rendering was scheduled. It might be delayed due a
             // pending swap (depends one driver vSync settings)
@@ -68,6 +69,7 @@ void VSyncThread::run() {
 
             // swaps the new waveform to front in case of gl-wf
             emit vsyncSwap();
+            setHasPendingSwap(true);
 
             // wait until swap occurred. It might be delayed due to driver vSync
             // settings.

@@ -844,6 +844,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/defaultdelegate.cpp
   src/library/dlganalysis.cpp
   src/library/dlganalysis.ui
   src/library/dlgcoverartfullsize.cpp
