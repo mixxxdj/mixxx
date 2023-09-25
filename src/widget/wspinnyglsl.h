@@ -8,6 +8,7 @@
 #include "widget/wspinnybase.h"
 
 class WSpinnyGLSL : public WSpinnyBase, private QOpenGLFunctions {
+    Q_OBJECT
   public:
     WSpinnyGLSL(QWidget* parent,
             const QString& group,

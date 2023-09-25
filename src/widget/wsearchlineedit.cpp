@@ -448,7 +448,7 @@ void WSearchLineEdit::keyPressEvent(QKeyEvent* keyEvent) {
         break;
     }
 
-    return QComboBox::keyPressEvent(keyEvent);
+    QComboBox::keyPressEvent(keyEvent);
 }
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {

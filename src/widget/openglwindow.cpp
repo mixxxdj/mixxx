@@ -88,7 +88,7 @@ bool OpenGLWindow::event(QEvent* pEv) {
             }
 
             pEv->ignore();
-            return false;
+            return false; // clazy:exclude=base-class-event
         }
 
         if (t == QEvent::Resize || t == QEvent::Move || t == QEvent::Expose) {
