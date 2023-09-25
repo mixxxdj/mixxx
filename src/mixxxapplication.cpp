@@ -172,14 +172,6 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     return QApplication::notify(target, event);
 }
 
-bool MixxxApplication::hasTimeSensitiveEvents() const {
-    return WaveformWidgetFactory::instance()->hasPendingTimeSensitiveEvents();
-}
-
-void MixxxApplication::processTimeSensitiveEvents() {
-    QCoreApplication::sendPostedEvents(WaveformWidgetFactory::instance());
-}
-
 bool MixxxApplication::touchIsRightButton() {
     if (!m_pTouchShift) {
         m_pTouchShift = new ControlProxy(
@@ -188,3 +180,11 @@ bool MixxxApplication::touchIsRightButton() {
     return m_pTouchShift->toBool();
 }
 #endif
+
+bool MixxxApplication::hasTimeSensitiveEvents() const {
+    return WaveformWidgetFactory::instance()->hasPendingTimeSensitiveEvents();
+}
+
+void MixxxApplication::processTimeSensitiveEvents() {
+    QCoreApplication::sendPostedEvents(WaveformWidgetFactory::instance());
+}
