@@ -1,6 +1,9 @@
+#include "track/keys.h"
+
 #include <QtDebug>
 
-#include "track/keys.h"
+#include "moc_keys.cpp"
+#include "track/keyutils.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::KeyMap;
@@ -15,6 +18,16 @@ Keys::Keys(const KeyMap& keyMap)
         : m_keyMap(keyMap) {
 }
 
+QString Keys::getTraditional() const {
+    return KeyUtils::formatGlobalKey(*this, KeyUtils::KeyNotation::Traditional);
+}
+QString Keys::getOpenkey() const {
+    return KeyUtils::formatGlobalKey(*this, KeyUtils::KeyNotation::OpenKey);
+}
+QString Keys::getLancelot() const {
+    return KeyUtils::formatGlobalKey(*this, KeyUtils::KeyNotation::Lancelot);
+}
+
 QByteArray Keys::toByteArray() const {
     std::string output;
     m_keyMap.SerializeToString(&output);
@@ -27,6 +40,11 @@ const QString& Keys::getSubVersion() const {
 
 void Keys::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
+}
+
+bool Keys::isValid() const {
+    return m_keyMap.global_key() != mixxx::track::io::key::INVALID ||
+            m_keyMap.global_key_text().length() > 0;
 }
 
 ChromaticKey Keys::getGlobalKey() const {

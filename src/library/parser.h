@@ -32,6 +32,11 @@ class Parser {
     static QList<QString> parseAllLocations(const QString& playlistFile);
     static QList<QString> parse(const QString& playlistFile);
 
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
+
   protected:
     // check for Utf8 encoding
     static bool isUtf8(const char* string);

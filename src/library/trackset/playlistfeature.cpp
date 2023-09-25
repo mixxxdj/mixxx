@@ -21,21 +21,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
-namespace {
-
-QString createPlaylistLabel(
-        const QString& name,
-        int count,
-        int duration) {
-    return QStringLiteral("%1 (%2) %3")
-            .arg(name,
-                    QString::number(count),
-                    mixxx::Duration::formatTime(
-                            duration, mixxx::Duration::Precision::SECONDS));
-}
-
-} // anonymous namespace
-
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -125,74 +110,6 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
     return !locked && formatSupported;
 }
 
-QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-    QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
-    QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-            "AS SELECT "
-            "  Playlists.id AS id, "
-            "  Playlists.name AS name, "
-            "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
-            "FROM Playlists "
-            "LEFT JOIN PlaylistTracks "
-            "  ON PlaylistTracks.playlist_id = Playlists.id "
-            "LEFT JOIN library "
-            "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = 0 "
-            "  GROUP BY Playlists.id");
-    queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY sort_name"));
-    QSqlQuery query(database);
-    if (!query.exec(queryString)) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, idColumn))
-                        .toInt();
-        QString name =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, nameColumn))
-                        .toString();
-        int count =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, countColumn))
-                        .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, durationColumn))
-                        .toInt();
-        BasePlaylistFeature::IdAndLabel idAndLabel;
-        idAndLabel.id = id;
-        idAndLabel.label = createPlaylistLabel(name, count, duration);
-        playlistLabels.append(idAndLabel);
-    }
-    return playlistLabels;
-}
-
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlDatabase database =
@@ -222,7 +139,7 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
                 playlistTableModel
                         .data(playlistTableModel.index(0, durationColumn))
                         .toInt();
-        return createPlaylistLabel(name, count, duration);
+        return PlaylistSummary::createPlaylistLabel(name, count, duration);
     }
     return QString();
 }
@@ -236,10 +153,10 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     int selectedRow = -1;
 
     int row = 0;
-    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+    const QList<PlaylistSummary> playlistLabels = m_playlistDao.createPlaylistSummary();
     for (const auto& idAndLabel : playlistLabels) {
-        int playlistId = idAndLabel.id;
-        QString playlistLabel = idAndLabel.label;
+        int playlistId = idAndLabel.id();
+        QString playlistLabel = idAndLabel.getLabel();
 
         if (selectedId == playlistId) {
             // save index for selection

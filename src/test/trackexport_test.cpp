@@ -3,6 +3,8 @@
 
 #include "test/trackexport_test.h"
 
+#include <grantlee/context.h>
+
 #include <QDebug>
 #include <QScopedPointer>
 
@@ -11,8 +13,12 @@
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
-void FakeOverwriteAnswerer::slotProgress(const QString& filename, int progress, int count) {
+void FakeOverwriteAnswerer::slotProgress(
+        const QString filename, const QString to, int progress, int count) {
     m_progress_filename = filename;
+    if (!to.isEmpty()) {
+        m_progress_to = to;
+    }
     m_progress = progress;
     m_progress_count = count;
 }
@@ -52,7 +58,10 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     tracks.append(track1);
     tracks.append(track2);
     tracks.append(track3);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
@@ -89,7 +98,10 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(QFileInfo(file1).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::OVERWRITE);
@@ -135,7 +147,10 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::OVERWRITE_ALL);
@@ -176,7 +191,10 @@ TEST_F(TrackExporterTest, SkipAll) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::SKIP_ALL);
@@ -215,7 +233,10 @@ TEST_F(TrackExporterTest, Cancel) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
     m_answerer->setAnswer(QFileInfo(file2).canonicalFilePath(),
                            TrackExportWorker::OverwriteAnswer::CANCEL);
@@ -246,7 +267,10 @@ TEST_F(TrackExporterTest, DedupeList) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{ track.fileName }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
@@ -283,7 +307,11 @@ TEST_F(TrackExporterTest, MungeFilename) {
     TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
+    auto pattern = QStringLiteral(
+            "{{track.baseName}}{% if dup %}-{{dup|zeropad:\"4\"}}{% endif %}"
+            ".{{track.extension}}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
+    worker.setPattern(&pattern);
     m_answerer.reset(new FakeOverwriteAnswerer(&worker));
 
     worker.run();
@@ -299,4 +327,44 @@ TEST_F(TrackExporterTest, MungeFilename) {
 
     // Remove the track we created.
     tempPath.remove("cover-test.ogg");
+}
+
+TEST_F(TrackExporterTest, PatternExport) {
+    // Create a simple list of trackpointers and export them.
+    mixxx::FileInfo fileinfo1(mixxx::FileInfo(m_testDataDir.filePath("cover-test.ogg")));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(mixxx::FileInfo(m_testDataDir.filePath("cover-test.flac")));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
+    mixxx::FileInfo fileinfo3(mixxx::FileInfo(
+            m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a")));
+    TrackPointer track3(Track::newTemporary(mixxx::FileAccess(fileinfo3)));
+
+    // An initializer list would be prettier here, but it doesn't compile
+    // on MSVC or OSX.
+    TrackPointerList tracks;
+    tracks.append(track1);
+    tracks.append(track2);
+    tracks.append(track3);
+    auto context = new Grantlee::Context();
+    context->insert("t", "t42-");
+    auto pattern = QStringLiteral(
+            "{{t}}{{track.baseName}}-{{track.extension}}-"
+            "{{track.bpm}}{% if index %}-{{index}}{%endif%}#{{ dup }}");
+    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks, context);
+    worker.setPattern(&pattern);
+
+    EXPECT_EQ(worker.generateFilename(track1, 0),
+            QString(m_exportDir.canonicalPath())
+                    .append("/t42-cover-test-ogg-0#0"));
+    EXPECT_EQ(worker.generateFilename(track2, 1),
+            QString(m_exportDir.canonicalPath())
+                    .append("/t42-cover-test-flac-0-1#0"));
+    EXPECT_EQ(worker.generateFilename(track3, 0, 23),
+            QString(m_exportDir.canonicalPath())
+                    .append("/t42-cover-test-itunes-12-m4a-0#23"));
+
+    auto pattern2 = QStringLiteral("{{track.fileName}}");
+    worker.setPattern(&pattern2);
+    EXPECT_EQ(worker.generateFilename(track1, 0),
+            QString(m_exportDir.canonicalPath()).append("/cover-test.ogg"));
 }

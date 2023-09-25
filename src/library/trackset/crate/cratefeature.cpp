@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "analyzer/analyzerscheduledtrack.h"
-#include "library/export/trackexportwizard.h"
+#include "library/export/trackexportdlg.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/parser.h"
@@ -207,9 +207,9 @@ QString CrateFeature::formatRootViewHtml() const {
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary));
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary2));
     html.append(QStringLiteral("<p>%1</p>").arg(cratesSummary3));
-    //Colorize links in lighter blue, instead of QT default dark blue.
-    //Links are still different from regular text, but readable on dark/light backgrounds.
-    //https://github.com/mixxxdj/mixxx/issues/9103
+    // Colorize links in lighter blue, instead of QT default dark blue.
+    // Links are still different from regular text, but readable on dark/light backgrounds.
+    // https://github.com/mixxxdj/mixxx/issues/9103
     html.append(
             QStringLiteral("<a style=\"color:#0496FF;\" href=\"create\">%1</a>")
                     .arg(createCrateLink));
@@ -828,7 +828,7 @@ void CrateFeature::slotExportPlaylist() {
             QModelIndex index = pCrateTableModel->index(i, 0);
             playlistItems << pCrateTableModel->getTrackLocation(index);
         }
-        exportPlaylistItemsIntoFile(
+        Parser::exportPlaylistItemsIntoFile(
                 fileLocation,
                 playlistItems,
                 useRelativePath);
@@ -837,9 +837,10 @@ void CrateFeature::slotExportPlaylist() {
 
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
+    CrateId id = crateIdFromIndex(m_lastRightClickedIndex);
     QScopedPointer<CrateTableModel> pCrateTableModel(
             new CrateTableModel(this, m_pLibrary->trackCollectionManager()));
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    pCrateTableModel->selectCrate(id);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
@@ -849,8 +850,25 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
-    track_export.exportTracks();
+    // ownership is transferred to TrackExportDlg
+    Grantlee::Context* context = new Grantlee::Context();
+
+    auto summary = new CrateSummary();
+    m_pTrackCollection->crates().readCrateSummaryById(id, summary);
+    CrateSummaryWrapper* summaryWrapper = nullptr;
+    if (summary->isValid()) {
+        summaryWrapper = new CrateSummaryWrapper(*summary);
+        context->insert(QStringLiteral("crate"), summaryWrapper);
+    } else {
+        qWarning() << "CrateSummary is empty";
+    }
+
+    auto exportDialog = new TrackExportDlg(
+            nullptr, m_pConfig, trackpointers, context, &summary->getName());
+    if (summaryWrapper) {
+        summaryWrapper->setParent(exportDialog);
+    }
+    exportDialog->open();
 }
 
 void CrateFeature::storePrevSiblingCrateId(CrateId crateId) {

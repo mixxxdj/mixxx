@@ -21,6 +21,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::RemoveFromDisk |
         WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Export |
         WTrackMenu::Feature::Properties |
         WTrackMenu::Feature::UpdateReplayGainFromPregain |
         WTrackMenu::Feature::FindOnWeb |

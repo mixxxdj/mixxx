@@ -1,5 +1,8 @@
 #pragma once
 
+#include <grantlee/context.h>
+
+#include <QCloseEvent>
 #include <QDialog>
 #include <QScopedPointer>
 #include <QString>
@@ -10,6 +13,7 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
+class QMenu;
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.
 class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
@@ -21,31 +25,53 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
         SKIP_ALL,
     };
 
-    // The dialog is prepared, but not shown on construction.  Does not
-    // take ownership of the export worker.
-    TrackExportDlg(QWidget *parent, UserSettingsPointer pConfig,
-                   TrackExportWorker* worker);
-    virtual ~TrackExportDlg() { }
+    /// The dialog is prepared, but not shown on construction.
+    /// You can pass additional information through a Context.
+    /// The dialog will take ownership of the Context.
+    TrackExportDlg(QWidget* parent,
+            UserSettingsPointer pConfig,
+            TrackPointerList& tracks,
+            Grantlee::Context* context = nullptr,
+            const QString* playlistName = nullptr);
+    virtual ~TrackExportDlg();
+    void open() override;
 
   public slots:
-    void slotProgress(const QString& filename, int progress, int count);
+    void slotProgress(const QString& from, const QString& to, int progress, int count);
+    void slotResult(TrackExportWorker::ExportResult result, const QString& msg);
     void slotAskOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
+    void slotBrowseFolder() {
+        browseFolder();
+    };
+    void slotStartExport();
 
   protected:
-    // First pops up a directory selector on show(), then does the actual
-    // copying.
-    void showEvent(QShowEvent* event) override;
+    bool browseFolder();
+
+  private slots:
+    void slotPatternSelected(int index);
+    void slotPatternEdited(const QString& text);
 
   private:
     // Called when progress is complete or the procedure has been canceled.
-    // Displays a final message box indicating success or failure.
     // Makes sure the exporter thread has exited.
     void finish();
+    void stopWorker();
+    int addStatus(const QString& status, const QString& to);
+    void updatePreview();
+    void setEnableControls(bool enabled);
+    void closeEvent(QCloseEvent* event) override;
+    void populateDefaultPatterns();
+    void removeDups(const QVariant& data);
 
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
+    int m_errorCount = 0;
+    int m_skippedCount = 0;
+    int m_okCount = 0;
+    bool m_patternComboSwitched = 0;
 };

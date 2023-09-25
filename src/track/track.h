@@ -64,9 +64,11 @@ class Track : public QObject {
     Q_PROPERTY(QString trackTotal READ getTrackTotal WRITE setTrackTotal NOTIFY trackTotalChanged)
     Q_PROPERTY(int timesPlayed READ getTimesPlayed NOTIFY timesPlayedChanged)
     Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
-    Q_PROPERTY(double bpm READ getBpm NOTIFY bpmChanged)
+    Q_PROPERTY(int bitrate READ getBitrate WRITE setBitrate NOTIFY bitrateChanged)
+    Q_PROPERTY(double bpm READ getBpm WRITE trySetBpm NOTIFY bpmChanged)
     Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
-    Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
+
+    Q_PROPERTY(Keys key READ getKeys WRITE setKeys NOTIFY keyChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
     Q_PROPERTY(QString durationTextSeconds READ getDurationTextSeconds
                     STORED false NOTIFY durationChanged)
@@ -77,11 +79,23 @@ class Track : public QObject {
     Q_PROPERTY(QString info READ getInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QDateTime sourceSynchronizedAt READ getSourceSynchronizedAt STORED false)
+    Q_PROPERTY(int rating READ getRating WRITE setRating NOTIFY ratingChanged)
 
-    mixxx::FileInfo getFileInfo() const {
-        // Copying mixxx::FileInfo based on QFileInfo is thread-safe due to implicit sharing,
+    Q_PROPERTY(QString location READ getLocation STORED false NOTIFY locationChanged)
+    Q_PROPERTY(QString directory READ directory STORED false NOTIFY directoryChanged)
+    Q_PROPERTY(QString baseName READ baseName STORED false NOTIFY basenameChanged)
+    Q_PROPERTY(QString fileName READ fileName STORED false NOTIFY filenameChanged)
+    Q_PROPERTY(QString extension READ extension STORED false NOTIFY extensionChanged)
+    Q_PROPERTY(QString url READ getURL WRITE setURL NOTIFY trackLocationUrlChanged)
+
+    mixxx::FileAccess getFileAccess() const {
+        // Copying QFileInfo is thread-safe due to implicit sharing,
         // i.e. no locking needed.
-        static_assert(mixxx::FileInfo::isQFileInfo());
+        return m_fileAccess;
+    }
+    mixxx::FileInfo getFileInfo() const {
+        // Copying QFileInfo is thread-safe due to implicit sharing,
+        // i.e. no locking needed.
         return m_fileAccess.info();
     }
 
@@ -93,6 +107,25 @@ class Track : public QObject {
             return {};
         }
         return m_fileAccess.info().location();
+    }
+    QString directory() const {
+        return m_fileAccess.info().asQFileInfo().dir().dirName();
+    }
+    QString baseName() const {
+        return m_fileAccess.info().asQFileInfo().baseName();
+    }
+    QString fileName() const {
+        return m_fileAccess.info().asQFileInfo().fileName();
+    }
+    QString extension() const {
+        return m_fileAccess.info().asQFileInfo().suffix();
+    }
+
+    // The (refreshed) canonical location
+    QString getCanonicalLocation() const;
+    // Checks if the file exists
+    bool checkFileExists() const {
+        return m_fileAccess.info().checkFileExists();
     }
 
     /// Set the file type
@@ -423,11 +456,19 @@ class Track : public QObject {
     void trackNumberChanged(const QString&);
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
+    void bitrateChanged();
     void bpmChanged();
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
     void infoChanged();
+    void ratingChanged();
+    void locationChanged();
+    void directoryChanged();
+    void basenameChanged();
+    void filenameChanged();
+    void extensionChanged();
+    void trackLocationUrlChanged();
 
     void waveformUpdated();
     void waveformSummaryUpdated();

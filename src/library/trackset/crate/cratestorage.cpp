@@ -389,6 +389,8 @@ bool CrateStorage::readCrateSummaryById(
         } else {
             kLogger.warning() << "Crate summary not found by id:" << id;
         }
+    } else {
+        kLogger.warning() << "Error fetching summary" << query.lastError();
     }
     return false;
 }

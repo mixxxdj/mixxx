@@ -3,12 +3,21 @@
 #include <QDir>
 #include <QFile>
 #include <QIODevice>
+#include <QMessageBox>
+#include <QString>
 #include <QUrl>
 #include <QtDebug>
 
 #include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "util/logger.h"
+
+namespace {
+
+const mixxx::Logger kLogger("Parser");
+
+} // anonymous namespace
 
 // static
 bool Parser::isPlaylistFilenameSupported(const QString& playlistFile) {
@@ -151,5 +160,53 @@ mixxx::FileInfo Parser::playlistEntryToFileInfo(
     } else {
         // Fallback: Relative to base path
         return mixxx::FileInfo(QDir(basePath), filePath);
+    }
+}
+
+bool Parser::exportPlaylistItemsIntoFile(
+        QString playlistFilePath,
+        const QList<QString>& playlistItemLocations,
+        bool useRelativePath) {
+    if (playlistFilePath.endsWith(
+                QStringLiteral(".pls"),
+                Qt::CaseInsensitive)) {
+        return ParserPls::writePLSFile(
+                playlistFilePath,
+                playlistItemLocations,
+                useRelativePath);
+    } else if (playlistFilePath.endsWith(
+                       QStringLiteral(".m3u8"),
+                       Qt::CaseInsensitive)) {
+        return ParserM3u::writeM3U8File(
+                playlistFilePath,
+                playlistItemLocations,
+                useRelativePath);
+    } else {
+        // default export to M3U if file extension is missing
+        if (!playlistFilePath.endsWith(
+                    QStringLiteral(".m3u"),
+                    Qt::CaseInsensitive)) {
+                kLogger.debug()
+                        << "No valid file extension for playlist export specified."
+                        << "Appending .m3u and exporting to M3U.";
+                playlistFilePath.append(QStringLiteral(".m3u"));
+                if (QFileInfo::exists(playlistFilePath)) {
+                    auto overwrite = QMessageBox::question(nullptr,
+                            QObject::tr("Overwrite File?"),
+                            QObject::tr("A playlist file with the name \"%1\" "
+                                        "already exists.\n"
+                                        "The default \"m3u\" extension was added "
+                                        "because none was specified.\n\n"
+                                        "Do you really want to overwrite it?")
+                                    .arg(playlistFilePath));
+                    if (overwrite != QMessageBox::StandardButton::Yes) {
+                        return false;
+                    }
+                }
+        }
+        return ParserM3u::writeM3UFile(
+                playlistFilePath,
+                playlistItemLocations,
+                useRelativePath);
     }
 }

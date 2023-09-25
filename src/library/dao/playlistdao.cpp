@@ -21,6 +21,32 @@ PlaylistDAO::PlaylistDAO()
 void PlaylistDAO::initialize(const QSqlDatabase& database) {
     DAO::initialize(database);
     populatePlaylistMembershipCache();
+
+    // create temporary views
+    QString queryString = QLatin1String(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+            "    AS count, "
+            "  SUM(case library.mixxx_deleted "
+            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks "
+            "  ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library "
+            "  ON PlaylistTracks.track_id = library.id "
+            "  WHERE Playlists.hidden = 0 "
+            "  GROUP BY Playlists.id");
+    queryString.append(
+            mixxx::DbConnection::collateLexicographically(
+                    " ORDER BY sort_name"));
+    QSqlQuery query(m_database);
+    if (!query.exec(queryString)) {
+        LOG_FAILED_QUERY(query);
+    }
 }
 
 void PlaylistDAO::populatePlaylistMembershipCache() {
@@ -472,8 +498,8 @@ unsigned int PlaylistDAO::playlistCount() const {
 }
 
 QList<QPair<int, QString>> PlaylistDAO::getPlaylists(const HiddenType hidden) const {
-    //qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
-    //         << QThread::currentThread() << m_database.connectionName();
+    // qDebug() << "PlaylistDAO::getPlaylists(hidden =" << hidden
+    //          << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare(
@@ -1270,6 +1296,122 @@ void PlaylistDAO::getPlaylistsTrackIsIn(TrackId trackId,
             ++it) {
         playlistSet->insert(it.value());
     }
+}
+
+QList<PlaylistSummary> PlaylistDAO::createPlaylistSummaryForTracks(const QList<TrackId>& tracks) {
+    QSet<int> allPlaylistIds;
+    QSet<int> playlistIds;
+    QMap<int, int> trackCount;
+    for (TrackId trackId : tracks) {
+        PlaylistDAO::getPlaylistsTrackIsIn(trackId, &playlistIds);
+        allPlaylistIds += playlistIds;
+        for (int playlistId : qAsConst(playlistIds)) {
+            trackCount[playlistId] = trackCount.value(playlistId, 0) + 1;
+        }
+    }
+    QList<PlaylistSummary> summaries = PlaylistDAO::createPlaylistSummary(&allPlaylistIds);
+    for (PlaylistSummary summary : summaries) {
+        DEBUG_ASSERT(trackCount.contains(summary.id()));
+        summary.setMatches(trackCount.value(summary.id()));
+    }
+    return summaries;
+}
+
+QList<PlaylistSummary> PlaylistDAO::createPlaylistSummary(const QSet<int>* playlistIds) {
+    QList<PlaylistSummary> playlistLabels;
+
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_database);
+    playlistTableModel.setTable("PlaylistsCountsDurations");
+
+    if (playlistIds) {
+        QStringList idList;
+        for (const auto& playlistId : *playlistIds) {
+            idList.append(QString::number(playlistId));
+        }
+        playlistTableModel.setFilter(QString("id in [%1]").arg(idList.join(",")));
+    }
+
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+        int id =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, idColumn))
+                        .toInt();
+        QString name =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, nameColumn))
+                        .toString();
+        int count =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, countColumn))
+                        .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, durationColumn))
+                        .toInt();
+        PlaylistSummary playlist(id, name);
+        playlist.setCount(count);
+        playlist.setDuration(duration);
+        playlistLabels.append(playlist);
+    }
+    return playlistLabels;
+}
+PlaylistSummary PlaylistDAO::getPlaylistSummary(int playlistId) {
+    if (playlistId == -1) {
+        return PlaylistSummary();
+    }
+    QSqlTableModel playlistTableModel(this, m_database);
+    playlistTableModel.setTable("PlaylistsCountsDurations");
+
+    playlistTableModel.setFilter(QString("id = %1").arg(playlistId));
+
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    if (playlistTableModel.rowCount() == 0) {
+        return PlaylistSummary();
+    }
+    VERIFY_OR_DEBUG_ASSERT(playlistTableModel.rowCount() == 1) {
+        qWarning() << "playlist id matched to multiple results";
+    }
+
+    int id =
+            playlistTableModel
+                    .data(playlistTableModel.index(0, idColumn))
+                    .toInt();
+    QString name =
+            playlistTableModel
+                    .data(playlistTableModel.index(0, nameColumn))
+                    .toString();
+    int count =
+            playlistTableModel
+                    .data(playlistTableModel.index(0, countColumn))
+                    .toInt();
+    int duration =
+            playlistTableModel
+                    .data(playlistTableModel.index(0, durationColumn))
+                    .toInt();
+    PlaylistSummary summary(id, name);
+    summary.setCount(count);
+    summary.setDuration(duration);
+    return summary;
 }
 
 void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {

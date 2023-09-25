@@ -18,7 +18,7 @@
 class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
-//class DlgDeleteFilesConfirmation;
+// class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
 class TrackModel;
@@ -55,11 +55,12 @@ class WTrackMenu : public QMenu {
         SelectInLibrary = 1 << 15,
         Analyze = 1 << 16,
         FindOnWeb = 1 << 17,
+        Export = 1 << 18,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset | Analyze |
                 BPM | Color | HideUnhidePurge | RemoveFromDisk | FileBrowser |
                 Properties | SearchRelated | UpdateReplayGainFromPregain | SelectInLibrary |
-                FindOnWeb
+                FindOnWeb | Export
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -96,6 +97,7 @@ class WTrackMenu : public QMenu {
   private slots:
     // File
     void slotOpenInFileBrowser();
+    void slotExportFiles();
     void slotSelectInLibrary();
 
     // Row color
@@ -234,6 +236,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pAnalyzeMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
+    QMenu* m_pFileMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
@@ -273,6 +276,8 @@ class WTrackMenu : public QMenu {
 
     // Open file in default file browser
     QAction* m_pFileBrowserAct{};
+    // Export files
+    QAction* m_pFileExportAct{};
 
     // Select track in library
     QAction* m_pSelectInLibraryAct{};

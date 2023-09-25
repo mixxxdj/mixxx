@@ -863,7 +863,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/export/coverartcopyworker.cpp
   src/library/export/dlgtrackexport.ui
   src/library/export/trackexportdlg.cpp
-  src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
@@ -921,7 +920,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/crate/cratesummary.cpp
   src/library/trackset/playlistfeature.cpp
+  src/library/trackset/playlistsummary.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
@@ -1087,9 +1088,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/experiment.cpp
   src/util/file.cpp
   src/util/imagefiledata.cpp
+  src/util/fileutils.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/formatter.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
@@ -1866,6 +1869,8 @@ add_executable(mixxx-test
   src/test/enginemixertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
+  src/test/formatter_test.cpp
+  src/test/fileutils_test.cpp
   src/test/fileinfo_test.cpp
   src/test/frametest.cpp
   src/test/globaltrackcache_test.cpp
@@ -2308,6 +2313,44 @@ elseif(GNU_GCC OR LLVM_CLANG)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
+# Grantlee5 (5.3.0 is the first version with Qt6 support)
+find_package(Grantlee5 5.3.0 NAMES grantlee grantlee5 )
+
+if(NOT Grantlee5_FOUND)
+      message(FATAL_ERROR "No Grantlee5 for Qt6 available")
+else()
+    # An existing installation of Grantlee5 is available.
+    message(STATUS "Use existing system installation of Grantlee5")
+endif()
+
+target_link_libraries(mixxx-lib PUBLIC
+  Grantlee5::Templates
+  Grantlee5::TextDocument
+)
+
+# grantlee plugin
+add_dependencies(mixxx-lib mixxxformatter)
+add_library(mixxxformatter MODULE
+  src/util/formatterplugin/mixxxformatter.cpp
+  src/util/fileutils.cpp
+)
+
+set_target_properties(mixxxformatter PROPERTIES AUTOMOC ON)
+target_include_directories(mixxxformatter PRIVATE src)
+
+grantlee_adjust_plugin_name(mixxxformatter)
+
+target_link_libraries(mixxxformatter
+  Grantlee5::Templates
+)
+
+add_custom_command(TARGET mixxxformatter POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Grantlee5::defaulttags> $<TARGET_FILE_DIR:mixxxformatter>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Grantlee5::defaultfilters> $<TARGET_FILE_DIR:mixxxformatter>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Grantlee5::loadertags> $<TARGET_FILE_DIR:mixxxformatter>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Grantlee5::Templates> $<TARGET_FILE_DIR:mixxxformatter>"/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
+)
+
 # LAME
 find_package(mp3lame REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE mp3lame::mp3lame)
@@ -2541,6 +2584,16 @@ else()
     install(IMPORTED_RUNTIME_ARTIFACTS
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      mixxxformatter
+      Grantlee5::defaulttags
+      Grantlee5::defaultfilters
+      Grantlee5::loadertags
+      Grantlee5::Templates
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/grantlee/${Grantlee5_VERSION_MAJOR}.${Grantlee5_VERSION_MINOR}"
       RUNTIME_DEPENDENCY_SET mixxx
       COMPONENT applocal)
 

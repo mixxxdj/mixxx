@@ -7,7 +7,7 @@
 #include <QInputDialog>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/export/trackexportwizard.h"
+#include "library/export/trackexportdlg.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/parser.h"
@@ -17,6 +17,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/playlistsummary.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
@@ -611,7 +612,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
             QModelIndex index = pPlaylistTableModel->index(i, 0);
             playlistItems << pPlaylistTableModel->getTrackLocation(index);
         }
-        exportPlaylistItemsIntoFile(
+        Parser::exportPlaylistItemsIntoFile(
                 fileLocation,
                 playlistItems,
                 useRelativePath);
@@ -642,8 +643,24 @@ void BasePlaylistFeature::slotExportTrackFiles() {
         tracks.push_back(pPlaylistTableModel->getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, tracks);
-    track_export.exportTracks();
+    Grantlee::Context* context = new Grantlee::Context();
+
+    PlaylistSummary summary = m_playlistDao.getPlaylistSummary(playlistId);
+    PlaylistSummaryWrapper* wrapper = nullptr;
+    QString playlistName = QString();
+    if (summary.isValid()) {
+        wrapper = new PlaylistSummaryWrapper(summary);
+        context->insert(QStringLiteral("playlist"), wrapper);
+        playlistName = summary.name();
+    }
+
+    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, tracks, context, &playlistName);
+
+    if (wrapper) {
+        wrapper->setParent(exportDialog);
+    }
+
+    exportDialog->open();
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {

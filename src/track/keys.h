@@ -1,7 +1,10 @@
 #pragma once
 
+#include <grantlee/metatype.h>
+
 #include <QByteArray>
 #include <QList>
+#include <QObject>
 #include <QPair>
 
 #include "proto/keys.pb.h"
@@ -13,8 +16,18 @@ typedef QList<QPair<mixxx::track::io::key::ChromaticKey, double>> KeyChangeList;
 class KeyFactory;
 
 class Keys final {
+    Q_GADGET
   public:
+    Q_PROPERTY(QString traditional READ getTraditional)
+    Q_PROPERTY(QString openkey READ getOpenkey)
+    Q_PROPERTY(QString lancelot READ getLancelot)
+    Q_PROPERTY(bool isValid READ isValid)
+
     explicit Keys(const QByteArray* pByteArray = nullptr);
+
+    QString getTraditional() const;
+    QString getOpenkey() const;
+    QString getLancelot() const;
 
     // Serialization
     QByteArray toByteArray() const;
@@ -30,6 +43,8 @@ class Keys final {
     // the keys object.
     const QString& getSubVersion() const;
     void setSubVersion(const QString& subVersion);
+
+    bool isValid() const;
 
     ////////////////////////////////////////////////////////////////////////////
     // Key calculations
@@ -56,3 +71,18 @@ bool operator==(const Keys& lhs, const Keys& rhs);
 inline bool operator!=(const Keys& lhs, const Keys& rhs) {
     return !(lhs == rhs);
 }
+
+Q_DECLARE_METATYPE(Keys)
+
+// FIXME(XXX) This should work according to grentlee docs, but it does not
+GRANTLEE_BEGIN_LOOKUP(Keys)
+if (property.isEmpty()) {
+    return object.getOpenkey();
+}
+GRANTLEE_END_LOOKUP
+
+GRANTLEE_BEGIN_LOOKUP_PTR(Keys)
+if (property.isEmpty()) {
+    return object->getOpenkey();
+}
+GRANTLEE_END_LOOKUP

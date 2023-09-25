@@ -12,6 +12,7 @@
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
+#include "library/trackset/playlistsummary.h"
 #include "track/trackid.h"
 
 class WLibrary;
@@ -77,11 +78,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotAnalyzePlaylist();
 
   protected:
-    struct IdAndLabel {
-        int id;
-        QString label;
-    };
-
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
     virtual QString fetchPlaylistLabel(int playlistId) = 0;

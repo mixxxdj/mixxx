@@ -37,7 +37,8 @@ class LibraryFeature : public QObject {
 
     /// Returns the icon name.
     ///
-    /// This is useful for QML skins that need to build a URL anyway and may use their own icon theme.
+    /// This is useful for QML skins that need to build a URL anyway and may use
+    /// their own icon theme.
     QString iconName() const {
         return m_iconName;
     }
@@ -149,14 +150,6 @@ class LibraryFeature : public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
-
-  protected:
-    // TODO: Move common crate/playlist functions into
-    // a separate base class
-    static bool exportPlaylistItemsIntoFile(
-            QString playlistFilePath,
-            const QList<QString>& playlistItemLocations,
-            bool useRelativePath);
 
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
