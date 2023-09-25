@@ -1196,6 +1196,699 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
+target_precompile_headers(mixxx-lib PRIVATE
+  src/analyzer/analyzer.h
+  src/analyzer/analyzerbeats.h
+  src/analyzer/analyzerebur128.h
+  src/analyzer/analyzergain.h
+  src/analyzer/analyzerkey.h
+  src/analyzer/analyzerprogress.h
+  src/analyzer/analyzerscheduledtrack.h
+  src/analyzer/analyzersilence.h
+  src/analyzer/analyzerthread.h
+  src/analyzer/analyzertrack.h
+  src/analyzer/analyzerwaveform.h
+  src/analyzer/constants.h
+  src/analyzer/plugins/analyzerplugin.h
+  src/analyzer/plugins/analyzerqueenmarybeats.h
+  src/analyzer/plugins/analyzerqueenmarykey.h
+  src/analyzer/plugins/analyzersoundtouchbeats.h
+  src/analyzer/plugins/buffering_utils.h
+  src/analyzer/trackanalysisscheduler.h
+  src/audio/frame.h
+  src/audio/signalinfo.h
+  src/audio/streaminfo.h
+  src/audio/types.h
+  src/control/control.h
+  src/control/controlaudiotaperpot.h
+  src/control/controlbehavior.h
+  src/control/controlcompressingproxy.h
+  src/control/controleffectknob.h
+  src/control/controlencoder.h
+  src/control/controlindicator.h
+  src/control/controlindicatortimer.h
+  src/control/controllinpotmeter.h
+  src/control/controllogpotmeter.h
+  src/control/controlmodel.h
+  src/control/controlobject.h
+  src/control/controlobjectscript.h
+  src/control/controlpotmeter.h
+  src/control/controlproxy.h
+  src/control/controlpushbutton.h
+  src/control/controlsortfiltermodel.h
+  src/control/controlttrotary.h
+  src/control/controlvalue.h
+  src/control/convert.h
+  src/control/pollingcontrolproxy.h
+  src/controllers/bulk/bulksupported.h
+  src/controllers/controller.h
+  src/controllers/controllerenumerator.h
+  src/controllers/controllerinputmappingtablemodel.h
+  src/controllers/controllerlearningeventfilter.h
+  src/controllers/controllermanager.h
+  src/controllers/controllermappinginfo.h
+  src/controllers/controllermappinginfoenumerator.h
+  src/controllers/controllermappingtablemodel.h
+  src/controllers/controlleroutputmappingtablemodel.h
+  src/controllers/controlpickermenu.h
+  src/controllers/defs_controllers.h
+  src/controllers/delegates/controldelegate.h
+  src/controllers/delegates/midibytedelegate.h
+  src/controllers/delegates/midichanneldelegate.h
+  src/controllers/delegates/midiopcodedelegate.h
+  src/controllers/delegates/midioptionsdelegate.h
+  src/controllers/dlgcontrollerlearning.h
+  src/controllers/dlgprefcontroller.h
+  src/controllers/dlgprefcontrollers.h
+  src/controllers/keyboard/keyboardeventfilter.h
+  src/controllers/learningutils.h
+  src/controllers/legacycontrollermapping.h
+  src/controllers/legacycontrollermappingfilehandler.h
+  src/controllers/midi/legacymidicontrollermapping.h
+  src/controllers/midi/legacymidicontrollermappingfilehandler.h
+  src/controllers/midi/midicontroller.h
+  src/controllers/midi/midienumerator.h
+  src/controllers/midi/midimessage.h
+  src/controllers/midi/midioutputhandler.h
+  src/controllers/midi/midiutils.h
+  src/controllers/midi/portmidicontroller.h
+  src/controllers/midi/portmididevice.h
+  src/controllers/midi/portmidienumerator.h
+  src/controllers/scripting/colormapper.h
+  src/controllers/scripting/colormapperjsproxy.h
+  src/controllers/scripting/controllerscriptenginebase.h
+  src/controllers/scripting/controllerscriptmoduleengine.h
+  src/controllers/scripting/legacy/controllerscriptenginelegacy.h
+  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.h
+  src/controllers/scripting/legacy/scriptconnection.h
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.h
+  src/controllers/softtakeover.h
+  src/coreservices.h
+  src/database/mixxxdb.h
+  src/database/schemamanager.h
+  src/defs_urls.h
+  src/dialog/dlgabout.h
+  src/dialog/dlgdevelopertools.h
+  src/dialog/dlgkeywheel.h
+  src/dialog/dlgreplacecuecolor.h
+  src/effects/backends/builtin/autopaneffect.h
+  src/effects/backends/builtin/balanceeffect.h
+  src/effects/backends/builtin/bessel4lvmixeqeffect.h
+  src/effects/backends/builtin/bessel8lvmixeqeffect.h
+  src/effects/backends/builtin/biquadfullkilleqeffect.h
+  src/effects/backends/builtin/bitcrushereffect.h
+  src/effects/backends/builtin/builtinbackend.h
+  src/effects/backends/builtin/distortioneffect.h
+  src/effects/backends/builtin/echoeffect.h
+  src/effects/backends/builtin/equalizer_util.h
+  src/effects/backends/builtin/filtereffect.h
+  src/effects/backends/builtin/flangereffect.h
+  src/effects/backends/builtin/graphiceqeffect.h
+  src/effects/backends/builtin/linkwitzriley8eqeffect.h
+  src/effects/backends/builtin/loudnesscontoureffect.h
+  src/effects/backends/builtin/lvmixeqbase.h
+  src/effects/backends/builtin/metronomeclick.h
+  src/effects/backends/builtin/metronomeeffect.h
+  src/effects/backends/builtin/moogladder4filtereffect.h
+  src/effects/backends/builtin/parametriceqeffect.h
+  src/effects/backends/builtin/phasereffect.h
+  src/effects/backends/builtin/pitchshifteffect.h
+  src/effects/backends/builtin/reverbeffect.h
+  src/effects/backends/builtin/threebandbiquadeqeffect.h
+  src/effects/backends/builtin/tremoloeffect.h
+  src/effects/backends/builtin/whitenoiseeffect.h
+  src/effects/backends/effectmanifest.h
+  src/effects/backends/effectmanifestparameter.h
+  src/effects/backends/effectprocessor.h
+  src/effects/backends/effectsbackend.h
+  src/effects/backends/effectsbackendmanager.h
+  src/effects/chains/equalizereffectchain.h
+  src/effects/chains/outputeffectchain.h
+  src/effects/chains/pergroupeffectchain.h
+  src/effects/chains/quickeffectchain.h
+  src/effects/chains/standardeffectchain.h
+  src/effects/defs.h
+  src/effects/effectbuttonparameterslot.h
+  src/effects/effectchain.h
+  src/effects/effectchainmixmode.h
+  src/effects/effectknobparameterslot.h
+  src/effects/effectparameter.h
+  src/effects/effectparameterslotbase.h
+  src/effects/effectslot.h
+  src/effects/effectsmanager.h
+  src/effects/effectsmessenger.h
+  src/effects/presets/effectchainpreset.h
+  src/effects/presets/effectchainpresetmanager.h
+  src/effects/presets/effectparameterpreset.h
+  src/effects/presets/effectpreset.h
+  src/effects/presets/effectpresetmanager.h
+  src/effects/presets/effectxmlelements.h
+  src/effects/visibleeffectslist.h
+  src/encoder/encoder.h
+  src/encoder/encodercallback.h
+  src/encoder/encoderfdkaac.h
+  src/encoder/encoderfdkaacsettings.h
+  src/encoder/encoderflacsettings.h
+  src/encoder/encodermp3.h
+  src/encoder/encodermp3settings.h
+  src/encoder/encoderrecordingsettings.h
+  src/encoder/encodersettings.h
+  src/encoder/encodersndfileflac.h
+  src/encoder/encodervorbis.h
+  src/encoder/encodervorbissettings.h
+  src/encoder/encoderwave.h
+  src/encoder/encoderwavesettings.h
+  src/engine/bufferscalers/enginebufferscale.h
+  src/engine/bufferscalers/enginebufferscalelinear.h
+  src/engine/bufferscalers/enginebufferscalerubberband.h
+  src/engine/bufferscalers/enginebufferscalest.h
+  src/engine/cachingreader/cachingreader.h
+  src/engine/cachingreader/cachingreaderchunk.h
+  src/engine/cachingreader/cachingreaderworker.h
+  src/engine/channelhandle.h
+  src/engine/channelmixer.h
+  src/engine/channels/engineaux.h
+  src/engine/channels/enginechannel.h
+  src/engine/channels/enginedeck.h
+  src/engine/channels/enginemicrophone.h
+  src/engine/controls/bpmcontrol.h
+  src/engine/controls/clockcontrol.h
+  src/engine/controls/cuecontrol.h
+  src/engine/controls/enginecontrol.h
+  src/engine/controls/keycontrol.h
+  src/engine/controls/loopingcontrol.h
+  src/engine/controls/quantizecontrol.h
+  src/engine/controls/ratecontrol.h
+  src/engine/effects/engineeffect.h
+  src/engine/effects/engineeffectchain.h
+  src/engine/effects/engineeffectparameter.h
+  src/engine/effects/engineeffectsdelay.h
+  src/engine/effects/engineeffectsmanager.h
+  src/engine/effects/groupfeaturestate.h
+  src/engine/effects/message.h
+  src/engine/engine.h
+  src/engine/enginebuffer.h
+  src/engine/enginedelay.h
+  src/engine/enginemixer.h
+  src/engine/engineobject.h
+  src/engine/enginepregain.h
+  src/engine/enginesidechaincompressor.h
+  src/engine/enginetalkoverducking.h
+  src/engine/enginevumeter.h
+  src/engine/engineworker.h
+  src/engine/engineworkerscheduler.h
+  src/engine/enginexfader.h
+  src/engine/filters/enginefilter.h
+  src/engine/filters/enginefilterbessel4.h
+  src/engine/filters/enginefilterbessel8.h
+  src/engine/filters/enginefilterbiquad1.h
+  src/engine/filters/enginefilterbutterworth4.h
+  src/engine/filters/enginefilterbutterworth8.h
+  src/engine/filters/enginefilterdelay.h
+  src/engine/filters/enginefilteriir.h
+  src/engine/filters/enginefilterlinkwitzriley2.h
+  src/engine/filters/enginefilterlinkwitzriley4.h
+  src/engine/filters/enginefilterlinkwitzriley8.h
+  src/engine/filters/enginefiltermoogladder4.h
+  src/engine/filters/enginefilterpan.h
+  src/engine/filters/enginefilterpansingle.h
+  src/engine/positionscratchcontroller.h
+  src/engine/readaheadmanager.h
+  src/engine/sidechain/enginenetworkstream.h
+  src/engine/sidechain/enginerecord.h
+  src/engine/sidechain/enginesidechain.h
+  src/engine/sidechain/networkinputstreamworker.h
+  src/engine/sidechain/networkoutputstreamworker.h
+  src/engine/sidechain/sidechainworker.h
+  src/engine/slipmodestate.h
+  src/engine/sync/clock.h
+  src/engine/sync/enginesync.h
+  src/engine/sync/internalclock.h
+  src/engine/sync/syncable.h
+  src/engine/sync/synccontrol.h
+  src/errordialoghandler.h
+  src/library/analysisfeature.h
+  src/library/analysislibrarytablemodel.h
+  src/library/autodj/autodjfeature.h
+  src/library/autodj/autodjprocessor.h
+  src/library/autodj/dlgautodj.h
+  src/library/banshee/bansheedbconnection.h
+  src/library/banshee/bansheefeature.h
+  src/library/banshee/bansheeplaylistmodel.h
+  src/library/baseexternallibraryfeature.h
+  src/library/baseexternalplaylistmodel.h
+  src/library/baseexternaltrackmodel.h
+  src/library/basesqltablemodel.h
+  src/library/basetrackcache.h
+  src/library/basetracktablemodel.h
+  src/library/bpmdelegate.h
+  src/library/browse/browsefeature.h
+  src/library/browse/browsetablemodel.h
+  src/library/browse/browsethread.h
+  src/library/browse/foldertreemodel.h
+  src/library/colordelegate.h
+  src/library/columncache.h
+  src/library/coverart.h
+  src/library/coverartcache.h
+  src/library/coverartdelegate.h
+  src/library/coverartutils.h
+  src/library/dao/analysisdao.h
+  src/library/dao/autodjcratesdao.h
+  src/library/dao/cuedao.h
+  src/library/dao/dao.h
+  src/library/dao/directorydao.h
+  src/library/dao/libraryhashdao.h
+  src/library/dao/playlistdao.h
+  src/library/dao/settingsdao.h
+  src/library/dao/trackdao.h
+  src/library/dao/trackschema.h
+  src/library/dlganalysis.h
+  src/library/dlgcoverartfullsize.h
+  src/library/dlghidden.h
+  src/library/dlgmissing.h
+  src/library/dlgtagfetcher.h
+  src/library/dlgtrackinfo.h
+  src/library/dlgtrackmetadataexport.h
+  src/library/export/coverartcopyworker.h
+  src/library/export/engineprimeexportrequest.h
+  src/library/export/trackexportdlg.h
+  src/library/export/trackexportwizard.h
+  src/library/export/trackexportworker.h
+  src/library/externaltrackcollection.h
+  src/library/hiddentablemodel.h
+  src/library/itunes/itunesdao.h
+  src/library/itunes/itunesfeature.h
+  src/library/itunes/itunesimporter.h
+  src/library/itunes/ituneslocalhosttoken.h
+  src/library/itunes/itunespathmapping.h
+  src/library/itunes/itunesplaylistmodel.h
+  src/library/itunes/itunesxmlimporter.h
+  src/library/library.h
+  src/library/library_decl.h
+  src/library/library_prefs.h
+  src/library/librarycontrol.h
+  src/library/libraryfeature.h
+  src/library/librarytablemodel.h
+  src/library/libraryview.h
+  src/library/locationdelegate.h
+  src/library/missingtablemodel.h
+  src/library/mixxxlibraryfeature.h
+  src/library/multilineeditdelegate.h
+  src/library/parser.h
+  src/library/parsercsv.h
+  src/library/parserm3u.h
+  src/library/parserpls.h
+  src/library/playlisttablemodel.h
+  src/library/previewbuttondelegate.h
+  src/library/proxytrackmodel.h
+  src/library/queryutil.h
+  src/library/recording/dlgrecording.h
+  src/library/recording/recordingfeature.h
+  src/library/rekordbox/kaitaistructs/rekordbox_anlz.h
+  src/library/rekordbox/kaitaistructs/rekordbox_pdb.h
+  src/library/rekordbox/rekordboxconstants.h
+  src/library/rekordbox/rekordboxfeature.h
+  src/library/relocatedtrack.h
+  src/library/rhythmbox/rhythmboxfeature.h
+  src/library/scanner/importfilestask.h
+  src/library/scanner/libraryscanner.h
+  src/library/scanner/libraryscannerdlg.h
+  src/library/scanner/recursivescandirectorytask.h
+  src/library/scanner/scannerglobal.h
+  src/library/scanner/scannertask.h
+  src/library/scanner/scannerutil.h
+  src/library/searchquery.h
+  src/library/searchqueryparser.h
+  src/library/serato/seratofeature.h
+  src/library/serato/seratoplaylistmodel.h
+  src/library/sidebarmodel.h
+  src/library/stardelegate.h
+  src/library/stareditor.h
+  src/library/starrating.h
+  src/library/tableitemdelegate.h
+  src/library/trackcollection.h
+  src/library/trackcollectioniterator.h
+  src/library/trackcollectionmanager.h
+  src/library/trackloader.h
+  src/library/trackmodel.h
+  src/library/trackmodeliterator.h
+  src/library/trackprocessing.h
+  src/library/trackset/baseplaylistfeature.h
+  src/library/trackset/basetracksetfeature.h
+  src/library/trackset/crate/crate.h
+  src/library/trackset/crate/cratefeature.h
+  src/library/trackset/crate/cratefeaturehelper.h
+  src/library/trackset/crate/crateid.h
+  src/library/trackset/crate/crateschema.h
+  src/library/trackset/crate/cratestorage.h
+  src/library/trackset/crate/cratesummary.h
+  src/library/trackset/crate/cratetablemodel.h
+  src/library/trackset/playlistfeature.h
+  src/library/trackset/setlogfeature.h
+  src/library/trackset/tracksettablemodel.h
+  src/library/traktor/traktorfeature.h
+  src/library/treeitem.h
+  src/library/treeitemmodel.h
+  src/mixer/auxiliary.h
+  src/mixer/baseplayer.h
+  src/mixer/basetrackplayer.h
+  src/mixer/deck.h
+  src/mixer/microphone.h
+  src/mixer/playerinfo.h
+  src/mixer/playermanager.h
+  src/mixer/previewdeck.h
+  src/mixer/sampler.h
+  src/mixer/samplerbank.h
+  src/mixxxapplication.h
+  src/musicbrainz/chromaprinter.h
+  src/musicbrainz/crc.h
+  src/musicbrainz/gzip.h
+  src/musicbrainz/musicbrainz.h
+  src/musicbrainz/musicbrainzxml.h
+  src/musicbrainz/tagfetcher.h
+  src/musicbrainz/web/acoustidlookuptask.h
+  src/musicbrainz/web/coverartarchiveimagetask.h
+  src/musicbrainz/web/coverartarchivelinkstask.h
+  src/musicbrainz/web/musicbrainzrecordingstask.h
+  src/network/httprequestmethod.h
+  src/network/httpstatuscode.h
+  src/network/jsonwebtask.h
+  src/network/networktask.h
+  src/network/webtask.h
+  src/preferences/beatdetectionsettings.h
+  src/preferences/colorpaletteeditor.h
+  src/preferences/colorpaletteeditormodel.h
+  src/preferences/colorpalettesettings.h
+  src/preferences/configobject.h
+  src/preferences/constants.h
+  src/preferences/dialog/dlgprefautodj.h
+  src/preferences/dialog/dlgprefbeats.h
+  src/preferences/dialog/dlgprefcolors.h
+  src/preferences/dialog/dlgprefdeck.h
+  src/preferences/dialog/dlgprefeffects.h
+  src/preferences/dialog/dlgpreferencepage.h
+  src/preferences/dialog/dlgpreferences.h
+  src/preferences/dialog/dlgprefinterface.h
+  src/preferences/dialog/dlgprefkey.h
+  src/preferences/dialog/dlgpreflibrary.h
+  src/preferences/dialog/dlgprefmixer.h
+  src/preferences/dialog/dlgprefrecord.h
+  src/preferences/dialog/dlgprefreplaygain.h
+  src/preferences/dialog/dlgprefsound.h
+  src/preferences/dialog/dlgprefsounditem.h
+  src/preferences/dialog/dlgprefwaveform.h
+  src/preferences/effectchainpresetlistmodel.h
+  src/preferences/effectmanifesttablemodel.h
+  src/preferences/keydetectionsettings.h
+  src/preferences/replaygainsettings.h
+  src/preferences/settingsmanager.h
+  src/preferences/upgrade.h
+  src/preferences/usersettings.h
+  src/preferences/waveformsettings.h
+  src/recording/defs_recording.h
+  src/recording/recordingmanager.h
+  src/skin/legacy/colorschemeparser.h
+  src/skin/legacy/imgcolor.h
+  src/skin/legacy/imginvert.h
+  src/skin/legacy/imgloader.h
+  src/skin/legacy/imgsource.h
+  src/skin/legacy/launchimage.h
+  src/skin/legacy/legacyskin.h
+  src/skin/legacy/legacyskinparser.h
+  src/skin/legacy/pixmapsource.h
+  src/skin/legacy/skincontext.h
+  src/skin/legacy/skinparser.h
+  src/skin/legacy/tooltips.h
+  src/skin/skin.h
+  src/skin/skincontrols.h
+  src/skin/skinloader.h
+  src/soundio/sounddevice.h
+  src/soundio/sounddevicenetwork.h
+  src/soundio/sounddevicenotfound.h
+  src/soundio/sounddeviceportaudio.h
+  src/soundio/sounddevicestatus.h
+  src/soundio/soundmanager.h
+  src/soundio/soundmanagerconfig.h
+  src/soundio/soundmanagerutil.h
+  src/sources/audiosource.h
+  src/sources/audiosourceproxy.h
+  src/sources/audiosourcestereoproxy.h
+  src/sources/audiosourcetrackproxy.h
+  src/sources/metadatasource.h
+  src/sources/metadatasourcetaglib.h
+  src/sources/mp3decoding.h
+  src/sources/readaheadframebuffer.h
+  src/sources/soundsource.h
+  src/sources/soundsourceflac.h
+  src/sources/soundsourceoggvorbis.h
+  src/sources/soundsourceprovider.h
+  src/sources/soundsourceproviderregistry.h
+  src/sources/soundsourceproxy.h
+  src/sources/soundsourcesndfile.h
+  src/sources/soundsourcewv.h
+  src/sources/urlresource.h
+  src/track/albuminfo.h
+  src/track/beatfactory.h
+  src/track/beats.h
+  src/track/beatsimporter.h
+  src/track/beatutils.h
+  src/track/bpm.h
+  src/track/cue.h
+  src/track/cueinfo.h
+  src/track/cueinfoimporter.h
+  src/track/globaltrackcache.h
+  src/track/keyfactory.h
+  src/track/keys.h
+  src/track/keyutils.h
+  src/track/playcounter.h
+  src/track/replaygain.h
+  src/track/serato/beatgrid.h
+  src/track/serato/beatsimporter.h
+  src/track/serato/color.h
+  src/track/serato/cueinfoimporter.h
+  src/track/serato/markers.h
+  src/track/serato/markers2.h
+  src/track/serato/tags.h
+  src/track/taglib/trackmetadata.h
+  src/track/taglib/trackmetadata_ape.h
+  src/track/taglib/trackmetadata_common.h
+  src/track/taglib/trackmetadata_file.h
+  src/track/taglib/trackmetadata_id3v2.h
+  src/track/taglib/trackmetadata_mp4.h
+  src/track/taglib/trackmetadata_riff.h
+  src/track/taglib/trackmetadata_xiph.h
+  src/track/track.h
+  src/track/track_decl.h
+  src/track/trackid.h
+  src/track/trackinfo.h
+  src/track/trackiterator.h
+  src/track/trackmetadata.h
+  src/track/tracknumbers.h
+  src/track/trackrecord.h
+  src/track/trackref.h
+  src/util/alphabetafilter.h
+  src/util/assert.h
+  src/util/battery/battery.h
+  src/util/cache.h
+  src/util/circularbuffer.h
+  src/util/class.h
+  src/util/cmdlineargs.h
+  src/util/color/color.h
+  src/util/color/colorpalette.h
+  src/util/color/predefinedcolorpalettes.h
+  src/util/color/rgbcolor.h
+  src/util/colorcomponents.h
+  src/util/compatibility/qatomic.h
+  src/util/compatibility/qbytearray.h
+  src/util/compatibility/qhash.h
+  src/util/compatibility/qmutex.h
+  src/util/console.h
+  src/util/counter.h
+  src/util/datetime.h
+  src/util/db/dbconnection.h
+  src/util/db/dbconnectionpool.h
+  src/util/db/dbconnectionpooled.h
+  src/util/db/dbconnectionpooler.h
+  src/util/db/dbentity.h
+  src/util/db/dbfieldindex.h
+  src/util/db/dbid.h
+  src/util/db/dbnamedentity.h
+  src/util/db/fwdsqlquery.h
+  src/util/db/fwdsqlqueryselectresult.h
+  src/util/db/sqlite.h
+  src/util/db/sqllikewildcards.h
+  src/util/db/sqlqueryfinisher.h
+  src/util/db/sqlstorage.h
+  src/util/db/sqlstringformatter.h
+  src/util/db/sqlsubselectmode.h
+  src/util/db/sqltransaction.h
+  src/util/debug.h
+  src/util/defs.h
+  src/util/denormalsarezero.h
+  src/util/desktophelper.h
+  src/util/dnd.h
+  src/util/duration.h
+  src/util/event.h
+  src/util/experiment.h
+  src/util/fifo.h
+  src/util/file.h
+  src/util/fileaccess.h
+  src/util/fileinfo.h
+  src/util/filename.h
+  src/util/font.h
+  src/util/fpclassify.h
+  src/util/gitinfostore.h
+  src/util/imagefiledata.h
+  src/util/imageutils.h
+  src/util/indexrange.h
+  src/util/itemiterator.h
+  src/util/lcs.h
+  src/util/logger.h
+  src/util/logging.h
+  src/util/mac.h
+  src/util/macros.h
+  src/util/math.h
+  src/util/memory.h
+  src/util/messagepipe.h
+  src/util/movinginterquartilemean.h
+  src/util/mutex.h
+  src/util/optional.h
+  src/util/painterscope.h
+  src/util/parented_ptr.h
+  src/util/path.h
+  src/util/performancetimer.h
+  src/util/platform.h
+  src/util/qt.h
+  src/util/quuid.h
+  src/util/rampingvalue.h
+  src/util/rangelist.h
+  src/util/readaheadsamplebuffer.h
+  src/util/reference.h
+  src/util/regex.h
+  src/util/rescaler.h
+  src/util/ringdelaybuffer.h
+  src/util/rotary.h
+  src/util/runtimeloggingcategory.h
+  src/util/safelywritablefile.h
+  src/util/sample.h
+  src/util/sample_autogen.h
+  src/util/samplebuffer.h
+  src/util/sandbox.h
+  src/util/scopedoverridecursor.h
+  src/util/screensaver.h
+  src/util/screensavermanager.h
+  src/util/semanticversion.h
+  src/util/singleton.h
+  src/util/span.h
+  src/util/stat.h
+  src/util/statmodel.h
+  src/util/statsmanager.h
+  src/util/string.h
+  src/util/tapfilter.h
+  src/util/task.h
+  src/util/taskmonitor.h
+  src/util/thread_affinity.h
+  src/util/thread_annotations.h
+  src/util/threadcputimer.h
+  src/util/time.h
+  src/util/timer.h
+  src/util/trace.h
+  src/util/translations.h
+  src/util/types.h
+  src/util/unique_ptr_vector.h
+  src/util/valuetransformer.h
+  src/util/versionstore.h
+  src/util/widgethelper.h
+  src/util/workerthread.h
+  src/util/workerthreadscheduler.h
+  src/util/xml.h
+  src/waveform/visualplayposition.h
+  src/waveform/waveform.h
+  src/waveform/waveformfactory.h
+  src/waveform/widgets/nonglwaveformwidgetabstract.h
+  src/waveform/widgets/waveformwidgetcategory.h
+  src/waveform/widgets/waveformwidgettype.h
+  src/widget/controlwidgetconnection.h
+  src/widget/effectwidgetutils.h
+  src/widget/findonwebmenufactory.h
+  src/widget/findonwebmenuservices/findonwebmenudiscogs.h
+  src/widget/findonwebmenuservices/findonwebmenulastfm.h
+  src/widget/findonwebmenuservices/findonwebmenusoundcloud.h
+  src/widget/hexspinbox.h
+  src/widget/knobeventhandler.h
+  src/widget/paintable.h
+  src/widget/slidereventhandler.h
+  src/widget/trackdroptarget.h
+  src/widget/wanalysislibrarytableview.h
+  src/widget/wbasewidget.h
+  src/widget/wbattery.h
+  src/widget/wbeatspinbox.h
+  src/widget/wcolorpicker.h
+  src/widget/wcolorpickeraction.h
+  src/widget/wcombobox.h
+  src/widget/wcoverart.h
+  src/widget/wcoverartlabel.h
+  src/widget/wcoverartmenu.h
+  src/widget/wcuemenupopup.h
+  src/widget/wdisplay.h
+  src/widget/weffectbuttonparametername.h
+  src/widget/weffectchain.h
+  src/widget/weffectchainpresetbutton.h
+  src/widget/weffectchainpresetselector.h
+  src/widget/weffectknobparametername.h
+  src/widget/weffectname.h
+  src/widget/weffectparameterknob.h
+  src/widget/weffectparameterknobcomposed.h
+  src/widget/weffectparameternamebase.h
+  src/widget/weffectpushbutton.h
+  src/widget/weffectselector.h
+  src/widget/wfindonwebmenu.h
+  src/widget/wglwidget.h
+  src/widget/whotcuebutton.h
+  src/widget/wimagestore.h
+  src/widget/wkey.h
+  src/widget/wknob.h
+  src/widget/wknobcomposed.h
+  src/widget/wlabel.h
+  src/widget/wlibrary.h
+  src/widget/wlibrarysidebar.h
+  src/widget/wlibrarytableview.h
+  src/widget/wlibrarytextbrowser.h
+  src/widget/wmainmenubar.h
+  src/widget/wnumber.h
+  src/widget/wnumberdb.h
+  src/widget/wnumberpos.h
+  src/widget/wnumberrate.h
+  src/widget/woverviewhsv.h
+  src/widget/woverviewlmh.h
+  src/widget/woverviewrgb.h
+  src/widget/wpixmapstore.h
+  src/widget/wpushbutton.h
+  src/widget/wraterange.h
+  src/widget/wrecordingduration.h
+  src/widget/wscrollable.h
+  src/widget/wsearchlineedit.h
+  src/widget/wsearchrelatedtracksmenu.h
+  src/widget/wsingletoncontainer.h
+  src/widget/wsizeawarestack.h
+  src/widget/wskincolor.h
+  src/widget/wslidercomposed.h
+  src/widget/wsplitter.h
+  src/widget/wstarrating.h
+  src/widget/wstatuslight.h
+  src/widget/wtime.h
+  src/widget/wtrackmenu.h
+  src/widget/wtrackproperty.h
+  src/widget/wtracktableview.h
+  src/widget/wtracktableviewheader.h
+  src/widget/wtracktext.h
+  src/widget/wtrackwidgetgroup.h
+  src/widget/wvumeterlegacy.h
+  src/widget/wwaveformviewer.h
+  src/widget/wwidget.h
+  src/widget/wwidgetgroup.h
+  src/widget/wwidgetstack.h
+)
 if(QT6)
   target_sources(mixxx-lib PRIVATE
     src/qml/asyncimageprovider.cpp
@@ -1212,6 +1905,22 @@ if(QT6)
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlwaveformoverview.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/qml/asyncimageprovider.h
+    src/qml/qmlapplication.h
+    src/qml/qmlconfigproxy.h
+    src/qml/qmlcontrolproxy.h
+    src/qml/qmldlgpreferencesproxy.h
+    src/qml/qmleffectmanifestparametersmodel.h
+    src/qml/qmleffectslotproxy.h
+    src/qml/qmleffectsmanagerproxy.h
+    src/qml/qmllibraryproxy.h
+    src/qml/qmllibrarytracklistmodel.h
+    src/qml/qmlplayermanagerproxy.h
+    src/qml/qmlplayerproxy.h
+    src/qml/qmlvisibleeffectsmodel.h
+    src/qml/qmlwaveformoverview.h
   )
 else()
   target_sources(mixxx-lib PRIVATE
@@ -1266,6 +1975,54 @@ else()
     src/widget/wvumeterlegacy.cpp
     src/widget/wwaveformviewer.cpp
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/mixxxmainwindow.h
+    src/waveform/guitick.h
+    src/waveform/renderers/glslwaveformrenderersignal.h
+    src/waveform/renderers/glvsynctestrenderer.h
+    src/waveform/renderers/glwaveformrenderbackground.h
+    src/waveform/renderers/glwaveformrenderer.h
+    src/waveform/renderers/glwaveformrendererfilteredsignal.h
+    src/waveform/renderers/glwaveformrendererrgb.h
+    src/waveform/renderers/glwaveformrenderersignal.h
+    src/waveform/renderers/glwaveformrenderersimplesignal.h
+    src/waveform/renderers/waveformmark.h
+    src/waveform/renderers/waveformmarkrange.h
+    src/waveform/renderers/waveformmarkset.h
+    src/waveform/renderers/waveformrenderbackground.h
+    src/waveform/renderers/waveformrenderbeat.h
+    src/waveform/renderers/waveformrendererabstract.h
+    src/waveform/renderers/waveformrendererendoftrack.h
+    src/waveform/renderers/waveformrendererfilteredsignal.h
+    src/waveform/renderers/waveformrendererhsv.h
+    src/waveform/renderers/waveformrendererpreroll.h
+    src/waveform/renderers/waveformrendererrgb.h
+    src/waveform/renderers/waveformrenderersignalbase.h
+    src/waveform/renderers/waveformrendermark.h
+    src/waveform/renderers/waveformrendermarkrange.h
+    src/waveform/renderers/waveformsignalcolors.h
+    src/waveform/renderers/waveformwidgetrenderer.h
+    src/waveform/sharedglcontext.h
+    src/waveform/visualsmanager.h
+    src/waveform/vsyncthread.h
+    src/waveform/waveformmarklabel.h
+    src/waveform/waveformwidgetfactory.h
+    src/waveform/widgets/emptywaveformwidget.h
+    src/waveform/widgets/glrgbwaveformwidget.h
+    src/waveform/widgets/glsimplewaveformwidget.h
+    src/waveform/widgets/glslwaveformwidget.h
+    src/waveform/widgets/glvsynctestwidget.h
+    src/waveform/widgets/glwaveformwidget.h
+    src/waveform/widgets/glwaveformwidgetabstract.h
+    src/waveform/widgets/rgbwaveformwidget.h
+    src/waveform/widgets/softwarewaveformwidget.h
+    src/waveform/widgets/waveformwidgetabstract.h
+    src/widget/woverview.h
+    src/widget/wspinny.h
+    src/widget/wspinnybase.h
+    src/widget/wvumeter.h
+    src/widget/wvumeterbase.h
+  )
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
       src/shaders/endoftrackshader.cpp
@@ -1303,6 +2060,45 @@ else()
       src/widget/wspinnyglsl.cpp
       src/widget/wvumeterglsl.cpp
     )
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/shaders/endoftrackshader.h
+      src/shaders/rgbashader.h
+      src/shaders/rgbshader.h
+      src/shaders/shader.h
+      src/shaders/textureshader.h
+      src/shaders/unicolorshader.h
+      src/shaders/vinylqualityshader.h
+      src/util/texture.h
+      src/waveform/renderers/allshader/matrixforwidgetgeometry.h
+      src/waveform/renderers/allshader/rgbadata.h
+      src/waveform/renderers/allshader/rgbdata.h
+      src/waveform/renderers/allshader/vertexdata.h
+      src/waveform/renderers/allshader/waveformrenderbackground.h
+      src/waveform/renderers/allshader/waveformrenderbeat.h
+      src/waveform/renderers/allshader/waveformrenderer.h
+      src/waveform/renderers/allshader/waveformrendererabstract.h
+      src/waveform/renderers/allshader/waveformrendererendoftrack.h
+      src/waveform/renderers/allshader/waveformrendererfiltered.h
+      src/waveform/renderers/allshader/waveformrendererlrrgb.h
+      src/waveform/renderers/allshader/waveformrendererpreroll.h
+      src/waveform/renderers/allshader/waveformrendererrgb.h
+      src/waveform/renderers/allshader/waveformrenderersignalbase.h
+      src/waveform/renderers/allshader/waveformrenderersimple.h
+      src/waveform/renderers/allshader/waveformrendermark.h
+      src/waveform/renderers/allshader/waveformrendermarkrange.h
+      src/waveform/widgets/allshader/filteredwaveformwidget.h
+      src/waveform/widgets/allshader/hsvwaveformwidget.h
+      src/waveform/widgets/allshader/lrrgbwaveformwidget.h
+      src/waveform/widgets/allshader/rgbwaveformwidget.h
+      src/waveform/widgets/allshader/simplewaveformwidget.h
+      src/waveform/widgets/allshader/waveformwidget.h
+      src/widget/openglwindow.h
+      src/widget/tooltipqopengl.h
+      src/widget/wglwidgetqopengl.h
+      src/widget/winitialglwidget.h
+      src/widget/wspinnyglsl.h
+      src/widget/wvumeterglsl.h
+    )
   else()
     target_sources(mixxx-lib PRIVATE
       src/waveform/renderers/qtvsynctestrenderer.cpp
@@ -1315,6 +2111,17 @@ else()
       src/waveform/widgets/qtwaveformwidget.cpp
       src/widget/wglwidgetqglwidget.cpp
     )
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/waveform/renderers/qtvsynctestrenderer.h
+      src/waveform/renderers/qtwaveformrendererfilteredsignal.h
+      src/waveform/renderers/qtwaveformrenderersimplesignal.h
+      src/waveform/widgets/qthsvwaveformwidget.h
+      src/waveform/widgets/qtrgbwaveformwidget.h
+      src/waveform/widgets/qtsimplewaveformwidget.h
+      src/waveform/widgets/qtvsynctestwidget.h
+      src/waveform/widgets/qtwaveformwidget.h
+      src/widget/wglwidgetqglwidget.h
+    )
   endif()
 endif()
 
@@ -1322,6 +2129,7 @@ set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY 
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
+  target_precompile_headers(mixxx-lib PRIVATE src/util/rlimit.h)
   set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
@@ -1342,11 +2150,18 @@ if(APPLE)
     src/util/darkappearance.mm
     src/util/macosversion.mm
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/util/darkappearance.h
+    src/util/macosversion.h
+  )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
   if(MACOS_ITUNES_LIBRARY)
     target_sources(mixxx-lib PRIVATE
       src/library/itunes/itunesmacosimporter.mm
+    )
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/library/itunes/itunesmacosimporter.h
     )
     target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
     target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
@@ -2194,7 +3009,13 @@ if(ENGINEPRIME)
   target_sources(mixxx-lib PRIVATE
     src/library/export/dlglibraryexport.cpp
     src/library/export/engineprimeexportjob.cpp
-    src/library/export/libraryexporter.cpp)
+    src/library/export/libraryexporter.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/library/export/dlglibraryexport.h
+    src/library/export/libraryexporter.h
+    src/library/export/engineprimeexportjob.h
+  )
   target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
 endif()
 
@@ -2289,6 +3110,7 @@ if(KEYFINDER)
   endif()
 
   target_sources(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.cpp)
+  target_precompile_headers(mixxx-lib PRIVATE src/analyzer/plugins/analyzerkeyfinder.h)
   target_compile_definitions(mixxx-lib PUBLIC __KEYFINDER__)
 endif()
 
@@ -2739,14 +3561,21 @@ cmake_dependent_option(BATTERY "Battery meter support" ON "WIN32 OR UNIX" OFF)
 if(BATTERY)
   if(WIN32)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterywindows.cpp)
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/util/battery/batterywindows.h
+    )
   elseif(APPLE)
     target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/util/battery/batterymac.h
+    )
   elseif(UNIX)
     find_package(Upower REQUIRED)
     find_package(GLIB COMPONENTS gobject REQUIRED)
     target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
     target_link_libraries(mixxx-lib PRIVATE Upower::Upower ${GLIB_LIBRARIES} ${GLIB_GOBJECT_LIBRARIES})
     target_sources(mixxx-lib PRIVATE src/util/battery/batterylinux.cpp)
+    target_precompile_headers(mixxx-lib PRIVATE src/util/battery/batterylinux.h)
   else()
     message(FATAL_ERROR "Battery support is not implemented for the target platform.")
   endif()
@@ -2809,6 +3638,11 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/sources/soundsourcecoreaudio.h
+    src/sources/v1/legacyaudiosourceadapter.h
+    src/sources/v1/legacyaudiosource.h
+  )
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
@@ -2827,6 +3661,10 @@ if(FAAD)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcem4a.cpp
     src/sources/libfaadloader.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/sources/soundsourcem4a.h
+    src/sources/libfaadloader.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
@@ -2886,6 +3724,13 @@ if(FFMPEG)
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/encoder/encoderffmpegcore.h
+    src/encoder/encoderffmpegmp3.h
+    src/encoder/encoderffmpegresample.h
+    src/encoder/encoderffmpegvorbis.h
+    src/sources/soundsourceffmpeg.h
+  )
   target_compile_definitions(mixxx-lib PUBLIC
     __FFMPEG__
     # Needed to build new FFmpeg
@@ -2925,6 +3770,10 @@ if(HSS1394)
     src/controllers/midi/hss1394controller.cpp
     src/controllers/midi/hss1394enumerator.cpp
   )
+  target_precompile_headers(mixxxx-lib PUBLIC
+    src/controllers/midi/hss1394controller.h
+    src/controllers/midi/hss1394enumerator.h
+  )
   target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
   if(NOT HSS1394_FOUND)
     message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
@@ -2943,6 +3792,11 @@ if(LILV)
     src/effects/backends/lv2/lv2backend.cpp
     src/effects/backends/lv2/lv2effectprocessor.cpp
     src/effects/backends/lv2/lv2manifest.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/effects/backends/lv2/lv2backend.h
+    src/effects/backends/lv2/lv2effectprocessor.h
+    src/effects/backends/lv2/lv2manifest.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
   target_link_libraries(mixxx-lib PRIVATE lilv::lilv)
@@ -2984,6 +3838,16 @@ if(BROADCAST)
     src/preferences/broadcastsettingsmodel.cpp
     src/encoder/encoderbroadcastsettings.cpp
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/preferences/dialog/dlgprefbroadcast.h
+    src/broadcast/broadcastmanager.h
+    src/broadcast/defs_broadcast.h
+    src/engine/sidechain/shoutconnection.h
+    src/preferences/broadcastprofile.h
+    src/preferences/broadcastsettings.h
+    src/preferences/broadcastsettingsmodel.h
+    src/encoder/encoderbroadcastsettings.h
+  )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
 endif()
 
@@ -2999,6 +3863,11 @@ if(OPUS)
     src/sources/soundsourceopus.cpp
     src/encoder/encoderopus.cpp
     src/encoder/encoderopussettings.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/sources/soundsourceopus.h
+    src/encoder/encoderopus.h
+    src/encoder/encoderopussettings.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
@@ -3017,6 +3886,7 @@ if(MAD)
     message(FATAL_ERROR "ID3Tag support requires libid3tag and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcemp3.cpp)
+  target_precompile_headers(mixxx-lib PRIVATE src/sources/soundsourcemp3.h)
   target_compile_definitions(mixxx-lib PUBLIC __MAD__)
   target_link_libraries(mixxx-lib PRIVATE MAD::MAD ID3Tag::ID3Tag)
 endif()
@@ -3030,6 +3900,9 @@ if(MEDIAFOUNDATION)
   find_package(MediaFoundation REQUIRED)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcemediafoundation.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/sources/soundsourcemediafoundation.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
   target_include_directories(mixxx-lib SYSTEM PRIVATE
@@ -3052,6 +3925,10 @@ if(MODPLUG)
     src/preferences/dialog/dlgprefmodplugdlg.ui
     src/sources/soundsourcemodplug.cpp
     src/preferences/dialog/dlgprefmodplug.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/sources/soundsourcemodplug.h
+    src/preferences/dialog/dlgprefmodplug.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __MODPLUG__)
   target_link_libraries(mixxx-lib PRIVATE Modplug::Modplug)
@@ -3136,6 +4013,17 @@ if(HID)
     src/controllers/hid/legacyhidcontrollermapping.cpp
     src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/controllers/hid/hidcontroller.h
+    src/controllers/hid/hiddenylist.h
+    src/controllers/hid/hiddevice.h
+    src/controllers/hid/hidenumerator.h
+    src/controllers/hid/hidioglobaloutputreportfifo.h
+    src/controllers/hid/hidiooutputreport.h
+    src/controllers/hid/hidiothread.h
+    src/controllers/hid/legacyhidcontrollermapping.h
+    src/controllers/hid/legacyhidcontrollermappingfilehandler.h
+  )
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
 endif()
 
@@ -3149,10 +4037,18 @@ if(BULK)
     src/controllers/bulk/bulkcontroller.cpp
     src/controllers/bulk/bulkenumerator.cpp
   )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/controllers/bulk/bulkcontroller.h
+    src/controllers/bulk/bulkenumerator.h
+  )
   if(NOT HID)
     target_sources(mixxx-lib PRIVATE
       src/controllers/hid/legacyhidcontrollermapping.cpp
       src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
+    )
+    target_precompile_headers(mixxx-lib PRIVATE
+      src/controllers/hid/legacyhidcontrollermapping.h
+      src/controllers/hid/legacyhidcontrollermappingfilehandler.h
     )
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)
@@ -3175,6 +4071,18 @@ if(VINYLCONTROL)
     src/vinylcontrol/vinylcontrolprocessor.cpp
     src/vinylcontrol/steadypitch.cpp
     src/engine/controls/vinylcontrolcontrol.cpp
+  )
+  target_precompile_headers(mixxx-lib PRIVATE
+    src/engine/controls/vinylcontrolcontrol.h
+    src/preferences/dialog/dlgprefvinyl.h
+    src/vinylcontrol/defs_vinylcontrol.h
+    src/vinylcontrol/steadypitch.h
+    src/vinylcontrol/vinylcontrol.h
+    src/vinylcontrol/vinylcontrolmanager.h
+    src/vinylcontrol/vinylcontrolprocessor.h
+    src/vinylcontrol/vinylcontrolsignalwidget.h
+    src/vinylcontrol/vinylcontrolxwax.h
+    src/vinylcontrol/vinylsignalquality.h
   )
   target_compile_definitions(mixxx-lib PUBLIC __VINYLCONTROL__)
 
