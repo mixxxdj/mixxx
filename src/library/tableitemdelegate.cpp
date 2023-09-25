@@ -80,5 +80,5 @@ void TableItemDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    QStyledItemDelegate::paint(painter, option, index);
+    DefaultDelegate::paint(painter, option, index);
 }
