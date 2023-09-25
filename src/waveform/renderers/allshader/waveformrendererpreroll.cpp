@@ -9,7 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {
@@ -141,3 +141,5 @@ void WaveformRendererPreroll::paintGL() {
     m_shader.disableAttributeArray(vertexLocation);
     m_shader.release();
 }
+
+} // namespace allshader

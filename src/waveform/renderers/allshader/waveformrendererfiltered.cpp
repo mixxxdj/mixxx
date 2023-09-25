@@ -9,7 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
         WaveformWidgetRenderer* waveformWidget)
@@ -196,3 +196,5 @@ void WaveformRendererFiltered::paintGL() {
     m_shader.disableAttributeArray(positionLocation);
     m_shader.release();
 }
+
+} // namespace allshader

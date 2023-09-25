@@ -20,7 +20,7 @@ constexpr float horizontalGradientArray[] = {-1.f, 1.f, -1.f, 1.f};
 
 } // anonymous namespace
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidget)
@@ -109,3 +109,5 @@ void WaveformRendererEndOfTrack::paintGL() {
         fillWithGradient(color);
     }
 }
+
+} // namespace allshader
