@@ -171,6 +171,7 @@ if(APPLE)
 endif()
 
 project(mixxx VERSION 2.4.0)
+enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "beta") # set to "alpha" "beta" or ""
 
@@ -1093,7 +1094,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/logger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
-  src/util/moc_included_test.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
@@ -1195,6 +1195,164 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+)
+target_precompile_headers(mixxx-lib PUBLIC
+  src/audio/frame.h
+  src/audio/signalinfo.h
+  src/audio/streaminfo.h
+  src/audio/types.h
+  src/control/control.h
+  src/control/controlaudiotaperpot.h
+  src/control/controlbehavior.h
+  src/control/controlcompressingproxy.h
+  src/control/controleffectknob.h
+  src/control/controlencoder.h
+  src/control/controlindicator.h
+  src/control/controlindicatortimer.h
+  src/control/controllinpotmeter.h
+  src/control/controllogpotmeter.h
+  src/control/controlmodel.h
+  src/control/controlobject.h
+  src/control/controlobjectscript.h
+  src/control/controlpotmeter.h
+  src/control/controlproxy.h
+  src/control/controlpushbutton.h
+  src/control/controlsortfiltermodel.h
+  src/control/controlttrotary.h
+  src/control/controlvalue.h
+  src/control/convert.h
+  src/control/pollingcontrolproxy.h
+  src/controllers/defs_controllers.h
+  src/defs_urls.h
+  src/effects/defs.h
+  src/engine/channelhandle.h
+  src/engine/engine.h
+  src/errordialoghandler.h
+  src/track/track.h
+  src/track/track_decl.h
+  src/track/trackid.h
+  src/track/trackinfo.h
+  src/track/trackiterator.h
+  src/track/trackmetadata.h
+  src/track/tracknumbers.h
+  src/track/trackrecord.h
+  src/track/trackref.h
+  src/util/alphabetafilter.h
+  src/util/assert.h
+  src/util/battery/battery.h
+  src/util/cache.h
+  src/util/circularbuffer.h
+  src/util/class.h
+  src/util/cmdlineargs.h
+  src/util/color/color.h
+  src/util/color/colorpalette.h
+  src/util/color/predefinedcolorpalettes.h
+  src/util/color/rgbcolor.h
+  src/util/colorcomponents.h
+  src/util/compatibility/qatomic.h
+  src/util/compatibility/qbytearray.h
+  src/util/compatibility/qhash.h
+  src/util/compatibility/qmutex.h
+  src/util/console.h
+  src/util/counter.h
+  src/util/datetime.h
+  src/util/db/dbconnection.h
+  src/util/db/dbconnectionpool.h
+  src/util/db/dbconnectionpooled.h
+  src/util/db/dbconnectionpooler.h
+  src/util/db/dbentity.h
+  src/util/db/dbfieldindex.h
+  src/util/db/dbid.h
+  src/util/db/dbnamedentity.h
+  src/util/db/fwdsqlquery.h
+  src/util/db/fwdsqlqueryselectresult.h
+  src/util/db/sqlite.h
+  src/util/db/sqllikewildcards.h
+  src/util/db/sqlqueryfinisher.h
+  src/util/db/sqlstorage.h
+  src/util/db/sqlstringformatter.h
+  src/util/db/sqlsubselectmode.h
+  src/util/db/sqltransaction.h
+  src/util/debug.h
+  src/util/defs.h
+  src/util/denormalsarezero.h
+  src/util/desktophelper.h
+  src/util/dnd.h
+  src/util/duration.h
+  src/util/event.h
+  src/util/experiment.h
+  src/util/fifo.h
+  src/util/file.h
+  src/util/fileaccess.h
+  src/util/fileinfo.h
+  src/util/filename.h
+  src/util/font.h
+  src/util/fpclassify.h
+  src/util/gitinfostore.h
+  src/util/imagefiledata.h
+  src/util/imageutils.h
+  src/util/indexrange.h
+  src/util/itemiterator.h
+  src/util/lcs.h
+  src/util/logger.h
+  src/util/logging.h
+  src/util/mac.h
+  src/util/macros.h
+  src/util/math.h
+  src/util/memory.h
+  src/util/messagepipe.h
+  src/util/movinginterquartilemean.h
+  src/util/mutex.h
+  src/util/optional.h
+  src/util/painterscope.h
+  src/util/parented_ptr.h
+  src/util/path.h
+  src/util/performancetimer.h
+  src/util/platform.h
+  src/util/qt.h
+  src/util/quuid.h
+  src/util/rampingvalue.h
+  src/util/rangelist.h
+  src/util/readaheadsamplebuffer.h
+  src/util/reference.h
+  src/util/regex.h
+  src/util/rescaler.h
+  src/util/ringdelaybuffer.h
+  src/util/rotary.h
+  src/util/runtimeloggingcategory.h
+  src/util/safelywritablefile.h
+  src/util/sample.h
+  src/util/sample_autogen.h
+  src/util/samplebuffer.h
+  src/util/sandbox.h
+  src/util/scopedoverridecursor.h
+  src/util/screensaver.h
+  src/util/screensavermanager.h
+  src/util/semanticversion.h
+  src/util/singleton.h
+  src/util/span.h
+  src/util/stat.h
+  src/util/statmodel.h
+  src/util/statsmanager.h
+  src/util/string.h
+  src/util/tapfilter.h
+  src/util/task.h
+  src/util/taskmonitor.h
+  src/util/thread_affinity.h
+  src/util/thread_annotations.h
+  src/util/threadcputimer.h
+  src/util/time.h
+  src/util/timer.h
+  src/util/trace.h
+  src/util/translations.h
+  src/util/types.h
+  src/util/unique_ptr_vector.h
+  src/util/valuetransformer.h
+  src/util/versionstore.h
+  src/util/widgethelper.h
+  src/util/workerthread.h
+  src/util/workerthreadscheduler.h
+  src/util/xml.h
 )
 if(QT6)
   target_sources(mixxx-lib PRIVATE
@@ -1326,6 +1484,8 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
+  enable_language(OBJC OBJCXX)
+
   # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
   # This frees us from having to worry about memory management when interfacing
   # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
@@ -1932,7 +2092,6 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
-  src/util/moc_included_test.cpp
 )
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
