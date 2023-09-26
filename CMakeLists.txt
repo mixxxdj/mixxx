@@ -1094,6 +1094,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/logger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
+  src/util/moc_included_test.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
   src/util/rangelist.cpp
@@ -2092,6 +2093,7 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/util/moc_included_test.cpp
 )
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
