@@ -219,3 +219,21 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
+
+// Specialization must be declared before the first use that would cause
+// implicit instantiation, in every translation unit where such use occurs.
+// See <https://en.cppreference.com/w/cpp/language/template_specialization> for
+// details.
+template<>
+template<>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QString& default_value) const;
+template<>
+template<>
+bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key, const bool& default_value) const;
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value);
+template<>
+template<>
+void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value);
