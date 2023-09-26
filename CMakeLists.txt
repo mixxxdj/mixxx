@@ -171,6 +171,7 @@ if(APPLE)
 endif()
 
 project(mixxx VERSION 2.4.0)
+enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "beta") # set to "alpha" "beta" or ""
 
@@ -1325,6 +1326,8 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
+  enable_language(OBJC OBJCXX)
+
   # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
   # This frees us from having to worry about memory management when interfacing
   # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
