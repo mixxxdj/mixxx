@@ -295,6 +295,106 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Touch ON</description>
+                <status>0x94</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Touch OFF</description>
+                <status>0x84</status>
+                <midino>0x09</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder</description>
+                <status>0xB4</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Button ON</description>
+                <status>0x94</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Select Encoder Button OFF</description>
+                <status>0x84</status>
+                <midino>0x07</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Touch ON</description>
+                <status>0x94</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Touch OFF</description>
+                <status>0x84</status>
+                <midino>0x0A</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder</description>
+                <status>0xB4</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Button ON</description>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX Time/Parameter Encoder Button OFF</description>
+                <status>0x84</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
         </controls>
 
         <outputs>
