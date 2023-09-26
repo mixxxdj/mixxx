@@ -257,14 +257,16 @@ void DlgPrefInterface::slotUpdateSchemes() {
 }
 
 void DlgPrefInterface::slotUpdate() {
-    const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
-    if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
-        m_skinNameOnUpdate = pSkinOnUpdate->name();
-    } else {
-        m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
+    if (m_pSkinLoader) {
+        const SkinPointer pSkinOnUpdate = m_pSkinLoader->getConfiguredSkin();
+        if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
+            m_skinNameOnUpdate = pSkinOnUpdate->name();
+        } else {
+            m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
+        }
+        ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
+        slotUpdateSchemes();
     }
-    ComboBoxSkinconf->setCurrentIndex(ComboBoxSkinconf->findText(m_skinNameOnUpdate));
-    slotUpdateSchemes();
 
     m_localeOnUpdate = m_pConfig->getValue(ConfigKey(kConfigGroup, kLocaleKey));
     ComboBoxLocale->setCurrentIndex(ComboBoxLocale->findData(m_localeOnUpdate));
@@ -286,9 +288,11 @@ void DlgPrefInterface::slotUpdate() {
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
-    int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
-    ComboBoxSkinconf->setCurrentIndex(index);
-    slotSetSkin(index);
+    if (m_pSkinLoader) {
+        int index = ComboBoxSkinconf->findText(m_pSkinLoader->getDefaultSkinName());
+        ComboBoxSkinconf->setCurrentIndex(index);
+        slotSetSkin(index);
+    }
 
     // Use System locale
     ComboBoxLocale->setCurrentIndex(0);
@@ -428,8 +432,9 @@ void DlgPrefInterface::slotApply() {
     }
 
     // load skin/scheme if necessary
-    if (m_pSkin->name() != m_skinNameOnUpdate ||
-            m_colorScheme != m_colorSchemeOnUpdate) {
+    if (m_pSkin &&
+            (m_pSkin->name() != m_skinNameOnUpdate ||
+                    m_colorScheme != m_colorSchemeOnUpdate)) {
         // ColorSchemeParser::setupLegacyColorSchemes() reads scheme from config
         emit reloadUserInterface();
         // Allow switching skins multiple times without closing the dialog
