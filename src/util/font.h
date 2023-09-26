@@ -53,21 +53,23 @@ class FontUtils {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             QFontDatabase database;
 #endif
-            QStringList families = QFontDatabase::applicationFontFamilies(result);
-            foreach (const QString& family, families) {
+            QStringList pointSizesStr;
+            const QStringList families = QFontDatabase::applicationFontFamilies(result);
+            for (const QString& family : families) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                QStringList styles = QFontDatabase::styles(family);
+                const QStringList styles = QFontDatabase::styles(family);
 #else
-                QStringList styles = database.styles(family);
+                const QStringList styles = database.styles(family);
 #endif
-                foreach (const QString& style, styles) {
+                for (const QString& style : styles) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                    QList<int> pointSizes = QFontDatabase::pointSizes(family, style);
+                    const QList<int> pointSizes = QFontDatabase::pointSizes(family, style);
 #else
-                    QList<int> pointSizes = database.pointSizes(family, style);
+                    const QList<int> pointSizes = database.pointSizes(family, style);
 #endif
-                    QStringList pointSizesStr;
-                    foreach (int point, pointSizes) {
+                    pointSizesStr.clear();
+                    pointSizesStr.reserve(pointSizes.count());
+                    for (int point : pointSizes) {
                         pointSizesStr.append(QString::number(point));
                     }
                     qDebug() << "FONT LOADED family:" << family

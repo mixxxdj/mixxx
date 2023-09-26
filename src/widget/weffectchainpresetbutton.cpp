@@ -54,6 +54,7 @@ void WEffectChainPresetButton::populateMenu() {
     // Chain preset items
     const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
     bool presetIsReadOnly = true;
+    QStringList effectNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
@@ -63,7 +64,6 @@ void WEffectChainPresetButton::populateMenu() {
         }
         QString tooltip =
                 QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
-        QStringList effectNames;
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
                 effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
@@ -73,6 +73,7 @@ void WEffectChainPresetButton::populateMenu() {
             tooltip.append("<br/>");
             tooltip.append(effectNames.join("<br/>"));
         }
+        effectNames.clear();
         parented_ptr<QAction> pAction = make_parented<QAction>(title, this);
         connect(pAction,
                 &QAction::triggered,
