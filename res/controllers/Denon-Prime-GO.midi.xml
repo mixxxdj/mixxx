@@ -7,7 +7,7 @@
         <wiki>Encoded URL to Mixxx wiki page documenting this controller mapping</wiki>
         <forums>Encoded URL to Mixxx discussion forums page for this controller mapping</forums>
     </info>
-    <controller id="primego"><!-- Many controllers in one file supported. A controller should only appear once -->
+    <controller id="primego">
         <scriptfiles>
             <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
@@ -901,6 +901,546 @@
                 <description>Deck 2 Sync / Key Sync Button Off</description>
                 <status>0x83</status>
                 <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder Button On</description>
+                <status>0x92</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder Button Off</description>
+                <status>0x82</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Encoder</description>
+                <status>0xB2</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder Button On</description>
+                <status>0x93</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder Button Off</description>
+                <status>0x83</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Encoder</description>
+                <status>0xB3</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Hot Cue Pad On</description>
+                <status>0x92</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Hot Cue Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Pad On</description>
+                <status>0x92</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Loop Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Roll Pad On</description>
+                <status>0x92</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Roll Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Bank Pad On</description>
+                <status>0x92</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Bank Pad Off</description>
+                <status>0x82</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Hot Cue Pad On</description>
+                <status>0x93</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Hot Cue Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Pad On</description>
+                <status>0x93</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Loop Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Roll Pad On</description>
+                <status>0x93</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Roll Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Bank Pad On</description>
+                <status>0x93</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Bank Pad Off</description>
+                <status>0x83</status>
+                <midino>0x0E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 1 On</description>
+                <status>0x92</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 1 Off</description>
+                <status>0x82</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 2 On</description>
+                <status>0x92</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 2 Off</description>
+                <status>0x82</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 3 On</description>
+                <status>0x92</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 3 Off</description>
+                <status>0x82</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 4 On</description>
+                <status>0x92</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 4 Off</description>
+                <status>0x82</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 5 On</description>
+                <status>0x92</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 5 Off</description>
+                <status>0x82</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 6 On</description>
+                <status>0x92</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 6 Off</description>
+                <status>0x82</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 7 On</description>
+                <status>0x92</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 7 Off</description>
+                <status>0x82</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 8 On</description>
+                <status>0x92</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pad 8 Off</description>
+                <status>0x82</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 1 On</description>
+                <status>0x93</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 1 Off</description>
+                <status>0x83</status>
+                <midino>0x0F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 2 On</description>
+                <status>0x93</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 2 Off</description>
+                <status>0x83</status>
+                <midino>0x10</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 3 On</description>
+                <status>0x93</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 3 Off</description>
+                <status>0x83</status>
+                <midino>0x11</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 4 On</description>
+                <status>0x93</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 4 Off</description>
+                <status>0x83</status>
+                <midino>0x12</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 5 On</description>
+                <status>0x93</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 5 Off</description>
+                <status>0x83</status>
+                <midino>0x13</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 6 On</description>
+                <status>0x93</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 6 Off</description>
+                <status>0x83</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 7 On</description>
+                <status>0x93</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 7 Off</description>
+                <status>0x83</status>
+                <midino>0x15</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 8 On</description>
+                <status>0x93</status>
+                <midino>0x16</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pad 8 Off</description>
+                <status>0x83</status>
+                <midino>0x16</midino>
                 <options>
                     <Script-Binding/>
                 </options>
