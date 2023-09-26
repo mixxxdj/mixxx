@@ -21,7 +21,7 @@ constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
     return a.isValid() && a > target - 1 && a < target + 1;
 }
-}
+} // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
@@ -96,8 +96,7 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
     m_pReloopToggleButton->set(0);
     // The old reloop_exit name was confusing. This CO does both entering and exiting.
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
-                                      ConfigKey(group, "reloop_toggle"));
+    m_pReloopToggleButton->addAlias(ConfigKey(group, QStringLiteral("reloop_exit")));
 
     m_pReloopAndStopButton = new ControlPushButton(ConfigKey(group, "reloop_andstop"));
     connect(m_pReloopAndStopButton, &ControlObject::valueChanged,

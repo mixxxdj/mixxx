@@ -1307,26 +1307,20 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WSpinnyBase* pSpinny;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
+            !CmdlineArgs::Instance().getUseLegacySpinny()) {
+        pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    } else
 #endif
-        {
-            pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        }
+    {
+        pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pSpinny->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
-#endif
-        {
-            pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        }
     }
     commonWidgetSetup(node, pSpinny);
 
@@ -1364,7 +1358,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     return nullptr;
 #else
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
+    if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
                     !pWaveformWidgetFactory->isOpenGlesAvailable())) {
         // Legacy WVuMeter
@@ -1395,26 +1389,19 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WVuMeterBase* pVuMeterWidget;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL();
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+        pVuMeterWidget = new WVuMeterGLSL(pParent);
+    } else
 #endif
-        {
-            pVuMeterWidget = new WVuMeter();
-        }
+    {
+        pVuMeterWidget = new WVuMeter(pParent);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pVuMeterWidget->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL(m_pParent);
-        } else
-#endif
-        {
-            pVuMeterWidget = new WVuMeter(m_pParent);
-        }
     }
     commonWidgetSetup(node, pVuMeterWidget);
 

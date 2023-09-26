@@ -50,7 +50,7 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                     ? std::distance(std::begin(tokens_list), it)
                     : std::optional<std::size_t>{};
         };
-        if (tokens.size()) {
+        if (!tokens.isEmpty()) {
             std::optional<std::size_t> locationColumnIndex = detect_location_column(
                     tokens[0],
                     [&](auto i) { return i == QObject::tr("Location"); });

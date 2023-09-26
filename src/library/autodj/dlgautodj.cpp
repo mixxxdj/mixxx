@@ -404,7 +404,7 @@ void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
         ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QWidget::keyPressEvent(pEvent);
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgAutoDJ::saveCurrentViewState() {

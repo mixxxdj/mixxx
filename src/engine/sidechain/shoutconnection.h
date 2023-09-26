@@ -125,7 +125,7 @@ class ShoutConnection
     UserSettingsPointer m_pConfig;
     BroadcastProfilePtr m_pProfile;
     EncoderPointer m_encoder;
-    PollingControlProxy m_masterSamplerate;
+    PollingControlProxy m_mainSamplerate;
     PollingControlProxy m_broadcastEnabled;
     // static metadata according to prefereneces
     bool m_custom_metadata;

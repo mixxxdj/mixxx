@@ -529,14 +529,14 @@ TraktorS3.Controller = class {
 
         engine.connectControl("[Microphone]", "pfl", this.pflOutput);
 
-        engine.connectControl("[Master]", "maximize_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
+        engine.connectControl("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
         // Master VuMeters
         this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
         this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.Controller.prototype.peakOutput.bind(this));
         this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.Controller.prototype.peakOutput.bind(this));
-        this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
+        this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
         for (let i = 1; i <= 8; ++i) {
@@ -1145,7 +1145,7 @@ TraktorS3.Deck = class {
             return;
         }
 
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 
     selectLoopHandler(field) {

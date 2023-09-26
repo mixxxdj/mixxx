@@ -482,7 +482,6 @@ WLibrarySidebar {
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;

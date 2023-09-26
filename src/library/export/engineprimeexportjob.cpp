@@ -210,13 +210,11 @@ void exportMetadata(
     snapshot.sample_count = frameCount;
     snapshot.sample_rate = pTrack->getSampleRate();
 
-    // Set track loudness.
-    // Note that the djinterop API method for setting loudness may be revised
-    // in future, as more is discovered about the exact meaning of the loudness
-    // field in the Engine Library format.  Make the assumption for now that
-    // ReplayGain ratio is an appropriate value to set, which has been validated
-    // by basic experimental testing.
-    snapshot.average_loudness = pTrack->getReplayGain().getRatio();
+    // Track loudness controls how the waveforms are scaled on Engine players.
+    // However, getting it wrong and accidentally scaling a waveform beyond a sensible maximum
+    // can result in no waveform being shown at all.  In order to be safe, no loudness information
+    // is exported, resulting in waveforms being displayed as-is.
+    snapshot.average_loudness = 0;
 
     // Set main cue-point.
     mixxx::audio::FramePos cuePlayPos = pTrack->getMainCuePosition();

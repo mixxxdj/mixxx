@@ -10,13 +10,10 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {
-}
-
-WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::initializeGL() {
@@ -128,3 +125,5 @@ void WaveformRenderBeat::paintGL() {
     m_shader.disableAttributeArray(vertexLocation);
     m_shader.release();
 }
+
+} // namespace allshader

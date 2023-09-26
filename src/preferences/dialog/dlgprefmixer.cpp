@@ -38,7 +38,7 @@ bool isMixingEQ(EffectManifest* pManifest) {
 }
 
 bool isMainEQ(EffectManifest* pManifest) {
-    return pManifest->isMasterEQ();
+    return pManifest->isMainEQ();
 }
 } // anonymous namespace
 
@@ -137,7 +137,7 @@ DlgPrefMixer::DlgPrefMixer(
 
     // Add drop down lists for current decks and connect num_decks control
     // to slotNumDecksChanged
-    m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
+    m_pNumDecks = new ControlProxy(QStringLiteral("[App]"), QStringLiteral("num_decks"), this);
     m_pNumDecks->connectValueChanged(this, &DlgPrefMixer::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 
@@ -330,7 +330,7 @@ void DlgPrefMixer::slotSingleEqCheckboxChanged(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigGroup, kSingleEq),
             do_hide ? QString("yes") : QString("no"));
-    if (m_deckEqEffectSelectors.size()) {
+    if (!m_deckEqEffectSelectors.isEmpty()) {
         int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
         for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
             if (do_hide) {

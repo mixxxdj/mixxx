@@ -101,8 +101,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Pressed>
-                      <Unpressed scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_master.svg</Unpressed>
+                      <Pressed scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn__xfader_sampler_main.svg</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>

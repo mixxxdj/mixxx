@@ -74,13 +74,27 @@ void WEffectChainPresetSelector::populate() {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
 
+    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
+    QStringList effectNames;
     for (int i = 0; i < presetList.size(); i++) {
         auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
-        setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
+            if (!pEffectPreset->isEmpty()) {
+                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+            }
+        }
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
+        }
+        effectNames.clear();
+        setItemData(i, tooltip, Qt::ToolTipRole);
     }
 
     slotChainPresetChanged(m_pChain->presetName());
@@ -88,6 +102,7 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
+    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
     // Clicking a chain item moves keyboard focus to the list view.

@@ -16,9 +16,6 @@ allshader::WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRender
         : WaveformRenderer(waveformWidget) {
 }
 
-allshader::WaveformRenderMarkRange::~WaveformRenderMarkRange() {
-}
-
 void allshader::WaveformRenderMarkRange::initializeGL() {
     WaveformRenderer::initializeGL();
     m_shader.init();

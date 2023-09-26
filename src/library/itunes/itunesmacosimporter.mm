@@ -3,6 +3,7 @@
 #import <iTunesLibrary/iTunesLibrary.h>
 #include <gsl/pointers>
 
+#include <QDateTime>
 #include <QHash>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -180,6 +181,7 @@ class ImporterImpl {
                 .title = qStringFrom(item.title),
                 .album = qStringFrom(item.album.title),
                 .albumArtist = qStringFrom(item.album.albumArtist),
+                .composer = qStringFrom(item.composer),
                 .genre = qStringFrom(item.genre),
                 .grouping = qStringFrom(item.grouping),
                 .year = static_cast<int>(item.year),
@@ -190,6 +192,9 @@ class ImporterImpl {
                 .trackNumber = static_cast<int>(item.trackNumber),
                 .bpm = static_cast<int>(item.beatsPerMinute),
                 .bitrate = static_cast<int>(item.bitrate),
+                .playCount = static_cast<int>(item.playCount),
+                .lastPlayedAt = QDateTime::fromNSDate(item.lastPlayedDate),
+                .dateAdded = QDateTime::fromNSDate(item.addedDate),
         };
 
         if (!m_dao.importTrack(track)) {

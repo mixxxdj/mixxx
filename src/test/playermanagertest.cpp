@@ -5,7 +5,7 @@
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
@@ -48,7 +48,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         // but it does a lot of local disk / settings setup.
         auto pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pEffectsManager = std::make_shared<EffectsManager>(m_pConfig, pChannelHandleFactory);
-        m_pEngine = std::make_shared<EngineMaster>(
+        m_pEngine = std::make_shared<EngineMixer>(
                 m_pConfig,
                 "[Master]",
                 m_pEffectsManager.get(),
@@ -110,7 +110,7 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
 
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
-    std::shared_ptr<EngineMaster> m_pEngine;
+    std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;

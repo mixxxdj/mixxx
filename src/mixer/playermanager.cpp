@@ -5,7 +5,7 @@
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -24,6 +24,8 @@
 namespace {
 
 const mixxx::Logger kLogger("PlayerManager");
+const QString kAppGroup = QStringLiteral("[App]");
+const QString kLegacyGroup = QStringLiteral("[Master]");
 
 // Utilize half of the available cores for adhoc analysis of tracks
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount() / 2);
@@ -94,7 +96,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
+        EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
@@ -103,24 +105,29 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_decks"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
           m_pCONumSamplers(new ControlObject(
-                  ConfigKey("[Master]", "num_samplers"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
           m_pCONumPreviewDecks(new ControlObject(
-                  ConfigKey("[Master]", "num_preview_decks"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
           m_pCONumMicrophones(new ControlObject(
-                  ConfigKey("[Master]", "num_microphones"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
-                  ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+                  ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+    m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
+    m_pCONumSamplers->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_samplers")));
     m_pCONumSamplers->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumSamplers, Qt::DirectConnection);
+    m_pCONumPreviewDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_preview_decks")));
     m_pCONumPreviewDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumPreviewDecks, Qt::DirectConnection);
+    m_pCONumMicrophones->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_microphones")));
     m_pCONumMicrophones->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumMicrophones, Qt::DirectConnection);
+    m_pCONumAuxiliaries->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_auxiliaries")));
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
@@ -241,7 +248,7 @@ unsigned int PlayerManager::numDecks() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumDecks = atomicLoadRelaxed(m_pCOPNumDecks);
     if (pCOPNumDecks == nullptr) {
-        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        pCOPNumDecks = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_decks")));
         if (!pCOPNumDecks->valid()) {
             delete pCOPNumDecks;
             pCOPNumDecks = nullptr;
@@ -259,7 +266,7 @@ unsigned int PlayerManager::numSamplers() {
     // a hashtable lookup every time they call this.
     ControlProxy* pCOPNumSamplers = atomicLoadRelaxed(m_pCOPNumSamplers);
     if (pCOPNumSamplers == nullptr) {
-        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        pCOPNumSamplers = new ControlProxy(ConfigKey(kAppGroup, QStringLiteral("num_samplers")));
         if (!pCOPNumSamplers->valid()) {
             delete pCOPNumSamplers;
             pCOPNumSamplers = nullptr;
@@ -278,7 +285,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     ControlProxy* pCOPNumPreviewDecks = atomicLoadRelaxed(m_pCOPNumPreviewDecks);
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
-                ConfigKey("[Master]", "num_preview_decks"));
+                ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")));
         if (!pCOPNumPreviewDecks->valid()) {
             delete pCOPNumPreviewDecks;
             pCOPNumPreviewDecks = nullptr;
@@ -428,12 +435,12 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager.
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, deckIndex), m_pEngine);
+            AudioOutput(AudioPathType::Deck, 0, 2, deckIndex), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, deckIndex), pEngineDeck);
+            AudioInput(AudioPathType::VinylControl, 0, 2, deckIndex), pEngineDeck);
 
     // Setup equalizer and QuickEffect chain for this deck.
     m_pEffectsManager->addDeck(handleGroup);

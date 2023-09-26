@@ -108,8 +108,7 @@ EffectChain::EffectChain(const QString& group,
             &ControlObject::valueChanged,
             this,
             &EffectChain::slotControlNextChainPreset);
-    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "next_chain"),
-            ConfigKey(m_group, "next_chain_preset"));
+    m_pControlNextChainPreset->addAlias(ConfigKey(m_group, QStringLiteral("next_chain")));
 
     m_pControlPrevChainPreset = std::make_unique<ControlPushButton>(
             ConfigKey(m_group, "prev_chain_preset"));
@@ -117,8 +116,7 @@ EffectChain::EffectChain(const QString& group,
             &ControlObject::valueChanged,
             this,
             &EffectChain::slotControlPrevChainPreset);
-    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "prev_chain"),
-            ConfigKey(m_group, "prev_chain_preset"));
+    m_pControlPrevChainPreset->addAlias(ConfigKey(m_group, QStringLiteral("prev_chain")));
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlChainPresetSelector = std::make_unique<ControlEncoder>(
@@ -127,8 +125,7 @@ EffectChain::EffectChain(const QString& group,
             &ControlObject::valueChanged,
             this,
             &EffectChain::slotControlChainPresetSelector);
-    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "chain_selector"),
-            ConfigKey(m_group, "chain_preset_selector"));
+    m_pControlChainPresetSelector->addAlias(ConfigKey(m_group, QStringLiteral("chain_selector")));
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.

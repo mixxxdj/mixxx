@@ -1,8 +1,8 @@
 <!DOCTYPE template>
-<!-- Master level meter -->
+<!-- Main level meter -->
 <Template>
   <WidgetGroup>
-    <ObjectName>MasterVu</ObjectName>
+    <ObjectName>MainVu</ObjectName>
     <Layout>vertical</Layout>
     <MinimumSize>28,60</MinimumSize>
     <MaximumSize>28,300</MaximumSize>
@@ -10,21 +10,21 @@
     <Children>
 
       <WidgetGroup>
-        <ObjectName>master_VuMeter_Group</ObjectName>
+        <ObjectName>main_VuMeter_Group</ObjectName>
         <SizePolicy>f,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <Template src="skin:vumeter_v.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="side">L</SetVariable>
-            <SetVariable name="tooltip_meter">master_VuMeterL</SetVariable>
-            <SetVariable name="tooltip_clip">master_PeakIndicatorL</SetVariable>
+            <SetVariable name="tooltip_meter">main_VuMeterL</SetVariable>
+            <SetVariable name="tooltip_clip">main_PeakIndicatorL</SetVariable>
           </Template>
           <Template src="skin:vumeter_v.xml">
             <SetVariable name="group">[Master]</SetVariable>
             <SetVariable name="side">R</SetVariable>
-            <SetVariable name="tooltip_meter">master_VuMeterR</SetVariable>
-            <SetVariable name="tooltip_clip">master_PeakIndicatorR</SetVariable>
+            <SetVariable name="tooltip_meter">main_VuMeterR</SetVariable>
+            <SetVariable name="tooltip_clip">main_PeakIndicatorR</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

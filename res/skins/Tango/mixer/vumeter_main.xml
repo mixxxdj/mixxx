@@ -1,6 +1,6 @@
 <!--
 Description:
-  Container for the master level meter, suiting various configurations.
+  Container for the main level meter, suiting various configurations.
 
 Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
 Refer to https://github.com/mixxxdj/mixxx/issues/9201
@@ -11,7 +11,7 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
     <SizePolicy>max,min</SizePolicy>
     <Children>
 
-      <!-- Master VU when mixer is hidden but permanent level meters are shown -->
+      <!-- Main VU when mixer is hidden but permanent level meters are shown -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -22,7 +22,7 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
             <Layout>vertical</Layout>
             <Children>
               <SingletonContainer>
-                <ObjectName>VuMeterMaster</ObjectName>
+                <ObjectName>VuMeterMain</ObjectName>
               </SingletonContainer>
             </Children>
             <Connection>
@@ -32,23 +32,23 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <!-- /Master VU when mixer is hidden but permanent level meters are shown -->
+      <!-- /Main VU when mixer is hidden but permanent level meters are shown -->
 
-      <WidgetGroup><!-- Master VU when mixer is shown -->
+      <WidgetGroup><!-- Main VU when mixer is shown -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>VuMeterMaster</ObjectName>
+            <ObjectName>VuMeterMain</ObjectName>
           </SingletonContainer>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

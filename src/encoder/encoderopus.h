@@ -17,7 +17,7 @@
 
 class EncoderOpus: public Encoder {
   public:
-    static mixxx::audio::SampleRate getMasterSamplerate();
+    static mixxx::audio::SampleRate getMainSampleRate();
     static QString getInvalidSamplerateMessage();
 
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);

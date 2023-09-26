@@ -37,7 +37,7 @@ VestaxVCI400.ModeEnum = {
  * Called when the MIDI device is opened for set up
  */
 VestaxVCI400.init = function (id) {
-   engine.setValue("[Master]", "num_decks", 4);
+   engine.setValue("[App]", "num_decks", 4);
    //Initialize controls and their default values here
    VestaxVCI400.Decks.A.init();
    VestaxVCI400.Decks.B.init();

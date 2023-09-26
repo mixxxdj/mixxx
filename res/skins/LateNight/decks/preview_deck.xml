@@ -173,7 +173,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

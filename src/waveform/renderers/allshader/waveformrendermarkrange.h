@@ -18,7 +18,6 @@ class WaveformRenderMarkRange;
 class allshader::WaveformRenderMarkRange final : public allshader::WaveformRenderer {
   public:
     explicit WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRenderMarkRange() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 

@@ -34,7 +34,7 @@
 ///
 /// Each EffectState instance tracks the state for one combination of input signal
 /// and output signal. Input signals can be any EngineChannel, but output channels
-/// are hardcoded in EngineMaster as the postfader processing for the main mix
+/// are hardcoded in EngineMixer as the postfader processing for the main mix
 /// and prefader processing for headphones. There can be many EffectStates for one
 /// EffectProcessorImpl, allowing a single EffectProcessorImpl to maintain
 /// independent state for each combination of input and output signal. This allows
@@ -114,7 +114,7 @@ class EffectProcessor {
 
 /// EffectProcessorImpl manages a separate EffectState for every combination of
 /// input channel to output channel. This allows for processing effects in
-/// parallel for PFL and post-fader for the master output.
+/// parallel for PFL and post-fader for the main output.
 /// EffectSpecificState must be a subclass of EffectState.
 template<typename EffectSpecificState>
 class EffectProcessorImpl : public EffectProcessor {

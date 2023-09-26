@@ -43,6 +43,7 @@ WSpinnyBase::WSpinnyBase(
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
+          m_pShowCoverProxy(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -73,9 +74,6 @@ WSpinnyBase::WSpinnyBase(
 #endif // __VINYLCONTROL__
     // Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinnyBase(): Created WGLWidget, Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -290,14 +288,14 @@ void WSpinnyBase::slotTrackCoverArtUpdated() {
 }
 
 void WSpinnyBase::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         setLoadedCover(pixmap);

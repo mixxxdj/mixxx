@@ -21,7 +21,7 @@ class BaseTrackPlayer;
 class ControlObject;
 class Deck;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class Library;
 class Microphone;
 class PreviewDeck;
@@ -61,7 +61,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            EngineMaster* pEngine);
+            EngineMixer* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -229,8 +229,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
-    // Emitted when the user tries to enable an auxiliary master control when
-    // there is no input configured.
+    // Emitted when the user tries to enable an auxiliary `main_mix` control
+    // when there is no input configured.
     void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
@@ -275,7 +275,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Library* m_pLibrary;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    EngineMaster* m_pEngine;
+    EngineMixer* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

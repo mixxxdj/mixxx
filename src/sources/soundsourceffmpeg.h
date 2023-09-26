@@ -201,7 +201,7 @@ class SoundSourceProviderFFmpeg : public SoundSourceProvider {
     ~SoundSourceProviderFFmpeg() override = default;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QChar(' ') + getVersionString();
     }
 
     QStringList getSupportedFileTypes() const override;
@@ -212,6 +212,8 @@ class SoundSourceProviderFFmpeg : public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx

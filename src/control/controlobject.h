@@ -53,6 +53,10 @@ class ControlObject : public QObject {
         }
     }
 
+    void addAlias(const ConfigKey& aliasKey) const {
+        ControlDoublePrivate::insertAlias(aliasKey, m_key);
+    }
+
     // Return the key of the object
     inline ConfigKey getKey() const {
         return m_key;

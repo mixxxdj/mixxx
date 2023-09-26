@@ -102,12 +102,12 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Dark</ObjectName>
+    <ObjectName>VuMeterMain_Dark</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../LateNight/mixer/vumeter_master.xml">
+          <Template src="skin:../LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">dark</SetVariable>
           </Template>
         </Children>
@@ -116,12 +116,12 @@
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>VuMeterMaster_Light</ObjectName>
+    <ObjectName>VuMeterMain_Light</ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../LateNight/mixer/vumeter_master.xml">
+          <Template src="skin:../LateNight/mixer/vumeter_main.xml">
             <SetVariable name="VuColor">light</SetVariable>
           </Template>
         </Children>

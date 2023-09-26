@@ -1,5 +1,6 @@
 #include "widget/wspinnyglsl.h"
 
+#include "moc_wspinnyglsl.cpp"
 #include "util/assert.h"
 #include "util/texture.h"
 
@@ -45,6 +46,8 @@ void WSpinnyGLSL::draw() {
 }
 
 void WSpinnyGLSL::resizeGL(int w, int h) {
+    Q_UNUSED(w);
+    Q_UNUSED(h);
     // The images were resized in WSpinnyBase::resizeEvent.
     updateTextures();
 }
@@ -87,6 +90,9 @@ void WSpinnyGLSL::paintGL() {
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glClearColor(0.f, 0.f, 0.f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     m_textureShader.bind();
 
@@ -150,6 +156,8 @@ void WSpinnyGLSL::paintGL() {
 }
 
 void WSpinnyGLSL::initializeGL() {
+    initializeOpenGLFunctions();
+
     updateTextures();
 
     m_pQTexture.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
@@ -172,8 +180,8 @@ void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     const float th = texture->height();
 
     // fill centered
-    const float posx2 = tw >= th ? 1.f : (th - tw) / th;
-    const float posy2 = th >= tw ? 1.f : (tw - th) / tw;
+    const float posx2 = tw >= th ? 1.f : tw / th;
+    const float posy2 = th >= tw ? 1.f : th / tw;
     const float posx1 = -posx2;
     const float posy1 = -posy2;
 
@@ -225,9 +233,9 @@ void WSpinnyGLSL::drawVinylQuality() {
 
     m_vinylQualityShader.setUniformValue(samplerLocation, 0);
 
-    m_textureShader.setAttributeArray(
+    m_vinylQualityShader.setAttributeArray(
             positionLocation, GL_FLOAT, posarray, 2);
-    m_textureShader.setAttributeArray(
+    m_vinylQualityShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
     m_pQTexture->bind();

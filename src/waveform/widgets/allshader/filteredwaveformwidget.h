@@ -12,26 +12,24 @@ class FilteredWaveformWidget;
 class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
-    ~FilteredWaveformWidget() override;
-
     WaveformWidgetType::Type getType() const override {
         return WaveformWidgetType::AllShaderFilteredWaveform;
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("Filtered (all-shaders)");
+        return tr("Filtered");
     }
     static constexpr bool useOpenGl() {
         return true;
     }
     static constexpr bool useOpenGles() {
-        return false;
+        return true;
     }
     static constexpr bool useOpenGLShaders() {
         return true;
     }
-    static constexpr bool developerOnly() {
-        return false;
+    static constexpr WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::AllShader;
     }
 
   protected:

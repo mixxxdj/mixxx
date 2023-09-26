@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2023-08-12" timestamp="1691865042">
+    <release version="2.4.0" type="development" date="2023-09-10" timestamp="1694376244">
       <description>
  <p>
   Cover Art
@@ -2005,7 +2005,7 @@
    #11226
   </li>
   <li>
-   Denon MC6000MK2: Delete mapping for master gain
+   Denon MC6000MK2: Delete mapping for main gain
    #11792
   </li>
   <li>

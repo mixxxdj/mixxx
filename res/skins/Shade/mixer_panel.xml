@@ -518,7 +518,7 @@
                 <PathStatusLight>audio_latency/audio_latency_overload.png</PathStatusLight>
                 <PathBack>audio_latency/audio_latency_overload_back.png</PathBack>
                 <Connection>
-                  <ConfigKey>[Master],audio_latency_overload</ConfigKey>
+                  <ConfigKey>[App],audio_latency_overload</ConfigKey>
                 </Connection>
               </StatusLight>
 
@@ -537,7 +537,7 @@
                     <PeakFallStep>1</PeakFallStep>
                     <Horizontal>true</Horizontal>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -640,11 +640,11 @@
 
               <!--
               **********************************************
-              RotaryFader- Master gain & balance
+              RotaryFader- Main gain & balance
               **********************************************
               -->
               <Knob>
-                <TooltipId>master_gain</TooltipId>
+                <TooltipId>main_gain</TooltipId>
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>151,15</Pos>
@@ -879,9 +879,9 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>master_VuMeterL</TooltipId>
-                    <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_master.png</PathBack>
+                    <TooltipId>main_VuMeterL</TooltipId>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -898,9 +898,9 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <VuMeter>
-                    <TooltipId>master_VuMeterR</TooltipId>
-                    <PathVu>skin:/style/volume_display_master_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_master.png</PathBack>
+                    <TooltipId>main_VuMeterR</TooltipId>
+                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skin:/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -935,18 +935,18 @@
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorL</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <TooltipId>main_PeakIndicatorL</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>master_PeakIndicatorR</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_master.png</PathBack>
+                <TooltipId>main_PeakIndicatorR</TooltipId>
+                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
                   <ConfigKey>[Master],PeakIndicatorR</ConfigKey>

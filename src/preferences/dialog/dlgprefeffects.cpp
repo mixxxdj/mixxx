@@ -368,7 +368,7 @@ bool DlgPrefEffects::eventFilter(QObject* object, QEvent* event) {
             }
         }
     }
-    return QWidget::eventFilter(object, event);
+    return DlgPreferencePage::eventFilter(object, event);
 }
 
 QListView* DlgPrefEffects::unfocusedChainList() {

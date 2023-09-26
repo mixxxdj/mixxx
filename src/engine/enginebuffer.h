@@ -12,6 +12,7 @@
 #include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
+#include "engine/slipmodestate.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/bpm.h"
@@ -47,7 +48,7 @@ class EngineBufferScaleRubberBand;
 class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
-class EngineMaster;
+class EngineMixer;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -90,8 +91,10 @@ class EngineBuffer : public EngineObject {
             KeylockEngine::RubberBandFaster,
             KeylockEngine::RubberBandFiner};
 
-    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                 EngineChannel* pChannel, EngineMaster* pMixingEngine);
+    EngineBuffer(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineMixer* pMixingEngine);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -112,7 +115,7 @@ class EngineBuffer : public EngineObject {
             mixxx::audio::FramePos endPositon,
             bool enabled);
     // Sets pointer to other engine buffer/channel
-    void setEngineMaster(EngineMaster*);
+    void setEngineMixer(EngineMixer*);
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(mixxx::audio::FramePos newpos, enum SeekRequest seekType);
@@ -313,7 +316,7 @@ class EngineBuffer : public EngineObject {
     HintVector m_hintList;
 
     // The current sample to play in the file.
-    mixxx::audio::FramePos m_playPosition;
+    mixxx::audio::FramePos m_playPos;
 
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
@@ -352,11 +355,13 @@ class EngineBuffer : public EngineObject {
     int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
-    mixxx::audio::FramePos m_slipPosition;
+    mixxx::audio::FramePos m_slipPos;
     // Saved value of rate for slip mode
     double m_dSlipRate;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
+
+    SlipModeState m_slipModeState;
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
@@ -369,7 +374,6 @@ class EngineBuffer : public EngineObject {
     ControlPushButton* m_pSlipButton;
 
     ControlObject* m_pQuantize;
-    ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
