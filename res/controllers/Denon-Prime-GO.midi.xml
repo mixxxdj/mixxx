@@ -1445,6 +1445,126 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Jog Wheel Touch On</description>
+                <status>0x92</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Jog Wheel Touch Off</description>
+                <status>0x82</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Jog Wheel Touch On</description>
+                <status>0x93</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Jog Wheel Touch Off</description>
+                <status>0x83</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Jog Wheel MSB</description>
+                <status>0xB2</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Jog Wheel LSB</description>
+                <status>0xB2</status>
+                <midino>0x4D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Jog Wheel MSB</description>
+                <status>0xB3</status>
+                <midino>0x37</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Jog Wheel LSB</description>
+                <status>0xB3</status>
+                <midino>0x4D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pitch Fader MSB</description>
+                <status>0xB2</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 - Pitch Fader LSB</description>
+                <status>0xB2</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pitch Fader MSB</description>
+                <status>0xB3</status>
+                <midino>0x1F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 - Pitch Fader LSB</description>
+                <status>0xB3</status>
+                <midino>0x4B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
         </controls>
 
         <outputs>
