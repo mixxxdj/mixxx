@@ -395,6 +395,36 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Wet/Dry Knob</description>
+                <status>0xB4</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX On Button On</description>
+                <status>0x94</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>FX On Button Off</description>
+                <status>0x84</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
         </controls>
 
         <outputs>
