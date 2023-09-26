@@ -425,6 +425,186 @@
                     <Script-Binding/>
                 </options>
             </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 1 Button On</description>
+                <status>0x94</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 1 Button Off</description>
+                <status>0x84</status>
+                <midino>0x0B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 2 Button On</description>
+                <status>0x94</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Assign 2 Button Off</description>
+                <status>0x84</status>
+                <midino>0x0C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 1 Button On</description>
+                <status>0x94</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 1 Button Off</description>
+                <status>0x84</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 2 Button On</description>
+                <status>0x94</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Mic 2 Button Off</description>
+                <status>0x84</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Eject Button On</description>
+                <status>0x94</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Eject Button Off</description>
+                <status>0x84</status>
+                <midino>0x14</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 Gain Knob</description>
+                <status>0xB0</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 Low Knob</description>
+                <status>0xB0</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 Mid Knob</description>
+                <status>0xB0</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 1 High Knob</description>
+                <status>0xB0</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 Gain Knob</description>
+                <status>0xB1</status>
+                <midino>0x03</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 Low Knob</description>
+                <status>0xB1</status>
+                <midino>0x08</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 Mid Knob</description>
+                <status>0xB1</status>
+                <midino>0x06</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group></group>
+                <key></key>
+                <description>Deck 2 High Knob</description>
+                <status>0xB1</status>
+                <midino>0x04</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
         </controls>
 
         <outputs>
