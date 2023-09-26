@@ -212,10 +212,9 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             // This happens if we have loaded the cover art via the legacy hash
             // and during tests.
             // Refresh hash before resizing the original image!
-            CoverInfo updatedCoverInfo = coverInfo;
-            updatedCoverInfo.setImageDigest(loadedImage.image);
-            if (pTrack && pTrack->getId().isValid()) {
-                // Update Track if not a temporary track
+            if (pTrack) {
+                CoverInfo updatedCoverInfo = coverInfo;
+                updatedCoverInfo.setImageDigest(loadedImage.image);
                 kLogger.info()
                         << "Updating cover info of track"
                         << coverInfo.trackLocation;
