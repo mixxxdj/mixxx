@@ -901,8 +901,8 @@ SCS3M.Agent = function(device) {
             watch("[Master]", "volume", patch(device.right.gain.meter.centerbar));
             expect(device.right.gain.slide, budge('[Master]', 'volume'));
 
-            watch("[Master]", "VuMeterL", vupatch(device.left.meter.bar));
-            watch("[Master]", "VuMeterR", vupatch(device.right.meter.bar));
+            watch("[Main]", "vu_meter_left", vupatch(device.left.meter.bar));
+            watch("[Main]", "vu_meter_right", vupatch(device.right.meter.bar));
         }
 
         if (deck.left.held() || deck.right.held()) {

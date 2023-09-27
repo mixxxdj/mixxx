@@ -74,15 +74,15 @@ StantonSCS1m.init = function (id) {    // called when the MIDI device is opened 
 
     // Connect signals
         // Vu Meters
-    engine.connectControl("[Master]","VuMeterL","StantonSCS1m.MasterLVu");
-    engine.connectControl("[Master]","VuMeterR","StantonSCS1m.MasterRVu");
-    engine.connectControl("[Channel1]","VuMeter","StantonSCS1m.Channel1Vu");
-    engine.connectControl("[Channel2]","VuMeter","StantonSCS1m.Channel2Vu");
+    engine.connectControl("[Master]","vu_meter_left","StantonSCS1m.MasterLVu");
+    engine.connectControl("[Master]","vu_meter_right","StantonSCS1m.MasterRVu");
+    engine.connectControl("[Channel1]","vu_meter","StantonSCS1m.Channel1Vu");
+    engine.connectControl("[Channel2]","vu_meter","StantonSCS1m.Channel2Vu");
 
         // Clipping LED
-    engine.connectControl("[Master]","PeakIndicator","StantonSCS1m.MasterClip");
-    engine.connectControl("[Channel1]","PeakIndicator","StantonSCS1m.Channel1Clip");
-    engine.connectControl("[Channel2]","PeakIndicator","StantonSCS1m.Channel2Clip");
+    engine.connectControl("[Master]","peak_indicator","StantonSCS1m.MasterClip");
+    engine.connectControl("[Channel1]","peak_indicator","StantonSCS1m.Channel1Clip");
+    engine.connectControl("[Channel2]","peak_indicator","StantonSCS1m.Channel2Clip");
 
         // Pitch displays
     engine.connectControl("[Channel1]","rate","StantonSCS1m.pitchDisplay1");

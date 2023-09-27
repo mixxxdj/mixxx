@@ -24,11 +24,11 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>main_PeakIndicatorL</TooltipId>
+            <TooltipId>main_peak_indicator_left</TooltipId>
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
-              <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+              <ConfigKey>[Main],peak_indicator_left</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -41,7 +41,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterL</ConfigKey>
+              <ConfigKey>[Main],vu_meter_left</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -53,11 +53,11 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
           <StatusLight>
-            <TooltipId>main_PeakIndicatorR</TooltipId>
+            <TooltipId>main_peak_indicator_right</TooltipId>
             <PathBack>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
             <PathStatusLight>skin:../LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
             <Connection>
-              <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+              <ConfigKey>[Main],peak_indicator_right</ConfigKey>
             </Connection>
           </StatusLight>
           <VuMeter>
@@ -70,7 +70,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Master],VuMeterR</ConfigKey>
+              <ConfigKey>[Main],vu_meter_right</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

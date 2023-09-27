@@ -46,8 +46,8 @@ VestaxVCI400.init = function (id) {
 
    //Connect vu meters
    // No need if using the sound card
-   engine.connectControl("[Master]","VuMeterL", "VestaxVCI400.onMasterVuMeterLChanged");
-   engine.connectControl("[Master]","VuMeterR", "VestaxVCI400.onMasterVuMeterRChanged");
+   engine.connectControl("[Master]","vu_meter_left", "VestaxVCI400.onMasterVuMeterLChanged");
+   engine.connectControl("[Master]","vu_meter_right", "VestaxVCI400.onMasterVuMeterRChanged");
 
    //Reset VU meters
    if (VestaxVCI400.enableMasterVu) {
@@ -457,7 +457,7 @@ VestaxVCI400.Deck.prototype.clearLights = function() {
 VestaxVCI400.Deck.prototype.init = function() {
     this.clearLights();
     //Connect controls
-    engine.connectControl(this.group,"VuMeter", "VestaxVCI400.Decks."+this.deckIdentifier+".onVuMeterChanged");
+    engine.connectControl(this.group,"vu_meter", "VestaxVCI400.Decks."+this.deckIdentifier+".onVuMeterChanged");
 
     engine.connectControl(this.group,"hotcue_1_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue1Changed");
     engine.connectControl(this.group,"hotcue_2_enabled", "VestaxVCI400.Decks."+this.deckIdentifier+".onHotCue2Changed");

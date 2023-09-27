@@ -114,12 +114,12 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.makeUnbufferedConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "vu_meter_left", MixtrackPlatinum.vuCallback);
+    engine.makeUnbufferedConnection("[Main]", "vu_meter_right", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -1393,7 +1393,7 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         || engine.getValue('[Channel3]', 'pfl')
         || engine.getValue('[Channel4]', 'pfl'))
     {
-        if (engine.getValue(group, "PeakIndicator")) {
+        if (engine.getValue(group, "peak_indicator")) {
             level = 81;
         }
 
@@ -1411,13 +1411,13 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
         }
     }
     else if (group == '[Master]' && control == 'VuMeterL') {
-        if (engine.getValue(group, "PeakIndicatorL")) {
+        if (engine.getValue(group, "peak_indicator_left")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
     else if (group == '[Master]' && control == 'VuMeterR') {
-        if (engine.getValue(group, "PeakIndicatorR")) {
+        if (engine.getValue(group, "peak_indicator_right")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x45, level);

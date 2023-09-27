@@ -2048,7 +2048,7 @@ PioneerDDJSX.VuMeterLeds = function(value, group, control) {
 
     value = parseInt(value * 0x76); //full level indicator: 0x7F
 
-    if (engine.getValue(group, "PeakIndicator")) {
+    if (engine.getValue(group, "peak_indicator")) {
         value = value + 0x09;
     }
 

@@ -2898,7 +2898,7 @@ class S4MK3 {
                         deckGroup = deckNum !== 1 ? `[Microphone${deckNum}]` : "[Microphone]";
                     }
                 }
-                const deckLevel = engine.getValue(deckGroup, "VuMeter");
+                const deckLevel = engine.getValue(deckGroup, "vu_meter");
                 const columnBaseIndex = (deckNum - 1) * (deckSegments + 2);
                 const scaledLevel = deckLevel * deckSegments;
                 const segmentsToLightFully = Math.floor(scaledLevel);
@@ -2912,7 +2912,7 @@ class S4MK3 {
                         deckMeters[columnBaseIndex + segmentsToLightFully + 1] = 125;
                     }
                 }
-                if (engine.getValue(deckGroup, "PeakIndicator")) {
+                if (engine.getValue(deckGroup, "peak_indicator")) {
                     deckMeters[columnBaseIndex + deckSegments + 1] = 127;
                 }
             }

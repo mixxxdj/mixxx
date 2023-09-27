@@ -721,12 +721,12 @@ DJ505.Deck = function(deckNumbers, offset) {
     this.vuMeter = new components.Component({
         midi: [0xB0 + offset, 0x1F],
         group: "[Channel" + deckNumbers + "]",
-        outKey: "VuMeter",
+        outKey: "vu_meter",
         output: function(value, group, _control) {
             // The red LEDs light up with MIDI values greater than 0x24. The
             // maximum brightness is reached at value 0x28. Red LEDs should
             // only be illuminated if the track is clipping.
-            if (engine.getValue(group, "PeakIndicator") === 1) {
+            if (engine.getValue(group, "peak_indicator") === 1) {
                 value = 0x28;
             } else {
                 value = Math.round(value * 0x24);
