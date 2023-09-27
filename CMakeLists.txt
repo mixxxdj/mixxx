@@ -1477,6 +1477,8 @@ else()
   endif()
 endif()
 
+set_source_files_properties(src/util/moc_included_test.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
