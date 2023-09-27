@@ -43,15 +43,15 @@
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="side">_left</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_peak_indicator_left</SetVariable>
               </Template>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="side">_right</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_peak_indicator_right</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

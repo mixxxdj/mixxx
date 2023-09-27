@@ -87,7 +87,7 @@ const createDataView = function(bufferLike) {
  * @property {string} group
  * @property {string} name
  * @property {string} mapped_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
- * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
+ * @property {string} mapped_name Name of mapped control, must be a valid Mixxx control name "vu_meter"
  * @property {controlCallback} mapped_callback
  * @property {string} pack Control packing format for unpack(), one of b/B, h/H, i/I
  * @property {number} offset Position of the first byte in the packet in bytes (first byte is 0)
@@ -759,7 +759,7 @@ class HIDPacket {
      * It is recommended to define callbacks after packet creation with
      * setCallback instead of adding it directly here. But you can do it.
      * @param {string} group Control group name e.g. "[Channel1]"
-     * @param {string} name Control name "VuMeter"
+     * @param {string} name Control name "vu_meter"
      * @param {number} offset The field's offset from the start of the packet in bytes:
      *                        - For HID devices which don't use ReportIDs, the data bytes starts at
      * position 0
@@ -1389,7 +1389,7 @@ class HIDController {
     /**
      * Find Output control matching give group and name
      * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
-     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
+     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "vu_meter"
      * @returns {bitObject|packetField} Bit or bytewise field - Returns undefined if output field
      *     can't be found.
      */
@@ -2162,7 +2162,7 @@ class HIDController {
      * @param {string} group Control group name
      * @param {string} name  Control name
      * @param {string} m_group Mapped group, must be a valid Mixxx control group name e.g. "[Channel1]"
-     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "VuMeter"
+     * @param {string} m_name Name of mapped control, must be a valid Mixxx control name "vu_meter"
      * @param {controlCallback} callback Callback function for the control
      */
     linkOutput(group, name, m_group, m_name, callback) {
@@ -2189,7 +2189,7 @@ class HIDController {
     /**
      * Unlink a virtual HID Output from mixxx control
      * @param {string} group Mixxx control group name e.g. "[Channel1]"
-     * @param {string} name Mixxx control name "VuMeter"
+     * @param {string} name Mixxx control name "vu_meter"
      * @param {controlCallback} callback Callback function for the control
      */
     unlinkOutput(group, name, callback) {

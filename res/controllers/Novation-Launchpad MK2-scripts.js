@@ -4144,7 +4144,7 @@ var NLMK2 = (function () {
 	    },
 	    PeakIndicator: {
 	      group: `[${type}${i}]`,
-	      name: 'PeakIndicator',
+	      name: 'peak_indicator',
 	      type: 'binary'
 	    },
 	    pfl: {

@@ -17,6 +17,7 @@
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kMainGroup = QStringLiteral("[Main]");
 const QString kLegacyGroup = QStringLiteral("[Master]");
 const QString kSkinGroup = QStringLiteral("[Skin]");
 
@@ -82,6 +83,34 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto audioLatencyOverloadCountLegacy = ControlProxy(ConfigKey(
             kLegacyGroup, QStringLiteral("audio_latency_overload_count")));
     EXPECT_DOUBLE_EQ(audioLatencyOverloadCount.get(), audioLatencyOverloadCountLegacy.get());
+
+    auto vuMeter = ControlProxy(ConfigKey(kMainGroup, QStringLiteral("vu_meter")));
+    auto vuMeterLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("VuMeter")));
+    EXPECT_DOUBLE_EQ(vuMeter.get(), vuMeterLegacy.get());
+
+    auto vuMeterLeft = ControlProxy(ConfigKey(kMainGroup, QStringLiteral("vu_meter_left")));
+    auto vuMeterLeftLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("VuMeterL")));
+    EXPECT_DOUBLE_EQ(vuMeterLeft.get(), vuMeterLeftLegacy.get());
+
+    auto vuMeterRight = ControlProxy(ConfigKey(kMainGroup, QStringLiteral("vu_meter_right")));
+    auto vuMeterRightLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("VuMeterR")));
+    EXPECT_DOUBLE_EQ(vuMeterRight.get(), vuMeterRightLegacy.get());
+
+    auto peakIndicator = ControlProxy(ConfigKey(kMainGroup, QStringLiteral("peak_indicator")));
+    auto peakIndicatorLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("VuMeter")));
+    EXPECT_DOUBLE_EQ(peakIndicator.get(), peakIndicatorLegacy.get());
+
+    auto peakIndicatorLeft = ControlProxy(
+            ConfigKey(kMainGroup, QStringLiteral("peak_indicator_left")));
+    auto peakIndicatorLeftLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("PeakIndicatorL")));
+    EXPECT_DOUBLE_EQ(peakIndicatorLeft.get(), peakIndicatorLeftLegacy.get());
+
+    auto peakIndicatorRight = ControlProxy(
+            ConfigKey(kMainGroup, QStringLiteral("peak_indicator_right")));
+    auto peakIndicatorRightLegacy = ControlProxy(
+            ConfigKey(kLegacyGroup, QStringLiteral("PeakIndicatorR")));
+    EXPECT_DOUBLE_EQ(peakIndicatorRight.get(), peakIndicatorRightLegacy.get());
 }
 
 TEST_F(ControlObjectAliasTest, PlayerManager) {

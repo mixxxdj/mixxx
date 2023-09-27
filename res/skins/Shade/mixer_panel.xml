@@ -848,7 +848,7 @@
                     <PeakFallStep>2</PeakFallStep>
                     <Channel>1</Channel>
                     <Connection>
-                      <ConfigKey>[Channel1],VuMeter</ConfigKey>
+                      <ConfigKey>[Channel1],vu_meter</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -868,7 +868,7 @@
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Channel2],VuMeter</ConfigKey>
+                      <ConfigKey>[Channel2],vu_meter</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -887,7 +887,7 @@
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],VuMeterL</ConfigKey>
+                      <ConfigKey>[Main],vu_meter_left</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -906,7 +906,7 @@
                     <PeakFallTime>50</PeakFallTime>
                     <PeakFallStep>2</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],VuMeterR</ConfigKey>
+                      <ConfigKey>[Main],vu_meter_right</ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -917,39 +917,39 @@
               **********************************************
               -->
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>107,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel1],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel1],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>channel_PeakIndicator</TooltipId>
+                <TooltipId>channel_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping.png</PathBack>
                 <Pos>143,57</Pos>
                 <Connection>
-                  <ConfigKey>[Channel2],PeakIndicator</ConfigKey>
+                  <ConfigKey>[Channel2],peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>main_PeakIndicatorL</TooltipId>
+                <TooltipId>main_peak_indicator_left</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_left</ConfigKey>
                 </Connection>
               </StatusLight>
               <StatusLight>
-                <TooltipId>main_PeakIndicatorR</TooltipId>
+                <TooltipId>main_peak_indicator_right</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
-                  <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
+                  <ConfigKey>[Main],peak_indicator_right</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>
