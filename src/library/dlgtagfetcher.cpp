@@ -166,6 +166,7 @@ void DlgTagFetcher::init() {
     loadingProgressBar->setMaximum(kMaximumValueOfQProgressBar);
 
     btnRetry->setDisabled(true);
+    btnApplyCover->setDisabled(true);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -329,14 +330,14 @@ void DlgTagFetcher::applyTagsAndCover() {
 
     applyCover();
 
-    statusMessage->setText(tr("Selected metadata applied"));
-
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
             // to the current time.
             QDateTime::currentDateTimeUtc());
+
+    statusMessage->setText(tr("Selected metadata applied"));
 }
 
 void DlgTagFetcher::applyCover() {
@@ -442,9 +443,9 @@ void DlgTagFetcher::fetchTagFinished(
         loadingProgressBar->setFormat(emptyMessage);
         return;
     } else {
-        btnApply->setEnabled(true);
-        btnApplyCover->setEnabled(true);
-        btnRetry->setEnabled(false);
+        btnApply->setDisabled(true);
+        btnApplyCover->setDisabled(true);
+        btnRetry->setDisabled(true);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
 
@@ -524,6 +525,7 @@ void DlgTagFetcher::tagSelected() {
     m_pWFetchedCoverArtLabel->loadData(QByteArray());
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
+    btnApplyCover->setDisabled(true);
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
@@ -592,7 +594,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     coverInfo.setImage();
 
     loadingProgressBar->setVisible(false);
-    statusMessage->setText(tr("Cover art is ready to be applied"));
+    statusMessage->clear();
     statusMessage->setVisible(true);
 
     m_fetchedCoverArtByteArrays = data;
@@ -600,7 +602,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
 
-    btnApplyCover->setEnabled(!data.isNull());
+    btnApplyCover->setDisabled(data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
