@@ -40,7 +40,7 @@
                         <Size>0e,18f</Size>
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Text>
+                          <TrackProperty>
                             <TooltipId>text</TooltipId>
                             <Style> QLabel {
                               font-size: 12px;
@@ -55,7 +55,7 @@
                             <Group>[PreviewDeck1]</Group>
                             <SizePolicy>me,min</SizePolicy>
                             <Elide>right</Elide>
-                          </Text>
+                          </TrackProperty>
                         </Children>
                       </WidgetGroup>
                       <WidgetGroup>

@@ -20,7 +20,7 @@
             <BackPath>style/style_bg_sampler_top.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
-              <Text>
+              <TrackProperty>
                 <TooltipId>text</TooltipId>
                 <Style>QLabel {
                     font-size: 12px;
@@ -35,7 +35,7 @@
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
-              </Text>
+              </TrackProperty>
               <!-- Alternative "TITLE ONLY" display
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
