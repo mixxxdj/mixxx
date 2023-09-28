@@ -337,7 +337,7 @@ void DlgTagFetcher::applyTagsAndCover() {
             // to the current time.
             QDateTime::currentDateTimeUtc());
 
-    statusMessage->setText(tr("Selected metadata applied"));
+    statusMessage->setText(tr("Metadata & Cover Art applied"));
 }
 
 void DlgTagFetcher::applyCover() {
@@ -386,8 +386,6 @@ void DlgTagFetcher::applyCover() {
 
         m_pWorker->start();
     }
-
-    statusMessage->setText(tr("Selected cover art applied"));
 }
 
 void DlgTagFetcher::retry() {
@@ -625,7 +623,7 @@ void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo
     qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
     m_pTrack->setCoverInfo(coverInfo);
     loadCurrentTrackCover();
-    statusMessage->setText(tr("Metadata & Cover Art applied"));
+    statusMessage->setText(tr("Selected cover art applied"));
 }
 
 void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
