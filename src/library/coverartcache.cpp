@@ -44,7 +44,7 @@ CoverArtCache::CoverArtCache() {
 }
 
 //static
-void CoverArtCache::requestCoverPrivate(
+void CoverArtCache::requestCoverImpl(
         const QObject* pRequester,
         const TrackPointer& pTrack,
         const CoverInfo& coverInfo,
@@ -72,7 +72,7 @@ void CoverArtCache::requestTrackCover(
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
-    requestCoverPrivate(
+    requestCoverImpl(
             pRequester,
             pTrack,
             pTrack->getCoverInfoWithLocation());

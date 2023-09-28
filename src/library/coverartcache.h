@@ -16,7 +16,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     static void requestCover(
             const QObject* pRequester,
             const CoverInfo& coverInfo) {
-        requestCoverPrivate(pRequester, TrackPointer(), coverInfo);
+        requestCoverImpl(pRequester, TrackPointer(), coverInfo);
     }
 
     static void requestTrackCover(
@@ -81,7 +81,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     friend class Singleton<CoverArtCache>;
 
   private:
-    static void requestCoverPrivate(
+    static void requestCoverImpl(
             const QObject* pRequester,
             const TrackPointer& /*optional*/ pTrack,
             const CoverInfo& coverInfo,
