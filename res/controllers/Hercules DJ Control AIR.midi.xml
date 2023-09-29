@@ -14,8 +14,8 @@
             <control>
                 <status>0x90</status>
                 <midino>0x39</midino>
-                <group>[Master]</group>
-                <key>HerculesAir.headMix</key>
+                <group>[Mixer]</group>
+                <key>HerculesAir.headphone_mix</key>
                 <description>Head Mix Button</description>
                 <options>
                     <script-binding/>
@@ -24,7 +24,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x3a</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesAir.headCue</key>
                 <description>Head Cue Button</description>
                 <options>
@@ -214,7 +214,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x3a</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>Crossfader</description>
                 <options>
@@ -634,7 +634,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x2e</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesAir.shift</key>
                 <description>Use Magic Button as Shift Button</description>
                 <options>
@@ -644,7 +644,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x2d</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HerculesAir.spinback</key>
                 <description>Use Scratch Button to toggle spinback effect</description>
                 <options>

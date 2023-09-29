@@ -1598,8 +1598,8 @@
       <control>
     <status>0xb5</status>
     <midino>0x00</midino>
-    <group>[Master]</group>
-    <key>volume</key>
+    <group>[Mixer]</group>
+    <key>main_gain</key>
     <options>
       <normal/>
     </options>
@@ -1607,8 +1607,8 @@
       <control>
     <status>0xb5</status>
     <midino>0x01</midino>
-    <group>[Master]</group>
-    <key>headVolume</key>
+    <group>[Mixer]</group>
+    <key>headphone_gain</key>
     <options>
       <normal/>
     </options>
@@ -1782,7 +1782,7 @@
       <control>
     <status>0xB3</status>
     <midino>0x00</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>crossfader</key>
     <options>
       <normal/>
@@ -1937,7 +1937,7 @@
       <control>
     <status>0x94</status>
     <midino>0x00</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.sliderCycle</key>
     <options>
       <Script-Binding/>
@@ -1946,7 +1946,7 @@
       <control>
     <status>0xb4</status>
     <midino>0x00</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider1Move</key>
     <options>
       <Script-Binding/>
@@ -1955,7 +1955,7 @@
       <control>
     <status>0x84</status>
     <midino>0x01</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider1Touch</key>
     <options>
       <Script-Binding/>
@@ -1964,7 +1964,7 @@
       <control>
     <status>0xb4</status>
     <midino>0x01</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider2Move</key>
     <options>
       <Script-Binding/>
@@ -1973,7 +1973,7 @@
       <control>
     <status>0x84</status>
     <midino>0x02</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider2Touch</key>
     <options>
       <Script-Binding/>
@@ -1982,7 +1982,7 @@
       <control>
     <status>0xb4</status>
     <midino>0x02</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider3Move</key>
     <options>
       <Script-Binding/>
@@ -1991,7 +1991,7 @@
       <control>
     <status>0x84</status>
     <midino>0x03</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider3Touch</key>
     <options>
       <Script-Binding/>
@@ -2000,7 +2000,7 @@
       <control>
     <status>0xb4</status>
     <midino>0x03</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider4Move</key>
     <options>
       <Script-Binding/>
@@ -2009,7 +2009,7 @@
       <control>
     <status>0x84</status>
     <midino>0x04</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.verticalSlider4Touch</key>
     <options>
       <Script-Binding/>
@@ -2246,7 +2246,7 @@
       <control>
     <status>0x97</status>
     <midino>0x00</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.toggleRecord</key>
     <options>
       <Script-Binding/>
@@ -2255,7 +2255,7 @@
       <control>
     <status>0x97</status>
     <midino>0x01</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assert13LEDs</key>
     <options>
       <Script-Binding/>
@@ -2264,7 +2264,7 @@
       <control>
     <status>0x87</status>
     <midino>0x01</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assertLEDOn</key>
     <options>
       <Script-Binding/>
@@ -2273,7 +2273,7 @@
       <control>
     <status>0x97</status>
     <midino>0x02</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.togglePlayScratch</key>
     <options>
       <Script-Binding/>
@@ -2282,7 +2282,7 @@
       <control>
     <status>0x97</status>
     <midino>0x0d</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assert5LEDs</key>
     <options>
       <Script-Binding/>
@@ -2291,7 +2291,7 @@
       <control>
     <status>0x97</status>
     <midino>0x0e</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assert14LEDs</key>
     <options>
       <Script-Binding/>
@@ -2300,7 +2300,7 @@
       <control>
     <status>0x97</status>
     <midino>0x0f</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assert15LEDs</key>
     <options>
       <Script-Binding/>
@@ -2309,7 +2309,7 @@
       <control>
     <status>0x97</status>
     <midino>0x10</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assert16LEDs</key>
     <options>
       <Script-Binding/>
@@ -2318,7 +2318,7 @@
       <control>
     <status>0x87</status>
     <midino>0x0d</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assertLEDOn</key>
     <options>
       <Script-Binding/>
@@ -2327,7 +2327,7 @@
       <control>
     <status>0x87</status>
     <midino>0x0e</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assertLEDOn</key>
     <options>
       <Script-Binding/>
@@ -2336,7 +2336,7 @@
       <control>
     <status>0x87</status>
     <midino>0x0f</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assertLEDOn</key>
     <options>
       <Script-Binding/>
@@ -2345,7 +2345,7 @@
       <control>
     <status>0x87</status>
     <midino>0x10</midino>
-    <group>[Master]</group>
+    <group>[Mixer]</group>
     <key>KANE_QuNeo.assertLEDOn</key>
     <options>
       <Script-Binding/>

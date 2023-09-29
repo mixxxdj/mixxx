@@ -16,7 +16,7 @@
     <controls>
       <!-- Main gain -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MixtrackProFX.gains.mainGain.input</key>
         <status>0xBE</status>
         <midino>0x23</midino>
@@ -27,7 +27,7 @@
       <!-- Crossfader and 1st deck "fader cuts" -->
       <!-- "fader cuts" moves the crossfader rapidly, sending the same midi codes as crossfader -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xBF</status>
         <midino>0x08</midino>
@@ -38,7 +38,7 @@
       <!-- 2nd deck "fader cuts" -->
       <!-- "fader cuts" on 2nd deck send different midi codes than on 1st deck -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>crossfader</key>
         <status>0xB1</status>
         <midino>0x08</midino>
@@ -1968,7 +1968,7 @@
       </control>
       <!-- Cue gain knob -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MixtrackProFX.gains.cueGain.input</key>
         <status>0xBE</status>
         <midino>0x2F</midino>
@@ -1978,7 +1978,7 @@
       </control>
       <!-- Cue mix knob -->
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>MixtrackProFX.gains.cueMix.input</key>
         <status>0xBE</status>
         <midino>0x27</midino>

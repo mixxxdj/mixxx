@@ -13,7 +13,7 @@ var MidiFighterTwister = {
             engine.makeConnection("[Channel2]", "rate", function(value) {
                 midi.sendShortMsg(cc, 0x07, (value + 1) / 2 * 127);
             }),
-            engine.makeConnection("[Master]", "crossfader", function(value) {
+            engine.makeConnection("[Mixer]", "crossfader", function(value) {
                 var scaled = (value + 1) / 2 * 127;
                 midi.sendShortMsg(cc, 0x0C, scaled);
             }),

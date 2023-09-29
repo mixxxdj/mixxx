@@ -10,7 +10,7 @@
 <controller id="Akai MPD24 MIDI 1">
   <controls>
     <control>
-      <group>[Master]</group>
+      <group>[Mixer]</group>
       <key>crossfader</key>
       <status>0xB0</status>
       <midino>17</midino>
@@ -24,22 +24,22 @@
     </control>
 
     <control>
-      <group>[Master]</group>
-      <key>volume</key>
+      <group>[Mixer]</group>
+      <key>main_gain</key>
       <status>0xB0</status>
       <midino>3</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
-      <key>headVolume</key>
+      <group>[Mixer]</group>
+      <key>headphone_gain</key>
       <status>0xB0</status>
       <midino>26</midino>
     </control>
 
     <control>
-      <group>[Master]</group>
-      <key>headMix</key>
+      <group>[Mixer]</group>
+      <key>headphone_mix</key>
       <status>0xB0</status>
       <midino>4</midino>
     </control>

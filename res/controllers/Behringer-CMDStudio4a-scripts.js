@@ -15,7 +15,7 @@
 /* global midi                                                        */
 ////////////////////////////////////////////////////////////////////////
 
-// Master function definition.
+// Main function definition.
 function BehringerCMDStudio4a() {}
 
 

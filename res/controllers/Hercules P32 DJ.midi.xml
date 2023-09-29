@@ -24,7 +24,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>headSplit</key>
                 <status>0x93</status>
                 <midino>0x01</midino>
@@ -33,7 +33,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>P32.headMixEncoder</key>
                 <status>0xB3</status>
                 <midino>0x02</midino>
@@ -889,7 +889,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x01</midino>
@@ -1150,7 +1150,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <status>0xB0</status>
                 <midino>0x01</midino>
