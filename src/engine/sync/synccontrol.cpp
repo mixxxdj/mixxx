@@ -519,6 +519,8 @@ void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
         // Turning off leader goes back to follower mode.
         switch (mode) {
         case SyncMode::LeaderExplicit:
+            m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderSoft);
+            break;
         case SyncMode::LeaderSoft:
             m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::Follower);
             break;

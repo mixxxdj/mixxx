@@ -46,17 +46,24 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     // decks that need to change as a result.
     Syncable* oldLeader = m_pLeaderSyncable;
     switch (mode) {
-    case SyncMode::LeaderExplicit:
-    case SyncMode::LeaderSoft: {
+    case SyncMode::LeaderExplicit: {
         if (pSyncable->getBaseBpm().isValid()) {
             activateLeader(pSyncable, mode);
-        } else {
-            // Because we don't have a valid bpm, we can't be the leader
-            // (or else everyone would try to be syncing to zero bpm).
-            // Override and make us a follower instead.
-            activateFollower(pSyncable);
+            break;
         }
-        break;
+        // Because we don't have a valid bpm, we can't be the leader
+        // (or else everyone would try to be syncing to zero bpm).
+        // Fall threough to SyncMode::Follower instead
+        [[fallthrough]];
+    }
+    case SyncMode::LeaderSoft: {
+        if (pSyncable->getBaseBpm().isValid() &&
+                pSyncable->isPlaying() &&
+                pSyncable->isAudible()) {
+            activateLeader(pSyncable, mode);
+            break;
+        }
+        [[fallthrough]];
     }
     case SyncMode::Follower: {
         // This request is also used to verifies and moves a soft leader
