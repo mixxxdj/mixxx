@@ -59,20 +59,22 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         break;
     }
     case SyncMode::Follower: {
-        // A request for follower mode may be converted into an enabling of soft
-        // leader mode if this still be best choice
-        if (m_pLeaderSyncable == pSyncable) {
-            // Avoid that pickLeader() returns pSyncable with SyncMode::LeaderExplicit
-            m_pLeaderSyncable = nullptr;
-        }
-        Syncable* newLeader = pickLeader(pSyncable);
-        if (newLeader != pSyncable) {
+        // This request is also used to verifies and moves a soft leader
+        if (!m_pLeaderSyncable || m_pLeaderSyncable == pSyncable ||
+                m_pLeaderSyncable->getSyncMode() != SyncMode::LeaderExplicit) {
+            // Pick a new leader, in case we would have none after becoming follower
+            Syncable* pNewLeader = pickNewLeader(pSyncable);
+            // Note: A request for follower mode may have been converted into
+            // enabling of soft leader mode if this still be best choice
+            if (pNewLeader) {
+                activateLeader(pNewLeader, SyncMode::LeaderSoft);
+            }
+            if (pNewLeader != pSyncable) {
+                // We have a different leader now, become follower
+                activateFollower(pSyncable);
+            }
+        } else {
             activateFollower(pSyncable);
-        }
-        if (newLeader && newLeader != m_pLeaderSyncable) {
-            // if the leader has changed, activate it (this updates m_pLeaderSyncable)
-            // But don't make an an explicit leader soft.
-            activateLeader(newLeader, SyncMode::LeaderSoft);
         }
         break;
     }
@@ -201,23 +203,29 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 
     if (wasLeader) {
-        Syncable* newLeader = pickLeader(nullptr);
+        Syncable* newLeader = pickNewLeader(nullptr);
         if (newLeader != nullptr) {
             activateLeader(newLeader, SyncMode::LeaderSoft);
         }
     }
 }
 
-Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::pickLeader";
-    }
+Syncable* EngineSync::pickLeader(Syncable* pEnablingSyncable) {
     if (m_pLeaderSyncable &&
             m_pLeaderSyncable->getSyncMode() == SyncMode::LeaderExplicit &&
             m_pLeaderSyncable->getBaseBpm().isValid()) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "EngineSync::pickLeader(): explicit leader found ";
+        }
         return m_pLeaderSyncable;
     }
+    return pickNewLeader(pEnablingSyncable);
+}
 
+Syncable* EngineSync::pickNewLeader(Syncable* pEnablingSyncable) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::pickNewLeader";
+    }
     // First preference: some other sync deck that is playing.
     // Note, if we are using PREFER_LOCK_BPM we don't use this option.
     Syncable* first_other_playing_deck = nullptr;
@@ -235,7 +243,7 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
             continue;
         }
 
-        if (pSyncable != enabling_syncable) {
+        if (pSyncable != pEnablingSyncable) {
             if (!pSyncable->getChannel()->isPrimaryDeck()) {
                 continue;
             }
@@ -248,7 +256,7 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
             if (playing_deck_count == 0) {
                 first_playing_deck = pSyncable;
             }
-            if (!first_other_playing_deck && pSyncable != enabling_syncable) {
+            if (!first_other_playing_deck && pSyncable != pEnablingSyncable) {
                 first_other_playing_deck = pSyncable;
             }
             playing_deck_count++;
