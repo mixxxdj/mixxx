@@ -393,7 +393,7 @@ void DlgReplaceCueColor::slotApply() {
             break;
         }
         query.bindValue(":id", row.id.toVariant());
-        query.bindValue(":track_id", row.trackId.value());
+        query.bindValue(":track_id", row.trackId.toVariant());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);

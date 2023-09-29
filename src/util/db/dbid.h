@@ -27,20 +27,12 @@ public:
   constexpr DbId()
           : m_value(kInvalidValue) {
   }
-  explicit DbId(int value)
-          : m_value(value) {
-      DEBUG_ASSERT(isValid() || (kInvalidValue == m_value));
-  }
   explicit DbId(const QVariant& variant)
-          : DbId(valueOf(variant)) {
+          : m_value(valueOf(variant)) {
   }
 
     bool isValid() const {
         return isValidValue(m_value);
-    }
-
-    int value() const {
-        return m_value;
     }
 
     std::size_t hash() const {

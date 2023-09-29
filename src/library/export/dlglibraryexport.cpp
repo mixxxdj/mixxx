@@ -35,7 +35,7 @@ void populateCrates(
     pListWidget->clear();
     while (crates.populateNext(&crate)) {
         auto pItem = std::make_unique<QListWidgetItem>(crate.getName());
-        pItem->setData(Qt::UserRole, crate.getId().value());
+        pItem->setData(Qt::UserRole, crate.getId().toVariant());
         pListWidget->addItem(pItem.release());
     }
 }
@@ -153,8 +153,8 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
     m_pCratesList->setEnabled(true);
     for (auto i = 0; i < m_pCratesList->count(); ++i) {
         auto* pItem = m_pCratesList->item(i);
-        const auto currCrateId = pItem->data(Qt::UserRole).toInt();
-        if (currCrateId == crateId->value()) {
+        const auto currCrateId = CrateId(pItem->data(Qt::UserRole));
+        if (currCrateId == crateId) {
             m_pCratesList->setCurrentItem(pItem);
             return;
         }
