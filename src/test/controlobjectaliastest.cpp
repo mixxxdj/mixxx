@@ -66,6 +66,10 @@ TEST_F(ControlObjectAliasTest, EngineMixer) {
     auto sampleRateLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("samplerate")));
     EXPECT_DOUBLE_EQ(sampleRate.get(), sampleRateLegacy.get());
 
+    auto latency = ControlProxy(ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")));
+    auto latencyLegacy = ControlProxy(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
+    EXPECT_DOUBLE_EQ(latency.get(), latencyLegacy.get());
+
     auto audioLatencyUsage = ControlProxy(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
     auto audioLatencyUsageLegacy = ControlProxy(

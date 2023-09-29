@@ -89,7 +89,7 @@ SoundDeviceStatus SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers)
 
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
-        ControlObject::set(ConfigKey("[Master]", "latency"),
+        ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
                 requestedBufferTime.toDoubleMillis());
         ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
 

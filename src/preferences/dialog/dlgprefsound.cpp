@@ -207,8 +207,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             new ControlProxy(kAppGroup, QStringLiteral("audio_latency_overload_count"), this);
     m_pAudioLatencyOverloadCount->connectValueChanged(this, &DlgPrefSound::bufferUnderflow);
 
-    m_pMainLatency = new ControlProxy("[Master]", "latency", this);
-    m_pMainLatency->connectValueChanged(this, &DlgPrefSound::mainLatencyChanged);
+    m_pOutputLatencyMs = new ControlProxy(kAppGroup, QStringLiteral("output_latency_ms"), this);
+    m_pOutputLatencyMs->connectValueChanged(this, &DlgPrefSound::outputLatencyChanged);
 
     // TODO: remove this option by automatically disabling/enabling the main mix
     // when recording, broadcasting, headphone, and main outputs are enabled/disabled
@@ -732,7 +732,7 @@ void DlgPrefSound::bufferUnderflow(double count) {
     update();
 }
 
-void DlgPrefSound::mainLatencyChanged(double latency) {
+void DlgPrefSound::outputLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
 }

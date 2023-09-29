@@ -74,15 +74,17 @@ EngineMixer::EngineMixer(
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     // Main sample rate
-    m_pMainSampleRate = new ControlObject(
+    m_pSampleRate = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("samplerate")), true, true);
-    m_pMainSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
-    m_pMainSampleRate->set(44100.);
+    m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
+    m_pSampleRate->set(44100.);
 
     // Latency control
-    m_pMainLatency = new ControlObject(ConfigKey(group, "latency"),
+    m_pOutputLatencyMs = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
             true,
             true); // reported latency (sometimes correct)
+    m_pOutputLatencyMs->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
     m_pAudioLatencyOverloadCount = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
     m_pAudioLatencyOverloadCount->addAlias(ConfigKey(
@@ -235,8 +237,8 @@ EngineMixer::~EngineMixer() {
     delete m_pXFaderMode;
 
     delete m_pEngineSync;
-    delete m_pMainSampleRate;
-    delete m_pMainLatency;
+    delete m_pSampleRate;
+    delete m_pOutputLatencyMs;
     delete m_pAudioLatencyOverloadCount;
     delete m_pAudioLatencyUsage;
     delete m_pAudioLatencyOverload;
@@ -417,7 +419,7 @@ void EngineMixer::process(const int iBufferSize) {
     bool boothEnabled = m_pBoothEnabled->toBool();
     bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
-    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMainSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
     // TODO: remove assumption of stereo buffer
     constexpr unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
