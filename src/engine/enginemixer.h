@@ -303,8 +303,8 @@ class EngineMixer : public QObject, public AudioSource {
     ControlObject* m_pMainGain;
     ControlObject* m_pBoothGain;
     ControlObject* m_pHeadGain;
-    ControlObject* m_pMainSampleRate;
-    ControlObject* m_pMainLatency;
+    ControlObject* m_pSampleRate;
+    ControlObject* m_pOutputLatencyMs;
     ControlObject* m_pAudioLatencyOverloadCount;
     ControlObject* m_pAudioLatencyUsage;
     ControlObject* m_pAudioLatencyOverload;
