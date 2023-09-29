@@ -301,7 +301,7 @@ void DlgPrefSound::slotApply() {
         const auto keylockEngine =
                 keylockComboBox->currentData().value<EngineBuffer::KeylockEngine>();
         m_pKeylockEngine->set(static_cast<double>(keylockEngine));
-        m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
+        m_pSettings->set(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                 ConfigValue(static_cast<int>(keylockEngine)));
 
         status = m_pSoundManager->setConfig(m_config);
@@ -481,7 +481,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 
     // Default keylock engine is Rubberband Faster (v2)
     const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
-            m_pSettings->getValue(ConfigKey("[Master]", "keylock_engine"),
+            m_pSettings->getValue(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                     static_cast<int>(EngineBuffer::defaultKeylockEngine())));
     const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
     const int index = keylockComboBox->findData(keylockEngineVariant);
