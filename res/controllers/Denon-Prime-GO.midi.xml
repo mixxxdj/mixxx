@@ -667,7 +667,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.cueButton.input</key>
                 <description>Deck 1 Cue Button On</description>
                 <status>0x92</status>
                 <midino>0x09</midino>
@@ -677,7 +677,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.cueButton.input</key>
                 <description>Deck 1 Cue Button Off</description>
                 <status>0x82</status>
                 <midino>0x09</midino>
@@ -687,7 +687,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.playButton.input</key>
                 <description>Deck 1 Play/Stop Button On</description>
                 <status>0x92</status>
                 <midino>0x0A</midino>
@@ -697,7 +697,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.playButton.input</key>
                 <description>Deck 1 Play/Stop Button Off</description>
                 <status>0x82</status>
                 <midino>0x0A</midino>
@@ -707,7 +707,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.cueButton.input</key>
                 <description>Deck 2 Cue Button On</description>
                 <status>0x93</status>
                 <midino>0x09</midino>
@@ -717,7 +717,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.cueButton.input</key>
                 <description>Deck 2 Cue Button Off</description>
                 <status>0x83</status>
                 <midino>0x09</midino>
@@ -727,7 +727,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.playButton.input</key>
                 <description>Deck 2 Play/Stop Button On</description>
                 <status>0x93</status>
                 <midino>0x0A</midino>
@@ -737,7 +737,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.playButton.input</key>
                 <description>Deck 2 Play/Stop Button Off</description>
                 <status>0x83</status>
                 <midino>0x0A</midino>
@@ -867,7 +867,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.syncButton.input</key>
                 <description>Deck 1 Sync / Key Sync Button On</description>
                 <status>0x92</status>
                 <midino>0x08</midino>
@@ -877,7 +877,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.syncButton.input</key>
                 <description>Deck 1 Sync / Key Sync Button Off</description>
                 <status>0x82</status>
                 <midino>0x08</midino>
@@ -887,7 +887,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.syncButton.input</key>
                 <description>Deck 2 Sync / Key Sync Button On</description>
                 <status>0x93</status>
                 <midino>0x08</midino>
@@ -897,7 +897,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.syncButton.input</key>
                 <description>Deck 2 Sync / Key Sync Button Off</description>
                 <status>0x83</status>
                 <midino>0x08</midino>
