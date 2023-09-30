@@ -116,13 +116,13 @@
                 </options>
             </control>
             <control>
-                <group></group>
-                <key></key>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
                 <description>Deck 1 - Sweep FX Knob</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -157,7 +157,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.sweepA.input</key>
                 <description>Deck 1 - Sweep FX A Button ON</description>
                 <status>0x90</status>
                 <midino>0x0E</midino>
@@ -167,7 +167,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.sweepA.input</key>
                 <description>Deck 1 - Sweep FX A Button OFF</description>
                 <status>0x80</status>
                 <midino>0x0E</midino>
@@ -177,7 +177,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.sweepA.input</key>
                 <description>Deck 2 - Sweep FX A Button ON</description>
                 <status>0x91</status>
                 <midino>0x0E</midino>
@@ -187,7 +187,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.sweepA.input</key>
                 <description>Deck 2 - Sweep FX A Button OFF</description>
                 <status>0x81</status>
                 <midino>0x0E</midino>
@@ -236,13 +236,13 @@
                 </options>
             </control>
             <control>
-                <group></group>
-                <key></key>
+                <group>[QuickEffectRack1_[Channel1]]</group>
+                <key>super1</key>
                 <description>Deck 2 - Sweep FX Knob</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -787,7 +787,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.pitchBendDown.input</key>
                 <description>Deck 1 Pitch Bend (-) Button On</description>
                 <status>0x92</status>
                 <midino>0x1D</midino>
@@ -797,7 +797,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.pitchBendDown.input</key>
                 <description>Deck 1 Pitch Bend (-) Button Off</description>
                 <status>0x82</status>
                 <midino>0x1D</midino>
@@ -807,7 +807,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.pitchBendUp.input</key>
                 <description>Deck 1 Pitch Bend (+) Button On</description>
                 <status>0x92</status>
                 <midino>0x1E</midino>
@@ -817,7 +817,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.pitchBendUp.input</key>
                 <description>Deck 1 Pitch Bend (+) Button Off</description>
                 <status>0x82</status>
                 <midino>0x1E</midino>
@@ -827,7 +827,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.pitchBendDown.input</key>
                 <description>Deck 2 Pitch Bend (-) Button On</description>
                 <status>0x93</status>
                 <midino>0x1D</midino>
@@ -837,7 +837,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.pitchBendDown.input</key>
                 <description>Deck 2 Pitch Bend (-) Button Off</description>
                 <status>0x83</status>
                 <midino>0x1D</midino>
@@ -847,7 +847,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.pitchBendUp.input</key>
                 <description>Deck 2 Pitch Bend (+) Button On</description>
                 <status>0x93</status>
                 <midino>0x1E</midino>
@@ -857,7 +857,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.pitchBendUp.input</key>
                 <description>Deck 2 Pitch Bend (+) Button Off</description>
                 <status>0x83</status>
                 <midino>0x1E</midino>
@@ -1527,7 +1527,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.tempoFader.inputMSB</key>
                 <description>Deck 1 - Pitch Fader MSB</description>
                 <status>0xB2</status>
                 <midino>0x1F</midino>
@@ -1537,7 +1537,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.tempoFader.inputLSB</key>
                 <description>Deck 1 - Pitch Fader LSB</description>
                 <status>0xB2</status>
                 <midino>0x4B</midino>
@@ -1547,7 +1547,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.tempoFader.inputMSB</key>
                 <description>Deck 2 - Pitch Fader MSB</description>
                 <status>0xB3</status>
                 <midino>0x1F</midino>
@@ -1557,7 +1557,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.tempoFader.inputLSB</key>
                 <description>Deck 2 - Pitch Fader LSB</description>
                 <status>0xB3</status>
                 <midino>0x4B</midino>

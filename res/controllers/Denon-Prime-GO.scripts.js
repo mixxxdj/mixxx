@@ -90,11 +90,24 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         midi: [0x90 + midiChannel, 0x09]
     });
 
-    //pitchbend -
+    this.pitchBendUp = new components.Button({
+        midi: [],
+        type: components.Button.prototype.types.push,
+        key: "rate_temp_up",
+        //TODO: tempo fader range
+    });
 
-    //pitchbend +
+    this.pitchBendDown = new components.Button({
+        midi: [],
+        type: components.Button.prototype.types.push,
+        key: "rate_temp_down",
+        //TODO: tempo fader range
+    });
 
-    //pitchfader
+    this.tempoFader = new components.Pot({
+        midi: [0xB0 + midiChannel, 0x1F],
+        inKey: "rate",
+    });
 
     this.syncButton = new components.SyncButton({
         midi: [0x90 + midiChannel, 0x08],
@@ -130,9 +143,14 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         inKey: "parameter3",
     });
 
-    //sweepfxknob
+    //sweepfxknob (mapped in XML)
 
     //sweepA
+    this.sweepA = new components.Button({
+        midi: [0x90 + midiChannel - 2, 0x0E],
+        group: "QuickEffectRack1_[Channel1]]",
+        key: "enabled",
+    });
 
     //sweepB
 
