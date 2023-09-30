@@ -126,18 +126,18 @@
                 </options>
             </control>
             <control>
-                <group></group>
-                <key></key>
+                <group>[Library]</group>
+                <key>MoveVertical</key>
                 <description>Browse Encoder</description>
                 <status>0xBF</status>
                 <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <selectknob/>
                 </options>
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>Prime4.encoderLoad.input</key>
                 <description>Browse Encoder Button ON</description>
                 <status>0x9F</status>
                 <midino>0x06</midino>
@@ -147,7 +147,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>Prime4.encoderLoad.input</key>
                 <description>Browse Encoder Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x06</midino>

@@ -14,7 +14,12 @@ PrimeGo.init = function(_id, _debugging) {
     midi.sendShortMsg(0x90, 0x75, 0x00);
     PrimeGo.leftDeck = new PrimeGo.Deck(1, 2);
     PrimeGo.rightDeck = new PrimeGo.Deck(2, 3);
-    // Initial functions go here
+
+    PrimeGo.encoderLoad = new components.Button({
+        midi: [0x9F, 0x06],
+        group: "[Library]",
+        key: "GoToItem",
+    });
 };
 
 PrimeGo.shutdown = function() {
@@ -28,7 +33,14 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
 
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],
-        //TODO: play_stutter
+        unshift: function() {
+            components.PlayButton.prototype.unshift.call(this);
+            this.type = components.Button.prototype.types.toggle;
+        },
+        shift: function() {
+            this.inKey = "play_stutter";
+            this.type = components.Button.prototype.types.push;
+        },
     });
 
     this.cueButton = new components.CueButton({
@@ -45,7 +57,7 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         midi: [0x90 + midiChannel, 0x08],
     });
 
-    //vinyl
+    //vinylButton
 
     //jogwheel
 
