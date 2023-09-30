@@ -247,7 +247,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.volumeFader.input</key>
                 <description>Deck 1 - Volume Fader</description>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
@@ -257,7 +257,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.volumeFader.input</key>
                 <description>Deck 2 - Volume Fader</description>
                 <status>0xB1</status>
                 <midino>0x0E</midino>
@@ -337,7 +337,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.shiftState</key>
                 <description>Shift Button ON</description>
                 <status>0x9F</status>
                 <midino>0x08</midino>
@@ -347,7 +347,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.shiftState</key>
                 <description>Shift Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x08</midino>

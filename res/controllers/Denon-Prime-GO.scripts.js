@@ -30,43 +30,67 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         midi: [0x90 + midiChannel, 0x0A],
         //TODO: play_stutter
     });
+
     this.cueButton = new components.CueButton({
         midi: [0x90 + midiChannel, 0x09]
     });
+
     //pitchbend -
+
     //pitchbend +
+
     //pitchfader
+
     this.syncButton = new components.SyncButton({
         midi: [0x90 + midiChannel, 0x08],
     });
+
     //vinyl
+
     //jogwheel
+
     //loopencoder
+
     this.gain = new components.Pot({
         midi: [0xB0 + midiChannel - 2, 0x03],
         group: "[Channel" + deckNumber + "]",
         inKey: "pregain",
     });
+
     this.eqLow = new components.Pot({
         midi: [0xB0 + midiChannel - 2, 0x08],
         group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
         inKey: "parameter1",
     });
+
     this.eqMid = new components.Pot({
         midi: [0xB0 + midiChannel - 2, 0x06],
         group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
         inKey: "parameter2",
     });
+
     this.eqHigh = new components.Pot({
         midi: [0xB0 + midiChannel - 2, 0x04],
         group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
         inKey: "parameter3",
     });
+
     //sweepfxknob
+
     //sweepA
+
     //sweepB
-    //pfl
-    //volume
+
+    this.headphoneCue = new components.Button({
+        midi: [0x90 + midiChannel - 2, 0x0D],
+        key: "pfl",
+        type: components.Button.prototype.types.toggle,
+    });
+
+    this.volumeFader = new components.Pot({
+        midi: [0xB0 + midiChannel - 2, 0x0E],
+        inKey: "volume",
+    });
 
     this.reconnectComponents(function(c) {
         if (c.group === undefined) {
@@ -76,3 +100,20 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
 };
 
 PrimeGo.Deck.prototype = new components.Deck();
+
+PrimeGo.shift = false;
+PrimeGo.shiftState = function(channel, control, value) {
+    PrimeGo.shift = value === 0x7F;
+    if (PrimeGo.shift) {
+        midi.sendShortMsg(0x9F, 0x08, 0x7F);
+        PrimeGo.leftDeck.shift();
+        PrimeGo.rightDeck.shift();
+        PrimeGo.leftDeck.reconnectComponents();
+        PrimeGo.rightDeck.reconnectComponents();
+    } else {
+        PrimeGo.leftDeck.unshift();
+        PrimeGo.rightDeck.unshift();
+        PrimeGo.leftDeck.reconnectComponents();
+        PrimeGo.rightDeck.reconnectComponents();
+    }
+};
