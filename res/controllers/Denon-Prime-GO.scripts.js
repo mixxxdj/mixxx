@@ -25,8 +25,20 @@ PrimeGo.init = function(_id, _debugging) {
         key: "GoToItem",
     });
 
+    PrimeGo.moveBack = new components.Button({
+        midi: [0x9F, 0x03],
+        group: "[Library]",
+        key: "MoveFocusBackward",
+    });
+
+    PrimeGo.moveForward = new components.Button({
+        midi: [0x9F, 0x04],
+        group: "[Library]",
+        key: "MoveFocusForward",
+    });
+
     PrimeGo.maxView = new components.Button({
-        midi: [],
+        midi: [0x9F, 0x07],
         group: "[Master]",
         key: "maximize_library",
         type: components.Button.prototype.types.toggle,
@@ -41,6 +53,19 @@ PrimeGo.shutdown = function() {
 
 PrimeGo.Deck = function(deckNumber, midiChannel) {
     components.Deck.call(this, deckNumber);
+
+    this.deckLoad = new components.Button({
+        midi: [0x9F, midiChannel - 1],
+        key: "LoadSelectedTrack",
+        shift: function() {
+            this.inKey = "eject";
+            this.outKey = this.inKey;
+        },
+        unshift: function() {
+            this.inKey = "LoadSelectedTrack",
+            this.outKey = this.inKey;
+        },
+    });
 
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],

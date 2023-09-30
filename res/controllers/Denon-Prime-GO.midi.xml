@@ -37,7 +37,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.deckLoad.input</key>
                 <description>Deck 1 - Load Button ON</description>
                 <status>0x9F</status>
                 <midino>0x01</midino>
@@ -47,7 +47,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.deckLoad.input</key>
                 <description>Deck 1 - Load Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x01</midino>
@@ -57,7 +57,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.deckLoad.input</key>
                 <description>Deck 2 - Load Button ON</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
@@ -67,7 +67,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.deckLoad.input</key>
                 <description>Deck 2 - Load Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x02</midino>
@@ -77,7 +77,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.moveBack.input</key>
                 <description>Back Button ON</description>
                 <status>0x9F</status>
                 <midino>0x03</midino>
@@ -87,7 +87,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.moveBack.input</key>
                 <description>Back Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x03</midino>
@@ -97,7 +97,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.moveForward.input</key>
                 <description>Fwd Button ON</description>
                 <status>0x9F</status>
                 <midino>0x04</midino>
@@ -107,7 +107,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.moveForward.input</key>
                 <description>Fwd Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x04</midino>
