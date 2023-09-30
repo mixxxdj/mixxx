@@ -587,7 +587,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.gain.input</key>
                 <description>Deck 1 Gain Knob</description>
                 <status>0xB0</status>
                 <midino>0x03</midino>
@@ -627,7 +627,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.gain.input</key>
                 <description>Deck 2 Gain Knob</description>
                 <status>0xB1</status>
                 <midino>0x03</midino>
