@@ -597,7 +597,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.eqLow.input</key>
                 <description>Deck 1 Low Knob</description>
                 <status>0xB0</status>
                 <midino>0x08</midino>
@@ -607,7 +607,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.eqMid.input</key>
                 <description>Deck 1 Mid Knob</description>
                 <status>0xB0</status>
                 <midino>0x06</midino>
@@ -617,7 +617,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.eqHigh.input</key>
                 <description>Deck 1 High Knob</description>
                 <status>0xB0</status>
                 <midino>0x04</midino>
@@ -637,7 +637,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.eqLow.input</key>
                 <description>Deck 2 Low Knob</description>
                 <status>0xB1</status>
                 <midino>0x08</midino>
@@ -647,7 +647,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.eqMid.input</key>
                 <description>Deck 2 Mid Knob</description>
                 <status>0xB1</status>
                 <midino>0x06</midino>
@@ -657,7 +657,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.eqHigh.input</key>
                 <description>Deck 2 High Knob</description>
                 <status>0xB1</status>
                 <midino>0x04</midino>

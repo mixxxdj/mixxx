@@ -47,9 +47,21 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         group: "[Channel" + deckNumber + "]",
         inKey: "pregain",
     });
-    //low
-    //mid
-    //high
+    this.eqLow = new components.Pot({
+        midi: [0xB0 + midiChannel - 2, 0x08],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter1",
+    });
+    this.eqMid = new components.Pot({
+        midi: [0xB0 + midiChannel - 2, 0x06],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter2",
+    });
+    this.eqHigh = new components.Pot({
+        midi: [0xB0 + midiChannel - 2, 0x04],
+        group: "[EqualizerRack1_[Channel" + deckNumber + "]_Effect1]",
+        inKey: "parameter3",
+    });
     //sweepfxknob
     //sweepA
     //sweepB
