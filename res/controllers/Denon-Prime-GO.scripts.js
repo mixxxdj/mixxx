@@ -9,12 +9,20 @@ components.Button.prototype.isPress = function(channel, control, value, status) 
 // 'Off' value sets basic LEDs to dim instead of fully off
 components.Button.prototype.off = 0x01;
 
+const initMsg = [0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x0C, 0x04, 0x00, 0x00, 0xF7];
+
+// Send colors to RGB pads via SysEx
+// F0 00 02 0B 7F 0C 03 00 05 status midino red green blue F7
+
 PrimeGo.init = function(_id, _debugging) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
 
     // Initialize Shift LED
     midi.sendShortMsg(0x9F, 0x08, 0x01);
+
+    // Get position of all components
+    midi.sendSysexMsg(initMsg, initMsg.length);
 
     PrimeGo.leftDeck = new PrimeGo.Deck(1, 2);
     PrimeGo.rightDeck = new PrimeGo.Deck(2, 3);
@@ -39,16 +47,15 @@ PrimeGo.init = function(_id, _debugging) {
 
     PrimeGo.maxView = new components.Button({
         midi: [0x9F, 0x07],
-        group: "[Master]",
-        key: "maximize_library",
+        group: "[Skin]",
+        key: "show_maximized_library",
         type: components.Button.prototype.types.toggle,
     });
 };
 
 PrimeGo.shutdown = function() {
     // Dim all LEDs
-    midi.sendShortMsg(0x90, 0x75, 0x00);
-    // Final functions go here
+    midi.sendShortMsg(0x90, 0x75, 0x01);
 };
 
 PrimeGo.Deck = function(deckNumber, midiChannel) {
