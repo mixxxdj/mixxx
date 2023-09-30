@@ -137,7 +137,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.encoderLoad.input</key>
+                <key>PrimeGo.encoderLoad.input</key>
                 <description>Browse Encoder Button ON</description>
                 <status>0x9F</status>
                 <midino>0x06</midino>
@@ -147,7 +147,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.encoderLoad.input</key>
+                <key>PrimeGo.encoderLoad.input</key>
                 <description>Browse Encoder Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x06</midino>
@@ -267,7 +267,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.headphoneCue.input</key>
                 <description>Deck 1 - PFL Button On</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
@@ -277,7 +277,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.headphoneCue.input</key>
                 <description>Deck 1 - PFL Button Off</description>
                 <status>0x80</status>
                 <midino>0x0D</midino>
@@ -287,7 +287,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.headphoneCue.input</key>
                 <description>Deck 2 - PFL Button On</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
@@ -297,7 +297,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.headphoneCue.input</key>
                 <description>Deck 2 - PFL Button Off</description>
                 <status>0x81</status>
                 <midino>0x0D</midino>
@@ -306,18 +306,18 @@
                 </options>
             </control>
             <control>
-                <group></group>
-                <key></key>
+                <group>[Master]</group>
+                <key>crossfader</key>
                 <description>Crossfader</description>
                 <status>0xBF</status>
                 <midino>0x0E</midino>
                 <options>
-                    <Script-Binding/>
+                    <normal/>
                 </options>
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.maxView.input</key>
                 <description>View Button ON</description>
                 <status>0x9F</status>
                 <midino>0x07</midino>
@@ -327,7 +327,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.maxView.input</key>
                 <description>View Button OFF</description>
                 <status>0x8F</status>
                 <midino>0x07</midino>

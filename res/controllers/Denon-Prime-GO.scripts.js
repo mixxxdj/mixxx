@@ -12,6 +12,10 @@ components.Button.prototype.off = 0x01;
 PrimeGo.init = function(_id, _debugging) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
+
+    // Initialize Shift LED
+    midi.sendShortMsg(0x9F, 0x08, 0x01);
+
     PrimeGo.leftDeck = new PrimeGo.Deck(1, 2);
     PrimeGo.rightDeck = new PrimeGo.Deck(2, 3);
 
@@ -20,11 +24,18 @@ PrimeGo.init = function(_id, _debugging) {
         group: "[Library]",
         key: "GoToItem",
     });
+
+    PrimeGo.maxView = new components.Button({
+        midi: [],
+        group: "[Master]",
+        key: "maximize_library",
+        type: components.Button.prototype.types.toggle,
+    });
 };
 
 PrimeGo.shutdown = function() {
     // Dim all LEDs
-    midi.sendShortMsg(0x90, 0x75, 0x01);
+    midi.sendShortMsg(0x90, 0x75, 0x00);
     // Final functions go here
 };
 
@@ -123,6 +134,7 @@ PrimeGo.shiftState = function(channel, control, value) {
         PrimeGo.leftDeck.reconnectComponents();
         PrimeGo.rightDeck.reconnectComponents();
     } else {
+        midi.sendShortMsg(0x9F, 0x08, 0x01);
         PrimeGo.leftDeck.unshift();
         PrimeGo.rightDeck.unshift();
         PrimeGo.leftDeck.reconnectComponents();
