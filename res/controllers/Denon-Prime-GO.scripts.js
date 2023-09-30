@@ -25,6 +25,7 @@ PrimeGo.shutdown = function() {
 
 PrimeGo.Deck = function(deckNumber, midiChannel) {
     components.Deck.call(this, deckNumber);
+
     this.playButton = new components.PlayButton({
         midi: [0x90 + midiChannel, 0x0A],
         //TODO: play_stutter
@@ -41,7 +42,11 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
     //vinyl
     //jogwheel
     //loopencoder
-    //gain
+    this.gain = new components.Pot({
+        midi: [0xB0 + midiChannel - 2, 0x03],
+        group: "[Channel" + deckNumber + "]",
+        inKey: "pregain",
+    });
     //low
     //mid
     //high
