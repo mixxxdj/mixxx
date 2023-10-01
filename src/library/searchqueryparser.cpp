@@ -69,7 +69,7 @@ const QRegularExpression kSplitOnOrOperatorRegexp = QRegularExpression(
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
-          m_searchCratesAndExternal(false) {
+          m_searchCrates(false) {
     setSearchColumns(std::move(searchColumns));
 
     m_textFilters << "artist"
@@ -133,8 +133,8 @@ void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
 
     // we need to create a filtered columns list that are handled differently
     for (int i = 0; i < m_queryColumns.size(); ++i) {
-        if (m_queryColumns[i] == "crate" || m_queryColumns[i] == "itunes") {
-            m_searchCratesAndExternal = true;
+        if (m_queryColumns[i] == "crate") {
+            m_searchCrates = true;
             m_queryColumns.removeAt(i);
             break;
         }
@@ -280,12 +280,10 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 // For untagged strings we search the track fields as well
                 // as the crate names the track is in. This allows the user
                 // to use crates like tags
-                if (m_searchCratesAndExternal) {
+                if (m_searchCrates) {
                     auto gNode = std::make_unique<OrNode>();
                     gNode->addNode(std::make_unique<CrateFilterNode>(
                                     &m_pTrackCollection->crates(), argument));
-                    gNode->addNode(std::make_unique<ITunesFilterNode>(
-                            m_pTrackCollection->database(), argument));
                     gNode->addNode(std::make_unique<TextFilterNode>(
                             m_pTrackCollection->database(), m_queryColumns, argument));
                     pNode = std::move(gNode);
