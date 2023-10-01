@@ -63,5 +63,5 @@ void WKey::setCents() {
 }
 
 void WKey::keyNotationChanged(double dValue) {
-    setValue(dValue);
+    setValue(m_dOldValue);
 }
