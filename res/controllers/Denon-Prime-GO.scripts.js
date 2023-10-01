@@ -14,6 +14,59 @@ const initMsg = [0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x0C, 0x04, 0x00, 0x00, 0xF7];
 // Send colors to RGB pads via SysEx
 // F0 00 02 0B 7F 0C 03 00 05 status midino red green blue F7
 
+// Provide functions for encoder to cycle through an array of values
+// See NS6II mapping
+
+// Array that stops at either end (e.g. beatjump ranges)
+PrimeGo.CyclingArrayView = class {
+    constructor(indexable, startIndex) {
+        this.indexable = indexable;
+        this.index = startIndex || 0;
+    }
+    advanceBy(n) {
+        this.index = script.posMod(this.index + n, this.indexable.length);
+        return this.current();
+    }
+    next() {
+        if (this.index !== (this.indexable.length - 1)) {
+            return this.advanceBy(1);
+        } else {
+            return this.current;
+        }
+    }
+    previous() {
+        if (this.index !== 0) {
+            return this.advanceBy(-1);
+        } else {
+            return this.current;
+        }
+    }
+    current() {
+        return this.indexable[this.index];
+    }
+};
+
+// Array that repeats at each end (e.g. effect selection)
+PrimeGo.WrappingArrayView = class {
+    constructor(indexable, startIndex) {
+        this.indexable = indexable;
+        this.index = startIndex || 0;
+    }
+    advanceBy(n) {
+        this.index = script.posMod(this.index + n, this.indexable.length);
+        return this.current();
+    }
+    next() {
+        return this.advanceBy(1);
+    }
+    previous() {
+        return this.advanceBy(-1);
+    }
+    current() {
+        return this.indexable[this.index];
+    }
+};
+
 PrimeGo.init = function(_id, _debugging) {
     // Turn off all LEDs
     midi.sendShortMsg(0x90, 0x75, 0x00);
@@ -24,6 +77,7 @@ PrimeGo.init = function(_id, _debugging) {
     // Get position of all components
     midi.sendSysexMsg(initMsg, initMsg.length);
 
+    // Initialize deck objects
     PrimeGo.leftDeck = new PrimeGo.Deck(1, 2);
     PrimeGo.rightDeck = new PrimeGo.Deck(2, 3);
 
@@ -143,16 +197,21 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
         inKey: "parameter3",
     });
 
-    //sweepfxknob (mapped in XML)
+    this.sweepKnob = new components.Pot({
+        midi: [],
+        group: "[QuickEffectRack1_[Channel" + deckNumber + "]_Effect1]",
+        key: "super1",
+    });
 
     //sweepA
     this.sweepA = new components.Button({
         midi: [0x90 + midiChannel - 2, 0x0E],
-        group: "QuickEffectRack1_[Channel1]]",
+        group: "[QuickEffectRack1_[Channel" + deckNumber + "]]",
         key: "enabled",
+        type: components.Button.prototype.types.toggle,
     });
 
-    //sweepB
+    //sweepB - Needs ability to select specific quick effects.
 
     this.headphoneCue = new components.Button({
         midi: [0x90 + midiChannel - 2, 0x0D],
@@ -191,3 +250,19 @@ PrimeGo.shiftState = function(channel, control, value) {
         PrimeGo.rightDeck.reconnectComponents();
     }
 };
+
+
+/*
+//========== PERFORMANCE PADS ==========//
+
+// mode-select pad index list to avoid remembering MIDI values
+PrimeGo.padMode = {
+    HOTCUE: 0x0B,
+    LOOP: 0x0C,
+    ROLL: 0x0D,
+    BANK: 0x0E,
+};
+
+PrimeGo.PadSection = function(deck, offset) {
+};
+*/

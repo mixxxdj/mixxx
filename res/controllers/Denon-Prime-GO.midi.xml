@@ -116,13 +116,13 @@
                 </options>
             </control>
             <control>
-                <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>super1</key>
+                <group></group>
+                <key>PrimeGo.leftDeck.sweepKnob.input</key>
                 <description>Deck 1 - Sweep FX Knob</description>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -236,13 +236,13 @@
                 </options>
             </control>
             <control>
-                <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>super1</key>
+                <group></group>
+                <key>PrimeGo.rightDeck.sweepKnob.input</key>
                 <description>Deck 2 - Sweep FX Knob</description>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
