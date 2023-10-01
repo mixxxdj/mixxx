@@ -359,7 +359,8 @@ QString ExternalPlaylistFilterNode::toSql() const {
 
 QString ExternalPlaylistFilterNode::formatQuerySuffixForTrackIds() const {
     FieldEscaper escaper(m_database);
-    QString escapedPlaylistNameLike = escaper.escapeString(m_playlistNameLike);
+    QString escapedPlaylistNameLike = escaper.escapeString(
+            kSqlLikeMatchAll + m_playlistNameLike + kSqlLikeMatchAll);
     return QStringLiteral(
             "FROM %1 "
             "JOIN %2 ON %2.id = %1.playlist_id "
