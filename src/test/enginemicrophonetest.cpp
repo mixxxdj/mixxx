@@ -16,8 +16,8 @@ namespace {
 class EngineMicrophoneTest : public SignalPathTest {
   protected:
     void SetUp() override {
-        inputLength = MAX_BUFFER_LEN;
-        outputLength = MAX_BUFFER_LEN;
+        inputLength = kMaxEngineSamples;
+        outputLength = kMaxEngineSamples;
         input = SampleUtil::alloc(inputLength);
         output = SampleUtil::alloc(outputLength);
         test = SampleUtil::alloc(outputLength);

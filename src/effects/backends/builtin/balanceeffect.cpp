@@ -67,7 +67,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
 
 BalanceGroupState::BalanceGroupState(const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
-          m_pHighBuf(MAX_BUFFER_LEN),
+          m_pHighBuf(engineParameters.samplesPerBuffer()),
           m_oldSampleRate(engineParameters.sampleRate()),
           m_freq(kMinCornerHz),
           m_oldBalance(0),
