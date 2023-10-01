@@ -62,6 +62,8 @@ void WKey::setCents() {
     setValue(m_dOldValue);
 }
 
-void WKey::keyNotationChanged(double dValue) {
+void WKey::keyNotationChanged(double dKeyNotationValue) {
+    // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
+    // key itself, so we intentionally set the old value again to update the UI.
     setValue(m_dOldValue);
 }
