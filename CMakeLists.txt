@@ -1516,7 +1516,7 @@ endif()
 
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
 endif()
 
@@ -2512,7 +2512,7 @@ target_link_libraries(mixxx-lib PRIVATE Vorbis::vorbis Vorbis::vorbisenc Vorbis:
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE PortAudio::PortAudio)
+target_link_libraries(mixxx-lib PUBLIC PortAudio::PortAudio)
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
@@ -2711,14 +2711,14 @@ elseif(UNIX AND NOT APPLE)
   else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
   endif()
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE
+  target_link_libraries(mixxx-lib PUBLIC
     Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
