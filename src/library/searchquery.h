@@ -140,10 +140,10 @@ class NoCrateFilterNode : public QueryNode {
 class ExternalPlaylistFilterNode : public QueryNode {
   public:
     ExternalPlaylistFilterNode(const QSqlDatabase& database,
-            const QString& playlistNameLike,
-            const QString& externalPlaylistsTable,
-            const QString& externalPlaylistTracksTable,
-            const QString& externalLibraryTable);
+            QString playlistNameLike,
+            QString externalPlaylistsTable,
+            QString externalPlaylistTracksTable,
+            QString externalLibraryTable);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
