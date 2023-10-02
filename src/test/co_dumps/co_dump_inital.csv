@@ -29,7 +29,7 @@
 [EffectRack1_EffectUnit4_Effect4],parameter4_set_default,0
 [EffectRack1_EffectUnit2_Effect2],parameter2_link_type,0
 [QuickEffectRack1_[Channel3]_Effect1],parameter5_set_zero,0
-[Master],latency,5.80499
+[App],output_latency_ms,5.80499
 [Channel4],hotcue_15_enabled,0
 [Channel4],hotcue_2_activate,0
 [EffectRack1_EffectUnit3_Effect3],parameter4_minus_toggle,0
