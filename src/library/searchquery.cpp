@@ -311,15 +311,15 @@ QString NoCrateFilterNode::toSql() const {
 }
 
 ExternalPlaylistFilterNode::ExternalPlaylistFilterNode(const QSqlDatabase& database,
-        const QString& playlistNameLike,
-        const QString& externalPlaylistsTable,
-        const QString& externalPlaylistTracksTable,
-        const QString& externalLibraryTable)
+        QString playlistNameLike,
+        QString externalPlaylistsTable,
+        QString externalPlaylistTracksTable,
+        QString externalLibraryTable)
         : m_database(database),
-          m_playlistNameLike(playlistNameLike),
-          m_externalPlaylistsTable(externalPlaylistsTable),
-          m_externalPlaylistTracksTable(externalPlaylistTracksTable),
-          m_externalLibraryTable(externalLibraryTable) {
+          m_playlistNameLike(std::move(playlistNameLike)),
+          m_externalPlaylistsTable(std::move(externalPlaylistsTable)),
+          m_externalPlaylistTracksTable(std::move(externalPlaylistTracksTable)),
+          m_externalLibraryTable(std::move(externalLibraryTable)) {
 }
 
 bool ExternalPlaylistFilterNode::match(const TrackPointer& pTrack) const {
