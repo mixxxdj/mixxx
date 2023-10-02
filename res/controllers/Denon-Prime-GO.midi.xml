@@ -967,7 +967,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Hot Cue Pad On</description>
                 <status>0x92</status>
                 <midino>0x0B</midino>
@@ -977,7 +977,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Hot Cue Pad Off</description>
                 <status>0x82</status>
                 <midino>0x0B</midino>
@@ -987,7 +987,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Loop Pad On</description>
                 <status>0x92</status>
                 <midino>0x0C</midino>
@@ -997,7 +997,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Loop Pad Off</description>
                 <status>0x82</status>
                 <midino>0x0C</midino>
@@ -1007,7 +1007,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Roll Pad On</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
@@ -1017,7 +1017,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.leftDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.leftDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 1 - Roll Pad Off</description>
                 <status>0x82</status>
                 <midino>0x0D</midino>
@@ -1047,7 +1047,7 @@
             -->
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Hot Cue Pad On</description>
                 <status>0x93</status>
                 <midino>0x0B</midino>
@@ -1057,7 +1057,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Hot Cue Pad Off</description>
                 <status>0x83</status>
                 <midino>0x0B</midino>
@@ -1067,7 +1067,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Loop Pad On</description>
                 <status>0x93</status>
                 <midino>0x0C</midino>
@@ -1077,7 +1077,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Loop Pad Off</description>
                 <status>0x83</status>
                 <midino>0x0C</midino>
@@ -1087,7 +1087,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Roll Pad On</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
@@ -1097,7 +1097,7 @@
             </control>
             <control>
                 <group></group>
-                <key>Prime4.rightDeck.padGrid.padModeButtonPressed</key>
+                <key>PrimeGo.rightDeck.padGrid.padModeButtonPressed</key>
                 <description>Deck 2 - Roll Pad Off</description>
                 <status>0x83</status>
                 <midino>0x0D</midino>
@@ -1447,7 +1447,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.jogWheel.inputTouch</key>
                 <description>Deck 1 - Jog Wheel Touch On</description>
                 <status>0x92</status>
                 <midino>0x21</midino>
@@ -1457,7 +1457,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.jogWheel.inputTouch</key>
                 <description>Deck 1 - Jog Wheel Touch Off</description>
                 <status>0x82</status>
                 <midino>0x21</midino>
@@ -1467,7 +1467,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.jogWheel.inputTouch</key>
                 <description>Deck 2 - Jog Wheel Touch On</description>
                 <status>0x93</status>
                 <midino>0x21</midino>
@@ -1477,7 +1477,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.jogWheel.inputTouch</key>
                 <description>Deck 2 - Jog Wheel Touch Off</description>
                 <status>0x83</status>
                 <midino>0x21</midino>
@@ -1487,7 +1487,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.jogWheel.inputWheelMSB</key>
                 <description>Deck 1 - Jog Wheel MSB</description>
                 <status>0xB2</status>
                 <midino>0x37</midino>
@@ -1497,7 +1497,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.jogWheel.inputWheelLSB</key>
                 <description>Deck 1 - Jog Wheel LSB</description>
                 <status>0xB2</status>
                 <midino>0x4D</midino>
@@ -1507,7 +1507,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.jogWheel.inputWheelMSB</key>
                 <description>Deck 2 - Jog Wheel MSB</description>
                 <status>0xB3</status>
                 <midino>0x37</midino>
@@ -1517,7 +1517,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.jogWheel.inputWheelLSB</key>
                 <description>Deck 2 - Jog Wheel LSB</description>
                 <status>0xB3</status>
                 <midino>0x4D</midino>

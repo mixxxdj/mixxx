@@ -1,6 +1,9 @@
 // eslint-disable-next-line-no-var
 var PrimeGo = {};
 
+//========== USER-CONFIGURABLE OPTIONS ==========//
+const nudgeSensitivity = 0.5;
+
 // Register '0x9n' as a button press and '0x8n' as a button release
 components.Button.prototype.isPress = function(channel, control, value, status) {
     return (status & 0xF0) === 0x90;
@@ -170,6 +173,55 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
     //vinylButton
 
     //jogwheel
+    this.jogWheel = new components.JogWheelBasic({
+        deck: script.deckFromGroup(this.currentDeck),
+        wheelResolution: 1000,
+        alpha: 1/8,
+        beta: 1/8/32,
+        rpm: 10.6,
+        // Instead of relative movements between this and the last position,
+        // the controller reports the absolute position of the wheel with
+        // 14-bit precision. Because of that, we need to reconstruct the value
+        // and then transform it into the relative directions expected by Mixxx.
+        inputWheelMSB: function(_channel, _control, value, _status, _group) {
+            this.wheelMSB = value;
+        },
+        inputWheelLSB: function(channel, control, value, status, group) {
+            this.inputWheel(channel, control, (this.wheelMSB << 7) + value, status, group);
+        },
+        previousPosition: null,
+        wrappingValue: Math.pow(2, 14),
+        relativeFromAbsolute: function(value) {
+            // The first value of the controller will probably be random
+            // and thus we just have to swallow it until we have the second value
+            // to find the difference
+            if (this.previousPosition === null) {
+                this.previousPosition = value;
+                return 0;
+            }
+            // This finds the shortest distance between the current value
+            // and the last one, and preserves the orientation
+            const delta = value - this.previousPosition;
+            let remainder = ((delta % this.wrappingValue) + this.wrappingValue) % this.wrappingValue;
+            if (remainder * 2 > this.wrappingValue) {
+                remainder -= this.wrappingValue;
+            }
+            this.previousPosition = value;
+            return remainder;
+        },
+        jogScale: function(val) {
+            //nudgeSensitivity is user-configurable, see top of file.
+            return val * nudgeSensitivity;
+        },
+        inputWheel: function(channel, control, value, _status, _group) {
+            value = this.relativeFromAbsolute(value);
+            if (engine.isScratching(this.deck)) {
+                engine.scratchTick(this.deck, value);
+            } else {
+                this.inSetValue(this.jogScale(value));
+            }
+        },
+    });
 
     //loopencoder
 
@@ -199,11 +251,10 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
 
     this.sweepKnob = new components.Pot({
         midi: [],
-        group: "[QuickEffectRack1_[Channel" + deckNumber + "]_Effect1]",
+        group: "[QuickEffectRack1_[Channel" + deckNumber + "]]",
         key: "super1",
     });
 
-    //sweepA
     this.sweepA = new components.Button({
         midi: [0x90 + midiChannel - 2, 0x0E],
         group: "[QuickEffectRack1_[Channel" + deckNumber + "]]",
@@ -391,7 +442,6 @@ PrimeGo.hotcueMode = function(deck, offset) {
             midi: [0x92 + offset, 0x0E + i],
             sendRGB: function(color_obj) {
                 const msg = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x0c, 0x03, 0x00, 0x05, 0x02 + offset, 0x0e + i, color_obj.red>>1, color_obj.green>>1, color_obj.blue>>1, 0xf7];
-                // F0 00 02 0B 7F 0C 03 00 05 status midino red green blue F7
                 midi.sendSysexMsg(msg, msg.length);
             },
             //on: this.colourOn,
