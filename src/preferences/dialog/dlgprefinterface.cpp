@@ -125,12 +125,7 @@ DlgPrefInterface::DlgPrefInterface(
 
     if (pSkinLoader) {
         // Skin configurations
-        QString sizeWarningString =
-                "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
-                "width=16 height=16 />   " +
-                tr("The minimum size of the selected skin is bigger than your "
-                   "screen resolution.");
-        warningLabel->setText(sizeWarningString);
+        warningLabel->setText(kWarningIconHtmlString);
 
         ComboBoxSkinconf->clear();
         // align left edge of preview image and skin description with comboboxes

@@ -858,27 +858,29 @@ void DlgPrefSound::checkLatencyCompensation() {
         micMonitorModeComboBox->setEnabled(true);
         if (configuredMicMonitorMode == EngineMixer::MicMonitorMode::DirectMonitor) {
             latencyCompensationSpinBox->setEnabled(true);
-            QString warningIcon(
-                    "<html>"
-                    "<img "
-                    "src=':/images/preferences/ic_preferences_warning.svg' "
-                    "width='20' height='20'>"
-                    "</html> ");
             QString lineBreak("<br/>");
             // TODO(Be): Make the "User Manual" text link to the manual.
             if (m_pLatencyCompensation->get() == 0.0) {
-                latencyCompensationWarningLabel->setText(
-                      warningIcon +
-                      tr("Microphone inputs are out of time in the record & broadcast signal compared to what you hear.") + lineBreak +
-                      tr("Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
-                      tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
+                        tr("Microphone inputs are out of time in the record & "
+                           "broadcast signal compared to what you hear.") +
+                        lineBreak +
+                        tr("Measure round trip latency and enter it above for "
+                           "Microphone Latency Compensation to align "
+                           "microphone timing.") +
+                        lineBreak +
+                        tr("Refer to the Mixxx User Manual for details.") +
+                        "</html>");
                 latencyCompensationWarningLabel->show();
             } else if (m_bLatencyChanged) {
-                latencyCompensationWarningLabel->setText(
-                  warningIcon +
-                  tr("Configured latency has changed.") + lineBreak +
-                  tr("Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.") + lineBreak +
-                  tr("Refer to the Mixxx User Manual for details.") + "</html>");
+                latencyCompensationWarningLabel->setText(kWarningIconHtmlString +
+                        tr("Configured latency has changed.") + lineBreak +
+                        tr("Remeasure round trip latency and enter it above "
+                           "for Microphone Latency Compensation to align "
+                           "microphone timing.") +
+                        lineBreak +
+                        tr("Refer to the Mixxx User Manual for details.") +
+                        "</html>");
                 latencyCompensationWarningLabel->show();
             } else {
                 latencyCompensationWarningLabel->hide();

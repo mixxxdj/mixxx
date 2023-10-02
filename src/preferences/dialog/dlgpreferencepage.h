@@ -18,6 +18,13 @@ class DlgPreferencePage : public QWidget {
     /// overriding this. The default implementation returns an invalid QUrl.
     virtual QUrl helpUrl() const;
 
+    const QString kWarningIconHtmlString = QStringLiteral(
+            "<html>"
+            "<img "
+            "src=':/images/preferences/ic_preferences_warning.svg' "
+            "width='20' height='20'>"
+            "</html> ");
+
     void setScrollSafeGuardForAllInputWidgets(QObject* obj);
     /// Avoid undesired value changes when scrolling a preferences page while
     /// the pointer is above an input widget (QSpinBox, QComboBox, QSlider):
