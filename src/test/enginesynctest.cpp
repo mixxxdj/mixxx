@@ -401,11 +401,13 @@ TEST_F(EngineSyncTest, InternalLeaderSetFollowerSliderMoves) {
     // If internal is leader, and we turn on a follower, the slider should move.
     auto pButtonLeaderSyncInternal = std::make_unique<ControlProxy>(
             m_sInternalClockGroup, "sync_leader");
-    auto pLeaderSyncSlider =
+    auto pInternalClockBpm =
             std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
 
-    pLeaderSyncSlider->set(100.0);
+    pInternalClockBpm->set(100.0);
+    // Request internal clock to become SyncMode::LeaderExplicit
     pButtonLeaderSyncInternal->set(1);
+    EXPECT_TRUE(isExplicitLeader(m_sInternalClockGroup));
 
     // Set the file bpm of channel 1 to 80 bpm.
     mixxx::BeatsPointer pBeats1 = mixxx::Beats::fromConstTempo(
@@ -416,6 +418,9 @@ TEST_F(EngineSyncTest, InternalLeaderSetFollowerSliderMoves) {
             std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonLeaderSync1->set(static_cast<double>(SyncMode::Follower));
     ProcessBuffer();
+
+    EXPECT_TRUE(isFollower(m_sGroup1));
+    EXPECT_TRUE(isExplicitLeader(m_sInternalClockGroup));
 
     EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
