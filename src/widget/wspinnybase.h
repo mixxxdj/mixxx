@@ -28,7 +28,7 @@ class WSpinnyBase : public WGLWidget,
                     public TrackDropTarget {
     Q_OBJECT
   public:
-    WSpinnyBase(QWidget* parent,
+    WSpinnyBase(QWidget* pParent,
             const QString& group,
             UserSettingsPointer pConfig,
             VinylControlManager* pVCMan,
@@ -36,6 +36,10 @@ class WSpinnyBase : public WGLWidget,
     ~WSpinnyBase() override;
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
+
+    virtual void setupVinylSignalQuality() = 0;
+    virtual void updateVinylSignalQualityImage(
+            const QColor& qual_color, const unsigned char* data) = 0;
 
     void setup(const QDomNode& node,
             const SkinContext& context,
@@ -55,7 +59,7 @@ class WSpinnyBase : public WGLWidget,
 
   protected slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedCacheKey,
@@ -88,6 +92,8 @@ class WSpinnyBase : public WGLWidget,
 
     void setLoadedCover(const QPixmap& pixmap);
 
+    bool shouldDrawVinylQuality() const;
+
   private:
     virtual void draw() = 0;
     virtual void coverChanged() = 0;
@@ -118,7 +124,7 @@ class WSpinnyBase : public WGLWidget,
     ControlProxy* m_pSlipEnabled;
     ControlProxy* m_pShowCoverProxy;
 
-    TrackPointer m_loadedTrack;
+    TrackPointer m_pLoadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
     CoverInfo m_lastRequestedCover;
@@ -130,7 +136,7 @@ class WSpinnyBase : public WGLWidget,
     int m_iVinylInput;
     bool m_bVinylActive;
     bool m_bSignalActive;
-    QImage m_qImage;
+    bool m_bDrawVinylSignalQuality;
     int m_iVinylScopeSize;
 
     float m_fAngle; // Degrees

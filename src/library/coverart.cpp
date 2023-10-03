@@ -106,8 +106,7 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
             << '}';
 }
 
-CoverInfo::LoadedImage CoverInfo::loadImage(
-        const SecurityTokenPointer& pTrackLocationToken) const {
+CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
     LoadedImage loadedImage(LoadedImage::Result::ErrorUnknown);
     if (type == CoverInfo::METADATA) {
         VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
@@ -115,10 +114,13 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
             return loadedImage;
         }
         loadedImage.location = trackLocation;
-        loadedImage.image = CoverArtUtils::extractEmbeddedCover(
-                mixxx::FileAccess(
-                        mixxx::FileInfo(trackLocation),
-                        pTrackLocationToken));
+        if (pTrack) {
+            DEBUG_ASSERT(trackLocation == pTrack->getLocation());
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(pTrack);
+        } else {
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(
+                    mixxx::FileAccess(mixxx::FileInfo(trackLocation)));
+        }
         if (loadedImage.image.isNull()) {
             // TODO: extractEmbeddedCover() should indicate if no image
             // is available or if loading the embedded image failed.
@@ -171,8 +173,7 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
 }
 
 bool CoverInfo::refreshImageDigest(
-        const QImage& loadedImage,
-        const SecurityTokenPointer& pTrackLocationToken) {
+        const QImage& loadedImage) {
     if (!imageDigest().isEmpty()) {
         // Assume that a non-empty digest has been calculated from
         // the corresponding image. Otherwise we would refresh all
@@ -183,7 +184,7 @@ bool CoverInfo::refreshImageDigest(
     }
     QImage image = loadedImage;
     if (image.isNull()) {
-        image = loadImage(pTrackLocationToken).image;
+        image = loadImage(TrackPointer()).image;
     }
     if (image.isNull() && type != CoverInfo::NONE) {
         kLogger.warning()

@@ -8,15 +8,8 @@
 #include <QtDebug>
 #include <QtGlobal>
 
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
 #ifdef __BROADCAST__
 #include <shoutidjc/shout.h>
-#endif
-#ifdef WIN64
-#undef WIN32
 #endif
 
 #include <FLAC/format.h>
@@ -136,6 +129,11 @@ QString VersionStore::gitVersion() {
     }
 
     return gitVersion;
+}
+
+// static
+QString VersionStore::qtVersion() {
+    return qVersion();
 }
 
 // static

@@ -26,4 +26,5 @@ class allshader::WaveformWidget : public ::WGLWidget,
     }
 
   private:
+    void wheelEvent(QWheelEvent* event) override;
 };

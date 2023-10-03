@@ -1655,11 +1655,11 @@ ReloopBeatpad.init = function(id, debug) {
     ReloopBeatpad.initobjects();
 
     // Set soft-takeover for all Sampler volumes
-    for (i = engine.getValue("[Master]", "num_samplers"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_samplers"); i >= 1; i--) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (i = engine.getValue("[Master]", "num_decks"); i >= 1; i--) {
+    for (i = engine.getValue("[App]", "num_decks"); i >= 1; i--) {
         engine.softTakeover("[Channel" + i + "]", "volume", true);
         engine.softTakeover("[Channel" + i + "]", "filterHigh", true);
         engine.softTakeover("[Channel" + i + "]", "filterMid", true);
@@ -1686,8 +1686,8 @@ ReloopBeatpad.init = function(id, debug) {
     engine.connectControl("[Channel2]", "track_samples", "ReloopBeatpad.OnTrackLoaded");
     engine.connectControl("[Channel1]", "keylock", "ReloopBeatpad.OnKeylock");
     engine.connectControl("[Channel2]", "keylock", "ReloopBeatpad.OnKeylock");
-    engine.connectControl("[Channel1]", "VuMeter", "ReloopBeatpad.OnVuMeterChange");
-    engine.connectControl("[Channel2]", "VuMeter", "ReloopBeatpad.OnVuMeterChange");
+    engine.connectControl("[Channel1]", "vu_meter", "ReloopBeatpad.OnVuMeterChange");
+    engine.connectControl("[Channel2]", "vu_meter", "ReloopBeatpad.OnVuMeterChange");
     engine.connectControl("[Channel1]", "playposition", "ReloopBeatpad.OnPlaypositionChange");
     engine.connectControl("[Channel2]", "playposition", "ReloopBeatpad.OnPlaypositionChange");
     engine.connectControl("[Channel1]", "duration", "ReloopBeatpad.OnDurationChange");
@@ -1771,8 +1771,8 @@ ReloopBeatpad.init = function(id, debug) {
     engine.trigger("[Channel2]", "sync_enabled");
     engine.trigger("[Channel1]", "keylock");
     engine.trigger("[Channel2]", "keylock");
-    engine.trigger("[Channel1]", "VuMeter");
-    engine.trigger("[Channel2]", "VuMeter");
+    engine.trigger("[Channel1]", "vu_meter");
+    engine.trigger("[Channel2]", "vu_meter");
     engine.trigger("[Channel1]", "playposition");
     engine.trigger("[Channel2]", "playposition");
     engine.trigger("[Channel1]", "bpm");

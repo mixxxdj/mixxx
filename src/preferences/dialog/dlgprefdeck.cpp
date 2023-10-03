@@ -31,20 +31,20 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
+const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
-DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        UserSettingsPointer pConfig)
+DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
           m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "TimeFormat"))),
-          m_pNumDecks(
-                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
           m_pNumSamplers(make_parented<ControlProxy>(
-                  "[Master]", "num_samplers", this)),
+                  kAppGroup, QStringLiteral("num_samplers"), this)),
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
@@ -699,11 +699,11 @@ void DlgPrefDeck::slotApply() {
     for (ControlProxy* pControl : qAsConst(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
 
-    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, static_cast<int>(m_loadWhenDeckPlaying));
+    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, m_loadWhenDeckPlaying);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
 
@@ -714,9 +714,9 @@ void DlgPrefDeck::slotApply() {
 
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-            static_cast<int>(m_bRateDownIncreasesSpeed));
+            m_bRateDownIncreasesSpeed);
 
-    int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
@@ -726,25 +726,25 @@ void DlgPrefDeck::slotApply() {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
 
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-                   ConfigValue(configSPAutoReset));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            configSPAutoReset);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
-                        static_cast<int>(m_keylockMode));
+            m_keylockMode);
     // Set key lock behavior for every group
     for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
-                        static_cast<int>(m_keyunlockMode));
+            m_keyunlockMode);
     // Set key un-lock behavior for every group
     for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), static_cast<int>(m_bRateRamping));
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
 
     RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);

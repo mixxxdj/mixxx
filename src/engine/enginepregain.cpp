@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "moc_enginepregain.cpp"
 #include "preferences/usersettings.h"
 #include "util/math.h"
 #include "util/sample.h"

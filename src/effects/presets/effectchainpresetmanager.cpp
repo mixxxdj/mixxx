@@ -9,6 +9,7 @@
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectxmlelements.h"
+#include "moc_effectchainpresetmanager.cpp"
 #include "util/filename.h"
 #include "util/xml.h"
 
@@ -33,6 +34,18 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
             new EffectChainPreset(doc.documentElement()));
     file.close();
     return pEffectChainPreset;
+}
+
+EffectChainPresetPointer createEmptyChainPreset() {
+    EffectManifestPointer pEmptyManifest(new EffectManifest());
+    pEmptyManifest->setName(kNoEffectString);
+    // Required for the QuickEffect selector in DlgPrefEQ
+    pEmptyManifest->setShortName(kNoEffectString);
+    auto pEmptyChainPreset =
+            EffectChainPresetPointer(new EffectChainPreset(pEmptyManifest));
+    pEmptyChainPreset->setReadOnly();
+
+    return pEmptyChainPreset;
 }
 
 } // anonymous namespace
@@ -592,6 +605,11 @@ void EffectChainPresetManager::resetToDefaults() {
     generateDefaultQuickEffectPresets();
     prependRemainingPresetsToLists();
 
+    // Re-add the empty chain preset
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
+    m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
+
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 }
@@ -672,7 +690,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     importUserPresets();
 
     // Reload order of custom chain presets
-    QStringList chainPresetsSorted;
     QDomElement chainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kChainPresetList);
     QDomNodeList presetNameList =
@@ -702,7 +719,6 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     // Reload order of QuickEffect chain presets
-    QStringList quickEffectChainPresetsSorted;
     QDomElement quickEffectChainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectList);
     QDomNodeList quickEffectPresetNameList =
@@ -733,14 +749,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // It will not be saved to effects/chains nor written to effects.xml
     // except as identifier for QuickEffect chains.
     // It will not be visible in the effects preferences.
-    EffectManifestPointer pEmptyChainManifest(new EffectManifest());
-    pEmptyChainManifest->setName(kNoEffectString);
-    // Required for the QuickEffect selector in DlgPrefEQ
-    pEmptyChainManifest->setShortName(kNoEffectString);
-    auto pEmptyChainPreset =
-            EffectChainPresetPointer(new EffectChainPreset(pEmptyChainManifest));
-    pEmptyChainPreset->setReadOnly();
-
+    // Note: we also need to take care of this preset in resetToDefaults() and
+    // setQuickEffectPresetOrder(), both called from DlgPrefEffects
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
 

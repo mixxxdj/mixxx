@@ -5,6 +5,7 @@
 
 #include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveformwidgetcategory.h"
 #include "waveformwidgettype.h"
 #include "widget/wglwidget.h"
 

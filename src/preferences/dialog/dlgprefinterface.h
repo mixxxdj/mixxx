@@ -71,13 +71,11 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     mixxx::skin::SkinPointer m_pSkin;
     QString m_skinNameOnUpdate;
     QString m_colorScheme;
+    QString m_colorSchemeOnUpdate;
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactor;
     double m_minScaleFactor;
     double m_dDevicePixelRatio;
-    bool m_bStartWithFullScreen;
     mixxx::ScreenSaverPreference m_screensaverMode;
-
-    bool m_bRebootMixxxView;
 };

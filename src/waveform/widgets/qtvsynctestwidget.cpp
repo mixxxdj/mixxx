@@ -16,12 +16,7 @@
 
 QtVSyncTestWidget::QtVSyncTestWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
-
     addRenderer<QtVSyncTestRenderer>();
-
     m_initSuccess = init();
 }
 

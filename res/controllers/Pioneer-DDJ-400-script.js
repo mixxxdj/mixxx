@@ -159,8 +159,8 @@ PioneerDDJ400.toggleLight = function(midiIn, active) {
 PioneerDDJ400.init = function() {
     engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", PioneerDDJ400.vuMeterUpdate);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", PioneerDDJ400.vuMeterUpdate);
 
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck1.vuMeter, false);
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck2.vuMeter, false);

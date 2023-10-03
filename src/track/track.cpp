@@ -295,6 +295,7 @@ bool Track::replaceRecord(
     const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
+    const auto newRating = newRecord.getRating();
 
     auto locked = lockMutex(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
@@ -305,6 +306,7 @@ bool Track::replaceRecord(
     const auto oldKey = m_record.getGlobalKey();
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
+    const auto oldRating = m_record.getRating();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
@@ -339,6 +341,9 @@ bool Track::replaceRecord(
     }
     if (oldColor != newColor) {
         emit colorUpdated(newColor);
+    }
+    if (oldRating != newRating) {
+        emit ratingUpdated(newRating);
     }
 
     emitChangedSignalsForAllMetadata();
@@ -749,6 +754,16 @@ void Track::updatePlayCounter(bool bPlayed) {
     auto locked = lockMutex(&m_qMutex);
     PlayCounter playCounter(m_record.getPlayCounter());
     playCounter.updateLastPlayedNowAndTimesPlayed(bPlayed);
+    if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
+        markDirtyAndUnlock(&locked);
+        emit timesPlayedChanged();
+    }
+}
+
+void Track::updatePlayedStatusKeepPlayCount(bool bPlayed) {
+    auto locked = lockMutex(&m_qMutex);
+    PlayCounter playCounter(m_record.getPlayCounter());
+    playCounter.setPlayedFlag(bPlayed);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&locked);
         emit timesPlayedChanged();
@@ -1364,6 +1379,7 @@ void Track::setRating (int rating) {
     auto locked = lockMutex(&m_qMutex);
     if (compareAndSet(m_record.ptrRating(), rating)) {
         markDirtyAndUnlock(&locked);
+        emit ratingUpdated(rating);
     }
 }
 

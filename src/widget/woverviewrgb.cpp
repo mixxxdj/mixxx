@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "moc_woverviewrgb.cpp"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
@@ -16,7 +17,7 @@ WOverviewRGB::WOverviewRGB(
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewRGB::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewRGB::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 

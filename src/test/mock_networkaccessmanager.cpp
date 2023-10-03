@@ -20,6 +20,9 @@
 #include <QUrlQuery>
 #include <QtDebug>
 #include <algorithm>
+
+#include "moc_mock_networkaccessmanager.cpp"
+
 using std::min;
 
 using ::testing::MakeMatcher;

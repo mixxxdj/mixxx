@@ -14,7 +14,9 @@ class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return true; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::DeveloperOnly;
+    }
 
   protected:
     virtual void castToQWidget();

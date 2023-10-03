@@ -171,7 +171,7 @@ void WVuMeterBase::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    ScopedTimer t("WVuMeterBase::render");
+    ScopedTimer t(u"WVuMeterBase::render");
 
     updateState(vSyncThread->sinceLastSwap());
 

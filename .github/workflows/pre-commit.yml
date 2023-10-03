@@ -18,7 +18,7 @@ jobs:
     container: holzhaus/mixxx-ci:20220930
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Unfortunately we need the whole history and can't use a shallow clone
           # because the Appstream Metadata hook parses the history to find the
@@ -67,14 +67,14 @@ jobs:
 
       - name: "Upload patch artifact"
         if: failure() && env.UPLOAD_PATCH_FILE != null
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: ${{ env.UPLOAD_PATCH_FILE }}
           path: ${{ env.UPLOAD_PATCH_FILE }}
 
       - name: "Upload pre-commit.log"
         if: failure() && env.UPLOAD_PATCH_FILE == null
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3.1.3
         with:
           name: pre-commit.log
           path: /github/home/.cache/pre-commit/pre-commit.log

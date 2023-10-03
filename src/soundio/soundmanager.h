@@ -16,7 +16,7 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
-class EngineMaster;
+class EngineMixer;
 class AudioOutput;
 class AudioInput;
 class AudioSource;
@@ -40,7 +40,7 @@ class SoundDeviceNotFound;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, EngineMixer* pEngineMixer);
     ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -68,10 +68,10 @@ class SoundManager : public QObject {
     QString getLastErrorMessage(SoundDeviceStatus status) const;
 
     // Returns a list of samplerates we will attempt to support for a given API.
-    QList<unsigned int> getSampleRates(const QString& api) const;
+    QList<mixxx::audio::SampleRate> getSampleRates(const QString& api) const;
 
     // Convenience overload for SoundManager::getSampleRates(QString)
-    QList<unsigned int> getSampleRates() const;
+    QList<mixxx::audio::SampleRate> getSampleRates() const;
 
     // Get a list of host APIs supported by PortAudio.
     QList<QString> getHostAPIList() const;
@@ -130,12 +130,12 @@ class SoundManager : public QObject {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
-    EngineMaster *m_pMaster;
+    EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
     QList<SoundDevicePointer> m_devices;
-    QList<unsigned int> m_samplerates;
+    QList<mixxx::audio::SampleRate> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;
 
     SoundManagerConfig m_config;
@@ -149,6 +149,6 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    PollingControlProxy m_masterAudioLatencyOverloadCount;
-    PollingControlProxy m_masterAudioLatencyOverload;
+    PollingControlProxy m_audioLatencyOverloadCount;
+    PollingControlProxy m_audioLatencyOverload;
 };

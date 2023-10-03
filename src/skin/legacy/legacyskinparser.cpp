@@ -15,6 +15,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
+#include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
@@ -24,6 +25,7 @@
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
@@ -326,7 +328,7 @@ Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
 }
 
 QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) {
-    ScopedTimer timer("SkinLoader::parseSkin");
+    ScopedTimer timer(u"SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
@@ -443,8 +445,6 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
     setupSize(skinDocument, pLaunchImage);
     return pLaunchImage;
 }
-
-
 
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
@@ -1169,14 +1169,18 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
 
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pStarRating, &WStarRating::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::playerEmpty, pStarRating, [pStarRating]() {
-        pStarRating->slotTrackLoaded(TrackPointer());
-    });
+    connect(pPlayer,
+            &BaseTrackPlayer::trackRatingChanged,
+            pStarRating,
+            &WStarRating::slotSetRating);
+    connect(pStarRating,
+            &WStarRating::ratingChanged,
+            pPlayer,
+            &BaseTrackPlayer::slotSetTrackRating);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
-        pStarRating->slotTrackLoaded(pTrack);
+        pStarRating->slotSetRating(pTrack->getRating());
     }
 
     return pStarRating;
@@ -1303,26 +1307,20 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WSpinnyBase* pSpinny;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
+            !CmdlineArgs::Instance().getUseLegacySpinny()) {
+        pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    } else
 #endif
-        {
-            pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        }
+    {
+        pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pSpinny->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
-#endif
-        {
-            pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        }
     }
     commonWidgetSetup(node, pSpinny);
 
@@ -1360,7 +1358,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     return nullptr;
 #else
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
+    if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
                     !pWaveformWidgetFactory->isOpenGlesAvailable())) {
         // Legacy WVuMeter
@@ -1391,26 +1389,19 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WVuMeterBase* pVuMeterWidget;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL();
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+        pVuMeterWidget = new WVuMeterGLSL(pParent);
+    } else
 #endif
-        {
-            pVuMeterWidget = new WVuMeter();
-        }
+    {
+        pVuMeterWidget = new WVuMeter(pParent);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pVuMeterWidget->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL(m_pParent);
-        } else
-#endif
-        {
-            pVuMeterWidget = new WVuMeter(m_pParent);
-        }
     }
     commonWidgetSetup(node, pVuMeterWidget);
 
@@ -1536,6 +1527,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pLibraryWidget->setup(node, *m_pContext);
+
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,

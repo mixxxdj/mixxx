@@ -9,14 +9,11 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererFiltered::WaveformRendererFiltered(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
-}
-
-WaveformRendererFiltered::~WaveformRendererFiltered() {
 }
 
 void WaveformRendererFiltered::onSetup(const QDomNode& node) {
@@ -199,3 +196,5 @@ void WaveformRendererFiltered::paintGL() {
     m_shader.disableAttributeArray(positionLocation);
     m_shader.release();
 }
+
+} // namespace allshader

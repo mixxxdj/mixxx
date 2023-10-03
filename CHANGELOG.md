@@ -526,8 +526,7 @@
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
   [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
   [#11556](https://github.com/mixxxdj/mixxx/issues/11556)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
-  [#11460](https://github.com/mixxxdj/mixxx/issues/11450)
+  [#11450](https://github.com/mixxxdj/mixxx/issues/11450)
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
 
 ### Effects
@@ -1029,9 +1028,67 @@
   [#11434](https://github.com/mixxxdj/mixxx/pull/11434)
   [#11301](https://github.com/mixxxdj/mixxx/pull/11301)
 
-## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (unreleased)
+## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)
 
-* TODO
+* Fixed possible crash when closing Mixxx while browsing the file system
+  [#11593](https://github.com/mixxxdj/mixxx/pull/11593)
+  [#11589](https://github.com/mixxxdj/mixxx/issues/11589)
+* No longer stop a track with an active loop at the very end
+  [#11558](https://github.com/mixxxdj/mixxx/pull/11558)
+  [#11557](https://github.com/mixxxdj/mixxx/issues/11557)
+* Fixed resyncing when moving an active loop
+  [#11152](https://github.com/mixxxdj/mixxx/pull/11152)
+  [#11381](https://github.com/mixxxdj/mixxx/issues/11381)
+* Allow true gapless playback when repeating full tracks
+  [#11532](https://github.com/mixxxdj/mixxx/pull/11532)
+  [#9842](https://github.com/mixxxdj/mixxx/issues/9842)
+  [#11704](https://github.com/mixxxdj/mixxx/pull/11704)
+* Rhythmbox: Fixed bulk track imports from playlists
+  [#11661](https://github.com/mixxxdj/mixxx/pull/11661)
+* Console log spam reduced
+  [#11690](https://github.com/mixxxdj/mixxx/pull/11690)
+  [#11691](https://github.com/mixxxdj/mixxx/issues/11691)
+* Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+  [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
+  [#11659](https://github.com/mixxxdj/mixxx/pull/11659)
+* Shade: Fixed VU-Meter and other minor issues
+  [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
+* Fixed a rare crash when disabling quantize form a controller
+  [#11744](https://github.com/mixxxdj/mixxx/pull/11744)
+  [#11709](https://github.com/mixxxdj/mixxx/issues/11709)
+* Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+  [#11756](https://github.com/mixxxdj/mixxx/pull/11756)
+* Broadcast: Improved error message in case of timeout
+  [#11775](https://github.com/mixxxdj/mixxx/pull/11775)
+* Handle setting `loop_in` and `loop_out` to the same position
+  [#11771](https://github.com/mixxxdj/mixxx/pull/11771)
+  [#10600](https://github.com/mixxxdj/mixxx/issues/10600)
+* Fix build issues with Protobuf v23.4 and with clang 32
+  [#11751](https://github.com/mixxxdj/mixxx/pull/11751)
+  [#11765](https://github.com/mixxxdj/mixxx/pull/11765)
+  [#11762](https://github.com/mixxxdj/mixxx/issues/11762)
+* Disable GL VU-Meters on Windows by default. They can be re-enabled via the command line option `--enableVuMeterGL`.
+  [#11787](https://github.com/mixxxdj/mixxx/pull/11787)
+  [#11785](https://github.com/mixxxdj/mixxx/issues/11785)
+  [#11789](https://github.com/mixxxdj/mixxx/issues/11789)
+* Library preferences: Uncheck Serato metadata export when file metadata export is unchecked
+  [#11782](https://github.com/mixxxdj/mixxx/pull/11782)
+  [#11226](https://github.com/mixxxdj/mixxx/issues/11226)
+* Denon MC6000MK2: Delete mapping for main gain
+  [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
+* Improve output in case of some failed file system operations
+  [#11783](https://github.com/mixxxdj/mixxx/pull/11783)
+* Fix overlapping buffers when decoding M4A files using FFmpeg before 4.4
+  [#11760](https://github.com/mixxxdj/mixxx/pull/11760)
+  [#11545](https://github.com/mixxxdj/mixxx/issues/11545)
+* Don't reject key values from file metadata with non-minor/-major scales.
+  [#11001](https://github.com/mixxxdj/mixxx/pull/11001)
+  [#10995](https://github.com/mixxxdj/mixxx/issues/10995)
+* Allow playing tracks with durations of more than 6 hours
+  [#11511](https://github.com/mixxxdj/mixxx/pull/11511)
+  [#11504](https://github.com/mixxxdj/mixxx/issues/11504)
+* Update latency compensation for Soundtouch version 2.1.1 to 2.3
+  [#11154](https://github.com/mixxxdj/mixxx/pull/11154)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
@@ -1411,6 +1468,7 @@
 * Add controller mapping for Native Instrument Traktor Kontrol S3 [#3031](https://github.com/mixxxdj/mixxx/pull/3031)
 * Add controller mapping for Behringer BCR2000 [#3342](https://github.com/mixxxdj/mixxx/pull/3342) [#3943](https://github.com/mixxxdj/mixxx/pull/3943)
 * Add controller mapping for Behringer DDM4000 [#3542](https://github.com/mixxxdj/mixxx/pull/3542)
+* Add controller mapping for Native Instruments Traktor Kontrol S4MK3 [#11284](https://github.com/mixxxdj/mixxx/pull/11284)
 * Update controller mapping for Allen & Heath Xone K2 to add intro/outro cues [#2236](https://github.com/mixxxdj/mixxx/pull/2236)
 * Update controller mapping for Hercules P32 for more accurate headmix control [#3537](https://github.com/mixxxdj/mixxx/pull/3537)
 * Update controller mapping for Native Instruments Traktor Kontrol S4MK2 to add auto-slip mode and pitch fader range [#3331](https://github.com/mixxxdj/mixxx/pull/3331)

@@ -192,8 +192,8 @@ bool ControllerScriptEngineLegacy::handleIncomingData(const QByteArray& data) {
             static_cast<uint>(data.size()),
     };
 
-    for (const QJSValue& function : std::as_const(m_incomingDataFunctions)) {
-        ControllerScriptEngineBase::executeFunction(function, args);
+    for (auto&& function : m_incomingDataFunctions) {
+        ControllerScriptEngineBase::executeFunction(&function, args);
     }
 
     return true;

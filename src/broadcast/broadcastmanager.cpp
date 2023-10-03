@@ -1,15 +1,9 @@
-// shout.h checks for WIN32 to see if we are on Windows.
-#ifdef WIN64
-#define WIN32
-#endif
-#include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
-
 #include "broadcast/broadcastmanager.h"
+
+#include <shoutidjc/shout.h>
+
 #include "broadcast/defs_broadcast.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "moc_broadcastmanager.cpp"

@@ -62,6 +62,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
+    Q_UNUSED(event);
     if (m_waveformWidget) {
         m_waveformWidget->resize(width(), height());
     }
@@ -187,7 +188,7 @@ void WWaveformViewer::wheelEvent(QWheelEvent* event) {
     if (m_waveformWidget) {
         if (event->angleDelta().y() > 0) {
             onZoomChange(m_waveformWidget->getZoomFactor() / 1.05);
-        } else {
+        } else if (event->angleDelta().y() < 0) {
             onZoomChange(m_waveformWidget->getZoomFactor() * 1.05);
         }
     }

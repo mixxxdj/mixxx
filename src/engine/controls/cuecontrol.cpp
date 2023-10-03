@@ -636,7 +636,7 @@ void CueControl::loadCuesFromTrack() {
             }
 
             int hotcue = pCue->getHotCue();
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
 
             // Cue's hotcue doesn't have a hotcue control.
             if (pControl == nullptr) {
@@ -2250,10 +2250,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
-    int configValue =
-            getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                    static_cast<int>(SeekOnLoadMode::IntroStart));
-    return static_cast<SeekOnLoadMode>(configValue);
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), SeekOnLoadMode::IntroStart);
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {
@@ -2450,8 +2447,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     m_pHotcueStatus->setReadOnly();
 
     // Add an alias for the legacy hotcue_X_enabled CO
-    ControlDoublePrivate::insertAlias(keyForControl(QStringLiteral("enabled")),
-            keyForControl(QStringLiteral("status")));
+    m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();

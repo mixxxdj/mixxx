@@ -1681,12 +1681,11 @@ auto_adjust_dual(Spec *sp, double rate, double f0, double f1) {
    double r0, r1, err0, err1;
    double perr;
    int cnt;
-   int cnt_design= 0;
 
 #define DESIGN(mm,ww) { if (rv) {free(rv);rv= 0;} \
    rv= design(rate, mm-ww, mm+ww, sp->order, sp->n_arg, sp->argarr); \
    r0= fid_response(rv, f0); r1= fid_response(rv, f1); \
-   err0= fabs(M301DB-r0); err1= fabs(M301DB-r1); cnt_design++; }
+   err0= fabs(M301DB-r0); err1= fabs(M301DB-r1); }
 
 #define INC_WID ((r0+r1 < 1.0) == bpass)
 #define INC_MID ((r0 > r1) == bpass)

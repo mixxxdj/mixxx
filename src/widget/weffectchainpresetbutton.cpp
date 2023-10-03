@@ -4,6 +4,8 @@
 #include <QWidgetAction>
 
 #include "effects/presets/effectpresetmanager.h"
+#include "moc_weffectchainpresetbutton.cpp"
+#include "util/parented_ptr.h"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManager* pEffectsManager)
@@ -42,6 +44,7 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
                 this,
                 &WEffectChainPresetButton::populateMenu);
     }
+    m_pMenu->setToolTipsVisible(true);
     populateMenu();
 }
 
@@ -49,7 +52,9 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
+    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
     bool presetIsReadOnly = true;
+    QStringList effectNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
         QString title = pChainPreset->name();
         if (title == m_pChain->presetName()) {
@@ -57,9 +62,27 @@ void WEffectChainPresetButton::populateMenu() {
                     QChar(' ') + title;
             presetIsReadOnly = pChainPreset->isReadOnly();
         }
-        m_pMenu->addAction(title, this, [this, pChainPreset]() {
-            m_pChain->loadChainPreset(pChainPreset);
-        });
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
+            if (!pEffectPreset->isEmpty()) {
+                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+            }
+        }
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
+        }
+        effectNames.clear();
+        parented_ptr<QAction> pAction = make_parented<QAction>(title, this);
+        connect(pAction,
+                &QAction::triggered,
+                this,
+                [this, pChainPreset]() {
+                    m_pChain->loadChainPreset(pChainPreset);
+                });
+        pAction->setToolTip(tooltip);
+        m_pMenu->addAction(pAction);
     }
     m_pMenu->addSeparator();
     // This prevents showing the Update button for the empty '---' preset, in case

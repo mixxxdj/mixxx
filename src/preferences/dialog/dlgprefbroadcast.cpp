@@ -6,15 +6,8 @@
 #include <QMessageBox>
 #include <QHeaderView>
 
-// shout.h checks for WIN32 to see if we are on Windows
-#ifdef WIN64
-#define WIN32
-#endif
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
-#ifdef WIN64
-#undef WIN32
-#endif
 
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
@@ -158,6 +151,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              &QCheckBox::stateChanged,
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
+
+     setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {

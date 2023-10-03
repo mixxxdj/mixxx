@@ -9,7 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 namespace {
 inline float math_pow2(float x) {
@@ -20,9 +20,6 @@ inline float math_pow2(float x) {
 WaveformRendererRGB::WaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
-}
-
-WaveformRendererRGB::~WaveformRendererRGB() {
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
@@ -228,3 +225,5 @@ void WaveformRendererRGB::paintGL() {
     m_shader.disableAttributeArray(colorLocation);
     m_shader.release();
 }
+
+} // namespace allshader

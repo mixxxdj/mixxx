@@ -4,8 +4,10 @@
 #include <QString>
 #include <QVector>
 
+#include "audio/types.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
+#include "util/types.h"
 
 class KeyFactory {
   public:
@@ -33,10 +35,11 @@ class KeyFactory {
     static QString getPreferredVersion();
 
     static QString getPreferredSubVersion(
-        const QHash<QString, QString>& extraVersionInfo);
+            const QHash<QString, QString>& extraVersionInfo);
 
     static Keys makePreferredKeys(
-        const KeyChangeList& key_changes,
-        const QHash<QString, QString>& extraVersionInfo,
-        const int iSampleRate, const int iTotalSamples);
+            const KeyChangeList& key_changes,
+            const QHash<QString, QString>& extraVersionInfo,
+            mixxx::audio::SampleRate sampleRate,
+            SINT totalFrames);
 };

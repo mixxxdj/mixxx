@@ -8,7 +8,7 @@
 class WVuMeterLegacy : public WWidget {
     Q_OBJECT
   public:
-    explicit WVuMeterLegacy(QWidget* parent = nullptr);
+    explicit WVuMeterLegacy(QWidget* pParent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
@@ -30,6 +30,7 @@ class WVuMeterLegacy : public WWidget {
 
   private:
     void paintEvent(QPaintEvent* /*unused*/) override;
+    void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

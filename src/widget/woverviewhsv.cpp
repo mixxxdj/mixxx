@@ -3,6 +3,7 @@
 #include <QColor>
 #include <QPainter>
 
+#include "moc_woverviewhsv.cpp"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/timer.h"
@@ -17,7 +18,7 @@ WOverviewHSV::WOverviewHSV(
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewHSV::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewHSV::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 

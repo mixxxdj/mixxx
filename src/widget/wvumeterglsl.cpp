@@ -1,11 +1,12 @@
 #include "widget/wvumeterglsl.h"
 
+#include "moc_wvumeterglsl.cpp"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/texture.h"
 
-WVuMeterGLSL::WVuMeterGLSL(QWidget* parent)
-        : WVuMeterBase(parent) {
+WVuMeterGLSL::WVuMeterGLSL(QWidget* pParent)
+        : WVuMeterBase(pParent) {
 }
 
 WVuMeterGLSL::~WVuMeterGLSL() {
@@ -21,6 +22,8 @@ void WVuMeterGLSL::draw() {
 }
 
 void WVuMeterGLSL::initializeGL() {
+    initializeOpenGLFunctions();
+
     m_pTextureBack.reset(createTexture(m_pPixmapBack));
     m_pTextureVu.reset(createTexture(m_pPixmapVu));
     m_textureShader.init();

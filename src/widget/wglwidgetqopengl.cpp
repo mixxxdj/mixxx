@@ -4,8 +4,11 @@
 #include "widget/tooltipqopengl.h"
 #include "widget/wglwidget.h"
 
-WGLWidget::WGLWidget(QWidget* parent)
-        : QWidget(parent) {
+WGLWidget::WGLWidget(QWidget* pParent)
+        : QWidget(pParent),
+          m_pOpenGLWindow(nullptr),
+          m_pContainerWidget(nullptr),
+          m_pTrackDropTarget(nullptr) {
     // When the widget is resized or moved, the QOpenGLWindow visibly resizes
     // or moves before the widgets do. This can be solved by calling
     //   setAttribute(Qt::WA_PaintOnScreen);
@@ -14,7 +17,7 @@ WGLWidget::WGLWidget(QWidget* parent)
 }
 
 WGLWidget::~WGLWidget() {
-    ToolTipQOpenGL::singleton().stop(this);
+    ToolTipQOpenGL::singleton().stop();
     if (m_pOpenGLWindow) {
         m_pOpenGLWindow->widgetDestroyed();
     }
@@ -53,10 +56,6 @@ void WGLWidget::resizeEvent(QResizeEvent* event) {
 
 bool WGLWidget::isContextValid() const {
     return m_pOpenGLWindow && m_pOpenGLWindow->context() && m_pOpenGLWindow->context()->isValid();
-}
-
-bool WGLWidget::isContextSharing() const {
-    return true;
 }
 
 void WGLWidget::makeCurrentIfNeeded() {

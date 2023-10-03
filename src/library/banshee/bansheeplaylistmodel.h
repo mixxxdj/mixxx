@@ -16,7 +16,7 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection);
     ~BansheePlaylistModel() final;
 
-    void setTableModel(int playlistId);
+    void selectPlaylist(int playlistId);
 
     TrackPointer getTrack(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;

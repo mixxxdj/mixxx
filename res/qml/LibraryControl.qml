@@ -97,7 +97,7 @@ Item {
     Mixxx.ControlProxy {
         id: numDecksControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_decks"
     }
 
@@ -118,7 +118,7 @@ Item {
     Mixxx.ControlProxy {
         id: numPreviewDecksControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_preview_decks"
     }
 
@@ -139,7 +139,7 @@ Item {
     Mixxx.ControlProxy {
         id: numSamplersControl
 
-        group: "[Master]"
+        group: "[App]"
         key: "num_samplers"
     }
 

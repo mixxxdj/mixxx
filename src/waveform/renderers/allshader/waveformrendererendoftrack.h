@@ -21,7 +21,6 @@ class allshader::WaveformRendererEndOfTrack final : public allshader::WaveformRe
   public:
     explicit WaveformRendererEndOfTrack(
             WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererEndOfTrack() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 

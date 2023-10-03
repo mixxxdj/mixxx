@@ -3,6 +3,7 @@
 #include <QQmlEngine>
 
 #include "mixer/playermanager.h"
+#include "moc_qmlplayermanagerproxy.cpp"
 #include "qml/qmlplayerproxy.h"
 
 namespace mixxx {

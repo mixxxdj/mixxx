@@ -10,18 +10,20 @@ class WGLWidget;
 // singleton mimics the standard tooltip behaviour for them.
 class ToolTipQOpenGL : public QObject {
     Q_OBJECT
-
-    bool m_active{true};
-    QTimer m_timer;
-    QPoint m_pos{};
-    WGLWidget* m_widget{};
-    ToolTipQOpenGL();
-
   public:
     static ToolTipQOpenGL& singleton();
     void setActive(bool active);
-    void start(WGLWidget* widget, QPoint pos);
-    void stop(WGLWidget* widget);
+    void start(WGLWidget* pWidget, QPoint pos);
+    void stop();
+
   private slots:
     void onTimeout();
+
+  private:
+    ToolTipQOpenGL();
+
+    bool m_active;
+    QTimer m_timer;
+    QPoint m_pos;
+    WGLWidget* m_pWidget;
 };

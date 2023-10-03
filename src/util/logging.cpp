@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include <QByteArray>
+#include <QDateTime>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
@@ -121,6 +122,8 @@ inline QString formatLogFileMessage(
         QtMsgType type,
         const QString& message,
         const QString& threadName) {
+    QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
+
     QString levelName;
     switch (type) {
     case QtDebugMsg:
@@ -140,7 +143,7 @@ inline QString formatLogFileMessage(
         break;
     }
 
-    return levelName + QStringLiteral(" [") + threadName + QStringLiteral("] ") + message;
+    return QStringLiteral("%1 %2 [%3] %4").arg(timestamp, levelName, threadName, message);
 }
 
 /// Actually write a log message to a file.

@@ -11,8 +11,8 @@ EngineEffectChain::EngineEffectChain(const QString& group,
           m_enableState(EffectEnableState::Enabled),
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
-          m_buffer1(MAX_BUFFER_LEN),
-          m_buffer2(MAX_BUFFER_LEN) {
+          m_buffer1(kMaxEngineSamples),
+          m_buffer2(kMaxEngineSamples) {
     // Try to prevent memory allocation.
     m_effects.reserve(256);
 
@@ -176,9 +176,11 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         CSAMPLE* pIn,
         CSAMPLE* pOut,
         const unsigned int numSamples,
-        const unsigned int sampleRate,
+        const mixxx::audio::SampleRate sampleRate,
         const GroupFeatureState& groupFeatures,
         bool fadeout) {
+    DEBUG_ASSERT(numSamples <= kMaxEngineSamples);
+
     // Compute the effective enable state from the channel input routing switch and
     // the chain's enable state. When either of these are turned on/off, send the
     // effects the intermediate enabling/disabling signal.

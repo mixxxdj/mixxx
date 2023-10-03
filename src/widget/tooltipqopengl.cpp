@@ -1,20 +1,23 @@
 #include "widget/tooltipqopengl.h"
 
-#include <widget/wglwidget.h>
-
 #include <QStyle>
 #include <QTimer>
 #include <QToolTip>
 #include <memory>
 
-ToolTipQOpenGL::ToolTipQOpenGL() {
+#include "moc_tooltipqopengl.cpp"
+#include "widget/wglwidget.h"
+
+ToolTipQOpenGL::ToolTipQOpenGL()
+        : m_active(true),
+          m_pWidget(nullptr) {
     m_timer.setSingleShot(true);
     connect(&m_timer, &QTimer::timeout, this, &ToolTipQOpenGL::onTimeout);
 }
 
 void ToolTipQOpenGL::onTimeout() {
-    if (m_widget) {
-        QToolTip::showText(m_pos, m_widget->toolTip(), m_widget);
+    if (m_pWidget) {
+        QToolTip::showText(m_pos, m_pWidget->toolTip(), m_pWidget);
     }
 }
 
@@ -30,14 +33,15 @@ void ToolTipQOpenGL::setActive(bool active) {
     }
 }
 
-void ToolTipQOpenGL::start(WGLWidget* widget, QPoint pos) {
+void ToolTipQOpenGL::start(WGLWidget* pWidget, QPoint pos) {
     if (m_active) {
-        m_widget = widget;
+        m_pWidget = pWidget;
         m_pos = pos;
-        m_timer.start(widget->style()->styleHint(QStyle::SH_ToolTip_WakeUpDelay));
+        m_timer.start(pWidget->style()->styleHint(QStyle::SH_ToolTip_WakeUpDelay));
     }
 }
 
-void ToolTipQOpenGL::stop(WGLWidget* widget) {
+void ToolTipQOpenGL::stop() {
     m_timer.stop();
+    m_pWidget = nullptr;
 }

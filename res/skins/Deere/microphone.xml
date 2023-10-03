@@ -48,7 +48,7 @@
                   <Template src="skin:vumeter.xml">
                     <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
                     <SetVariable name="Size">5f,42f</SetVariable>
-                    <SetVariable name="control">VuMeter</SetVariable>
+                    <SetVariable name="control">vu_meter</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -144,7 +144,7 @@
       </WidgetGroup><!-- MicAuxContainer -->
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

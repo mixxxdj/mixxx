@@ -38,9 +38,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     makeCurrentIfNeeded();
 
@@ -96,16 +93,4 @@ void GLSLWaveformWidget::resize(int width, int height) {
     makeCurrentIfNeeded();
     WaveformWidgetAbstract::resize(width, height);
     doneCurrent();
-}
-
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (event->button() == Qt::RightButton) {
-        makeCurrentIfNeeded();
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        if (m_signalRenderer) {
-            m_signalRenderer->debugClick();
-        }
-#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        doneCurrent();
-    }
 }

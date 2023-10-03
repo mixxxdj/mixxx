@@ -40,7 +40,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
     const mixxx::EngineParameters engineParameters(
             kInitalSampleRate,
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+            kMaxEngineFrames);
     m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, engineParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
@@ -56,12 +56,13 @@ EngineEffect::~EngineEffect() {
 void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
         // already initialized for this input channel
+        return;
     }
 
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.
     const mixxx::EngineParameters engineParameters(
             kInitalSampleRate,
-            MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
+            kMaxEngineFrames);
     m_pProcessor->initializeInputChannel(inputChannel, engineParameters);
 }
 
@@ -127,7 +128,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const unsigned int numSamples,
-        const unsigned int sampleRate,
+        const mixxx::audio::SampleRate sampleRate,
         const EffectEnableState chainEnableState,
         const GroupFeatureState& groupFeatures) {
     // Compute the effective enable state from the combination of the effect's state
@@ -178,7 +179,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters engineParameters(
-                mixxx::audio::SampleRate(sampleRate),
+                sampleRate,
                 numSamples / mixxx::kEngineChannelCount);
 
         m_pProcessor->process(inputHandle,

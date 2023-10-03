@@ -21,13 +21,13 @@ IF NOT DEFINED INSTALL_ROOT (
 )
 
 IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.4-rel
-    SET BUILDENV_NAME=mixxx-deps-rel-2.4-x64-windows-d5a93e2
-    SET BUILDENV_SHA256=34fc0f6c0771b9c2b1a6b79b05dd166df71704ee0b2af3789f613bebeb305099
+    SET BUILDENV_BRANCH=2.5-rel
+    SET BUILDENV_NAME=mixxx-deps-rel-2.5-x64-windows-0d9cf82
+    SET BUILDENV_SHA256=d251b9dd6368d594b14c4cddb63256b4616b7b82fd9f0f93a2066b870e72f5e8
 ) ELSE (
-    SET BUILDENV_BRANCH=2.4
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-55d482c
-    SET BUILDENV_SHA256=a662a483374881a5d7cf9bbde210150d14a3e17e50c974473bfd2cfb8945a67f
+    SET BUILDENV_BRANCH=2.5
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-5f1e4ab
+    SET BUILDENV_SHA256=a3f24b72d2f61b0b0159e5dca0cd9d420d3ecc8cec1970b95da2351e1bc56e31
 )
 
 IF "%~1"=="" (
@@ -186,6 +186,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>"%CMakeSettings%" echo   ]
     >>"%CMakeSettings%" echo }
+
+    echo ^You can now open CMakeSetting.json from Visual Studio
+    echo ^or configure cmake from the command line in an EMPTY build directory via:
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 
@@ -221,6 +226,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"

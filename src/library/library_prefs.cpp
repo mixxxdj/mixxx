@@ -58,6 +58,11 @@ const ConfigKey mixxx::library::prefs::kEnableSearchHistoryShortcutsConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("EnableSearchHistoryShortcuts")};
 
+const ConfigKey mixxx::library::prefs::kBpmColumnPrecisionConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("BpmColumnPrecision")};
+
 // The "Export" suffix in the key is kept for backward compatibility
 const ConfigKey mixxx::library::prefs::kSyncTrackMetadataConfigKey =
         ConfigKey{

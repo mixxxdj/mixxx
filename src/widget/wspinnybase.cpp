@@ -1,3 +1,5 @@
+#include "widget/wspinnybase.h"
+
 #include <QApplication>
 #include <QMimeData>
 #include <QStylePainter>
@@ -9,6 +11,7 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_wspinnybase.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
@@ -16,18 +19,17 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/visualplayposition.h"
 #include "waveform/vsyncthread.h"
-#include "widget/moc_wspinny.cpp"
 #include "widget/wspinny.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
 WSpinnyBase::WSpinnyBase(
-        QWidget* parent,
+        QWidget* pParent,
         const QString& group,
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : WGLWidget(parent),
+        : WGLWidget(pParent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -41,11 +43,13 @@ WSpinnyBase::WSpinnyBase(
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
+          m_pShowCoverProxy(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
           m_bVinylActive(false),
           m_bSignalActive(true),
+          m_bDrawVinylSignalQuality(false),
           m_iVinylScopeSize(0),
           m_fAngle(0.0f),
           m_dAngleCurrentPlaypos(-1),
@@ -70,9 +74,6 @@ WSpinnyBase::WSpinnyBase(
 #endif // __VINYLCONTROL__
     // Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinnyBase(): Created WGLWidget, Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -104,6 +105,14 @@ WSpinnyBase::~WSpinnyBase() {
 #endif
 }
 
+bool WSpinnyBase::shouldDrawVinylQuality() const {
+#ifdef __VINYLCONTROL__
+    return m_bVinylActive && m_bSignalActive && m_bDrawVinylSignalQuality;
+#else
+    return false;
+#endif
+}
+
 void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
 #ifdef __VINYLCONTROL__
     if (!m_bVinylActive || !m_bSignalActive) {
@@ -113,7 +122,6 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
     if (report.processor != m_iVinylInput) {
         return;
     }
-    int r, g, b;
     QColor qual_color = QColor();
     float signalQuality = report.timecode_quality;
 
@@ -122,19 +130,9 @@ void WSpinnyBase::onVinylSignalQualityUpdate(const VinylSignalQualityReport& rep
     // h is the only variable.
     // h=0 is red, h=120 is green
     qual_color.setHsv(static_cast<int>(120.0 * signalQuality), 255, 255);
-    qual_color.getRgb(&r, &g, &b);
 
-    for (int y = 0; y < m_iVinylScopeSize; ++y) {
-        QRgb* line = reinterpret_cast<QRgb*>(m_qImage.scanLine(y));
-        for (int x = 0; x < m_iVinylScopeSize; ++x) {
-            // use xwax's bitmap to set alpha data only
-            // adjust alpha by 3/4 so it's not quite so distracting
-            // setpixel is slow, use scanlines instead
-            // m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iVinylScopeSize*y] * .75));
-            *line = qRgba(r, g, b, static_cast<int>(report.scope[x + m_iVinylScopeSize * y] * .75));
-            line++;
-        }
-    }
+    updateVinylSignalQualityImage(qual_color, report.scope);
+    m_bDrawVinylSignalQuality = true;
 #else
     Q_UNUSED(report);
 #endif
@@ -191,9 +189,8 @@ void WSpinnyBase::setup(const QDomNode& node,
         m_iVinylInput = m_pVCManager->vinylInputFromGroup(m_group);
     }
     m_iVinylScopeSize = MIXXX_VINYL_SCOPE_SIZE;
-    m_qImage = QImage(m_iVinylScopeSize, m_iVinylScopeSize, QImage::Format_ARGB32);
-    // fill with transparent black
-    m_qImage.fill(qRgba(0, 0, 0, 0));
+    setupVinylSignalQuality();
+    m_bDrawVinylSignalQuality = false;
 #endif
 
     m_pPlayPos = new ControlProxy(
@@ -221,11 +218,13 @@ void WSpinnyBase::setup(const QDomNode& node,
 
     m_pVinylControlEnabled = new ControlProxy(
             m_group, "vinylcontrol_enabled", this, ControlFlag::NoAssertIfMissing);
+    updateVinylControlEnabled(m_pVinylControlEnabled->get());
     m_pVinylControlEnabled->connectValueChanged(this,
             &WSpinnyBase::updateVinylControlEnabled);
 
     m_pSignalEnabled = new ControlProxy(
             m_group, "vinylcontrol_signal_enabled", this, ControlFlag::NoAssertIfMissing);
+    updateVinylControlSignalEnabled(m_pSignalEnabled->get());
     m_pSignalEnabled->connectValueChanged(this,
             &WSpinnyBase::updateVinylControlSignalEnabled);
 
@@ -246,8 +245,8 @@ void WSpinnyBase::setLoadedCover(const QPixmap& pixmap) {
 }
 
 void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
-    if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(),
+    if (m_pLoadedTrack) {
+        disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &WSpinnyBase::slotTrackCoverArtUpdated);
@@ -256,9 +255,9 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
 
     setLoadedCover(QPixmap());
 
-    m_loadedTrack = pTrack;
-    if (m_loadedTrack) {
-        connect(m_loadedTrack.get(),
+    m_pLoadedTrack = pTrack;
+    if (m_pLoadedTrack) {
+        connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &WSpinnyBase::slotTrackCoverArtUpdated);
@@ -269,13 +268,13 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
 
 void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
-    if (m_loadedTrack && pOldTrack == m_loadedTrack) {
-        disconnect(m_loadedTrack.get(),
+    if (m_pLoadedTrack && pOldTrack == m_pLoadedTrack) {
+        disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &WSpinnyBase::slotTrackCoverArtUpdated);
     }
-    m_loadedTrack.reset();
+    m_pLoadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
 
     setLoadedCover(QPixmap());
@@ -283,39 +282,39 @@ void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrac
 }
 
 void WSpinnyBase::slotTrackCoverArtUpdated() {
-    if (m_loadedTrack) {
-        CoverArtCache::requestTrackCover(this, m_loadedTrack);
+    if (m_pLoadedTrack) {
+        CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     }
 }
 
 void WSpinnyBase::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (pRequestor == this &&
-            m_loadedTrack &&
-            m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+    if (pRequester == this &&
+            m_pLoadedTrack &&
+            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         setLoadedCover(pixmap);
         coverChanged();
     }
 }
 
 void WSpinnyBase::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    if (m_loadedTrack != nullptr) {
+    if (m_pLoadedTrack != nullptr) {
         // Will trigger slotTrackCoverArtUpdated().
-        m_loadedTrack->setCoverInfo(coverInfo);
+        m_pLoadedTrack->setCoverInfo(coverInfo);
     }
 }
 
 void WSpinnyBase::slotReloadCoverArt() {
-    if (!m_loadedTrack) {
+    if (!m_pLoadedTrack) {
         return;
     }
-    const auto future = guessTrackCoverInfoConcurrently(m_loadedTrack);
+    const auto future = guessTrackCoverInfoConcurrently(m_pLoadedTrack);
     // Don't wait for the result and keep running in the background
     Q_UNUSED(future)
 }
@@ -495,8 +494,7 @@ void WSpinnyBase::updateVinylControlSignalEnabled(double enabled) {
         m_pVCManager->addSignalQualityListener(this);
     } else {
         m_pVCManager->removeSignalQualityListener(this);
-        // fill with transparent black
-        m_qImage.fill(qRgba(0, 0, 0, 0));
+        m_bDrawVinylSignalQuality = false;
     }
 #else
     Q_UNUSED(enabled);
@@ -562,7 +560,7 @@ void WSpinnyBase::mouseMoveEvent(QMouseEvent* e) {
 }
 
 void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
-    if (m_loadedTrack == nullptr) {
+    if (m_pLoadedTrack == nullptr) {
         return;
     }
 
@@ -613,7 +611,7 @@ void WSpinnyBase::mousePressEvent(QMouseEvent* e) {
         }
     } else {
         if (!m_loadedCover.isNull()) {
-            m_pDlgCoverArt->init(m_loadedTrack);
+            m_pDlgCoverArt->init(m_pLoadedTrack);
         } else if (!m_pDlgCoverArt->isVisible() && m_bShowCover) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
             m_pCoverMenu->popup(e->globalPosition().toPoint());
@@ -653,8 +651,7 @@ void WSpinnyBase::hideEvent(QHideEvent* event) {
         m_pVCManager->removeSignalQualityListener(this);
     }
 #endif
-    // fill with transparent black
-    m_qImage.fill(qRgba(0, 0, 0, 0));
+    m_bDrawVinylSignalQuality = false;
 }
 
 bool WSpinnyBase::event(QEvent* pEvent) {

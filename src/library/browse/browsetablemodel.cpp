@@ -204,10 +204,12 @@ const QList<int>& BrowseTableModel::searchColumns() const {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (path.info().hasLocation() && path.info().isDir()) {
-        m_currentDirectory = path.info().location();
-    } else {
-        m_currentDirectory = QString();
+    if (m_pBrowseThread) {
+        if (path.info().hasLocation() && path.info().isDir()) {
+            m_currentDirectory = path.info().location();
+        } else {
+            m_currentDirectory = QString();
+        }
     }
     m_pBrowseThread->executePopulation(std::move(path), this);
 }
@@ -529,3 +531,10 @@ bool BrowseTableModel::updateTrackMood(
     return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
 }
 #endif // __EXTRA_METADATA__
+
+void BrowseTableModel::releaseBrowseThread() {
+    // The shared browse thread is stopped in the destructor
+    // if this is the last reference. All references must be reset before
+    // the library is destructed.
+    m_pBrowseThread.reset();
+}

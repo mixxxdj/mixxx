@@ -15,17 +15,11 @@ class OpenGLWindow;
 class TrackDropTarget;
 
 class WGLWidget : public QWidget {
-  private:
-    OpenGLWindow* m_pOpenGLWindow{};
-    QWidget* m_pContainerWidget{};
-    TrackDropTarget* m_pTrackDropTarget{};
-
   public:
     WGLWidget(QWidget* parent);
     ~WGLWidget();
 
     bool isContextValid() const;
-    bool isContextSharing() const;
 
     bool shouldRender() const;
 
@@ -48,4 +42,9 @@ class WGLWidget : public QWidget {
     void resizeEvent(QResizeEvent* event) override;
 
     QPaintDevice* paintDevice();
+
+  private:
+    OpenGLWindow* m_pOpenGLWindow;
+    QWidget* m_pContainerWidget;
+    TrackDropTarget* m_pTrackDropTarget;
 };

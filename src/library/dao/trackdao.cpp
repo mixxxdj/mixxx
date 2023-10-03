@@ -683,30 +683,30 @@ bool insertTrackLibrary(
 
 TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
     DEBUG_ASSERT(pTrack);
-    const auto fileAccess = pTrack->getFileAccess();
+    const mixxx::FileInfo fileInfo = pTrack->getFileInfo();
 
     if (!(m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
                 m_pQueryLibrarySelect || m_pQueryTrackLocationSelect)) {
         qDebug() << "TrackDAO::addTracksAddTrack: needed SqlQuerys have not "
                     "been prepared. Skipping track"
-                 << fileAccess.info().location();
+                 << fileInfo.location();
         DEBUG_ASSERT("Failed query");
         return TrackId();
     }
 
     qDebug() << "TrackDAO: Adding track"
-             << fileAccess.info().location();
+             << fileInfo.location();
 
     TrackId trackId;
 
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
-    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), fileAccess.info())) {
+    if (!insertTrackLocation(m_pQueryTrackLocationInsert.get(), fileInfo)) {
         DEBUG_ASSERT(pTrack->getDateAdded().isValid());
         // Inserting into track_locations failed, so the file already
         // exists. Query for its trackLocationId.
-        m_pQueryTrackLocationSelect->bindValue(":location", fileAccess.info().location());
+        m_pQueryTrackLocationSelect->bindValue(":location", fileInfo.location());
         if (!m_pQueryTrackLocationSelect->exec()) {
             // We can't even select this, something is wrong.
             LOG_FAILED_QUERY(*m_pQueryTrackLocationSelect)
@@ -729,7 +729,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         if (!m_pQueryLibrarySelect->exec()) {
             LOG_FAILED_QUERY(*m_pQueryLibrarySelect)
                     << "Failed to query existing track: "
-                    << fileAccess.info().location();
+                    << fileInfo.location();
             return TrackId();
         }
         if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
@@ -756,7 +756,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
             if (!m_pQueryLibraryUpdate->exec()) {
                 LOG_FAILED_QUERY(*m_pQueryLibraryUpdate)
                         << "Failed to unremove existing track: "
-                        << fileAccess.info().location();
+                        << fileInfo.location();
                 return TrackId();
             }
         }
@@ -792,7 +792,7 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
                     trackRecord,
                     pTrack->getBeats(),
                     trackLocationId,
-                    fileAccess.info(),
+                    fileInfo,
                     trackDateAdded)) {
             return TrackId();
         }
@@ -1374,14 +1374,14 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     // be executed with a lock on the GlobalTrackCache. The GlobalTrackCache
     // will be locked again after the query has been executed (see below)
     // and potential race conditions will be resolved.
-    ScopedTimer t("TrackDAO::getTrackById");
+    ScopedTimer t(u"TrackDAO::getTrackById");
 
     QSqlRecord queryRecord;
     {
         QString columnsStr;
         int columnsSize = 0;
         for (int i = 0; i < columnsCount; ++i) {
-            columnsSize += qstrlen(columns[i].name) + 1;
+            columnsSize += static_cast<int>(qstrlen(columns[i].name)) + 1;
         }
         columnsStr.reserve(columnsSize);
         for (int i = 0; i < columnsCount; ++i) {
@@ -2232,13 +2232,11 @@ TrackPointer TrackDAO::getOrAddTrack(
     return pTrack;
 }
 
-mixxx::FileAccess TrackDAO::relocateCachedTrack(
-        TrackId trackId,
-        mixxx::FileAccess fileAccess) {
+mixxx::FileAccess TrackDAO::relocateCachedTrack(TrackId trackId) {
     QString trackLocation = getTrackLocation(trackId);
     if (trackLocation.isEmpty()) {
         // not found
-        return fileAccess;
+        return mixxx::FileAccess();
     } else {
         return mixxx::FileAccess(mixxx::FileInfo(trackLocation));
     }

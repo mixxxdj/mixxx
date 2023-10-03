@@ -18,13 +18,12 @@ EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* p
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)) {
     // Make input_configured read-only.
     m_pInputConfigured->setReadOnly();
-    ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
-                                      ConfigKey(getGroup(), "input_configured"));
+    m_pInputConfigured->addAlias(ConfigKey(getGroup(), QStringLiteral("enabled")));
 
-    // by default Aux is disabled on the master and disabled on PFL. User
-    // can over-ride by setting the "pfl" or "master" controls.
-    // Skins can change that during initialisation, if the master control is not provided.
-    setMaster(false);
+    // by default Aux is disabled on the main and disabled on PFL. User
+    // can over-ride by setting the "pfl" or "main_mix" controls.
+    // Skins can change that during initialisation, if the main control is not provided.
+    setMainMix(false);
 }
 
 EngineAux::~EngineAux() {
@@ -46,7 +45,7 @@ EngineChannel::ActiveState EngineAux::updateActiveState() {
 }
 
 void EngineAux::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::AUXILIARY) {
+    if (input.getType() != AudioPathType::Auxiliary) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
@@ -56,7 +55,7 @@ void EngineAux::onInputConfigured(const AudioInput& input) {
 }
 
 void EngineAux::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioPath::AUXILIARY) {
+    if (input.getType() != AudioPathType::Auxiliary) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
@@ -79,10 +78,11 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
-            pEngineEffectsManager->processPreFaderInPlace(
-                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
-                    // TODO(jholthuis): Use mixxx::audio::SampleRate instead
-                    static_cast<unsigned int>(m_sampleRate.get()));
+            pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                    m_pEffectsManager->getMainHandle(),
+                    pOut,
+                    iBufferSize,
+                    mixxx::audio::SampleRate::fromDouble(m_sampleRate.get()));
         }
         m_sampleBuffer = nullptr;
     } else {

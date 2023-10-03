@@ -41,4 +41,7 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public WGLWidget
     }
 
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+  private:
+    void wheelEvent(QWheelEvent* event) override;
 };

@@ -62,12 +62,15 @@ find_library(ID3Tag_LIBRARY
 )
 mark_as_advanced(ID3Tag_LIBRARY)
 
+if(DEFINED PC_ID3Tag_VERSION AND NOT PC_ID3Tag_VERSION STREQUAL "")
+  set(ID3Tag_VERSION "${PC_ID3Tag_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   ID3Tag
-  DEFAULT_MSG
-  ID3Tag_LIBRARY
-  ID3Tag_INCLUDE_DIR
+  REQUIRED_VARS ID3Tag_LIBRARY ID3Tag_INCLUDE_DIR
+  VERSION_VAR ID3Tag_VERSION
 )
 
 if(ID3Tag_FOUND)

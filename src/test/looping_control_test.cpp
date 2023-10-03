@@ -81,6 +81,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 m_sGroup1, "beatlooproll_2_activate");
         m_pButtonBeatLoopRoll4Activate = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatlooproll_4_activate");
+
+        ProcessBuffer();
     }
 
     mixxx::audio::FramePos currentFramePos() {
@@ -178,6 +180,28 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     m_pLoopStartPoint->set(mixxx::audio::FramePos{110}.toEngineSamplePos());
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{110}, m_pLoopStartPoint);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopInSetAtLoopOutClearsLoopOut) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopStartPoint->set(100);
+    EXPECT_EQ(100, m_pLoopStartPoint->get());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, LoopOutSetAtLoopInIgnored) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopEndPoint->set(0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(-1);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(0);
+    EXPECT_FALSE(isLoopEnabled());
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
@@ -454,8 +478,10 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
