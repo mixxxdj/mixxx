@@ -15,7 +15,7 @@
 
 namespace {
 const QRegularExpression kChannelRegex(QStringLiteral("\\[Channel([1-9]\\d*)\\]"));
-}
+} // namespace
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,

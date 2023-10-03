@@ -4,7 +4,7 @@
 
 namespace {
 const QString kSkinGroup = QStringLiteral("[Skin]");
-}
+} // namespace
 
 SkinControls::SkinControls()
         : m_showEffectRack(ConfigKey(kSkinGroup, QStringLiteral("show_effectrack")),

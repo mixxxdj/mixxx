@@ -12,7 +12,7 @@
 
 namespace {
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
-}
+} // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)

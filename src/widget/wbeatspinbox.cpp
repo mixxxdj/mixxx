@@ -11,7 +11,7 @@
 
 namespace {
 const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
-}
+} // namespace
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         const ConfigKey& configKey,
