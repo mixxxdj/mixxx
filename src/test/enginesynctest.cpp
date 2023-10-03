@@ -581,11 +581,28 @@ TEST_F(EngineSyncTest, SetExplicitLeaderByLights) {
     EXPECT_TRUE(isExplicitLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
-    // Now set channel 1 to not-leader. The system will choose deck 2 as the next best
-    // option for soft leader
+    // Now set channel 1 to not-leader.
+    // This will choose automatically a Soft Leader, but prefers the old
+    // explicit leader it is still playing with a valid BPM
     pButtonSyncLeader1->set(0);
     ProcessBuffer();
 
+    EXPECT_TRUE(isFollower(m_sInternalClockGroup));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
+
+    // Try again without playing
+    pButtonSyncLeader1->set(1);
+    ProcessBuffer();
+
+    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    pButtonSyncLeader1->set(0);
+    ProcessBuffer();
+
+    // Now the m_sGroup2 should be leader because m_sGroup1 can't lead without playing
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));
     EXPECT_TRUE(isSoftLeader(m_sGroup2));
     EXPECT_TRUE(isFollower(m_sGroup1));
