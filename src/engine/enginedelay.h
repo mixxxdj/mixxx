@@ -9,7 +9,7 @@ class ControlProxy;
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist = true);
+    EngineDelay(const ConfigKey& delayControl, bool bPersist = true);
     virtual ~EngineDelay();
 
     void process(CSAMPLE* pInOut, const int iBufferSize);

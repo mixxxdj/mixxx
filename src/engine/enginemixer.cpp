@@ -124,11 +124,11 @@ EngineMixer::EngineMixer(
     // VU meter:
     m_pVumeter = new EngineVuMeter(kMainGroup, kLegacyGroup);
 
-    m_pMainDelay = new EngineDelay(group, ConfigKey(group, "delay"));
-    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
-    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
-    m_pLatencyCompensationDelay = new EngineDelay(group,
-        ConfigKey(group, "microphoneLatencyCompensation"));
+    m_pMainDelay = new EngineDelay(ConfigKey(group, "delay"));
+    m_pHeadDelay = new EngineDelay(ConfigKey(group, "headDelay"));
+    m_pBoothDelay = new EngineDelay(ConfigKey(group, "boothDelay"));
+    m_pLatencyCompensationDelay =
+            new EngineDelay(ConfigKey(group, "microphoneLatencyCompensation"));
 
     // Headphone volume
     m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
