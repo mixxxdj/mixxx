@@ -21,7 +21,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),

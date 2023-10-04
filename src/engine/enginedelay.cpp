@@ -14,7 +14,7 @@ const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
 const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
-EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist)
+EngineDelay::EngineDelay(const ConfigKey& delayControl, bool bPersist)
         : m_delayBuffer(kiMaxDelay),
           m_iDelayPos(0),
           m_iDelay(0) {

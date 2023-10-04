@@ -1517,7 +1517,7 @@ endif()
 
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
 endif()
 
@@ -2096,6 +2096,7 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
   src/util/moc_included_test.cpp
 )
+target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
@@ -2511,7 +2512,7 @@ target_link_libraries(mixxx-lib PRIVATE Vorbis::vorbis Vorbis::vorbisenc Vorbis:
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE PortAudio::PortAudio)
+target_link_libraries(mixxx-lib PUBLIC PortAudio::PortAudio)
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
@@ -2534,11 +2535,17 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
+set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
-  set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
+  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
+endif()
+if(QML)
+  list(APPEND QT_EXTRA_COMPONENTS "Quick")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2555,7 +2562,7 @@ find_package(Qt${QT_VERSION_MAJOR}
     Test
     Widgets
     Xml
-    ${QT6_NEW_COMPONENTS}
+    ${QT_EXTRA_COMPONENTS}
   REQUIRED
 )
 # PUBLIC is required below to find included headers
@@ -2573,8 +2580,8 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::Test
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml)
-if(QT6)
-  foreach(COMPONENT ${QT6_NEW_COMPONENTS})
+if(QT_EXTRA_COMPONENTS)
+  foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
 endif()
@@ -2764,14 +2771,14 @@ elseif(UNIX AND NOT APPLE)
   else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
   endif()
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE
+  target_link_libraries(mixxx-lib PUBLIC
     Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)

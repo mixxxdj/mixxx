@@ -53,7 +53,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 WTrackMenu::WTrackMenu(
         QWidget* parent,
