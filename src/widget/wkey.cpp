@@ -63,6 +63,7 @@ void WKey::setCents() {
 }
 
 void WKey::keyNotationChanged(double dKeyNotationValue) {
+    Q_UNUSED(dKeyNotationValue);
     // NOTE: dKeyNotationValue is the index of the key notation type, NOT the
     // key itself, so we intentionally set the old value again to update the UI.
     setValue(m_dOldValue);
