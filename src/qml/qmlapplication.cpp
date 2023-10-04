@@ -57,15 +57,7 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
-            m_pCoreServices->getScreensaverManager(),
-            nullptr,
-            m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getControllerManager(),
-            m_pCoreServices->getVinylControlManager(),
-            m_pCoreServices->getEffectsManager(),
-            m_pCoreServices->getSettingsManager(),
-            m_pCoreServices->getLibrary());
+    std::shared_ptr<QDialog> pDlgPreferences = m_pCoreServices->makeDlgPreferences();
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
