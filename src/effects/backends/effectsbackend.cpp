@@ -4,9 +4,9 @@ namespace {
 const QString backendTypeNameLV2 = QStringLiteral("LV2");
 // QString::tr requires const char[] rather than QString
 //: Backend type for effects that are built into Mixxx.
-constexpr char backendTypeNameBuiltIn[] = QT_TR_NOOP("Built-In");
+constexpr char backendTypeNameBuiltIn[] = QT_TR_NOOP("EffectsBackend", "Built-In");
 //: Backend type for effects were the backend is unknown.
-constexpr char backendTypeNameUnknown[] = QT_TR_NOOP("Unknown");
+constexpr char backendTypeNameUnknown[] = QT_TR_NOOP("EffectsBackend", "Unknown");
 } // anonymous namespace
 
 EffectBackendType EffectsBackend::backendTypeFromString(const QString& typeName) {
