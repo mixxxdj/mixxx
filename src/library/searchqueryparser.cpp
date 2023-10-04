@@ -1,7 +1,9 @@
 #include "library/searchqueryparser.h"
 
 #include <QRegularExpression>
+#include <memory>
 
+#include "library/searchquery.h"
 #include "track/keyutils.h"
 
 constexpr char kNegatePrefix[] = "-";
@@ -263,6 +265,28 @@ void SearchQueryParser::parseTokens(QStringList tokens,
     }
 }
 
+std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(QString query) const {
+    auto pQuery(std::make_unique<AndNode>());
+
+    QStringList tokens = query.split(" ");
+    parseTokens(std::move(tokens), pQuery.get());
+
+    return pQuery;
+}
+
+std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(QString query) const {
+    auto pQuery(std::make_unique<OrNode>());
+
+    QStringList rawAndNodes = query.split("|");
+    for (const QString& rawAndNode : rawAndNodes) {
+        if (!rawAndNode.isEmpty()) {
+            pQuery->addNode(parseAndNode(std::move(rawAndNode)));
+        }
+    }
+
+    return pQuery;
+}
+
 std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
         const QString& query,
         const QString& extraFilter) const {
@@ -273,8 +297,7 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(
     }
 
     if (!query.isEmpty()) {
-        QStringList tokens = query.split(" ");
-        parseTokens(tokens, pQuery.get());
+        pQuery->addNode(parseOrNode(query));
     }
 
     return pQuery;

@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 #include <QString>
 #include <QtSql>
+#include <memory>
 
 #include "library/searchquery.h"
 #include "library/trackcollection.h"
@@ -28,6 +29,9 @@ class SearchQueryParser {
   private:
     void parseTokens(QStringList tokens,
                      AndNode* pQuery) const;
+
+    std::unique_ptr<AndNode> parseAndNode(QString query) const;
+    std::unique_ptr<OrNode> parseOrNode(QString query) const;
 
     QString getTextArgument(QString argument,
                             QStringList* tokens) const;
