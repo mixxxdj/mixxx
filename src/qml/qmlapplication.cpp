@@ -5,6 +5,7 @@
 #include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
 #include "moc_qmlapplication.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmlcontrolproxy.h"
@@ -56,7 +57,7 @@ QmlApplication::QmlApplication(
 
     // FIXME: DlgPreferences has some initialization logic that must be executed
     // before the GUI is shown, at least for the effects system.
-    m_pDlgPreferences = std::make_shared<DlgPreferences>(
+    std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             m_pCoreServices->getScreensaverManager(),
             nullptr,
             m_pCoreServices->getSoundManager(),
@@ -68,7 +69,7 @@ QmlApplication::QmlApplication(
     // Without this, QApplication will quit when the last QWidget QWindow is
     // closed because it does not take into account the window created by
     // the QQmlApplicationEngine.
-    m_pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
+    pDlgPreferences->setAttribute(Qt::WA_QuitOnClose, false);
 
     // Any uncreateable non-singleton types registered here require arguments
     // that we don't want to expose to QML directly. Instead, they can be
@@ -78,7 +79,7 @@ QmlApplication::QmlApplication(
     // system, which would improve nothing, or we had to expose them as
     // singletons to that they can be accessed by components instantiated by
     // QML, which would also be suboptimal.
-    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(m_pDlgPreferences, this);
+    QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(pDlgPreferences, this);
     QmlEffectsManagerProxy::s_pInstance = new QmlEffectsManagerProxy(
             pCoreServices->getEffectsManager(), this);
     QmlPlayerManagerProxy::s_pInstance =

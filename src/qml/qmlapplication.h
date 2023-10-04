@@ -5,7 +5,6 @@
 #include <QQmlApplicationEngine>
 
 #include "coreservices.h"
-#include "preferences/dialog/dlgpreferences.h"
 
 namespace mixxx {
 namespace qml {
@@ -28,7 +27,6 @@ class QmlApplication : public QObject {
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
     QFileSystemWatcher m_fileWatcher;
-    std::shared_ptr<DlgPreferences> m_pDlgPreferences;
 };
 
 } // namespace qml
