@@ -2535,11 +2535,17 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
+set(QT_EXTRA_COMPONENTS "")
 if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
-  set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
+  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
 else()
   find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
+endif()
+if(QML)
+  list(APPEND QT_EXTRA_COMPONENTS "Quick")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2556,7 +2562,7 @@ find_package(Qt${QT_VERSION_MAJOR}
     Test
     Widgets
     Xml
-    ${QT6_NEW_COMPONENTS}
+    ${QT_EXTRA_COMPONENTS}
   REQUIRED
 )
 # PUBLIC is required below to find included headers
@@ -2574,8 +2580,8 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::Test
   Qt${QT_VERSION_MAJOR}::Widgets
   Qt${QT_VERSION_MAJOR}::Xml)
-if(QT6)
-  foreach(COMPONENT ${QT6_NEW_COMPONENTS})
+if(QT_EXTRA_COMPONENTS)
+  foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
 
