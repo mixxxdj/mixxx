@@ -1046,6 +1046,52 @@ TEST_F(SearchQueryParserTest, EmptyOrOperator) {
     EXPECT_FALSE(pQuery->match(pTrack));
 }
 
+TEST_F(SearchQueryParserTest, EmptySpelledOutOrOperator) {
+    auto pQuery = m_parser.parseQuery("OR", QString());
+
+    // An empty OR query matches no tracks.
+    TrackPointer pTrack = Track::newTemporary();
+    EXPECT_FALSE(pQuery->match(pTrack));
+}
+
+TEST_F(SearchQueryParserTest, LowercaseOr) {
+    m_parser.setSearchColumns({"title"});
+
+    // Lowercase 'or' is not parsed as an operator and treated literally instead
+    auto pQuery = m_parser.parseQuery("or", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("or");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("and");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("OR");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
+TEST_F(SearchQueryParserTest, QuotedOr) {
+    m_parser.setSearchColumns({"title"});
+
+    // Quoted uppercase 'OR' is treated literally too.
+    auto pQuery = m_parser.parseQuery("\"OR\"", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("or");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("and");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("OR");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
 TEST_F(SearchQueryParserTest, DurationSearchWithOrOperator) {
     // Query is intentionally "misformatted" to ensure whitespace-invariance
     auto pQuery = m_parser.parseQuery("duration:<39|duration:>=2:00", QString());

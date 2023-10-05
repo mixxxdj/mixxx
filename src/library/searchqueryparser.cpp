@@ -16,7 +16,7 @@ const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
         QStringLiteral(" " QUOTED_STRING_LOOKAHEAD));
 
 const QRegularExpression kSplitOnOrOperatorRegexp = QRegularExpression(
-        QStringLiteral("\\|" QUOTED_STRING_LOOKAHEAD));
+        QStringLiteral("(?:\\||\\bOR\\b)" QUOTED_STRING_LOOKAHEAD));
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
