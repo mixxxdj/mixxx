@@ -42,7 +42,7 @@ class DeckClass {
          * Knob encoder states (hold values between 0x0 and 0xF)
          * Rotate to the right is +1 and to the left is means -1
          */
-        this.loopKnobEncoderState = 0;
+        this.loopKnobEncoderState = undefined;
     }
 
     numberButtonHandler(field) {
@@ -329,6 +329,14 @@ class DeckClass {
         console.log(
             "TraktorZ2: selectLoopHandler " + this.activeChannel + " field.value:" + field.value);
 
+        let delta = 0;
+        if ((field.value + 15) % 16 === this.loopKnobEncoderState) {
+            delta = +1;
+        } else if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            delta = -1;
+        }
+        this.loopKnobEncoderState = field.value;
+
         if (((this.parent.Decks.deck1.syncPressed === true) &&
              (this.activeChannel !== "[Channel1]")) ||
             ((this.parent.Decks.deck2.syncPressed === true) &&
@@ -339,26 +347,26 @@ class DeckClass {
 
         if (this.syncPressed) {
             // Sync hold down -> Adjust key
-            if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            if (delta === -1) {
                 script.triggerControl(this.activeChannel, "pitch_down");
-            } else {
+            } else if (delta === +1) {
                 script.triggerControl(this.activeChannel, "pitch_up");
             }
         } else if (this.parent.shiftState === 0x00) {
             // Shift mode not set, and shift button not pressed -> Adjust loop size
             const beatloopSize = engine.getValue(this.activeChannel, "beatloop_size");
-            if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            if (delta === -1) {
                 engine.setValue(this.activeChannel, "beatloop_size", beatloopSize / 2);
-            } else {
+            } else if (delta === +1) {
                 engine.setValue(this.activeChannel, "beatloop_size", beatloopSize * 2);
             }
         } else if (this.parent.shiftState === 0x01) {
             // Shift mode not set, but shift button is pressed ->  Move loop
-            if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            if (delta === -1) {
                 engine.setValue(
                     this.activeChannel, "loop_move",
                     engine.getValue(this.activeChannel, "beatloop_size") * -1);
-            } else {
+            } else if (delta === +1) {
                 engine.setValue(
                     this.activeChannel, "loop_move",
                     engine.getValue(this.activeChannel, "beatloop_size"));
@@ -366,24 +374,23 @@ class DeckClass {
         } else if (this.parent.shiftState === 0x02) {
             // Shift mode is set, but shift button not pressed ->  Adjust beatjump size
             const beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
-            if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            if (delta === -1) {
                 engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize / 2);
-            } else {
+            } else if (delta === +1) {
                 engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize * 2);
             }
         } else if (this.parent.shiftState === 0x03) {
             // Shift mode is set, and shift button is pressed ->  Move beatjump
-            if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
+            if (delta === -1) {
                 engine.setValue(
                     this.activeChannel, "beatjump",
                     engine.getValue(this.activeChannel, "beatjump_size") * -1);
-            } else {
+            } else if (delta === +1) {
                 engine.setValue(
                     this.activeChannel, "beatjump",
                     engine.getValue(this.activeChannel, "beatjump_size"));
             }
         }
-        this.loopKnobEncoderState = field.value;
     }
 
     activateLoopHandler(field) {
@@ -703,7 +710,7 @@ class TraktorZ2Class {
          * Knob encoder states (hold values between 0x0 and 0xF)
          * Rotate to the right is +1 and to the left is means -1
          */
-        this.browseKnobEncoderState = 0;
+        this.browseKnobEncoderState = undefined;
 
         this.lastsendTimestamp = 0;
         this.lastBeatTimestamp = [];
@@ -996,8 +1003,10 @@ class TraktorZ2Class {
 
     selectTrackHandler(field) {
         console.log("TraktorZ2: selectTrackHandler");
-        let delta = 1;
-        if ((field.value + 1) % 16 === this.browseKnobEncoderState) {
+        let delta = 0;
+        if ((field.value + 15) % 16 === this.browseKnobEncoderState) {
+            delta = +1;
+        } else if ((field.value + 1) % 16 === this.browseKnobEncoderState) {
             delta = -1;
         }
         this.browseKnobEncoderState = field.value;
@@ -1013,16 +1022,16 @@ class TraktorZ2Class {
 
             if (this.shiftState === 0x02) {
                 // If shift mode is locked scale beatgrid
-                if (delta < 0) {
+                if (delta === -1) {
                     script.triggerControl(ch, "beats_adjust_faster");
-                } else {
+                } else if (delta === +1) {
                     script.triggerControl(ch, "beats_adjust_slower");
                 }
             } else {
                 // Shift is not locked zoom waveform
-                if (delta < 0) {
+                if (delta === -1) {
                     script.triggerControl(ch, "waveform_zoom_up");
-                } else {
+                } else if (delta === +1) {
                     script.triggerControl(ch, "waveform_zoom_down");
                 }
             }
