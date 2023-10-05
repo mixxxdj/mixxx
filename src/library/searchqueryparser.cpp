@@ -265,7 +265,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
     }
 }
 
-std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(QString query) const {
+std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(const QString& query) const {
     auto pQuery(std::make_unique<AndNode>());
 
     QStringList tokens = query.split(" ");
@@ -274,13 +274,13 @@ std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(QString query) const {
     return pQuery;
 }
 
-std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(QString query) const {
+std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) const {
     auto pQuery(std::make_unique<OrNode>());
 
     QStringList rawAndNodes = query.split("|");
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
-            pQuery->addNode(parseAndNode(std::move(rawAndNode)));
+            pQuery->addNode(parseAndNode(rawAndNode));
         }
     }
 
