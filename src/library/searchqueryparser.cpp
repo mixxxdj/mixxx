@@ -10,13 +10,13 @@ constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
 
 // see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
-#define STRING_QUOTE_SUFFIX "(?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"
+#define QUOTED_STRING_LOOKAHEAD "(?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"
 
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
-        QStringLiteral(" " STRING_QUOTE_SUFFIX));
+        QStringLiteral(" " QUOTED_STRING_LOOKAHEAD));
 
 const QRegularExpression kSplitOnOrOperatorRegexp = QRegularExpression(
-        QStringLiteral("\\|" STRING_QUOTE_SUFFIX));
+        QStringLiteral("\\|" QUOTED_STRING_LOOKAHEAD));
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
