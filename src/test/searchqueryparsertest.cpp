@@ -1041,9 +1041,9 @@ TEST_F(SearchQueryParserTest, QueryIsLessSpecific) {
 TEST_F(SearchQueryParserTest, EmptyOrOperator) {
     auto pQuery = m_parser.parseQuery("|", QString());
 
-    // An empty query matches all tracks.
+    // An empty OR query matches no tracks.
     TrackPointer pTrack = Track::newTemporary();
-    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_FALSE(pQuery->match(pTrack));
 }
 
 TEST_F(SearchQueryParserTest, DurationSearchWithOrOperator) {
