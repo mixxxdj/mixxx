@@ -8,6 +8,7 @@
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
+constexpr char kOrOperator[] = "|";
 // see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
         QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
@@ -277,7 +278,7 @@ std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(const QString& query) c
 std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) const {
     auto pQuery = std::make_unique<OrNode>();
 
-    QStringList rawAndNodes = query.split("|");
+    QStringList rawAndNodes = query.split(kOrOperator);
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
             pQuery->addNode(parseAndNode(rawAndNode));
