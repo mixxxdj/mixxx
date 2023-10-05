@@ -1109,3 +1109,49 @@ TEST_F(SearchQueryParserTest, MultiWayOrOperator) {
     pTrackI->setComment("Room");
     EXPECT_TRUE(pQuery->match(pTrackI));
 }
+
+TEST_F(SearchQueryParserTest, QuotedOrOperator) {
+    m_parser.setSearchColumns({"title", "comment"});
+
+    auto pQuery = m_parser.parseQuery("title:\"a | contrived|example\" house | techno", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a  contrived example");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("a | contrived|example");
+    EXPECT_FALSE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setTitle("a | contrived|example");
+    pTrackD->setComment("house");
+    EXPECT_TRUE(pQuery->match(pTrackD));
+
+    TrackPointer pTrackE = newTestTrack();
+    pTrackE->setTitle("house");
+    EXPECT_FALSE(pQuery->match(pTrackE));
+
+    TrackPointer pTrackF = newTestTrack();
+    pTrackF->setTitle("techno");
+    EXPECT_TRUE(pQuery->match(pTrackF));
+
+    TrackPointer pTrackG = newTestTrack();
+    pTrackG->setTitle("a contrived|example");
+    pTrackG->setComment("house");
+    EXPECT_FALSE(pQuery->match(pTrackG));
+
+    TrackPointer pTrackH = newTestTrack();
+    pTrackH->setTitle("a  | contrived|example");
+    pTrackH->setComment("house");
+    EXPECT_FALSE(pQuery->match(pTrackH));
+
+    TrackPointer pTrackI = newTestTrack();
+    pTrackI->setTitle("a | contrived|example and more");
+    pTrackI->setComment("house");
+    EXPECT_TRUE(pQuery->match(pTrackI));
+}
