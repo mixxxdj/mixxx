@@ -1148,10 +1148,12 @@ double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
     const mixxx::audio::FramePos outroEndPosition = pDeck->outroEndPosition();
     if (!outroEndPosition.isValid() || outroEndPosition > trackEndPosition) {
         double lastSoundSecond = getLastSoundSecond(pDeck);
+        DEBUG_ASSERT(lastSoundSecond <= framePositionToSeconds(trackEndPosition, pDeck));
         if (!outroStartPosition.isValid() || outroStartPosition > trackEndPosition) {
             // No outro start and outro end set, use Last Sound.
             return lastSoundSecond;
         }
+        // Try to find a better Outro End using Outro Start and transition time
         double outroStartSecond = framePositionToSeconds(outroStartPosition, pDeck);
         if (m_transitionTime >= 0 && lastSoundSecond > outroStartSecond) {
             double outroEndFromTime = outroStartSecond + m_transitionTime;
