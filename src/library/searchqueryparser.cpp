@@ -8,10 +8,15 @@
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
-constexpr char kOrOperator[] = "|";
+
 // see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
+#define STRING_QUOTE_SUFFIX "(?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"
+
 const QRegularExpression kSplitIntoWordsRegexp = QRegularExpression(
-        QStringLiteral(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)"));
+        QStringLiteral(" " STRING_QUOTE_SUFFIX));
+
+const QRegularExpression kSplitOnOrOperatorRegexp = QRegularExpression(
+        QStringLiteral("\\|" STRING_QUOTE_SUFFIX));
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns)
         : m_pTrackCollection(pTrackCollection),
@@ -278,7 +283,12 @@ std::unique_ptr<AndNode> SearchQueryParser::parseAndNode(const QString& query) c
 std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) const {
     auto pQuery = std::make_unique<OrNode>();
 
-    QStringList rawAndNodes = query.split(kOrOperator);
+    QStringList rawAndNodes = query.split(kSplitOnOrOperatorRegexp,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            Qt::SkipEmptyParts);
+#else
+            QString::SkipEmptyParts);
+#endif
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
             pQuery->addNode(parseAndNode(rawAndNode));
