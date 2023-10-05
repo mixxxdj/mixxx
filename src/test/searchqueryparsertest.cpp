@@ -1037,3 +1037,75 @@ TEST_F(SearchQueryParserTest, QueryIsLessSpecific) {
             QStringLiteral("-crate:\"a b c\""),
             QStringLiteral("crate:\"a b c\"")));
 }
+
+TEST_F(SearchQueryParserTest, EmptyOrOperator) {
+    auto pQuery = m_parser.parseQuery("|", QString());
+
+    // An empty query matches all tracks.
+    TrackPointer pTrack = Track::newTemporary();
+    EXPECT_TRUE(pQuery->match(pTrack));
+}
+
+TEST_F(SearchQueryParserTest, DurationSearchWithOrOperator) {
+    // Query is intentionally "misformatted" to ensure whitespace-invariance
+    auto pQuery = m_parser.parseQuery("duration:<39|duration:>=2:00", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setDuration(39);
+    EXPECT_FALSE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setDuration(38);
+    EXPECT_TRUE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setDuration(120);
+    EXPECT_TRUE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setDuration(119);
+    EXPECT_FALSE(pQuery->match(pTrackD));
+}
+
+TEST_F(SearchQueryParserTest, MultiWayOrOperator) {
+    m_parser.setSearchColumns({"title", "album", "comment"});
+
+    auto pQuery = m_parser.parseQuery("house|  funk | big room", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setComment("tech house");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("The Funk, the Whole Funk, and Nothing but the Funk");
+    EXPECT_TRUE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setAlbum("Big room anthems vol. 1");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setAlbum("homework");
+    EXPECT_FALSE(pQuery->match(pTrackD));
+
+    TrackPointer pTrackE = newTestTrack();
+    pTrackE->setAlbum("housework");
+    EXPECT_TRUE(pQuery->match(pTrackE));
+
+    TrackPointer pTrackF = newTestTrack();
+    pTrackF->setAlbum("small room");
+    EXPECT_FALSE(pQuery->match(pTrackF));
+
+    TrackPointer pTrackG = newTestTrack();
+    pTrackG->setAlbum("big   room");
+    EXPECT_TRUE(pQuery->match(pTrackG));
+
+    TrackPointer pTrackH = newTestTrack();
+    pTrackH->setTitle("big");
+    EXPECT_FALSE(pQuery->match(pTrackH));
+
+    TrackPointer pTrackI = newTestTrack();
+    pTrackI->setTitle("big");
+    pTrackI->setComment("Room");
+    EXPECT_TRUE(pQuery->match(pTrackI));
+}
