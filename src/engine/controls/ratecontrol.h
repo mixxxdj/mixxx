@@ -75,7 +75,7 @@ public:
 
 public slots:
   void slotRateRangeChanged(double);
-  void slotRateSliderChanged(double);
+  void slotRateSliderChanged();
   void slotRateRatioChanged(double);
   void slotReverseRollActivate(double);
   void slotControlRatePermDown(double);
@@ -122,6 +122,7 @@ private:
   ControlObject* m_pRateDir;
   ControlObject* m_pRateRange;
   ControlPotmeter* m_pRateSlider;
+  ControlPotmeter* m_pRateUltraSlider;
   ControlPotmeter* m_pRateSearch;
   ControlPushButton* m_pReverseButton;
   ControlPushButton* m_pReverseRollButton;

@@ -304,6 +304,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Playback speed control (Vinyl \"Pitch\" slider)"),
             speedMenu,
             true);
+    addDeckAndSamplerControl("rate_ultra",
+            tr("Wide Range Playback Speed"),
+            tr("Playback speed control with a wide range (Vinyl "
+               "\"Ultra-Pitch\" slider)"),
+            speedMenu,
+            true);
     speedMenu->addSeparator();
     addDeckAndSamplerControl("rate_perm_up",
             tr("Increase Speed"),
