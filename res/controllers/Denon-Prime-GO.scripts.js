@@ -4,6 +4,22 @@ var PrimeGo = {};
 //========== USER-CONFIGURABLE OPTIONS ==========//
 const nudgeSensitivity = 0.5;
 
+//========== CAUTION: DON'T EDIT PAST THIS POINT ==========//
+//==========  UNLESS YOU KNOW WHAT YOU'RE DOING  ==========//
+
+// mode-select pad index list to avoid remembering MIDI values
+PrimeGo.padMode = {
+    HOTCUE: 0x0B,
+    LOOP: 0x0C,
+    ROLL: 0x0D,
+    BANK: 0x0E,
+};
+
+// Default color arrays for the performance pad SysEx messages
+const padOff = [0x07, 0x07, 0x07];
+const padModeA = [0x00, 0x10, 0x7f];
+const padModeB = [0x00, 0x7f, 0x07];
+
 // Register '0x9n' as a button press and '0x8n' as a button release
 components.Button.prototype.isPress = function(channel, control, value, status) {
     return (status & 0xF0) === 0x90;
@@ -16,12 +32,17 @@ const initMsg = [0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x0C, 0x04, 0x00, 0x00, 0xF7];
 
 // Send colors to RGB pads via SysEx
 // F0 00 02 0B 7F 0C 03 00 05 status midino red green blue F7
+const sendSysexColor = function(channel, control, colorArray) {
+    // channel 2 = left deck, channel 3 = right deck
+    // colorArray should consist of 3 values between 0 and 127
+    const msg = [0xF0, 0x00, 0x02, 0x0B, 0x7F, 0x0C, 0x03, 0x00, 0x05, channel, control, colorArray[0], colorArray[1], colorArray[2], 0xF7];
+    midi.sendSysexMsg(msg, msg.length);
+};
 
 // Provide functions for encoder to cycle through an array of values
 // See NS6II mapping
-
-// Array that stops at either end (e.g. beatjump ranges)
 PrimeGo.CyclingArrayView = class {
+    // Array that stops at either end (e.g. beatjump ranges)
     constructor(indexable, startIndex) {
         this.indexable = indexable;
         this.index = startIndex || 0;
@@ -48,9 +69,8 @@ PrimeGo.CyclingArrayView = class {
         return this.indexable[this.index];
     }
 };
-
-// Array that repeats at each end (e.g. effect selection)
 PrimeGo.WrappingArrayView = class {
+    // Array that repeats at each end (e.g. effect selection)
     constructor(indexable, startIndex) {
         this.indexable = indexable;
         this.index = startIndex || 0;
@@ -307,14 +327,6 @@ PrimeGo.shiftState = function(channel, control, value) {
 
 //========== PERFORMANCE PADS ==========//
 
-// mode-select pad index list to avoid remembering MIDI values
-PrimeGo.padMode = {
-    HOTCUE: 0x0B,
-    LOOP: 0x0C,
-    ROLL: 0x0D,
-    BANK: 0x0E,
-};
-
 PrimeGo.PadSection = function(deck, offset) {
     components.ComponentContainer.call(this);
     const theContainer = this;
@@ -322,6 +334,8 @@ PrimeGo.PadSection = function(deck, offset) {
     // Create component containers for each pad mode
     const modes = new components.ComponentContainer({
         "hotcue": new PrimeGo.WrappingArrayView([new PrimeGo.hotcueMode(deck, offset)], 0),
+        "loop": new PrimeGo.WrappingArrayView([new PrimeGo.loopMode(deck, offset), new PrimeGo.autoloopMode(deck, offset)], 0),
+        "roll": new PrimeGo.WrappingArrayView([new PrimeGo.rollMode(deck, offset), new PrimeGo.samplerMode(deck, offset)], 0),
     });
 
     modes.forEachComponent(c => c.disconnect());
@@ -367,12 +381,14 @@ PrimeGo.PadSection = function(deck, offset) {
                 const mode = modeLayers.current();
                 if (theContainer.currentMode !== mode) {
                     // Make this LED inactive
+                    sendSysexColor(0x02 + offset, mode.ledControl, padOff);
                 }
             }
             for (const modeLayers of Object.values(modes)) {
                 const mode = modeLayers.current();
                 if (theContainer.currentMode === mode) {
                     // Make this LED active
+                    sendSysexColor(0x02 + offset, mode.ledControl, mode.modeOn);
                 }
             }
         },
@@ -432,8 +448,7 @@ PrimeGo.PadSection.prototype.performancePad = function(channel, control, value, 
 PrimeGo.hotcueMode = function(deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = PrimeGo.padMode.HOTCUE;
-    // this.colourOn = ________
-    // this.colourOff = ________
+    this.modeOn = padModeA;
     this.pads = new components.ComponentContainer();
     for (let i = 1; i <= 8; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -441,13 +456,70 @@ PrimeGo.hotcueMode = function(deck, offset) {
             group: deck.currentDeck,
             midi: [0x92 + offset, 0x0E + i],
             sendRGB: function(color_obj) {
-                const msg = [0xf0, 0x00, 0x02, 0x0b, 0x7f, 0x0c, 0x03, 0x00, 0x05, 0x02 + offset, 0x0e + i, color_obj.red>>1, color_obj.green>>1, color_obj.blue>>1, 0xf7];
-                midi.sendSysexMsg(msg, msg.length);
+                sendSysexColor(0x02 + offset, 0x0e + i, [color_obj.red>>1, color_obj.green>>1, color_obj.blue>>1]);
             },
-            //on: this.colourOn,
-            //off: this.colourOff,
             outConnect: false,
         });
     }
 };
 PrimeGo.hotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+PrimeGo.loopMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = PrimeGo.padMode.LOOP;
+    this.modeOn = padModeA;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.Button({
+            group: deck.currentDeck,
+            midi: [0x92 + offset, 0x0E + i],
+            outConnect: false,
+        });
+    }
+};
+PrimeGo.loopMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+PrimeGo.autoloopMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = PrimeGo.padMode.LOOP;
+    this.modeOn = padModeB;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.Button({
+            group: deck.currentDeck,
+            midi: [0x92 + offset, 0x0E + i],
+            outConnect: false,
+        });
+    }
+};
+PrimeGo.autoloopMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+PrimeGo.rollMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = PrimeGo.padMode.ROLL;
+    this.modeOn = padModeA;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.Button({
+            group: deck.currentDeck,
+            midi: [0x92 + offset, 0x0E + i],
+            outConnect: false,
+        });
+    }
+};
+PrimeGo.rollMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+PrimeGo.samplerMode = function(deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = PrimeGo.padMode.ROLL;
+    this.modeOn = padModeB;
+    this.pads = new components.ComponentContainer();
+    for (let i = 1; i <= 8; i++) {
+        this.pads[i] = new components.Button({
+            group: deck.currentDeck,
+            midi: [0x92 + offset, 0x0E + i],
+            outConnect: false,
+        });
+    }
+};
+PrimeGo.samplerMode.prototype = Object.create(components.ComponentContainer.prototype);
