@@ -1,24 +1,16 @@
-{ nixroot  ? (import <nixpkgs> {})
+{ pkgs  ? (import <nixpkgs> {})
 , defaultLv2Plugins ? false
 , lv2Plugins ? []
 , releaseMode ? false
 }:
-let inherit (nixroot) stdenv pkgs lib
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile lilv
-    libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5 glib
-    rubberband sqlite taglib soundtouch vamp opusfile hidapi upower ccache git
-    libGLU x11 lame lv2 makeWrapper pcre utillinux libselinux libsepol
-    libsForQt5
+let inherit (pkgs) stdenv lib
     clang-tools
     cmake
     fetchurl
-    ffmpeg
+    ccache
     gdb
-    libmodplug
-    mp4v2
     nix-gitignore
-    python3 python37Packages
-    wavpack;
+    python3;
 
   git-clang-format = stdenv.mkDerivation {
     name = "git-clang-format";
@@ -29,7 +21,7 @@ let inherit (nixroot) stdenv pkgs lib
       executable = true;
     };
     nativeBuildInputs = [
-      makeWrapper
+      pkgs.makeWrapper
     ];
     buildInputs = [
       clang-tools
@@ -45,34 +37,37 @@ let inherit (nixroot) stdenv pkgs lib
     '';
   };
 
-  shell-configure = nixroot.writeShellScriptBin "configure" ''
+  shell-configure = pkgs.writeShellScriptBin "configure" ''
+    set -eux
     mkdir -p cbuild
     cd cbuild
     cmake .. "$@"
     cd ..
   '';
 
-  shell-build = nixroot.writeShellScriptBin "build" ''
+  shell-build = pkgs.writeShellScriptBin "build" ''
     if [ ! -d "cbuild" ]; then
       >&2 echo "First you have to run configure."
       exit 1
     fi
+    set -eux
     cd cbuild
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
     source ${pkgs.makeWrapper}/nix-support/setup-hook
     wrapProgram mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
   '';
 
-  shell-run = nixroot.writeShellScriptBin "run" ''
+  shell-run = pkgs.writeShellScriptBin "run" ''
     if [ ! -f "cbuild/mixxx" ]; then
       >&2 echo "First you have to run build."
       exit 1
     fi
+    set -eux
     cd cbuild
     ./mixxx --resourcePath res/ "$@"
   '';
 
-  shell-debug = nixroot.writeShellScriptBin "debug" ''
+  shell-debug = pkgs.writeShellScriptBin "debug" ''
     if [ ! -f "cbuild/mixxx" ]; then
       >&2 echo "First you have to run build."
       exit 1
@@ -82,22 +77,33 @@ let inherit (nixroot) stdenv pkgs lib
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then [
-    nixroot.x42-plugins nixroot.zam-plugins nixroot.rkrlv2 nixroot.mod-distortion
-    nixroot.infamousPlugins nixroot.artyFX
+    pkgs.x42-plugins pkgs.zam-plugins pkgs.rkrlv2 pkgs.mod-distortion
+    pkgs.infamousPlugins pkgs.artyFX
   ] else []);
 
-in stdenv.mkDerivation rec {
+in pkgs.qt6Packages.callPackage ({
+    # buildInputs from <nixpkgs/pkgs/applications/audio/mixxx/default.nix>, Qt5->Qt6, removed qtscript and qtx11extras and added gtest, gbenchmark, qtdeclarative, qt5compat and microsoft_gsl for Qt6
+    # as of https://github.com/NixOS/nixpkgs/commit/ab9cf80e428a8814cecb173efce840cc56b025eb
+    chromaprint, faad2, ffmpeg, fftw, flac, glibcLocales, hidapi, lame, libebur128,
+    libGLU, libid3tag, libkeyfinder, libmad, libmodplug, libopus, libsecret, libshout,
+    libsndfile, libusb1, libvorbis, libxcb, lilv, lv2, mp4v2, opusfile, pcre, portaudio,
+    portmidi, protobuf, qtbase, qtkeychain, qtsvg, rubberband,
+    serd, sord, soundtouch, sratom, sqlite, taglib, upower, vamp-plugin-sdk, wavpack, gtest, gbenchmark, qtdeclarative, qt5compat, microsoft_gsl
+}: stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # Reading the version from git output is very hard to do without wasting lots of diskspace and
   # runtime. Reading version file is easy.
-  version = lib.strings.removeSuffix "\"\n" (
-              lib.strings.removePrefix "#define MIXXX_VERSION \"" (
-                builtins.readFile ./src/_version.h ));
+  #version = lib.strings.removeSuffix "\"\n" (
+  #            lib.strings.removePrefix "#define MIXXX_VERSION \"" (
+  #              builtins.readFile ./src/_version.h ));
+
+  # As of 2023-10-04, Mixxx gets its version number from CMake, which gets it from the latest Git tag.
+  version = "2.4-beta-1172-gab8d11fc60-dirty";
 
   # SOURCE_DATE_EPOCH helps with python and pre-commit hook
   shellHook =  ''
-    export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
-    export SOURCE_DATE_EPOCH=315532800
+    #export PYTHONPATH=venv/lib/python3.*/site-packages/:$PYTHONPATH
+    #export SOURCE_DATE_EPOCH=315532800
     echo -e "Mixxx development shell. Available commands:\n"
     echo " configure - configures cmake (only has to run once)"
     echo " build - compiles Mixxx"
@@ -121,31 +127,32 @@ in stdenv.mkDerivation rec {
     git-clang-format
     clang-tools
     # for pre-commit installation since nixpkg.pre-commit may be to old
-    python3 python37Packages.virtualenv python37Packages.pip python37Packages.setuptools
+    #python3 python3.pkgs.virtualenv python3.pkgs.pip python3.pkgs.setuptools
     shell-configure shell-build shell-run shell-debug
   ] else []);
 
   buildInputs = [
-    chromaprint fftw flac libid3tag libmad libopus libshout libsndfile
-    libusb1 libvorbis libebur128 pkgconfig portaudio portmidi protobuf qt5.full
-    rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
-    git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase pcre utillinux libselinux
-    libsepol libsForQt5.qtkeychain
-    ffmpeg
-    libmodplug
-    mp4v2
-    wavpack
+    # buildInputs from <nixpkgs/pkgs/applications/audio/mixxx/default.nix>, Qt5->Qt6, removed qtscript and qtx11extras and added gtest, gbenchmark, qtdeclarative, qt5compat and microsoft_gsl for Qt6
+    # as of https://github.com/NixOS/nixpkgs/commit/ab9cf80e428a8814cecb173efce840cc56b025eb
+    chromaprint faad2 ffmpeg fftw flac glibcLocales hidapi lame libebur128
+    libGLU libid3tag libkeyfinder libmad libmodplug libopus libsecret libshout
+    libsndfile libusb1 libvorbis libxcb lilv lv2 mp4v2 opusfile pcre portaudio
+    portmidi protobuf qtbase qtkeychain qtsvg rubberband
+    serd sord soundtouch sratom sqlite taglib upower vamp-plugin-sdk wavpack gtest gbenchmark qtdeclarative qt5compat microsoft_gsl
+
+    pkgs.microsoft_gsl
+    pkgs.gbenchmark
   ] ++ allLv2Plugins;
 
   postInstall = (if releaseMode then ''
     wrapProgram $out/bin/mixxx --prefix LV2_PATH : ${lib.makeSearchPath "lib/lv2" allLv2Plugins}
   '' else "");
 
-  meta = with nixroot.stdenv.lib; {
+  meta = with lib; {
     homepage = https://mixxx.org;
     description = "Digital DJ mixing software";
     license = licenses.gpl2Plus;
-    maintainers = nixroot.pkgs.mixxx.meta.maintainers;
+    maintainers = pkgs.mixxx.meta.maintainers;
     platforms = platforms.linux;
   };
-}
+}) {}
