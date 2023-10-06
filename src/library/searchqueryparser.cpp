@@ -186,9 +186,36 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                                        .trimmed();
 
             if (!argument.isEmpty()) {
+                bool isSingleNumber = false;
+                double bpm = argument.toDouble(&isSingleNumber);
                 if (argument == kMissingFieldSearchTerm) {
                     pNode = std::make_unique<NullNumericFilterNode>(
                          m_fieldToSqlColumns[field]);
+                } else if (field == "bpm" && isSingleNumber) {
+                    // If it's a single number also search for half & double BPM
+                    // Add literal BPM value
+                    auto gNode = std::make_unique<OrNode>();
+                    gNode->addNode(std::make_unique<NumericFilterNode>(
+                            m_fieldToSqlColumns[field], argument));
+                    // Add half BPM
+                    // If the halve is not an integer, use range prev-next integer
+                    QString halfStr = QString::number(bpm / 2);
+                    bool halveIsInt = false;
+                    int half = halfStr.toInt(&halveIsInt);
+                    if (halveIsInt) {
+                        gNode->addNode(std::make_unique<NumericFilterNode>(
+                                m_fieldToSqlColumns[field], QString::number(half)));
+                    } else {
+                        gNode->addNode(std::make_unique<NumericFilterNode>(
+                                m_fieldToSqlColumns[field],
+                                QStringLiteral("%1-%2").arg(
+                                        QString::number(floor(bpm / 2)),
+                                        QString::number(ceil(bpm / 2)))));
+                    }
+                    // Add double BPM
+                    gNode->addNode(std::make_unique<NumericFilterNode>(
+                            m_fieldToSqlColumns[field], QString::number(bpm * 2)));
+                    pNode = std::move(gNode);
                 } else {
                     pNode = std::make_unique<NumericFilterNode>(
                          m_fieldToSqlColumns[field], argument);
