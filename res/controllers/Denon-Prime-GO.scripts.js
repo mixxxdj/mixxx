@@ -137,6 +137,7 @@ PrimeGo.shutdown = function() {
 
 PrimeGo.Deck = function(deckNumber, midiChannel) {
     components.Deck.call(this, deckNumber);
+    const theDeck = this;
 
     this.deckLoad = new components.Button({
         midi: [0x9F, midiChannel - 1],
@@ -191,6 +192,20 @@ PrimeGo.Deck = function(deckNumber, midiChannel) {
     });
 
     //vinylButton
+    this.vinylButton = new components.Button({
+        midi: [0x90 + midiChannel, 0x23],
+        type: components.Button.prototype.types.toggle,
+        input: function(channel, control, value, status, _group) {
+            if (!this.isPress(channel, control, value, status)) {
+                return;
+            }
+            theDeck.jogWheel.vinylMode = !theDeck.jogWheel.vinylMode;
+            this.trigger();
+        },
+        trigger: function() {
+            this.output(theDeck.jogWheel.vinylMode);
+        },
+    });
 
     //jogwheel
     this.jogWheel = new components.JogWheelBasic({

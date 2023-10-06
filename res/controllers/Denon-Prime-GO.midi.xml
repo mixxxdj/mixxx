@@ -747,7 +747,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.vinylButton.input</key>
                 <description>Deck 1 Vinyl / Grid Edit Button On</description>
                 <status>0x92</status>
                 <midino>0x23</midino>
@@ -757,7 +757,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.leftDeck.vinylButton.input</key>
                 <description>Deck 1 Vinyl / Grid Edit Button Off</description>
                 <status>0x82</status>
                 <midino>0x23</midino>
@@ -767,7 +767,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.vinylButton.input</key>
                 <description>Deck 2 Vinyl / Grid Edit Button On</description>
                 <status>0x93</status>
                 <midino>0x23</midino>
@@ -777,7 +777,7 @@
             </control>
             <control>
                 <group></group>
-                <key></key>
+                <key>PrimeGo.rightDeck.vinylButton.input</key>
                 <description>Deck 2 Vinyl / Grid Edit Button Off</description>
                 <status>0x83</status>
                 <midino>0x23</midino>
