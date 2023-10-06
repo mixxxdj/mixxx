@@ -1037,3 +1037,197 @@ TEST_F(SearchQueryParserTest, QueryIsLessSpecific) {
             QStringLiteral("-crate:\"a b c\""),
             QStringLiteral("crate:\"a b c\"")));
 }
+
+TEST_F(SearchQueryParserTest, EmptyOrOperator) {
+    auto pQuery = m_parser.parseQuery("|", QString());
+
+    // An empty OR query matches no tracks.
+    TrackPointer pTrack = Track::newTemporary();
+    EXPECT_FALSE(pQuery->match(pTrack));
+}
+
+TEST_F(SearchQueryParserTest, EmptySpelledOutOrOperator) {
+    auto pQuery = m_parser.parseQuery("OR", QString());
+
+    // An empty OR query matches no tracks.
+    TrackPointer pTrack = Track::newTemporary();
+    EXPECT_FALSE(pQuery->match(pTrack));
+}
+
+TEST_F(SearchQueryParserTest, PrefixedSpelledOutOrOperator) {
+    m_parser.setSearchColumns({"title"});
+
+    // 'OR' needs to have a boundary on the left to be parsed as an operator
+    auto pQuery = m_parser.parseQuery("aOR", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("aOR");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+}
+
+TEST_F(SearchQueryParserTest, SuffixedSpelledOutOrOperator) {
+    m_parser.setSearchColumns({"title"});
+
+    // 'OR' needs to have a boundary on the right to be parsed as an operator
+    auto pQuery = m_parser.parseQuery("ORa", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("ORa");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+}
+
+TEST_F(SearchQueryParserTest, LowercaseOr) {
+    m_parser.setSearchColumns({"title"});
+
+    // Lowercase 'or' is not parsed as an operator and treated literally instead
+    auto pQuery = m_parser.parseQuery("or", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("or");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("and");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("OR");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
+TEST_F(SearchQueryParserTest, QuotedOr) {
+    m_parser.setSearchColumns({"title"});
+
+    // Quoted uppercase 'OR' is treated literally too.
+    auto pQuery = m_parser.parseQuery("\"OR\"", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("or");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("and");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("OR");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
+TEST_F(SearchQueryParserTest, DurationSearchWithOrOperator) {
+    // Query is intentionally "misformatted" to ensure whitespace-invariance
+    auto pQuery = m_parser.parseQuery("duration:<39|duration:>=2:00", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setDuration(39);
+    EXPECT_FALSE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setDuration(38);
+    EXPECT_TRUE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setDuration(120);
+    EXPECT_TRUE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setDuration(119);
+    EXPECT_FALSE(pQuery->match(pTrackD));
+}
+
+TEST_F(SearchQueryParserTest, MultiWayOrOperator) {
+    m_parser.setSearchColumns({"title", "album", "comment"});
+
+    auto pQuery = m_parser.parseQuery("house|  funk | big room", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setComment("tech house");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("The Funk, the Whole Funk, and Nothing but the Funk");
+    EXPECT_TRUE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setAlbum("Big room anthems vol. 1");
+    EXPECT_TRUE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setAlbum("homework");
+    EXPECT_FALSE(pQuery->match(pTrackD));
+
+    TrackPointer pTrackE = newTestTrack();
+    pTrackE->setAlbum("housework");
+    EXPECT_TRUE(pQuery->match(pTrackE));
+
+    TrackPointer pTrackF = newTestTrack();
+    pTrackF->setAlbum("small room");
+    EXPECT_FALSE(pQuery->match(pTrackF));
+
+    TrackPointer pTrackG = newTestTrack();
+    pTrackG->setAlbum("big   room");
+    EXPECT_TRUE(pQuery->match(pTrackG));
+
+    TrackPointer pTrackH = newTestTrack();
+    pTrackH->setTitle("big");
+    EXPECT_FALSE(pQuery->match(pTrackH));
+
+    TrackPointer pTrackI = newTestTrack();
+    pTrackI->setTitle("big");
+    pTrackI->setComment("Room");
+    EXPECT_TRUE(pQuery->match(pTrackI));
+}
+
+TEST_F(SearchQueryParserTest, QuotedOrOperator) {
+    m_parser.setSearchColumns({"title", "comment"});
+
+    auto pQuery = m_parser.parseQuery("title:\"a | contrived|example\" house | techno", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a  contrived example");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+
+    TrackPointer pTrackC = newTestTrack();
+    pTrackC->setTitle("a | contrived|example");
+    EXPECT_FALSE(pQuery->match(pTrackC));
+
+    TrackPointer pTrackD = newTestTrack();
+    pTrackD->setTitle("a | contrived|example");
+    pTrackD->setComment("house");
+    EXPECT_TRUE(pQuery->match(pTrackD));
+
+    TrackPointer pTrackE = newTestTrack();
+    pTrackE->setTitle("house");
+    EXPECT_FALSE(pQuery->match(pTrackE));
+
+    TrackPointer pTrackF = newTestTrack();
+    pTrackF->setTitle("techno");
+    EXPECT_TRUE(pQuery->match(pTrackF));
+
+    TrackPointer pTrackG = newTestTrack();
+    pTrackG->setTitle("a contrived|example");
+    pTrackG->setComment("house");
+    EXPECT_FALSE(pQuery->match(pTrackG));
+
+    TrackPointer pTrackH = newTestTrack();
+    pTrackH->setTitle("a  | contrived|example");
+    pTrackH->setComment("house");
+    EXPECT_FALSE(pQuery->match(pTrackH));
+
+    TrackPointer pTrackI = newTestTrack();
+    pTrackI->setTitle("a | contrived|example and more");
+    pTrackI->setComment("house");
+    EXPECT_TRUE(pQuery->match(pTrackI));
+}
