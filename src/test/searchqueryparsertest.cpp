@@ -1054,6 +1054,36 @@ TEST_F(SearchQueryParserTest, EmptySpelledOutOrOperator) {
     EXPECT_FALSE(pQuery->match(pTrack));
 }
 
+TEST_F(SearchQueryParserTest, PrefixedSpelledOutOrOperator) {
+    m_parser.setSearchColumns({"title"});
+
+    // 'OR' needs to have a boundary on the left to be parsed as an operator
+    auto pQuery = m_parser.parseQuery("aOR", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("aOR");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+}
+
+TEST_F(SearchQueryParserTest, SuffixedSpelledOutOrOperator) {
+    m_parser.setSearchColumns({"title"});
+
+    // 'OR' needs to have a boundary on the right to be parsed as an operator
+    auto pQuery = m_parser.parseQuery("ORa", QString());
+
+    TrackPointer pTrackA = newTestTrack();
+    pTrackA->setTitle("ORa");
+    EXPECT_TRUE(pQuery->match(pTrackA));
+
+    TrackPointer pTrackB = newTestTrack();
+    pTrackB->setTitle("a");
+    EXPECT_FALSE(pQuery->match(pTrackB));
+}
+
 TEST_F(SearchQueryParserTest, LowercaseOr) {
     m_parser.setSearchColumns({"title"});
 
