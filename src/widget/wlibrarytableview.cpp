@@ -274,7 +274,7 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
         // [Library],MoveVertical controls. See #9548
-        if (model()->rowCount() > 0) {
+        if (model() && model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
                 if (!currentIndex().isValid() ||
