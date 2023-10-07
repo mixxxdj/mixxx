@@ -30,7 +30,8 @@ class SearchQueryParser {
                      AndNode* pQuery) const;
 
     QString getTextArgument(QString argument,
-                            QStringList* tokens) const;
+            QStringList* tokens,
+            StringMatch* matchMode = nullptr) const;
 
     TrackCollection* m_pTrackCollection;
     QStringList m_queryColumns;

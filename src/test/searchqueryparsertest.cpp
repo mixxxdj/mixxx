@@ -178,6 +178,32 @@ TEST_F(SearchQueryParserTest, TextFilter) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, TextFilterEquals) {
+    m_parser.setSearchColumns({"artist", "album"});
+    auto pQuery(m_parser.parseQuery("comment:=\"asdf\"", QString()));
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setComment("test ASDF test");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("ASDF");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("comment LIKE 'asdf'")),
+            qPrintable(pQuery->toSql()));
+
+    // Incomplete quoting should use StringMatch::Contains,
+    // i.e. equal to 'comment:asdf'
+    pQuery = m_parser.parseQuery("comment:=\"asdf", QString());
+
+    pTrack->setComment("test ASDF test");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("comment LIKE '%asdf%'")),
+            qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, TextFilterEmpty) {
     m_parser.setSearchColumns({"artist", "album"});
     // An empty argument should pass everything.
