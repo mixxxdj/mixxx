@@ -319,7 +319,7 @@ shout_connection_return_state_t shout_parse_xaudiocast_response(shout_t *self, s
 int shout_open_ogg(shout_t *self);
 int shout_open_mp3(shout_t *self);
 int shout_open_webm(shout_t *self);
-int shout_open_adts(shout_t *self);
 int shout_open_text(shout_t *self);
+int shout_open_adts(shout_t *self);
 
 #endif /* __LIBSHOUT_SHOUT_PRIVATE_H__ */
