@@ -36,7 +36,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #elif _WIN32
-#include <os.h>
+#include <compat.h>
 #endif
 
 #ifdef HAVE_SYS_UIO_H
@@ -62,16 +62,12 @@ struct iovec
 #endif
 
 #ifndef sock_t
-#ifdef _WIN32
-#define sock_t SOCKET
-#else
 #define sock_t int
-#endif
 #endif
 
 /* The following values are based on unix avoiding errno value clashes */
 #define SOCK_SUCCESS 0
-#define SOCK_ERROR -1
+#define SOCK_ERROR (sock_t)-1
 #define SOCK_TIMEOUT -2
 
 /* sock connect macro */
