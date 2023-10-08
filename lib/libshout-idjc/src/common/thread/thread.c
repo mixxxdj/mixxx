@@ -268,8 +268,8 @@ static void _catch_signals(void)
 }
 
 
-thread_type *thread_create_c(char *name, void *(*start_routine)(void *),
-        void *arg, int detached, int line, char *file)
+thread_type *thread_create_c(const char *name, void *(*start_routine)(void *),
+        void *arg, int detached, int line, const char *file)
 {
     thread_type *thread = NULL;
     thread_start_t *start = NULL;
@@ -314,6 +314,14 @@ thread_type *thread_create_c(char *name, void *(*start_routine)(void *),
         if (pthread_create (&thread->sys_thread, &attr, _start_routine, start) == 0)
         {
             pthread_attr_destroy (&attr);
+#ifdef HAVE_PTHREAD_SETNAME_NP
+            if (pthread_setname_np(thread->sys_thread, name) != 0) {
+                /* If the call above did not work it was likely due to name limit restrictions.
+                 * In that case we retry with a fixed name so we do not inherit our parent's name.
+                 */
+                pthread_setname_np(thread->sys_thread, "Worker");
+            }
+#endif
             return thread;
         }
         else

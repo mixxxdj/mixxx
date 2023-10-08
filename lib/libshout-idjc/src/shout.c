@@ -699,11 +699,11 @@ static const char *shout_get_mimetype(unsigned int format, unsigned int usage, c
                 return "video/x-matroska";
             }
         break;
-
         case SHOUT_FORMAT_TEXT:
             if (usage == SHOUT_USAGE_TEXT) {
                 return "text/plain; charset=utf-8";
             }
+        break;
         case SHOUT_FORMAT_AAC:
             if (usage == SHOUT_USAGE_AUDIO) {
                 return "audio/aac";
@@ -1161,7 +1161,6 @@ static int try_connect(shout_t *self)
             case SHOUT_FORMAT_AACPLUS:
                 rc = self->error = shout_open_adts(self);
                 break;
-
             default:
                 rc = SHOUTERR_INSANE;
                 break;

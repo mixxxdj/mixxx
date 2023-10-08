@@ -49,12 +49,6 @@ int shout_set_format(shout_t *self, unsigned int format)
         case SHOUT_FORMAT_WEBMAUDIO:
             return shout_set_content_format(self, SHOUT_FORMAT_WEBM, SHOUT_USAGE_AUDIO, NULL);
         break;
-        case SHOUT_FORMAT_AAC:
-            return shout_set_content_format(self, SHOUT_FORMAT_AAC, SHOUT_USAGE_AUDIO, NULL);
-        break;
-        case SHOUT_FORMAT_AACPLUS:
-            return shout_set_content_format(self, SHOUT_FORMAT_AACPLUS, SHOUT_USAGE_AUDIO, NULL);
-        break;
     }
 
     return self->error = SHOUTERR_UNSUPPORTED;
