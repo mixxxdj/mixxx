@@ -351,18 +351,17 @@ TEST_F(SearchQueryParserTest, TextFilterNegation) {
 
 TEST_F(SearchQueryParserTest, NumericFilter) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("bpm:127.12", QString()));
+    auto pQuery(m_parser.parseQuery("bitrate:127", QString()));
 
     TrackPointer pTrack = newTestTrack();
-    pTrack->trySetBpm(127);
+    pTrack->setBitrate(128);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("bpm = 127.12")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ( // half/double BPM, half
+            qPrintable(QString("bitrate = 127")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, NumericFilterYear) {
@@ -388,11 +387,10 @@ TEST_F(SearchQueryParserTest, NumericFilterYear) {
 
 TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("bpm:", QString()));
+    auto pQuery(m_parser.parseQuery("bitrate:", QString()));
 
     TrackPointer pTrack = newTestTrack();
-    pTrack->trySetBpm(127);
+    pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -402,84 +400,128 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
 
 TEST_F(SearchQueryParserTest, NumericFilterNegation) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("-bpm:127.12", QString()));
+    auto pQuery(m_parser.parseQuery("-bitrate:127", QString()));
 
     TrackPointer pTrack = newTestTrack();
-    pTrack->trySetBpm(127);
+    pTrack->setBitrate(129);
     EXPECT_TRUE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-        qPrintable(QString("NOT (bpm = 127.12)")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("NOT (bitrate = 127)")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("bpm: 127.12", QString()));
+    auto pQuery(m_parser.parseQuery("bitrate: 127", QString()));
 
     TrackPointer pTrack = newTestTrack();
-    pTrack->trySetBpm(127);
+    pTrack->setBitrate(128);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ(
-        qPrintable(QString("bpm = 127.12")),
-        qPrintable(pQuery->toSql()));
+    EXPECT_STREQ(qPrintable(QString("bitrate = 127")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, NumericFilterOperators) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("bpm:>127.12", QString()));
+    auto pQuery(m_parser.parseQuery("bitrate:>127", QString()));
 
     TrackPointer pTrack = newTestTrack();
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.13);
+    pTrack->setBitrate(128);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("bpm > 127.12")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("bitrate > 127")),
+            qPrintable(pQuery->toSql()));
 
-    pQuery = m_parser.parseQuery("bpm:>=127.12", QString());
-    pTrack->trySetBpm(127.11);
+    pQuery = m_parser.parseQuery("bitrate:>=127", QString());
+    pTrack->setBitrate(126);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("bpm >= 127.12")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("bitrate >= 127")),
+            qPrintable(pQuery->toSql()));
 
-    pQuery = m_parser.parseQuery("bpm:<127.12", QString());
-    pTrack->trySetBpm(127.12);
+    pQuery = m_parser.parseQuery("bitrate:<127", QString());
+    pTrack->setBitrate(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.11);
+    pTrack->setBitrate(126);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("bpm < 127.12")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("bitrate < 127")),
+            qPrintable(pQuery->toSql()));
 
-    pQuery = m_parser.parseQuery("bpm:<=127.12", QString());
-    pTrack->trySetBpm(127.13);
+    pQuery = m_parser.parseQuery("bitrate:<=127", QString());
+    pTrack->setBitrate(129);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->trySetBpm(127.12);
+    pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
-        qPrintable(QString("bpm <= 127.12")),
-        qPrintable(pQuery->toSql()));
+            qPrintable(QString("bitrate <= 127")),
+            qPrintable(pQuery->toSql()));
+
+    pQuery = m_parser.parseQuery("bitrate:=127", QString());
+    pTrack->setBitrate(129);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBitrate(127);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    EXPECT_STREQ(
+            qPrintable(QString("bitrate = 127")),
+            qPrintable(pQuery->toSql()));
 }
 
 TEST_F(SearchQueryParserTest, NumericRangeFilter) {
     m_parser.setSearchColumns({"artist", "album"});
-    auto pQuery(
-            m_parser.parseQuery("bpm:127.12-129", QString()));
+    auto pQuery(m_parser.parseQuery("bitrate:127-129", QString()));
 
     TrackPointer pTrack = newTestTrack();
+    pTrack->setBitrate(125);
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setBitrate(127);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->setBitrate(129);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bitrate BETWEEN 127 AND 129")),
+            qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, BpmFilter) {
+    m_parser.setSearchColumns({"artist", "album"});
+
+    // Test (implicit) half/double BPM match
+    auto pQuery(m_parser.parseQuery("bpm:127.12", QString()));
+
+    TrackPointer pTrack = newTestTrack();
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->trySetBpm(127.12);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("(bpm = 127.12) OR (bpm BETWEEN 63 AND 64) OR "
+                               "(bpm BETWEEN 254 AND 255)")),
+            qPrintable(pQuery->toSql()));
+
+    // Test (explicit) exact match
+    pQuery = m_parser.parseQuery("bpm:=127.12", QString());
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->trySetBpm(127.13);
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm = 127.12")),
+            qPrintable(pQuery->toSql()));
+
+    // Test BPM range
+    pQuery = m_parser.parseQuery("bpm:127.12-129", QString());
     pTrack->trySetBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
@@ -489,6 +531,26 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
 
     EXPECT_STREQ(
             qPrintable(QString("bpm BETWEEN 127.12 AND 129")),
+            qPrintable(pQuery->toSql()));
+
+    // Test fuzzy BPM match (hardcoded range is +- 6%)
+    pQuery = m_parser.parseQuery("~bpm:100", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->trySetBpm(106);
+    EXPECT_TRUE(pQuery->match(pTrack));
+    pTrack->trySetBpm(94);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm BETWEEN 94 AND 106")),
+            qPrintable(pQuery->toSql()));
+
+    // Test empty BPM
+    pQuery = m_parser.parseQuery("bpm:", QString());
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("")),
             qPrintable(pQuery->toSql()));
 }
 

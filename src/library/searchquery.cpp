@@ -508,8 +508,8 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     if (isDouble) {
         if (m_fuzzy) {
             // fuzzy search
-            m_rangeLower = std::floor((1 - kRelativeBpmRange) * bpm);
-            m_rangeUpper = std::ceil((1 + kRelativeBpmRange) * bpm);
+            m_rangeLower = floor((1 - kRelativeBpmRange) * bpm);
+            m_rangeUpper = ceil((1 + kRelativeBpmRange) * bpm);
             m_isRangeQuery = true;
         } else if (!opMatch.hasMatch() && !m_negate) {
             // Simple 'bpm:NNN' search.
