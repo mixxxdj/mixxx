@@ -2978,7 +2978,7 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
+  target_compile_definitions(mixxx-lib PUBLIC __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
 
@@ -2999,7 +2999,7 @@ if(FAAD)
   )
   target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
-    target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
+    target_compile_definitions(mixxx-lib PUBLIC __MP4V2__)
     target_link_libraries(mixxx-lib PRIVATE MP4v2::MP4v2)
   else()
     target_link_libraries(mixxx-lib PRIVATE MP4::MP4)
