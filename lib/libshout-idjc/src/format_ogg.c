@@ -3,6 +3,7 @@
  * $Id$
  *
  *  Copyright (C) 2002-2004 the Icecast team <team@icecast.org>
+ *  Copyright (C) 2015-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -90,9 +91,11 @@ static int send_ogg(shout_t *self, const unsigned char *data, size_t len)
     char        *buffer;
     ogg_page     page;
 
-    buffer = ogg_sync_buffer(&ogg_data->oy, (long)len);
+    buffer = ogg_sync_buffer(&ogg_data->oy, len);
+    if (!buffer)
+        return self->error = SHOUTERR_INSANE;
     memcpy(buffer, data, len);
-    ogg_sync_wrote(&ogg_data->oy, (long)len);
+    ogg_sync_wrote(&ogg_data->oy, len);
 
     while (ogg_sync_pageout(&ogg_data->oy, &page) == 1) {
         if (ogg_page_bos(&page)) {

@@ -15,6 +15,7 @@ add_library(${PROJECT_NAME} STATIC
     src/common/httpp/httpp.c
     src/common/httpp/encoding.c
     src/common/thread/thread.c
+    src/connection.c
     src/format_mpeg.c
     src/format_ogg.c
     src/format_webm.c
@@ -27,7 +28,7 @@ add_library(${PROJECT_NAME} STATIC
     src/tls.c
     src/util.c
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include src src/common)
+target_include_directories(${PROJECT_NAME} PRIVATE src src/common)
 
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
@@ -78,7 +79,8 @@ endif()
 # Configure shout.h
 set(SHOUT_THREADSAFE 1)
 set(SHOUT_TLS 1)
-configure_file(include/shoutidjc/shout.h.in "${CMAKE_CURRENT_BINARY_DIR}/include/shoutidjc/shout.h" @ONLY)
+configure_file(include/shoutidjc/shout.h.in "include/shoutidjc/shout.h" @ONLY)
+target_include_directories(${PROJECT_NAME} BEFORE PRIVATE include "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Required system dependencies
 # Ogg Vorbis

@@ -5,7 +5,8 @@
  *                    Brendan Cully <brendan@xiph.org>,
  *                    Karl Heyes <karl@xiph.org>,
  *                    Jack Moffitt <jack@icecast.org>,
- *                    Ed "oddsock" Zaleski <oddsock@xiph.org>
+ *                    Ed "oddsock" Zaleski <oddsock@xiph.org>,
+ * Copyright (C) 2014-2019 Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -194,12 +195,10 @@ int sock_stalled (int error)
 }
 
 
-#ifdef HAVE_GETADDRINFO
 static int sock_connect_pending (int error)
 {
     return error == EINPROGRESS || error == EALREADY;
 }
-#endif
 
 /* sock_valid_socket
 **
@@ -264,7 +263,7 @@ int sock_set_blocking(sock_t sock, int block)
 #ifdef __MINGW32__
     u_long varblock = 1;
 #else
-    u_long varblock = 1;
+    int varblock = 1;
 #endif
 #endif
 
@@ -329,7 +328,7 @@ ssize_t sock_writev (sock_t sock, const struct iovec *iov, size_t count)
 
 ssize_t sock_writev (sock_t sock, const struct iovec *iov, size_t count)
 {
-    int i = (int)count, accum = 0, ret;
+    int i = count, accum = 0, ret;
     const struct iovec *v = iov;
 
     while (i)
@@ -369,7 +368,7 @@ int sock_write_bytes(sock_t sock, const void *buff, size_t len)
         return SOCK_ERROR;
     } */
 
-    return send(sock, buff, (int)len, 0);
+    return send(sock, buff, len, 0);
 }
 
 /* sock_write_string
@@ -471,7 +470,7 @@ int sock_read_bytes(sock_t sock, char *buff, size_t len)
     if (!buff) return 0;
     if (len <= 0) return 0;
 
-    return recv(sock, buff, (int)len, 0);
+    return recv(sock, buff, len, 0);
 }
 
 /* sock_read_line
@@ -571,7 +570,7 @@ int sock_connected (sock_t sock, int timeout)
     FD_ZERO(&wfds);
     FD_SET(sock, &wfds);
 
-    switch (select((int)sock + 1, NULL, &wfds, NULL, timeval))
+    switch (select(sock + 1, NULL, &wfds, NULL, timeval))
     {
         case 0:
             return SOCK_TIMEOUT;
@@ -717,7 +716,7 @@ sock_t sock_get_server_socket (int port, const char *sinterface)
 {
     struct sockaddr_storage sa;
     struct addrinfo hints, *res, *ai;
-    char service [12];
+    char service [10];
     int sock;
 
     if (port < 0)
@@ -788,7 +787,7 @@ int sock_try_connection (sock_t sock, const char *hostname, unsigned int port)
         return -1;
     }
 
-    memcpy(&server.sin_addr, &sin.sin_addr, sizeof(IN_ADDR));
+    memcpy(&server.sin_addr, &sin.sin_addr, sizeof(struct sockaddr_in));
 
     server.sin_family = AF_INET;
     server.sin_port = htons((short)port);
