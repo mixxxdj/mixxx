@@ -61,6 +61,8 @@ class QMouseEventEditable : public QMouseEvent {
 #endif
 };
 
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(20);
+
 } // anonymous namespace
 #endif
 
@@ -168,7 +170,23 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     default:
         break;
     }
-    return QApplication::notify(target, event);
+
+    PerformanceTimer time;
+    time.start();
+
+    bool ret = QApplication::notify(target, event);
+
+    if (time.elapsed() > kEventNotifyExecTimeWarningThreshold) {
+        qDebug() << "Processing event type"
+                 << event->type()
+                 << "for object"
+                 << target->metaObject()->className()
+                 << target->objectName()
+                 << "took"
+                 << time.elapsed().debugMillisWithUnit();
+    }
+
+    return ret;
 }
 
 bool MixxxApplication::touchIsRightButton() {
