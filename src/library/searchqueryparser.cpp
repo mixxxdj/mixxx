@@ -343,6 +343,18 @@ std::unique_ptr<OrNode> SearchQueryParser::parseOrNode(const QString& query) con
 #endif
     for (const QString& rawAndNode : rawAndNodes) {
         if (!rawAndNode.isEmpty()) {
+            // Try both apostrophes and right single quotation marks.
+            if (rawAndNode.contains(QChar('\''))) {
+                QString quotationMarkAndNode = rawAndNode;
+                quotationMarkAndNode.replace(QChar('\''), QChar(0x2019));
+                pQuery->addNode(parseAndNode(quotationMarkAndNode));
+            }
+            if (rawAndNode.contains(QChar(0x2019))) {
+                QString apostropheAndNode = rawAndNode;
+                apostropheAndNode.replace(QChar(0x2019), QChar('\''));
+                pQuery->addNode(parseAndNode(apostropheAndNode));
+            }
+
             pQuery->addNode(parseAndNode(rawAndNode));
         }
     }
