@@ -12,8 +12,6 @@ class SearchQueryParser {
   public:
     explicit SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns);
 
-    virtual ~SearchQueryParser();
-
     void setSearchColumns(QStringList searchColumns);
 
     std::unique_ptr<QueryNode> parseQuery(

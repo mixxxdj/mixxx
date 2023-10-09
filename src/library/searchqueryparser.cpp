@@ -71,9 +71,6 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection, QStringL
             QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
 
-SearchQueryParser::~SearchQueryParser() {
-}
-
 void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
     m_queryColumns = std::move(searchColumns);
 
