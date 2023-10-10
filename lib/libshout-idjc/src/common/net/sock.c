@@ -289,7 +289,7 @@ int sock_write_bytes(sock_t sock, const void *buff, size_t len)
         return SOCK_ERROR;
     } */
 
-    return send(sock, buff, len, 0);
+    return (int)send(sock, buff, len, 0);
 }
 
 /* sock_write
@@ -381,7 +381,7 @@ int sock_read_bytes(sock_t sock, char *buff, size_t len)
     if (!buff) return 0;
     if (len <= 0) return 0;
 
-    return recv(sock, buff, len, 0);
+    return (int)recv(sock, buff, len, 0);
 }
 
 /* sock_read_line
