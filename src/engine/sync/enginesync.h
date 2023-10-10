@@ -2,6 +2,8 @@
 
 #include <gtest/gtest_prod.h>
 
+#include <QString>
+
 #include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
@@ -9,8 +11,8 @@
 class InternalClock;
 class EngineChannel;
 
-#define BPM_CONFIG_GROUP "[BPM]"
-#define SYNC_LOCK_ALGORITHM_CONFIG_KEY "sync_lock_algorithm"
+const QString kBpmConfigGroup = QStringLiteral("[BPM]");
+const QString kSyncLockAlgorithmConfigKey = QStringLiteral("sync_lock_algorithm");
 
 /// EngineSync is the heart of the Mixxx Sync Lock engine.  It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses

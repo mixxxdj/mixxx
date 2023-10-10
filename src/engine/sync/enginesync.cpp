@@ -254,7 +254,7 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
     }
 
     const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+            m_pConfig->getValue<int>(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
                     PREFER_SOFT_LEADER));
     switch (picker) {
     case PREFER_SOFT_LEADER:

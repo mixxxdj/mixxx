@@ -466,7 +466,7 @@ void DlgPrefDeck::slotUpdate() {
 
     const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
             static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
-                    ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+                    ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
                     EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
     if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER) {
         radioButtonSoftLeader->setChecked(true);
@@ -741,10 +741,10 @@ void DlgPrefDeck::slotApply() {
                    ConfigValue(configSPAutoReset));
 
     if (radioButtonSoftLeader->isChecked()) {
-        m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
                 static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
     } else {
-        m_pConfig->setValue(ConfigKey(BPM_CONFIG_GROUP, SYNC_LOCK_ALGORITHM_CONFIG_KEY),
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
                 static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_LOCK_BPM));
     }
 
