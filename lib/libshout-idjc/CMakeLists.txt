@@ -85,7 +85,7 @@ endif()
 set(SHOUT_THREADSAFE 1)
 set(SHOUT_TLS 1)
 configure_file(include/shoutidjc/shout.h.in "include/shoutidjc/shout.h" @ONLY)
-target_include_directories(${PROJECT_NAME} BEFORE PRIVATE include "${CMAKE_CURRENT_BINARY_DIR}/include")
+target_include_directories(${PROJECT_NAME} BEFORE PUBLIC include "${CMAKE_CURRENT_BINARY_DIR}/include")
 
 # Required system dependencies
 # Ogg Vorbis
