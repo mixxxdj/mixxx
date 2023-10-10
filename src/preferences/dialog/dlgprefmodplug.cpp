@@ -1,8 +1,5 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 
-#include <QtDebug>
-
-#include "defs_urls.h"
 #include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"

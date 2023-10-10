@@ -1,7 +1,5 @@
 #include "encoder/encoderopus.h"
 
-#include <stdlib.h>
-
 #include <QByteArray>
 #include <QMapIterator>
 
