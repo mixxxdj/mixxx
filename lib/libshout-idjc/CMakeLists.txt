@@ -251,6 +251,11 @@ if(HAVE_SETHOSTENT)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_SETHOSTENT)
 endif()
 
+check_include_file(ws2tcpip.h HAVE_WS2TCPIP_H)
+if(HAVE_WS2TCPIP_H)
+    target_compile_definitions(${PROJECT_NAME} HAVE_WS2TCPIP_H)
+endif()
+
 check_symbol_exists(strcasestr "string.h" HAVE_STRCASESTR)
 if(HAVE_STRCASESTR)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRCASESTR)
