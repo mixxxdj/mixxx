@@ -4,9 +4,9 @@
 
 #include "util/types.h"
 #include "preferences/usersettings.h"
-#include "vinylcontrol/vinylsignalquality.h"
 
 class ControlProxy;
+struct VinylSignalQualityReport;
 
 class VinylControl : public QObject {
     Q_OBJECT
