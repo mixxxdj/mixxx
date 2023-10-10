@@ -55,7 +55,11 @@
 #endif
 
 #ifndef sock_t
+#ifdef _WIN32
+#define sock_t SOCKET
+#else
 #define sock_t int
+#endif
 #endif
 
 /* The following values are based on unix avoiding errno value clashes */
