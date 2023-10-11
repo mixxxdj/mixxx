@@ -259,6 +259,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         m_iRateRangePercent = kDefaultRateRangePercent;
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
+    // Write verified value back to config so DlgPrefLibrary can use it to
+    // calculate the 'fuzzy' BPM search range
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+            ConfigValue{m_iRateRangePercent});
 
     // Key lock mode
     connect(buttonGroupKeyLockMode,

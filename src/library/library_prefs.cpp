@@ -48,6 +48,11 @@ const ConfigKey mixxx::library::prefs::kSearchDebouncingTimeoutMillisConfigKey =
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("SearchDebouncingTimeoutMillis")};
 
+const ConfigKey mixxx::library::prefs::kSearchBpmFuzzyRangeConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("search_bpm_fuzzy_range")};
+
 const ConfigKey mixxx::library::prefs::kEnableSearchCompletionsConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,

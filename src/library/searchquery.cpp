@@ -24,8 +24,6 @@ const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)
 // > are not necessarily greedy.
 const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
 
-constexpr double kRelativeBpmRange = 0.06; // +/-6 %
-
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -473,6 +471,21 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
     return 60 * m + s;
 }
 
+// static
+constexpr double BpmFilterNode::kRelativeRangeDefault;
+
+// static
+double BpmFilterNode::s_relativeRange = kRelativeRangeDefault;
+
+// static
+void BpmFilterNode::setBpmRelativeRange(double range) {
+    // range < 0 would yield zero results because m_dRangeLow > m_dRangeHigh
+    VERIFY_OR_DEBUG_ASSERT(range >= 0) {
+        return;
+    }
+    s_relativeRange = range;
+}
+
 BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         : m_fuzzy(fuzzy),
           m_negate(negate),
@@ -507,14 +520,13 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     const double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
         if (m_fuzzy) {
-            // fuzzy search
-            m_rangeLower = floor((1 - kRelativeBpmRange) * bpm);
-            m_rangeUpper = ceil((1 + kRelativeBpmRange) * bpm);
+            // fuzzy search +- n%
+            m_rangeLower = floor((1 - s_relativeRange) * bpm);
+            m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
             m_isRangeQuery = true;
         } else if (!opMatch.hasMatch() && !m_negate) {
             // Simple 'bpm:NNN' search.
-            // Include half/double BPM (rounded to int) if enabled
-            qWarning() << "     .halfDouble";
+            // Include half/double BPM (rounded to int)
             m_bpm = bpm;
             m_bpmHalfLower = floor(bpm / 2);
             m_bpmHalfUpper = ceil(bpm / 2);
@@ -533,7 +545,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     } else if (m_fuzzy) {
         // Invalid combination. Fuzzy was requested but argument is not a single
         // number. Maybe it's a range query, wrong operator order (e.g. =>) or
-        // simply invalid characters.
+        // simply invalid characters.t the BPM fuzzy range)
         return;
     }
     // else test if this is a valid range query

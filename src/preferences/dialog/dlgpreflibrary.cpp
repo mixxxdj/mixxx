@@ -14,11 +14,16 @@
 #include "library/dlgtrackmetadataexport.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/searchquery.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
 #include "util/desktophelper.h"
 #include "widget/wsearchlineedit.h"
+
+namespace {
+constexpr int kDefaultFuzzyRateRangePercent = 75;
+} // namespace
 
 using namespace mixxx::library::prefs;
 
@@ -91,6 +96,16 @@ DlgPrefLibrary::DlgPrefLibrary(
             this,
             &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
+    comboBox_search_bpm_fuzzy_range->clear();
+    comboBox_search_bpm_fuzzy_range->addItem("25 %", 25);
+    comboBox_search_bpm_fuzzy_range->addItem("50 %", 50);
+    comboBox_search_bpm_fuzzy_range->addItem("75 %", 75);
+    comboBox_search_bpm_fuzzy_range->addItem("100 %", 100);
+    connect(comboBox_search_bpm_fuzzy_range,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefLibrary::slotBpmRangeSelected);
+
     updateSearchLineEditHistoryOptions();
 
     connect(btn_library_font, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
@@ -121,7 +136,20 @@ DlgPrefLibrary::DlgPrefLibrary(
             m_pLinkColor,
             tr("See the manual for details"),
             MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    // TODO It seems this isnot required anymore with Qt 6.2.3
     connect(label_settingsManualLink,
+            &QLabel::linkActivated,
+            [](const QString& url) {
+                mixxx::DesktopHelper::openUrl(url);
+            });
+
+    // Add link to the track search documentation
+    label_searchBpmFuzzyRangeInfo->setText(
+            label_searchBpmFuzzyRangeInfo->text() + QStringLiteral(" ") +
+            coloredLinkString(m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SETTINGS_DIRECTORY_URL));
+    connect(label_searchBpmFuzzyRangeInfo,
             &QLabel::linkActivated,
             [](const QString& url) {
                 mixxx::DesktopHelper::openUrl(url);
@@ -222,6 +250,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
             WSearchLineEdit::kCompletionsEnabledDefault);
     checkBox_enable_search_history_shortcuts->setChecked(
             WSearchLineEdit::kHistoryShortcutsEnabledDefault);
+    comboBox_search_bpm_fuzzy_range->setCurrentIndex(
+            comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent));
 
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -320,6 +350,17 @@ void DlgPrefLibrary::slotUpdate() {
                     kSearchDebouncingTimeoutMillisConfigKey,
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     spinBox_search_debouncing_timeout->setValue(searchDebouncingTimeoutMillis);
+
+    const auto searchBpmFuzzyRange =
+            m_pConfig->getValue(
+                    kSearchBpmFuzzyRangeConfigKey,
+                    BpmFilterNode::kRelativeRangeDefault);
+    int index = comboBox_search_bpm_fuzzy_range->findData(static_cast<int>(searchBpmFuzzyRange));
+    if (index == -1) {
+        index = comboBox_search_bpm_fuzzy_range->findData(kDefaultFuzzyRateRangePercent);
+    }
+    comboBox_search_bpm_fuzzy_range->setCurrentIndex(index);
+    slotBpmRangeSelected(index);
 
     const auto bpmColumnPrecision =
             m_pConfig->getValue(
@@ -564,6 +605,21 @@ void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebounci
             kSearchDebouncingTimeoutMillisConfigKey,
             searchDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
+}
+
+void DlgPrefLibrary::slotBpmRangeSelected(int index) {
+    const int bpmRange = comboBox_search_bpm_fuzzy_range->itemData(index).toInt();
+    m_pConfig->set(kSearchBpmFuzzyRangeConfigKey, ConfigValue{bpmRange});
+    const int rateRangePercent =
+            m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"), 8);
+    qWarning() << "     .";
+    qWarning() << "     Pref fuzzy range selected:";
+    qWarning().nospace() << "       " << bpmRange << "%";
+    qWarning().nospace() << "       of " << rateRangePercent << "%";
+    qWarning() << "       =" << bpmRange * rateRangePercent / 10000.0;
+    qWarning() << "     .";
+    // 75% / 100 * 8% / 100
+    BpmFilterNode::setBpmRelativeRange(bpmRange * rateRangePercent / 10000.0);
 }
 
 void DlgPrefLibrary::updateSearchLineEditHistoryOptions() {

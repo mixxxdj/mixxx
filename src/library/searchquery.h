@@ -190,6 +190,9 @@ class DurationFilterNode : public NumericFilterNode {
 // 61-61, 123.1 and 246-247 BPM
 class BpmFilterNode : public QueryNode {
   public:
+    static constexpr double kRelativeRangeDefault = 0.06;
+    static void setBpmRelativeRange(double range);
+
     BpmFilterNode(QString& argument, bool fuzzy, bool negate);
 
   private:
@@ -212,6 +215,8 @@ class BpmFilterNode : public QueryNode {
     double m_bpmHalfUpper;
     double m_bpmDoubleLower;
     double m_bpmDoubleUpper;
+
+    static double s_relativeRange;
 };
 
 class KeyFilterNode : public QueryNode {

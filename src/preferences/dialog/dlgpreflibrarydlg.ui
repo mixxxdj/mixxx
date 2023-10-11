@@ -325,10 +325,30 @@
        </widget>
       </item>
 
-      <item row="3" column="0" colspan="3">
-       <widget class="QCheckBox" name="checkBox_BpmHalfDoubleSearch">
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_searchBpmFuzzyRange">
         <property name="text">
-         <string>Search also for half and double BPM with 'bpm:123'</string>
+         <string>Percentage of pitch slider range for 'fuzzy' BPM search:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+        <property name="buddy">
+         <cstring>comboBox_search_bpm_fuzzy_range</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBox_search_bpm_fuzzy_range">
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QLabel" name="label_searchBpmFuzzyRangeInfo">
+        <property name="text">
+         <string>This range will be used for the 'fuzzy' BPM search (~bpm:) via the search box, as well as for BPM search in Track context menu > Search related Tracks</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -657,6 +677,7 @@
   <tabstop>spinBox_search_debouncing_timeout</tabstop>
   <tabstop>checkBox_enable_search_completions</tabstop>
   <tabstop>checkBox_enable_search_history_shortcuts</tabstop>
+  <tabstop>comboBox_search_bpm_fuzzy_range</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
   <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>
