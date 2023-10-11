@@ -13,8 +13,6 @@ class SearchQueryParser {
   public:
     explicit SearchQueryParser(TrackCollection* pTrackCollection, QStringList searchColumns);
 
-    virtual ~SearchQueryParser();
-
     void setSearchColumns(QStringList searchColumns);
 
     std::unique_ptr<QueryNode> parseQuery(
@@ -33,8 +31,13 @@ class SearchQueryParser {
     std::unique_ptr<AndNode> parseAndNode(const QString& query) const;
     std::unique_ptr<OrNode> parseOrNode(const QString& query) const;
 
-    QString getTextArgument(QString argument,
-                            QStringList* tokens) const;
+    struct TextArgumentResult {
+        QString argument;
+        StringMatch mode;
+    };
+
+    TextArgumentResult getTextArgument(QString argument,
+            QStringList* tokens) const;
 
     TrackCollection* m_pTrackCollection;
     QStringList m_queryColumns;

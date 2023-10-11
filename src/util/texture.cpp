@@ -7,7 +7,7 @@ QOpenGLTexture* createTexture(const QImage& image) {
     QOpenGLTexture* pTexture = new QOpenGLTexture(image);
     pTexture->setMinificationFilter(QOpenGLTexture::Linear);
     pTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    pTexture->setWrapMode(QOpenGLTexture::ClampToBorder);
+    pTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
 
     return pTexture;
 }
