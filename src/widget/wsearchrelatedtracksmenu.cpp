@@ -2,6 +2,7 @@
 
 #include <QScreen>
 
+#include "library/searchquery.h"
 #include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
@@ -14,17 +15,7 @@ namespace {
 // a viable upper bound for the context menu.
 constexpr double kMaxMenuToAvailableScreenWidthRatio = 0.2;
 
-constexpr double kRelativeBpmRange = 0.06; // +/-6 %
-
 const QString kActionTextPrefixSuffixSeparator = QStringLiteral(" | ");
-
-inline int bpmLowerBound(double bpm) {
-    return static_cast<int>(std::floor((1 - kRelativeBpmRange) * bpm));
-}
-
-inline int bpmUpperBound(double bpm) {
-    return static_cast<int>(std::ceil((1 + kRelativeBpmRange) * bpm));
-}
 
 inline QString quoteSearchQueryText(const QString& text) {
     return QChar('"') + text + QChar('"');
@@ -141,18 +132,23 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
     {
         const auto bpm = track.getBpm();
         if (bpm > 0) {
-            const auto minBpmNumber = QString::number(bpmLowerBound(bpm));
-            const auto maxBpmNumber = QString::number(bpmUpperBound(bpm));
+            QString bpmStr = QString::number(bpm);
+            // BpmFilterNode has the user value for the fuzzy range, set in DlgPrefLibrary
+            BpmFilterNode* pBpmNode = new BpmFilterNode(bpmStr, true /* fuzzy search */);
+            double bpmLowerBound = 0.0;
+            double bpmUpperBound = 0.0;
+            DEBUG_ASSERT(pBpmNode->isRangeQuery(&bpmLowerBound, &bpmUpperBound));
             const QString searchQuery =
                     QStringLiteral("bpm:>=") +
-                    minBpmNumber +
+                    QString::number(bpmLowerBound) +
                     QStringLiteral(" bpm:<=") +
-                    maxBpmNumber;
-            addTriggerSearchAction(
-                    &addSeparatorBeforeNextAction,
+                    QString::number(bpmUpperBound);
+            addTriggerSearchAction(&addSeparatorBeforeNextAction,
                     searchQuery,
                     tr("BPM"),
-                    tr("between %1 and %2").arg(minBpmNumber, maxBpmNumber));
+                    tr("between %1 and %2")
+                            .arg(QString::number(bpmLowerBound),
+                                    QString::number(bpmUpperBound)));
         }
     }
 
