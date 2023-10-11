@@ -1565,7 +1565,7 @@ if(APPLE)
   option(AU_EFFECTS "Audio Unit (AU) effects integration" ON)
   if(AU_EFFECTS)
     target_sources(mixxx-lib PRIVATE
-      src/effects/backends/au/aubackend.cpp
+      src/effects/backends/au/aubackend.mm
     )
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()

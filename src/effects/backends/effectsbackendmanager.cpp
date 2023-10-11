@@ -18,7 +18,7 @@ EffectsBackendManager::EffectsBackendManager() {
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));
 #ifdef __AU_EFFECTS__
-    addBackend(EffectsBackendPointer(new AUBackend()));
+    addBackend(createAUBackend());
 #endif
 #ifdef __LILV__
     addBackend(EffectsBackendPointer(new LV2Backend()));
