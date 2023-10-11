@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "effects/backends/au/aubackend.h"
+#include "effects/backends/au/aueffectprocessor.h"
 #include "effects/defs.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
@@ -40,8 +41,7 @@ class AUBackend : public EffectsBackend {
 
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest) const override {
-        // TODO
-        return {};
+        return std::make_unique<AUEffectProcessor>(pManifest);
     }
 };
 

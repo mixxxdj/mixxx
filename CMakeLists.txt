@@ -1566,6 +1566,7 @@ if(APPLE)
   if(AU_EFFECTS)
     target_sources(mixxx-lib PRIVATE
       src/effects/backends/au/aubackend.mm
+      src/effects/backends/au/aueffectprocessor.mm
     )
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()
