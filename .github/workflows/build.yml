@@ -477,6 +477,9 @@ jobs:
     name: "Update manifest file on download server"
     runs-on: ubuntu-latest
     needs: build
+    # Always run this job, even if one or more jobs from the `build` jobs
+    # fail to allow partial updates of the manifest.
+    if: always()
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
@@ -501,6 +504,7 @@ jobs:
             export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
           fi;
           python3 tools/deploy.py generate-manifest
+          --update
           --output-dir 'deploy/'
           --dest-path "${DEPLOY_PATH}"
           --dest-url 'https://downloads.mixxx.org'

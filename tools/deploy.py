@@ -40,12 +40,10 @@ def url_exists(url):
 
 def url_download_json(url):
     """Returns the JSON object from the given URL or return None."""
-    try:
-        resp = url_fetch(url)
-        manifest_data = resp.read().decode()
-    except IOError:
-        return None
-
+    resp = url_fetch(url)
+    if resp.status != 200:
+        raise IOError(f"Server responded with HTTP status {resp.status}")
+    manifest_data = resp.read().decode().strip()
     return json.loads(manifest_data)
 
 
@@ -211,7 +209,6 @@ def collect_manifest_data(job_data):
     """Parse the job metadata dict and return the manifest data."""
     job_result = job_data["result"]
     print(f"Build job result: {job_result}")
-    assert job_result == "success"
 
     manifest_data = {}
     for output_name, output_data in job_data["outputs"].items():
@@ -260,12 +257,8 @@ def generate_manifest(args):
     manifest_data = collect_manifest_data(job_data)
     print("Manifest:", json.dumps(manifest_data, indent=2, sort_keys=True))
 
-    # Write the manifest.json for subsequent deployment to the server
-    with open(output_destpath, mode="w") as fp:
-        json.dump(manifest_data, fp, indent=2, sort_keys=True)
-
     # If possible, check if the remote manifest is the same as our local one
-    remote_manifest_data = None
+    remote_manifest_data = {}
     if args.dest_url:
         # Check if generated manifest.json file differs from the one that
         # is currently deployed.
@@ -273,9 +266,18 @@ def generate_manifest(args):
         manifest_url = manifest_url.format_map(format_data)
 
         try:
-            remote_manifest_data = url_fetch(manifest_url)
+            remote_manifest_data = url_download_json(manifest_url) or {}
         except IOError:
-            pass
+            print("Fetching remote manifest failed!")
+
+    if args.update:
+        for key, value in remote_manifest_data.items():
+            if key not in manifest_data:
+                manifest_data[key] = value
+
+    # Write the manifest.json for subsequent deployment to the server
+    with open(output_destpath, mode="w") as fp:
+        json.dump(manifest_data, fp, indent=2, sort_keys=True)
 
     # Skip deployment if the remote manifest is the same as the local one.
     if manifest_data != remote_manifest_data:
@@ -349,6 +351,11 @@ def main(argv=None):
     )
     manifest_parser.add_argument(
         "--dest-url", action="store", help="Destination URL prefix"
+    )
+    manifest_parser.add_argument(
+        "--update",
+        action="store_true",
+        help="Fetch the remote manifest and update it ",
     )
 
     args = parser.parse_args(argv)
