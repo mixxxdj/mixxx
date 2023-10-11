@@ -41,8 +41,7 @@ class AUBackend : public EffectsBackend {
     EffectManifestPointer getManifest(const QString& effectId) const override {
         AVAudioUnitComponent* component =
                 m_componentsById[effectId.toNSString()];
-        return EffectManifestPointer(new AUManifest(
-                effectId, QString::fromNSString([component name])));
+        return EffectManifestPointer(new AUManifest(effectId, component));
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
@@ -50,9 +49,8 @@ class AUBackend : public EffectsBackend {
 
         for (NSString* effectId in m_componentsById) {
             AVAudioUnitComponent* component = m_componentsById[effectId];
-            manifests.append(EffectManifestPointer(
-                    new AUManifest(QString::fromNSString(effectId),
-                            QString::fromNSString([component name]))));
+            manifests.append(EffectManifestPointer(new AUManifest(
+                    QString::fromNSString(effectId), component)));
         }
 
         return manifests;

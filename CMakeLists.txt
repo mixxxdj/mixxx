@@ -1567,7 +1567,7 @@ if(APPLE)
     target_sources(mixxx-lib PRIVATE
       src/effects/backends/au/aubackend.mm
       src/effects/backends/au/aueffectprocessor.mm
-      src/effects/backends/au/aumanifest.cpp
+      src/effects/backends/au/aumanifest.mm
     )
     target_link_libraries(mixxx-lib PRIVATE "-weak_framework AVFAudio")
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
