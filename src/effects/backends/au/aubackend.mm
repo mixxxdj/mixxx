@@ -4,6 +4,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <Foundation/Foundation.h>
 
+#include <QDebug>
 #include <QList>
 #include <QString>
 #include <memory>
@@ -75,6 +76,8 @@ class AUBackend : public EffectsBackend {
     }
 
     void loadAudioUnits() {
+        qDebug() << "Loading audio units...";
+
         // See
         // https://developer.apple.com/documentation/audiotoolbox/audio_unit_v3_plug-ins/incorporating_audio_effects_and_instruments?language=objc
 
@@ -99,6 +102,7 @@ class AUBackend : public EffectsBackend {
                 [[NSMutableDictionary alloc] init];
 
         for (AVAudioUnitComponent* component in components) {
+            qDebug() << "Found audio unit" << [component name];
             QString effectId = freshId();
             componentsById[effectId.toNSString()] = component;
         }
