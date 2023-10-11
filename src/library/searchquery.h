@@ -193,11 +193,22 @@ class BpmFilterNode : public QueryNode {
     static constexpr double kRelativeRangeDefault = 0.06;
     static void setBpmRelativeRange(double range);
 
-    BpmFilterNode(QString& argument, bool fuzzy, bool negate);
+    BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
+
+    // Allows WSearchRelatedTracksMenu to construct the QAction title
+    bool isRangeQuery(double* low, double* high) const {
+        if (m_isRangeQuery) {
+            *low = m_rangeLower;
+            *high = m_rangeUpper;
+            return true;
+        }
+        return false;
+    }
+
+    QString toSql() const override;
 
   private:
     bool match(const TrackPointer& pTrack) const override;
-    QString toSql() const override;
 
     bool m_fuzzy;
     bool m_negate;

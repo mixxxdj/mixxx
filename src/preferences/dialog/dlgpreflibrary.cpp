@@ -612,13 +612,6 @@ void DlgPrefLibrary::slotBpmRangeSelected(int index) {
     m_pConfig->set(kSearchBpmFuzzyRangeConfigKey, ConfigValue{bpmRange});
     const int rateRangePercent =
             m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"), 8);
-    qWarning() << "     .";
-    qWarning() << "     Pref fuzzy range selected:";
-    qWarning().nospace() << "       " << bpmRange << "%";
-    qWarning().nospace() << "       of " << rateRangePercent << "%";
-    qWarning() << "       =" << bpmRange * rateRangePercent / 10000.0;
-    qWarning() << "     .";
-    // 75% / 100 * 8% / 100
     BpmFilterNode::setBpmRelativeRange(bpmRange * rateRangePercent / 10000.0);
 }
 
