@@ -17,6 +17,7 @@ enum class EffectEnableState {
 // The order of the enum values here is used to determine sort order in EffectManifest::alphabetize
 enum class EffectBackendType {
     BuiltIn,
+    AU,
     LV2,
     Unknown
 };
