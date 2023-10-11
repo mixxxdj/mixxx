@@ -40,25 +40,18 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     // Only public for testing
     struct FutureResult {
         FutureResult()
-                : pRequester(nullptr),
-                  requestedCacheKey(CoverImageUtils::defaultCacheKey()) {
+                : requestedCacheKey(CoverImageUtils::defaultCacheKey()) {
         }
         FutureResult(
-                const QObject* pRequestorArg,
                 mixxx::cache_key_t requestedCacheKeyArg)
-                : pRequester(pRequestorArg),
-                  requestedCacheKey(requestedCacheKeyArg) {
+                : requestedCacheKey(requestedCacheKeyArg) {
         }
-
-        const QObject* pRequester;
         mixxx::cache_key_t requestedCacheKey;
-
         CoverArt coverArt;
     };
     // Load cover from path indicated in coverInfo. WARNING: This is run in a
     // worker thread.
     static FutureResult loadCover(
-            const QObject* pRequester,
             TrackPointer pTrack,
             CoverInfo coverInfo,
             int desiredWidth);
@@ -91,5 +84,5 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const CoverInfo& info,
             int desiredWidth);
 
-    QSet<QPair<const QObject*, mixxx::cache_key_t>> m_runningRequests;
+    QMultiHash<QString, const QObject*> m_runningRequests;
 };

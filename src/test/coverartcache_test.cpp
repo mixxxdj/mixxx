@@ -29,7 +29,7 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0);
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
         EXPECT_TRUE(res.coverArt.coverLocation.isNull());
     }
@@ -47,7 +47,7 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         info.trackLocation = trackLocation;
 
         CoverArtCache::FutureResult res;
-        res = CoverArtCache::loadCover(nullptr, TrackPointer(), info, 0);
+        res = CoverArtCache::loadCover(TrackPointer(), info, 0);
         EXPECT_EQ(img, res.coverArt.loadedImage.image);
         EXPECT_QSTRING_EQ(info.coverLocation, res.coverArt.coverLocation);
     }

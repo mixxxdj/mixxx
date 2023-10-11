@@ -162,10 +162,12 @@ void CoverArtCache::tryLoadCover(
     }
 
     const auto requestedCacheKey = coverInfo.cacheKey();
-    // keep a list of trackIds for which a future is currently running
+    QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
+    // keep a list of cacheKeys for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequester, requestedCacheKey);
-    if (m_runningRequests.contains(requestId)) {
+    bool requestPending = m_runningRequests.contains(cacheKey);
+    m_runningRequests.insert(cacheKey, pRequester);
+    if (requestPending) {
         return;
     }
 
@@ -174,12 +176,11 @@ void CoverArtCache::tryLoadCover(
                 << "requestCover starting future for"
                 << coverInfo;
     }
-    m_runningRequests.insert(requestId);
+
     // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             &CoverArtCache::loadCover,
-            pRequester,
             pTrack,
             coverInfo,
             desiredWidth);
@@ -193,7 +194,6 @@ void CoverArtCache::tryLoadCover(
 
 //static
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const QObject* pRequester,
         TrackPointer pTrack,
         CoverInfo coverInfo,
         int desiredWidth) {
@@ -207,7 +207,6 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             pTrack->getLocation() == coverInfo.trackLocation);
 
     auto res = FutureResult(
-            pRequester,
             coverInfo.cacheKey());
 
     CoverInfo::LoadedImage loadedImage = coverInfo.loadImage(pTrack);
@@ -258,6 +257,8 @@ void CoverArtCache::coverLoaded() {
         kLogger.trace() << "coverLoaded" << res.coverArt;
     }
 
+    QString cacheKey = pixmapCacheKey(
+            res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
     QPixmap pixmap;
     if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
         if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
@@ -293,18 +294,15 @@ void CoverArtCache::coverLoaded() {
             // It is very unlikely that res.coverArt.hash generates the
             // same hash for different images. Otherwise the wrong image would
             // be displayed when loaded from the cache.
-            QString cacheKey = pixmapCacheKey(
-                    res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
             QPixmapCache::insert(cacheKey, pixmap);
         }
     }
 
-    m_runningRequests.remove(qMakePair(res.pRequester, res.requestedCacheKey));
-
-    if (res.pRequester) {
+    const QObject* pRequester;
+    while ((pRequester = m_runningRequests.take(cacheKey)) != nullptr) {
         emit coverFound(
-                res.pRequester,
-                std::move(res.coverArt),
+                pRequester,
+                res.coverArt,
                 pixmap);
     }
 }
