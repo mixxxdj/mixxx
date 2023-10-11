@@ -7,4 +7,7 @@ AUManifest::AUManifest(const QString& id, AVAudioUnitComponent* component) {
 
     setId(id);
     setName(QString::fromNSString([component name]));
+    setVersion(QString::fromNSString([component versionString]));
+    setDescription(QString::fromNSString([component typeName]));
+    setAuthor(QString::fromNSString([component manufacturerName]));
 }
