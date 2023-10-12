@@ -416,7 +416,9 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
     }
-    return nullptr;
+    // Explicitly return a TableItemDelegate, otherwise
+    // the default QStyleItemDelegate will be used.
+    return new TableItemDelegate(pTableView);
 }
 
 QVariant BaseTrackTableModel::data(

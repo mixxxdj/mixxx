@@ -8,7 +8,7 @@
 #include "widget/wtracktableview.h"
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
-        : QStyledItemDelegate(pTableView),
+        : QItemDelegate(pTableView),
           m_pTableView(pTableView) {
     DEBUG_ASSERT(m_pTableView);
     auto* pTrackTableView = qobject_cast<WTrackTableView*>(m_pTableView);
@@ -22,7 +22,7 @@ void TableItemDelegate::paint(
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
     PainterScope painterScope(painter);
-    painter->setClipRect(option.rect);
+    painter->setClipRect(addMargins(option.rect));
 
     // Set the palette appropriately based on whether the row is selected or
     // not. We also have to check if it is inactive or not and use the
@@ -78,5 +78,9 @@ void TableItemDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    QStyledItemDelegate::paint(painter, option, index);
+    painter->drawText(addMargins(option.rect), Qt::AlignVCenter, index.data().toString());
+}
+
+QRect TableItemDelegate::addMargins(const QRect& rect) const {
+    return QRect(rect.x() + 4, rect.y(), rect.width() - 8, rect.height());
 }

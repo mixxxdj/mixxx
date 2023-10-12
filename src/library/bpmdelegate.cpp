@@ -81,14 +81,21 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     // #LibraryBPMButton::indicator:unchecked {
     //  image: url(:/images/library/ic_library_unlocked.svg);
     // }
-    QStyleOptionViewItem opt = option;
-    initStyleOption(&opt, index);
 
-    if (m_pTableView != nullptr) {
-        QStyle* style = m_pTableView->style();
-        if (style != nullptr) {
-            style->drawControl(QStyle::CE_ItemViewItem, &opt, painter,
-                               m_pCheckBox);
-        }
-    }
+    // TODO: Draw the checkbox. Considering using the approach used with
+    // PreviewButtonDelegate and LibraryPreviewButton
+    //
+    // QStyleOptionViewItem opt = option;
+    // initStyleOption(&opt, index);
+    // if (m_pTableView != nullptr) {
+    //     QStyle* style = m_pTableView->style();
+    //     if (style != nullptr) {
+    //         style->drawControl(QStyle::CE_ItemViewItem, &opt, painter,
+    //                         m_pCheckBox);
+    //     }
+    // }
+
+    painter->drawText(addMargins(option.rect),
+            Qt::AlignVCenter | Qt::AlignRight,
+            index.data().toString());
 }

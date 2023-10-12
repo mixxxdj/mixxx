@@ -1,9 +1,9 @@
 #pragma once
 
-#include <QStyledItemDelegate>
+#include <QItemDelegate>
 #include <QTableView>
 
-class TableItemDelegate : public QStyledItemDelegate {
+class TableItemDelegate : public QItemDelegate {
     Q_OBJECT
   public:
     explicit TableItemDelegate(
@@ -27,6 +27,7 @@ class TableItemDelegate : public QStyledItemDelegate {
             const QModelIndex& index);
 
     int columnWidth(const QModelIndex &index) const;
+    QRect addMargins(const QRect& rect) const;
 
     QColor m_pFocusBorderColor;
     QTableView* m_pTableView;
