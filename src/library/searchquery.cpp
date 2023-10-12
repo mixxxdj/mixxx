@@ -24,6 +24,8 @@ const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)
 // > are not necessarily greedy.
 const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
 
+constexpr double kRelativeBpmRange = 0.06; // +/-6 %
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -471,14 +473,21 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
     return 60 * m + s;
 }
 
-BpmFilterNode::BpmFilterNode(QString& argument)
-        : m_isNullQuery(false),
+BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
+        : m_fuzzy(fuzzy),
+          m_negate(negate),
+          m_isNullQuery(false),
           m_isOperatorQuery(false),
           m_isRangeQuery(false),
+          m_isHalfDoubleQuery(false),
           m_operator("="),
           m_bpm(0.0),
           m_rangeLower(0.0),
-          m_rangeUpper(0.0) {
+          m_rangeUpper(0.0),
+          m_bpmHalfLower(0.0),
+          m_bpmHalfUpper(0.0),
+          m_bpmDoubleLower(0.0),
+          m_bpmDoubleUpper(0.0) {
     if (argument == kMissingFieldSearchTerm) {
         m_isNullQuery = true;
         return;
@@ -486,6 +495,10 @@ BpmFilterNode::BpmFilterNode(QString& argument)
 
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
     if (opMatch.hasMatch()) {
+        if (m_fuzzy) {
+            // fuzzy can't be combined with operators
+            return;
+        }
         m_operator = opMatch.captured(1);
         argument = opMatch.captured(2);
     }
@@ -493,8 +506,35 @@ BpmFilterNode::BpmFilterNode(QString& argument)
     bool isDouble = false;
     const double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
-        m_bpm = bpm;
-        m_isOperatorQuery = true;
+        if (m_fuzzy) {
+            // fuzzy search
+            m_rangeLower = std::floor((1 - kRelativeBpmRange) * bpm);
+            m_rangeUpper = std::ceil((1 + kRelativeBpmRange) * bpm);
+            m_isRangeQuery = true;
+        } else if (!opMatch.hasMatch() && !m_negate) {
+            // Simple 'bpm:NNN' search.
+            // Include half/double BPM (rounded to int) if enabled
+            qWarning() << "     .halfDouble";
+            m_bpm = bpm;
+            m_bpmHalfLower = floor(bpm / 2);
+            m_bpmHalfUpper = ceil(bpm / 2);
+            m_bpmDoubleLower = floor(bpm * 2);
+            m_bpmDoubleUpper = ceil(bpm * 2);
+            m_isHalfDoubleQuery = true;
+        } else {
+            // Operator query
+            // Either explicitly with = or other operators or implicitly (simple
+            // 'bpm:NNN' query) if no operator was found, half/double is disabled
+            // and fuzzy was not requested (m_operator is still the initial '=').
+            m_bpm = bpm;
+            m_isOperatorQuery = true;
+        }
+        return;
+    } else if (m_fuzzy) {
+        // Invalid combination. Fuzzy was requested but argument is not a single
+        // number. Maybe it's a range query, wrong operator order (e.g. =>) or
+        // simply invalid characters.
+        return;
     }
     // else test if this is a valid range query
     QStringList rangeArgs = argument.split("-");
@@ -517,6 +557,9 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
     }
 
     if (m_isOperatorQuery) {
+        if (m_fuzzy) {
+            return false;
+        }
         if ((m_operator == "=" && value == m_bpm) ||
                 (m_operator == "<" && value < m_bpm) ||
                 (m_operator == ">" && value > m_bpm) ||
@@ -524,8 +567,13 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
                 (m_operator == ">=" && value >= m_bpm)) {
             return true;
         }
-    } else if (m_isRangeQuery && value >= m_rangeLower &&
-            value <= m_rangeUpper) {
+    } else if (m_isHalfDoubleQuery) {
+        if (value == m_bpm ||
+                (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
+                (value >= m_bpmDoubleLower && value <= m_bpmDoubleUpper)) {
+            return true;
+        }
+    } else if (m_isRangeQuery && value >= m_rangeLower && value <= m_rangeUpper) {
         return true;
     } else if (value == m_bpm) {
         return true;
@@ -539,7 +587,23 @@ QString BpmFilterNode::toSql() const {
     }
 
     if (m_isOperatorQuery) {
+        if (m_fuzzy) {
+            return QString();
+        }
         return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+    }
+
+    if (m_isHalfDoubleQuery) {
+        QStringList searchClauses;
+        searchClauses << QString("bpm = %1").arg(QString::number(m_bpm));
+        // 'BETWEEN' returns true if lower <= value <= upper
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_bpmHalfLower),
+                                         QString::number(m_bpmHalfUpper));
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_bpmDoubleLower),
+                                         QString::number(m_bpmDoubleUpper));
+        return concatSqlClauses(searchClauses, "OR");
     }
 
     if (m_isRangeQuery) {

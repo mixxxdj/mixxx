@@ -137,7 +137,8 @@ void SearchQueryParser::setSearchColumns(QStringList searchColumns) {
 }
 
 SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString argument,
-        QStringList* tokens) const {
+        QStringList* tokens,
+        bool removeLeadingEqualsSign) const {
     // If the argument is empty, assume the user placed a space after an
     // advanced search command. Consume another token and treat that as the
     // argument.
@@ -148,7 +149,7 @@ SearchQueryParser::TextArgumentResult SearchQueryParser::getTextArgument(QString
         }
     }
     StringMatch mode = StringMatch::Contains;
-    if (argument.startsWith("=")) {
+    if (removeLeadingEqualsSign && argument.startsWith("=")) {
         // strip the '=' from the argument
         argument = argument.mid(1);
         mode = StringMatch::Equals;
@@ -219,10 +220,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
         } else if (specialFilterMatch.hasMatch()) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
+            bool negate = token.startsWith(kNegatePrefix);
             QString field = specialFilterMatch.captured(1);
-            QString argument = getTextArgument(
-                    specialFilterMatch.captured(2), &tokens)
-                                       .argument;
+            auto [argument, matchMode] = getTextArgument(
+                    specialFilterMatch.captured(2), &tokens);
+
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
@@ -252,7 +254,11 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     pNode = std::make_unique<TextFilterNode>(
                         m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
                 } else if (field == "bpm") {
-                    pNode = std::make_unique<BpmFilterNode>(argument);
+                    if (matchMode == StringMatch::Equals) {
+                        // restore = operator removed by getTextArgument()
+                        argument.prepend('=');
+                    }
+                    pNode = std::make_unique<BpmFilterNode>(argument, fuzzy, negate);
                 }
             }
         } else {

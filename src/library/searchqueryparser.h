@@ -39,7 +39,8 @@ class SearchQueryParser {
     };
 
     TextArgumentResult getTextArgument(QString argument,
-            QStringList* tokens) const;
+            QStringList* tokens,
+            bool removeLeadingEqualsSign = true) const;
 
     TrackCollection* m_pTrackCollection;
     QStringList m_queryColumns;

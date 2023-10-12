@@ -184,21 +184,34 @@ class DurationFilterNode : public NumericFilterNode {
     double parse(const QString& arg, bool* ok) override;
 };
 
+// BPM filter that supports fuzzy matching via ~ prefix.
+// If no operator is provided (bpm:123) it also finds half & double BPM matches.
+// Half/double values aren't integers, int ranges are used. E.g. bpm:123.1 finds
+// 61-61, 123.1 and 246-247 BPM
 class BpmFilterNode : public QueryNode {
   public:
-    BpmFilterNode(QString& argument);
+    BpmFilterNode(QString& argument, bool fuzzy, bool negate);
 
   private:
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
 
+    bool m_fuzzy;
+    bool m_negate;
+
     bool m_isNullQuery;
     bool m_isOperatorQuery;
     bool m_isRangeQuery;
+    bool m_isHalfDoubleQuery;
     QString m_operator;
+
     double m_bpm;
     double m_rangeLower;
     double m_rangeUpper;
+    double m_bpmHalfLower;
+    double m_bpmHalfUpper;
+    double m_bpmDoubleLower;
+    double m_bpmDoubleUpper;
 };
 
 class KeyFilterNode : public QueryNode {
