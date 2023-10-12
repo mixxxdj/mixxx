@@ -471,6 +471,86 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
     return 60 * m + s;
 }
 
+BpmFilterNode::BpmFilterNode(QString& argument)
+        : m_isNullQuery(false),
+          m_isOperatorQuery(false),
+          m_isRangeQuery(false),
+          m_operator("="),
+          m_bpm(0.0),
+          m_rangeLower(0.0),
+          m_rangeUpper(0.0) {
+    if (argument == kMissingFieldSearchTerm) {
+        m_isNullQuery = true;
+        return;
+    }
+
+    QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
+    if (opMatch.hasMatch()) {
+        m_operator = opMatch.captured(1);
+        argument = opMatch.captured(2);
+    }
+
+    bool isDouble = false;
+    const double bpm = argument.toDouble(&isDouble);
+    if (isDouble) {
+        m_bpm = bpm;
+        m_isOperatorQuery = true;
+    }
+    // else test if this is a valid range query
+    QStringList rangeArgs = argument.split("-");
+    if (rangeArgs.length() == 2) {
+        bool lowOk = false;
+        m_rangeLower = rangeArgs[0].toDouble(&lowOk);
+        bool highOk = false;
+        m_rangeUpper = rangeArgs[1].toDouble(&highOk);
+
+        if (lowOk && highOk && m_rangeLower <= m_rangeUpper) {
+            m_isRangeQuery = true;
+        }
+    }
+}
+
+bool BpmFilterNode::match(const TrackPointer& pTrack) const {
+    double value = pTrack->getBpm();
+    if (m_isNullQuery && value == mixxx::Bpm::kValueUndefined) {
+        return true;
+    }
+
+    if (m_isOperatorQuery) {
+        if ((m_operator == "=" && value == m_bpm) ||
+                (m_operator == "<" && value < m_bpm) ||
+                (m_operator == ">" && value > m_bpm) ||
+                (m_operator == "<=" && value <= m_bpm) ||
+                (m_operator == ">=" && value >= m_bpm)) {
+            return true;
+        }
+    } else if (m_isRangeQuery && value >= m_rangeLower &&
+            value <= m_rangeUpper) {
+        return true;
+    } else if (value == m_bpm) {
+        return true;
+    }
+    return false;
+}
+
+QString BpmFilterNode::toSql() const {
+    if (m_isNullQuery) {
+        return QString("bpm IS NULL");
+    }
+
+    if (m_isOperatorQuery) {
+        return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+    }
+
+    if (m_isRangeQuery) {
+        return QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                .arg(QString::number(m_rangeLower),
+                        QString::number(m_rangeUpper));
+    }
+
+    return QString();
+}
+
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,
         bool fuzzy) {
     if (fuzzy) {

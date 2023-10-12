@@ -184,6 +184,23 @@ class DurationFilterNode : public NumericFilterNode {
     double parse(const QString& arg, bool* ok) override;
 };
 
+class BpmFilterNode : public QueryNode {
+  public:
+    BpmFilterNode(QString& argument);
+
+  private:
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+    bool m_isNullQuery;
+    bool m_isOperatorQuery;
+    bool m_isRangeQuery;
+    QString m_operator;
+    double m_bpm;
+    double m_rangeLower;
+    double m_rangeUpper;
+};
+
 class KeyFilterNode : public QueryNode {
   public:
     KeyFilterNode(mixxx::track::io::key::ChromaticKey key, bool fuzzy);
