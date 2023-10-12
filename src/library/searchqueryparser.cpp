@@ -1,12 +1,8 @@
 #include "library/searchqueryparser.h"
 
 #include <QRegularExpression>
-//<<<<<<< HEAD
 #include <memory>
-//||||||| 130ae183f8
-//=======
 #include <utility>
-//>>>>>>> mixxx/2.4
 
 #include "library/searchquery.h"
 #include "track/keyutils.h"
