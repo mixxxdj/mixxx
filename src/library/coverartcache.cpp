@@ -161,12 +161,13 @@ void CoverArtCache::tryLoadCover(
         return;
     }
 
-    const auto requestedCacheKey = coverInfo.cacheKey();
-    QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
-    // keep a list of cacheKeys for which a future is currently running
-    // to avoid loading the same picture again while we are loading it
-    bool requestPending = m_runningRequests.contains(cacheKey);
-    m_runningRequests.insert(cacheKey, pRequester);
+    const mixxx::cache_key_t requestedCacheKey = coverInfo.cacheKey();
+    // keep a list of cache keys for which a future is currently running
+    // to avoid loading the same picture again while we are loading it.
+    // This fixes also https://github.com/mixxxdj/mixxx/issues/11131 on
+    // Windows where simultaneous open the same file from two threads fails.
+    bool requestPending = m_runningRequests.contains(requestedCacheKey);
+    m_runningRequests.insert(requestedCacheKey, {pRequester, desiredWidth});
     if (requestPending) {
         return;
     }
@@ -298,11 +299,25 @@ void CoverArtCache::coverLoaded() {
         }
     }
 
-    const QObject* pRequester;
-    while ((pRequester = m_runningRequests.take(cacheKey)) != nullptr) {
-        emit coverFound(
-                pRequester,
-                res.coverArt,
-                pixmap);
+    auto runningRequests = m_runningRequests;
+    // First remove all requests for this cover that way we can
+    // re-add cover with different sizes via tryLoadCover() as usual
+    m_runningRequests.remove(res.coverArt.cacheKey());
+
+    auto i = runningRequests.find(res.coverArt.cacheKey());
+    while (i != runningRequests.end() && i.key() == res.coverArt.cacheKey()) {
+        if (i.value().desiredWidth == res.coverArt.resizedToWidth) {
+            emit coverFound(
+                    i.value().pRequester,
+                    res.coverArt,
+                    pixmap);
+        } else {
+            tryLoadCover(
+                    i.value().pRequester,
+                    nullptr,
+                    res.coverArt,
+                    i.value().desiredWidth);
+        }
+        ++i;
     }
 }

@@ -84,5 +84,9 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const CoverInfo& info,
             int desiredWidth);
 
-    QMultiHash<QString, const QObject*> m_runningRequests;
+    struct RequestData {
+        const QObject* pRequester;
+        int desiredWidth;
+    };
+    QMultiHash<mixxx::cache_key_t, RequestData> m_runningRequests;
 };
