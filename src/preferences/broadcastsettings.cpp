@@ -2,14 +2,12 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QFileInfoList>
 #include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
-#include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
+#include "preferences/broadcastsettingsmodel.h"
 #include "util/logger.h"
-#include "util/memory.h"
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";
