@@ -5,6 +5,7 @@
 #import <Foundation/Foundation.h>
 
 #include <QDebug>
+#include <QHash>
 #include <QList>
 #include <QString>
 #include <memory>
@@ -39,21 +40,11 @@ class AUBackend : public EffectsBackend {
     }
 
     EffectManifestPointer getManifest(const QString& effectId) const override {
-        AVAudioUnitComponent* component =
-                m_componentsById[effectId.toNSString()];
-        return EffectManifestPointer(new AUManifest(effectId, component));
+        return m_manifestsById[effectId];
     }
 
     const QList<EffectManifestPointer> getManifests() const override {
-        QList<EffectManifestPointer> manifests;
-
-        for (NSString* effectId in m_componentsById) {
-            AVAudioUnitComponent* component = m_componentsById[effectId];
-            manifests.append(EffectManifestPointer(new AUManifest(
-                    QString::fromNSString(effectId), component)));
-        }
-
-        return manifests;
+        return m_manifestsById.values();
     }
 
     bool canInstantiateEffect(const QString& effectId) const override {
@@ -67,6 +58,7 @@ class AUBackend : public EffectsBackend {
 
   private:
     NSDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
+    QHash<QString, EffectManifestPointer> m_manifestsById;
     int m_nextId;
 
     QString freshId() {
@@ -98,14 +90,19 @@ class AUBackend : public EffectsBackend {
         // Assign ids to the components
         NSMutableDictionary<NSString*, AVAudioUnitComponent*>* componentsById =
                 [[NSMutableDictionary alloc] init];
+        QHash<QString, EffectManifestPointer> manifestsById;
 
         for (AVAudioUnitComponent* component in components) {
             qDebug() << "Found audio unit" << [component name];
+
             QString effectId = freshId();
             componentsById[effectId.toNSString()] = component;
+            manifestsById[effectId] =
+                    EffectManifestPointer(new AUManifest(effectId, component));
         }
 
         m_componentsById = componentsById;
+        m_manifestsById = manifestsById;
     }
 };
 
