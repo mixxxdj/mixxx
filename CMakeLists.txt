@@ -1569,7 +1569,10 @@ if(APPLE)
       src/effects/backends/au/aueffectprocessor.mm
       src/effects/backends/au/aumanifest.mm
     )
-    target_link_libraries(mixxx-lib PRIVATE "-weak_framework AVFAudio")
+    target_link_libraries(mixxx-lib PRIVATE
+      "-weak_framework AudioToolbox"
+      "-weak_framework AVFAudio"
+    )
     target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()
 endif()

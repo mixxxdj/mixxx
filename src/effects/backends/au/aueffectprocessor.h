@@ -1,37 +1,47 @@
 #pragma once
 
 #import <AVFAudio/AVFAudio.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <CoreAudioTypes/CoreAudioTypes.h>
 
 #include <atomic>
 
 #include "effects/backends/effectprocessor.h"
 
-class AUEffectGroupState final : public EffectState {
+/// Manages instantiation of an audio unit. Only for internal use.
+class AudioUnitManager {
   public:
-    AUEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    AudioUnitManager(AVAudioUnitComponent* component);
 
     /// Fetches the audio unit if already instantiated. Non-blocking and
     /// thread-safe.
     AVAudioUnit* _Nullable getAudioUnit();
 
-    /// Initiates an asynchronous instantiation of the audio unit if not already
-    /// in progress. Non-blocking and thread-safe.
-    void instantiateAudioUnitAsyncIfNeeded(AVAudioUnitComponent* _Nullable component);
+    /// Fetches the underlying audio unit if already instantiated.
+    /// Non-blocking and thread-safe.
+    AudioUnit _Nullable getRawAudioUnit();
 
   private:
-    std::atomic<bool> m_isInstantiating;
     std::atomic<bool> m_isInstantiated;
     AVAudioUnit* m_audioUnit;
 
     void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nullable component);
 };
 
+class AUEffectGroupState final : public EffectState {
+  public:
+    AUEffectGroupState(const mixxx::EngineParameters& engineParameters);
+
+    AudioTimeStamp getTimestamp();
+    void incrementTimestamp();
+
+  private:
+    AudioTimeStamp m_timestamp;
+};
+
 class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
   public:
     AUEffectProcessor(AVAudioUnitComponent* component = nil);
-
-    AUEffectGroupState* createSpecificState(
-            const mixxx::EngineParameters& engineParameters) override;
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters)
@@ -46,4 +56,5 @@ class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
 
   private:
     AVAudioUnitComponent* _Nullable m_component;
+    AudioUnitManager m_manager;
 };

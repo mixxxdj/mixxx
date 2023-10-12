@@ -1,18 +1,13 @@
 #import <AVFAudio/AVFAudio.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <CoreAudioTypes/CoreAudioBaseTypes.h>
 
 #include <QMutex>
 #include <QtGlobal>
 
 #include "effects/backends/au/aueffectprocessor.h"
 
-AUEffectGroupState::AUEffectGroupState(
-        const mixxx::EngineParameters& engineParameters)
-        : EffectState(engineParameters),
-          m_isInstantiating(false),
-          m_audioUnit(nil) {
-}
-
-AVAudioUnit* _Nullable AUEffectGroupState::getAudioUnit() {
+AVAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
     // impossible: https://belkadan.com/blog/2023/10/Implicity-Atomic)
@@ -22,15 +17,12 @@ AVAudioUnit* _Nullable AUEffectGroupState::getAudioUnit() {
     return m_audioUnit;
 }
 
-void AUEffectGroupState::instantiateAudioUnitAsyncIfNeeded(
-        AVAudioUnitComponent* _Nullable component) {
-    // Ensure that we only instantiate once
-    if (!m_isInstantiating.exchange(true)) {
-        instantiateAudioUnitAsync(component);
-    }
+AudioUnit _Nullable AudioUnitManager::getRawAudioUnit() {
+    // NOTE: We use the fact that Obj-C calls to nil are simply nil
+    return [getAudioUnit() audioUnit];
 }
 
-void AUEffectGroupState::instantiateAudioUnitAsync(
+void AudioUnitManager::instantiateAudioUnitAsync(
         AVAudioUnitComponent* _Nullable component) {
     // NOTE: The component can be null if the lookup failed in
     // `AUBackend::createProcessor`, in which case the effect simply acts as an
@@ -62,15 +54,21 @@ void AUEffectGroupState::instantiateAudioUnitAsync(
     // clang-format on
 }
 
-AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* component)
-        : m_component(component) {
+AUEffectGroupState::AUEffectGroupState(
+        const mixxx::EngineParameters& engineParameters)
+        : EffectState(engineParameters),
+          m_timestamp{
+                  .mSampleTime = 0,
+                  .mFlags = kAudioTimeStampSampleTimeValid,
+          } {
 }
 
-AUEffectGroupState* AUEffectProcessor::createSpecificState(
-        const mixxx::EngineParameters& engineParameters) {
-    AUEffectGroupState* state = new AUEffectGroupState(engineParameters);
-    state->instantiateAudioUnitAsyncIfNeeded(m_component);
-    return state;
+AudioTimeStamp AUEffectGroupState::getTimestamp() {
+    return m_timestamp;
+}
+
+void AUEffectGroupState::incrementTimestamp() {
+    m_timestamp.mSampleTime += 1;
 }
 
 void AUEffectProcessor::loadEngineEffectParameters(
@@ -84,5 +82,13 @@ void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    // TODO
+    AudioUnit _Nullable rawAudioUnit = m_manager.getRawAudioUnit();
+    if (!rawAudioUnit) {
+        return;
+    }
+
+    AudioTimeStamp timestamp = channelState->getTimestamp();
+    channelState->incrementTimestamp();
+
+    // TODO: Render
 }
