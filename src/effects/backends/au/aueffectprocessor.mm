@@ -7,7 +7,11 @@
 
 #include "effects/backends/au/aueffectprocessor.h"
 
-AVAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
+AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* component) {
+    instantiateAudioUnitAsync(component);
+}
+
+AUAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
     // impossible: https://belkadan.com/blog/2023/10/Implicity-Atomic)
@@ -15,11 +19,6 @@ AVAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
         return nil;
     }
     return m_audioUnit;
-}
-
-AudioUnit _Nullable AudioUnitManager::getRawAudioUnit() {
-    // NOTE: We use the fact that Obj-C calls to nil are simply nil
-    return [getAudioUnit() audioUnit];
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
@@ -35,11 +34,18 @@ void AudioUnitManager::instantiateAudioUnitAsync(
     auto description = [component audioComponentDescription];
     auto options = kAudioComponentInstantiation_LoadOutOfProcess;
 
+    // Instantiate the audio unit asynchronously.
+
+    // NOTE: We don't need AVAudioUnit here, since we want to render samples
+    // without using an `AUGraph` or `AVAudioEngine`. Hence the recommended
+    // approach is to simply instantiate the `AUAudioUnit` directly.  See
+    // https://www.mail-archive.com/coreaudio-api@lists.apple.com/msg01084.html
+
     // TODO: Fix the weird formatting of blocks
     // clang-format off
-    [AVAudioUnit instantiateWithComponentDescription:description
+    [AUAudioUnit instantiateWithComponentDescription:description
                  options:options
-                 completionHandler:^(AVAudioUnit* _Nullable audioUnit, NSError* _Nullable error) {
+                 completionHandler:^(AUAudioUnit* _Nullable audioUnit, NSError* _Nullable error) {
         if (error == nil) {
             VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
                 return;
@@ -71,6 +77,10 @@ void AUEffectGroupState::incrementTimestamp() {
     m_timestamp.mSampleTime += 1;
 }
 
+AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* component)
+        : m_component(component), m_manager(component) {
+}
+
 void AUEffectProcessor::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     // TODO
@@ -82,13 +92,70 @@ void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    AudioUnit _Nullable rawAudioUnit = m_manager.getRawAudioUnit();
-    if (!rawAudioUnit) {
+    AUAudioUnit* _Nullable audioUnit = m_manager.getAudioUnit();
+    if (!audioUnit) {
+        qWarning() << "Audio Unit not instantiated yet";
+        return;
+    }
+
+    NSError* error = nil;
+    [audioUnit allocateRenderResourcesAndReturnError:&error];
+    if (error != nil) {
+        qWarning() << "Audio Unit could not allocate render resources"
+                   << QString::fromNSString([error localizedDescription]);
         return;
     }
 
     AudioTimeStamp timestamp = channelState->getTimestamp();
     channelState->incrementTimestamp();
 
-    // TODO: Render
+    AudioUnitRenderActionFlags flags = 0;
+    AUAudioFrameCount framesToRender = 1;
+    NSInteger outputBusNumber = 0;
+    AudioBufferList outputData = {.mNumberBuffers = 1,
+            .mBuffers = {{
+                    .mNumberChannels = 1,
+                    .mDataByteSize = sizeof(CSAMPLE),
+                    .mData = pOutput,
+            }}};
+
+    // TODO: Fix the weird formatting of blocks
+    // clang-format off
+    AURenderPullInputBlock pullInput = ^(
+        AudioUnitRenderActionFlags *actionFlags,
+        const AudioTimeStamp *timestamp,
+        AUAudioFrameCount frameCount,
+        NSInteger inputBusNumber,
+        AudioBufferList *inputData
+    ) {
+        VERIFY_OR_DEBUG_ASSERT(inputData->mNumberBuffers >= 1) {
+            qWarning() << "AURenderPullInputBlock received empty input data";
+            return 1; // TODO: Proper error-code
+        };
+
+        AudioBuffer* buffer = &inputData->mBuffers[0];
+
+        VERIFY_OR_DEBUG_ASSERT(buffer->mDataByteSize == sizeof(CSAMPLE)) {
+            qWarning() << "AURenderPullInputBlock encountered a buffer of size" << buffer->mDataByteSize << "(rather than the expected" << sizeof(CSAMPLE) << "bytes)";
+            return 1; // TODO: Proper error-code
+        }
+
+        CSAMPLE* data = static_cast<CSAMPLE*>(buffer->mData);
+        *data = *pInput;
+
+        return 0; // No error
+    };
+    // clang-format on
+
+    // Apply the actual effect to the sample.
+    // See
+    // https://developer.apple.com/documentation/audiotoolbox/aurenderblock?language=objc
+    [audioUnit renderBlock](&flags,
+            &timestamp,
+            framesToRender,
+            outputBusNumber,
+            &outputData,
+            pullInput);
+
+    [audioUnit deallocateRenderResources];
 }
