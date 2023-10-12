@@ -18,7 +18,7 @@
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
 class AUBackend : public EffectsBackend {
   public:
-    AUBackend() : m_componentsById([[NSDictionary alloc] init]), m_nextId(0) {
+    AUBackend() : m_componentsById([[NSDictionary alloc] init]) {
         loadAudioUnits();
     }
 
@@ -59,11 +59,6 @@ class AUBackend : public EffectsBackend {
   private:
     NSDictionary<NSString*, AVAudioUnitComponent*>* m_componentsById;
     QHash<QString, EffectManifestPointer> m_manifestsById;
-    int m_nextId;
-
-    QString freshId() {
-        return QString::number(m_nextId++);
-    }
 
     void loadAudioUnits() {
         qDebug() << "Loading audio units...";
@@ -95,7 +90,11 @@ class AUBackend : public EffectsBackend {
         for (AVAudioUnitComponent* component in components) {
             qDebug() << "Found audio unit" << [component name];
 
-            QString effectId = freshId();
+            QString effectId = QString::fromNSString(
+                    [NSString stringWithFormat:@"%@~%@~%@",
+                              [component manufacturerName],
+                              [component name],
+                              [component versionString]]);
             componentsById[effectId.toNSString()] = component;
             manifestsById[effectId] =
                     EffectManifestPointer(new AUManifest(effectId, component));
