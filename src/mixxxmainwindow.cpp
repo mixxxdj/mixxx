@@ -35,6 +35,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
+#include "engine/sidechain/enginenetworkstream.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
