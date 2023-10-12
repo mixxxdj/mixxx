@@ -53,7 +53,9 @@ class AUBackend : public EffectsBackend {
 
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest) const override {
-        return std::make_unique<AUEffectProcessor>(pManifest);
+        AVAudioUnitComponent* component =
+                m_componentsById[pManifest->id().toNSString()];
+        return std::make_unique<AUEffectProcessor>(component);
     }
 
   private:
