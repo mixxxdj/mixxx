@@ -42,7 +42,7 @@ QString computeResourcePathImpl() {
             DEBUG_ASSERT(QDir(qResourcePath).exists());
         }
 #if defined(__UNIX__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
+        else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
 #elif defined(__WINDOWS__)
@@ -52,7 +52,7 @@ QString computeResourcePathImpl() {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
 #elif defined(__APPLE__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+        else if (mixxxDir.cd("../Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
