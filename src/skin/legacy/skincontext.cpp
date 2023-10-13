@@ -1,9 +1,7 @@
-#include <QtDebug>
-#include <QStringList>
-#include <QAction>
-
 #include "skin/legacy/skincontext.h"
-#include "util/cmdlineargs.h"
+
+#include <QtDebug>
+
 #include "util/math.h"
 
 SkinContext::SkinContext(UserSettingsPointer pConfig,
