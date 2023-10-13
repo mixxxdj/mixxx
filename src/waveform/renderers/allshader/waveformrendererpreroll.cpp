@@ -61,7 +61,7 @@ void WaveformRendererPreroll::paintGL() {
     const float halfBreadth = m_waveformRenderer->getBreadth() * 0.5f;
     const float halfMarkerBreadth = markerBreadth * 0.5f;
 
-    const double markerLength = 40.0 / vSamplesPerPixel;
+    const float markerLength = 40.f / static_cast<float>(vSamplesPerPixel);
 
     // A series of markers will be drawn (by repeating the texture in a pattern)
     // from the left of the screen up until start (preroll) and from the right
@@ -97,22 +97,22 @@ void WaveformRendererPreroll::paintGL() {
 
     m_pTexture->bind();
 
+    const float end = m_waveformRenderer->getLength();
+
     if (preRollVisible) {
         // VSample position of the right-most triangle's tip
         const double triangleTipVSamplePosition =
                 playMarkerPosition * numberOfVSamples -
                 currentVSamplePosition;
         // In pixels
-        double x = triangleTipVSamplePosition / vSamplesPerPixel;
-        const double limit =
-                static_cast<double>(m_waveformRenderer->getLength()) +
-                markerLength;
+        float x = static_cast<float>(triangleTipVSamplePosition / vSamplesPerPixel);
+        const float limit = end + markerLength;
         if (x >= limit) {
             // Don't draw invisible triangles beyond the right side of the display
             x -= std::ceil((x - limit) / markerLength) * markerLength;
         }
 
-        drawPattern(0,
+        drawPattern(0.f,
                 halfBreadth - halfMarkerBreadth,
                 x,
                 halfBreadth + halfMarkerBreadth,
@@ -127,14 +127,13 @@ void WaveformRendererPreroll::paintGL() {
                 playMarkerPosition * numberOfVSamples +
                 remainingVSamples;
         // In pixels
-        double x = triangleTipVSamplePosition / vSamplesPerPixel;
-        const double limit = -markerLength;
+        float x = static_cast<float>(triangleTipVSamplePosition / vSamplesPerPixel);
+        const float limit = -markerLength;
         if (x <= limit) {
             // Don't draw invisible triangles before the left side of the display
             x += std::ceil((limit - x) / markerLength) * markerLength;
         }
 
-        const double end = static_cast<double>(m_waveformRenderer->getLength());
         drawPattern(x,
                 halfBreadth - halfMarkerBreadth,
                 end,
@@ -151,7 +150,7 @@ void WaveformRendererPreroll::paintGL() {
 }
 
 void WaveformRendererPreroll::drawPattern(
-        float x1, float y1, float x2, float y2, double repetitions, bool flip) {
+        float x1, float y1, float x2, float y2, float repetitions, bool flip) {
     // Draw a large rectangle with a repeating pattern of the texture
     const int numVerticesPerTriangle = 3;
     const int reserved = 2 * numVerticesPerTriangle;
@@ -212,6 +211,10 @@ void WaveformRendererPreroll::generateTexture(float markerLength, float markerBr
     path.lineTo(p1);
     path.lineTo(p0);
     path.closeSubpath();
+    QColor fillColor = m_color;
+    fillColor.setAlphaF(0.25);
+    painter.fillPath(path, QBrush(fillColor));
+
     painter.drawPath(path);
     painter.end();
 

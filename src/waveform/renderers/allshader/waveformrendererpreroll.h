@@ -26,7 +26,7 @@ class allshader::WaveformRendererPreroll final : public allshader::WaveformRende
     void initializeGL() override;
 
   private:
-    void drawPattern(float x1, float y1, float x2, float y2, double repetitions, bool flip);
+    void drawPattern(float x1, float y1, float x2, float y2, float repetitions, bool flip);
     void generateTexture(float markerLength, float markerBreadth);
 
     mixxx::PatternShader m_shader;
