@@ -212,7 +212,7 @@ void WaveformRendererPreroll::generateTexture(float markerLength, float markerBr
     path.lineTo(p0);
     path.closeSubpath();
     QColor fillColor = m_color;
-    fillColor.setAlphaF(0.25);
+    fillColor.setAlphaF(0.5f);
     painter.fillPath(path, QBrush(fillColor));
 
     painter.drawPath(path);
