@@ -2,7 +2,6 @@
 
 #include "analyzer/constants.h"
 #include "util/assert.h"
-#include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
