@@ -44,6 +44,9 @@ while true; do
     elif [ "${NOTARIZATION_STATUS}" == "success" ]; then
         echo "Notarization succeeded"
         break
+    elif [ "${NOTARIZATION_STATUS}" == "invalid" ]; then
+        echo "Notarization failed with status: ${NOTARIZATION_STATUS}"
+        exit 1
     else
         echo "Notarization status: ${NOTARIZATION_STATUS}"
     fi
