@@ -2,7 +2,6 @@
 
 #include "waveform/widgets/glwaveformwidgetabstract.h"
 
-class GLSLWaveformRendererSignal;
 
 class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT

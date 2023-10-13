@@ -1,7 +1,9 @@
 #include "widget/wvumeterglsl.h"
 
+#include <QOpenGLTexture>
+
 #include "moc_wvumeterglsl.cpp"
-#include "util/assert.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/texture.h"
 

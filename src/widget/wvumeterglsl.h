@@ -1,13 +1,12 @@
 #pragma once
 
 #include <QOpenGLFunctions>
-#include <QOpenGLTexture>
 #include <memory>
 
 #include "shaders/textureshader.h"
-#include "widget/wpixmapstore.h"
 #include "widget/wvumeterbase.h"
-#include "widget/wwidget.h"
+
+class QOpenGLTexture;
 
 class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     Q_OBJECT

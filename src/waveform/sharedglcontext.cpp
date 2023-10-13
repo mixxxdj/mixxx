@@ -1,13 +1,12 @@
 #include "waveform/sharedglcontext.h"
 
-#include <QtDebug>
-
 #ifndef MIXXX_USE_QOPENGL
+#include <QDebug>
 #include <QGLContext>
 #include <QGLFormat>
-#endif
 
 #include "widget/wglwidget.h"
+#endif
 
 WGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 

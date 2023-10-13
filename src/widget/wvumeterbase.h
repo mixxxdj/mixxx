@@ -4,7 +4,6 @@
 #include "util/duration.h"
 #include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidget.h"
 
 class VSyncThread;
 

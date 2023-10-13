@@ -2,7 +2,6 @@
 #include <QDomNode>
 #include <QImage>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/cue.h"
 #include "util/memory.h"
@@ -10,9 +9,6 @@
 
 class SkinContext;
 class WaveformSignalColors;
-
-class WOverview;
-
 class QOpenGLTexture;
 
 namespace allshader {

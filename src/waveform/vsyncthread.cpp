@@ -1,13 +1,8 @@
 #include "vsyncthread.h"
 
-#include <QThread>
-#include <QTime>
-#include <QtDebug>
-
 #include "moc_vsyncthread.cpp"
 #include "util/math.h"
 #include "util/performancetimer.h"
-#include "waveform/guitick.h"
 
 VSyncThread::VSyncThread(QObject* pParent)
         : QThread(pParent),

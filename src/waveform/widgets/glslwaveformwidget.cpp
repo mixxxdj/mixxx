@@ -1,7 +1,6 @@
 #include "glslwaveformwidget.h"
 
 #include <QPainter>
-#include <QtDebug>
 
 #include "moc_glslwaveformwidget.cpp"
 #include "util/performancetimer.h"
@@ -12,8 +11,6 @@
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,

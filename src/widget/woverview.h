@@ -1,27 +1,13 @@
-//
-// C++ Interface: woverview
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #pragma once
 
 #include <QColor>
 #include <QList>
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -33,6 +19,8 @@
 
 class PlayerManager;
 class PainterScope;
+class QMouseEvent;
+class QPaintEvent;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT

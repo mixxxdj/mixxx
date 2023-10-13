@@ -4,9 +4,7 @@
 
 #include "waveformmark.h"
 #include "skin/legacy/skincontext.h"
-#include "util/memory.h"
 
-class WaveformWidgetRenderer;
 
 // This class helps share code between the WaveformRenderMark and WOverview
 // constructors.

@@ -1,34 +1,17 @@
-//
-// C++ Implementation: woverview
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "woverview.h"
 
 #include <QBrush>
-#include <QMimeData>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QUrl>
-#include <QtDebug>
 
 #include "analyzer/analyzerprogress.h"
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
