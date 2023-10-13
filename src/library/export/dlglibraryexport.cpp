@@ -4,12 +4,9 @@
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <algorithm>
 #include <djinterop/djinterop.hpp>
-#include <string>
 
 #include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
