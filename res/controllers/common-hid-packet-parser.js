@@ -1252,6 +1252,7 @@ class HIDController {
             "[Sampler6]",
             "[Sampler7]",
             "[Sampler8]",
+            "[Main]",
             "[Master]",
             "[PreviewDeck1]",
             "[Effects]",
