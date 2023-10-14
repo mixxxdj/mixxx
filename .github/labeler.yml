@@ -4,6 +4,9 @@ build:
   - build/**
   - cmake/**
 
+cmake:
+  - cmake/**
+
 code quality:
   - src/test/**
   - .clang-format
@@ -16,14 +19,68 @@ code quality:
 controllers:
   - res/controllers/**
 
+analyzer:
+  - src/analyzer/**
+
+broadcast:
+  - src/broadcast/**
+
+effects:
+  - src/effects/**
+
+engine:
+  - src/engine/**
+
+sync:
+  - src/engine/sync/**
+
 library:
   - src/library/**
 
+autodj:
+  - src/library/autodj/**
+
+browse:
+  - src/library/browse/**
+
+itunes:
+  - src/library/itunes/**
+
+rekordbox:
+  - src/library/rekordbox/**
+
+scanner:
+  - src/library/scanner/**
+
+search:
+  - src/library/searchquery*
+
+serato:
+  - src/library/serato/**
+
+packaging:
+  - packaging/**
+
+preferences:
+  - src/preferences/**
+
 skins:
   - res/skins/**
+
+soundio:
+  - src/soundio/**
+
+soundsource:
+  - src/sources/soundsource*
 
 ui:
   - src/**.ui
   - src/dialog/**
   - src/preferences/**
   - src/widget/**
+
+vinylcontrol:
+  - src/vinylcontrol/**
+
+waveform:
+  - src/waveform/**
