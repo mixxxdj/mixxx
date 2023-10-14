@@ -6,8 +6,10 @@
 #include <QtGlobal>
 
 #include "effects/backends/au/aueffectprocessor.h"
+#include "engine/engine.h"
+#include "util/assert.h"
 
-AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* component) {
+AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component) {
     instantiateAudioUnitAsync(component);
 }
 
@@ -92,7 +94,7 @@ void AUEffectGroupState::incrementTimestamp() {
     m_timestamp.mSampleTime += 1;
 }
 
-AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* component)
+AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* _Nullable component)
         : m_component(component), m_manager(component) {
 }
 
@@ -101,9 +103,10 @@ void AUEffectProcessor::loadEngineEffectParameters(
     // TODO
 }
 
-void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
-        const CSAMPLE* pInput,
-        CSAMPLE* pOutput,
+void AUEffectProcessor::processChannel(
+        AUEffectGroupState* _Nonnull channelState,
+        const CSAMPLE* _Nonnull pInput,
+        CSAMPLE* _Nonnull pOutput,
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

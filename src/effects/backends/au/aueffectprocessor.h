@@ -11,7 +11,7 @@
 /// Manages instantiation of an audio unit. Only for internal use.
 class AudioUnitManager {
   public:
-    AudioUnitManager(AVAudioUnitComponent* component);
+    AudioUnitManager(AVAudioUnitComponent* _Nullable component);
     ~AudioUnitManager();
 
     AudioUnitManager(const AudioUnitManager&) = delete;
@@ -23,7 +23,7 @@ class AudioUnitManager {
 
   private:
     std::atomic<bool> m_isInstantiated;
-    AUAudioUnit* m_audioUnit;
+    AUAudioUnit* _Nullable m_audioUnit;
 
     void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nullable component);
 };
@@ -41,15 +41,15 @@ class AUEffectGroupState final : public EffectState {
 
 class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
   public:
-    AUEffectProcessor(AVAudioUnitComponent* component = nil);
+    AUEffectProcessor(AVAudioUnitComponent* _Nullable component = nil);
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters)
             override;
 
-    void processChannel(AUEffectGroupState* channelState,
-            const CSAMPLE* pInput,
-            CSAMPLE* pOutput,
+    void processChannel(AUEffectGroupState* _Nonnull channelState,
+            const CSAMPLE* _Nonnull pInput,
+            CSAMPLE* _Nonnull pOutput,
             const mixxx::EngineParameters& engineParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
