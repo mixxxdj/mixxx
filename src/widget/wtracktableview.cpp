@@ -140,6 +140,11 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 }
 
 // slot
+void WTrackTableView::pasteFromSidebar() {
+    pasteTracks(QModelIndex());
+}
+
+// slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreState) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
@@ -819,6 +824,66 @@ TrackModel* WTrackTableView::getTrackModel() const {
     return trackModel;
 }
 
+namespace {
+QModelIndex calculateCutIndex(const QModelIndex& currentIndex,
+        const QModelIndexList& removedIndices) {
+    if (removedIndices.empty()) {
+        return QModelIndex();
+    }
+    const int row = currentIndex.row();
+    int rowAfterRemove = row;
+    for (const auto& removeIndex : removedIndices) {
+        if (removeIndex.row() < row) {
+            rowAfterRemove--;
+        }
+    }
+    return currentIndex.siblingAtRow(rowAfterRemove);
+}
+} // namespace
+
+void WTrackTableView::removeSelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
+    getTrackModel()->removeTracks(indices);
+    setCurrentIndex(newIndex);
+}
+
+void WTrackTableView::cutSelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    const QModelIndex newIndex = calculateCutIndex(currentIndex(), indices);
+    getTrackModel()->cutTracks(indices);
+    setCurrentIndex(newIndex);
+}
+
+void WTrackTableView::copySelectedTracks() {
+    const QModelIndexList indices = selectionModel()->selectedRows();
+    getTrackModel()->copyTracks(indices);
+}
+
+void WTrackTableView::pasteTracks(const QModelIndex& index) {
+    const QList<int> rows = getTrackModel()->pasteTracks(index);
+    if (rows.empty()) {
+        return;
+    }
+    for (const auto row : rows) {
+        selectionModel()->select(model()->index(row, 0),
+                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
+
+    updateGeometries();
+
+    const auto lastVisibleRow = rowAt(height());
+
+    // Use selectRow to scroll to the first or last pasted row. We would use
+    // scrollTo but this is broken. This solution was already used elsewhere
+    // in this way.
+    if (rows.back() > lastVisibleRow) {
+        selectRow(rows.back());
+    } else {
+        selectRow(rows.front());
+    }
+}
+
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
@@ -839,16 +904,41 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
                 m_pTrackMenu->slotShowDlgTrackInfo();
             }
         }
-    } break;
+        return;
+    }
     case kHideRemoveShortcutKey: {
         if (event->modifiers() == kHideRemoveShortcutModifier) {
             hideOrRemoveSelectedTracks();
+        }
+        return;
+    }
+    default:
+        break;
+    }
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel && !trackModel->isLocked()) {
+        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+            removeSelectedTracks();
             return;
         }
-    } break;
-    default:
-        QTableView::keyPressEvent(event);
+        if (event->matches(QKeySequence::Cut)) {
+            cutSelectedTracks();
+            return;
+        }
+        if (event->matches(QKeySequence::Copy)) {
+            copySelectedTracks();
+            return;
+        }
+        if (event->matches(QKeySequence::Paste)) {
+            pasteTracks(currentIndex());
+            return;
+        }
+        if (event->key() == Qt::Key_Escape) {
+            clearSelection();
+            setCurrentIndex(QModelIndex());
+        }
     }
+    QTableView::keyPressEvent(event);
 }
 
 void WTrackTableView::resizeEvent(QResizeEvent* event) {
@@ -1208,12 +1298,23 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
 
     sortByColumn(headerSection, sortOrder);
 
+    selectTracksById(selectedTrackIds, prevColum);
+
+    // This seems to be broken since at least Qt 5.12: no scrolling is issued
+    // scrollTo(first, QAbstractItemView::EnsureVisible);
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
+}
+
+void WTrackTableView::selectTracksById(const QList<TrackId>& trackIds, int prevColum) {
+    TrackModel* trackModel = getTrackModel();
+    QAbstractItemModel* itemModel = model();
+
     QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
 
     // Find previously selected tracks and store respective rows for reselection.
     QMap<int, int> selectedRows;
-    for (const auto& trackId : selectedTrackIds) {
+    for (const auto& trackId : trackIds) {
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
         // the table once. This will erroneously select all instances of the
@@ -1252,10 +1353,6 @@ void WTrackTableView::doSortByColumn(int headerSection, Qt::SortOrder sortOrder)
         QModelIndex tl = itemModel->index(i.key(), 0);
         currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
     }
-
-    // This seems to be broken since at least Qt 5.12: no scrolling is issued
-    //scrollTo(first, QAbstractItemView::EnsureVisible);
-    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::applySortingIfVisible() {
@@ -1326,7 +1423,7 @@ bool WTrackTableView::hasFocus() const {
 }
 
 void WTrackTableView::setFocus() {
-    QWidget::setFocus();
+    QWidget::setFocus(Qt::OtherFocusReason);
 }
 
 QString WTrackTableView::getModelStateKey() const {

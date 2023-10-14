@@ -68,6 +68,32 @@ class LibraryFeature : public QObject {
         return false;
     }
 
+    virtual void clear() {
+    }
+    virtual void clearChild(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    virtual void cut() {
+    }
+    virtual void cutChild(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    virtual void copy() const {
+    }
+    virtual void copyChild(const QModelIndex& index) const {
+        Q_UNUSED(index);
+    }
+    virtual void paste() {
+    }
+    virtual void pasteChild(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+    virtual void selectAll() {
+    }
+    virtual void selectAllChild(const QModelIndex& index) {
+        Q_UNUSED(index);
+    }
+
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}
@@ -135,6 +161,7 @@ class LibraryFeature : public QObject {
     void restoreModelState();
     void restoreSearch(const QString&);
     void disableSearch();
+    void pasteFromSidebar();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);

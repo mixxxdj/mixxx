@@ -140,6 +140,16 @@ class TrackModel {
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
+    virtual void cutTracks(const QModelIndexList& indices) {
+        Q_UNUSED(indices);
+    }
+    virtual void copyTracks(const QModelIndexList& indices) const {
+        Q_UNUSED(indices);
+    }
+    virtual QList<int> pasteTracks(const QModelIndex& index) {
+        Q_UNUSED(index);
+        return QList<int>();
+    }
     virtual void hideTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
