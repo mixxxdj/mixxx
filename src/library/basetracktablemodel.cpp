@@ -21,6 +21,7 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/clipboard.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -369,6 +370,54 @@ int BaseTrackTableModel::columnCount(const QModelIndex& parent) const {
         return 0;
     }
     return countValidColumnHeaders();
+}
+
+void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
+    copyTracks(indices);
+    removeTracks(indices);
+}
+
+void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+}
+
+QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
+    int insertionPos = 0;
+    const QList<QUrl> urls = Clipboard::urls();
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, false);
+    if (!trackIds.isEmpty()) {
+        addTracksWithTrackIds(insertionIndex, trackIds, &insertionPos);
+    }
+
+    QList<int> rows;
+    for (const auto& trackId : trackIds) {
+        const auto trackRows = getTrackRows(trackId);
+        for (int trackRow : trackRows) {
+            if (insertionPos == 0) {
+                rows.append(trackRow);
+            } else {
+                int pos =
+                        index(
+                                trackRow,
+                                fieldIndex(ColumnCache::
+                                                COLUMN_PLAYLISTTRACKSTABLE_POSITION))
+                                .data()
+                                .toInt();
+                // trackRows includes all instances in the table of the pasted
+                // tracks. We only want to select the ones we just inserted
+                if (pos >= insertionPos && pos < insertionPos + trackIds.size()) {
+                    rows.append(trackRow);
+                }
+            }
+        }
+    }
+    return rows;
 }
 
 bool BaseTrackTableModel::isColumnHiddenByDefault(

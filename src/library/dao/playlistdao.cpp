@@ -796,6 +796,16 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<TrackId>& trackIds,
     return tracksAdded;
 }
 
+void PlaylistDAO::clearAutoDJQueue() {
+    const int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    // If the first track is already loaded to the player,
+    // alter the playlist only below the first track
+    const int position =
+            (m_pAutoDJProcessor && m_pAutoDJProcessor->nextTrackLoaded()) ? 2 : 1;
+
+    removeTracksFromPlaylist(iAutoDJPlaylistId, position);
+}
+
 void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 

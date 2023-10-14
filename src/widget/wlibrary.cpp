@@ -76,6 +76,14 @@ void WLibrary::switchToView(const QString& name) {
     }
 }
 
+void WLibrary::pasteFromSidebar() {
+    QWidget* current = currentWidget();
+    LibraryView* view = dynamic_cast<LibraryView*>(current);
+    if (view) {
+        view->pasteFromSidebar();
+    }
+}
+
 void WLibrary::search(const QString& name) {
     auto lock = lockMutex(&m_mutex);
     QWidget* current = currentWidget();
@@ -141,4 +149,11 @@ bool WLibrary::event(QEvent* pEvent) {
         updateTooltip();
     }
     return QStackedWidget::event(pEvent);
+}
+
+void WLibrary::keyPressEvent(QKeyEvent* event) {
+    if (event->key() == Qt::Key_Left && event->modifiers() & Qt::ControlModifier) {
+        emit setLibraryFocus(FocusWidget::Sidebar);
+    }
+    QStackedWidget::keyPressEvent(event);
 }

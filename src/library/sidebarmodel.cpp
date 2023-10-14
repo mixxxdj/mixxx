@@ -148,6 +148,66 @@ QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
     return ind;
 }
 
+void SidebarModel::clear(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->clear();
+    } else {
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            LibraryFeature* feature = tree_item->feature();
+            feature->clearChild(index);
+        }
+    }
+}
+
+void SidebarModel::cut(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->cut();
+    } else {
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            LibraryFeature* feature = tree_item->feature();
+            feature->cutChild(index);
+        }
+    }
+}
+
+void SidebarModel::copy(const QModelIndex& index) const {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->copy();
+    } else {
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            LibraryFeature* feature = tree_item->feature();
+            feature->copyChild(index);
+        }
+    }
+}
+
+void SidebarModel::paste(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->paste();
+    } else {
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            LibraryFeature* feature = tree_item->feature();
+            feature->pasteChild(index);
+        }
+    }
+}
+
+void SidebarModel::selectAll(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->selectAll();
+    } else {
+        TreeItem* tree_item = (TreeItem*)index.internalPointer();
+        if (tree_item) {
+            LibraryFeature* feature = tree_item->feature();
+            feature->selectAllChild(index);
+        }
+    }
+}
+
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
     //qDebug() << "SidebarModel::parent index=" << index.getData();
     if (index.isValid()) {
@@ -475,7 +535,7 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
@@ -499,8 +559,8 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsInserted" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsInserted" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 

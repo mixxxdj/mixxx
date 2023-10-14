@@ -47,6 +47,11 @@ class SidebarModel : public QAbstractItemModel {
     }
     QModelIndex getFeatureRootIndex(LibraryFeature* pFeature);
 
+    void clear(const QModelIndex& index);
+    void cut(const QModelIndex& index);
+    void copy(const QModelIndex& index) const;
+    void selectAll(const QModelIndex& index);
+    void paste(const QModelIndex& index);
   public slots:
     void pressed(const QModelIndex& index);
     void clicked(const QModelIndex& index);

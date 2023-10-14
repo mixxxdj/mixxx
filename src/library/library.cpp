@@ -389,6 +389,10 @@ void Library::bindLibraryWidget(
             &Library::showTrackModel,
             pTrackTableView,
             &WTrackTableView::loadTrackModel);
+    connect(this,
+            &Library::pasteFromSidebar,
+            m_pLibraryWidget,
+            &WLibrary::pasteFromSidebar);
     connect(pTrackTableView,
             &WTrackTableView::loadTrack,
             this,
@@ -399,6 +403,10 @@ void Library::bindLibraryWidget(
             &Library::slotLoadTrackToPlayer);
     m_pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
+    connect(m_pLibraryWidget,
+            &WLibrary::setLibraryFocus,
+            m_pLibraryControl,
+            &LibraryControl::setLibraryFocus);
     connect(this,
             &Library::switchToView,
             m_pLibraryWidget,
@@ -462,6 +470,10 @@ void Library::addFeature(LibraryFeature* feature) {
     m_features.push_back(feature);
     m_pSidebarModel->addLibraryFeature(feature);
     connect(feature,
+            &LibraryFeature::pasteFromSidebar,
+            this,
+            &Library::slotPasteFromSidebar);
+    connect(feature,
             &LibraryFeature::showTrackModel,
             this,
             &Library::slotShowTrackModel);
@@ -516,8 +528,12 @@ void Library::onPlayerManagerTrackAnalyzerIdle() {
     }
 }
 
+void Library::slotPasteFromSidebar() {
+    emit pasteFromSidebar();
+}
+
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "Library::slotShowTrackModel" << model;
+    // qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
@@ -528,7 +544,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotSwitchToView(const QString& view) {
-    //qDebug() << "Library::slotSwitchToView" << view;
+    // qDebug() << "Library::slotSwitchToView" << view;
     emit switchToView(view);
 }
 
