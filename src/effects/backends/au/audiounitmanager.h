@@ -4,6 +4,8 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QString>
+
 /// Manages instantiation of an audio unit. Only for internal use.
 class AudioUnitManager {
   public:
@@ -18,6 +20,7 @@ class AudioUnitManager {
     AudioUnit _Nullable getAudioUnit();
 
   private:
+    QString m_name;
     std::atomic<bool> m_isInstantiated;
     AudioUnit _Nullable m_audioUnit;
 
