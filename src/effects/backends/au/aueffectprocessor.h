@@ -13,11 +13,26 @@ class AUEffectGroupState final : public EffectState {
   public:
     AUEffectGroupState(const mixxx::EngineParameters& engineParameters);
 
-    AudioTimeStamp getTimestamp();
-    void incrementTimestamp();
+    void render(AudioUnit _Nonnull audioUnit,
+            const CSAMPLE* _Nonnull pInput,
+            CSAMPLE* _Nonnull pOutput);
 
   private:
     AudioTimeStamp m_timestamp;
+    AudioBufferList m_inputBuffers;
+    AudioBufferList m_outputBuffers;
+
+    static OSStatus renderCallbackUntyped(void* rawThis,
+            AudioUnitRenderActionFlags* inActionFlags,
+            const AudioTimeStamp* inTimeStamp,
+            UInt32 inBusNumber,
+            UInt32 inNumFrames,
+            AudioBufferList* ioData);
+    OSStatus renderCallback(AudioUnitRenderActionFlags* inActionFlags,
+            const AudioTimeStamp* inTimeStamp,
+            UInt32 inBusNumber,
+            UInt32 inNumFrames,
+            AudioBufferList* ioData) const;
 };
 
 class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {

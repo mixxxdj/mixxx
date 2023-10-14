@@ -1,3 +1,5 @@
+#import <AudioToolbox/AudioToolbox.h>
+
 #include "effects/backends/au/audiounitmanager.h"
 
 AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component) {
@@ -6,11 +8,11 @@ AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component) {
 
 AudioUnitManager::~AudioUnitManager() {
     if (m_isInstantiated.load()) {
-        [m_audioUnit deallocateRenderResources];
+        AudioUnitUninitialize(m_audioUnit);
     }
 }
 
-AUAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
+AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
     // impossible: https://belkadan.com/blog/2023/10/Implicity-Atomic)
@@ -30,7 +32,6 @@ void AudioUnitManager::instantiateAudioUnitAsync(
         return;
     }
 
-    auto description = [component audioComponentDescription];
     auto options = kAudioComponentInstantiation_LoadOutOfProcess;
 
     // Instantiate the audio unit asynchronously.
@@ -42,28 +43,24 @@ void AudioUnitManager::instantiateAudioUnitAsync(
 
     // TODO: Fix the weird formatting of blocks
     // clang-format off
-    [AUAudioUnit instantiateWithComponentDescription:description
-                 options:options
-                 completionHandler:^(AUAudioUnit* _Nullable audioUnit, NSError* _Nullable error) {
-        if (error == nil) {
-            VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
-                return;
-            }
-
-            NSError* error = nil;
-            [audioUnit allocateRenderResourcesAndReturnError:&error];
-            if (error != nil) {
-                qWarning() << "Audio Unit failed to allocate render resources"
-                        << QString::fromNSString([error localizedDescription]);
-                return;
-            }
-
-            m_audioUnit = audioUnit;
-            m_isInstantiated.store(true);
-        } else {
-            qWarning() << "Could not instantiate audio unit:"
-                       << QString::fromNSString([error localizedDescription]);
+    AudioComponentInstantiate(component.audioComponent, options, ^(AudioUnit _Nullable audioUnit, OSStatus error) {
+        if (error != noErr) {
+            qWarning() << "Could not instantiate Audio Unit:" << error << "(Check https://www.osstatus.com for a description)";
+            return;
         }
-    }];
+
+        VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
+            return;
+        }
+
+        OSStatus initError = AudioUnitInitialize(audioUnit);
+        if (initError != noErr) {
+            qWarning() << "Audio Unit failed to initialize, i.e. allocate render resources:" << initError << "(Check https://www.osstatus.com for a description)";
+            return;
+        }
+
+        m_audioUnit = audioUnit;
+        m_isInstantiated.store(true);
+    });
     // clang-format on
 }

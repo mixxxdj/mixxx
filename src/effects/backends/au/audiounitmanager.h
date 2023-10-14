@@ -15,11 +15,11 @@ class AudioUnitManager {
 
     /// Fetches the audio unit if already instantiated.
     /// Non-blocking and thread-safe.
-    AUAudioUnit* _Nullable getAudioUnit();
+    AudioUnit _Nullable getAudioUnit();
 
   private:
     std::atomic<bool> m_isInstantiated;
-    AUAudioUnit* _Nullable m_audioUnit;
+    AudioUnit _Nullable m_audioUnit;
 
     void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nullable component);
 };

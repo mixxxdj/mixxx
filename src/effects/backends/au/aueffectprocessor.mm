@@ -16,14 +16,83 @@ AUEffectGroupState::AUEffectGroupState(
                   .mSampleTime = 0,
                   .mFlags = kAudioTimeStampSampleTimeValid,
           } {
+    m_inputBuffers.mNumberBuffers = 1;
+    m_outputBuffers.mNumberBuffers = 1;
 }
 
-AudioTimeStamp AUEffectGroupState::getTimestamp() {
-    return m_timestamp;
+// static
+OSStatus AUEffectGroupState::renderCallbackUntyped(void* rawThis,
+        AudioUnitRenderActionFlags* inActionFlags,
+        const AudioTimeStamp* inTimeStamp,
+        UInt32 inBusNumber,
+        UInt32 inNumFrames,
+        AudioBufferList* ioData) {
+    return static_cast<AUEffectGroupState*>(rawThis)->renderCallback(
+            inActionFlags, inTimeStamp, inBusNumber, inNumFrames, ioData);
 }
 
-void AUEffectGroupState::incrementTimestamp() {
-    m_timestamp.mSampleTime += 1;
+OSStatus AUEffectGroupState::renderCallback(
+        AudioUnitRenderActionFlags* inActionFlags,
+        const AudioTimeStamp* inTimeStamp,
+        UInt32 inBusNumber,
+        UInt32 inNumFrames,
+        AudioBufferList* ioData) const {
+    if (ioData->mNumberBuffers == 0) {
+        qWarning() << "Audio unit render callback failed, no buffers available "
+                      "to write to.";
+        return noErr;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_inputBuffers.mNumberBuffers > 0) {
+        qWarning() << "Audio unit render callback failed, no buffers available "
+                      "to read from.";
+        return noErr;
+    }
+    ioData->mBuffers[0].mData = m_inputBuffers.mBuffers[0].mData;
+    return noErr;
+}
+
+void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
+        const CSAMPLE* _Nonnull pInput,
+        CSAMPLE* _Nonnull pOutput) {
+    // Fill the input and output buffers.
+    // TODO: Assert the size
+    m_inputBuffers.mBuffers[0].mData = const_cast<CSAMPLE*>(pInput);
+    m_outputBuffers.mBuffers[0].mData = pOutput;
+
+    // Set the render callback
+    AURenderCallbackStruct callback;
+    callback.inputProc = AUEffectGroupState::renderCallbackUntyped;
+    callback.inputProcRefCon = this;
+
+    OSStatus setCallbackStatus = AudioUnitSetProperty(audioUnit,
+            kAudioUnitProperty_SetRenderCallback,
+            kAudioUnitScope_Input,
+            0,
+            &callback,
+            sizeof(AURenderCallbackStruct));
+    if (setCallbackStatus != noErr) {
+        qWarning() << "Setting Audio Unit render callback failed with status"
+                   << setCallbackStatus;
+        return;
+    }
+
+    // Apply the actual effect to the sample.
+    AudioUnitRenderActionFlags flags = 0;
+    AUAudioFrameCount framesToRender = 1;
+    NSInteger outputBusNumber = 0;
+    OSStatus renderStatus = AudioUnitRender(audioUnit,
+            &flags,
+            &m_timestamp,
+            outputBusNumber,
+            framesToRender,
+            &m_outputBuffers);
+    if (renderStatus != noErr) {
+        qWarning() << "Rendering Audio Unit failed with status" << renderStatus;
+        return;
+    }
+
+    // Increment the timestamp
+    m_timestamp.mSampleTime += framesToRender;
 }
 
 AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* _Nullable component)
@@ -42,96 +111,14 @@ void AUEffectProcessor::processChannel(
         const mixxx::EngineParameters& engineParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    AUAudioUnit* _Nullable audioUnit = m_manager.getAudioUnit();
+    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
     if (!audioUnit) {
-        qWarning() << "Audio Unit not instantiated yet";
+        qWarning() << "Audio Unit is not instantiated yet";
         return;
     }
 
-    if (!m_isConfigured.exchange(true)) {
-        qDebug() << "Configuring Audio Unit to use a sample rate of"
-                 << engineParameters.sampleRate() << "and a channel count of"
-                 << engineParameters.channelCount();
+    // TODO: Set format (even though Core Audio seems to default to 32-bit
+    // floats, 2 channels and 44.1kHz sample rate)
 
-        qWarning() << "Inputs:" << [[audioUnit inputBusses] count];
-        qWarning() << "Outputs:" << [[audioUnit outputBusses] count];
-
-        for (AUAudioUnitBusArray* buses in
-                @[ [audioUnit inputBusses], [audioUnit outputBusses] ]) {
-            for (AUAudioUnitBus* bus in buses) {
-                NSError* error = nil;
-
-                auto format = [[AVAudioFormat alloc]
-                        initWithCommonFormat:AVAudioPCMFormatFloat32
-                                  sampleRate:engineParameters.sampleRate()
-                                    channels:engineParameters.channelCount()
-                                 interleaved:false];
-
-                [bus setFormat:format error:&error];
-
-                if (error != nil) {
-                    qWarning() << "Could not set Audio Unit format:"
-                               << QString::fromNSString(
-                                          [error localizedDescription]);
-                    return;
-                }
-            }
-        }
-    }
-
-    AudioTimeStamp timestamp = channelState->getTimestamp();
-    channelState->incrementTimestamp();
-
-    AudioUnitRenderActionFlags flags = 0;
-    AUAudioFrameCount framesToRender = 1;
-    NSInteger outputBusNumber = 0;
-    AudioBufferList outputData = {.mNumberBuffers = 1,
-            .mBuffers = {{
-                    .mNumberChannels = 1,
-                    .mDataByteSize = sizeof(CSAMPLE),
-                    .mData = pOutput,
-            }}};
-
-    // TODO: Fix the weird formatting of blocks
-    // clang-format off
-    AURenderPullInputBlock pullInput = ^(
-        AudioUnitRenderActionFlags *actionFlags,
-        const AudioTimeStamp *timestamp,
-        AUAudioFrameCount frameCount,
-        NSInteger inputBusNumber,
-        AudioBufferList *inputData
-    ) {
-        VERIFY_OR_DEBUG_ASSERT(inputData->mNumberBuffers >= 1) {
-            qWarning() << "AURenderPullInputBlock received empty input data";
-            return 1; // TODO: Proper error-code
-        };
-
-        AudioBuffer* buffer = &inputData->mBuffers[0];
-
-        VERIFY_OR_DEBUG_ASSERT(buffer->mDataByteSize == sizeof(CSAMPLE)) {
-            qWarning() << "AURenderPullInputBlock encountered a buffer of size" << buffer->mDataByteSize << "(rather than the expected" << sizeof(CSAMPLE) << "bytes)";
-            return 1; // TODO: Proper error-code
-        }
-
-        CSAMPLE* data = static_cast<CSAMPLE*>(buffer->mData);
-        *data = *pInput;
-
-        return 0; // No error
-    };
-    // clang-format on
-
-    // Apply the actual effect to the sample.
-    // See
-    // https://developer.apple.com/documentation/audiotoolbox/aurenderblock?language=objc
-    AUAudioUnitStatus status = [audioUnit renderBlock](&flags,
-            &timestamp,
-            framesToRender,
-            outputBusNumber,
-            &outputData,
-            pullInput);
-
-    if (status != 0) {
-        qWarning() << "Rendering Audio Unit failed with status" << status;
-        return;
-    }
+    channelState->render(audioUnit, pInput, pOutput);
 }
