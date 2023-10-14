@@ -154,6 +154,14 @@ class TrackModel {
         Q_UNUSED(locations);
         return 0;
     }
+    virtual int addTracksWithTrackIds(const QModelIndex& index,
+            const QList<TrackId>& tracks,
+            int* pOutInsertionPos) {
+        Q_UNUSED(index);
+        Q_UNUSED(tracks);
+        Q_UNUSED(pOutInsertionPos);
+        return 0;
+    }
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex) {
         Q_UNUSED(sourceIndex);
