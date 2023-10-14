@@ -31,11 +31,10 @@ OSStatus AUEffectGroupState::renderCallbackUntyped(void* rawThis,
             inActionFlags, inTimeStamp, inBusNumber, inNumFrames, ioData);
 }
 
-OSStatus AUEffectGroupState::renderCallback(
-        AudioUnitRenderActionFlags* inActionFlags,
-        const AudioTimeStamp* inTimeStamp,
-        UInt32 inBusNumber,
-        UInt32 inNumFrames,
+OSStatus AUEffectGroupState::renderCallback(AudioUnitRenderActionFlags*,
+        const AudioTimeStamp*,
+        UInt32,
+        UInt32,
         AudioBufferList* ioData) const {
     if (ioData->mNumberBuffers == 0) {
         qWarning() << "Audio unit render callback failed, no buffers available "
@@ -52,12 +51,16 @@ OSStatus AUEffectGroupState::renderCallback(
 }
 
 void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
+        SINT sampleCount,
         const CSAMPLE* _Nonnull pInput,
         CSAMPLE* _Nonnull pOutput) {
     // Fill the input and output buffers.
     // TODO: Assert the size
+    SINT size = sizeof(CSAMPLE) * sampleCount;
     m_inputBuffers.mBuffers[0].mData = const_cast<CSAMPLE*>(pInput);
+    m_inputBuffers.mBuffers[0].mDataByteSize = size;
     m_outputBuffers.mBuffers[0].mData = pOutput;
+    m_outputBuffers.mBuffers[0].mDataByteSize = size;
 
     // Set the render callback
     AURenderCallbackStruct callback;
@@ -78,13 +81,12 @@ void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
 
     // Apply the actual effect to the sample.
     AudioUnitRenderActionFlags flags = 0;
-    AUAudioFrameCount framesToRender = 1;
     NSInteger outputBusNumber = 0;
     OSStatus renderStatus = AudioUnitRender(audioUnit,
             &flags,
             &m_timestamp,
             outputBusNumber,
-            framesToRender,
+            sampleCount,
             &m_outputBuffers);
     if (renderStatus != noErr) {
         qWarning() << "Rendering Audio Unit failed with status" << renderStatus;
@@ -92,7 +94,7 @@ void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
     }
 
     // Increment the timestamp
-    m_timestamp.mSampleTime += framesToRender;
+    m_timestamp.mSampleTime += sampleCount;
 }
 
 AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* _Nullable component)
@@ -100,7 +102,7 @@ AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* _Nullable component)
 }
 
 void AUEffectProcessor::loadEngineEffectParameters(
-        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+        const QMap<QString, EngineEffectParameterPointer>&) {
     // TODO
 }
 
@@ -109,8 +111,8 @@ void AUEffectProcessor::processChannel(
         const CSAMPLE* _Nonnull pInput,
         CSAMPLE* _Nonnull pOutput,
         const mixxx::EngineParameters& engineParameters,
-        const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures) {
+        const EffectEnableState,
+        const GroupFeatureState&) {
     AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
     if (!audioUnit) {
         qWarning() << "Audio Unit is not instantiated yet";
@@ -120,5 +122,6 @@ void AUEffectProcessor::processChannel(
     // TODO: Set format (even though Core Audio seems to default to 32-bit
     // floats, 2 channels and 44.1kHz sample rate)
 
-    channelState->render(audioUnit, pInput, pOutput);
+    channelState->render(
+            audioUnit, engineParameters.samplesPerBuffer(), pInput, pOutput);
 }

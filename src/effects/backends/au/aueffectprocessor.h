@@ -14,6 +14,7 @@ class AUEffectGroupState final : public EffectState {
     AUEffectGroupState(const mixxx::EngineParameters& engineParameters);
 
     void render(AudioUnit _Nonnull audioUnit,
+            SINT sampleCount,
             const CSAMPLE* _Nonnull pInput,
             CSAMPLE* _Nonnull pOutput);
 
