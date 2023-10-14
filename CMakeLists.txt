@@ -1566,6 +1566,7 @@ if(APPLE)
   if(AU_EFFECTS)
     target_sources(mixxx-lib PRIVATE
       src/effects/backends/au/aubackend.mm
+      src/effects/backends/au/audiounitmanager.mm
       src/effects/backends/au/aueffectprocessor.mm
       src/effects/backends/au/aumanifest.mm
     )

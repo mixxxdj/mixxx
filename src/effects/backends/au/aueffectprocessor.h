@@ -6,27 +6,8 @@
 
 #include <atomic>
 
+#include "effects/backends/au/audiounitmanager.h"
 #include "effects/backends/effectprocessor.h"
-
-/// Manages instantiation of an audio unit. Only for internal use.
-class AudioUnitManager {
-  public:
-    AudioUnitManager(AVAudioUnitComponent* _Nullable component);
-    ~AudioUnitManager();
-
-    AudioUnitManager(const AudioUnitManager&) = delete;
-    AudioUnitManager& operator=(const AudioUnitManager&) = delete;
-
-    /// Fetches the audio unit if already instantiated.
-    /// Non-blocking and thread-safe.
-    AUAudioUnit* _Nullable getAudioUnit();
-
-  private:
-    std::atomic<bool> m_isInstantiated;
-    AUAudioUnit* _Nullable m_audioUnit;
-
-    void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nullable component);
-};
 
 class AUEffectGroupState final : public EffectState {
   public:
@@ -55,7 +36,6 @@ class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
             const GroupFeatureState& groupFeatures) override;
 
   private:
-    AVAudioUnitComponent* _Nullable m_component;
     std::atomic<bool> m_isConfigured;
     AudioUnitManager m_manager;
 };
