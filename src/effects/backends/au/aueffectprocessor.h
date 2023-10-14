@@ -56,5 +56,6 @@ class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
 
   private:
     AVAudioUnitComponent* _Nullable m_component;
+    std::atomic<bool> m_isConfigured;
     AudioUnitManager m_manager;
 };

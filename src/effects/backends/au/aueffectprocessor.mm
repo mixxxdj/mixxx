@@ -116,6 +116,30 @@ void AUEffectProcessor::processChannel(
         return;
     }
 
+    if (!m_isConfigured.exchange(true)) {
+        for (AUAudioUnitBusArray* buses in
+                @[ [audioUnit inputBusses], [audioUnit outputBusses] ]) {
+            for (AUAudioUnitBus* bus in buses) {
+                NSError* error = nil;
+
+                auto format = [[AVAudioFormat alloc]
+                        initWithCommonFormat:AVAudioPCMFormatFloat32
+                                  sampleRate:engineParameters.sampleRate()
+                                    channels:engineParameters.channelCount()
+                                 interleaved:false];
+
+                [bus setFormat:format error:&error];
+
+                if (error != nil) {
+                    qWarning() << "Could not set Audio Unit format:"
+                               << QString::fromNSString(
+                                          [error localizedDescription]);
+                    return;
+                }
+            }
+        }
+    }
+
     AudioTimeStamp timestamp = channelState->getTimestamp();
     channelState->incrementTimestamp();
 
