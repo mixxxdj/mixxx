@@ -14,6 +14,7 @@
 #include "moc_browsetablemodel.cpp"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -312,6 +313,16 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 }
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
+}
+
+void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList&) {
