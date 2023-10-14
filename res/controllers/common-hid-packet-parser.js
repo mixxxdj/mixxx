@@ -1240,6 +1240,7 @@ class HIDController {
          * @type {string[]}
          */
         this.valid_groups = [
+            "[App]",
             "[Channel1]",
             "[Channel2]",
             "[Channel3]",
