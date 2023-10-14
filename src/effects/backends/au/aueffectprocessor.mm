@@ -117,6 +117,10 @@ void AUEffectProcessor::processChannel(
     }
 
     if (!m_isConfigured.exchange(true)) {
+        qDebug() << "Configuring Audio Unit to use a sample rate of"
+                 << engineParameters.sampleRate() << "and a channel count of"
+                 << engineParameters.channelCount();
+
         for (AUAudioUnitBusArray* buses in
                 @[ [audioUnit inputBusses], [audioUnit outputBusses] ]) {
             for (AUAudioUnitBus* bus in buses) {
