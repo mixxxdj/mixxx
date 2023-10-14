@@ -157,10 +157,15 @@ void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
     // Apply the actual effect to the sample.
     // See
     // https://developer.apple.com/documentation/audiotoolbox/aurenderblock?language=objc
-    [audioUnit renderBlock](&flags,
+    AUAudioUnitStatus status = [audioUnit renderBlock](&flags,
             &timestamp,
             framesToRender,
             outputBusNumber,
             &outputData,
             pullInput);
+
+    if (status != 0) {
+        qWarning() << "Rendering Audio Unit failed with status" << status;
+        return;
+    }
 }
