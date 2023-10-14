@@ -12,6 +12,10 @@
 class AudioUnitManager {
   public:
     AudioUnitManager(AVAudioUnitComponent* component);
+    ~AudioUnitManager();
+
+    AudioUnitManager(const AudioUnitManager&) = delete;
+    AudioUnitManager& operator=(const AudioUnitManager&) = delete;
 
     /// Fetches the audio unit if already instantiated.
     /// Non-blocking and thread-safe.

@@ -11,6 +11,12 @@ AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* component) {
     instantiateAudioUnitAsync(component);
 }
 
+AudioUnitManager::~AudioUnitManager() {
+    if (m_isInstantiated.load()) {
+        [m_audioUnit deallocateRenderResources];
+    }
+}
+
 AUAudioUnit* _Nullable AudioUnitManager::getAudioUnit() {
     // We need to load this atomic flag to ensure that we don't get a partial
     // read of the audio unit pointer (probably extremely uncommon, but not
@@ -50,6 +56,15 @@ void AudioUnitManager::instantiateAudioUnitAsync(
             VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
                 return;
             }
+
+            NSError* error = nil;
+            [audioUnit allocateRenderResourcesAndReturnError:&error];
+            if (error != nil) {
+                qWarning() << "Audio Unit failed to allocate render resources"
+                        << QString::fromNSString([error localizedDescription]);
+                return;
+            }
+
             m_audioUnit = audioUnit;
             m_isInstantiated.store(true);
         } else {
@@ -95,14 +110,6 @@ void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
     AUAudioUnit* _Nullable audioUnit = m_manager.getAudioUnit();
     if (!audioUnit) {
         qWarning() << "Audio Unit not instantiated yet";
-        return;
-    }
-
-    NSError* error = nil;
-    [audioUnit allocateRenderResourcesAndReturnError:&error];
-    if (error != nil) {
-        qWarning() << "Audio Unit could not allocate render resources"
-                   << QString::fromNSString([error localizedDescription]);
         return;
     }
 
@@ -156,6 +163,4 @@ void AUEffectProcessor::processChannel(AUEffectGroupState* channelState,
             outputBusNumber,
             &outputData,
             pullInput);
-
-    [audioUnit deallocateRenderResources];
 }
