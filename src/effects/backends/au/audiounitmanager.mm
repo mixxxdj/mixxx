@@ -1,13 +1,26 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
+#include "util/assert.h"
 
 #include <QString>
 
 #include "effects/backends/au/audiounitmanager.h"
 
-AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component)
+AudioUnitManager::AudioUnitManager(
+        AVAudioUnitComponent* _Nullable component, bool instantiateSync)
         : m_name(QString::fromNSString([component name])) {
-    instantiateAudioUnitAsync(component);
+    // NOTE: The component can be null if the lookup failed in
+    // `AUBackend::createProcessor`, in which case the effect simply acts as an
+    // identity function on the audio. Same applies when `AudioUnitManager` is
+    // default-initialized.
+    if (!component) {
+        return;
+    }
+
+    if (instantiateSync) {
+    } else {
+        instantiateAudioUnitAsync(component);
+    }
 }
 
 AudioUnitManager::~AudioUnitManager() {
@@ -29,15 +42,7 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
-        AVAudioUnitComponent* _Nullable component) {
-    // NOTE: The component can be null if the lookup failed in
-    // `AUBackend::createProcessor`, in which case the effect simply acts as an
-    // identity function on the audio. Same applies when `AUEffectProcessor` is
-    // default-initialized.
-    if (!component) {
-        return;
-    }
-
+        AVAudioUnitComponent* _Nonnull component) {
     auto options = kAudioComponentInstantiation_LoadOutOfProcess;
 
     // Instantiate the audio unit asynchronously.
@@ -51,18 +56,47 @@ void AudioUnitManager::instantiateAudioUnitAsync(
             return;
         }
 
-        VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
+        VERIFY_OR_DEBUG_ASSERT(audioUnit != nil) {
+            qWarning() << "Could not instantiate Audio Unit" << m_name << "...but the error is noErr, what's going on?";
             return;
         }
 
-        OSStatus initError = AudioUnitInitialize(audioUnit);
-        if (initError != noErr) {
-            qWarning() << "Audio Unit" << m_name << "failed to initialize, i.e. allocate render resources:" << initError << "(Check https://www.osstatus.com for a description)";
-            return;
-        }
-
-        m_audioUnit = audioUnit;
-        m_isInstantiated.store(true);
+        initializeWith(audioUnit);
     });
     // clang-format on
+}
+
+void AudioUnitManager::instantiateAudioUnitSync(
+        AVAudioUnitComponent* _Nonnull component) {
+    AudioUnit _Nullable audioUnit = nil;
+    OSStatus error =
+            AudioComponentInstanceNew(component.audioComponent, &audioUnit);
+    if (error != noErr) {
+        qWarning() << "Audio Unit" << m_name
+                   << "could not be instantiated:" << error
+                   << "(Check https://www.osstatus.com for a description)";
+    }
+
+    initializeWith(audioUnit);
+}
+
+void AudioUnitManager::initializeWith(AudioUnit _Nonnull audioUnit) {
+    VERIFY_OR_DEBUG_ASSERT(!m_isInstantiated.load()) {
+        qWarning() << "Audio Unit" << m_name
+                   << "cannot be initialized after already having been "
+                      "instantiated";
+        return;
+    }
+
+    OSStatus initError = AudioUnitInitialize(audioUnit);
+    if (initError != noErr) {
+        qWarning() << "Audio Unit" << m_name
+                   << "failed to initialize, i.e. allocate render resources:"
+                   << initError
+                   << "(Check https://www.osstatus.com for a description)";
+        return;
+    }
+
+    m_audioUnit = audioUnit;
+    m_isInstantiated.store(true);
 }

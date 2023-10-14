@@ -9,7 +9,7 @@
 /// Manages instantiation of an audio unit. Only for internal use.
 class AudioUnitManager {
   public:
-    AudioUnitManager(AVAudioUnitComponent* _Nullable component);
+    AudioUnitManager(AVAudioUnitComponent* _Nullable component = nil, bool instantiateSync = false);
     ~AudioUnitManager();
 
     AudioUnitManager(const AudioUnitManager&) = delete;
@@ -24,5 +24,8 @@ class AudioUnitManager {
     std::atomic<bool> m_isInstantiated;
     AudioUnit _Nullable m_audioUnit;
 
-    void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nullable component);
+    void instantiateAudioUnitAsync(AVAudioUnitComponent* _Nonnull component);
+    void instantiateAudioUnitSync(AVAudioUnitComponent* _Nonnull component);
+
+    void initializeWith(AudioUnit _Nonnull audioUnit);
 };
