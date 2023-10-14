@@ -23,6 +23,7 @@ if(DEFINED APPLE_CODESIGN_IDENTITY AND DEFINED APPLE_CODESIGN_ENTITLEMENTS)
       message(STATUS "Ad-hoc signing bundle without hardened runtime")
       execute_process(COMMAND
           codesign --verbose=4 --deep --force
+          --entitlements "${APPLE_CODESIGN_ENTITLEMENTS}"
           --sign "${APPLE_CODESIGN_IDENTITY}"
           "${PATH_TO_SIGN}"
       )
