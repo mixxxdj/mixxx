@@ -51,6 +51,7 @@
                         <ObjectName>BpmText</ObjectName>
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>57f,22f</Size>
+                        <Alignment>center</Alignment>
                         <NumberOfDigits>2</NumberOfDigits>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
@@ -59,6 +60,7 @@
                       <NumberRate>
                         <TooltipId>rate_display</TooltipId>
                         <ObjectName>RateText</ObjectName>
+                        <Alignment>center</Alignment>
                         <Channel><Variable name="ChanNum" /></Channel>
                         <NumberOfDigits>2</NumberOfDigits>
                       </NumberRate>
