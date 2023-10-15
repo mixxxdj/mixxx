@@ -18,46 +18,33 @@ xcrun notarytool submit \
     --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
     --team-id "${APPLE_TEAM_ID}" \
     --output-format plist \
-    "${DMG_FILE}" > notarize_result.plist
-UUID="$(/usr/libexec/PlistBuddy -c 'Print notarization-upload:RequestUUID' notarize_result.plist)"
-echo "Notarization UUID: $UUID"
-rm notarize_result.plist
+    --wait \
+    "${DMG_FILE}" > notarize_status.plist
 
-# Wait a few seconds to avoid "Could not find the RequestUUID." error
-sleep 5
+# shellcheck disable=SC2181
+if [ "$?" != "0" ]; then
+    echo "Notarization failed:"
+    cat notarize_status.plist
+    curl "$(/usr/libexec/PlistBuddy -c 'Print notarization-info:LogFileURL' notarize_status.plist)"
+    exit 1
+fi
 
-# wait for confirmation that notarization finished
-while true; do
-    xcrun notarytool info \
-        --apple-id "${APPLE_ID_USERNAME}" \
-        --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
-        --output-format plist > notarize_status.plist \
-        "$UUID"
+NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
+rm notarize_status.plist
 
-    # shellcheck disable=SC2181
-    if [ "$?" != "0" ]; then
-        echo "Notarization failed:"
-        cat notarize_status.plist
-        curl "$(/usr/libexec/PlistBuddy -c 'Print notarization-info:LogFileURL' notarize_status.plist)"
-        exit 1
-    fi
-
-    NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
-    if [ "${NOTARIZATION_STATUS}" == "in progress" ]; then
-        echo "Waiting another 10 seconds for notarization to complete"
-        sleep 10
-    elif [ "${NOTARIZATION_STATUS}" == "success" ]; then
+case "${NOTARIZATION_STATUS}" in
+    success)
         echo "Notarization succeeded"
-        break
-    elif [ "${NOTARIZATION_STATUS}" == "invalid" ]; then
+        ;;
+    invalid)
         echo "Notarization failed with status: ${NOTARIZATION_STATUS}"
         exit 1
-    else
-        echo "Notarization status: ${NOTARIZATION_STATUS}"
-    fi
-done
-
-rm notarize_status.plist
+        ;;
+    *)
+        echo "Unknown notarization status: ${NOTARIZATION_STATUS}"
+        exit 1
+        ;;
+esac
 
 echo "Stapling $DMG_FILE"
 xcrun stapler staple -q "${DMG_FILE}"
