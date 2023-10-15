@@ -105,22 +105,7 @@ AudioUnitEffectProcessor::AudioUnitEffectProcessor(
 
 void AudioUnitEffectProcessor::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
-    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
-    if (!audioUnit) {
-        qWarning() << "Cannot load engine effect parameters before the Audio "
-                      "Unit is instantiated";
-        return;
-    }
-
-    for (auto parameter : parameters) {
-        AudioUnitParameterID parameterId = parameter->id().toInt();
-        AudioUnitSetParameter(audioUnit,
-                parameterId,
-                kAudioUnitScope_Global,
-                0,
-                static_cast<AudioUnitParameterValue>(parameter->value()),
-                0);
-    }
+    m_parameters = parameters.values();
 }
 
 void AudioUnitEffectProcessor::processChannel(
@@ -140,6 +125,44 @@ void AudioUnitEffectProcessor::processChannel(
     // TODO: Set format (even though Core Audio seems to default to 32-bit
     // floats, 2 channels and 44.1kHz sample rate)
 
+    // Update changed parameters
+    syncParameters();
+
+    // Render the effect into the output buffer
     channelState->render(
             audioUnit, engineParameters.samplesPerBuffer(), pInput, pOutput);
+}
+
+void AudioUnitEffectProcessor::syncParameters() {
+    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    DEBUG_ASSERT(audioUnit != nil);
+
+    m_lastValues.reserve(m_parameters.size());
+
+    int i = 0;
+    for (auto parameter : m_parameters) {
+        if (m_lastValues.size() < i) {
+            m_lastValues.push_back(NAN);
+        }
+        DEBUG_ASSERT(m_lastValues.size() >= i);
+
+        AudioUnitParameterID id = parameter->id().toInt();
+        auto value = static_cast<AudioUnitParameterValue>(parameter->value());
+
+        // Update parameter iff changed since the last sync
+        if (m_lastValues[i] != value) {
+            m_lastValues[i] = value;
+
+            OSStatus status = AudioUnitSetParameter(
+                    audioUnit, id, kAudioUnitScope_Global, 0, value, 0);
+            if (status != noErr) {
+                qWarning()
+                        << "Could not set Audio Unit parameter" << id << ":"
+                        << status
+                        << "(Check https://www.osstatus.com for a description)";
+            }
+        }
+
+        i++;
+    }
 }

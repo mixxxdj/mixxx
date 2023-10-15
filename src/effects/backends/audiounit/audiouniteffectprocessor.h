@@ -4,6 +4,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioTypes.h>
 
+#include <QList>
 #include <atomic>
 
 #include "effects/backends/audiounit/audiounitmanager.h"
@@ -54,4 +55,9 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
   private:
     std::atomic<bool> m_isConfigured;
     AudioUnitManager m_manager;
+
+    QList<EngineEffectParameterPointer> m_parameters;
+    QList<AudioUnitParameterValue> m_lastValues;
+
+    void syncParameters();
 };
