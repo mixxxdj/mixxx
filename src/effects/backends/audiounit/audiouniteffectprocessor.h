@@ -24,17 +24,17 @@ class AudioUnitEffectGroupState final : public EffectState {
     AudioBufferList m_inputBuffers;
     AudioBufferList m_outputBuffers;
 
-    static OSStatus renderCallbackUntyped(void* rawThis,
-            AudioUnitRenderActionFlags* inActionFlags,
-            const AudioTimeStamp* inTimeStamp,
+    static OSStatus renderCallbackUntyped(void* _Nonnull rawThis,
+            AudioUnitRenderActionFlags* _Nonnull inActionFlags,
+            const AudioTimeStamp* _Nonnull inTimeStamp,
             UInt32 inBusNumber,
             UInt32 inNumFrames,
-            AudioBufferList* ioData);
-    OSStatus renderCallback(AudioUnitRenderActionFlags* inActionFlags,
-            const AudioTimeStamp* inTimeStamp,
+            AudioBufferList* _Nonnull ioData);
+    OSStatus renderCallback(AudioUnitRenderActionFlags* _Nonnull inActionFlags,
+            const AudioTimeStamp* _Nonnull inTimeStamp,
             UInt32 inBusNumber,
             UInt32 inNumFrames,
-            AudioBufferList* ioData) const;
+            AudioBufferList* _Nonnull ioData) const;
 };
 
 class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffectGroupState> {

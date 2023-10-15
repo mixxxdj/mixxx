@@ -22,12 +22,13 @@ AudioUnitEffectGroupState::AudioUnitEffectGroupState(
 }
 
 // static
-OSStatus AudioUnitEffectGroupState::renderCallbackUntyped(void* rawThis,
-        AudioUnitRenderActionFlags* inActionFlags,
-        const AudioTimeStamp* inTimeStamp,
+OSStatus AudioUnitEffectGroupState::renderCallbackUntyped(
+        void* _Nonnull rawThis,
+        AudioUnitRenderActionFlags* _Nonnull inActionFlags,
+        const AudioTimeStamp* _Nonnull inTimeStamp,
         UInt32 inBusNumber,
         UInt32 inNumFrames,
-        AudioBufferList* ioData) {
+        AudioBufferList* _Nonnull ioData) {
     return static_cast<AudioUnitEffectGroupState*>(rawThis)->renderCallback(
             inActionFlags, inTimeStamp, inBusNumber, inNumFrames, ioData);
 }
