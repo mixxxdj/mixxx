@@ -1,4 +1,5 @@
 #import <AudioToolbox/AudioToolbox.h>
+#include "effects/backends/effectmanifestparameter.h"
 
 #include <memory>
 
@@ -49,10 +50,18 @@ AudioUnitManifest::AudioUnitManifest(
                     &paramInfo,
                     &paramInfoSize);
 
+            QString paramName = QString::fromUtf8(paramInfo.name);
             qDebug() << QString::fromNSString([component name])
-                     << "has parameter"
-                     << QString::fromCFString(paramInfo.cfNameString);
-            // TODO: Declare it
+                     << "has parameter" << paramName;
+
+            if (paramInfo.flags & kAudioUnitParameterFlag_IsWritable) {
+                EffectManifestParameterPointer manifestParam = addParameter();
+                manifestParam->setId(paramName);
+                manifestParam->setName(paramName);
+                manifestParam->setRange(paramInfo.minValue,
+                        paramInfo.defaultValue,
+                        paramInfo.maxValue);
+            }
         }
     }
 }
