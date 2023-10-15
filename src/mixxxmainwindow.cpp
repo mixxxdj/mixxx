@@ -694,11 +694,11 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
         }
         filePath = pTrack->getLocation();
     }
-    this->setWindowTitle(appTitle);
+    setWindowTitle(appTitle);
 
     // Display a draggable proxy icon for the track in the title bar on
     // platforms that support it, e.g. macOS
-    this->setWindowFilePath(filePath);
+    setWindowFilePath(filePath);
 }
 
 void MixxxMainWindow::createMenuBar() {
