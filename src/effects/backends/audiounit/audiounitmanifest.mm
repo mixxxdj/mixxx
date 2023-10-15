@@ -42,6 +42,7 @@ AudioUnitManifest::AudioUnitManifest(
         // Resolve parameters
         AudioUnitParameterInfo paramInfo;
         UInt32 paramInfoSize = sizeof(AudioUnitParameterInfo);
+        bool hasLinkedParam = false;
         for (UInt32 i = 0; i < paramCount; i++) {
             AudioUnitParameterID paramId = paramIds[i];
 
@@ -66,6 +67,15 @@ AudioUnitManifest::AudioUnitManifest(
                 manifestParam->setRange(paramInfo.minValue,
                         paramInfo.defaultValue,
                         paramInfo.maxValue);
+
+                // Link the first parameter
+                // TODO: Figure out if AU plugins provide a better way to figure
+                // out the "default" parameter
+                if (!hasLinkedParam) {
+                    manifestParam->setDefaultLinkType(
+                            EffectManifestParameter::LinkType::Linked);
+                    hasLinkedParam = true;
+                }
 
                 // TODO: Support more modes, e.g. squared, square root in Mixxx
                 if (paramFlags & kAudioUnitParameterFlag_DisplayLogarithmic) {
