@@ -374,7 +374,7 @@ jobs:
           APPLE_ID_USERNAME: rryan@mixxx.org
           APPLE_BUNDLE_ID: org.mixxx.mixxx
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
-          ASC_PROVIDER: FLYL4D545V
+          APPLE_TEAM_ID: FLYL4D545V
 
       - name: "[Windows] Sign Package"
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
