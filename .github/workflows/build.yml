@@ -385,7 +385,6 @@ jobs:
         timeout-minutes: 5
         env:
           APPLE_ID_USERNAME: rryan@mixxx.org
-          APPLE_BUNDLE_ID: org.mixxx.mixxx
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: FLYL4D545V
 
