@@ -4,7 +4,7 @@
 #include "effects/backends/builtin/builtinbackend.h"
 #include "effects/backends/effectprocessor.h"
 #ifdef __AU_EFFECTS__
-#include "effects/backends/au/audiounitbackend.h"
+#include "effects/backends/audiounit/audiounitbackend.h"
 #endif
 #ifdef __LILV__
 #include "effects/backends/lv2/lv2backend.h"

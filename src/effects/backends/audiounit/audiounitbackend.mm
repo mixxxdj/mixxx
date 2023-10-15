@@ -1,4 +1,4 @@
-#include "effects/backends/au/audiounitbackend.h"
+#include "effects/backends/audiounit/audiounitbackend.h"
 
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -10,9 +10,9 @@
 #include <QString>
 #include <memory>
 
-#include "effects/backends/au/audiounitbackend.h"
-#include "effects/backends/au/audiouniteffectprocessor.h"
-#include "effects/backends/au/audiounitmanifest.h"
+#include "effects/backends/audiounit/audiounitbackend.h"
+#include "effects/backends/audiounit/audiouniteffectprocessor.h"
+#include "effects/backends/audiounit/audiounitmanifest.h"
 #include "effects/defs.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
@@ -26,7 +26,7 @@ class AudioUnitBackend : public EffectsBackend {
     }
 
     EffectBackendType getType() const override {
-        return EffectBackendType::AU;
+        return EffectBackendType::AudioUnit;
     };
 
     const QList<QString> getEffectIds() const override {

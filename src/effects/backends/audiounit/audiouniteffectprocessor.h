@@ -6,7 +6,7 @@
 
 #include <atomic>
 
-#include "effects/backends/au/audiounitmanager.h"
+#include "effects/backends/audiounit/audiounitmanager.h"
 #include "effects/backends/effectprocessor.h"
 
 class AudioUnitEffectGroupState final : public EffectState {

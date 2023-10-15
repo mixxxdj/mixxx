@@ -4,7 +4,7 @@
 
 #include <QString>
 
-#include "effects/backends/au/audiounitmanager.h"
+#include "effects/backends/audiounit/audiounitmanager.h"
 
 AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component,
         AudioUnitInstantiationType instantiationType)

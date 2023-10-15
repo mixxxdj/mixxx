@@ -5,7 +5,7 @@
 #include <QMutex>
 #include <QtGlobal>
 
-#include "effects/backends/au/audiouniteffectprocessor.h"
+#include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "engine/engine.h"
 #include "util/assert.h"
 
