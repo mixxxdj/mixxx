@@ -1,6 +1,7 @@
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
 #import <CoreAudioTypes/CoreAudioBaseTypes.h>
+#include <CoreAudioTypes/CoreAudioTypes.h>
 
 #include <QMutex>
 #include <QtGlobal>
@@ -123,10 +124,10 @@ void AudioUnitEffectProcessor::processChannel(
         return;
     }
 
-    // TODO: Set format (even though Core Audio seems to default to 32-bit
-    // floats, 2 channels and 44.1kHz sample rate)
+    // Sync engine parameters with Audio Unit
+    syncStreamFormat(engineParameters);
 
-    // Update changed parameters
+    // Sync effect parameters with Audio Unit
     syncParameters();
 
     // Render the effect into the output buffer
@@ -165,5 +166,46 @@ void AudioUnitEffectProcessor::syncParameters() {
         }
 
         i++;
+    }
+}
+
+void AudioUnitEffectProcessor::syncStreamFormat(
+        const mixxx::EngineParameters& parameters) {
+    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    DEBUG_ASSERT(audioUnit != nil);
+
+    if (parameters.sampleRate() != m_lastSampleRate ||
+            parameters.channelCount() != m_lastChannelCount) {
+        auto sampleRate = parameters.sampleRate();
+        auto channelCount = parameters.channelCount();
+
+        m_lastSampleRate = sampleRate;
+        m_lastChannelCount = channelCount;
+
+        AVAudioFormat* audioFormat = [[AVAudioFormat alloc]
+                initWithCommonFormat:AVAudioPCMFormatFloat32
+                          sampleRate:sampleRate
+                            channels:channelCount
+                         interleaved:false];
+
+        const auto* streamFormat = [audioFormat streamDescription];
+
+        qDebug() << "Updating Audio Unit stream format to sample rate"
+                 << sampleRate << "and channel count" << channelCount;
+
+        OSStatus status = AudioUnitSetProperty(audioUnit,
+                kAudioUnitProperty_StreamFormat,
+                kAudioUnitScope_Global,
+                0,
+                streamFormat,
+                sizeof(AudioStreamBasicDescription));
+
+        if (status != noErr) {
+            qWarning()
+                    << "Could not set Audio Unit stream format to sample rate"
+                    << sampleRate << "and channel count" << channelCount << ":"
+                    << status
+                    << "(Check https://www.osstatus.com for a description)";
+        }
     }
 }

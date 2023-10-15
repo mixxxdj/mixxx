@@ -7,8 +7,10 @@
 #include <QList>
 #include <atomic>
 
+#include "audio/types.h"
 #include "effects/backends/audiounit/audiounitmanager.h"
 #include "effects/backends/effectprocessor.h"
+#include "engine/engine.h"
 
 class AudioUnitEffectGroupState final : public EffectState {
   public:
@@ -57,6 +59,9 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
 
     QList<EngineEffectParameterPointer> m_parameters;
     QList<AudioUnitParameterValue> m_lastValues;
+    mixxx::audio::ChannelCount m_lastChannelCount;
+    mixxx::audio::SampleRate m_lastSampleRate;
 
     void syncParameters();
+    void syncStreamFormat(const mixxx::EngineParameters& engineParameters);
 };
