@@ -28,7 +28,7 @@ QOpenGLTexture* generateTexture(float markerLength,
     const float penWidth = 1.5f;
     const float offset = penWidth / 2.f;
 
-    image.fill(QColor(0, 0, 0, 0).rgba());
+    image.fill(Qt::transparent);
     QPainter painter;
     painter.begin(&image);
 
