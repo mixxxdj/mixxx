@@ -3,7 +3,6 @@
 DMG_FILE="${1}"
 [ -z "${DMG_FILE}" ] && echo "Pass DMG file name as first argument." >&2 && exit 1
 [ -z "${APPLE_CODESIGN_IDENTITY}" ] && echo 'Please set the APPLE_CODESIGN_IDENTITY env var.' >&2 && exit 1
-[ -z "${APPLE_BUNDLE_ID}" ] && echo 'Please set the APPLE_BUNDLE_ID env var.' >&2 && exit 1
 [ -z "${APPLE_ID_USERNAME}" ] && echo 'Please set the APPLE_ID_USERNAME env var.' >&2 && exit 1
 [ -z "${APPLE_APP_SPECIFIC_PASSWORD}" ] && echo 'Please set the APPLE_APP_SPECIFIC_PASSWORD env var.' >&2 && exit 1
 [ -z "${APPLE_TEAM_ID}" ] && echo 'Please set the APPLE_TEAM_ID env var.' >&2 && exit 1
