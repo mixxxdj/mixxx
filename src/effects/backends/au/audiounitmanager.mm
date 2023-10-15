@@ -10,9 +10,9 @@ AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component,
         AudioUnitInstantiationType instantiationType)
         : m_name(QString::fromNSString([component name])) {
     // NOTE: The component can be null if the lookup failed in
-    // `AUBackend::createProcessor`, in which case the effect simply acts as an
-    // identity function on the audio. Same applies when `AudioUnitManager` is
-    // default-initialized.
+    // `AudioUnitBackend::createProcessor`, in which case the effect simply acts
+    // as an identity function on the audio. Same applies when
+    // `AudioUnitManager` is default-initialized.
     if (!component) {
         return;
     }

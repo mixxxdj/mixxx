@@ -5,11 +5,11 @@
 #include <QMutex>
 #include <QtGlobal>
 
-#include "effects/backends/au/aueffectprocessor.h"
+#include "effects/backends/au/audiouniteffectprocessor.h"
 #include "engine/engine.h"
 #include "util/assert.h"
 
-AUEffectGroupState::AUEffectGroupState(
+AudioUnitEffectGroupState::AudioUnitEffectGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
           m_timestamp{
@@ -21,17 +21,17 @@ AUEffectGroupState::AUEffectGroupState(
 }
 
 // static
-OSStatus AUEffectGroupState::renderCallbackUntyped(void* rawThis,
+OSStatus AudioUnitEffectGroupState::renderCallbackUntyped(void* rawThis,
         AudioUnitRenderActionFlags* inActionFlags,
         const AudioTimeStamp* inTimeStamp,
         UInt32 inBusNumber,
         UInt32 inNumFrames,
         AudioBufferList* ioData) {
-    return static_cast<AUEffectGroupState*>(rawThis)->renderCallback(
+    return static_cast<AudioUnitEffectGroupState*>(rawThis)->renderCallback(
             inActionFlags, inTimeStamp, inBusNumber, inNumFrames, ioData);
 }
 
-OSStatus AUEffectGroupState::renderCallback(AudioUnitRenderActionFlags*,
+OSStatus AudioUnitEffectGroupState::renderCallback(AudioUnitRenderActionFlags*,
         const AudioTimeStamp*,
         UInt32,
         UInt32,
@@ -50,7 +50,7 @@ OSStatus AUEffectGroupState::renderCallback(AudioUnitRenderActionFlags*,
     return noErr;
 }
 
-void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
+void AudioUnitEffectGroupState::render(AudioUnit _Nonnull audioUnit,
         SINT sampleCount,
         const CSAMPLE* _Nonnull pInput,
         CSAMPLE* _Nonnull pOutput) {
@@ -64,7 +64,7 @@ void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
 
     // Set the render callback
     AURenderCallbackStruct callback;
-    callback.inputProc = AUEffectGroupState::renderCallbackUntyped;
+    callback.inputProc = AudioUnitEffectGroupState::renderCallbackUntyped;
     callback.inputProcRefCon = this;
 
     OSStatus setCallbackStatus = AudioUnitSetProperty(audioUnit,
@@ -97,17 +97,18 @@ void AUEffectGroupState::render(AudioUnit _Nonnull audioUnit,
     m_timestamp.mSampleTime += sampleCount;
 }
 
-AUEffectProcessor::AUEffectProcessor(AVAudioUnitComponent* _Nullable component)
+AudioUnitEffectProcessor::AudioUnitEffectProcessor(
+        AVAudioUnitComponent* _Nullable component)
         : m_manager(component) {
 }
 
-void AUEffectProcessor::loadEngineEffectParameters(
+void AudioUnitEffectProcessor::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>&) {
     // TODO
 }
 
-void AUEffectProcessor::processChannel(
-        AUEffectGroupState* _Nonnull channelState,
+void AudioUnitEffectProcessor::processChannel(
+        AudioUnitEffectGroupState* _Nonnull channelState,
         const CSAMPLE* _Nonnull pInput,
         CSAMPLE* _Nonnull pOutput,
         const mixxx::EngineParameters& engineParameters,

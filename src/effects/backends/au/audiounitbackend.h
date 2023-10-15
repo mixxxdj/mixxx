@@ -7,4 +7,4 @@
 #include "effects/backends/effectsbackend.h"
 #include "effects/defs.h"
 
-EffectsBackendPointer createAUBackend();
+EffectsBackendPointer createAudioUnitBackend();

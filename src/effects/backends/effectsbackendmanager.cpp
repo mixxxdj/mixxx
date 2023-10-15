@@ -4,7 +4,7 @@
 #include "effects/backends/builtin/builtinbackend.h"
 #include "effects/backends/effectprocessor.h"
 #ifdef __AU_EFFECTS__
-#include "effects/backends/au/aubackend.h"
+#include "effects/backends/au/audiounitbackend.h"
 #endif
 #ifdef __LILV__
 #include "effects/backends/lv2/lv2backend.h"
@@ -18,7 +18,7 @@ EffectsBackendManager::EffectsBackendManager() {
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));
 #ifdef __AU_EFFECTS__
-    addBackend(createAUBackend());
+    addBackend(createAudioUnitBackend());
 #endif
 #ifdef __LILV__
     addBackend(EffectsBackendPointer(new LV2Backend()));

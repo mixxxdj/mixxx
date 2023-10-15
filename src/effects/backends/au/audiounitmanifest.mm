@@ -1,8 +1,9 @@
-#include "effects/backends/au/aumanifest.h"
+#include "effects/backends/au/audiounitmanifest.h"
 
 #include "effects/defs.h"
 
-AUManifest::AUManifest(const QString& id, AVAudioUnitComponent* component) {
+AudioUnitManifest::AudioUnitManifest(
+        const QString& id, AVAudioUnitComponent* component) {
     setBackendType(EffectBackendType::AU);
 
     setId(id);

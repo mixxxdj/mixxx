@@ -5,7 +5,7 @@
 #include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
 
-class AUManifest : public EffectManifest {
+class AudioUnitManifest : public EffectManifest {
   public:
-    AUManifest(const QString& id, AVAudioUnitComponent* component);
+    AudioUnitManifest(const QString& id, AVAudioUnitComponent* component);
 };

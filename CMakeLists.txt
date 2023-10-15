@@ -1565,10 +1565,10 @@ if(APPLE)
   option(AU_EFFECTS "Audio Unit (AU) effects integration" ON)
   if(AU_EFFECTS)
     target_sources(mixxx-lib PRIVATE
-      src/effects/backends/au/aubackend.mm
+      src/effects/backends/au/audiounitbackend.mm
       src/effects/backends/au/audiounitmanager.mm
-      src/effects/backends/au/aueffectprocessor.mm
-      src/effects/backends/au/aumanifest.mm
+      src/effects/backends/au/audiouniteffectprocessor.mm
+      src/effects/backends/au/audiounitmanifest.mm
     )
     target_link_libraries(mixxx-lib PRIVATE
       "-weak_framework AudioToolbox"

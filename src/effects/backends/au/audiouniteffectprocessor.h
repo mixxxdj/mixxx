@@ -9,9 +9,9 @@
 #include "effects/backends/au/audiounitmanager.h"
 #include "effects/backends/effectprocessor.h"
 
-class AUEffectGroupState final : public EffectState {
+class AudioUnitEffectGroupState final : public EffectState {
   public:
-    AUEffectGroupState(const mixxx::EngineParameters& engineParameters);
+    AudioUnitEffectGroupState(const mixxx::EngineParameters& engineParameters);
 
     void render(AudioUnit _Nonnull audioUnit,
             SINT sampleCount,
@@ -36,15 +36,15 @@ class AUEffectGroupState final : public EffectState {
             AudioBufferList* ioData) const;
 };
 
-class AUEffectProcessor final : public EffectProcessorImpl<AUEffectGroupState> {
+class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffectGroupState> {
   public:
-    AUEffectProcessor(AVAudioUnitComponent* _Nullable component = nil);
+    AudioUnitEffectProcessor(AVAudioUnitComponent* _Nullable component = nil);
 
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters)
             override;
 
-    void processChannel(AUEffectGroupState* _Nonnull channelState,
+    void processChannel(AudioUnitEffectGroupState* _Nonnull channelState,
             const CSAMPLE* _Nonnull pInput,
             CSAMPLE* _Nonnull pOutput,
             const mixxx::EngineParameters& engineParameters,

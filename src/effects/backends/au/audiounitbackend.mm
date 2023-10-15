@@ -1,4 +1,4 @@
-#include "effects/backends/au/aubackend.h"
+#include "effects/backends/au/audiounitbackend.h"
 
 #import <AVFAudio/AVFAudio.h>
 #import <AudioToolbox/AudioToolbox.h>
@@ -10,19 +10,19 @@
 #include <QString>
 #include <memory>
 
-#include "effects/backends/au/aubackend.h"
-#include "effects/backends/au/aueffectprocessor.h"
-#include "effects/backends/au/aumanifest.h"
+#include "effects/backends/au/audiounitbackend.h"
+#include "effects/backends/au/audiouniteffectprocessor.h"
+#include "effects/backends/au/audiounitmanifest.h"
 #include "effects/defs.h"
 
 /// An effects backend for Audio Unit (AU) plugins. macOS-only.
-class AUBackend : public EffectsBackend {
+class AudioUnitBackend : public EffectsBackend {
   public:
-    AUBackend() : m_componentsById([[NSDictionary alloc] init]) {
+    AudioUnitBackend() : m_componentsById([[NSDictionary alloc] init]) {
         loadAudioUnits();
     }
 
-    ~AUBackend() override {
+    ~AudioUnitBackend() override {
     }
 
     EffectBackendType getType() const override {
@@ -55,7 +55,7 @@ class AUBackend : public EffectsBackend {
             const EffectManifestPointer pManifest) const override {
         AVAudioUnitComponent* component =
                 m_componentsById[pManifest->id().toNSString()];
-        return std::make_unique<AUEffectProcessor>(component);
+        return std::make_unique<AudioUnitEffectProcessor>(component);
     }
 
   private:
@@ -98,8 +98,8 @@ class AUBackend : public EffectsBackend {
                               [component name],
                               [component versionString]]);
             componentsById[effectId.toNSString()] = component;
-            manifestsById[effectId] =
-                    EffectManifestPointer(new AUManifest(effectId, component));
+            manifestsById[effectId] = EffectManifestPointer(
+                    new AudioUnitManifest(effectId, component));
         }
 
         m_componentsById = componentsById;
@@ -107,6 +107,6 @@ class AUBackend : public EffectsBackend {
     }
 };
 
-EffectsBackendPointer createAUBackend() {
-    return EffectsBackendPointer(new AUBackend());
+EffectsBackendPointer createAudioUnitBackend() {
+    return EffectsBackendPointer(new AudioUnitBackend());
 }
