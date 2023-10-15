@@ -568,6 +568,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
                 this,
                 coverInfo,
                 absoluteHeightOfCoverartToolTip);
+        //: Tooltip text on the cover art column shown when the cover is read from disk
         return tr("Fetching image ...");
     }
     QByteArray data;
