@@ -13,13 +13,12 @@ codesign --verbose=4 --options runtime \
     --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/Mixxx.entitlements" "${DMG_FILE}"
 
 echo "Notarizing $DMG_FILE"
-xcrun notarytool \
-    --primary-bundle-id "${APPLE_BUNDLE_ID}" \
+xcrun notarytool submit \
     --apple-id "${APPLE_ID_USERNAME}" \
     --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
     --team-id "${APPLE_TEAM_ID}" \
-    --file "${DMG_FILE}" \
-    --output-format plist > notarize_result.plist
+    --output-format plist \
+    "${DMG_FILE}" > notarize_result.plist
 UUID="$(/usr/libexec/PlistBuddy -c 'Print notarization-upload:RequestUUID' notarize_result.plist)"
 echo "Notarization UUID: $UUID"
 rm notarize_result.plist
@@ -29,11 +28,11 @@ sleep 5
 
 # wait for confirmation that notarization finished
 while true; do
-    xcrun notarytool \
-        --notarization-info "$UUID" \
+    xcrun notarytool info \
         --apple-id "${APPLE_ID_USERNAME}" \
         --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
-        --output-format plist > notarize_status.plist
+        --output-format plist > notarize_status.plist \
+        "$UUID"
 
     # shellcheck disable=SC2181
     if [ "$?" != "0" ]; then
