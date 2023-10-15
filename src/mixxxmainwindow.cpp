@@ -682,6 +682,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
 void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     QString appTitle = VersionStore::applicationName();
+    QString filePath;
 
     // If we have a track, use getInfo() to format a summary string and prepend
     // it to the title.
@@ -691,8 +692,13 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
         if (!trackInfo.isEmpty()) {
             appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
+        filePath = pTrack->getLocation();
     }
-    this->setWindowTitle(appTitle);
+    setWindowTitle(appTitle);
+
+    // Display a draggable proxy icon for the track in the title bar on
+    // platforms that support it, e.g. macOS
+    setWindowFilePath(filePath);
 }
 
 void MixxxMainWindow::createMenuBar() {
