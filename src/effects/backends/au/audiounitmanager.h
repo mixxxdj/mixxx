@@ -12,7 +12,7 @@ enum AudioUnitInstantiationType {
     AsyncOutOfProcess,
 };
 
-/// Manages instantiation of an audio unit. Only for internal use.
+/// A RAII wrapper around an `AudioUnit`.
 class AudioUnitManager {
   public:
     AudioUnitManager(AVAudioUnitComponent* _Nullable component = nil,
