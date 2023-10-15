@@ -506,7 +506,7 @@ TraktorS2MK3.maximizeLibraryHandler = function(field) {
         return;
     }
 
-    script.toggleControl("[Master]", "maximize_library");
+    script.toggleControl("[Skin]", "show_maximized_library");
 };
 
 TraktorS2MK3.selectLoopHandler = function(field) {
@@ -763,14 +763,14 @@ TraktorS2MK3.registerOutputPackets = function() {
     output.addOutput("[Channel1]", "vu-6", 0x1E, "B");
     output.addOutput("[Channel1]", "vu0", 0x1F, "B");
     output.addOutput("[Channel1]", "vu6", 0x20, "B");
-    output.addOutput("[Channel1]", "PeakIndicator", 0x21, "B");
+    output.addOutput("[Channel1]", "peak_indicator", 0x21, "B");
 
     output.addOutput("[Channel2]", "vu-18", 0x22, "B");
     output.addOutput("[Channel2]", "vu-12", 0x23, "B");
     output.addOutput("[Channel2]", "vu-6", 0x24, "B");
     output.addOutput("[Channel2]", "vu0", 0x25, "B");
     output.addOutput("[Channel2]", "vu6", 0x26, "B");
-    output.addOutput("[Channel2]", "PeakIndicator", 0x27, "B");
+    output.addOutput("[Channel2]", "peak_indicator", 0x27, "B");
 
     output.addOutput("[ChannelX]", "fxButton1", 0x16, "B");
     output.addOutput("[ChannelX]", "fxButton2", 0x17, "B");
@@ -825,10 +825,10 @@ TraktorS2MK3.registerOutputPackets = function() {
     this.linkOutput("[Microphone]", "talkover", this.outputHandler);
 
     // VuMeter
-    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "VuMeter", this.vuMeterHandler);
-    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "VuMeter", this.vuMeterHandler);
-    this.clipLeftConnection = engine.makeConnection("[Channel1]", "PeakIndicator", this.peakOutputHandler);
-    this.clipRightConnection = engine.makeConnection("[Channel2]", "PeakIndicator", this.peakOutputHandler);
+    this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
+    this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
+    this.clipLeftConnection = engine.makeConnection("[Channel1]", "peak_indicator", this.peakOutputHandler);
+    this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler);
 
     // Sampler callbacks
     for (let i = 1; i <= 16; ++i) {

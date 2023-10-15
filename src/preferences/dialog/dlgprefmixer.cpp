@@ -464,6 +464,7 @@ void DlgPrefMixer::slotResetToDefaults() {
 }
 
 void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
+    Q_UNUSED(effectIndex);
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
     if (!c || m_ignoreEqQuickEffectBoxSignals) {
@@ -480,6 +481,7 @@ void DlgPrefMixer::slotEQEffectSelectionChanged(int effectIndex) {
 }
 
 void DlgPrefMixer::slotQuickEffectSelectionChanged(int effectIndex) {
+    Q_UNUSED(effectIndex);
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
     if (!c || m_ignoreEqQuickEffectBoxSignals) {

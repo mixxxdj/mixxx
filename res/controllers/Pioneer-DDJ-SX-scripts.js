@@ -2048,7 +2048,7 @@ PioneerDDJSX.VuMeterLeds = function(value, group, control) {
 
     value = parseInt(value * 0x76); //full level indicator: 0x7F
 
-    if (engine.getValue(group, "PeakIndicator")) {
+    if (engine.getValue(group, "peak_indicator")) {
         value = value + 0x09;
     }
 
@@ -2206,7 +2206,7 @@ PioneerDDJSX.backButton = function(channel, control, value, status) {
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
     if (value) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 };
 

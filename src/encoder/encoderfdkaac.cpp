@@ -187,13 +187,12 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
         // Typical name for a butt installation folder
         // is "butt-x.x.x" so list subfolders beginning with "butt"
-        QStringList nameFilters("butt*");
-        QStringList subfolders =
-                folder.entryList(nameFilters, QDir::Dirs, QDir::Name);
+        const QStringList subfolders =
+                folder.entryList(QStringList{"butt*"}, QDir::Dirs, QDir::Name);
 
         // If a butt installation is found, try
         // to find libfdk-aac in it
-        for (const auto& subName : qAsConst(subfolders)) {
+        for (const auto& subName : subfolders) {
             if (!folder.cd(subName)) {
                 continue;
             }

@@ -13,7 +13,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
@@ -122,15 +122,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     constexpr int kNumEqRacks = 1;
     const int iNumDecks = static_cast<int>(ControlObject::get(
             ConfigKey(kAppGroup, QStringLiteral("num_decks"))));
+    QList<QString> eqNames = {tr("Low EQ"), tr("Mid EQ"), tr("High EQ")};
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
         // Since 3-band is by far the most common, stick with that.
         const int kMaxEqs = 3;
-        QList<QString> eqNames;
-        eqNames.append(tr("Low EQ"));
-        eqNames.append(tr("Mid EQ"));
-        eqNames.append(tr("High EQ"));
         for (int deck = 1; deck <= iNumDecks; ++deck) {
             QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
             for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
@@ -1254,7 +1251,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("4 Effect Units Show/Hide"),
             tr("Switches between showing 2 and 4 effect units"),
             guiMenu);
-    addControl("[Master]",
+    addControl("[Skin]",
             "show_mixer",
             tr("Mixer Show/Hide"),
             tr("Show or hide the mixer."),
@@ -1264,8 +1261,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Library)"),
             tr("Show/hide cover art in the library"),
             guiMenu);
-    addControl("[Master]",
-            "maximize_library",
+    addControl("[Skin]",
+            "show_maximized_library",
             tr("Library Maximize/Restore"),
             tr("Maximize the track library to take up all the available screen "
                "space."),

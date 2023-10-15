@@ -24,3 +24,5 @@ class AnalyzerScheduledTrack {
     /// The additional options.
     AnalyzerTrack::Options m_options;
 };
+
+Q_DECLARE_TYPEINFO(AnalyzerScheduledTrack, Q_MOVABLE_TYPE);

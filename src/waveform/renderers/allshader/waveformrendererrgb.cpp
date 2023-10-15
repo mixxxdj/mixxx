@@ -9,7 +9,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 namespace {
 inline float math_pow2(float x) {
@@ -225,3 +225,5 @@ void WaveformRendererRGB::paintGL() {
     m_shader.disableAttributeArray(colorLocation);
     m_shader.release();
 }
+
+} // namespace allshader

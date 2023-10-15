@@ -40,7 +40,7 @@
 
               <Template src="skin:vumeter_latency.xml">
                 <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[App]</SetVariable>
                 <SetVariable name="control">audio_latency_usage</SetVariable>
               </Template>
             </Children>
@@ -360,7 +360,7 @@
                 <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">MIXER</SetVariable>
                 <SetVariable name="state_1_text">MIXER</SetVariable>
-                <SetVariable name="left_connection_control">[Master],show_mixer</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -373,7 +373,7 @@
                 <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">EFFECTS</SetVariable>
                 <SetVariable name="state_1_text">EFFECTS</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_effectrack</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -386,7 +386,7 @@
                 <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">SAMPLERS</SetVariable>
                 <SetVariable name="state_1_text">SAMPLERS</SetVariable>
-                <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_samplers</SetVariable>
               </Template>
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
@@ -399,11 +399,11 @@
                 <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">MICS &amp; AUX</SetVariable>
                 <SetVariable name="state_1_text">MICS &amp; AUX</SetVariable>
-                <SetVariable name="left_connection_control">[Microphone],show_microphone</SetVariable>
+                <SetVariable name="left_connection_control">[Skin],show_microphones</SetVariable>
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Skin],show_maximized_library</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -441,13 +441,13 @@
                   <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>

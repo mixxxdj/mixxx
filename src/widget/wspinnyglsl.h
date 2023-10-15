@@ -1,12 +1,14 @@
 #pragma once
 
+#include <QOpenGLFunctions>
 #include <QOpenGLTexture>
 
 #include "shaders/textureshader.h"
 #include "shaders/vinylqualityshader.h"
 #include "widget/wspinnybase.h"
 
-class WSpinnyGLSL : public WSpinnyBase {
+class WSpinnyGLSL : public WSpinnyBase, private QOpenGLFunctions {
+    Q_OBJECT
   public:
     WSpinnyGLSL(QWidget* parent,
             const QString& group,

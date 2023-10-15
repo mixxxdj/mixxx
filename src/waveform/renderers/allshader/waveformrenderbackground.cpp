@@ -2,7 +2,7 @@
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRenderBackground::WaveformRenderBackground(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -28,3 +28,5 @@ void WaveformRenderBackground::paintGL() {
             1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+
+} // namespace allshader

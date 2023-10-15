@@ -573,7 +573,7 @@ void DlgPrefController::keyPressEvent(QKeyEvent* pEvent) {
             (m_ui.inputControlSearch->hasFocus() || m_ui.inputControlSearch->hasFocus())) {
         return;
     }
-    return QWidget::keyPressEvent(pEvent);
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgPrefController::enableWizardAndIOTabs(bool enable) {

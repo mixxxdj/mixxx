@@ -30,7 +30,9 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+const QString kLegacyGroup = QStringLiteral("[Master]");
+const QString kMainGroup = QStringLiteral("[Main]");
+} // namespace
 
 EngineMixer::EngineMixer(
         UserSettingsPointer pConfig,
@@ -72,18 +74,28 @@ EngineMixer::EngineMixer(
     m_pWorkerScheduler->start(QThread::HighPriority);
 
     // Main sample rate
-    m_pMainSampleRate = new ControlObject(
+    m_pSampleRate = new ControlObject(
             ConfigKey(kAppGroup, QStringLiteral("samplerate")), true, true);
-    m_pMainSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
-    m_pMainSampleRate->set(44100.);
+    m_pSampleRate->addAlias(ConfigKey(group, QStringLiteral("samplerate")));
+    m_pSampleRate->set(44100.);
 
     // Latency control
-    m_pMainLatency = new ControlObject(ConfigKey(group, "latency"),
+    m_pOutputLatencyMs = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
             true,
             true); // reported latency (sometimes correct)
-    m_pAudioLatencyOverloadCount = new ControlObject(ConfigKey(group, "audio_latency_overload_count"), true, true);
-    m_pAudioLatencyUsage = new ControlPotmeter(ConfigKey(group, "audio_latency_usage"), 0.0, 0.25);
-    m_pAudioLatencyOverload  = new ControlPotmeter(ConfigKey(group, "audio_latency_overload"), 0.0, 1.0);
+    m_pOutputLatencyMs->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("latency")));
+    m_pAudioLatencyOverloadCount = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload_count")));
+    m_pAudioLatencyOverloadCount->addAlias(ConfigKey(
+            kLegacyGroup, QStringLiteral("audio_latency_overload_count")));
+    m_pAudioLatencyUsage = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_usage")));
+    m_pAudioLatencyUsage->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_usage")));
+    m_pAudioLatencyOverload = new ControlObject(
+            ConfigKey(kAppGroup, QStringLiteral("audio_latency_overload")));
+    m_pAudioLatencyOverload->addAlias(
+            ConfigKey(kLegacyGroup, QStringLiteral("audio_latency_overload")));
 
     // Sync controller
     m_pEngineSync = new EngineSync(pConfig);
@@ -110,13 +122,13 @@ EngineMixer::EngineMixer(
     m_pMainGain->addAlias(ConfigKey(group, QStringLiteral("volume")));
 
     // VU meter:
-    m_pVumeter = new EngineVuMeter(group);
+    m_pVumeter = new EngineVuMeter(kMainGroup, kLegacyGroup);
 
-    m_pMainDelay = new EngineDelay(group, ConfigKey(group, "delay"));
-    m_pHeadDelay = new EngineDelay(group, ConfigKey(group, "headDelay"));
-    m_pBoothDelay = new EngineDelay(group, ConfigKey(group, "boothDelay"));
-    m_pLatencyCompensationDelay = new EngineDelay(group,
-        ConfigKey(group, "microphoneLatencyCompensation"));
+    m_pMainDelay = new EngineDelay(ConfigKey(group, "delay"));
+    m_pHeadDelay = new EngineDelay(ConfigKey(group, "headDelay"));
+    m_pBoothDelay = new EngineDelay(ConfigKey(group, "boothDelay"));
+    m_pLatencyCompensationDelay =
+            new EngineDelay(ConfigKey(group, "microphoneLatencyCompensation"));
 
     // Headphone volume
     m_pHeadGain = new ControlAudioTaperPot(ConfigKey(group, "headGain"), -14, 14, 0.5);
@@ -225,8 +237,8 @@ EngineMixer::~EngineMixer() {
     delete m_pXFaderMode;
 
     delete m_pEngineSync;
-    delete m_pMainSampleRate;
-    delete m_pMainLatency;
+    delete m_pSampleRate;
+    delete m_pOutputLatencyMs;
     delete m_pAudioLatencyOverloadCount;
     delete m_pAudioLatencyUsage;
     delete m_pAudioLatencyOverload;
@@ -407,7 +419,7 @@ void EngineMixer::process(const int iBufferSize) {
     bool boothEnabled = m_pBoothEnabled->toBool();
     bool headphoneEnabled = m_pHeadphoneEnabled->toBool();
 
-    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pMainSampleRate->get());
+    m_sampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
     // TODO: remove assumption of stereo buffer
     constexpr unsigned int kChannels = 2;
     const unsigned int iFrames = iBufferSize / kChannels;
@@ -506,7 +518,7 @@ void EngineMixer::process(const int iBufferSize) {
         m_pTalkoverDucking->processKey(m_pTalkover, iBufferSize);
         break;
     case EngineTalkoverDucking::MANUAL:
-        m_pTalkoverDucking->setAboveThreshold(m_activeTalkoverChannels.size());
+        m_pTalkoverDucking->setAboveThreshold(!m_activeTalkoverChannels.isEmpty());
         break;
     default:
         DEBUG_ASSERT("!Unknown Ducking mode");

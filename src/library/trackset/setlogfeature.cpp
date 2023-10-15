@@ -22,7 +22,7 @@
 
 namespace {
 constexpr int kNumToplevelHistoryEntries = 5;
-}
+} // namespace
 
 using namespace mixxx::library::prefs;
 

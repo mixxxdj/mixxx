@@ -9,7 +9,7 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_hsvwaveformwidget.cpp"
 
-using namespace allshader;
+namespace allshader {
 
 HSVWaveformWidget::HSVWaveformWidget(const QString& group, QWidget* parent)
         : WaveformWidget(group, parent) {
@@ -31,3 +31,5 @@ void HSVWaveformWidget::castToQWidget() {
 void HSVWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
+
+} // namespace allshader

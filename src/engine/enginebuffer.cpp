@@ -375,13 +375,13 @@ mixxx::Bpm EngineBuffer::getLocalBpm() const {
 }
 
 void EngineBuffer::setBeatLoop(mixxx::audio::FramePos startPosition, bool enabled) {
-    return m_pLoopingControl->setBeatLoop(startPosition, enabled);
+    m_pLoopingControl->setBeatLoop(startPosition, enabled);
 }
 
 void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
         mixxx::audio::FramePos endPositon,
         bool enabled) {
-    return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
+    m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
 void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {

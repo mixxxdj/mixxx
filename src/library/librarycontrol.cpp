@@ -21,7 +21,7 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
-}
+} // namespace
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),
@@ -765,7 +765,8 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 
     if (m_focusedWidget == FocusWidget::None) {
-        return setLibraryFocus(FocusWidget::TracksTable);
+        setLibraryFocus(FocusWidget::TracksTable);
+        return;
     }
 
     // Send the event pointer to the currently focused widget
@@ -841,17 +842,20 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
         VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
             return;
         }
-        return m_pSearchbox->setFocus();
+        m_pSearchbox->setFocus();
+        return;
     case FocusWidget::Sidebar:
         VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
             return;
         }
-        return m_pSidebarWidget->setFocus();
+        m_pSidebarWidget->setFocus();
+        return;
     case FocusWidget::TracksTable:
         VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
             return;
         }
-        return m_pLibraryWidget->getActiveView()->setFocus();
+        m_pLibraryWidget->getActiveView()->setFocus();
+        return;
     case FocusWidget::None:
         // What could be the goal, what are the consequences of manually
         // removing focus from a widget?
@@ -942,7 +946,8 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     case FocusWidget::TracksTable:
-        return m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+        m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+        return;
     case FocusWidget::Dialog: {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
@@ -968,7 +973,7 @@ void LibraryControl::slotGoToItem(double v) {
     case FocusWidget::Searchbar:
     case FocusWidget::None:
     default:
-        return setLibraryFocus(FocusWidget::TracksTable);
+        setLibraryFocus(FocusWidget::TracksTable);
     }
 }
 

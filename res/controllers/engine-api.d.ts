@@ -122,7 +122,7 @@ declare namespace engine {
      * only the last value set for the control is processed.
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "VuMeter"
+     * @param name Name of the control e.g. "vu_meter"
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @returns Returns script connection object on success, otherwise 'undefined''
      */
@@ -134,7 +134,7 @@ declare namespace engine {
      * JavaScript code that evaluates to a function or an actual JavaScript function.
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "VuMeter"
+     * @param name Name of the control e.g. "vu_meter"
      * @param callback JS function, which will be called every time, the value of the connected control changes.
      * @param disconnect If "true", all connections to the ControlObject are removed. [default = false]
      * @returns Returns script connection object on success, otherwise 'undefined' or 'false' depending on the error cause.

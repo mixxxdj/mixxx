@@ -10,7 +10,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidget)
@@ -211,3 +211,5 @@ void WaveformRendererHSV::paintGL() {
     m_shader.disableAttributeArray(colorLocation);
     m_shader.release();
 }
+
+} // namespace allshader

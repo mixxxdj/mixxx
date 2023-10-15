@@ -337,8 +337,8 @@ void BaseSqlTableModel::select() {
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
 
-    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
-             << m_rowInfo.size();
+    qDebug() << this << "select() returned" << m_rowInfo.size()
+             << "results in" << time.elapsed().debugMillisWithUnit();
 }
 
 void BaseSqlTableModel::setTable(QString tableName,

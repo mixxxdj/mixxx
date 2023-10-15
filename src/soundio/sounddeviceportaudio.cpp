@@ -91,7 +91,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
-          m_mainAudioLatencyUsage("[Master]", "audio_latency_usage"),
+          m_audioLatencyUsage(kAppGroup, QStringLiteral("audio_latency_usage")),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
@@ -385,7 +385,9 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     if (isClkRefDevice) {
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
-        ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
+        ControlObject::set(
+                ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
+                currentLatencyMSec);
         ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_dSampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
@@ -1088,12 +1090,12 @@ void SoundDevicePortAudio::updateAudioLatencyUsage(
     m_framesSinceAudioLatencyUsageUpdate += framesPerBuffer;
     if (m_framesSinceAudioLatencyUsageUpdate > (m_dSampleRate / kCpuUsageUpdateRate)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_mainAudioLatencyUsage.set(
+        m_audioLatencyUsage.set(
                 secInAudioCb / (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_timeInAudioCallback = mixxx::Duration::fromSeconds(0);
         m_framesSinceAudioLatencyUsageUpdate = 0;
-        // qDebug() << m_mainAudioLatencyUsage
-        //          << m_mainAudioLatencyUsage->get();
+        // qDebug() << m_audioLatencyUsage
+        //          << m_audioLatencyUsage->get();
     }
     // measure time in Audio callback at the very last
     m_timeInAudioCallback += m_clkRefTimer.elapsed();

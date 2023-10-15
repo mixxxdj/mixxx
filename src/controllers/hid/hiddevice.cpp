@@ -105,9 +105,9 @@ QDebug operator<<(QDebug dbg, const DeviceInfo& deviceInfo) {
     if (!usage.isEmpty()) {
         parts.append(QStringLiteral("Usage: ") + usage);
     }
-    const QString interface = deviceInfo.formatInterface();
-    if (!interface.isEmpty()) {
-        parts.append(QStringLiteral("Interface: ") + interface);
+    const QString interfaceId = deviceInfo.formatInterface();
+    if (!interfaceId.isEmpty()) {
+        parts.append(QStringLiteral("Interface: ") + interfaceId);
     }
     if (!deviceInfo.manufacturerString().isEmpty()) {
         parts.append(QStringLiteral("Manufacturer: ") + deviceInfo.manufacturerString());
@@ -129,11 +129,11 @@ QString DeviceCategory::guessFromDeviceInfoImpl(
         const DeviceInfo& deviceInfo) const {
     // This should be done somehow else, I know. But at least we get started with
     // the idea of mapping this information
-    const QString interface = deviceInfo.formatInterface();
-    if (!interface.isEmpty()) {
+    const QString interfaceId = deviceInfo.formatInterface();
+    if (!interfaceId.isEmpty()) {
         // TODO: Guess linux device types somehow as well
         // or maybe just fill in the interface number?
-        return tr("HID Interface %1: ").arg(interface) + deviceInfo.formatUsage();
+        return tr("HID Interface %1: ").arg(interfaceId) + deviceInfo.formatUsage();
     }
     if (deviceInfo.usage_page == kGenericDesktopUsagePage) {
         switch (deviceInfo.usage) {

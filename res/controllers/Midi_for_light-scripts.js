@@ -145,9 +145,9 @@ midi_for_light.vuMeter = function() { // read, calculate and send vu-meter value
     var vu_out_range = vu_out_max - vu_out_min;
 
     // get current value Vu-Meter
-    var vu_mono_current = engine.getValue("[Master]", "VuMeter");
-    var vu_left_current = engine.getValue("[Master]", "VuMeterL");
-    var vu_right_current = engine.getValue("[Master]", "VuMeterR");
+    var vu_mono_current = engine.getValue("[Main]", "vu_meter");
+    var vu_left_current = engine.getValue("[Main]", "vu_meter_left");
+    var vu_right_current = engine.getValue("[Main]", "vu_meter_right");
 
     // arraycounter
     vu_array_fill_counter++;

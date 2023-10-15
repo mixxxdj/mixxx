@@ -48,7 +48,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void slotApply() override;  // called on ok button
     void slotResetToDefaults() override;
     void bufferUnderflow(double count);
-    void mainLatencyChanged(double latency);
+    void outputLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
     void mainDelaySpinboxChanged(double value);
     void headDelaySpinboxChanged(double value);
@@ -85,8 +85,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
-    ControlProxy* m_pMainAudioLatencyOverloadCount;
-    ControlProxy* m_pMainLatency;
+    ControlProxy* m_pAudioLatencyOverloadCount;
+    ControlProxy* m_pOutputLatencyMs;
     ControlProxy* m_pHeadDelay;
     ControlProxy* m_pMainDelay;
     ControlProxy* m_pBoothDelay;
