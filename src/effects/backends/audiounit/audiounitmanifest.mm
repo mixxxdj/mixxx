@@ -51,16 +51,28 @@ AudioUnitManifest::AudioUnitManifest(
                     &paramInfoSize);
 
             QString paramName = QString::fromUtf8(paramInfo.name);
+            auto paramFlags = paramInfo.flags;
+
             qDebug() << QString::fromNSString([component name])
                      << "has parameter" << paramName;
 
-            if (paramInfo.flags & kAudioUnitParameterFlag_IsWritable) {
+            // TODO: Check CanRamp too?
+            if (paramFlags & kAudioUnitParameterFlag_IsWritable) {
                 EffectManifestParameterPointer manifestParam = addParameter();
                 manifestParam->setId(paramName);
                 manifestParam->setName(paramName);
                 manifestParam->setRange(paramInfo.minValue,
                         paramInfo.defaultValue,
                         paramInfo.maxValue);
+
+                // TODO: Support more modes, e.g. squared, square root in Mixxx
+                if (paramFlags & kAudioUnitParameterFlag_DisplayLogarithmic) {
+                    manifestParam->setValueScaler(
+                            EffectManifestParameter::ValueScaler::Logarithmic);
+                } else {
+                    manifestParam->setValueScaler(
+                            EffectManifestParameter::ValueScaler::Linear);
+                }
             }
         }
     }
