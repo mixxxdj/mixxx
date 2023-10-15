@@ -20,16 +20,17 @@ xcrun notarytool submit \
     --wait \
     "${DMG_FILE}" > notarize_status.plist
 
+trap 'rm notarize_status.plist' EXIT
+cat notarize_status.plist
+
 # shellcheck disable=SC2181
 if [ "$?" != "0" ]; then
     echo "Notarization failed:"
-    cat notarize_status.plist
     curl "$(/usr/libexec/PlistBuddy -c 'Print notarization-info:LogFileURL' notarize_status.plist)"
     exit 1
 fi
 
 NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
-rm notarize_status.plist
 
 case "${NOTARIZATION_STATUS}" in
     success)
