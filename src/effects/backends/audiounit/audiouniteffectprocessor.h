@@ -53,7 +53,6 @@ class AudioUnitEffectProcessor final : public EffectProcessorImpl<AudioUnitEffec
             const GroupFeatureState& groupFeatures) override;
 
   private:
-    std::atomic<bool> m_isConfigured;
     AudioUnitManager m_manager;
 
     QList<EngineEffectParameterPointer> m_parameters;
