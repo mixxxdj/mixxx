@@ -21,9 +21,13 @@ void main()
 {
     highp float minAlpha = 0.5 * color.w;
     highp float maxAlpha = 0.83 * color.w;
-    gl_FragColor = vec4(color.xyz, mix(minAlpha, maxAlpha, max(0.,vgradient)));
+    gl_FragColor = vec4(color.xyz, mix(minAlpha, maxAlpha, max(0.0, vgradient)));
 }
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
+
+    m_positionLocation = attributeLocation("position");
+    m_gradientLocation = attributeLocation("gradient");
+    m_colorLocation = uniformLocation("color");
 }

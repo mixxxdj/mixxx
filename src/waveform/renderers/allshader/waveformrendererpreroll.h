@@ -26,16 +26,13 @@ class allshader::WaveformRendererPreroll final : public allshader::WaveformRende
     void initializeGL() override;
 
   private:
-    void drawPattern(float x1, float y1, float x2, float y2, float repetitions, bool flip);
-    void generateTexture(float markerLength, float markerBreadth);
+    void drawPattern(float x1, float y1, float x2, float y2, float repetitions);
 
     mixxx::PatternShader m_shader;
     QColor m_color;
     float m_markerBreadth{};
     float m_markerLength{};
     std::unique_ptr<QOpenGLTexture> m_pTexture;
-    VertexData m_vertices;
-    VertexData m_texcoords;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererPreroll);
 };

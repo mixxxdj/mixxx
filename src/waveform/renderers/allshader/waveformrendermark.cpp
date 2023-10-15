@@ -80,9 +80,9 @@ void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture
     m_textureShader.bind();
 
     const int matrixLocation = m_textureShader.uniformLocation("matrix");
-    const int samplerLocation = m_textureShader.uniformLocation("sampler");
+    const int textureLocation = m_textureShader.uniformLocation("texture");
     const int positionLocation = m_textureShader.attributeLocation("position");
-    const int texcoordLocation = m_textureShader.attributeLocation("texcoor");
+    const int texcoordLocation = m_textureShader.attributeLocation("texcoord");
 
     m_textureShader.setUniformValue(matrixLocation, matrix);
 
@@ -93,7 +93,7 @@ void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture
     m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
-    m_textureShader.setUniformValue(samplerLocation, 0);
+    m_textureShader.setUniformValue(textureLocation, 0);
 
     texture->bind();
 
@@ -135,9 +135,9 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 
     m_rgbaShader.bind();
 
-    int matrixLocation = m_rgbaShader.uniformLocation("matrix");
-    int positionLocation = m_rgbaShader.attributeLocation("position");
-    int colorLocation = m_rgbaShader.attributeLocation("color");
+    const int matrixLocation = m_rgbaShader.matrixLocation();
+    const int positionLocation = m_rgbaShader.positionLocation();
+    const int colorLocation = m_rgbaShader.colorLocation();
 
     m_rgbaShader.setUniformValue(matrixLocation, matrix);
 
@@ -359,7 +359,7 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
 
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
-        int hotCue = pCue->getHotCue();
+        const int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
             continue;
         }
@@ -377,7 +377,7 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
                 !pMark->fillColor().isValid() ||
                 newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
-            int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
+            const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
             pMark->setBaseColor(newColor, dimBrightThreshold);
             generateMarkImage(pMark, m_waveformRenderer->getBreadth());
         }

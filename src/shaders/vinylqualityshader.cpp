@@ -6,30 +6,30 @@ void VinylQualityShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform mat4 matrix;
 attribute highp vec4 position;
-attribute highp vec3 texcoor;
-varying highp vec3 vTexcoor;
+attribute highp vec2 texcoord;
+varying highp vec2 vTexcoord;
 void main()
 {
-    vTexcoor = texcoor;
+    vTexcoord = texcoord;
     gl_Position = matrix * position;
 }
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-uniform sampler2D sampler;
-uniform highp vec4 color;
-varying highp vec3 vTexcoor;
+uniform sampler2D texture;
+uniform highp vec3 color;
+varying highp vec2 vTexcoord;
 void main()
 {
-    gl_FragColor = vec4(color.xyz, texture2D(sampler, vTexcoor.xy) * 0.75);
+    gl_FragColor = vec4(color, texture2D(texture, vTexcoord) * 0.75);
 }
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
 
     m_matrixLocation = uniformLocation("matrix");
-    m_samplerLocation = uniformLocation("sampler");
-    m_colorLocation = uniformLocation("color");
     m_positionLocation = attributeLocation("position");
-    m_texcoordLocation = attributeLocation("texcoor");
+    m_texcoordLocation = attributeLocation("texcoord");
+    m_textureLocation = uniformLocation("texture");
+    m_colorLocation = uniformLocation("color");
 }

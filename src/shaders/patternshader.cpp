@@ -16,20 +16,20 @@ void main()
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-uniform sampler2D sampler;
+uniform sampler2D texture;
 uniform vec2 repetitions;
 varying highp vec2 vTexcoor;
 void main()
 {
-    gl_FragColor = texture2D(sampler, fract(vTexcoor * repetitions));
+    gl_FragColor = texture2D(texture, fract(vTexcoor * repetitions));
 }
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
 
     m_matrixLocation = uniformLocation("matrix");
-    m_samplerLocation = uniformLocation("sampler");
-    m_repetitionsLocation = uniformLocation("repetitions");
     m_positionLocation = attributeLocation("position");
     m_texcoordLocation = attributeLocation("texcoor");
+    m_textureLocation = uniformLocation("texture");
+    m_repetitionsLocation = uniformLocation("repetitions");
 }
