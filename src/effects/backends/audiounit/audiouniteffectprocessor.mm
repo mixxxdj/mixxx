@@ -193,19 +193,22 @@ void AudioUnitEffectProcessor::syncStreamFormat(
         qDebug() << "Updating Audio Unit stream format to sample rate"
                  << sampleRate << "and channel count" << channelCount;
 
-        OSStatus status = AudioUnitSetProperty(audioUnit,
-                kAudioUnitProperty_StreamFormat,
-                kAudioUnitScope_Global,
-                0,
-                streamFormat,
-                sizeof(AudioStreamBasicDescription));
+        for (auto scope : {kAudioUnitScope_Input, kAudioUnitScope_Output}) {
+            OSStatus status = AudioUnitSetProperty(audioUnit,
+                    kAudioUnitProperty_StreamFormat,
+                    scope,
+                    0,
+                    streamFormat,
+                    sizeof(AudioStreamBasicDescription));
 
-        if (status != noErr) {
-            qWarning()
-                    << "Could not set Audio Unit stream format to sample rate"
-                    << sampleRate << "and channel count" << channelCount << ":"
-                    << status
-                    << "(Check https://www.osstatus.com for a description)";
+            if (status != noErr) {
+                qWarning()
+                        << "Could not set Audio Unit stream format to sample "
+                           "rate"
+                        << sampleRate << "and channel count" << channelCount
+                        << ":" << status
+                        << "(Check https://www.osstatus.com for a description)";
+            }
         }
     }
 }
