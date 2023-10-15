@@ -43,10 +43,12 @@ AudioUnitManifest::AudioUnitManifest(
         AudioUnitParameterInfo paramInfo;
         UInt32 paramInfoSize = sizeof(AudioUnitParameterInfo);
         for (UInt32 i = 0; i < paramCount; i++) {
+            AudioUnitParameterID paramId = paramIds[i];
+
             AUDIO_UNIT_GET(audioUnit,
                     ParameterInfo,
                     Global,
-                    paramIds[i],
+                    paramId,
                     &paramInfo,
                     &paramInfoSize);
 
@@ -59,7 +61,7 @@ AudioUnitManifest::AudioUnitManifest(
             // TODO: Check CanRamp too?
             if (paramFlags & kAudioUnitParameterFlag_IsWritable) {
                 EffectManifestParameterPointer manifestParam = addParameter();
-                manifestParam->setId(paramName);
+                manifestParam->setId(QString::number(paramId));
                 manifestParam->setName(paramName);
                 manifestParam->setRange(paramInfo.minValue,
                         paramInfo.defaultValue,

@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/assert.h"
 
@@ -103,8 +104,23 @@ AudioUnitEffectProcessor::AudioUnitEffectProcessor(
 }
 
 void AudioUnitEffectProcessor::loadEngineEffectParameters(
-        const QMap<QString, EngineEffectParameterPointer>&) {
-    // TODO
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
+    if (!audioUnit) {
+        qWarning() << "Cannot load engine effect parameters before the Audio "
+                      "Unit is instantiated";
+        return;
+    }
+
+    for (auto parameter : parameters) {
+        AudioUnitParameterID parameterId = parameter->id().toInt();
+        AudioUnitSetParameter(audioUnit,
+                parameterId,
+                kAudioUnitScope_Global,
+                0,
+                static_cast<AudioUnitParameterValue>(parameter->value()),
+                0);
+    }
 }
 
 void AudioUnitEffectProcessor::processChannel(
@@ -116,7 +132,8 @@ void AudioUnitEffectProcessor::processChannel(
         const GroupFeatureState&) {
     AudioUnit _Nullable audioUnit = m_manager.getAudioUnit();
     if (!audioUnit) {
-        qWarning() << "Audio Unit is not instantiated yet";
+        qWarning()
+                << "Cannot process channel before Audio Unit is instantiated";
         return;
     }
 
