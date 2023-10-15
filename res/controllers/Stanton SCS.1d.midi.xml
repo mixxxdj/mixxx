@@ -16,7 +16,7 @@
             <controls>
                 <control>   <!-- Firmware version response, platter message on Linux -->
                     <status>0xf0</status>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.inboundSysex</key>
                     <options>
                         <Script-Binding/>
@@ -27,7 +27,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x04</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoderBank</key>
                     <options>
                         <Script-Binding/>
@@ -36,7 +36,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x04</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoderBank</key>
                     <options>
                         <Script-Binding/>
@@ -45,7 +45,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x7c</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder4</key>
                     <options>
                         <Script-Binding/>
@@ -54,7 +54,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x03</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder4</key>
                     <options>
                         <Script-Binding/>
@@ -63,7 +63,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x03</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder4</key>
                     <options>
                         <Script-Binding/>
@@ -72,7 +72,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x11</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display4button</key>
                     <options>
                         <Script-Binding/>
@@ -81,7 +81,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x11</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display4button</key>
                     <options>
                         <Script-Binding/>
@@ -90,7 +90,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x7d</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder3</key>
                     <options>
                         <Script-Binding/>
@@ -99,7 +99,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x02</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder3</key>
                     <options>
                         <Script-Binding/>
@@ -108,7 +108,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x02</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder3</key>
                     <options>
                         <Script-Binding/>
@@ -117,7 +117,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x10</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display3button</key>
                     <options>
                         <Script-Binding/>
@@ -126,7 +126,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x10</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display3button</key>
                     <options>
                         <Script-Binding/>
@@ -135,7 +135,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x7e</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder2</key>
                     <options>
                         <Script-Binding/>
@@ -144,7 +144,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder2</key>
                     <options>
                         <Script-Binding/>
@@ -153,7 +153,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder2</key>
                     <options>
                         <Script-Binding/>
@@ -162,7 +162,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x18</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display2button</key>
                     <options>
                         <Script-Binding/>
@@ -171,7 +171,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x18</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display2button</key>
                     <options>
                         <Script-Binding/>
@@ -180,7 +180,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x7f</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder1</key>
                     <options>
                         <Script-Binding/>
@@ -189,7 +189,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x0</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder1</key>
                     <options>
                         <Script-Binding/>
@@ -198,7 +198,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x0</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.encoder1</key>
                     <options>
                         <Script-Binding/>
@@ -207,7 +207,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x19</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display1button</key>
                     <options>
                         <Script-Binding/>
@@ -216,7 +216,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x19</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.display1button</key>
                     <options>
                         <Script-Binding/>
@@ -228,7 +228,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x37</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pfl</key>
                     <options>
                         <Script-Binding/>
@@ -237,7 +237,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x37</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pfl</key>
                     <options>
                         <Script-Binding/>
@@ -246,7 +246,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x29</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.playButton</key>
                     <options>
                         <Script-Binding/>
@@ -255,7 +255,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x29</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.playButton</key>
                     <options>
                         <Script-Binding/>
@@ -264,7 +264,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x2b</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.cueButton</key>
                     <options>
                         <Script-Binding/>
@@ -273,7 +273,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x2b</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.cueButton</key>
                     <options>
                         <Script-Binding/>
@@ -282,7 +282,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x2a</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.syncButton</key>
                     <options>
                         <Script-Binding/>
@@ -291,7 +291,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x2a</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.syncButton</key>
                     <options>
                         <Script-Binding/>
@@ -300,7 +300,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x28</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.bpmButton</key>
                     <options>
                         <Script-Binding/>
@@ -309,7 +309,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x28</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.bpmButton</key>
                     <options>
                         <Script-Binding/>
@@ -318,7 +318,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x2e</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.ffwd</key>
                     <options>
                         <Script-Binding/>
@@ -327,7 +327,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x2e</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.ffwd</key>
                     <options>
                         <Script-Binding/>
@@ -336,7 +336,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x2f</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.rew</key>
                     <options>
                         <Script-Binding/>
@@ -345,7 +345,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x2f</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.rew</key>
                     <options>
                         <Script-Binding/>
@@ -356,7 +356,7 @@
 
                 <control>
                     <status>0xf9</status>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.vinylMoved</key>
                     <options>
                         <Script-Binding/>
@@ -368,7 +368,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1E</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.EnterButton</key>
                     <options>
                         <Script-Binding/>
@@ -377,7 +377,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1E</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.EnterButton</key>
                     <options>
                         <Script-Binding/>
@@ -386,7 +386,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x40</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.DeckChange</key>
                     <options>
                         <Script-Binding/>
@@ -395,7 +395,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x40</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.DeckChange</key>
                     <options>
                         <Script-Binding/>
@@ -404,7 +404,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1A</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.setupButton</key>
                     <options>
                         <Script-Binding/>
@@ -413,7 +413,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1A</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.setupButton</key>
                     <options>
                         <Script-Binding/>
@@ -422,7 +422,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1B</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.controlButton</key>
                     <options>
                         <Script-Binding/>
@@ -431,7 +431,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1B</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.controlButton</key>
                     <options>
                         <Script-Binding/>
@@ -440,7 +440,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1C</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.browseButton</key>
                     <options>
                         <Script-Binding/>
@@ -449,7 +449,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1C</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.browseButton</key>
                     <options>
                         <Script-Binding/>
@@ -458,7 +458,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1D</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.vinylButton</key>
                     <options>
                         <Script-Binding/>
@@ -467,7 +467,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1D</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.vinylButton</key>
                     <options>
                         <Script-Binding/>
@@ -479,7 +479,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x06</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.rangeButton</key>
                     <options>
                         <Script-Binding/>
@@ -488,7 +488,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x06</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.rangeButton</key>
                     <options>
                         <Script-Binding/>
@@ -497,7 +497,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x07</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pitchReset</key>
                     <options>
                         <Script-Binding/>
@@ -506,7 +506,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x07</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pitchReset</key>
                     <options>
                         <Script-Binding/>
@@ -515,7 +515,7 @@
                 <control>
                     <status>0xb0</status>
                     <midino>0x00</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pitchSlider</key>
                     <options>
                         <Script-Binding/>
@@ -527,7 +527,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x20</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -536,7 +536,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x20</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -545,7 +545,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x21</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -554,7 +554,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x21</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -563,7 +563,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x22</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -572,7 +572,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x22</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -581,7 +581,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x23</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -590,7 +590,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x23</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.pad</key>
                     <options>
                         <Script-Binding/>
@@ -599,7 +599,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x30</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop1</key>
                     <options>
                         <Script-Binding/>
@@ -608,7 +608,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x30</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop1</key>
                     <options>
                         <Script-Binding/>
@@ -617,7 +617,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x31</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop2</key>
                     <options>
                         <Script-Binding/>
@@ -626,7 +626,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x31</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop2</key>
                     <options>
                         <Script-Binding/>
@@ -635,7 +635,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x32</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop3</key>
                     <options>
                         <Script-Binding/>
@@ -644,7 +644,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x32</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop3</key>
                     <options>
                         <Script-Binding/>
@@ -653,7 +653,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x33</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop4</key>
                     <options>
                         <Script-Binding/>
@@ -662,7 +662,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x33</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padTop4</key>
                     <options>
                         <Script-Binding/>
@@ -671,7 +671,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x34</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.velocityButton</key>
                     <options>
                         <Script-Binding/>
@@ -680,7 +680,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x34</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.velocityButton</key>
                     <options>
                         <Script-Binding/>
@@ -689,7 +689,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x35</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padBankButton</key>
                     <options>
                         <Script-Binding/>
@@ -698,7 +698,7 @@
                                 <control>
                     <status>0x80</status>
                     <midino>0x35</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padBankButton</key>
                     <options>
                         <Script-Binding/>
@@ -707,7 +707,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x36</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padBankButton</key>
                     <options>
                         <Script-Binding/>
@@ -716,7 +716,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x36</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.padBankButton</key>
                     <options>
                         <Script-Binding/>
@@ -728,7 +728,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x16</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -737,7 +737,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x16</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -746,7 +746,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x17</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -755,7 +755,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x17</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -764,7 +764,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x5</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -773,7 +773,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x5</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerBankSelect</key>
                     <options>
                         <Script-Binding/>
@@ -785,7 +785,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>8</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -794,7 +794,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>8</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -803,7 +803,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>9</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -812,7 +812,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>9</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -821,7 +821,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>10</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -830,7 +830,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>10</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -839,7 +839,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>11</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -848,7 +848,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>11</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -857,7 +857,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>12</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -866,7 +866,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>12</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -875,7 +875,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>13</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -884,7 +884,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>13</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -893,7 +893,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>14</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -902,7 +902,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>14</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -911,7 +911,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>15</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -920,7 +920,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>15</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -929,7 +929,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>18</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -938,7 +938,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>18</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -947,7 +947,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>19</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -956,7 +956,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>19</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -965,7 +965,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>20</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -974,7 +974,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>20</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -983,7 +983,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>21</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>
@@ -992,7 +992,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>21</midino>
-                    <group>[Master]</group>
+                    <group>[App]</group>
                     <key>StantonSCS1d.triggerButton</key>
                     <options>
                         <Script-Binding/>

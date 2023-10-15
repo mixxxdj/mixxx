@@ -13,7 +13,7 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>Master crossfader</description>
                 <status>0xB6</status>
@@ -24,7 +24,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>Master crossfader</description>
                 <status>0xB6</status>
@@ -36,9 +36,9 @@
             </control>
 
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DDJ200.headmix</key>
-                <description>Headphones master as headMix knob</description>
+                <description>Headphones master as headphone_mix knob</description>
                 <status>0x96</status>
                 <midino>0x63</midino>
                 <options>
@@ -46,7 +46,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>DDJ200.toggleFourDeckMode</key>
                 <description>Headphones master + shift</description>
                 <status>0x96</status>

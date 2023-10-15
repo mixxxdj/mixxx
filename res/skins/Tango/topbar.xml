@@ -109,7 +109,7 @@ Description:
 		                    <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/crossfader_scale.svg</Slider>
 		                    <Horizontal>true</Horizontal>
 		                    <Connection>
-		                      <ConfigKey>[Master],crossfader</ConfigKey>
+		                      <ConfigKey>[Mixer],crossfader</ConfigKey>
 		                    </Connection>
 		                  </SliderComposed>
 		                </Children>

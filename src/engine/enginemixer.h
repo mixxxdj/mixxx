@@ -40,7 +40,6 @@ class EngineMixer : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMixer(UserSettingsPointer pConfig,
-            const QString& group,
             EffectsManager* pEffectsManager,
             ChannelHandleFactoryPointer pChannelHandleFactory,
             bool bEnableSidechain);
@@ -312,7 +311,7 @@ class EngineMixer : public QObject, public AudioSource {
     EngineDelay* m_pMainDelay;
     EngineDelay* m_pHeadDelay;
     EngineDelay* m_pBoothDelay;
-    EngineDelay* m_pLatencyCompensationDelay;
+    EngineDelay* m_pMicrophoneDelay;
 
     EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pEngineSideChain;

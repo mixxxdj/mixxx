@@ -1013,8 +1013,8 @@ MixtrackPlatinum.HeadGain = function(sampler) {
     });
 };
 MixtrackPlatinum.HeadGain.prototype = new components.Pot({
-    group: '[Master]',
-    inKey: 'headGain',
+    group: '[Mixer]',
+    inKey: 'headphone_gain',
     input: function (channel, control, value, status, group) {
         // we call softTakeoverIgnoreNextValue() here on the non-targeted
         // control only if the control was moved when focus was switched. This
@@ -1410,13 +1410,13 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
     }
-    else if (group == '[Master]' && control == 'VuMeterL') {
+    else if (group == '[Mixer]' && control == 'VuMeterL') {
         if (engine.getValue(group, "peak_indicator_left")) {
             level = 81;
         }
         midi.sendShortMsg(0xBF, 0x44, level);
     }
-    else if (group == '[Master]' && control == 'VuMeterR') {
+    else if (group == '[Mixer]' && control == 'VuMeterR') {
         if (engine.getValue(group, "peak_indicator_right")) {
             level = 81;
         }

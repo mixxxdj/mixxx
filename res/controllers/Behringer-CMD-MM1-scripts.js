@@ -88,8 +88,8 @@ CMDMM.currentLayer=1;
 // - library encoder knob
 // - HeadGain
 // - HeadMix
-// - out1 (masterBalance)
-// - out2 (MasterGain)
+// - out1 (main balance)
+// - out2 (main gain)
 
 // The Component name usually match with the corresponding label on the Controller.
 // ButtonCue, Button1 and Button2 are derived from their label on a channel.
@@ -464,12 +464,12 @@ CMDMM.init = function () {
   CMDMM.crossfader = new components.Pot({
     midi: [MIDI.CC,0x40],
     inKey: "crossfader",
-    group: "[Master]",
+    group: "[Mixer]",
   });
   CMDMM.middleButton = new components.Button({
     midi:[MIDI.noteOn,0x12],
     key: "crossfader",
-    group: "[Master]",
+    group: "[Mixer]",
     layer1: function () {
       this.input = function () {this.inSetParameter(0.5);};
       this.output = function () {this.send(this.inGetParameter()===0.5);};
@@ -496,18 +496,18 @@ CMDMM.init = function () {
   });
   CMDMM.out2 = new components.Pot({
     midi: [MIDI.CC,0x02],
-    group: "[Master]",
-    inKey: "gain",
+    group: "[Mixer]",
+    inKey: "main_gain",
   });
   CMDMM.cueVol = new components.Pot({
     midi: [MIDI.CC,0x04],
-    group: "[Master]",
-    inKey: "headGain",
+    group: "[Mixer]",
+    inKey: "headphone_gain",
   });
   CMDMM.cueMix = new components.Pot({
     midi: [MIDI.CC,0x05],
-    group: "[Master]",
-    inKey: "headMix",
+    group: "[Mixer]",
+    inKey: "headphone_mix",
   });
   CMDMM.libraryButton = new components.Button({
     midi: [MIDI.noteOn,0x03],

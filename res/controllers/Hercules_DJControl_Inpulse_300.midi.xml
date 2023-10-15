@@ -385,7 +385,7 @@
 			<control>
 				<group>[Channel1]</group>
 				<key>sync_leader</key>
-				<description>SHIFT + Sync: Sync Master</description>
+				<description>SHIFT + Sync: Sync Leader</description>
 				<status>0x94</status>
 				<midino>0x05</midino>
 				<options>
@@ -464,7 +464,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>sync_leader</key>
-				<description>SHIFT + Sync: Sync Master</description>
+				<description>SHIFT + Sync: Sync Leader</description>
 				<status>0x95</status>
 				<midino>0x05</midino>
 				<options>
@@ -1662,7 +1662,7 @@
 
 			<!--Crossfader-->
 			<control>
-				<group>[Master]</group>
+				<group>[Mixer]</group>
 				<key>crossfader</key>
 				<description>Crossfader</description>
 				<status>0xB0</status>

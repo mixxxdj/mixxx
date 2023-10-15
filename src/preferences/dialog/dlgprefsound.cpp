@@ -18,6 +18,7 @@
 namespace {
 
 const QString kAppGroup = QStringLiteral("[App]");
+const QString kMixerGroup = QStringLiteral("[Mixer]");
 
 bool soundItemAlreadyExists(const AudioPath& output, const QWidget& widget) {
     for (const QObject* pObj : widget.children()) {
@@ -111,10 +112,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
         }
     }
 
-    m_pLatencyCompensation = new ControlProxy("[Master]", "microphoneLatencyCompensation", this);
-    m_pMainDelay = new ControlProxy("[Master]", "delay", this);
-    m_pHeadDelay = new ControlProxy("[Master]", "headDelay", this);
-    m_pBoothDelay = new ControlProxy("[Master]", "boothDelay", this);
+    m_pLatencyCompensation = new ControlProxy(
+            kMixerGroup, QStringLiteral("microphone_delay"), this);
+    m_pMainDelay = new ControlProxy(kMixerGroup, QStringLiteral("main_delay"), this);
+    m_pHeadDelay = new ControlProxy(kMixerGroup, QStringLiteral("headphone_delay"), this);
+    m_pBoothDelay = new ControlProxy(kMixerGroup, QStringLiteral("booth_delay"), this);
 
     latencyCompensationSpinBox->setValue(m_pLatencyCompensation->get());
     latencyCompensationWarningLabel->setWordWrap(true);
@@ -139,7 +141,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             this,
             &DlgPrefSound::boothDelaySpinboxChanged);
 
-    m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
+    m_pMicMonitorMode = new ControlProxy(kMixerGroup, QStringLiteral("talkover_mix"), this);
     micMonitorModeComboBox->addItem(tr("Main output only"),
             QVariant(static_cast<int>(EngineMixer::MicMonitorMode::Main)));
     micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
@@ -212,7 +214,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     // TODO: remove this option by automatically disabling/enabling the main mix
     // when recording, broadcasting, headphone, and main outputs are enabled/disabled
-    m_pMainEnabled = new ControlProxy("[Master]", "enabled", this);
+    m_pMainEnabled = new ControlProxy(kMixerGroup, QStringLiteral("main_enabled"), this);
     mainMixComboBox->addItem(tr("Disabled"));
     mainMixComboBox->addItem(tr("Enabled"));
     mainMixComboBox->setCurrentIndex(m_pMainEnabled->toBool() ? 1 : 0);
@@ -222,7 +224,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::mainMixChanged);
     m_pMainEnabled->connectValueChanged(this, &DlgPrefSound::mainEnabledChanged);
 
-    m_pMainMonoMixdown = new ControlProxy("[Master]", "mono_mixdown", this);
+    m_pMainMonoMixdown = new ControlProxy(kMixerGroup, QStringLiteral("mono_mixdown"), this);
     mainOutputModeComboBox->addItem(tr("Stereo"));
     mainOutputModeComboBox->addItem(tr("Mono"));
     mainOutputModeComboBox->setCurrentIndex(m_pMainMonoMixdown->toBool() ? 1 : 0);
@@ -299,7 +301,7 @@ void DlgPrefSound::slotApply() {
         const auto keylockEngine =
                 keylockComboBox->currentData().value<EngineBuffer::KeylockEngine>();
         m_pKeylockEngine->set(static_cast<double>(keylockEngine));
-        m_pSettings->set(ConfigKey("[Master]", "keylock_engine"),
+        m_pSettings->set(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                 ConfigValue(static_cast<int>(keylockEngine)));
 
         status = m_pSoundManager->setConfig(m_config);
@@ -479,7 +481,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
 
     // Default keylock engine is Rubberband Faster (v2)
     const auto keylockEngine = static_cast<EngineBuffer::KeylockEngine>(
-            m_pSettings->getValue(ConfigKey("[Master]", "keylock_engine"),
+            m_pSettings->getValue(ConfigKey(kAppGroup, QStringLiteral("keylock_engine")),
                     static_cast<int>(EngineBuffer::defaultKeylockEngine())));
     const auto keylockEngineVariant = QVariant::fromValue(keylockEngine);
     const int index = keylockComboBox->findData(keylockEngineVariant);

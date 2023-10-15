@@ -159,7 +159,7 @@
                 <control>
                     <status>0xB0</status>
                     <midino>0x00</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>crossfader</key>
                 </control>
                 <control>
@@ -333,20 +333,20 @@
                 <control>
                     <status>0xB0</status>
                     <midino>0x1d</midino>
-                    <group>[Master]</group>
-                    <key>headVolume</key>
+                    <group>[Mixer]</group>
+                    <key>headphone_gain</key>
                 </control>
                 <control>
                     <status>0xB0</status>
                     <midino>0x1e</midino>
-                    <group>[Master]</group>
-                    <key>headMix</key>
+                    <group>[Mixer]</group>
+                    <key>headphone_mix</key>
                 </control>
                 <control>
                     <status>0xB0</status>
                     <midino>0x1f</midino>
-                    <group>[Master]</group>
-                    <key>volume</key>
+                    <group>[Mixer]</group>
+                    <key>main_gain</key>
                 </control>
                 <control>
                     <status>0x90</status>
@@ -483,13 +483,13 @@
                 <control>
                     <status>0xB0</status>
                     <midino>0x15</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>balance</key>
                 </control>
                 <control>
                     <status>0xB0</status>
                     <midino>0x70</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.selectKnob</key>
                     <options>
                         <Script-Binding/>
@@ -534,7 +534,7 @@
                 <control>   <!-- Select knob press -->
                     <status>0x90</status>
                     <midino>0x27</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.pressSelectKnob</key>
                     <options>
                         <Script-Binding/>
@@ -543,7 +543,7 @@
                 <control>   <!-- Select knob release -->
                     <status>0x80</status>
                     <midino>0x27</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.pressSelectKnob</key>
                     <options>
                         <Script-Binding/>
@@ -576,7 +576,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x20</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.browseButton</key>
                     <options>
                         <Script-Binding/>
@@ -585,7 +585,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x20</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.browseButton</key>
                     <options>
                         <Script-Binding/>
@@ -594,7 +594,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1E</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.controlButton</key>
                     <options>
                         <Script-Binding/>
@@ -603,7 +603,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1E</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.controlButton</key>
                     <options>
                         <Script-Binding/>
@@ -612,7 +612,7 @@
                 <control>
                     <status>0x90</status>
                     <midino>0x1C</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.setupButton</key>
                     <options>
                         <Script-Binding/>
@@ -621,7 +621,7 @@
                 <control>
                     <status>0x80</status>
                     <midino>0x1C</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.setupButton</key>
                     <options>
                         <Script-Binding/>
@@ -630,7 +630,7 @@
                 <control>   <!-- Pitch range knob Ch1 -->
                     <status>0xB0</status>
                     <midino>0x7F</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.pitchRangeKnob1</key>
                     <options>
                         <Script-Binding/>
@@ -639,7 +639,7 @@
                 <control>   <!-- Pitch range knob Ch2 -->
                     <status>0xB0</status>
                     <midino>0x7C</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.pitchRangeKnob2</key>
                     <options>
                         <Script-Binding/>
@@ -648,7 +648,7 @@
                 <control>   <!-- Fader start toggle -->
                     <status>0x90</status>
                     <midino>0x08</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.faderStartToggle</key>
                     <options>
                         <Script-Binding/>
@@ -657,7 +657,7 @@
                 <control>   <!-- Hot cue deck toggle -->
                     <status>0x90</status>
                     <midino>0x22</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.hotCueDeckChange</key>
                     <options>
                         <Script-Binding/>
@@ -666,14 +666,14 @@
                 <control>   <!-- Hot cue deck toggle -->
                     <status>0x80</status>
                     <midino>0x22</midino>
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.hotCueDeckChange</key>
                     <options>
                         <Script-Binding/>
                     </options>
                 </control>
                 <control>    <!--    Preset 1   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
                     <midino>0x23</midino>
@@ -682,7 +682,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 1   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x80</status>
                     <midino>0x23</midino>
@@ -691,7 +691,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 2   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
                     <midino>0x24</midino>
@@ -700,7 +700,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 2   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x80</status>
                     <midino>0x24</midino>
@@ -709,7 +709,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 3   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
                     <midino>0x25</midino>
@@ -718,7 +718,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 3   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x80</status>
                     <midino>0x25</midino>
@@ -727,7 +727,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 4   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x90</status>
                     <midino>0x26</midino>
@@ -736,7 +736,7 @@
                     </options>
                 </control>
                 <control>    <!--    Preset 4   -->
-                    <group>[Master]</group>
+                    <group>[Mixer]</group>
                     <key>StantonSCS1m.presetButton</key>
                     <status>0x80</status>
                     <midino>0x26</midino>

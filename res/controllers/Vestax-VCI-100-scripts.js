@@ -1,5 +1,5 @@
 VestaxVCI100 = new function() {
-   this.group = "[Master]";
+   this.group = "[Mixer]";
    this.loopHotcueDeck = null;
    this.shiftMode = false;
    this.jogPlaylistScrollMode = false;

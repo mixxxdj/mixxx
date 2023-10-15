@@ -1816,7 +1816,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>PioneerDDJSB3.masterCueButton</key>
         <description>Toggles headphone master cue, Button: Master</description>
         <status>0x96</status>
@@ -1826,7 +1826,7 @@
         </options>
       </control>
       <control>
-        <group>[Master]</group>
+        <group>[Mixer]</group>
         <key>PioneerDDJSB3.masterCueButton</key>
         <description>Toggles headphone master cue, Button: SHIFT + Master</description>
         <status>0x96</status>

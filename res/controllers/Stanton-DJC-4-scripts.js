@@ -137,7 +137,7 @@ DJC4.init = function() {
         DJC4.effectUnit[i].init();
     }
 
-    // === Master VU Meter ===
+    // === Main VU Meter ===
     if (DJC4.showMasterVu === true) {
         DJC4.vuMeter = new components.Component({
             midi: [0xB0, 0x03],
@@ -297,7 +297,7 @@ DJC4.allLed2Default = function() {
         // Channel VU meter
         midi.sendShortMsg(0xB0 + (i - 1), 2, 0);
     }
-    // Master VU meter
+    // Main VU meter
     midi.sendShortMsg(0xB0, 3, 0);
     midi.sendShortMsg(0xB0, 4, 0);
 };
@@ -331,7 +331,7 @@ DJC4.autoShowDecks = function() {
     if (!DJC4.autoShowFourDecks) {
         return;
     }
-    engine.setValue("[Master]", "show_4decks", anyLoaded);
+    engine.setValue("[Skin]", "show_4decks", anyLoaded);
 };
 
 DJC4.shiftButton = function(channel, control, value) {

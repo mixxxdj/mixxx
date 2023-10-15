@@ -49,7 +49,7 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
-DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
+DJCi300.vuMeterUpdateMain = function(value, _group, _control) {
     value = (value * 122) + 5;
     midi.sendShortMsg(0xB0, 0x40, value);
     midi.sendShortMsg(0xB0, 0x41, value);
@@ -88,10 +88,10 @@ DJCi300.init = function() {
 	engine.getValue("[Channel1]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
     engine.connectControl("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
 	engine.getValue("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
-    engine.connectControl("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
-	engine.getValue("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
-    engine.getValue("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
+    engine.connectControl("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMain");
+    engine.connectControl("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMain");
+	engine.getValue("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMain");
+    engine.getValue("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMain");
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.

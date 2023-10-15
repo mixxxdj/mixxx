@@ -28,7 +28,7 @@ v0.1 10/09/2010 First public release
 //TODO: Cleanup, create objects from init.
 //Remove led timers when alsa midi is working properly.
 HerculesSteel = new function() {
-    this.group = "[Master]";
+    this.group = "[Mixer]";
     this.shiftMode = false;
     this.scratchMode = false;
     this.jogPlaylistScrollMode = false;
@@ -170,7 +170,7 @@ HerculesSteel.Controls = {
     "Balance" : new HerculesSteel.Control("balance", false),
     "Volume" : new HerculesSteel.Control("volume", false),
     "CrossFader" : new HerculesSteel.Control("crossfader", false),
-    "HeadPhoneMix" : new HerculesSteel.Control("headMix", false),
+    "HeadPhoneMix" : new HerculesSteel.Control("headphone_mix", false),
     "FlangerDepth" : new HerculesSteel.Control("lfoDepth", false),
     "FlangerDelay" : new HerculesSteel.Control("lfoDelay", false),
     "FlangerPeriod" : new HerculesSteel.Control("lfoPeriod", false)

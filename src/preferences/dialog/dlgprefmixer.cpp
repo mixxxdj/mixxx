@@ -56,7 +56,7 @@ DlgPrefMixer::DlgPrefMixer(
           m_curve(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
           m_calibration(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
           m_reverse(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
-          m_crossfader("[Master]", "crossfader"),
+          m_crossfader(QStringLiteral("[Mixer]"), QStringLiteral("crossfader")),
           m_xFaderReverse(false),
           m_COLoFreq(kConfigGroup, QStringLiteral("LoEQFrequency")),
           m_COHiFreq(kConfigGroup, QStringLiteral("HiEQFrequency")),

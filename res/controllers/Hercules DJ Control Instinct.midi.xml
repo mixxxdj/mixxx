@@ -332,7 +332,7 @@
             <control>
                 <status>0xb0</status>
                 <midino>0x3a</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description></description>
                 <options>
@@ -982,7 +982,7 @@
             <control>
                 <status>0x90</status>
                 <midino>0x35</midino>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>HCInstinct.vinylButtonHandler</key>
                 <description></description>
                 <options>

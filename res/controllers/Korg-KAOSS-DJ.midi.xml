@@ -563,7 +563,7 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
+                <group>[Mixer]</group>
                 <key>crossfader</key>
                 <description>X-Fader</description>
                 <status>0xB6</status>

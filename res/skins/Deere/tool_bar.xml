@@ -53,8 +53,8 @@
             <Children>
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">main_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">gain</SetVariable>
+                <SetVariable name="group">[Mixer]</SetVariable>
+                <SetVariable name="control">main_gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
                 <SetVariable name="label">Main</SetVariable>
               </Template>
@@ -118,13 +118,13 @@
             <ObjectName>BoothControls</ObjectName>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Master],booth_enabled</ConfigKey>
+              <ConfigKey>[Mixer],booth_enabled</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">booth_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="group">[Mixer]</SetVariable>
                 <SetVariable name="control">booth_gain</SetVariable>
                 <SetVariable name="color">grey</SetVariable>
                 <SetVariable name="label">Booth</SetVariable>
@@ -139,15 +139,15 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Connection>
-              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <ConfigKey>[Mixer],headphones_enabled</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
 
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">headGain</SetVariable>
+                <SetVariable name="group">[Mixer]</SetVariable>
+                <SetVariable name="control">headphone_gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
                 <SetVariable name="label">Head</SetVariable>
               </Template>
@@ -156,7 +156,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <KnobComposed>
-                    <TooltipId>headMix</TooltipId>
+                    <TooltipId>headphone_mix</TooltipId>
                     <Size>34f,28f</Size>
                     <Knob>knob_toolbar.svg</Knob>
                     <BackPath>knob_bg_blue_gapless.svg</BackPath>
@@ -164,7 +164,7 @@
                     <MaxAngle>135</MaxAngle>
                     <KnobCenterYOffset>1.32</KnobCenterYOffset>
                     <Connection>
-                      <ConfigKey>[Master],headMix</ConfigKey>
+                      <ConfigKey>[Mixer],headphone_mix</ConfigKey>
                     </Connection>
                   </KnobComposed>
                   <WidgetGroup>
@@ -197,7 +197,7 @@
                 <SetVariable name="SizePolicy">f,f</SetVariable>
                 <SetVariable name="state_0_text">SPLIT</SetVariable>
                 <SetVariable name="state_1_text">SPLIT</SetVariable>
-                <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
+                <SetVariable name="left_connection_control">[Mixer],headphone_split</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,0min</Size></WidgetGroup>

@@ -15,7 +15,7 @@
             <SetVariable name="Size">42f,24f</SetVariable>
             <SetVariable name="BtnType">embedded</SetVariable>
             <SetVariable name="BtnSize">medium</SetVariable>
-            <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+            <SetVariable name="ConfigKey">[Mixer],talkover_ducking_mode</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -30,8 +30,8 @@
             <SetVariable name="KnobColor">red</SetVariable>
             <SetVariable name="ArcColor"><Variable name="ArcColorFxMix"/></SetVariable>
             <SetVariable name="ArcReversed">true</SetVariable>
-            <SetVariable name="Group">[Master]</SetVariable>
-            <SetVariable name="Control">duckStrength</SetVariable>
+            <SetVariable name="Group">[Mixer]</SetVariable>
+            <SetVariable name="Control">talkover_ducking_strength</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- MicDuckingStrengthKnob -->

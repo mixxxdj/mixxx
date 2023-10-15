@@ -15,7 +15,7 @@
             <control>
                 <description>Device status inquiry response</description>
                 <status>0xf0</status>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.statusResponse</key>
                 <options>
                     <Script-Binding/>
@@ -23,7 +23,7 @@
             </control>
             <control>
                 <description>Gain slider</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.gain</key>
                 <status>0xB0</status>
                 <midino>7</midino>
@@ -33,7 +33,7 @@
             </control>
             <control>
                 <description>Gain slider relative mode</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.gainRelative</key>
                 <status>0xB0</status>
                 <midino>8</midino>
@@ -43,7 +43,7 @@
             </control>
             <control>
                 <description>Pitch slider</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.pitch</key>
                 <status>0xB0</status>
                 <midino>4</midino>
@@ -53,7 +53,7 @@
             </control>
             <control>
                 <description>Pitch absolute</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.pitchAbsolute</key>
                 <status>0xB0</status>
                 <midino>3</midino>
@@ -63,7 +63,7 @@
             </control>
             <control>
                 <description>Pitch touch</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.pitchTouch</key>
                 <status>0x90</status>
                 <midino>3</midino>
@@ -73,7 +73,7 @@
             </control>
             <control>
                 <description>Pitch touch</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.pitchTouch</key>
                 <status>0x80</status>
                 <midino>3</midino>
@@ -85,7 +85,7 @@
                 <description>FX</description>
                 <!--<group>[Channel1]</group>-->
                 <!--<key>flanger</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.FX</key>
                 <status>0x90</status>
                 <midino>0x20</midino>
@@ -97,7 +97,7 @@
                 <description>FX</description>
                 <!--<group>[Channel1]</group>-->
                 <!--<key>flanger</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.FX</key>
                 <status>0x80</status>
                 <midino>0x20</midino>
@@ -108,7 +108,7 @@
             </control>
             <control>
                 <description>EQ</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.EQ</key>
                 <status>0x90</status>
                 <midino>0x26</midino>
@@ -118,7 +118,7 @@
             </control>
             <control>
                 <description>EQ</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.EQ</key>
                 <status>0x80</status>
                 <midino>0x26</midino>
@@ -128,7 +128,7 @@
             </control>
             <control>
                 <description>Loop</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Loop</key>
                 <status>0x90</status>
                 <midino>0x22</midino>
@@ -138,7 +138,7 @@
             </control>
             <control>
                 <description>Loop</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Loop</key>
                 <status>0x80</status>
                 <midino>0x22</midino>
@@ -148,7 +148,7 @@
             </control>
             <control>
                 <description>Trig</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Trig</key>
                 <status>0x90</status>
                 <midino>0x28</midino>
@@ -158,7 +158,7 @@
             </control>
             <control>
                 <description>Trig</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Trig</key>
                 <status>0x80</status>
                 <midino>0x28</midino>
@@ -170,7 +170,7 @@
                 <description>Vinyl</description>
                 <!-- <group>[Channel1]</group> -->
                 <!-- <key>reverse</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Vinyl</key>
                 <status>0x90</status>
                 <midino>0x24</midino>
@@ -182,7 +182,7 @@
                 <description>Vinyl</description>
                 <!-- <group>[Channel1]</group> -->
                 <!-- <key>reverse</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.Vinyl</key>
                 <status>0x80</status>
                 <midino>0x24</midino>
@@ -192,7 +192,7 @@
             </control>
             <control>
                 <description>Deck</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.DeckButton</key>
                 <status>0x90</status>
                 <midino>0x2A</midino>
@@ -202,7 +202,7 @@
             </control>
             <control>
                 <description>Deck</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.DeckButton</key>
                 <status>0x80</status>
                 <midino>0x2A</midino>
@@ -212,7 +212,7 @@
             </control>
             <control>
                 <description>B11 headphone cue</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B11</key>
                 <status>0x90</status>
                 <midino>0x2C</midino>
@@ -222,7 +222,7 @@
             </control>
             <control>
                 <description>B11 headphone cue</description>
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B11</key>
                 <status>0x80</status>
                 <midino>0x2C</midino>
@@ -234,7 +234,7 @@
                 <description>B12</description>
                 <!-- <group>[Channel1]</group> -->
                 <!-- <key>rateRange</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B12</key>
                 <status>0x90</status>
                 <midino>0x2E</midino>
@@ -246,7 +246,7 @@
                 <description>B12</description>
                 <!-- <group>[Channel1]</group> -->
                 <!-- <key>rateRange</key> -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B12</key>
                 <status>0x80</status>
                 <midino>0x2E</midino>
@@ -255,7 +255,7 @@
                 </options>
             </control>
             <control>    <!--    B13    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B13</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
@@ -265,7 +265,7 @@
                 </options>
             </control>
             <control>    <!--    B13    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B13</key>
                 <status>0x80</status>
                 <midino>0x30</midino>
@@ -275,7 +275,7 @@
                 </options>
             </control>
             <control>    <!--    B14    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B14</key>
                 <status>0x90</status>
                 <midino>0x32</midino>
@@ -285,7 +285,7 @@
                 </options>
             </control>
             <control>    <!--    B14    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.B14</key>
                 <status>0x80</status>
                 <midino>0x32</midino>
@@ -295,7 +295,7 @@
                 </options>
             </control>
             <control>    <!--    C1 relative    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.C1relative</key>
                 <status>0xB0</status>
                 <midino>0x63</midino>
@@ -305,7 +305,7 @@
                 </options>
             </control>
             <control>    <!--    C1 absolute    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.C1absolute</key>
                 <status>0xB0</status>
                 <midino>0x62</midino>
@@ -315,7 +315,7 @@
                 </options>
             </control>
             <control>    <!--    C1 touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.C1touch</key>
                 <status>0x90</status>
                 <midino>0x62</midino>
@@ -324,7 +324,7 @@
                 </options>
             </control>
             <control>    <!--    C1 touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.C1touch</key>
                 <status>0x80</status>
                 <midino>0x62</midino>
@@ -333,7 +333,7 @@
                 </options>
             </control>
             <control>    <!--    S3 Absolute    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S3absolute</key>
                 <status>0xB0</status>
                 <midino>0x0C</midino>
@@ -342,7 +342,7 @@
                 </options>
             </control>
             <control>    <!--    S3 Touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S3touch</key>
                 <status>0x90</status>
                 <midino>0x0C</midino>
@@ -351,7 +351,7 @@
                 </options>
             </control>
             <control>    <!--    S3 Touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S3touch</key>
                 <status>0x80</status>
                 <midino>0x0C</midino>
@@ -360,7 +360,7 @@
                 </options>
             </control>
             <control>    <!--    S4 Relative   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S4relative</key>
                 <status>0xB0</status>
                 <midino>2</midino>
@@ -369,7 +369,7 @@
                 </options>
             </control>
             <control>    <!--    S4 Absolute    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S4absolute</key>
                 <status>0xB0</status>
                 <midino>1</midino>
@@ -378,7 +378,7 @@
                 </options>
             </control>
             <control> <!--       S4 touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S4touch</key>
                 <status>0x90</status>
                 <midino>1</midino>
@@ -388,7 +388,7 @@
                 </options>
             </control>
             <control> <!--       S4 touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S4touch</key>
                 <status>0x80</status>
                 <midino>1</midino>
@@ -398,7 +398,7 @@
                 </options>
             </control>
             <control>    <!--    S5 Absolute    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S5absolute</key>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
@@ -407,7 +407,7 @@
                 </options>
             </control>
             <control>    <!--    S5 Relative    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S5relative</key>
                 <status>0xB0</status>
                 <midino>0x0F</midino>
@@ -416,7 +416,7 @@
                 </options>
             </control>
             <control>    <!--    S5 Touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S5touch</key>
                 <status>0x90</status>
                 <midino>0x0E</midino>
@@ -425,7 +425,7 @@
                 </options>
             </control>
             <control>    <!--    S5 Touch    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.S5touch</key>
                 <status>0x80</status>
                 <midino>0x0E</midino>
@@ -434,7 +434,7 @@
                 </options>
             </control>
             <control>    <!--    Play    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.playButton</key>
                 <status>0x90</status>
                 <midino>0x6D</midino>
@@ -444,7 +444,7 @@
                 </options>
             </control>
             <control>    <!--    Play    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.playButton</key>
                 <status>0x80</status>
                 <midino>0x6D</midino>
@@ -454,7 +454,7 @@
                 </options>
             </control>
             <control>    <!--    Cue    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.cueButton</key>
                 <status>0x90</status>
                 <midino>0x6E</midino>
@@ -464,7 +464,7 @@
                 </options>
             </control>
             <control>    <!--    Cue    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.cueButton</key>
                 <status>0x80</status>
                 <midino>0x6E</midino>
@@ -474,7 +474,7 @@
                 </options>
             </control>
             <control>    <!--    Sync    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.syncButton</key>
                 <status>0x90</status>
                 <midino>0x6F</midino>
@@ -484,7 +484,7 @@
                 </options>
             </control>
             <control>    <!--    Sync    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.syncButton</key>
                 <status>0x80</status>
                 <midino>0x6F</midino>
@@ -494,7 +494,7 @@
                 </options>
             </control>
             <control>    <!--    Tap    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.tapButton</key>
                 <status>0x90</status>
                 <midino>0x70</midino>
@@ -504,7 +504,7 @@
                 </options>
             </control>
             <control>    <!--    Tap    -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.tapButton</key>
                 <status>0x80</status>
                 <midino>0x70</midino>
@@ -514,7 +514,7 @@
                 </options>
             </control>
             <control>    <!--    B15 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
@@ -523,7 +523,7 @@
                 </options>
             </control>
             <control>    <!--    B15 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x48</midino>
@@ -532,7 +532,7 @@
                 </options>
             </control>
             <control>    <!--    B16 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x4A</midino>
@@ -541,7 +541,7 @@
                 </options>
             </control>
             <control>    <!--    B16 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x4A</midino>
@@ -550,7 +550,7 @@
                 </options>
             </control>
             <control>    <!--    B17 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x4C</midino>
@@ -559,7 +559,7 @@
                 </options>
             </control>
             <control>    <!--    B17 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x4C</midino>
@@ -568,7 +568,7 @@
                 </options>
             </control>
             <control>    <!--    B18 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x4E</midino>
@@ -577,7 +577,7 @@
                 </options>
             </control>
             <control>    <!--    B18 (left)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x4E</midino>
@@ -586,7 +586,7 @@
                 </options>
             </control>
             <control>    <!--    B19 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x4F</midino>
@@ -595,7 +595,7 @@
                 </options>
             </control>
             <control>    <!--    B19 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x4F</midino>
@@ -604,7 +604,7 @@
                 </options>
             </control>
             <control>    <!--    B20 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x51</midino>
@@ -613,7 +613,7 @@
                 </options>
             </control>
             <control>    <!--    B20 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x51</midino>
@@ -622,7 +622,7 @@
                 </options>
             </control>
             <control>    <!--    B21 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x53</midino>
@@ -631,7 +631,7 @@
                 </options>
             </control>
             <control>    <!--    B21 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x53</midino>
@@ -640,7 +640,7 @@
                 </options>
             </control>
             <control>    <!--    B22 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x90</status>
                 <midino>0x55</midino>
@@ -649,7 +649,7 @@
                 </options>
             </control>
             <control>    <!--    B22 (right)   -->
-                <group>[Master]</group>
+                <group>[App]</group>
                 <key>StantonSCS3d.SurfaceButton</key>
                 <status>0x80</status>
                 <midino>0x55</midino>
