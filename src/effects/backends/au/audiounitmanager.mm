@@ -6,8 +6,8 @@
 
 #include "effects/backends/au/audiounitmanager.h"
 
-AudioUnitManager::AudioUnitManager(
-        AVAudioUnitComponent* _Nullable component, bool instantiateSync)
+AudioUnitManager::AudioUnitManager(AVAudioUnitComponent* _Nullable component,
+        AudioUnitInstantiationType instantiationType)
         : m_name(QString::fromNSString([component name])) {
     // NOTE: The component can be null if the lookup failed in
     // `AUBackend::createProcessor`, in which case the effect simply acts as an
@@ -17,9 +17,15 @@ AudioUnitManager::AudioUnitManager(
         return;
     }
 
-    if (instantiateSync) {
-    } else {
-        instantiateAudioUnitAsync(component);
+    switch (instantiationType) {
+    case Sync:
+        instantiateAudioUnitSync(component);
+        break;
+    case AsyncInProcess:
+    case AsyncOutOfProcess:
+        instantiateAudioUnitAsync(
+                component, instantiationType == AsyncInProcess);
+        break;
     }
 }
 
@@ -42,8 +48,9 @@ AudioUnit _Nullable AudioUnitManager::getAudioUnit() {
 }
 
 void AudioUnitManager::instantiateAudioUnitAsync(
-        AVAudioUnitComponent* _Nonnull component) {
-    auto options = kAudioComponentInstantiation_LoadOutOfProcess;
+        AVAudioUnitComponent* _Nonnull component, bool inProcess) {
+    auto options = inProcess ? kAudioComponentInstantiation_LoadInProcess
+                             : kAudioComponentInstantiation_LoadOutOfProcess;
 
     // Instantiate the audio unit asynchronously.
     qDebug() << "Instantiating Audio Unit" << m_name << "asynchronously";
