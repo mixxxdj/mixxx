@@ -1,20 +1,14 @@
 #pragma once
 
 #include <QBasicTimer>
-#include <QContextMenuEvent>
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
-#include <QEvent>
-#include <QKeyEvent>
 #include <QModelIndex>
-#include <QPoint>
-#include <QTimerEvent>
 #include <QTreeView>
 
 #include "library/library_decl.h"
 #include "widget/wbasewidget.h"
 
 class LibraryFeature;
+class QPoint;
 
 class WLibrarySidebar : public QTreeView, public WBaseWidget {
     Q_OBJECT

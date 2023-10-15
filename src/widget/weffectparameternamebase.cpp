@@ -1,11 +1,11 @@
 #include "widget/weffectparameternamebase.h"
 
 #include <QDrag>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QMimeData>
-#include <QtDebug>
 
 #include "effects/effectslot.h"
-#include "effects/effectsmanager.h"
 #include "moc_weffectparameternamebase.cpp"
 
 namespace {

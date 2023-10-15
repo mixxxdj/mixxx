@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QCache>
-#include <QFont>
-#include <QItemSelectionModel>
 #include <QString>
 #include <QTableView>
 
@@ -10,7 +8,7 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
-class TrackModel;
+class QFont;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT

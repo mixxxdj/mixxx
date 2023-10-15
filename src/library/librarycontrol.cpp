@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QItemSelectionModel>
+#include <QKeyEvent>
 #include <QModelIndex>
 #include <QModelIndexList>
 #include <QWindow>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
@@ -9,10 +8,9 @@
 
 class ControlProxy;
 class WaveformWidgetAbstract;
-class QDragEnterEvent;
-class QDropEvent;
-class QEvent;
 class WCueMenuPopup;
+class QDomNode;
+class SkinContext;
 
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT

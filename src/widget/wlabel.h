@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QLabel>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
-#include "skin/legacy/skincontext.h"
+
+class QDomNode;
+class SkinContext;
 
 class WLabel : public QLabel, public WBaseWidget {
     Q_OBJECT

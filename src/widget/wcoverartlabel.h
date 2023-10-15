@@ -2,9 +2,7 @@
 
 #include <QByteArray>
 #include <QLabel>
-#include <QMouseEvent>
 #include <QPixmap>
-#include <QWidget>
 
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"

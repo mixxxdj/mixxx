@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QKeyEvent>
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>

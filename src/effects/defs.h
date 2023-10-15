@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QSharedPointer>
 #include <array>
 #include <memory>

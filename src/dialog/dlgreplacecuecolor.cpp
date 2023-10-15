@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QResizeEvent>
 #include <QtConcurrent>
+#include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"

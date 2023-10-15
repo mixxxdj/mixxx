@@ -3,11 +3,12 @@
 #include <QMenu>
 #include <QPushButton>
 
-#include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
-#include "skin/legacy/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WEffectChainPresetButton : public QPushButton, public WBaseWidget {
     Q_OBJECT

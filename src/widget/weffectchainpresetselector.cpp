@@ -1,16 +1,15 @@
 #include "widget/weffectchainpresetselector.h"
 
 #include <QAbstractItemView>
-#include <QPaintEvent>
 #include <QStyleOption>
 #include <QStylePainter>
-#include <QtDebug>
 
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
-#include "library/library_decl.h"
 #include "moc_weffectchainpresetselector.cpp"
 #include "widget/effectwidgetutils.h"
+
+class QPaintEvent;
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(
         QWidget* pParent, EffectsManager* pEffectsManager)

@@ -5,7 +5,6 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
@@ -18,9 +17,9 @@
 #include "widget/wwidget.h"
 
 class PlayerManager;
-class PainterScope;
-class QMouseEvent;
-class QPaintEvent;
+;
+class QDomNode;
+class SkinContext;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT

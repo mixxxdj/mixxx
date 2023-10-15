@@ -1,9 +1,8 @@
 #include "widget/wraterange.h"
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wraterange.cpp"
-#include "util/math.h"
+#include "skin/legacy/skincontext.h"
 
 WRateRange::WRateRange(const QString& group, QWidget* parent)
         : WNumber(parent),

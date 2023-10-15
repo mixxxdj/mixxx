@@ -1,11 +1,6 @@
 #pragma once
 
-#include <QDomNode>
-#include <QLabel>
-#include <QWidget>
-
-#include "effects/effectchain.h"
-#include "skin/legacy/skincontext.h"
+#include "effects/defs.h"
 #include "widget/wlabel.h"
 
 class EffectsManager;

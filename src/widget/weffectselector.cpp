@@ -5,7 +5,6 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
-#include "library/library_decl.h"
 #include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 

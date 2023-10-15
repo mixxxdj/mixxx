@@ -4,6 +4,7 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QVBoxLayout>
 
 #include "analyzer/analyzerprogress.h"
 #include "control/controlproxy.h"

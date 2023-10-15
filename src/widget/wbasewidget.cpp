@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "widget/wbasewidget.h"
 
 #include "widget/controlwidgetconnection.h"
