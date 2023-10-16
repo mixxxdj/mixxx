@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DMG_FILE="${1}"
 [ -z "${DMG_FILE}" ] && echo "Pass DMG file name as first argument." >&2 && exit 1
 [ -z "${APPLE_CODESIGN_IDENTITY}" ] && echo 'Please set the APPLE_CODESIGN_IDENTITY env var.' >&2 && exit 1
@@ -22,13 +24,6 @@ xcrun notarytool submit \
 
 trap 'rm notarize_status.plist' EXIT
 cat notarize_status.plist
-
-# shellcheck disable=SC2181
-if [ "$?" != "0" ]; then
-    echo "Notarization failed:"
-    curl "$(/usr/libexec/PlistBuddy -c 'Print notarization-info:LogFileURL' notarize_status.plist)"
-    exit 1
-fi
 
 NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
 
