@@ -9,6 +9,11 @@ DMG_FILE="${1}"
 [ -z "${APPLE_APP_SPECIFIC_PASSWORD}" ] && echo 'Please set the APPLE_APP_SPECIFIC_PASSWORD env var.' >&2 && exit 1
 [ -z "${APPLE_TEAM_ID}" ] && echo 'Please set the APPLE_TEAM_ID env var.' >&2 && exit 1
 
+tmp_dir="$(mktemp -dt mixxx_notarize)"
+# We want $tmp_dir to expand now, therefore we disable the check
+# shellcheck disable=SC2064
+trap "rm -rf '$tmp_dir'" EXIT
+
 echo "Signing $DMG_FILE"
 codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
@@ -18,15 +23,16 @@ credentials=(
     --team-id "${APPLE_TEAM_ID}"
 )
 
+status_plist="$tmp_dir/status.plist"
+
 echo "Notarizing $DMG_FILE"
 xcrun notarytool submit "${credentials[@]}" --output-format plist --wait "${DMG_FILE}" \
-    > notarize_status.plist
+    > "$status_plist"
 
-trap 'rm notarize_status.plist' EXIT
-cat notarize_status.plist
+cat "$status_plist"
 
-id="$(/usr/libexec/PlistBuddy -c 'Print id' notarize_status.plist)"
-status="$(/usr/libexec/PlistBuddy -c 'Print status' notarize_status.plist)"
+id="$(/usr/libexec/PlistBuddy -c 'Print id' "$status_plist")"
+status="$(/usr/libexec/PlistBuddy -c 'Print status' "$status_plist")"
 
 print_notary_log() {
     xcrun notarytool log "${credentials[@]}" "$id"

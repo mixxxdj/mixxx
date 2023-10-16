@@ -7,9 +7,6 @@
 *.log
 *.log.*
 
-# Notarization
-notarize_status.plist
-
 # TOOLS
 
 # Might be created when running a Python script from the tools folder
