@@ -5,7 +5,7 @@ using namespace mixxx;
 void PatternShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform highp mat4 matrix;
-attribute highp vec4 position;
+attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
 attribute highp vec2 texcoor;
 varying highp vec2 vTexcoor;
 void main()

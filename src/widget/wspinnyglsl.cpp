@@ -101,7 +101,7 @@ void WSpinnyGLSL::paintGL() {
     int positionLocation = m_textureShader.positionLocation();
     int texcoordLocation = m_textureShader.texcoordLocation();
 
-    QMatrix matrix;
+    QMatrix4x4 matrix;
     m_textureShader.setUniformValue(matrixLocation, matrix);
 
     m_textureShader.enableAttributeArray(positionLocation);
@@ -137,16 +137,16 @@ void WSpinnyGLSL::paintGL() {
     bool paintGhost = m_bGhostPlayback && m_pGhostTextureScaled;
 
     if (paintGhost) {
-        QMatrix rotate;
-        rotate.rotate(-m_fGhostAngle);
+        QMatrix4x4 rotate;
+        rotate.rotate(-m_fGhostAngle, 0, 0);
         m_textureShader.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pGhostTextureScaled.get());
     }
 
     if (m_pFgTextureScaled) {
-        QMatrix rotate;
-        rotate.rotate(-m_fAngle);
+        QMatrix4x4 rotate;
+        rotate.rotate(-m_fAngle, 0, 0);
         m_textureShader.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pFgTextureScaled.get());
@@ -224,7 +224,7 @@ void WSpinnyGLSL::drawVinylQuality() {
     int positionLocation = m_vinylQualityShader.positionLocation();
     int texcoordLocation = m_vinylQualityShader.texcoordLocation();
 
-    QMatrix matrix;
+    QMatrix4x4 matrix;
     m_vinylQualityShader.setUniformValue(matrixLocation, matrix);
     m_vinylQualityShader.setUniformValue(colorLocation, m_vinylQualityColor);
 

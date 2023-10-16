@@ -4,7 +4,7 @@ using namespace mixxx;
 
 void EndOfTrackShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-attribute highp vec4 position;
+attribute highp vec4 position; // use vec4 here (will be padded) to assign directly to gl_Position
 attribute highp float gradient;
 varying highp float vgradient;
 void main()

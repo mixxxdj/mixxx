@@ -5,7 +5,7 @@ using namespace mixxx;
 void VinylQualityShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform mat4 matrix;
-attribute highp vec4 position;
+attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
 attribute highp vec2 texcoord;
 varying highp vec2 vTexcoord;
 void main()
