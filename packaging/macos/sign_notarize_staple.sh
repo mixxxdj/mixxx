@@ -25,14 +25,18 @@ xcrun notarytool submit \
 trap 'rm notarize_status.plist' EXIT
 cat notarize_status.plist
 
-NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print notarization-info:Status' notarize_status.plist)"
+NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print status' notarize_status.plist)"
 
 case "${NOTARIZATION_STATUS}" in
-    success)
+    Accepted)
         echo "Notarization succeeded"
         ;;
-    invalid)
-        echo "Notarization failed with status: ${NOTARIZATION_STATUS}"
+    Invalid)
+        echo "Notarization invalid"
+        exit 1
+        ;;
+    Rejected)
+        echo "Notarization rejected"
         exit 1
         ;;
     *)
