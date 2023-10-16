@@ -14,7 +14,7 @@ tmp_dir="$(mktemp -dt mixxx_notarize)"
 # shellcheck disable=SC2064
 trap "rm -rf '$tmp_dir'" EXIT
 
-echo "Signing $DMG_FILE"
+echo "==> Signing $DMG_FILE"
 codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
 credentials=(
@@ -25,7 +25,7 @@ credentials=(
 
 status_plist="$tmp_dir/status.plist"
 
-echo "Notarizing $DMG_FILE"
+echo "==> Notarizing $DMG_FILE"
 xcrun notarytool submit "${credentials[@]}" --output-format plist --wait "${DMG_FILE}" \
     > "$status_plist"
 
@@ -54,5 +54,5 @@ case "${status}" in
         ;;
 esac
 
-echo "Stapling $DMG_FILE"
+echo "==> Stapling $DMG_FILE"
 xcrun stapler staple -q "${DMG_FILE}"
