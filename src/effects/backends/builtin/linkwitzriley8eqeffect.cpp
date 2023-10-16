@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/linkwitzriley8eqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
+#include "effects/defs.h"
 #include "util/math.h"
 
 static constexpr unsigned int kStartupSamplerate = 44100;
@@ -67,9 +68,9 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, i
     m_high2->setFrequencyCorners(sampleRate, highFreq);
 }
 
-LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
@@ -83,8 +84,6 @@ void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
 }
 
 LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
 }
 
 void LinkwitzRiley8EQEffect::processChannel(
@@ -108,10 +107,10 @@ void LinkwitzRiley8EQEffect::processChannel(
     }
 
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
-            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner.get())) ||
+            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner.get()))) {
+        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner.get());
+        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner.get());
         pState->m_oldSampleRate = engineParameters.sampleRate();
         pState->setFilters(engineParameters.sampleRate(), pState->m_loFreq, pState->m_hiFreq);
     }
