@@ -242,7 +242,7 @@ jobs:
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
           # Print code signing identities
-          security find-identity -v -p codesigning
+          security find-identity -v -p codesigning Mixxx.keychain
 
       - name: "[Windows] Set up Windows code signing"
         env:
