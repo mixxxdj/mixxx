@@ -13,34 +13,38 @@ echo "Signing $DMG_FILE"
 codesign --verbose=4 --options runtime \
     --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/Mixxx.entitlements" "${DMG_FILE}"
 
+CREDENTIALS=(
+    --apple-id "${APPLE_ID_USERNAME}"
+    --password "${APPLE_APP_SPECIFIC_PASSWORD}"
+    --team-id "${APPLE_TEAM_ID}"
+)
+
 echo "Notarizing $DMG_FILE"
-xcrun notarytool submit \
-    --apple-id "${APPLE_ID_USERNAME}" \
-    --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
-    --team-id "${APPLE_TEAM_ID}" \
-    --output-format plist \
-    --wait \
-    "${DMG_FILE}" > notarize_status.plist
+xcrun notarytool submit "${CREDENTIALS[@]}" --output-format plist --wait "${DMG_FILE}" \
+    > notarize_status.plist
 
 trap 'rm notarize_status.plist' EXIT
 cat notarize_status.plist
 
-NOTARIZATION_STATUS="$(/usr/libexec/PlistBuddy -c 'Print status' notarize_status.plist)"
+ID="$(/usr/libexec/PlistBuddy -c 'Print id' notarize_status.plist)"
+STATUS="$(/usr/libexec/PlistBuddy -c 'Print status' notarize_status.plist)"
 
-case "${NOTARIZATION_STATUS}" in
+print_notary_log() {
+    xcrun notarytool log "${CREDENTIALS[@]}" "$ID"
+}
+
+case "${STATUS}" in
     Accepted)
         echo "Notarization succeeded"
         ;;
-    Invalid)
-        echo "Notarization invalid"
-        exit 1
-        ;;
-    Rejected)
-        echo "Notarization rejected"
+    Invalid|Rejected)
+        echo "Notarization failed: ${STATUS}"
+        print_notary_log
         exit 1
         ;;
     *)
-        echo "Unknown notarization status: ${NOTARIZATION_STATUS}"
+        echo "Unknown notarization status: ${STATUS}"
+        print_notary_log
         exit 1
         ;;
 esac
