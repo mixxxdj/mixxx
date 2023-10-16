@@ -67,11 +67,11 @@
       <!-- T4 = Autoloop -->
       <control>
         <group>[Channel1]</group>
-        <key>beatloop_activate</key>
+        <key>Mixage.handleLoop</key>
         <status>0x90</status>
         <midino>0x05</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T4_SHIFT = Loop in -->
@@ -107,7 +107,7 @@
       <!-- T5_PRESS = Activate/Deactivate Loop -->
       <control>
         <group>[Channel1]</group>
-        <key>Mixage.handleBeatMovePressed</key>
+        <key>Mixage.handleLoopLengthPress</key>
         <status>0x90</status>
         <midino>0x20</midino>
         <options>
@@ -117,7 +117,7 @@
       <!-- T5_PRESS_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key>Mixage.clearLoop</key>
+        <key>Mixage.handleBeatLoopPress</key>
         <status>0x90</status>
         <midino>0x5F</midino>
         <options>
@@ -165,11 +165,11 @@
       <!-- T8 = Reloop -->
       <control>
         <group>[Channel1]</group>
-        <key>reloop_toggle</key>
+        <key>Mixage.handleReloop</key>
         <status>0x90</status>
         <midino>0x06</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T8_SHIFT = Loop Out -->
@@ -635,11 +635,11 @@
       <!-- T4 = Autoloop -->
       <control>
         <group>[Channel2]</group>
-        <key>beatloop_activate</key>
+        <key>Mixage.handleLoop</key>
         <status>0x90</status>
         <midino>0x13</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T4_SHIFT = Loop in -->
@@ -675,7 +675,7 @@
       <!-- T5_PRESS = ? -->
       <control>
         <group>[Channel2]</group>
-        <key>Mixage.handleBeatMovePressed</key>
+        <key>Mixage.handleLoopLengthPress</key>
         <status>0x90</status>
         <midino>0x22</midino>
         <options>
@@ -685,11 +685,11 @@
       <!-- T5_PRESS_SHIFT = Activate/Deactivate Loop -->
       <control>
         <group>[Channel2]</group>
-        <key></key>
+        <key>Mixage.handleBeatLoopPress</key>
         <status>0x90</status>
         <midino>0x61</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T6 = Gain Dial -->
@@ -733,11 +733,11 @@
       <!-- T8 = Reloop -->
       <control>
         <group>[Channel2]</group>
-        <key>reloop_toggle</key>
+        <key>Mixage.handleReloop</key>
         <status>0x90</status>
         <midino>0x14</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T8_SHIFT = Loop Out -->
