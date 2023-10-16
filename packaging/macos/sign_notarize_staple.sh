@@ -10,8 +10,7 @@ DMG_FILE="${1}"
 [ -z "${APPLE_TEAM_ID}" ] && echo 'Please set the APPLE_TEAM_ID env var.' >&2 && exit 1
 
 echo "Signing $DMG_FILE"
-codesign --verbose=4 --options runtime \
-    --sign "${APPLE_CODESIGN_IDENTITY}" "$(dirname "$0")/Mixxx.entitlements" "${DMG_FILE}"
+codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
 CREDENTIALS=(
     --apple-id "${APPLE_ID_USERNAME}"
