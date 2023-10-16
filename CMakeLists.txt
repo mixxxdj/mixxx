@@ -3434,14 +3434,6 @@ if(WAVPACK)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
 
-if (APPLOCAL_COMPONENT_DEFINED)
-    set(CPACK_COMPONENT_applocal_HIDDEN TRUE)
-    # In order to run Mixx from the build directory install applocal components
-    add_custom_command(
-        TARGET mixxx POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
-endif()
-
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/src/config.h" @ONLY)
@@ -3515,6 +3507,17 @@ if(WIN32)
 endif()
 
 include(CPack)
+
+if (APPLOCAL_COMPONENT_DEFINED)
+    cpack_add_component(applocal
+        HIDDEN
+        REQUIRED)
+
+    # In order to run Mixx from the build directory install applocal components
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
+endif()
 
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
