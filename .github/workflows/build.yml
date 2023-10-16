@@ -226,7 +226,7 @@ jobs:
           # Decrypt the certificate
           openssl enc -aes-256-cbc -d -md sha512 \
             -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
-            -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
+            -in "${{ github.workspace }}/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc" \
             -out ~/certificate.p12
 
           # Create a temporary keychain for the certificate and import it.
