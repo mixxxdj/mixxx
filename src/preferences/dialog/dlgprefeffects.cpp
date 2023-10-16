@@ -206,6 +206,7 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
 }
 
 void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selected) {
+    Q_UNUSED(selected);
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
