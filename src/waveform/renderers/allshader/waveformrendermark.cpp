@@ -298,7 +298,7 @@ void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
     }
     painter.end();
 
-    m_pPlayPosMarkTexture.reset(createTexture(image));
+    m_pPlayPosMarkTexture = createTexture(image);
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -405,7 +405,7 @@ void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark,
             //  Also, without this some Qt-internal issue results in an offset
             //  image when calculating the center line of pixmaps in draw().
             pMark->m_image.setDevicePixelRatio(devicePixelRatio);
-            pMark->m_pTexture.reset(createTexture(pMark->m_image));
+            pMark->m_pTexture = createTexture(pMark->m_image);
             return;
         }
     }
@@ -547,5 +547,5 @@ void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark,
         painter.drawText(labelRect, Qt::AlignCenter, label);
     }
 
-    pMark->m_pTexture.reset(createTexture(pMark->m_image));
+    pMark->m_pTexture = createTexture(pMark->m_image);
 }

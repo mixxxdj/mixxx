@@ -13,7 +13,7 @@
 #include "widget/wwidget.h"
 
 namespace {
-QOpenGLTexture* generateTexture(float markerLength,
+std::unique_ptr<QOpenGLTexture> generateTexture(float markerLength,
         float markerBreadth,
         float devicePixelRatio,
         QColor color) {
@@ -121,10 +121,10 @@ void WaveformRendererPreroll::paintGL() {
         // has changed size last time.
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
-        m_pTexture.reset(generateTexture(m_markerLength,
+        m_pTexture = generateTexture(m_markerLength,
                 m_markerBreadth,
                 m_waveformRenderer->getDevicePixelRatio(),
-                m_color));
+                m_color);
     }
 
     if (!m_pTexture) {

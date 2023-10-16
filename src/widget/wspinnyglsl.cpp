@@ -31,7 +31,7 @@ void WSpinnyGLSL::cleanupGL() {
 void WSpinnyGLSL::coverChanged() {
     if (isContextValid()) {
         makeCurrentIfNeeded();
-        m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+        m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
         doneCurrent();
     }
     // otherwise this will happen in initializeGL
@@ -53,11 +53,11 @@ void WSpinnyGLSL::resizeGL(int w, int h) {
 }
 
 void WSpinnyGLSL::updateTextures() {
-    m_pBgTexture.reset(createTexture(m_pBgImage));
-    m_pMaskTexture.reset(createTexture(m_pMaskImage));
-    m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
-    m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
-    m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+    m_pBgTexture = createTexture(m_pBgImage);
+    m_pMaskTexture = createTexture(m_pMaskImage);
+    m_pFgTextureScaled = createTexture(m_fgImageScaled);
+    m_pGhostTextureScaled = createTexture(m_ghostImageScaled);
+    m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
 }
 
 void WSpinnyGLSL::setupVinylSignalQuality() {
