@@ -93,7 +93,7 @@
                 <Size>50f,-1me</Size>
                 <MaximumSize>40,200</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
                 </Connection>
