@@ -34,6 +34,25 @@ QSize StarRating::sizeHint() const {
     return m_scaleFactor * getNormalizedSize();
 }
 
+int StarRating::starAtPosition(int x) const {
+    int width = sizeHint().width();
+    // If the pointer is very close to the left edge, set 0 stars.
+    if (x < width * 0.05) {
+        return 0;
+    } else if (x > width) {
+        return m_starCount;
+    }
+    int star = (x / (width / m_maxStarCount)) + 1;
+
+    if (star <= 0) {
+        return 0;
+    } else if (star > m_maxStarCount) {
+        // Pointer outside the right-hand edge, reset to current rating
+        return m_starCount;
+    }
+    return star;
+}
+
 void StarRating::paint(QPainter* painter, const QRect& rect, int height) {
     m_scaleFactor = height > 0 ? height : kDefaultPaintingScaleFactor;
     // Assume the painter is configured with the right brush.

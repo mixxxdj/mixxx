@@ -88,7 +88,7 @@ void StarEditor::mouseMoveEvent(QMouseEvent *event) {
 #else
     const int eventPosition = event->x();
 #endif
-    int star = starAtPosition(eventPosition);
+    int star = m_starRating.starAtPosition(eventPosition);
 
     if (star != m_starRating.starCount() && star != -1) {
         m_starRating.setStarCount(star);
@@ -103,20 +103,4 @@ void StarEditor::leaveEvent(QEvent*) {
 
 void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
     emit editingFinished();
-}
-
-int StarEditor::starAtPosition(int x) {
-    // If the mouse is very close to the left edge, set 0 stars.
-    if (x < m_starRating.sizeHint().width() * 0.05) {
-        return 0;
-    }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
-
-    if (star <= 0) {
-        return 0;
-    } else if (star > m_starRating.maxStarCount()) {
-        // Pointer outside the right-hand edge, reset to current rating
-        return m_starRating.starCount();
-    }
-    return star;
 }

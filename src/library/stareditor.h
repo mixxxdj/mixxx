@@ -40,8 +40,6 @@ class StarEditor : public QWidget {
     void leaveEvent(QEvent*);
 
   private:
-    int starAtPosition(int x);
-
     QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;

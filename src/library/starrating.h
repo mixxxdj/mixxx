@@ -45,6 +45,8 @@ class StarRating {
     int maxStarCount() const {
         return m_maxStarCount;
     }
+    int starAtPosition(int x) const;
+
     void setStarCount(int starCount) {
         DEBUG_ASSERT(starCount >= kMinStarCount);
         DEBUG_ASSERT(starCount <= m_maxStarCount);

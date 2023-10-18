@@ -75,10 +75,11 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
 
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    int star = starAtPosition(event->position().toPoint().x());
+    const int x = event->position().toPoint().x();
 #else
-    int star = starAtPosition(event->x());
+    const int x = event->x();
 #endif
+    int star = m_visualStarRating.starAtPosition(x);
 
     if (star != -1) {
         updateVisualRating(star);
@@ -107,24 +108,6 @@ void WStarRating::updateVisualRating(int starCount) {
     }
     m_visualStarRating.setStarCount(starCount);
     update();
-}
-
-// The method uses basic linear algebra to find out which star is under the cursor.
-int WStarRating::starAtPosition(int x) const {
-    // If the mouse is very close to the left edge, set 0 stars.
-    if (x < m_visualStarRating.sizeHint().width() * 0.05) {
-        return 0;
-    }
-    int star = (x /
-                       (m_visualStarRating.sizeHint().width() /
-                               m_visualStarRating.maxStarCount())) +
-            1;
-
-    if (star <= 0 || star > m_visualStarRating.maxStarCount()) {
-        return 0;
-    }
-
-    return star;
 }
 
 void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {

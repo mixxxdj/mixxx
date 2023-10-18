@@ -45,7 +45,6 @@ class WStarRating : public WWidget {
     StarRating m_visualStarRating;
     mutable QRect m_contentRect;
 
-    int starAtPosition(int x) const;
     void updateVisualRating(int starCount);
     void resetVisualRating() {
         updateVisualRating(m_starCount);
