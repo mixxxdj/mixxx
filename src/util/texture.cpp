@@ -2,7 +2,7 @@
 
 std::unique_ptr<QOpenGLTexture> createTexture(const QImage& image) {
     if (image.isNull()) {
-        return std::unique_ptr<QOpenGLTexture>{};
+        return nullptr;
     }
     std::unique_ptr<QOpenGLTexture> pTexture{new QOpenGLTexture(image)};
     pTexture->setMinificationFilter(QOpenGLTexture::Linear);
@@ -18,14 +18,14 @@ std::unique_ptr<QOpenGLTexture> createTexture(const QPixmap& pixmap) {
 
 std::unique_ptr<QOpenGLTexture> createTexture(const QSharedPointer<Paintable>& pPaintable) {
     if (pPaintable.isNull()) {
-        return std::unique_ptr<QOpenGLTexture>{};
+        return nullptr;
     }
     return createTexture(pPaintable->toImage());
 }
 
 std::unique_ptr<QOpenGLTexture> createTexture(const std::shared_ptr<QImage>& pImage) {
     if (!pImage) {
-        return std::unique_ptr<QOpenGLTexture>{};
+        return nullptr;
     }
     return createTexture(*pImage);
 }
