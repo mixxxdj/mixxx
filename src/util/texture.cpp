@@ -4,7 +4,7 @@ std::unique_ptr<QOpenGLTexture> createTexture(const QImage& image) {
     if (image.isNull()) {
         return nullptr;
     }
-    std::unique_ptr<QOpenGLTexture> pTexture{new QOpenGLTexture(image)};
+    auto pTexture = std::make_unique<QOpenGLTexture>(image);
     pTexture->setMinificationFilter(QOpenGLTexture::Linear);
     pTexture->setMagnificationFilter(QOpenGLTexture::Linear);
     pTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
