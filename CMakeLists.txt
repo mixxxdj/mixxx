@@ -2137,25 +2137,25 @@ add_dependencies(mixxx-benchmark mixxx-test)
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
-option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
-if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
-  set(MANUAL_URL "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf")
-  message(STATUS "Downloading manual from ${MANUAL_URL}...")
-  file(DOWNLOAD
-    "${MANUAL_URL}"
-    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
-    SHOW_PROGRESS
-    STATUS MANUAL_PDF_DOWNLOAD
-    TLS_VERIFY ON
-  )
-  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
-    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
-      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
-      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
-      "manual.")
-  endif()
-  file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
-endif()
+# option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
+# if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+#   set(MANUAL_URL "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf")
+#   message(STATUS "Downloading manual from ${MANUAL_URL}...")
+#   file(DOWNLOAD
+#     "${MANUAL_URL}"
+#     "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+#     SHOW_PROGRESS
+#     STATUS MANUAL_PDF_DOWNLOAD
+#     TLS_VERIFY ON
+#   )
+#   if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
+#     message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
+#       "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+#       "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+#       "manual.")
+#   endif()
+#   file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+# endif()
 
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
