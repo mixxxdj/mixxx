@@ -765,10 +765,10 @@ void DlgPrefMixer::slotUpdate() {
     CheckBoxGainAutoReset->setChecked(m_gainAutoReset);
 
     QString eqBaypassCfg = m_pConfig->getValueString(kEnableEqsKey);
-    m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1"); // default false
+    m_eqBypass = !(eqBaypassCfg == "yes" || eqBaypassCfg == "1" || eqBaypassCfg.isEmpty());
     CheckBoxBypass->setChecked(m_eqBypass);
     // Deactivate EQ comboboxes when Bypass is enabled
-    slotBypassEqToggled(CheckBoxBypass->isChecked());
+    slotBypassEqToggled(m_eqBypass);
 
     // EQ shelves //////////////////////////////////////////////////////////////
     QString highEqCoarse = m_pConfig->getValueString(kHighEqFreqKey);
