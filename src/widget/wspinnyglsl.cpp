@@ -138,7 +138,7 @@ void WSpinnyGLSL::paintGL() {
 
     if (paintGhost) {
         QMatrix4x4 rotate;
-        rotate.rotate(-m_fGhostAngle, 0, 0);
+        rotate.rotate(m_fGhostAngle, 0, 0, -1);
         m_textureShader.setUniformValue(matrixLocation, rotate);
 
         drawTexture(m_pGhostTextureScaled.get());
