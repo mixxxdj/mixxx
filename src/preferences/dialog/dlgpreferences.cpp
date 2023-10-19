@@ -426,12 +426,10 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         }
         break;
     case QDialogButtonBox::ApplyRole:
-        // Only apply settings on the current page.
-        if (pCurrentPage) {
-            pCurrentPage->slotApply();
-        }
+        emit applyPreferences();
         break;
     case QDialogButtonBox::AcceptRole:
+        // Same as Apply but close the dialog
         emit applyPreferences();
         accept();
         break;
