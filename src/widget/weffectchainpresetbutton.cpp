@@ -93,6 +93,11 @@ void WEffectChainPresetButton::populateMenu() {
             m_pChainPresetManager->updatePreset(m_pChain);
         });
     }
+    if (!presetIsReadOnly && !m_pChain->presetName().isEmpty()) {
+        m_pMenu->addAction(tr("Rename Preset"), this, [this]() {
+            m_pChainPresetManager->renamePreset(m_pChain->presetName());
+        });
+    }
     m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {
         m_pChainPresetManager->savePresetAndReload(m_pChain);
     });

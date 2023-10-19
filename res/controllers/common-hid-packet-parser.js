@@ -1233,38 +1233,6 @@ class HIDController {
          */
         this.deckSwitchMap = {1: 2, 2: 1, 3: 4, 4: 3, undefined: 1};
 
-        /**
-         * Standard target groups available in mixxx.
-         *
-         * This is used by HID packet parser to recognize group parameters we should try sending to mixxx.
-         * @type {string[]}
-         */
-        this.valid_groups = [
-            "[Channel1]",
-            "[Channel2]",
-            "[Channel3]",
-            "[Channel4]",
-            "[Sampler1]",
-            "[Sampler2]",
-            "[Sampler3]",
-            "[Sampler4]",
-            "[Sampler5]",
-            "[Sampler6]",
-            "[Sampler7]",
-            "[Sampler8]",
-            "[Master]",
-            "[PreviewDeck1]",
-            "[Effects]",
-            "[Playlist]",
-            "[Flanger]",
-            "[Microphone]",
-            "[EffectRack1_EffectUnit1]",
-            "[EffectRack1_EffectUnit2]",
-            "[EffectRack1_EffectUnit3]",
-            "[EffectRack1_EffectUnit4]",
-            "[InternalClock]"
-        ];
-
         //
         /**
          * Set to value in ms to update Outputs periodically
@@ -1357,34 +1325,36 @@ class HIDController {
         return `[Channel${deck}]`;
     }
     /**
-     * Map virtual deck names to real deck group. If group is already
-     * a real mixxx group value, just return it as it without mapping.
-     * @param {string} group Control group name e.g. "[Channel1]"
+     * Map virtual deck names ("deck, "deck1", "deck2") to real deck group. If group is already a
+     * real mixxx group value, just return it as it without mapping.
+     * @param {string} group Control group name e.g. "[Channel1]" or "deck" or "deck1".
      * @returns {string} Channel
      */
     resolveGroup(group) {
-        const channel_name = /\[Channel[0-9]+\]/;
-        if (group !== undefined && group.match(channel_name)) {
-            return group;
-        }
-        if (this.valid_groups.indexOf(group) !== -1) {
-            return group;
-        }
         if (group === "deck" || group === undefined) {
             if (this.activeDeck === undefined) {
                 return undefined;
             }
             return `[Channel${this.activeDeck}]`;
         }
-        if (this.activeDeck === 1 || this.activeDeck === 2) {
-            if (group === "deck1") { return "[Channel1]"; }
-            if (group === "deck2") { return "[Channel2]"; }
+        if (group === "deck1") {
+            if (this.activeDeck === 1 || this.activeDeck === 2) {
+                return "[Channel1]";
+            }
+            if (this.activeDeck === 3 || this.activeDeck === 4) {
+                return "[Channel3]";
+            }
+            return undefined;
+        } else if (group === "deck2") {
+            if (this.activeDeck === 1 || this.activeDeck === 2) {
+                return "[Channel2]";
+            }
+            if (this.activeDeck === 3 || this.activeDeck === 4) {
+                return "[Channel4]";
+            }
+            return undefined;
         }
-        if (this.activeDeck === 3 || this.activeDeck === 4) {
-            if (group === "deck1") { return "[Channel3]"; }
-            if (group === "deck2") { return "[Channel4]"; }
-        }
-        return undefined;
+        return group;
     }
     /**
      * Find Output control matching give group and name
@@ -1746,11 +1716,7 @@ class HIDController {
                 return `[Channel${this.activeDeck}]`;
             }
         }
-        if (this.valid_groups.indexOf(group) !== -1) {
-            // console.log(`Resolving group ${group}`);
-            return this.resolveGroup(group);
-        }
-        return group;
+        return this.resolveGroup(group);
     }
     /**
      * Get active control name from field

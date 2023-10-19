@@ -2,7 +2,7 @@
 
 #include <QMap>
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/builtin/lvmixeqbase.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -24,7 +24,7 @@ class Bessel8LVMixEQEffectGroupState : public LVMixEQEffectGroupState<EngineFilt
 class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGroupState> {
   public:
     Bessel8LVMixEQEffect();
-    ~Bessel8LVMixEQEffect() override;
+    ~Bessel8LVMixEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();
@@ -53,8 +53,8 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    ControlProxy* m_pLoFreqCorner;
-    ControlProxy* m_pHiFreqCorner;
+    PollingControlProxy m_pLoFreqCorner;
+    PollingControlProxy m_pHiFreqCorner;
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };

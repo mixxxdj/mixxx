@@ -104,13 +104,14 @@ EffectChainPresetPointer EffectChainPresetManager::quickEffectPresetAtIndex(
     return m_quickEffectChainPresetsSorted.at(index);
 }
 
-void EffectChainPresetManager::importPreset() {
+bool EffectChainPresetManager::importPreset() {
     QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
             tr("Import effect chain preset"),
             QDir::homePath(),
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
 
+    bool presetsImported = false;
     QString importFailedText = tr("Error importing effect chain preset");
     QString importFailedInformativeText = tr("Error importing effect chain preset \"%1\"");
     for (int i = 0; i < fileNames.size(); ++i) {
@@ -186,11 +187,13 @@ void EffectChainPresetManager::importPreset() {
             m_quickEffectChainPresetsSorted.append(pPreset);
             emit effectChainPresetListUpdated();
             emit quickEffectChainPresetListUpdated();
+            presetsImported = true;
         } else {
             QMessageBox::critical(
                     nullptr, importFailedText, importFailedInformativeText.arg(filePath));
         }
     }
+    return presetsImported;
 }
 
 void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
@@ -242,9 +245,9 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
     file.close();
 }
 
-void EffectChainPresetManager::renamePreset(const QString& oldName) {
+bool EffectChainPresetManager::renamePreset(const QString& oldName) {
     VERIFY_OR_DEBUG_ASSERT(m_effectChainPresets.contains(oldName)) {
-        return;
+        return false;
     }
     if (m_effectChainPresets.value(oldName)->isReadOnly()) {
         QMessageBox msgBox;
@@ -254,7 +257,7 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
                         .arg(oldName));
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
-        return;
+        return false;
     }
 
     QString newName;
@@ -272,7 +275,7 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
                 &okay)
                           .trimmed();
         if (!okay) {
-            return;
+            return false;
         }
 
         if (newName.isEmpty()) {
@@ -299,7 +302,7 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         m_effectChainPresets.take(newName);
         pPreset->setName(oldName);
         m_effectChainPresets.insert(oldName, pPreset);
-        return;
+        return false;
     }
 
     QString directoryPath = m_pConfig->getSettingsPath() + kEffectChainPresetDirectory;
@@ -328,6 +331,7 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         m_quickEffectChainPresetsSorted.replace(index, pPreset);
         emit quickEffectChainPresetListUpdated();
     }
+    return true;
 }
 
 bool EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
