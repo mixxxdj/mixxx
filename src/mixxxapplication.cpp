@@ -61,7 +61,7 @@ class QMouseEventEditable : public QMouseEvent {
 #endif
 };
 
-constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(20);
+constexpr mixxx::Duration kEventNotifyExecTimeWarningThreshold = mixxx::Duration::fromMillis(5);
 
 } // anonymous namespace
 #endif
@@ -182,6 +182,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
                  << "for object"
                  << target->metaObject()->className()
                  << target->objectName()
+                 << "running in thread:"
+                 << target->thread()->objectName()
                  << "took"
                  << time.elapsed().debugMillisWithUnit();
     }
