@@ -33,14 +33,16 @@ class WaveformMark {
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
-    int getHotCue() const { return m_iHotCue; };
+    int getHotCue() const {
+        return m_iHotCue;
+    };
 
-    //The m_pPositionCO related function
+    // The m_pPositionCO related function
     bool isValid() const {
         return m_pPositionCO && m_pPositionCO->valid();
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
         m_pPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     };
@@ -74,7 +76,7 @@ class WaveformMark {
         return m_pVisibleCO->toBool();
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
         m_pVisibleCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
@@ -94,6 +96,8 @@ class WaveformMark {
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
+    QImage generateImage(float breath, float devicePixelRatio);
+
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
@@ -107,10 +111,15 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
-    std::unique_ptr<QOpenGLTexture> m_pTexture; // used by allshader::WaveformRenderMark
+
     friend class allshader::WaveformRenderMark;
+
+    std::unique_ptr<QOpenGLTexture> m_pTexture; // Used by allshader::WaveformRenderMark
+    QImage m_image;                             // Used by WaveformRenderMark
+    bool m_needsUpdate{true};                   // To indicate either the texture or the image has
+                                                // to be updated
+
     int m_iHotCue;
-    QImage m_image;
 
     QColor m_fillColor;
     QColor m_borderColor;

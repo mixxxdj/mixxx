@@ -25,13 +25,9 @@
 // The renderers in this folder are optimized to use GLSL shaders and refrain
 // from using QPainter on the QOpenGLWindow, which causes degredated performance.
 //
-// This renderer does use QPainter, but only to draw on a QImage. This is only
-// done once when needed and the images are then used as textures to be drawn
-// with a GLSL shader.
-
-namespace {
-constexpr int kMaxCueLabelLength = 23;
-} // namespace
+// This renderer does use QPainter (indirectly, in WaveformMark::generateImage), but
+// only to draw on a QImage. This is only done once when needed and the images are
+// then used as textures to be drawn with a GLSL shader.
 
 allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget),
@@ -55,9 +51,9 @@ void allshader::WaveformRenderMark::initializeGL() {
     m_textureShader.init();
 
     for (const auto& pMark : m_marks) {
-        generateMarkImage(pMark, m_waveformRenderer->getBreadth());
+        generateMarkImage(pMark);
     }
-    generatePlayPosMarkTexture(m_waveformRenderer->getBreadth());
+    generatePlayPosMarkTexture();
 }
 
 void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* texture) {
@@ -173,8 +169,8 @@ void allshader::WaveformRenderMark::paintGL() {
             continue;
         }
 
-        if (pMark->m_image.isNull()) {
-            generateMarkImage(pMark, m_waveformRenderer->getBreadth());
+        if (pMark->m_needsUpdate) {
+            generateMarkImage(pMark);
         }
 
         const double samplePosition = pMark->getSamplePosition();
@@ -239,11 +235,14 @@ void allshader::WaveformRenderMark::paintGL() {
     drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
 }
 
-void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
+// Generate the texture used to draw the play position marker.
+// Note that in the legacy waveform widgets this is drawn directly
+// in the WaveformWidgetRenderer itself. Doing it here is cleaner.
+void allshader::WaveformRenderMark::generatePlayPosMarkTexture() {
     float imgwidth;
     float imgheight;
 
-    const float height = breadth;
+    const float height = m_waveformRenderer->getBreadth();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const float lineX = 5.5f;
@@ -261,13 +260,16 @@ void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
     QPainter painter;
 
     painter.begin(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
 
     painter.setWorldMatrixEnabled(false);
 
+    const QColor fgColor{m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor()};
+    const QColor bgColor{m_waveformRenderer->getWaveformSignalColors()->getBgColor()};
+
     // draw dim outlines to increase playpos/waveform contrast
+    painter.setPen(bgColor);
     painter.setOpacity(0.5);
-    painter.setPen(m_waveformRenderer->getWaveformSignalColors()->getBgColor());
-    QBrush bgFill = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
     // lines next to playpos
     // Note: don't draw lines where they would overlap the triangles,
     // otherwise both translucent strokes add up to a darker tone.
@@ -278,23 +280,22 @@ void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
     // Increase line/waveform contrast
     painter.setOpacity(0.8);
     {
-        QPointF t0 = QPointF(lineX - 5.f, 0.f);
-        QPointF t1 = QPointF(lineX + 5.f, 0.f);
-        QPointF t2 = QPointF(lineX, 6.f);
-        drawTriangle(&painter, bgFill, t0, t1, t2);
+        QPointF baseL = QPointF(lineX - 5.f, 0.f);
+        QPointF baseR = QPointF(lineX + 5.f, 0.f);
+        QPointF tip = QPointF(lineX, 5.f);
+        drawTriangle(&painter, bgColor, baseL, baseR, tip);
     }
     // draw colored play position indicators
+    painter.setPen(fgColor);
     painter.setOpacity(1.0);
-    painter.setPen(m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor());
-    QBrush fgFill = m_waveformRenderer->getWaveformSignalColors()->getPlayPosColor();
     // play position line
     painter.drawLine(QLineF(lineX, 0.f, lineX, height));
     // triangle at top edge
     {
-        QPointF t0 = QPointF(lineX - 4.f, 0.f);
-        QPointF t1 = QPointF(lineX + 4.f, 0.f);
-        QPointF t2 = QPointF(lineX, 5.f);
-        drawTriangle(&painter, fgFill, t0, t1, t2);
+        QPointF baseL = QPointF(lineX - 4.f, 0.f);
+        QPointF baseR = QPointF(lineX + 4.f, 0.f);
+        QPointF tip = QPointF(lineX, 4.f);
+        drawTriangle(&painter, fgColor, baseL, baseR, tip);
     }
     painter.end();
 
@@ -303,30 +304,23 @@ void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
         const QBrush& fillColor,
-        QPointF p0,
-        QPointF p1,
-        QPointF p2) {
+        QPointF baseL,
+        QPointF baseR,
+        QPointF tip) {
     QPainterPath triangle;
     painter->setPen(Qt::NoPen);
-    triangle.moveTo(p0); // ° base 1
-    triangle.lineTo(p1); // > base 2
-    triangle.lineTo(p2); // > peak
-    triangle.lineTo(p0); // > base 1
+    triangle.moveTo(baseL);
+    triangle.lineTo(tip);
+    triangle.lineTo(baseR);
+    triangle.closeSubpath();
     painter->fillPath(triangle, fillColor);
 }
 
-void allshader::WaveformRenderMark::resizeGL(int w, int h) {
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    const float breadth =
-            static_cast<float>(
-                    m_waveformRenderer->getOrientation() == Qt::Vertical ? w
-                                                                         : h) /
-            devicePixelRatio;
-
+void allshader::WaveformRenderMark::resizeGL(int, int) {
     for (const auto& pMark : m_marks) {
-        generateMarkImage(pMark, breadth);
+        generateMarkImage(pMark);
     }
-    generatePlayPosMarkTexture(breadth);
+    generatePlayPosMarkTexture();
 }
 
 void allshader::WaveformRenderMark::onSetTrack() {
@@ -379,173 +373,13 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
             pMark->m_text = newLabel;
             const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
             pMark->setBaseColor(newColor, dimBrightThreshold);
-            generateMarkImage(pMark, m_waveformRenderer->getBreadth());
+            generateMarkImage(pMark);
         }
     }
 }
 
-void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark, float breadth) {
-    // Load the pixmap from file.
-    // If that succeeds loading the text and stroke is skipped.
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    if (!pMark->m_pixmapPath.isEmpty()) {
-        QString path = pMark->m_pixmapPath;
-        // Use devicePixelRatio to properly scale the image
-        QImage image = *WImageStore::getImage(path, devicePixelRatio);
-        // QImage image = QImage(path);
-        //  If loading the image didn't fail, then we're done. Otherwise fall
-        //  through and render a label.
-        if (!image.isNull()) {
-            pMark->m_image =
-                    image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            // WImageStore::correctImageColors(&pMark->m_image);
-            //  Set the pixel/device ratio AFTER loading the image in order to get
-            //  a truly scaled source image.
-            //  See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
-            //  Also, without this some Qt-internal issue results in an offset
-            //  image when calculating the center line of pixmaps in draw().
-            pMark->m_image.setDevicePixelRatio(devicePixelRatio);
-            pMark->m_pTexture = createTexture(pMark->m_image);
-            return;
-        }
-    }
-
-    {
-        // See comment on use of QPainter at top of file
-        QPainter painter;
-
-        // Determine mark text.
-        QString label = pMark->m_text;
-        if (pMark->getHotCue() >= 0) {
-            if (!label.isEmpty()) {
-                label.prepend(": ");
-            }
-            label.prepend(QString::number(pMark->getHotCue() + 1));
-            if (label.size() > kMaxCueLabelLength) {
-                label = label.left(kMaxCueLabelLength - 3) + "...";
-            }
-        }
-
-        // This alone would pick the OS default font, or that set by Qt5 Settings (qt5ct)
-        // respectively. This would mostly not be notable since contemporary OS and distros
-        // use a proven sans-serif anyway. Though, some user fonts may be lacking glyphs
-        // we use for the intro/outro markers for example.
-        QFont font;
-        // So, let's just use Open Sans which is used by all official skins to achieve
-        // a consistent skin design.
-        font.setFamily("Open Sans");
-        // Use a pixel size like everywhere else in Mixxx, which can be scaled well
-        // in general.
-        // Point sizes would work if only explicit Qt scaling QT_SCALE_FACTORS is used,
-        // though as soon as other OS-based font and app scaling mechanics join the
-        // party the resulting font size is hard to predict (affects all supported OS).
-        font.setPixelSize(13);
-        font.setWeight(75); // bold
-        font.setItalic(false);
-
-        QFontMetrics metrics(font);
-
-        // fixed margin ...
-        QRect wordRect = metrics.tightBoundingRect(label);
-        wordRect.setHeight(wordRect.height() + (wordRect.height() % 2));
-        wordRect.setWidth(wordRect.width() + (wordRect.width()) % 2);
-        constexpr float marginX = 1.f;
-        constexpr float marginY = 1.f;
-        QRectF wordRectF(marginX + 1.f,
-                marginY + 1.f,
-                static_cast<float>(wordRect.width()),
-                static_cast<float>(wordRect.height()));
-        // even wordrect to have an even Image >> draw the line in the middle !
-
-        float labelRectWidth = static_cast<float>(wordRectF.width()) + 2.f * marginX + 4.f;
-        float labelRectHeight = static_cast<float>(wordRectF.height()) + 2.f * marginY + 4.f;
-
-        QRectF labelRect(0.f, 0.f, labelRectWidth, labelRectHeight);
-
-        float width;
-        float height;
-
-        width = 2.f * labelRectWidth + 1.f;
-        height = breadth;
-
-        pMark->m_image = QImage(
-                static_cast<int>(width * devicePixelRatio),
-                static_cast<int>(height * devicePixelRatio),
-                QImage::Format_ARGB32_Premultiplied);
-        pMark->m_image.setDevicePixelRatio(devicePixelRatio);
-
-        Qt::Alignment markAlignH = pMark->m_align & Qt::AlignHorizontal_Mask;
-        Qt::Alignment markAlignV = pMark->m_align & Qt::AlignVertical_Mask;
-
-        if (markAlignH == Qt::AlignHCenter) {
-            labelRect.moveLeft((width - labelRectWidth) / 2.f);
-        } else if (markAlignH == Qt::AlignRight) {
-            labelRect.moveRight(width - 1.f);
-        }
-
-        if (markAlignV == Qt::AlignVCenter) {
-            labelRect.moveTop((height - labelRectHeight) / 2.f);
-        } else if (markAlignV == Qt::AlignBottom) {
-            labelRect.moveBottom(height - 1.f);
-        }
-
-        pMark->m_label.setAreaRect(labelRect);
-
-        // Fill with transparent pixels
-        pMark->m_image.fill(QColor(0, 0, 0, 0).rgba());
-
-        painter.begin(&pMark->m_image);
-        painter.setRenderHint(QPainter::TextAntialiasing);
-
-        painter.setWorldMatrixEnabled(false);
-
-        // Draw marker lines
-        float middle = width / 2.f;
-        pMark->m_linePosition = middle;
-        if (markAlignH == Qt::AlignHCenter) {
-            if (labelRect.top() > 0) {
-                painter.setPen(pMark->fillColor());
-                painter.drawLine(QLineF(middle, 0, middle, labelRect.top()));
-
-                painter.setPen(pMark->borderColor());
-                painter.drawLine(QLineF(middle - 1.f, 0.f, middle - 1.f, labelRect.top()));
-                painter.drawLine(QLineF(middle + 1.f, 0.f, middle + 1.f, labelRect.top()));
-            }
-
-            if (labelRect.bottom() < height) {
-                painter.setPen(pMark->fillColor());
-                painter.drawLine(QLineF(middle, labelRect.bottom(), middle, height));
-
-                painter.setPen(pMark->borderColor());
-                painter.drawLine(QLineF(middle - 1.f,
-                        labelRect.bottom(),
-                        middle - 1.f,
-                        height));
-                painter.drawLine(QLineF(middle + 1.f,
-                        labelRect.bottom(),
-                        middle + 1.f,
-                        height));
-            }
-        } else { // AlignLeft || AlignRight
-            painter.setPen(pMark->fillColor());
-            painter.drawLine(QLineF(middle, 0.f, middle, height));
-
-            painter.setPen(pMark->borderColor());
-            painter.drawLine(QLineF(middle - 1.f, 0, middle - 1.f, height));
-            painter.drawLine(QLineF(middle + 1.f, 0, middle + 1.f, height));
-        }
-
-        // Draw the label rect
-        painter.setPen(pMark->borderColor());
-        painter.setBrush(QBrush(pMark->fillColor()));
-        painter.drawRoundedRect(labelRect, 2.0, 2.0);
-
-        // Draw text
-        painter.setBrush(QBrush(QColor(0, 0, 0, 0)));
-        painter.setFont(font);
-        painter.setPen(pMark->labelColor());
-        painter.drawText(labelRect, Qt::AlignCenter, label);
-    }
-
-    pMark->m_pTexture = createTexture(pMark->m_image);
+void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
+    pMark->m_pTexture = createTexture(pMark->generateImage(m_waveformRenderer->getBreadth(),
+            m_waveformRenderer->getDevicePixelRatio()));
+    pMark->m_needsUpdate = false;
 }
