@@ -2149,11 +2149,15 @@ if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.
     STATUS MANUAL_PDF_DOWNLOAD
     TLS_VERIFY ON
   )
-  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
-    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
-      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
-      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
-      "manual.")
+  list(GET MANUAL_PDF_DOWNLOAD 0 MANUAL_PDF_DOWNLOAD_ERROR)
+  if(NOT MANUAL_PDF_DOWNLOAD_ERROR EQUAL 0)
+    list(GET MANUAL_PDF_DOWNLOAD 1 MANUAL_PDF_DOWNLOAD_MESSGAE)
+    message(FATAL_ERROR "Manual PDF download failed with: "
+        "${MANUAL_PDF_DOWNLOAD_MESSGAE} Code: ${MANUAL_PDF_DOWNLOAD_ERROR}. "
+        "Either download it yourself and move it to "
+        "'${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+        "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+        "manual.")
   endif()
   file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
 endif()
