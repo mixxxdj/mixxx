@@ -4,6 +4,7 @@
 
 #include <array>
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
