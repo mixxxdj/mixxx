@@ -18,6 +18,7 @@
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
+#include "control/pollingcontrolproxy.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -81,7 +82,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     double getTrackSamples() const {
         if (m_trackLoaded) {
-            return m_trackSamplesControl->get();
+            return m_trackSamplesControl.get();
         } else {
             // Ignore the value, because the engine can still have the old track
             // during loading
@@ -110,7 +111,9 @@ class WOverview : public WWidget, public TrackDropTarget {
     void onMarkRangeChange(double v);
     void onRateRatioChange(double v);
     void onPassthroughChange(double v);
+    void onEndOfTrackBlinkTimerChange(double v);
     void receiveCuesUpdated();
+    void setEndOfTrackTime(int time);
 
     void slotWaveformSummaryUpdated();
     void slotCueMenuPopupAboutToHide();
@@ -145,14 +148,17 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
-    ControlProxy* m_endOfTrackControl;
+    parented_ptr<ControlProxy> m_pEndOfTrackControl;
     bool m_endOfTrack;
+    bool m_drawEndOfTrack;
     bool m_bPassthroughEnabled;
-    ControlProxy* m_pRateRatioControl;
-    ControlProxy* m_trackSampleRateControl;
-    ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playpositionControl;
-    ControlProxy* m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pRateRatioControl;
+    PollingControlProxy m_playpositionControl;
+    PollingControlProxy m_pTimeRemainingControl;
+    PollingControlProxy m_trackSampleRateControl;
+    PollingControlProxy m_trackSamplesControl;
+    parented_ptr<ControlProxy> m_pPassthroughControl;
+    parented_ptr<ControlProxy> m_pEndOfTrackBlinkTimer;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -164,10 +170,11 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPosSeconds;
     // True if pick-up is dragged. Only used when m_bEventWhileDrag is false
     bool m_bLeftClickDragging;
-    // Internal storage of slider position in pixels
-    int m_iPickupPos;
     // position of the overlay shadow
+    int m_iPickupPos;
+    // Internal storage of slider position in pixels
     int m_iPlayPos;
+    int m_endOfTrackWarningTime;
 
     WaveformMarkPointer m_pHoveredMark;
     bool m_bTimeRulerActive;

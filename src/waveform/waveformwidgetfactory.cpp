@@ -512,6 +512,7 @@ void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"), ConfigValue(m_endOfTrackWarningTime));
     }
+    emit endOfTrackTimeChanged(endTime);
 }
 
 void WaveformWidgetFactory::setVSyncType(int type) {
