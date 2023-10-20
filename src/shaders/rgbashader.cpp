@@ -4,7 +4,7 @@ using namespace mixxx;
 
 void RGBAShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
+uniform highp mat4 matrix;
 attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
 attribute highp vec4 color;
 varying highp vec4 vColor;

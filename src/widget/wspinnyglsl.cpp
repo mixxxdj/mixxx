@@ -66,6 +66,7 @@ void WSpinnyGLSL::setupVinylSignalQuality() {
 void WSpinnyGLSL::updateVinylSignalQualityImage(
         const QColor& qual_color, const unsigned char* data) {
     m_vinylQualityColor = qual_color;
+    m_vinylQualityColor.setAlphaF(0.75f);
     if (m_pQTexture) {
         makeCurrentIfNeeded();
         m_pQTexture->bind();
