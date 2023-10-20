@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QtGlobal>
+
 #ifdef Q_OS_MAC
 #include <IOKit/pwr_mgt/IOPMLib.h>
 #endif // Q_OS_MAC

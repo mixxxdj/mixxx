@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "util/assert.h"
+#include "util/parented_ptr.h"
 
 // Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
 // Objects which both derive from QObject AND have a parent object, have their lifetime governed by
