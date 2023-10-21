@@ -373,10 +373,10 @@ TraktorS4MK2.registerOutputPackets = function() {
 
 
 
-    Output1.addOutput("[Channel1]", "PeakIndicator", 0x0F, "B");
-    Output1.addOutput("[Channel2]", "PeakIndicator", 0x17, "B");
-    Output1.addOutput("[Channel3]", "PeakIndicator", 0x07, "B");
-    Output1.addOutput("[Channel4]", "PeakIndicator", 0x1F, "B");
+    Output1.addOutput("[Channel1]", "peak_indicator", 0x0F, "B");
+    Output1.addOutput("[Channel2]", "peak_indicator", 0x17, "B");
+    Output1.addOutput("[Channel3]", "peak_indicator", 0x07, "B");
+    Output1.addOutput("[Channel4]", "peak_indicator", 0x1F, "B");
 
     Output1.addOutput("[Master]", "!usblight", 0x2A, "B");
     Output1.addOutput("[Master]", "!quantize", 0x31, "B");
@@ -466,8 +466,8 @@ TraktorS4MK2.registerOutputPackets = function() {
     Output3.addOutput("[Channel2]", "pfl", 0x19, "B");
     Output3.addOutput("[Channel4]", "pfl", 0x1A, "B");
 
-    Output3.addOutput("[Master]", "PeakIndicatorL", 0x3B, "B");
-    Output3.addOutput("[Master]", "PeakIndicatorR", 0x3C, "B");
+    Output3.addOutput("[Main]", "peak_indicator_left", 0x3B, "B");
+    Output3.addOutput("[Main]", "peak_indicator_right", 0x3C, "B");
 
     Output3.addOutput("deck1", "!deckLight", 0x13, "B");
     Output3.addOutput("deck1", "LoadSelectedTrack", 0x14, "B");
@@ -525,12 +525,12 @@ TraktorS4MK2.registerOutputPackets = function() {
     TraktorS4MK2.linkChannelOutput("[Channel2]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel3]", "track_samples", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[Channel4]", "track_samples", TraktorS4MK2.outputChannelCallback);
-    TraktorS4MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel3]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Channel4]", "PeakIndicator", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS4MK2.outputChannelCallbackDark);
-    TraktorS4MK2.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel3]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Channel4]", "peak_indicator", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS4MK2.outputChannelCallbackDark);
+    TraktorS4MK2.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS4MK2.outputChannelCallbackDark);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", TraktorS4MK2.outputChannelCallback);
     TraktorS4MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS4MK2.outputChannelCallback);
@@ -571,10 +571,10 @@ TraktorS4MK2.registerOutputPackets = function() {
     engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
     // VU meters get special attention
-    engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel2]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel3]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
-    engine.connectControl("[Channel4]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel1]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel2]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel3]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
+    engine.connectControl("[Channel4]", "vu_meter", "TraktorS4MK2.onVuMeterChanged");
 
     engine.connectControl("[Channel1]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
     engine.connectControl("[Channel2]", "loop_enabled", "TraktorS4MK2.onLoopEnabledChanged");
@@ -1239,8 +1239,8 @@ TraktorS4MK2.snapHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    library_maximized = engine.getValue("[Master]", "maximize_library");
-    engine.setValue("[Master]", "maximize_library", !library_maximized);
+    library_maximized = engine.getValue("[Skin]", "show_maximized_library");
+    engine.setValue("[Skin]", "show_maximized_library", !library_maximized);
 };
 
 TraktorS4MK2.FXButtonHandler = function(field) {

@@ -28,7 +28,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             RecordingManager* pRecordingManager);
-    virtual ~BrowseFeature();
+    ~BrowseFeature() override;
 
     QVariant title() override;
 
@@ -37,6 +37,8 @@ class BrowseFeature : public LibraryFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+
+    void releaseBrowseThread();
 
   public slots:
     void slotAddQuickLink();

@@ -67,10 +67,10 @@ void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& engi
 #define DECLARE_EFFECT_BENCHMARK(EffectName)                                         \
     TEST_F(EffectsBenchmarkTest, BM_BuiltInEffects_DefaultParameters_##EffectName) { \
         ControlPotmeter loEqFrequency(                                               \
-                ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);           \
+                ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040);              \
         loEqFrequency.setDefaultValue(250.0);                                        \
         ControlPotmeter hiEqFrequency(                                               \
-                ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);           \
+                ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040);               \
         hiEqFrequency.setDefaultValue(2500.0);                                       \
         mixxx::EngineParameters engineParameters(                                    \
                 mixxx::audio::SampleRate(44100),                                     \

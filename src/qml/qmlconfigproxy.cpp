@@ -1,5 +1,6 @@
 #include "qml/qmlconfigproxy.h"
 
+#include "moc_qmlconfigproxy.cpp"
 #include "preferences/colorpalettesettings.h"
 
 namespace {

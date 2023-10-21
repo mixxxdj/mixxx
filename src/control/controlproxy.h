@@ -13,7 +13,7 @@
 /// Do not (re-)connect slots during runtime, since this locks the mutex in
 /// QMetaObject::activate().
 /// Be sure that the ControlProxy is created and deleted from the same
-/// thread, otherwise a pending signal may lead to a segfault (Bug #1406124).
+/// thread, otherwise a pending signal may lead to a segfault (Issue #7773).
 /// Parent it to the the creating object to achieve this.
 class ControlProxy : public QObject {
     Q_OBJECT
@@ -42,7 +42,7 @@ class ControlProxy : public QObject {
         // the requested ConnectionType is working as desired.
         // We try to avoid direct connections if not requested
         // since you cannot safely delete an object with a pending
-        // direct connection. This fixes bug Bug #1406124
+        // direct connection. This fixes issue #7773
         // requested: Auto -> COP = Auto / SCO = Auto
         // requested: Direct -> COP = Direct / SCO = Direct
         // requested: Queued -> COP = Queued / SCO = Auto
@@ -159,7 +159,7 @@ class ControlProxy : public QObject {
     void valueChanged(double);
 
   protected slots:
-    /// Receives the value from the master control by a unique direct connection
+    /// Receives the value from the primary control by a unique direct connection
     void slotValueChangedDirect(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
@@ -167,7 +167,7 @@ class ControlProxy : public QObject {
         }
     }
 
-    /// Receives the value from the master control by a unique auto connection
+    /// Receives the value from the primary control by a unique auto connection
     void slotValueChangedAuto(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling
@@ -175,7 +175,7 @@ class ControlProxy : public QObject {
         }
     }
 
-    /// Receives the value from the master control by a unique Queued connection
+    /// Receives the value from the primary control by a unique Queued connection
     void slotValueChangedQueued(double v, QObject* pSetter) {
         if (pSetter != this) {
             // This is base implementation of this function without scaling

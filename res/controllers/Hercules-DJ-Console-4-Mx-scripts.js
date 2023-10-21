@@ -325,10 +325,10 @@ Hercules4Mx.init = function(id, debugging) {
         }
     }
     if (Hercules4Mx.userSettings.useVuMeters) {
-        engine.connectControl("[Master]", "VuMeterL", "Hercules4Mx.onVuMeterMasterL");
-        engine.connectControl("[Master]", "VuMeterR", "Hercules4Mx.onVuMeterMasterR");
+        engine.connectControl("[Main]", "vu_meter_left", "Hercules4Mx.onVuMeterMasterL");
+        engine.connectControl("[Main]", "vu_meter_right", "Hercules4Mx.onVuMeterMasterR");
         for (i = 1; i <= 4; i++) {
-            engine.connectControl("[Channel" + i + "]", "VuMeter", "Hercules4Mx.onVuMeterDeck" + i);
+            engine.connectControl("[Channel" + i + "]", "vu_meter", "Hercules4Mx.onVuMeterDeck" + i);
             engine.connectControl("[Channel" + i + "]", "passthrough", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter3", "Hercules4Mx.onKillOrSourceChange" + i);
             engine.connectControl("[EqualizerRack1_[Channel" + i + "]_Effect1]", "button_parameter2", "Hercules4Mx.onKillOrSourceChange" + i);
@@ -673,7 +673,7 @@ Hercules4Mx.updateVumeterEvent = function(vumeter, value) {
     var newval = parseInt(value * 0x80);
     if (vumeter.lastvalue !== newval) {
         vumeter.lastvalue = newval;
-        if (engine.getValue(vumeter.source, "PeakIndicator") > 0) {
+        if (engine.getValue(vumeter.source, "peak_indicator") > 0) {
             // IF it clips, we put the top led on and the rest off, which gives a "flash" effect.
             midi.sendShortMsg(vumeter.midichan, vumeter.clip, 0x7F);
             newval = 0;

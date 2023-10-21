@@ -15,7 +15,7 @@
 #include "track/beats.h"
 #include "track/track_decl.h"
 
-class EngineMaster;
+class EngineMixer;
 class EngineBuffer;
 
 constexpr int kNoTrigger = -1;
@@ -56,7 +56,7 @@ class EngineControl : public QObject {
     // target.
     virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
-    virtual void setEngineMaster(EngineMaster* pEngineMaster);
+    virtual void setEngineMixer(EngineMixer* pEngineMixer);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setFrameInfo(mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos trackEndPosition,
@@ -104,7 +104,7 @@ class EngineControl : public QObject {
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
-    EngineMaster* getEngineMaster();
+    EngineMixer* getEngineMixer();
     EngineBuffer* getEngineBuffer();
 
     const QString m_group;
@@ -112,7 +112,7 @@ class EngineControl : public QObject {
 
   private:
     ControlValueAtomic<FrameInfo> m_frameInfo;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     EngineBuffer* m_pEngineBuffer;
 
     friend class CueControlTest;

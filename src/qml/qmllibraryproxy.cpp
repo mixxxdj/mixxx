@@ -3,6 +3,7 @@
 #include <QAbstractItemModel>
 
 #include "library/library.h"
+#include "moc_qmllibraryproxy.cpp"
 
 namespace mixxx {
 namespace qml {

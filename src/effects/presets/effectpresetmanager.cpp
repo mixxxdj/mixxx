@@ -8,7 +8,7 @@
 
 namespace {
 const QString kEffectDefaultsDirectory = "/effects/defaults";
-}
+} // namespace
 
 EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)
@@ -39,11 +39,13 @@ void EffectPresetManager::loadDefaultEffectPresets() {
             file.close();
             continue;
         }
-        EffectPresetPointer pEffectPreset(new EffectPreset(doc.documentElement()));
-        if (!pEffectPreset->isEmpty()) {
+        auto presetFromFile = EffectPreset(doc.documentElement());
+        if (!presetFromFile.isEmpty()) {
             EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-                    pEffectPreset->id(), pEffectPreset->backendType());
+                    presetFromFile.id(), presetFromFile.backendType());
             if (pManifest) {
+                auto pEffectPreset = EffectPresetPointer(new EffectPreset(pManifest));
+                pEffectPreset->updateParametersFrom(presetFromFile);
                 m_defaultPresets.insert(pManifest, pEffectPreset);
             }
         }

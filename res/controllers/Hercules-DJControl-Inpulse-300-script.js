@@ -84,14 +84,14 @@ DJCi300.init = function() {
    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
 
    // Connect the VUMeters
-    engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
-    engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
-	engine.getValue("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
-    engine.getValue("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
+    engine.connectControl("[Channel1]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel1]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
+    engine.connectControl("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
+	engine.getValue("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
+    engine.getValue("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.

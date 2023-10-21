@@ -201,7 +201,7 @@ StantonSCS1d.init2 = function () {
     // Force change to first deck, initializing the LEDs and connecting signals in the process
     StantonSCS1d.state["Oldknob"]=1;
     // Set active deck to last available so the below will switch to #1.
-    StantonSCS1d.deck = engine.getValue("[Master]","num_decks");
+    StantonSCS1d.deck = engine.getValue("[App]", "num_decks");
     // Set the default platter mode for this last deck
     if (!StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"])
         StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"] = StantonSCS1d.platterMode["default"];
@@ -791,7 +791,7 @@ StantonSCS1d.DeckChange = function (channel, control, value, status) {
             StantonSCS1d.newPlatterMode = StantonSCS1d.platterMode["[Channel"+StantonSCS1d.deck+"]"];
 
         // Supports n-decks
-        if (StantonSCS1d.deck == engine.getValue("[Master]","num_decks")) StantonSCS1d.deck=1;
+        if (StantonSCS1d.deck == engine.getValue("[App]", "num_decks")) StantonSCS1d.deck=1;
         else StantonSCS1d.deck++;
 
         if (StantonSCS1d.debug) print("StantonSCS1d: Switching to deck "+StantonSCS1d.deck);

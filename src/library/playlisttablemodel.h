@@ -10,7 +10,7 @@ class PlaylistTableModel final : public TrackSetTableModel {
     PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool keepDeletedTracks = false);
     ~PlaylistTableModel() final = default;
 
-    void setTableModel(int playlistId = -1);
+    void selectPlaylist(int playlistId = -1 /* kInvalidPlaylistId */);
     int getPlaylist() const {
         return m_iPlaylistId;
     }

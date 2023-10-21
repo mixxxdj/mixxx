@@ -140,7 +140,7 @@ Rectangle {
         id: vuMeter
 
         group: root.group
-        key: "VuMeter"
+        key: "vu_meter"
         width: 4
         anchors.margins: 5
         anchors.top: parent.top

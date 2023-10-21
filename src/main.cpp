@@ -59,7 +59,15 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
         pCoreServices->initialize(pApp);
+
+#ifdef MIXXX_USE_QOPENGL
+        // Will call initialize when the initial wglwidget's
+        // qopenglwindow has been exposed
+        mainWindow.initializeQOpenGL();
+#else
         mainWindow.initialize();
+#endif
+
         pCoreServices->getControllerManager()->setUpDevices();
 
         // If startup produced a fatal error, then don't even start the
@@ -124,6 +132,9 @@ int main(int argc, char * argv[]) {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
+#ifdef MIXXX_USE_QOPENGL
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+#endif
 
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && QT_VERSION < QT_VERSION_CHECK(5, 15, 1)
@@ -156,7 +167,7 @@ int main(int argc, char * argv[]) {
 
     // Create the ErrorDialogHandler in the main thread, otherwise it will be
     // created in the thread of the first caller to instance(), which may not be
-    // the main thread. Bug #1748636.
+    // the main thread. Issue #9130.
     ErrorDialogHandler::instance();
 
 #ifdef __APPLE__

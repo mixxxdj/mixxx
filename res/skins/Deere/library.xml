@@ -37,7 +37,7 @@
                       <Template src="skin:hide_show_button.xml">
                         <SetVariable name="TooltipId">maximize_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
-                        <SetVariable name="control">[Master],maximize_library</SetVariable>
+                        <SetVariable name="control">[Skin],show_maximized_library</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -60,7 +60,7 @@
                         <SizePolicy>me,me</SizePolicy>
                         <MinimumSize>30,30</MinimumSize>
                         <Connection>
-                          <ConfigKey>[Library],show_coverart</ConfigKey>
+                          <ConfigKey>[Skin],show_library_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </CoverArt>

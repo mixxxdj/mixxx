@@ -1,6 +1,7 @@
 #include "util/screensavermanager.h"
 
 #include "mixer/playerinfo.h"
+#include "moc_screensavermanager.cpp"
 
 namespace mixxx {
 

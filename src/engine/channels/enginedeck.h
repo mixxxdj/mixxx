@@ -13,7 +13,7 @@
 class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
-class EngineMaster;
+class EngineMixer;
 class EngineVuMeter;
 class EngineEffectsManager;
 class ControlPushButton;
@@ -24,7 +24,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineDeck(
             const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);
@@ -43,7 +43,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // configured input to be processed. This is run in the callback thread of
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
-    // concurrent with EngineMaster processing.
+    // concurrent with EngineMixer processing.
     void receiveBuffer(const AudioInput& input,
             const CSAMPLE* pBuffer,
             unsigned int nFrames) override;

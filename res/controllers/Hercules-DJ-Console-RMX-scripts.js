@@ -28,7 +28,7 @@ HerculesRMX.jogPlaylistScrollMode = false;
 // quirks. One of which is that the pitch faders are centered at 0x40 instead of
 // 0x3F. If you have a first-generation RMX, set this flag to true to fix things
 // like the pitch control being off by -0.16%. See Bug #863683
-// (https://bugs.launchpad.net/mixxx/+bug/863683).
+// (https://github.com/mixxxdj/mixxx/issues/5999).
 HerculesRMX.firstGenerationFirmware = false;
 
 HerculesRMX.Button = Button;

@@ -16,6 +16,11 @@
 
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 
+enum class StringMatch {
+    Contains = 0,
+    Equals,
+};
+
 class QueryNode {
   public:
     QueryNode(const QueryNode&) = delete; // prevent copying
@@ -72,7 +77,8 @@ class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
             const QStringList& sqlColumns,
-            const QString& argument);
+            const QString& argument,
+            const StringMatch matchMode = StringMatch::Contains);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -81,6 +87,7 @@ class TextFilterNode : public QueryNode {
     QSqlDatabase m_database;
     QStringList m_sqlColumns;
     QString m_argument;
+    StringMatch m_matchMode;
 };
 
 class NullOrEmptyTextFilterNode : public QueryNode {

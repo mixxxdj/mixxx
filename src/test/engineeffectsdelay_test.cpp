@@ -19,6 +19,11 @@
 #include "util/span.h"
 #include "util/types.h"
 
+#ifndef GTEST_FLAG_SET
+// Available in GoogleTest v1.12.0.
+#define GTEST_FLAG_SET(name, value) (void)(::testing::GTEST_FLAG(name) = value)
+#endif
+
 namespace {
 
 static_assert(mixxx::kEngineChannelCount == mixxx::audio::ChannelCount::stereo(),

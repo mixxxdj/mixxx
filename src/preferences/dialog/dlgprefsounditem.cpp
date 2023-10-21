@@ -32,14 +32,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
 
-    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
-    // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page.
-    deviceComboBox->setFocusPolicy(Qt::StrongFocus);
-    deviceComboBox->installEventFilter(this);
-    channelComboBox->setFocusPolicy(Qt::StrongFocus);
-    channelComboBox->installEventFilter(this);
-
     connect(deviceComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -53,20 +45,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
 
 DlgPrefSoundItem::~DlgPrefSoundItem() {
 
-}
-
-// Catch scroll events over comboboxes and pass them to the scroll area instead.
-bool DlgPrefSoundItem::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QComboBox* combo = qobject_cast<QComboBox*>(obj);
-        if (combo && !combo->hasFocus()) {
-            QApplication::sendEvent(this->parentWidget(), e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
 }
 
 /**

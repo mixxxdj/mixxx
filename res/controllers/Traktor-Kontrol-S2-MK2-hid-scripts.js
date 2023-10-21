@@ -181,7 +181,7 @@ TraktorS2MK2.registerInputPackets = function() {
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x0E, "B", 0x02);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x0E, "B", 0x01);
 
-    MessageShort.addControl("[Master]", "maximize_library", 0x0F, "B", 0x04, false, this.toggleButton);
+    MessageShort.addControl("[Skin]", "show_maximized_library", 0x0F, "B", 0x04, false, this.toggleButton);
 
     MessageShort.addControl("[Microphone]", "talkover", 0x0A, "B", 0x08, false, this.toggleButton);
 
@@ -293,8 +293,8 @@ TraktorS2MK2.registerOutputPackets = function() {
         }
     }
 
-    OutputTop.addOutput("[Channel1]", "PeakIndicator", 0x05, "B");
-    OutputTop.addOutput("[Channel2]", "PeakIndicator", 0x0A, "B");
+    OutputTop.addOutput("[Channel1]", "peak_indicator", 0x05, "B");
+    OutputTop.addOutput("[Channel2]", "peak_indicator", 0x0A, "B");
 
     OutputTop.addOutput("[Channel1]", "!flux_button", 0x20, "B");
     OutputTop.addOutput("[Channel1]", "loop_in", 0x21, "B");
@@ -389,8 +389,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.linkChannelOutput("[Channel2]", "pfl", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel1]", "track_loaded", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[Channel2]", "track_loaded", TraktorS2MK2.outputChannelCallback);
-    TraktorS2MK2.linkChannelOutput("[Channel1]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
-    TraktorS2MK2.linkChannelOutput("[Channel2]", "PeakIndicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel1]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
+    TraktorS2MK2.linkChannelOutput("[Channel2]", "peak_indicator", TraktorS2MK2.outputChannelCallbackDark);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorS2MK2.outputChannelCallback);
     TraktorS2MK2.linkChannelOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorS2MK2.outputChannelCallback);
@@ -401,8 +401,8 @@ TraktorS2MK2.registerOutputPackets = function() {
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit1]");
     TraktorS2MK2.connectEffectButtonLEDs("[EffectRack1_EffectUnit2]");
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", TraktorS2MK2.onVuMeterChanged).trigger();
 
     engine.makeConnection("[Channel1]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
     engine.makeConnection("[Channel2]", "loop_enabled", TraktorS2MK2.onLoopEnabledChanged);
@@ -1017,7 +1017,7 @@ TraktorS2MK2.effectFocusButton = function(field) {
     if (field.value > 0) {
         var effectUnitNumber = field.group.slice(-2, -1);
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(field.group, "load_preset", 1);
+            engine.setValue(field.group, "loaded_chain_preset", 1);
             return;
         }
         TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, function() {
@@ -1099,7 +1099,7 @@ TraktorS2MK2.effectButton = function(field) {
 
     if (field.value > 0) {
         if (TraktorS2MK2.shiftPressed["[Channel" + effectUnitNumber + "]"]) {
-            engine.setValue(effectUnitGroup, "load_preset", buttonNumber+1);
+            engine.setValue(effectUnitGroup, "loaded_chain_preset", buttonNumber+1);
         } else {
             if (TraktorS2MK2.effectFocusChooseModeActive[effectUnitGroup]) {
                 if (focusedEffect === buttonNumber) {

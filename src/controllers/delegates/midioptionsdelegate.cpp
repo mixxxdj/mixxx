@@ -28,7 +28,7 @@ const QList<MidiOption> kMidiOptions = {
         MidiOption::FourteenBitLSB,
 };
 
-}
+} // namespace
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {

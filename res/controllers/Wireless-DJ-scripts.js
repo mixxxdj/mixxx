@@ -16,10 +16,10 @@ WirelessDJ.init = function(id) {
     WirelessDJ.ledTimers = [0,0,0,0];
 
     // LEDs
-    engine.connectControl("[Channel1]", "VuMeter", "WirelessDJ.meter");
-    engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter");
-    engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter");
-    engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter");
+    engine.connectControl("[Channel1]", "vu_meter", "WirelessDJ.meter");
+    engine.connectControl("[Channel2]", "vu_meter", "WirelessDJ.meter");
+    engine.connectControl("[Main]", "vu_meter_left", "WirelessDJ.meter");
+    engine.connectControl("[Main]", "vu_meter_right", "WirelessDJ.meter");
 
     // sliders feedback
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback");
@@ -48,10 +48,10 @@ WirelessDJ.init = function(id) {
 }
 
 WirelessDJ.shutdown = function(id) {
-    engine.connectControl("[Channel1]", "VuMeter", "WirelessDJ.meter", true);
-    engine.connectControl("[Channel2]", "VuMeter", "WirelessDJ.meter", true);
-    engine.connectControl("[Master]", "VuMeterL", "WirelessDJ.meter", true);
-    engine.connectControl("[Master]", "VuMeterR", "WirelessDJ.meter", true);
+    engine.connectControl("[Channel1]", "vu_meter", "WirelessDJ.meter", true);
+    engine.connectControl("[Channel2]", "vu_meter", "WirelessDJ.meter", true);
+    engine.connectControl("[Main]", "vu_meter_left", "WirelessDJ.meter", true);
+    engine.connectControl("[Main]", "vu_meter_right", "WirelessDJ.meter", true);
 
     engine.connectControl("[Channel1]", "rate", "WirelessDJ.controlFeedback", true);
     engine.connectControl("[Channel1]", "volume", "WirelessDJ.controlFeedback", true);
@@ -114,7 +114,7 @@ WirelessDJ.meter = function(value, group, key) {
     } else if (deck == 1) {
         WirelessDJ.sendLED(3, val);
     } else {
-        if (key == "VuMeterL") {
+        if (key == "vu_meter_left") {
             WirelessDJ.sendLED(1, val);
         } else {
             WirelessDJ.sendLED(2, val);

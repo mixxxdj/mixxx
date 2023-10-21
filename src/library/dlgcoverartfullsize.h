@@ -33,7 +33,7 @@ class DlgCoverArtFullSize
   public slots:
     void slotLoadTrack(TrackPointer);
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedCacheKey,

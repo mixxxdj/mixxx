@@ -53,12 +53,15 @@ find_library(Opus_LIBRARY
 )
 mark_as_advanced(Opus_LIBRARY)
 
+if(DEFINED PC_Opus_VERSION AND NOT PC_Opus_VERSION STREQUAL "")
+  set(Opus_VERSION "${PC_Opus_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Opus
-  DEFAULT_MSG
-  Opus_LIBRARY
-  Opus_INCLUDE_DIR
+  REQUIRED_VARS Opus_LIBRARY Opus_INCLUDE_DIR
+  VERSION_VAR Opus_VERSION
 )
 
 if(Opus_FOUND)

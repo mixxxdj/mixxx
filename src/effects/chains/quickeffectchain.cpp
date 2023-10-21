@@ -2,6 +2,7 @@
 
 #include "effects/effectslot.h"
 #include "effects/presets/effectchainpresetmanager.h"
+#include "moc_quickeffectchain.cpp"
 
 QuickEffectChain::QuickEffectChain(
         const ChannelHandleAndGroup& handleAndGroup,

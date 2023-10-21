@@ -8,7 +8,7 @@
 
 class ControlProxy;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class SoundManager;
 
 class Microphone : public BasePlayer {
@@ -18,7 +18,7 @@ class Microphone : public BasePlayer {
             const QString& group,
             int index,
             SoundManager* pSoundManager,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager);
     ~Microphone() override;
 

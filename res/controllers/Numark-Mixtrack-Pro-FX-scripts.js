@@ -89,8 +89,8 @@ MixtrackProFX.init = function() {
     var statusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
     midi.sendSysexMsg(statusSysex, statusSysex.length);
 
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MixtrackProFX.vuCallback);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MixtrackProFX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MixtrackProFX.vuCallback);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MixtrackProFX.vuCallback);
 
     // trigger is needed to initialize lights to 0x01
     MixtrackProFX.deck.forEachComponent(function(component) {

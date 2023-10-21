@@ -193,10 +193,10 @@ StantonSCS3d.modeSignals = {
                                       ["CurrentChannel", "hotcue_35_activate", "StantonSCS3d.BsKaLED"],
                                       ["CurrentChannel", "hotcue_36_activate", "StantonSCS3d.BsLaLED"] ],
                             "vinyl":[ ["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
-                                      ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"],
+                                      ["CurrentChannel", "vu_meter", "StantonSCS3d.VUMeterLEDs"],
                                       ["CurrentChannel", "keylock", "StantonSCS3d.B12LED"] ],
                             "vinyl2":[["CurrentChannel", "pfl", "StantonSCS3d.B11LED"],
-                                      ["CurrentChannel", "VuMeter", "StantonSCS3d.VUMeterLEDs"],
+                                      ["CurrentChannel", "vu_meter", "StantonSCS3d.VUMeterLEDs"],
                                       ["CurrentChannel", "keylock", "StantonSCS3d.B12LED"] ],
                             "vinyl3":[],
                             "deck":[  ["[Master]","balance","StantonSCS3d.pitchLEDs"],
@@ -244,7 +244,7 @@ StantonSCS3d.init2 = function () {
     // Force change to first deck, initializing the control surface & LEDs and connecting signals in the process
 
     // Set active deck to the last one so the below will switch to #1.
-    StantonSCS3d.deck = engine.getValue("[Master]","num_decks");
+    StantonSCS3d.deck = engine.getValue("[App]", "num_decks");
     if (StantonSCS3d.singleDeck)    // Force timer to expire so the deck change happens
         StantonSCS3d.modifier["deckTime"] = new Date() - StantonSCS3d.deckChangeWait;
     StantonSCS3d.DeckChangeP1(StantonSCS3d.channel, StantonSCS3d.buttons["deck"], "null", 0x90+StantonSCS3d.channel);
@@ -1100,7 +1100,7 @@ StantonSCS3d.deckChangeFlash = function (channel, value, targetSide) {
         // Finish the deck change
         StantonSCS3d.deckIndicator(byte1,true);  // Deck indicator on
         if (!StantonSCS3d.state["logoLit"] && StantonSCS3d.deck > 0 &&
-            StantonSCS3d.deck <= engine.getValue("[Master]","num_decks")) {
+            StantonSCS3d.deck <= engine.getValue("[App]", "num_decks")) {
             // Re-light the Stanton logo if we're within deck #1-4 and if it had
             //  been extinguished before
             midi.sendShortMsg(byte1,0x7A,0x01);
@@ -1188,7 +1188,7 @@ StantonSCS3d.DeckChangeP1 = function (channel, control, value, status) {
             StantonSCS3d.mode_store["[Channel"+StantonSCS3d.deck+"]"].substring(0,4) == "loop")
                 for (i=0x48; i<=0x5c; i++) midi.sendShortMsg(byte1,i,0x40); // Set surface LEDs to black
         StantonSCS3d.deck++;
-        if (StantonSCS3d.deck > engine.getValue("[Master]","num_decks")) StantonSCS3d.deck = 1;   // Wrap around
+        if (StantonSCS3d.deck > engine.getValue("[App]", "num_decks")) StantonSCS3d.deck = 1;   // Wrap around
         if (StantonSCS3d.debug) print("StantonSCS3d: Switching to deck "+StantonSCS3d.deck);
         midi.sendShortMsg(byte1,0x71,0x00); // Deck A light off
         midi.sendShortMsg(byte1,0x72,0x00);  // Deck B light off

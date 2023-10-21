@@ -61,12 +61,15 @@ find_library(MP4v2_LIBRARY
 )
 mark_as_advanced(MP4v2_LIBRARY)
 
+if(DEFINED PC_MP4v2_VERSION AND NOT PC_MP4v2_VERSION STREQUAL "")
+  set(MP4v2_VERSION "${PC_MP4v2_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   MP4v2
-  DEFAULT_MSG
-  MP4v2_LIBRARY
-  MP4v2_INCLUDE_DIR
+  REQUIRED_VARS MP4v2_LIBRARY MP4v2_INCLUDE_DIR
+  VERSION_VAR MP4v2_VERSION
 )
 
 if(MP4v2_FOUND)

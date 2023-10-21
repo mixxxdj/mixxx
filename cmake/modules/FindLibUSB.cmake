@@ -63,12 +63,15 @@ find_library(LibUSB_LIBRARY
 )
 mark_as_advanced(LibUSB_LIBRARY)
 
+if(DEFINED PC_LibUSB_VERSION AND NOT PC_LibUSB_VERSION STREQUAL "")
+  set(LibUSB_VERSION "${PC_LibUSB_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   LibUSB
-  DEFAULT_MSG
-  LibUSB_LIBRARY
-  LibUSB_INCLUDE_DIR
+  REQUIRED_VARS LibUSB_LIBRARY LibUSB_INCLUDE_DIR
+  VERSION_VAR LibUSB_VERSION
 )
 
 if(LibUSB_FOUND)

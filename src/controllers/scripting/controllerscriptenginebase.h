@@ -32,6 +32,10 @@ class ControllerScriptEngineBase : public QObject {
     void showScriptExceptionDialog(const QJSValue& evaluationResult, bool bFatal = false);
     void throwJSError(const QString& message);
 
+    bool willAbortOnWarning() const {
+        return m_bAbortOnWarning;
+    }
+
     inline void setTesting(bool testing) {
         m_bTesting = testing;
     };
@@ -44,12 +48,15 @@ class ControllerScriptEngineBase : public QObject {
     virtual void shutdown();
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
+    void logOrThrowError(const QString& errorMessage);
 
     bool m_bDisplayingExceptionDialog;
     std::shared_ptr<QJSEngine> m_pJSEngine;
 
     Controller* m_pController;
     const RuntimeLoggingCategory m_logger;
+
+    bool m_bAbortOnWarning;
 
     bool m_bTesting;
 

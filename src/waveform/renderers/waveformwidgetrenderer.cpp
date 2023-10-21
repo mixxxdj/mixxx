@@ -49,7 +49,8 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition),
           m_passthroughEnabled(false),
-          m_playPos(-1) {
+          m_playPos(-1.0),
+          m_truePosSample(-1.0) {
     //qDebug() << "WaveformWidgetRenderer";
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -109,7 +110,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     }
 
     // For a valid track to render we need
-    m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
+    m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0) {
         return;
     }
@@ -141,14 +142,14 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
     if (m_audioSamplePerPixel > 0 && truePlayPos != -1) {
         // Track length in pixels.
-        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        m_trackPixelCount = m_trackSamples / 2.0 / m_audioSamplePerPixel;
 
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
         m_playPos = round(truePlayPos * m_trackPixelCount) / m_trackPixelCount;
         m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
         m_playPosVSample = static_cast<int>(m_playPos * m_totalVSamples);
-
+        m_truePosSample = truePlayPos * static_cast<double>(m_trackSamples);
         double leftOffset = m_playMarkerPosition;
         double rightOffset = 1.0 - m_playMarkerPosition;
 
@@ -165,7 +166,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_firstDisplayedPosition = m_playPos - displayedLengthLeft;
         m_lastDisplayedPosition = m_playPos + displayedLengthRight;
     } else {
-        m_playPos = -1; // disable renderers
+        m_playPos = -1.0; // disable renderers
+        m_truePosSample = -1.0;
     }
 
     // qDebug() << "WaveformWidgetRenderer::onPreRender" <<
@@ -187,7 +189,7 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     // not ready to display need to wait until track initialization is done
     // draw only first in stack (background)
     int stackSize = m_rendererStack.size();
-    if (m_trackSamples <= 0 || m_playPos == -1) {
+    if (shouldOnlyDrawBackground()) {
         if (stackSize) {
             m_rendererStack.at(0)->draw(painter, event);
         }
@@ -345,7 +347,7 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     // the renderer state dirty in order trigger the render process. This is only
     // required for the background renderer since that's the only one that'll
     // be processed if passtrhough is active.
-    if (m_rendererStack.size()) {
+    if (!m_rendererStack.isEmpty()) {
         m_rendererStack[0]->setDirty(true);
     }
 }

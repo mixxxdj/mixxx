@@ -26,8 +26,8 @@ EffectsManager::EffectsManager(
         std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
-          m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
-          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040) {
+          m_loEqFreq(ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040),
+          m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());

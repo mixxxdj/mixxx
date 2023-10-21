@@ -12,7 +12,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
         : m_group(handleGroup),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
-          m_sampleRate("[Master]", "samplerate"),
+          m_sampleRate(QStringLiteral("[App]"), QStringLiteral("samplerate")),
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
           m_active(false),
@@ -20,12 +20,14 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
-    m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));
-    m_pMaster->setButtonMode(ControlPushButton::POWERWINDOW);
-    m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
+    m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
+    m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
+    m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
+    // crossfader assignment is persistent
+    m_pOrientation = new ControlPushButton(
+            ConfigKey(getGroup(), "orientation"), true, defaultOrientation);
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
-    m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
     connect(m_pOrientationLeft, &ControlObject::valueChanged,
             this, &EngineChannel::slotOrientationLeft, Qt::DirectConnection);
@@ -44,7 +46,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
 }
 
 EngineChannel::~EngineChannel() {
-    delete m_pMaster;
+    delete m_pMainMix;
     delete m_pPFL;
     delete m_pOrientation;
     delete m_pOrientationLeft;
@@ -61,12 +63,12 @@ bool EngineChannel::isPflEnabled() const {
     return m_pPFL->toBool();
 }
 
-void EngineChannel::setMaster(bool enabled) {
-    m_pMaster->set(enabled ? 1.0 : 0.0);
+void EngineChannel::setMainMix(bool enabled) {
+    m_pMainMix->set(enabled ? 1.0 : 0.0);
 }
 
-bool EngineChannel::isMasterEnabled() const {
-    return m_pMaster->toBool();
+bool EngineChannel::isMainMixEnabled() const {
+    return m_pMainMix->toBool();
 }
 
 void EngineChannel::setTalkover(bool enabled) {

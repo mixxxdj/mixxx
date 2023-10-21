@@ -2,7 +2,7 @@
 Description:
   Top bar containing
   * Logo
-  * Mixer for Master, Booth & Headphone
+  * Mixer for Main, Booth & Headphone
   * Crossfader (if enabled)
   * GUI toggle buttons (FX, Sampler, Lib, Wave ...)
   * recording button with duration display
@@ -24,7 +24,7 @@ Description:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <WidgetGroup><!-- Logo + Master, Headphone & Booth Mixer -->
+          <WidgetGroup><!-- Logo + Main, Headphone & Booth Mixer -->
             <ObjectName>MixerBar</ObjectName>
             <Layout>horizontal</Layout>
             <Size>-1me,28f</Size>
@@ -52,24 +52,24 @@ Description:
               </PushButton>
 
               <Template src="skin:../Tango/controls/button_2state_persist.xml">
-                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <SetVariable name="ObjectName">MainHeadMixerToggle</SetVariable>
                 <!-- Size needs to be changed in size_detector_stars.xml, too -->
                 <SetVariable name="Size">15f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],main_mixer</SetVariable>
               </Template>
 
               <Label>
                 <Size>22f,28f</Size>
-                <ObjectName>MasterHeadMixerLabel</ObjectName>
+                <ObjectName>MainHeadMixerLabel</ObjectName>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],master_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Tango],main_mixer</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </Label>
 
-              <!-- Master & Headphone mixer -->
-              <Template src="skin:../Tango/mixer/mixer_master.xml"/>
+              <!-- Main & Headphone mixer -->
+              <Template src="skin:../Tango/mixer/mixer_main.xml"/>
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
@@ -83,7 +83,7 @@ Description:
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /Logo + Master, Headphone & Booth Mixer -->
+      </WidgetGroup><!-- /Logo + Main, Headphone & Booth Mixer -->
 
       <WidgetGroup><!-- Crossfader, hidden with maximized library -->
         <SizePolicy>min,min</SizePolicy>
@@ -122,13 +122,13 @@ Description:
 		          </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <ConfigKey>[Skin],show_maximized_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -181,7 +181,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_text">FX</SetVariable>
                 <SetVariable name="state_1_text">FX</SetVariable>
-                <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_effectrack</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -192,7 +192,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_samplers</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -203,7 +203,7 @@ Description:
                 <SetVariable name="Size">30f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_microphones</SetVariable>
               </Template>
 
               <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
@@ -214,7 +214,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_mixer</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -239,7 +239,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <ConfigKey>[Skin],show_maximized_library</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -343,7 +343,7 @@ Description:
                     <PeakFallTime>100</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey>[Master],audio_latency_usage</ConfigKey>
+                      <ConfigKey>[App],audio_latency_usage</ConfigKey>
                     </Connection>
                   </VuMeter><!-- /latency usage -->
                 </Children>
@@ -369,13 +369,13 @@ Description:
                   <Number>1</Number>
                 </State>
                 <Connection>
-                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ConfigKey>[Skin],show_settings</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
               </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

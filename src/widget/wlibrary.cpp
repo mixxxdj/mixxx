@@ -95,6 +95,9 @@ LibraryView* WLibrary::getActiveView() const {
 
 bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
     //qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
     QWidget* current = currentWidget();
     WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
     if (!tracksView) {
@@ -115,6 +118,10 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     //qDebug() << "WLibrary::slotSelectTrackInActiveTrackView" << trackId;
+    if (!trackId.isValid()) {
+        return;
+    }
+
     QWidget* current = currentWidget();
     WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
     if (!tracksView) {

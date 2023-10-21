@@ -3,12 +3,11 @@
 #include <QtQml>
 
 #include "effects/effectsmanager.h"
+#include "qml/qmleffectslotproxy.h"
 #include "qml/qmlvisibleeffectsmodel.h"
 
 namespace mixxx {
 namespace qml {
-
-class QmlEffectSlotProxy;
 
 class QmlEffectsManagerProxy : public QObject {
     Q_OBJECT

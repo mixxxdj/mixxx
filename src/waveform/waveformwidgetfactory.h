@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QSurfaceFormat>
 #include <QVector>
 #include <vector>
 
@@ -11,8 +12,8 @@
 #include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
-class WVuMeter;
-class WVuMeterGL;
+class WVuMeterLegacy;
+class WVuMeterBase;
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class VSyncThread;
@@ -98,6 +99,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
 
+    /// Returns the desired surface format for the OpenGLWindow
+    static QSurfaceFormat getSurfaceFormat();
+
   protected:
     bool setWidgetType(
             WaveformWidgetType::Type type,
@@ -123,8 +127,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void getAvailableVSyncTypes(QList<QPair<int, QString>>* list);
     void destroyWidgets();
 
-    void addVuMeter(WVuMeter* pWidget);
-    void addVuMeter(WVuMeterGL* pWidget);
+    void addVuMeter(WVuMeterLegacy* pWidget);
+    void addVuMeter(WVuMeterBase* pWidget);
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
@@ -160,6 +164,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private:
     void evaluateWidgets();
+    template<typename WaveformT>
+    QString buildWidgetDisplayName() const;
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 

@@ -10,7 +10,7 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
-class EngineMaster;
+class EngineMixer;
 class ControlPushButton;
 class ControlProxy;
 
@@ -25,7 +25,7 @@ class ControlProxy;
 class RecordingManager : public QObject {
     Q_OBJECT
   public:
-    RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
+    RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine);
     ~RecordingManager() override = default;
 
     // This will try to start recording. If successful, slotIsRecording will be

@@ -7,7 +7,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -57,8 +57,7 @@ SyncControl::SyncControl(const QString& group,
     m_pSyncLeaderEnabled->setStates(3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "sync_master"),
-            ConfigKey(group, "sync_leader"));
+    m_pSyncLeaderEnabled->addAlias(ConfigKey(group, QStringLiteral("sync_master")));
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));
@@ -575,7 +574,7 @@ void SyncControl::setLocalBpm(mixxx::Bpm localBpm) {
 void SyncControl::updateAudible() {
     int channelIndex = m_pChannel->getChannelIndex();
     if (channelIndex >= 0) {
-        CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
+        CSAMPLE_GAIN gain = getEngineMixer()->getMainGain(channelIndex);
         bool newAudible = gain > CSAMPLE_GAIN_ZERO;
         if (static_cast<bool>(m_audible) != newAudible) {
             m_audible = newAudible;

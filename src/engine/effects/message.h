@@ -22,7 +22,7 @@ struct EffectsRequest {
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
         // Effects cannot currently be toggled for output channels;
-        // the outputs that effects are applied to are hardwired in EngineMaster
+        // the outputs that effects are applied to are hardwired in EngineMixer
         ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
         DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL,
 

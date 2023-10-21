@@ -1,6 +1,6 @@
 <!--
 Description:
-	Container for Master mixer in topbar.
+	Container for Main mixer in topbar.
 -->
 <Template>
   <WidgetGroup>
@@ -94,7 +94,7 @@ Description:
 
     </Children>
     <Connection>
-      <ConfigKey>[Tango],master_mixer</ConfigKey>
+      <ConfigKey>[Tango],main_mixer</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -47,6 +47,8 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
             &QCheckBox::stateChanged,
             this,
             &DlgPrefBeats::slotReanalyzeImportedChanged);
+
+    setScrollSafeGuard(comboBoxBeatPlugin);
 }
 
 DlgPrefBeats::~DlgPrefBeats() {

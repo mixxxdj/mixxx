@@ -13,7 +13,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -74,7 +74,7 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 }
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
-// https://bugs.launchpad.net/mixxx/+bug/1805559
+// https://github.com/mixxxdj/mixxx/issues/9533
 #if defined(Q_OS_LINUX) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
@@ -258,7 +258,7 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
-    m_pEngine = std::make_shared<EngineMaster>(
+    m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
             "[Master]",
             m_pEffectsManager.get(),
@@ -419,46 +419,20 @@ void CoreServices::initialize(QApplication* pApp) {
             supportedFileSuffixes.join(","));
 
     // Scan the library directory. Do this after the skinloader has
-    // loaded a skin, see Bug #1047435
+    // loaded a skin, see issue #6625
     if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 
     // This has to be done before m_pSoundManager->setupDevices()
-    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    // https://github.com/mixxxdj/mixxx/issues/9188
     m_pPlayerManager->loadSamplers();
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
-    // The following UI controls must be created here so that controllers can bind to them
-    // on startup.
-    m_uiControls.clear();
-
-    struct UIControlConfig {
-        ConfigKey key;
-        bool persist;
-        bool defaultValue;
-    };
-    const std::vector<UIControlConfig> uiControls = {
-            {ConfigKey("[Master]", "skin_settings"), false, false},
-            {ConfigKey("[Microphone]", "show_microphone"), true, true},
-            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
-            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
-            {ConfigKey("[Library]", "show_coverart"), true, true},
-            {ConfigKey("[Master]", "maximize_library"), true, false},
-            {ConfigKey("[Samplers]", "show_samplers"), true, true},
-            {ConfigKey("[EffectRack1]", "show"), true, true},
-            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
-            {ConfigKey("[Master]", "show_mixer"), true, true},
-            {ConfigKey("[Skin]", "show_spinnies"), true, true},
-            {ConfigKey("[Skin]", "show_coverart"), true, true},
-    };
-    m_uiControls.reserve(uiControls.size());
-    for (const auto& row : uiControls) {
-        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
-                row.key, row.persist, row.defaultValue));
-        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
-    }
+    // The UI controls must be created here so that controllers can bind to
+    // them on startup.
+    m_pSkinControls = std::make_unique<SkinControls>();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -615,8 +589,8 @@ void CoreServices::finalize() {
     CLEAR_AND_CHECK_DELETED(m_pBroadcastManager);
 #endif
 
-    // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMaster";
+    // EngineMixer depends on Config and m_pEffectsManager.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
@@ -634,7 +608,7 @@ void CoreServices::finalize() {
 
     m_pTouchShift.reset();
 
-    m_uiControls.clear();
+    m_pSkinControls.reset();
 
     m_pControlIndicatorTimer.reset();
 

@@ -237,6 +237,16 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
+void WOverview::initWithTrack(TrackPointer pTrack) {
+    Init();
+    if (pTrack) {
+        // if a track already loaded (after skin change)
+        slotLoadingTrack(pTrack, TrackPointer());
+        slotTrackLoaded(pTrack);
+        slotWaveformSummaryUpdated();
+    }
+}
+
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
@@ -262,7 +272,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // least once per second, regardless of m_iPos which depends on the length
     // of the widget.
     int oldPositionSeconds = m_iPosSeconds;
-    m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
+    m_iPosSeconds = static_cast<int>(dParameter * getTrackSamples());
     if ((m_bTimeRulerActive || m_pHoveredMark != nullptr) && oldPositionSeconds != m_iPosSeconds) {
         redraw = true;
     }
@@ -332,6 +342,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &Track::waveformSummaryUpdated,
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
+        disconnect(m_pCurrentTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -339,6 +353,9 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    // Note: Here we already have the new track, but the engine and it's
+    // Control Objects may still have the old one until the slotTrackLoaded()
+    // signal has been received.
     m_trackLoaded = false;
     m_endOfTrack = false;
 
@@ -424,18 +441,21 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                     pMark->m_text = newLabel;
                 }
             }
-
-            m_marksToRender.append(pMark);
         }
     }
 
-    // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
     for (const auto& pMark : m_marks) {
-        if (!m_marksToRender.contains(pMark) && pMark->isValid() && pMark->getSamplePosition() != Cue::kNoPosition && pMark->isVisible()) {
-            m_marksToRender.append(pMark);
+        if (pMark->isValid() && pMark->isVisible()) {
+            double samplePosition = pMark->getSamplePosition();
+            if (samplePosition != Cue::kNoPosition) {
+                // Create a stable key for sorting, because the WaveformMark's samplePosition is a
+                // ControlObject which can change at any time by other threads. Such a change causes
+                // another updateCues() call, rebuilding m_marksToRender.
+                auto key = WaveformMarkSortKey(samplePosition, pMark->getHotCue());
+                m_marksToRender.emplace(key, pMark);
+            }
         }
     }
-    std::sort(m_marksToRender.begin(), m_marksToRender.end());
 }
 
 // connecting the tracks cuesUpdated and onMarkChanged is not possible
@@ -480,8 +500,8 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     // the hotcue rendered on top must be assigned to m_pHoveredMark to show
     // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
     // reverse and the loop breaks as soon as m_pHoveredMark is set.
-    for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
+    for (auto i = m_marksToRender.crbegin(); i != m_marksToRender.crend(); ++i) {
+        const WaveformMarkPointer& pMark = i->second;
         if (pMark->contains(e->pos(), m_orientation)) {
             m_pHoveredMark = pMark;
             break;
@@ -522,7 +542,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         m_bLeftClickDragging = false;
         return;
     }
-    if (m_pCurrentTrack == nullptr) {
+    double trackSamples = getTrackSamples();
+    if (m_pCurrentTrack == nullptr || trackSamples <= 0) {
         return;
     }
     if (e->button() == Qt::LeftButton) {
@@ -541,7 +562,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
 
         if (m_pHoveredMark != nullptr) {
-            double dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            double dValue = m_pHoveredMark->getSamplePosition() / trackSamples;
             m_iPickupPos = valueToPosition(dValue);
             m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
@@ -627,11 +648,11 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
 
-        double trackSamples = m_trackSamplesControl->get();
-        if (m_trackLoaded && trackSamples > 0) {
+        double trackSamples = getTrackSamples();
+        if (trackSamples > 0) {
             const float offset = 1.0f;
             const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
-                    static_cast<CSAMPLE_GAIN>(m_trackSamplesControl->get());
+                    static_cast<CSAMPLE_GAIN>(trackSamples);
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
@@ -850,11 +871,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     // the view of labels is not obscured by the playhead.
 
     bool markHovered = false;
-    for (int i = 0; i < m_marksToRender.size(); ++i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
-        PainterScope painterScope(pPainter);
 
-        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
+    for (auto i = m_marksToRender.cbegin(); i != m_marksToRender.cend(); ++i) {
+        PainterScope painterScope(pPainter);
+        const WaveformMarkPointer& pMark = i->second;
+        double samplePosition = pMark->getSamplePosition();
         const float markPosition = math_clamp(
                 offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
@@ -872,7 +893,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         }
 
         QRectF rect;
-        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        double sampleEndPosition = pMark->getSampleEndPosition();
         if (sampleEndPosition > 0) {
             const float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
@@ -908,10 +929,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // hovering over it. Elide it if it would render over the next
             // label, but do not elide it if the next mark's label is not at the
             // same vertical position.
-            if (pMark != m_pHoveredMark && i < m_marksToRender.size() - 1) {
+
+            if (pMark != m_pHoveredMark) {
                 float nextMarkPosition = -1.0f;
-                for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
-                    WaveformMarkPointer otherMark = m_marksToRender.at(m);
+                for (auto m = std::next(i); m != m_marksToRender.cend(); ++m) {
+                    const WaveformMarkPointer& otherMark = m->second;
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
                     bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
@@ -1004,7 +1026,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             double markSamples = pMark->getSamplePosition();
-            double trackSamples = m_trackSamplesControl->get();
+            double trackSamples = getTrackSamples();
             double currentPositionSamples = m_playpositionControl->get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
@@ -1115,7 +1137,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             textPointDistance.setX(0);
             widgetPositionFraction = m_timeRulerPos.y() / height();
         }
-        qreal trackSamples = m_trackSamplesControl->get();
+        qreal trackSamples = getTrackSamples();
         qreal timePosition = samplePositionToSeconds(
                 widgetPositionFraction * trackSamples);
         qreal timePositionTillEnd = samplePositionToSeconds(
@@ -1162,7 +1184,8 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
-    for (const auto& pMark : qAsConst(m_marksToRender)) {
+    for (const auto& pair : m_marksToRender) {
+        const WaveformMarkPointer& pMark = pair.second;
         if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
             if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
                 continue;

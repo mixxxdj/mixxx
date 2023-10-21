@@ -3,7 +3,7 @@ Description:
   An effect chain widget.
   * EffectSlots, with or without highlight/focus option
   * mixer with Wet/Dry knob and Super knob (optional)
-  * assignment buttons for master & headphone
+  * assignment buttons for main & headphone
 Variables:
   FxUnit: number of effect unit for FX label
 -->

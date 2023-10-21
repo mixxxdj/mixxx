@@ -64,6 +64,6 @@ Skin.Button {
         id: leaderControl
 
         group: root.group
-        key: "sync_master"
+        key: "sync_leader"
     }
 }

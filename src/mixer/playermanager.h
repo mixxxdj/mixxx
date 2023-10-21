@@ -21,7 +21,7 @@ class BaseTrackPlayer;
 class ControlObject;
 class Deck;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class Library;
 class Microphone;
 class PreviewDeck;
@@ -61,7 +61,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            EngineMaster* pEngine);
+            EngineMixer* pEngine);
     ~PlayerManager() override;
 
     // Add a deck to the PlayerManager
@@ -130,6 +130,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns the track that was last ejected or unloaded. Can return nullptr or
     // invalid TrackId in case of error.
     TrackPointer getLastEjectedTrack() const;
+    TrackPointer getSecondLastEjectedTrack() const;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -228,8 +229,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // there is no input configured.
     void noMicrophoneInputConfigured();
 
-    // Emitted when the user tries to enable an auxiliary master control when
-    // there is no input configured.
+    // Emitted when the user tries to enable an auxiliary `main_mix` control
+    // when there is no input configured.
     void noAuxiliaryInputConfigured();
 
     // Emitted when the user tries to enable deck passthrough when there is no
@@ -274,7 +275,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Library* m_pLibrary;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    EngineMaster* m_pEngine;
+    EngineMixer* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
@@ -285,6 +286,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
+    TrackId m_secondLastEjectedTrackId;
     TrackId m_lastEjectedTrackId;
 
     QList<Deck*> m_decks;

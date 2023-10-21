@@ -4,6 +4,7 @@
 
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectxmlelements.h"
+#include "moc_visibleeffectslist.cpp"
 #include "util/xml.h"
 
 void VisibleEffectsList::setList(const QList<EffectManifestPointer>& newList) {

@@ -118,7 +118,7 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
         // likely to be triggered. Before the isVisible() check was added,
         // the window title was getting set on DlgCoverArtFullSize instances
         // that had never been shown whenever a track was loaded.
-        // https://bugs.launchpad.net/mixxx/+bug/1789059
+        // https://github.com/mixxxdj/mixxx/issues/9415
         // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
         if (isVisible()) {
             QString windowTitle;
@@ -158,14 +158,14 @@ void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
 }
 
 void DlgCoverArtFullSize::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
     Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
-    if (pRequestor != this || !m_pLoadedTrack ||
+    if (pRequester != this || !m_pLoadedTrack ||
             m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
@@ -229,8 +229,7 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
         return;
     }
     slotCoverInfoSelected(
-            CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+            CoverInfoGuesser().guessCoverInfoForTrack(m_pLoadedTrack));
 }
 
 void DlgCoverArtFullSize::slotCoverInfoSelected(

@@ -20,6 +20,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "errordialoghandler.h"
 
 namespace {
 // according to http://en.wikipedia.org/wiki/M3U the default encoding of m3u is Windows-1252
@@ -59,7 +60,8 @@ QList<QString> ParserM3u::parseAllLocations(const QString& playlistFile) {
     if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
-                << playlistFile;
+                << playlistFile
+                << file.errorString();
         return paths;
     }
 
@@ -142,9 +144,13 @@ bool ParserM3u::writeM3UFile(const QString &file_str, const QList<QString> &item
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(nullptr,
-                QObject::tr("Playlist Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+        ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
+        ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
+        props->setDetails(file.errorString());
+        pDialogHandler->requestErrorDialog(props);
         return false;
     }
     if (urlEncodingUsed) {

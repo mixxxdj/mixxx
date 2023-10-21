@@ -1,5 +1,7 @@
 #include "widget/wscrollable.h"
 
+#include "moc_wscrollable.cpp"
+
 WScrollable::WScrollable(QWidget* pParent)
         : QScrollArea(pParent),
           WBaseWidget(this) {

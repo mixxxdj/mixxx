@@ -16,6 +16,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -61,6 +63,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
@@ -84,7 +87,8 @@ WEffectSelector::indicator:unchecked:selected,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #3F3041;
   }
   /* checked checkbox */
@@ -108,7 +112,8 @@ WEffectSelector::indicator:unchecked:selected,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
-  QLineEdit QMenu::item:disabled {
+  QLineEdit QMenu::item:disabled,
+  QPlainTextEdit QMenu::item:disabled {
     border-color: #444;
     color: #444;
   }
@@ -188,14 +193,12 @@ WTrackTableView {
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
+  WLibrary QPlainTextEdit,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #aaa;
-  }
-  WLibrary QLineEdit,
-  #LibraryBPMSpinBox {
     border: 1px solid #666;
   }
   #LibraryBPMSpinBox::up-button,

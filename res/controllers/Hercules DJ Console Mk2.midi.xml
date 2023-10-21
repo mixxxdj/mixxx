@@ -419,7 +419,7 @@
 
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <minimum>0.4</minimum>
@@ -427,7 +427,7 @@
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x16</midino>
         <minimum>0.5</minimum>
@@ -436,21 +436,21 @@
       <!--
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x0D</midino>
         <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x0F</midino>
         <minimum>0.8</minimum>
@@ -458,14 +458,14 @@
       -->
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x04</midino>
         <minimum>0.4</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x1A</midino>
         <minimum>0.5</minimum>
@@ -473,21 +473,21 @@
       <!--
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x12</midino>
         <minimum>0.6</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x11</midino>
         <minimum>0.7</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>VuMeter</key>
+        <key>vu_meter</key>
         <status>0xB0</status>
         <midino>0x10</midino>
         <minimum>0.8</minimum>

@@ -61,12 +61,15 @@ find_library(MP4_LIBRARY
 )
 mark_as_advanced(MP4_LIBRARY)
 
+if(DEFINED PC_MP4_VERSION AND NOT PC_MP4_VERSION STREQUAL "")
+  set(MP4_VERSION "${PC_MP4_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   MP4
-  DEFAULT_MSG
-  MP4_LIBRARY
-  MP4_INCLUDE_DIR
+  REQUIRED_VARS MP4_LIBRARY MP4_INCLUDE_DIR
+  VERSION_VAR MP4_VERSION
 )
 
 if(MP4_FOUND)

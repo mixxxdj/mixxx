@@ -131,7 +131,7 @@
             <Children>
               <Template src="skin:vumeter.xml">
                 <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
-                <SetVariable name="control">VuMeter</SetVariable>
+                <SetVariable name="control">vu_meter</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -139,7 +139,7 @@
       </WidgetGroup><!-- /PreviewDeck -->
     </Children>
     <Connection>
-      <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey>[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

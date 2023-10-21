@@ -493,7 +493,7 @@ LPD8RK.beatjump = function (channel, control, value, status, group) {
     var numbeats = LPD8RK.beatjumpstep;
     var backseconds = numbeats*(1/(engine.getValue(group, "bpm")/60));
     var backsamples = backseconds*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
-    var newpos = curpos-(backsamples+engine.getValue("Master", "latency"));
+    var newpos = curpos-(backsamples+engine.getValue("[App]", "output_latency_ms"));
 
     if (LPD8RK.debug){print("backseconds: "+backseconds);}
     if (LPD8RK.debug){print("backsamples: "+backsamples);}

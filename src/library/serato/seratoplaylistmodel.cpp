@@ -1,5 +1,7 @@
 #include "library/serato/seratoplaylistmodel.h"
 
+#include "moc_seratoplaylistmodel.cpp"
+
 SeratoPlaylistModel::SeratoPlaylistModel(QObject* parent,
         TrackCollectionManager* trackCollectionManager,
         QSharedPointer<BaseTrackCache> trackSource)

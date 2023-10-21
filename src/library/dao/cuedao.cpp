@@ -40,7 +40,7 @@ inline QString labelFromQVariant(const QVariant& value) {
 CuePointer cueFromRow(const QSqlRecord& row) {
     const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
-    int type = row.value(row.indexOf("type")).toInt();
+    auto type = static_cast<mixxx::CueType>(row.value(row.indexOf("type")).toInt());
     const auto position =
             mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                     row.value(row.indexOf("position")).toDouble());
@@ -51,8 +51,20 @@ CuePointer cueFromRow(const QSqlRecord& row) {
     VERIFY_OR_DEBUG_ASSERT(color) {
         return CuePointer();
     }
+    if (type == mixxx::CueType::Loop && lengthFrames == 0.0) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard loop cue" << hotcue << "found in database with length of 0";
+        return CuePointer();
+    }
+    if (type == mixxx::CueType::HotCue &&
+            position == mixxx::audio::FramePos(0) &&
+            *color == mixxx::RgbColor(0)) {
+        // These entries are likely added via issue #11283
+        qWarning() << "Discard black hot cue" << hotcue << "found in database at position 0";
+        return CuePointer();
+    }
     CuePointer pCue(new Cue(id,
-            static_cast<mixxx::CueType>(type),
+            type,
             position,
             lengthFrames,
             hotcue,
@@ -84,7 +96,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     QMap<int, CuePointer> hotCuesByNumber;
     while (query.next()) {
         CuePointer pCue = cueFromRow(query.record());
-        VERIFY_OR_DEBUG_ASSERT(pCue) {
+        if (!pCue) {
             continue;
         }
         int hotCueNumber = pCue->getHotCue();
@@ -187,21 +199,6 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     }
     DEBUG_ASSERT(cue->getId().isValid());
     cue->setDirty(false);
-    return true;
-}
-
-bool CueDAO::deleteCue(Cue* cue) const {
-    //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
-    if (!cue->getId().isValid()) {
-        return false;
-    }
-    QSqlQuery query(m_database);
-    query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE id=:id"));
-    query.bindValue(":id", cue->getId().toVariant());
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return false;
-    }
     return true;
 }
 

@@ -46,7 +46,7 @@ void EngineEffectsManager::onCallbackStart() {
                     *request, m_pResponsePipe.get());
             if (processed) {
                 // When an effect becomes active (part of a chain), keep
-                // it in our master list so that we can respond to
+                // it in our main list so that we can respond to
                 // requests about it.
                 if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
                     m_effects.append(request->AddEffectToChain.pEffect);

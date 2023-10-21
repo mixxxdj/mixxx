@@ -40,6 +40,10 @@ constexpr int kNumEffectsPerUnit = 4;
 
 const QString kNoEffectString = QStringLiteral("---");
 
+const QString kMixerProfile = QStringLiteral("[Mixer Profile]");
+const QString kHighEqFrequency = QStringLiteral("HiEQFrequency");
+const QString kLowEqFrequency = QStringLiteral("LoEQFrequency");
+
 // NOTE: Setting this to true will enable string manipulation and calls to
 // qDebug() in the audio engine thread. That may cause audio dropouts, so only
 // enable this when debugging the effects system.

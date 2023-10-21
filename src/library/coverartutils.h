@@ -30,6 +30,8 @@ class CoverArtUtils {
     // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             mixxx::FileAccess trackFileAccess);
+    static QImage extractEmbeddedCover(
+            TrackPointer pTrack);
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -78,11 +80,10 @@ class CoverInfoGuesser {
 
     // Extracts an embedded cover image if available and guesses
     // the cover art for the provided track.
-    CoverInfoRelative guessCoverInfoForTrack(
-            const Track& track);
+    CoverInfoRelative guessCoverInfoForTrack(TrackPointer pTrack);
 
     void guessAndSetCoverInfoForTrack(
-            Track& track);
+            TrackPointer pTrack);
     void guessAndSetCoverInfoForTracks(
             const TrackPointerList& tracks);
 

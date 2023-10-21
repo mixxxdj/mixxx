@@ -22,7 +22,7 @@
         </State>
         <Pos>2,0</Pos>
         <Connection>
-          <ConfigKey>[EffectRack1],show</ConfigKey>
+          <ConfigKey>[Skin],show_effectrack</ConfigKey>
         </Connection>
       </PushButton>
 

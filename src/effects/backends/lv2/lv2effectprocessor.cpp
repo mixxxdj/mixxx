@@ -5,6 +5,7 @@
 
 LV2EffectProcessor::LV2EffectProcessor(LV2EffectManifestPointer pManifest)
         : m_pManifest(pManifest),
+          m_LV2parameters(nullptr),
           m_pPlugin(pManifest->getPlugin()),
           m_audioPortIndices(pManifest->getAudioPortIndices()),
           m_controlPortIndices(pManifest->getControlPortIndices()) {

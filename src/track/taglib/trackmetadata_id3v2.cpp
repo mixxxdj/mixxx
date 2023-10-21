@@ -109,7 +109,7 @@ T* downcastFrame(TagLib::ID3v2::Frame* pFrame) {
     DEBUG_ASSERT(pFrame);
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     auto* pDowncastFrame = dynamic_cast<T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -122,7 +122,7 @@ template<typename T>
 const T* downcastFrame(const TagLib::ID3v2::Frame* pFrame) {
     // We need to use a safe dynamic_cast at runtime instead of an unsafe
     // static_cast at compile time to detect unexpected frame subtypes!
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    // See also: https://github.com/mixxxdj/mixxx/issues/9325
     const auto* pDowncastFrame = dynamic_cast<const T*>(pFrame);
     VERIFY_OR_DEBUG_ASSERT(pDowncastFrame) {
         // This should only happen when reading corrupt or malformed files
@@ -688,7 +688,7 @@ void importTrackMetadataFromTag(
     // description (see below). If no such CommentsFrame exists TagLib
     // arbitrarily picks the first one with a description that it finds,
     // e.g. "iTunNORM" or "iTunPGAP" with unexpected results for the user.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1742617
+    // See also: https://github.com/mixxxdj/mixxx/issues/9074
     taglib::importTrackMetadataFromTag(
             pTrackMetadata,
             tag,
@@ -905,7 +905,7 @@ void importTrackMetadataFromTag(
 
     const TagLib::ID3v2::FrameList keyFrames(tag.frameListMap()["TKEY"]);
     if (!keyFrames.isEmpty() || resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(
+        pTrackMetadata->refTrackInfo().setKeyText(
                 firstNonEmptyFrameToQString(keyFrames));
     }
 
@@ -1217,7 +1217,7 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     writeTextIdentificationFrame(
             pTag,
             "TKEY",
-            trackMetadata.getTrackInfo().getKey());
+            trackMetadata.getTrackInfo().getKeyText());
 
     writeUserTextIdentificationFrame(
             pTag,

@@ -34,7 +34,7 @@ EngineSideChain::EngineSideChain(
     // a suitable choice since we do semi-realtime tasks
     // in the sidechain thread. To get reliable timing, it's important
     // that this work be prioritized over the GUI and non-realtime tasks. See
-    // discussion on Bug #1270583 and Bug #1194543.
+    // discussion on issue #7272 and https://bugs.launchpad.net/mixxx/1.11/+bug/1194543.
     start(QThread::HighPriority);
 }
 
@@ -66,7 +66,7 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
 void EngineSideChain::receiveBuffer(const AudioInput& input,
         const CSAMPLE* pBuffer,
         unsigned int iFrames) {
-    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
+    VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioPathType::RecordBroadcast) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;
     }

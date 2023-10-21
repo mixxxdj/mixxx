@@ -6,6 +6,7 @@
 
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectparameternamebase.cpp"
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");

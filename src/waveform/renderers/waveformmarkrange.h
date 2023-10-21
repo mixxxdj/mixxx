@@ -13,6 +13,10 @@ QT_FORWARD_DECLARE_CLASS(QDomNode);
 class SkinContext;
 class WaveformSignalColors;
 
+namespace allshader {
+class WaveformRenderMarkRange;
+}
+
 class WaveformMarkRange {
   public:
     WaveformMarkRange(
@@ -71,5 +75,6 @@ class WaveformMarkRange {
     DurationTextLocation m_durationTextLocation;
 
     friend class WaveformRenderMarkRange;
+    friend class allshader::WaveformRenderMarkRange;
     friend class WOverview;
 };

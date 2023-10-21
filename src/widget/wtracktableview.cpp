@@ -59,7 +59,8 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
-    m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick = new ControlProxy(
+            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
@@ -554,8 +555,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // called every time the mouse is moved -- kain88 May 2012
     if (pEvent->buttons() != Qt::LeftButton) {
         // Needed for mouse-tracking to fire entered() events. If we call this
-        // outside of this if statement then we get 'ghost' drags. See Bug
-        // #1008737
+        // outside of this if statement then we get 'ghost' drags. See issue
+        // #6507
         WLibraryTableView::mouseMoveEvent(pEvent);
         return;
     }
@@ -1022,6 +1023,9 @@ TrackId WTrackTableView::getCurrentTrackId() const {
 }
 
 bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
+        return false;
+    }
     //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
@@ -1057,6 +1061,10 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool scrollToTrack) {
+    if (!trackId.isValid()) {
+        return false;
+    }
+
     QItemSelectionModel* pSelectionModel = selectionModel();
     VERIFY_OR_DEBUG_ASSERT(pSelectionModel != nullptr) {
         qWarning() << "No selection model";
@@ -1124,8 +1132,10 @@ void WTrackTableView::slotAddToAutoDJReplace() {
 }
 
 void WTrackTableView::slotSelectTrack(const TrackId& trackId) {
-    if (setCurrentTrackId(trackId, 0, true)) {
+    if (trackId.isValid() && setCurrentTrackId(trackId, 0, true)) {
         setSelectedTracks({trackId});
+    } else {
+        setSelectedTracks({});
     }
 }
 

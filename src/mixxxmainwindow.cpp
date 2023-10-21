@@ -1,13 +1,25 @@
 #include "mixxxmainwindow.h"
 
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
-#include <QGLFormat>
+#include <QOpenGLContext>
 #include <QUrl>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QGLFormat>
+#endif
+
 #ifdef __LINUX__
 #include <QtDBus>
 #endif
-#include <QtDebug>
+
+#include "widget/wglwidget.h"
+
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/tooltipqopengl.h"
+#include "widget/winitialglwidget.h"
+#endif
 
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
@@ -84,8 +96,8 @@ namespace {
 inline bool supportsGlobalMenu() {
 #ifndef QT_NO_DBUS
     QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto iface = conn.interface()) {
-        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    if (const auto* pIface = conn.interface()) {
+        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
     }
 #endif
     return false;
@@ -138,6 +150,38 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     m_pVisualsManager = new VisualsManager();
 }
 
+#ifdef MIXXX_USE_QOPENGL
+void MixxxMainWindow::initializeQOpenGL() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt 6 will nno longer crash if no GL is available and
+    // QGLFormat::hasOpenGL() has been removed.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+#else
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+#endif
+        QOpenGLContext context;
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
+        if (context.create()) {
+            // This widget and its QOpenGLWindow will be used to query QOpenGL
+            // information (version, driver, etc) in WaveformWidgetFactory.
+            // The "SharedGLContext" terminology here doesn't really apply,
+            // but allows us to take advantage of the existing classes.
+            WInitialGLWidget* widget = new WInitialGLWidget(this);
+            widget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(widget);
+            // When the widget's QOpenGLWindow has been initialized, we continue
+            // with the actual initialization
+            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            widget->show();
+            return;
+        }
+        qDebug() << "QOpenGLContext::create() failed";
+    }
+    qInfo() << "Initializing without OpenGL";
+    initialize();
+}
+#endif
+
 void MixxxMainWindow::initialize() {
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
@@ -147,6 +191,9 @@ void MixxxMainWindow::initialize() {
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
             pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -194,6 +241,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
+#ifndef MIXXX_USE_QOPENGL
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
@@ -218,11 +266,12 @@ void MixxxMainWindow::initialize() {
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QGLWidget* pContextWidget = new QGLWidget(this);
+        WGLWidget* pContextWidget = new WGLWidget(this);
         pContextWidget->setGeometry(QRect(0, 0, 3, 3));
         pContextWidget->hide();
         SharedGLContext::setWidget(pContextWidget);
     }
+#endif
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
@@ -374,16 +423,14 @@ MixxxMainWindow::~MixxxMainWindow() {
     // On next start restoreGeometry would enable fullscreen mode even though that
     // might not be requested (no '--fullscreen' command line arg and
     // [Config],StartInFullscreen is '0'.
-    // https://bugs.launchpad.net/mixxx/+bug/1882474
-    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // https://github.com/mixxxdj/mixxx/issues/10005
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (isFullScreen() && !fullscreenPref) {
-        slotViewFullScreen(false);
-        // After returning from fullscreen the main window incl. window decoration
-        // may be too large for the screen.
-        // Maximize the window so we can store a geometry that fits the screen.
+        // Simply maximize the window so we can store a geometry that fits the screen.
+        // Don't call slotViewFullScreen(false) (calls showNormal()) because that
+        // can make the main window incl. window decoration too large for the screen.
         showMaximized();
     }
     m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -908,7 +955,7 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         showFullScreen();
 #ifdef __LINUX__
         // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
-        // #885890 and #1076789. Before touching anything here, please read
+        // #6072 and #6689. Before touching anything here, please read
         // those bugs.
         // Set this attribute instead of calling setNativeMenuBar(false), see
         // https://github.com/mixxxdj/mixxx/issues/11320
@@ -1017,6 +1064,9 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 }
 
 void MixxxMainWindow::rebootMixxxView() {
@@ -1058,7 +1108,7 @@ void MixxxMainWindow::rebootMixxxView() {
 #ifdef __LINUX__
     // don't adjustSize() on Linux as this wouldn't use the entire available area
     // to paint the new skin with X11
-    // https://bugs.launchpad.net/mixxx/+bug/1773587
+    // https://github.com/mixxxdj/mixxx/issues/9309
 #else
     adjustSize();
 #endif

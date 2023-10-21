@@ -1,8 +1,10 @@
+#include "controllers/bulk/bulkenumerator.h"
+
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
-#include "controllers/bulk/bulkenumerator.h"
 #include "controllers/bulk/bulksupported.h"
+#include "moc_bulkenumerator.cpp"
 
 BulkEnumerator::BulkEnumerator(UserSettingsPointer pConfig)
         : ControllerEnumerator(),

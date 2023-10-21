@@ -24,7 +24,7 @@ class EngineEffectChain;
 /// EffectChain is the main thread representation of an effect chain.
 /// EffectChain owns the ControlObjects for the routing switches that assign
 /// chains to process audio inputs (decks, microphones, auxiliary inputs,
-/// master mix). EffectChain also owns the ControlObject for the superknob
+/// main mix). EffectChain also owns the ControlObject for the superknob
 /// which manipulates the metaknob of each EffectSlot in the chain.
 ///
 /// EffectChains are created and destroyed by EffectsManager during Mixxx

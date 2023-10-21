@@ -15,8 +15,8 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
@@ -512,7 +512,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.dryWetKnob.input</key>
+                <key>P32.leftDeck.dryWetKnobOrPregain.input</key>
                 <status>0xB1</status>
                 <midino>0x09</midino>
                 <options>
@@ -521,7 +521,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.leftDeck.effectUnit.dryWetKnob.input</key>
+                <key>P32.leftDeck.dryWetKnobOrPregain.input</key>
                 <status>0xB4</status>
                 <midino>0x09</midino>
                 <options>
@@ -1548,7 +1548,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.dryWetKnob.input</key>
+                <key>P32.rightDeck.dryWetKnobOrPregain.input</key>
                 <status>0xB2</status>
                 <midino>0x09</midino>
                 <options>
@@ -1557,7 +1557,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>P32.rightDeck.effectUnit.dryWetKnob.input</key>
+                <key>P32.rightDeck.dryWetKnobOrPregain.input</key>
                 <status>0xB5</status>
                 <midino>0x09</midino>
                 <options>

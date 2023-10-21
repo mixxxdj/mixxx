@@ -147,7 +147,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 
         // We cannot select, just open the parent folder
         QDir dir = dirPath;
-        while (!dir.exists() && dirPath.size()) {
+        while (!dir.exists() && !dirPath.isEmpty()) {
             // Note: dir.cdUp() does not work for not existing dirs
             dirPath = removeChildDir(dirPath);
             dir.setPath(dirPath);

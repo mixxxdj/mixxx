@@ -149,7 +149,7 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedCacheKey,
@@ -160,7 +160,7 @@ void WCoverArt::slotCoverFound(
         return;
     }
 
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_lastRequestedCover = coverInfo;

@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
+#include "moc_weffectbuttonparametername.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectButtonParameterName::WEffectButtonParameterName(

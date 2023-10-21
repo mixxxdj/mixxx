@@ -6,12 +6,12 @@
 #include <QQuickPaintedItem>
 #include <QtQml>
 
+#include "qml/qmlplayerproxy.h"
 #include "track/track.h"
 
 namespace mixxx {
 namespace qml {
 
-class QmlPlayerProxy;
 
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT

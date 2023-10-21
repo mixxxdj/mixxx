@@ -44,7 +44,7 @@
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control"><Variable name="group"/>,master</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
                 <SetVariable name="TooltipId">configure_input</SetVariable>
               </Template>
             </Children>
@@ -54,7 +54,7 @@
       </WidgetGroup><!-- MicAuxContainer -->
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>

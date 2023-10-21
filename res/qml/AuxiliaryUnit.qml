@@ -14,7 +14,7 @@ Row {
         id: vuMeter
 
         group: root.group
-        key: "VuMeter"
+        key: "vu_meter"
         width: 4
         height: parent.height
     }

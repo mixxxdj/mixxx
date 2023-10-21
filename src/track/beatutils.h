@@ -42,3 +42,5 @@ class BeatUtils {
     static mixxx::Bpm roundBpmWithinRange(
             mixxx::Bpm minBpm, mixxx::Bpm centerBpm, mixxx::Bpm maxBpm);
 };
+
+Q_DECLARE_TYPEINFO(BeatUtils::ConstRegion, Q_PRIMITIVE_TYPE);

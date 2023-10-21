@@ -18,7 +18,9 @@ class EmptyWaveformWidget : public NonGLWaveformWidgetAbstract {
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Default;
+    }
 
   protected:
     virtual void castToQWidget();

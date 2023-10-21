@@ -62,12 +62,15 @@ find_library(Ebur128_LIBRARY
 )
 mark_as_advanced(Ebur128_LIBRARY)
 
+if(DEFINED PC_Ebur128_VERSION AND NOT PC_Ebur128_VERSION STREQUAL "")
+  set(Ebur128_VERSION "${PC_Ebur128_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Ebur128
-  DEFAULT_MSG
-  Ebur128_LIBRARY
-  Ebur128_INCLUDE_DIR
+  REQUIRED_VARS Ebur128_LIBRARY Ebur128_INCLUDE_DIR
+  VERSION_VAR Ebur128_VERSION
 )
 
 if(Ebur128_FOUND)

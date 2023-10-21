@@ -158,6 +158,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
              &QCheckBox::stateChanged,
              this,
              &DlgPrefBroadcast::enableCustomMetadataChanged);
+
+     setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {

@@ -20,17 +20,20 @@ public:
     static const SINT kSamples;
 
     // Converts frames to samples
-    inline static SINT frames2samples(SINT frames) {
+    static SINT frames2samples(SINT frames) {
         return frames * kChannels;
     }
+    static double dFrames2samples(SINT frames) {
+        return static_cast<double>(frames) * kChannels;
+    }
     // Converts samples to frames
-    inline static SINT samples2frames(SINT samples) {
+    static SINT samples2frames(SINT samples) {
         DEBUG_ASSERT(0 == (samples % kChannels));
         return samples / kChannels;
     }
 
     // Returns the corresponding chunk index for a frame index
-    inline static SINT indexForFrame(
+    static SINT indexForFrame(
             /*const mixxx::AudioSourcePointer& pAudioSource,*/
             SINT frameIndex) {
         //DEBUG_ASSERT(pAudioSource->frameIndexRange().contains(frameIndex));

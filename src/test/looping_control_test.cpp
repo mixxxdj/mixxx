@@ -67,6 +67,10 @@ class LoopingControlTest : public MockedEngineBackendTest {
         m_pButtonBeatLoopActivate = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatloop_activate");
         m_pBeatJumpSize = std::make_unique<PollingControlProxy>(m_sGroup1, "beatjump_size");
+        m_pButtonBeatJumpSizeDouble = std::make_unique<PollingControlProxy>(
+                m_sGroup1, "beatjump_size_double");
+        m_pButtonBeatJumpSizeHalve = std::make_unique<PollingControlProxy>(
+                m_sGroup1, "beatjump_size_halve");
         m_pButtonBeatJumpForward = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatjump_forward");
         m_pButtonBeatJumpBackward = std::make_unique<PollingControlProxy>(
@@ -77,6 +81,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 m_sGroup1, "beatlooproll_2_activate");
         m_pButtonBeatLoopRoll4Activate = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatlooproll_4_activate");
+
+        ProcessBuffer();
     }
 
     mixxx::audio::FramePos currentFramePos() {
@@ -121,6 +127,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
     std::unique_ptr<PollingControlProxy> m_pBeatLoopSize;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatLoopActivate;
     std::unique_ptr<PollingControlProxy> m_pBeatJumpSize;
+    std::unique_ptr<PollingControlProxy> m_pButtonBeatJumpSizeHalve;
+    std::unique_ptr<PollingControlProxy> m_pButtonBeatJumpSizeDouble;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatJumpForward;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatJumpBackward;
     std::unique_ptr<PollingControlProxy> m_pButtonBeatLoopRoll1Activate;
@@ -172,6 +180,28 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     m_pLoopStartPoint->set(mixxx::audio::FramePos{110}.toEngineSamplePos());
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{110}, m_pLoopStartPoint);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopInSetAtLoopOutClearsLoopOut) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopStartPoint->set(100);
+    EXPECT_EQ(100, m_pLoopStartPoint->get());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, LoopOutSetAtLoopInIgnored) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopEndPoint->set(0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(-1);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(0);
+    EXPECT_FALSE(isLoopEnabled());
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
@@ -448,8 +478,10 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
@@ -712,6 +744,55 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
     EXPECT_EQ(2.0, m_pBeatLoopSize->get());
 }
 
+TEST_F(LoopingControlTest, BeatLoopSize_SetRangeCheck) {
+    // Set BeatLoopSize to the maximum allowed value of 512
+    m_pBeatLoopSize->set(512.0);
+    EXPECT_EQ(512, m_pBeatLoopSize->get());
+
+    m_pBeatLoopSize->set(150.0);
+    EXPECT_EQ(150, m_pBeatLoopSize->get());
+
+    // Set BeatLoopSize to a value above the allowed maximum of 512 -> This must be ignored
+    m_pBeatLoopSize->set(513.0);
+    EXPECT_EQ(150, m_pBeatLoopSize->get());
+
+    // Double BeatLoopSize (the result is 300 which is in the allowed range)
+    m_pButtonLoopDouble->set(1.0);
+    m_pButtonLoopDouble->set(0.0);
+    EXPECT_EQ(300.0, m_pBeatLoopSize->get());
+
+    // Double BeatLoopSize (the result would be 600 which is above the allowed
+    // maximum of 512 -> This must be ignored)
+    m_pButtonLoopDouble->set(1.0);
+    m_pButtonLoopDouble->set(0.0);
+    EXPECT_EQ(300.0, m_pBeatLoopSize->get());
+
+    // Set BeatLoopSize to the minimum allowed value
+    m_pBeatLoopSize->set(1 / 32.0);
+    EXPECT_EQ(1 / 32.0, m_pBeatLoopSize->get());
+
+    m_pBeatLoopSize->set(1 / 10.0);
+    EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
+
+    // Set BeatLoopSize to a value below the allowed minimum of 1/32 -> This must be ignored
+    m_pBeatLoopSize->set(1 / 33.0);
+    EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
+
+    m_pBeatLoopSize->set(0);
+    EXPECT_EQ(1 / 10.0, m_pBeatLoopSize->get());
+
+    // Halve BeatLoopSize (the result is 1/20 which is in the allowed range)
+    m_pButtonLoopHalve->set(1.0);
+    m_pButtonLoopHalve->set(0.0);
+    EXPECT_EQ(1 / 20.0, m_pBeatLoopSize->get());
+
+    // Halve BeatLoopSize (the result would be 1/40 which is below the allowed
+    // minimum of 1/32 -> This must be ignored)
+    m_pButtonLoopHalve->set(1.0);
+    m_pButtonLoopHalve->set(0.0);
+    EXPECT_EQ(1 / 20.0, m_pBeatLoopSize->get());
+}
+
 TEST_F(LoopingControlTest, BeatLoopSize_SetDoesNotStartLoop) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
@@ -812,6 +893,55 @@ TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
     m_pBeatLoop->set(6.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
     EXPECT_EQ(6.0, m_pBeatLoopSize->get());
+}
+
+TEST_F(LoopingControlTest, BeatjumpSize_SetRangeCheck) {
+    // Set BeatJumpSize to the maximum allowed value
+    m_pBeatJumpSize->set(512.0);
+    EXPECT_EQ(512, m_pBeatJumpSize->get());
+
+    m_pBeatJumpSize->set(150.0);
+    EXPECT_EQ(150, m_pBeatJumpSize->get());
+
+    // Set BeatJumpSize to a value above the allowed maximum of 512 -> This must be ignored
+    m_pBeatJumpSize->set(513.0);
+    EXPECT_EQ(150, m_pBeatJumpSize->get());
+
+    // Double BeatJumpSize (the result is 300 which is in the allowed range)
+    m_pButtonBeatJumpSizeDouble->set(1.0);
+    m_pButtonBeatJumpSizeDouble->set(0.0);
+    EXPECT_EQ(300.0, m_pBeatJumpSize->get());
+
+    // Double BeatJumpSize (the result would be 600 which is above the allowed
+    // maximum of 512-> This must be ignored)
+    m_pButtonBeatJumpSizeDouble->set(1.0);
+    m_pButtonBeatJumpSizeDouble->set(0.0);
+    EXPECT_EQ(300.0, m_pBeatJumpSize->get());
+
+    // Set BeatJumpSize to the minimum allowed value
+    m_pBeatJumpSize->set(1 / 32.0);
+    EXPECT_EQ(1 / 32.0, m_pBeatJumpSize->get());
+
+    m_pBeatJumpSize->set(1 / 10.0);
+    EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
+
+    // Set BeatJumpSize to a value below the allowed minimum of 1/32 -> This must be ignored
+    m_pBeatJumpSize->set(1 / 33.0);
+    EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
+
+    m_pBeatJumpSize->set(0);
+    EXPECT_EQ(1 / 10.0, m_pBeatJumpSize->get());
+
+    // Halve BeatJumpSize (the result is 1/20 which is in the allowed range)
+    m_pButtonBeatJumpSizeHalve->set(1.0);
+    m_pButtonBeatJumpSizeHalve->set(0.0);
+    EXPECT_EQ(1 / 20.0, m_pBeatJumpSize->get());
+
+    // Halve BeatJumpSize (the result would be 1/40 which is below the allowed
+    // minimum of 1/32 -> This must be ignored)
+    m_pButtonBeatJumpSizeHalve->set(1.0);
+    m_pButtonBeatJumpSizeHalve->set(0.0);
+    EXPECT_EQ(1 / 20.0, m_pBeatJumpSize->get());
 }
 
 TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {

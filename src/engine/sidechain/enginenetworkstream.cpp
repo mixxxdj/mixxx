@@ -147,7 +147,6 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
         return ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;
     } else {
         static qint64 oldNow = 0;
-        static qint64 incCount = 0;
         static PerformanceTimer timerSinceInc;
         GetSystemTimeAsFileTime(&ft);
         qint64 now = ((qint64)ft.dwHighDateTime << 32 | ft.dwLowDateTime) / 10;

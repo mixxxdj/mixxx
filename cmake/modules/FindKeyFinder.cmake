@@ -63,12 +63,15 @@ find_library(KeyFinder_LIBRARY
 )
 mark_as_advanced(KeyFinder_LIBRARY)
 
+if(DEFINED PC_KeyFinder_VERSION AND NOT PC_KeyFinder_VERSION STREQUAL "")
+  set(KeyFinder_VERSION "${PC_KeyFinder_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   KeyFinder
-  DEFAULT_MSG
-  KeyFinder_LIBRARY
-  KeyFinder_INCLUDE_DIR
+  REQUIRED_VARS KeyFinder_LIBRARY KeyFinder_INCLUDE_DIR
+  VERSION_VAR KeyFinder_VERSION
 )
 
 if(KeyFinder_FOUND)

@@ -41,7 +41,6 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     void setDevice(const SoundDeviceId& device);
     void setChannel(unsigned int channelBase, unsigned int channels);
     int hasSufficientChannels(const SoundDevice& device) const;
-    bool eventFilter(QObject* object, QEvent* event) override;
 
     AudioPathType m_type;
     unsigned int m_index;

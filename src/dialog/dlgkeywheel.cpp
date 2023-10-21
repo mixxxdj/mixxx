@@ -7,6 +7,7 @@
 
 #include "control/controlobject.h"
 #include "library/library_prefs.h"
+#include "moc_dlgkeywheel.cpp"
 
 using namespace mixxx::track::io::key;
 

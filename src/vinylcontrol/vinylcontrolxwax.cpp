@@ -1,12 +1,15 @@
-#include <QtDebug>
+#include "vinylcontrol/vinylcontrolxwax.h"
+
 #include <limits.h>
 
-#include "vinylcontrol/vinylcontrolxwax.h"
-#include "util/timer.h"
-#include "control/controlproxy.h"
+#include <QtDebug>
+
 #include "control/controlobject.h"
-#include "util/math.h"
+#include "control/controlproxy.h"
+#include "moc_vinylcontrolxwax.cpp"
 #include "util/defs.h"
+#include "util/math.h"
+#include "util/timer.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -125,7 +128,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     }
 
     double latency = ControlObject::get(
-            ConfigKey("[Master]", "latency"));
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("output_latency_ms")));
     if (latency <= 0 || latency > 200) {
         qDebug() << "Failed to get sane latency, assuming 20 as a reasonable value";
         latency = 20;

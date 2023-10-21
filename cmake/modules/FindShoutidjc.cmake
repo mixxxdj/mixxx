@@ -63,12 +63,15 @@ find_library(Shoutidjc_LIBRARY
 )
 mark_as_advanced(Shoutidjc_LIBRARY)
 
+if(DEFINED PC_Shoutidjc_VERSION AND NOT PC_Shoutidjc_VERSION STREQUAL "")
+  set(Shoutidjc_VERSION "${PC_Shoutidjc_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   Shoutidjc
-  DEFAULT_MSG
-  Shoutidjc_LIBRARY
-  Shoutidjc_INCLUDE_DIR
+  REQUIRED_VARS Shoutidjc_LIBRARY Shoutidjc_INCLUDE_DIR
+  VERSION_VAR Shoutidjc_VERSION
 )
 
 if(Shoutidjc_FOUND)

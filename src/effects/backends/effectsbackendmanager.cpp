@@ -91,7 +91,7 @@ EffectManifestPointer EffectsBackendManager::getManifest(
 
 const QString EffectsBackendManager::getDisplayNameForEffectPreset(
         EffectPresetPointer pPreset) const {
-    //: Displayed when no effect is loaded
+    // "---" id displayed when no effect is loaded
     QString displayName(kNoEffectString);
     if (!pPreset || pPreset->isEmpty()) {
         return displayName;

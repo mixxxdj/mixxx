@@ -348,7 +348,7 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
   engine.connectControl("[Channel2]","visual_playposition","KANE_QuNeo.time2Keeper");
 
   // led controls for the master / flanger channels
-  engine.connectControl("[Master]","VuMeter","KANE_QuNeo.masterVuMeter");
+  engine.connectControl("[Master]","vu_meter","KANE_QuNeo.masterVuMeter");
   //engine.softTakeover("[Master]","volume",true);
   engine.connectControl("[Master]","headVolume","KANE_QuNeo.headVol");
   engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");
@@ -359,7 +359,7 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
       var channelName = KANE_QuNeo.getChannelName(deck)
 
       // led controls for deck VU meters
-      engine.connectControl(channelName,"VuMeter","KANE_QuNeo.deck"+deck+"VuMeter");
+      engine.connectControl(channelName,"vu_meter","KANE_QuNeo.deck"+deck+"vu_meter");
 
       // soft takeovers
       //engine.softTakeover(channelName,"rate",true);
@@ -827,8 +827,8 @@ KANE_QuNeo.openSliderMode = function () {
     engine.connectControl("[Channel2]","filterHigh","KANE_QuNeo.deck2Highs")
     KANE_QuNeo.LEDs(0x90,[0x2c],0x00) // rhombus green off
     KANE_QuNeo.LEDs(0x90,[0x2d],0x7f) // rhombus red on
-    engine.trigger("[Channel1]","VuMeter")
-    engine.trigger("[Channel2]","VuMeter")
+    engine.trigger("[Channel1]","vu_meter")
+    engine.trigger("[Channel2]","vu_meter")
     engine.trigger("[Channel1]","filterHigh")
     engine.trigger("[Channel2]","filterHigh")
     break;
@@ -1689,10 +1689,10 @@ KANE_QuNeo.assertLEDs = function (mode) {
 KANE_QuNeo.assertMode5 = function () {
     KANE_QuNeo.LEDSequencing[0] = 1; // turn on sequencer
     KANE_QuNeo.LEDSequencing[1] = 1; // turn on sequencer
-    engine.connectControl("[Channel1]","VuMeterL","KANE_QuNeo.deck1LeftVol");
-    engine.connectControl("[Channel1]","VuMeterR","KANE_QuNeo.deck1RightVol");
-    engine.connectControl("[Channel2]","VuMeterL","KANE_QuNeo.deck2LeftVol");
-    engine.connectControl("[Channel2]","VuMeterR","KANE_QuNeo.deck2RightVol");
+    engine.connectControl("[Channel1]","vu_meter_left","KANE_QuNeo.deck1LeftVol");
+    engine.connectControl("[Channel1]","vu_meter_right","KANE_QuNeo.deck1RightVol");
+    engine.connectControl("[Channel2]","vu_meter_left","KANE_QuNeo.deck2LeftVol");
+    engine.connectControl("[Channel2]","vu_meter_right","KANE_QuNeo.deck2RightVol");
 }
 
 KANE_QuNeo.assertMode13 = function () {
@@ -1733,13 +1733,13 @@ KANE_QuNeo.assertMode16 = function () {
 KANE_QuNeo.closeMode = function (mode) {
     switch (mode) {
     case 5:
-    engine.connectControl("[Channel1]","VuMeterL",
+    engine.connectControl("[Channel1]","vu_meter_left",
                   "KANE_QuNeo.deck1LeftVol",true);
-    engine.connectControl("[Channel1]","VuMeterR",
+    engine.connectControl("[Channel1]","vu_meter_right",
                   "KANE_QuNeo.deck1RightVol",true);
-    engine.connectControl("[Channel2]","VuMeterL",
+    engine.connectControl("[Channel2]","vu_meter_left",
                   "KANE_QuNeo.deck2LeftVol",true);
-    engine.connectControl("[Channel2]","VuMeterR",
+    engine.connectControl("[Channel2]","vu_meter_right",
                   "KANE_QuNeo.deck2RightVol",true);
     break;
     case 13: case 14: case 15:
@@ -2269,7 +2269,7 @@ KANE_QuNeo.assertJumpSyncLED = function (deck) {
 
 KANE_QuNeo.triggerVuMeter = function (deck) {
     var channelName = KANE_QuNeo.getChannelName(deck);
-    engine.trigger(channelName,"VuMeter")
+    engine.trigger(channelName,"vu_meter")
 }
 
 // VuMeters

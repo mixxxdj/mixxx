@@ -109,13 +109,16 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     if (controllerIndex >= 0) {
         DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
         if (pControllerDlg) {
-            m_pDlgPreferences->switchToPage(pControllerDlg);
+            const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
+                    clickedItem->text(0);
+            m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         }
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
         m_pDlgPreferences->expandTreeItem(clickedItem);
-        m_pDlgPreferences->switchToPage(this);
+        const QString pageTitle = clickedItem->text(0);
+        m_pDlgPreferences->switchToPage(pageTitle, this);
         return true;
     }
     return false;

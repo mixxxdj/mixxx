@@ -189,8 +189,8 @@ var DJCJV = {
         }
 
         // Connect the VUMeters
-        engine.connectControl("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
-        engine.connectControl("[Channel2]", "VuMeter", "DJCJV.vuMeterUpdate");
+        engine.connectControl("[Channel1]", "vu_meter", "DJCJV.vuMeterUpdate");
+        engine.connectControl("[Channel2]", "vu_meter", "DJCJV.vuMeterUpdate");
 
         // Set inner & outer jog leds to 0
         DJCJV.updateJogLeds(0, "[Channel1]");

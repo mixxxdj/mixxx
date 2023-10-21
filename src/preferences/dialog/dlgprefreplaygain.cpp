@@ -41,6 +41,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderReplayGainBoost);
+
     connect(SliderDefaultBoost,
             &QAbstractSlider::valueChanged,
             this,
@@ -49,6 +51,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderDefaultBoost);
+
     connect(checkBoxReanalyze,
             &QCheckBox::stateChanged,
             this,

@@ -51,9 +51,9 @@ class EffectChainPresetManager : public QObject {
     int quickEffectPresetIndex(EffectChainPresetPointer pChainPreset) const;
     EffectChainPresetPointer quickEffectPresetAtIndex(int index) const;
 
-    void importPreset();
+    bool importPreset();
     void exportPreset(const QString& chainPresetName);
-    void renamePreset(const QString& oldName);
+    bool renamePreset(const QString& oldName);
     bool deletePreset(const QString& chainPresetName);
 
     void resetToDefaults();

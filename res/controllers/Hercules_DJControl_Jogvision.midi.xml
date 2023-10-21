@@ -1016,8 +1016,8 @@
       </control>
       <!-- View button -->
       <control>
-        <group>[Master]</group>
-        <key>maximize_library</key>
+        <group>[Skin]</group>
+        <key>show_maximized_library</key>
         <description>Browser button - Maximize Library view</description>
         <status>0x90</status>
         <midino>0x47</midino>
@@ -1719,8 +1719,8 @@
       </output>
       <!--  VIEW LED -->
       <output>
-        <group>[Master]</group>
-        <key>maximize_library</key>
+        <group>[Skin]</group>
+        <key>show_maximized_library</key>
         <description>VIEW button LED</description>
         <minimum>0.5</minimum>
         <maximum>1</maximum>

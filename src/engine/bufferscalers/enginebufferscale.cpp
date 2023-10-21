@@ -12,7 +12,8 @@ EngineBufferScale::EngineBufferScale()
           m_dBaseRate(1.0),
           m_bSpeedAffectsPitch(false),
           m_dTempoRatio(1.0),
-          m_dPitchRatio(1.0) {
+          m_dPitchRatio(1.0),
+          m_effectiveRate(1.0) {
     DEBUG_ASSERT(!m_outputSignal.isValid());
 }
 

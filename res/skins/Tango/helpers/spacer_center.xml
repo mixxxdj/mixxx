@@ -8,11 +8,11 @@ Description:
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><!-- with mixer and Master VU -->
+      <WidgetGroup><!-- with mixer and Main VU -->
         <Layout>vertical</Layout>
         <Size>16f,0f</Size>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -31,7 +31,7 @@ Description:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

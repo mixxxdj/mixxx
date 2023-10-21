@@ -114,8 +114,23 @@ bool hasMP4Tag(TagLib::MP4::File& file) {
 bool readAudioPropertiesFromFile(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file) {
+    // The declaration of TagLib::FileName is platform specific.
+#ifdef _WIN32
+    // For _WIN32 there are two types std::string and std::wstring
+    // we must pick one explicit,
+    // to prevent "use of overloaded operator '<<' is ambiguous" error
+    // on clang-cl builds.
+    // We need to save the filename here because if it was chained
+    // (`file.name().wstr()`) the wstr() result would be dangling.
+    TagLib::FileName filename_owning = file.name();
+    const std::wstring& filename = filename_owning.wstr();
+#else
+    const char* filename = file.name();
+#endif
     if (!file.isValid()) {
-        kLogger.warning() << "Cannot read audio properties from inaccessible/unreadable/invalid file:" << file.name();
+        kLogger.warning() << "Cannot read audio properties from "
+                             "inaccessible/unreadable/invalid file:"
+                          << filename;
         return false;
     }
     if (!pTrackMetadata) {
@@ -126,7 +141,7 @@ bool readAudioPropertiesFromFile(
             file.audioProperties();
     if (!pAudioProperties) {
         kLogger.warning() << "Failed to read audio properties from file"
-                          << file.name();
+                          << filename;
         return false;
     }
     readAudioProperties(pTrackMetadata, *pAudioProperties);

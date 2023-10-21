@@ -2,6 +2,7 @@
 
 #include "effects/effectsmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_standardeffectchain.cpp"
 
 StandardEffectChain::StandardEffectChain(unsigned int iChainNumber,
         EffectsManager* pEffectsManager,

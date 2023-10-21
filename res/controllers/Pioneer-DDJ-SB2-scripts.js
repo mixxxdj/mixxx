@@ -533,13 +533,13 @@ PioneerDDJSB2.bindNonDeckControlConnections = function(isUnbinding) {
     }
 
     if (PioneerDDJSB2.showVumeterMaster) {
-        engine.connectControl("[Master]", "VuMeterL", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Master]", "VuMeterR", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Main]", "vu_meter_left", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Main]", "vu_meter_right", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
     } else {
-        engine.connectControl("[Channel1]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel2]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel3]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel4]", "VuMeter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Channel1]", "vu_meter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Channel2]", "vu_meter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Channel3]", "vu_meter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Channel4]", "vu_meter", "PioneerDDJSB2.VuMeterLeds", isUnbinding);
     }
 };
 
@@ -916,7 +916,7 @@ PioneerDDJSB2.hotCueLeds = function(value, group, control) {
 PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
     // The red LED lights up with MIDI values 119 (0x77) and above. That should only light up when
     // the track is clipping.
-    if (engine.getValue(group, "PeakIndicator") === 1) {
+    if (engine.getValue(group, "peak_indicator") === 1) {
         value = 119;
     } else {
         // 117 was determined experimentally so the yellow LED only lights
@@ -927,9 +927,9 @@ PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
     if (!(PioneerDDJSB2.twinkleVumeterAutodjOn && engine.getValue("[AutoDJ]", "enabled"))) {
         var midiChannel;
         if (PioneerDDJSB2.showVumeterMaster) {
-            if (control === "VuMeterL") {
+            if (control === "vu_meter_left") {
                 midiChannel = 0;
-            } else if (control === "VuMeterR") {
+            } else if (control === "vu_meter_right") {
                 midiChannel = 1;
             }
             // Send for deck 1 or 2
@@ -942,7 +942,7 @@ PioneerDDJSB2.VuMeterLeds = function(value, group, control) {
         }
     } else {
         if (group === "[Master]") {
-            if (control === "VuMeterL") {
+            if (control === "vu_meter_left") {
                 PioneerDDJSB2.valueVuMeter["[Channel1]_current"] = value;
                 PioneerDDJSB2.valueVuMeter["[Channel3]_current"] = value;
             } else {

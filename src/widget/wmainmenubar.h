@@ -84,7 +84,7 @@ class WMainMenuBar : public QMenuBar {
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
     void slotDeveloperDebugger(bool toggle);
-    void slotVisitUrl(const QString& url);
+    void slotVisitUrl(const QUrl& url);
 
   private:
     void initialize();

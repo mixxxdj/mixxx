@@ -293,19 +293,30 @@ void CachingReader::process() {
 
 CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
     // Check for bad inputs
-    VERIFY_OR_DEBUG_ASSERT(
-            // Refuse to read from an invalid position
-            (startSample % CachingReaderChunk::kChannels == 0) &&
-            // Refuse to read from an invalid number of samples
-            (numSamples % CachingReaderChunk::kChannels == 0) && (numSamples >= 0)) {
+    // Refuse to read from an invalid position
+    VERIFY_OR_DEBUG_ASSERT(startSample % CachingReaderChunk::kChannels == 0) {
         kLogger.critical()
                 << "Invalid arguments for read():"
-                << "startSample =" << startSample
-                << "numSamples =" << numSamples
-                << "reverse =" << reverse;
+                << "startSample =" << startSample;
+        return ReadResult::UNAVAILABLE;
+    }
+    // Refuse to read from an invalid number of samples
+    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "numSamples =" << numSamples;
+        return ReadResult::UNAVAILABLE;
+    }
+    VERIFY_OR_DEBUG_ASSERT(numSamples >= 0) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "numSamples =" << numSamples;
         return ReadResult::UNAVAILABLE;
     }
     VERIFY_OR_DEBUG_ASSERT(buffer) {
+        kLogger.critical()
+                << "Invalid arguments for read():"
+                << "buffer =" << buffer;
         return ReadResult::UNAVAILABLE;
     }
 

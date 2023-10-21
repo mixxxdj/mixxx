@@ -38,7 +38,7 @@
               <Unpressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ConfigKey>[Skin],show_settings</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -122,7 +122,7 @@
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
-            <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_vinylcontrol</SetVariable>
           </Template>
 
         </Children>
@@ -131,7 +131,7 @@
       <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_mixer</SetVariable>
         <SetVariable name="text">Mixer</SetVariable>
-        <SetVariable name="skinsetting">[Master],show_mixer</SetVariable>
+        <SetVariable name="skinsetting">[Skin],show_mixer</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -177,7 +177,7 @@
       <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_samplers</SetVariable>
         <SetVariable name="text">Samplers</SetVariable>
-        <SetVariable name="skinsetting">[Samplers],show_samplers</SetVariable>
+        <SetVariable name="skinsetting">[Skin],show_samplers</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -254,7 +254,7 @@
       <Template src="skin:../Deere/skinsettings_category_button.xml">
         <SetVariable name="TooltipId">show_effects</SetVariable>
         <SetVariable name="text">Effects</SetVariable>
-        <SetVariable name="skinsetting">[EffectRack1],show</SetVariable>
+        <SetVariable name="skinsetting">[Skin],show_effectrack</SetVariable>
       </Template>
 
       <WidgetGroup>
@@ -293,13 +293,13 @@
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_previewdeck</SetVariable>
             <SetVariable name="text">Preview Deck</SetVariable>
-            <SetVariable name="skinsetting">[PreviewDeck],show_previewdeck</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_preview_decks</SetVariable>
           </Template>
 
           <Template src="skin:../Deere/skinsettings_button.xml">
             <SetVariable name="TooltipId">show_coverart</SetVariable>
             <SetVariable name="text">Cover Art</SetVariable>
-            <SetVariable name="skinsetting">[Library],show_coverart</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_library_coverart</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

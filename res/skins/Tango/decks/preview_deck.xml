@@ -170,7 +170,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_preview_decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

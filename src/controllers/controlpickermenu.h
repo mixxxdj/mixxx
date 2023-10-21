@@ -103,7 +103,7 @@ class ControlPickerMenu : public QMenu {
 
     int addAvailableControl(const ConfigKey& key, const QString& title, const QString& description);
 
-    QString m_effectMasterOutputStr;
+    QString m_effectMainOutputStr;
     QString m_effectHeadphoneOutputStr;
     QString m_deckStr;
     QString m_previewdeckStr;

@@ -1,6 +1,7 @@
 #include "qml/qmlplayerproxy.h"
 
 #include "mixer/basetrackplayer.h"
+#include "moc_qmlplayerproxy.cpp"
 #include "qml/asyncimageprovider.h"
 
 #define PROPERTY_IMPL_GETTER(TYPE, NAME, GETTER)     \

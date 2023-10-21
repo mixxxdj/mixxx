@@ -403,7 +403,7 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
 }
 
 TEST_F(CueControlTest, SeekOnSetCueCDJ) {
-    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    // Regression test for https://github.com/mixxxdj/mixxx/issues/10551
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     m_pQuantizeEnabled->set(1);
@@ -433,7 +433,7 @@ TEST_F(CueControlTest, SeekOnSetCueCDJ) {
 }
 
 TEST_F(CueControlTest, SeekOnSetCuePlay) {
-    // Regression test for https://bugs.launchpad.net/mixxx/+bug/1946415
+    // Regression test for https://github.com/mixxxdj/mixxx/issues/10551
     config()->set(ConfigKey("[Controls]", "CueRecall"),
             ConfigValue(static_cast<int>(SeekOnLoadMode::MainCue)));
     m_pQuantizeEnabled->set(1);

@@ -86,7 +86,7 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -135,7 +135,7 @@ Variables:
 
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -149,7 +149,7 @@ Variables:
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Mixer -->

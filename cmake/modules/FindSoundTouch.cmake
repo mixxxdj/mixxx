@@ -62,7 +62,7 @@ find_library(SoundTouch_LIBRARY
 mark_as_advanced(SoundTouch_LIBRARY)
 
 # Version detection
-if(DEFINED PC_SoundTouch_VERSION)
+if(DEFINED PC_SoundTouch_VERSION AND NOT PC_SoundTouch_VERSION STREQUAL "")
   set(SoundTouch_VERSION "${PC_SoundTouch_VERSION}")
 else()
   if(EXISTS "${SoundTouch_INCLUDE_DIR}/soundtouch/SoundTouch.h")

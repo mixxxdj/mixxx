@@ -70,12 +70,12 @@ Qt::Alignment WWidgetGroup::layoutAlignment() const {
     return pLayout ? pLayout->alignment() : Qt::Alignment();
 }
 
-void WWidgetGroup::setLayoutAlignment(int alignment) {
+void WWidgetGroup::setLayoutAlignment(Qt::Alignment alignment) {
     //qDebug() << "WWidgetGroup::setLayoutAlignment" << alignment;
 
     QLayout* pLayout = layout();
     if (pLayout) {
-        pLayout->setAlignment(static_cast<Qt::Alignment>(alignment));
+        pLayout->setAlignment(alignment);
     }
 }
 

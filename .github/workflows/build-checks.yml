@@ -25,7 +25,7 @@ jobs:
     name: ${{ matrix.name }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install build dependencies
         run: tools/debian_buildenv.sh setup
       - name: Create build directory
@@ -111,13 +111,13 @@ jobs:
             ..
         working-directory: build
       - name: Set up problem matcher
-        uses: ammaraskar/gcc-problem-matcher@master
+        uses: ammaraskar/gcc-problem-matcher@0.2.0
       - name: Build
         # Do not abort on errors and build/check the whole project
         run: cmake --build . -j $(nproc) -- --keep-going
         working-directory: build
         env:
-          CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression,no-missing-typeinfo,no-base-class-event
+          CLAZY_CHECKS: level2,container-inside-loop,heap-allocated-small-trivial-type,isempty-vs-count,qhash-with-char-pointer-key,qproperty-type-mismatch,tr-non-literal,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression
           CLAZY_IGNORE_DIRS: lib/.*
       - name: "Test"
         if: matrix.name == 'coverage'
@@ -146,7 +146,7 @@ jobs:
       - name: "Upload Coverage Report to coveralls.io"
         if: matrix.name == 'coverage'
         continue-on-error: true
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2.2.3
         with:
           flag-name: ubuntu-22.04
           path-to-lcov: build/lcov.info

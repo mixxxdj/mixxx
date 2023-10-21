@@ -33,8 +33,12 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     }
     // Store search text
     QString currSearch = currentSearch();
-    if (m_selectedCrate.isValid() && !currSearch.trimmed().isEmpty()) {
-        m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+    if (m_selectedCrate.isValid()) {
+        if (!currSearch.trimmed().isEmpty()) {
+            m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+        } else {
+            m_searchTexts.remove(m_selectedCrate.value());
+        }
     }
 
     m_selectedCrate = crateId;

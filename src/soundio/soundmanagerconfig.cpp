@@ -8,16 +8,11 @@
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
-// this (7) represents latency values from 1 ms to about 80 ms -- bkgood
-const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
-
 const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
 const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 // Sample Rate even the cheap sound Devices will support most likely
 const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;
-// audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
-const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
 const int SoundManagerConfig::kDefaultSyncBuffers = 2;
 
@@ -181,7 +176,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) {
+            if (out.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -204,7 +199,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) {
+            if (in.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
@@ -355,9 +350,9 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if ((type == AudioInput::DECK ||
-                        type == AudioInput::VINYLCONTROL ||
-                        type == AudioInput::AUXILIARY) &&
+            if ((type == AudioPathType::Deck ||
+                        type == AudioPathType::VinylControl ||
+                        type == AudioPathType::Auxiliary) &&
                     index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = index + 1;
@@ -368,7 +363,7 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
+            if (type == AudioPathType::Deck && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
                 minimum_deck_count = index + 1;
             }
@@ -389,6 +384,25 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
 // This reflects the configured value only. In case of JACK the
 // setting of the JACK server is used.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
+    if (m_api == MIXXX_PORTAUDIO_JACK_STRING) {
+        // in case of jack we configure the frames/period
+        if (m_audioBufferSizeIndex ==
+                static_cast<unsigned int>(
+                        JackAudioBufferSizeIndex::Size4096fpp)) {
+            return 4096;
+        } else if (m_audioBufferSizeIndex ==
+                static_cast<unsigned int>(
+                        JackAudioBufferSizeIndex::Size2048fpp)) {
+            return 2048;
+        }
+        // default is auto <= 1024
+        // The Jack buffer size can change at any time, so we
+        // need buffers for the maximum of 1024 (limited by Portaudio).
+        return 1024;
+    }
+
+    // With the other APIs we calc the frames per buffer form the sample rate
+
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
     VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
@@ -424,9 +438,9 @@ void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutpu
 
 void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
     m_inputs.insert(device, in);
-    if (in.getType() == AudioPath::MICROPHONE) {
+    if (in.getType() == AudioPathType::Microphone) {
         m_iNumMicInputs++;
-    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+    } else if (in.getType() == AudioPathType::RecordBroadcast) {
         m_bExternalRecordBroadcastConnected = true;
     }
 }
@@ -458,11 +472,11 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
 }
 
 /**
- * Loads default values for API, master output, sample rate and/or latency.
+ * Loads default values for API, main output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
  * @param flags Bitfield to determine which defaults to load, use something
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
+ *              load default API and main device.
  */
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
@@ -505,8 +519,8 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(pDevice->getDeviceId(), masterOut);
+                auto mainOut = AudioOutput(AudioPathType::Main, 0, 2, 0);
+                addOutput(pDevice->getDeviceId(), mainOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }

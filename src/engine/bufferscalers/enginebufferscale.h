@@ -73,4 +73,6 @@ class EngineBufferScale : public QObject {
     bool m_bSpeedAffectsPitch;
     double m_dTempoRatio;
     double m_dPitchRatio;
+    // Due to the scaler latency, tempo and pitch changes are not immediately effective.
+    double m_effectiveRate;
 };

@@ -24,7 +24,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
   private slots:
     void effectsTableItemSelected(const QModelIndex& selected);
-    void slotChainPresetSelected(const QModelIndex& selected);
+    void slotChainPresetSelectionChanged(const QItemSelection& selected);
     void slotImportPreset();
     void slotExportPreset();
     void slotRenamePreset();

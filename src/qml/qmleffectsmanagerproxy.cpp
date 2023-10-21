@@ -4,8 +4,7 @@
 #include <memory>
 
 #include "effects/effectchain.h"
-#include "qml/qmleffectslotproxy.h"
-#include "qml/qmlvisibleeffectsmodel.h"
+#include "moc_qmleffectsmanagerproxy.cpp"
 
 namespace mixxx {
 namespace qml {

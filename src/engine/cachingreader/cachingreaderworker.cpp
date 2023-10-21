@@ -234,8 +234,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
-    const SINT sampleCount =
-            CachingReaderChunk::frames2samples(
+    const double sampleCount =
+            CachingReaderChunk::dFrames2samples(
                     m_pAudioSource->frameLength());
 
     // This code is a workaround until we have found a better solution to
@@ -283,7 +283,8 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
             // This can happen in case of track edits or replacements, changed
             // encoders or encoding issues.
             qWarning() << "First sound has been moved! The beatgrid and "
-                          "other annotations are no longer valid";
+                          "other annotations are no longer valid"
+                       << m_pAudioSource->getUrlString();
         }
         m_firstSoundFrameToVerify = mixxx::audio::FramePos();
     }

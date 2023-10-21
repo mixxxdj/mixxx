@@ -196,9 +196,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
                                         QSet<TrackId>* pTracksChanged);
 
     // Callback for GlobalTrackCache
-    mixxx::FileAccess relocateCachedTrack(
-            TrackId trackId,
-            mixxx::FileAccess fileAccess) override;
+    mixxx::FileAccess relocateCachedTrack(TrackId trackId) override;
 
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;

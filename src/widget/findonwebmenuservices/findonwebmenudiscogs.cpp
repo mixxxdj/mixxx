@@ -3,6 +3,7 @@
 #include <QMenu>
 #include <QUrlQuery>
 
+#include "moc_findonwebmenudiscogs.cpp"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
