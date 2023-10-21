@@ -1,0 +1,51 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMixer<Variable name="i"/></ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children>
+
+      <!-- In 2 deck mode, we show a 2-column mixer section -->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:deck_mixer_controls_col1.xml"/>
+          <Template src="skin:deck_mixer_controls_col2.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- In 4 deck mode, we show a 2-column mixer section -->
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <Template src="skin:deck_mixer_controls_col1.xml"/>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <ObjectName>4DecksMixerCol2Container</ObjectName>
+            <Children>
+              <Template src="skin:deck_mixer_controls_col2.xml"/>
+            </Children>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

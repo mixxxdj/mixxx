@@ -1,0 +1,57 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A 5-state left-click push button.
+    Currently used for controlling effect parameters linked to the super knob.
+  Variables:
+    ObjectName: The object name.
+    Size: the button size.
+    state_X_text:
+    state_X_pressed:
+    state_X_unpressed:
+    left_connection_control:
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName><Variable name="ObjectName"/></ObjectName>
+    <MinimumSize><Variable name="MinimumSize"/></MinimumSize>
+    <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
+    <NumberStates>5</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_0_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_0_unpressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_1_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_1_unpressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>2</Number>
+      <Text><Variable name="state_2_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_2_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_2_unpressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>3</Number>
+      <Text><Variable name="state_3_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_3_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_3_unpressed"/></Unpressed>
+    </State>
+    <State>
+      <Number>4</Number>
+      <Text><Variable name="state_4_text"/></Text>
+      <Pressed scalemode="STRETCH_ASPECT"><Variable name="state_4_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT"><Variable name="state_4_unpressed"/></Unpressed>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="left_connection_control"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

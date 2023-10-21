@@ -1,0 +1,390 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Sample deck container widget.
+-->
+<Template>
+  <SingletonDefinition>
+    <ObjectName>SamplerRow1</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">1</SetVariable>
+        <SetVariable name="1">1</SetVariable>
+        <SetVariable name="2">2</SetVariable>
+        <SetVariable name="3">3</SetVariable>
+        <SetVariable name="4">4</SetVariable>
+        <SetVariable name="5">5</SetVariable>
+        <SetVariable name="6">6</SetVariable>
+        <SetVariable name="7">7</SetVariable>
+        <SetVariable name="8">8</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow2</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">2</SetVariable>
+        <SetVariable name="1">9</SetVariable>
+        <SetVariable name="2">10</SetVariable>
+        <SetVariable name="3">11</SetVariable>
+        <SetVariable name="4">12</SetVariable>
+        <SetVariable name="5">13</SetVariable>
+        <SetVariable name="6">14</SetVariable>
+        <SetVariable name="7">15</SetVariable>
+        <SetVariable name="8">16</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow3</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">3</SetVariable>
+        <SetVariable name="1">17</SetVariable>
+        <SetVariable name="2">18</SetVariable>
+        <SetVariable name="3">19</SetVariable>
+        <SetVariable name="4">20</SetVariable>
+        <SetVariable name="5">21</SetVariable>
+        <SetVariable name="6">22</SetVariable>
+        <SetVariable name="7">23</SetVariable>
+        <SetVariable name="8">24</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow4</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">4</SetVariable>
+        <SetVariable name="1">25</SetVariable>
+        <SetVariable name="2">26</SetVariable>
+        <SetVariable name="3">27</SetVariable>
+        <SetVariable name="4">28</SetVariable>
+        <SetVariable name="5">29</SetVariable>
+        <SetVariable name="6">30</SetVariable>
+        <SetVariable name="7">31</SetVariable>
+        <SetVariable name="8">32</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow5</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">5</SetVariable>
+        <SetVariable name="1">33</SetVariable>
+        <SetVariable name="2">34</SetVariable>
+        <SetVariable name="3">35</SetVariable>
+        <SetVariable name="4">36</SetVariable>
+        <SetVariable name="5">37</SetVariable>
+        <SetVariable name="6">38</SetVariable>
+        <SetVariable name="7">39</SetVariable>
+        <SetVariable name="8">40</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow6</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">6</SetVariable>
+        <SetVariable name="1">41</SetVariable>
+        <SetVariable name="2">42</SetVariable>
+        <SetVariable name="3">43</SetVariable>
+        <SetVariable name="4">44</SetVariable>
+        <SetVariable name="5">45</SetVariable>
+        <SetVariable name="6">46</SetVariable>
+        <SetVariable name="7">47</SetVariable>
+        <SetVariable name="8">48</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow7</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">7</SetVariable>
+        <SetVariable name="1">49</SetVariable>
+        <SetVariable name="2">50</SetVariable>
+        <SetVariable name="3">51</SetVariable>
+        <SetVariable name="4">52</SetVariable>
+        <SetVariable name="5">53</SetVariable>
+        <SetVariable name="6">54</SetVariable>
+        <SetVariable name="7">55</SetVariable>
+        <SetVariable name="8">56</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerRow8</ObjectName>
+    <Children>
+      <Template src="skin:sampler_row.xml">
+        <SetVariable name="row">8</SetVariable>
+        <SetVariable name="1">57</SetVariable>
+        <SetVariable name="2">58</SetVariable>
+        <SetVariable name="3">59</SetVariable>
+        <SetVariable name="4">60</SetVariable>
+        <SetVariable name="5">61</SetVariable>
+        <SetVariable name="6">62</SetVariable>
+        <SetVariable name="7">63</SetVariable>
+        <SetVariable name="8">64</SetVariable>
+      </Template>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+    <Layout>vertical</Layout>
+    <!-- I don't now why this works but a WidgetGroup wrapper around a
+         WidgetStack with a 'fixed' size policy makes the group track the
+         minimum size of the current stack widget. -->
+    <SizePolicy>me,f</SizePolicy>
+    <Children>
+      <!-- Although the minimum size is now tracked correctly, the border
+          applied via qss is not added to child widgets size but substracted
+          from the WidgetStack's usable height.
+          Creating the border with fixed-size WidgetGroups solves this. -->
+      <WidgetGroup><Size>-1me,2f</Size></WidgetGroup>
+
+      <WidgetStack currentpage="[Deere],sampler_row_current" persist="true">
+        <ObjectName>SampleDecksContainer</ObjectName>
+        <NextControl>[Deere],sampler_row_next</NextControl>
+        <PrevControl>[Deere],sampler_row_prev</PrevControl>
+        <Children>
+
+          <WidgetGroup trigger="[Deere],sampler_row_1">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_2">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_3">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+        <WidgetGroup trigger="[Deere],sampler_row_4">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow4</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_5">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow4</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow5</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_6">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow4</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow5</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow6</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_7">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow4</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow5</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow6</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow7</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup trigger="[Deere],sampler_row_8">
+            <ObjectName>SamplerRows</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow1</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow2</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow3</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow4</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow5</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow6</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow7</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>SamplerRow8</ObjectName>
+              </SingletonContainer>
+
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+      <WidgetGroup><Size>-1me,2f</Size></WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
+

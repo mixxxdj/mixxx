@@ -1,0 +1,102 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck controls row (transport, beatgrid, looping, hotcue, etc.).
+  Variables:
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ControlsRow</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>      
+      <!-- Expanding spacers in between control contexts-->
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">sync_enabled</SetVariable>
+            <SetVariable name="ObjectName">DeckSync</SetVariable>
+            <SetVariable name="MinimumSize">-1,18</SetVariable>
+            <SetVariable name="MaximumSize">-1,18</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text">Sync</SetVariable>
+            <SetVariable name="state_0_pressed"></SetVariable>
+            <SetVariable name="state_0_unpressed"></SetVariable>
+            <SetVariable name="state_1_text">Sync</SetVariable>
+            <SetVariable name="state_1_pressed"></SetVariable>
+            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+          </Template>
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">play_cue_set</SetVariable>
+            <SetVariable name="ObjectName">PlayToggle</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+            <SetVariable name="LeftClickIsPushButton">false</SetVariable>
+            <SetVariable name="RightClickIsPushButton">false</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+            <SetVariable name="display_connection_control"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+          <WidgetGroup>
+            <ObjectName>TempoControlButtons</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_right_display_2state_button.xml">
+                <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
+                <SetVariable name="ObjectName">DeckCue</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="LeftClickIsPushButton">true</SetVariable>
+                <SetVariable name="RightClickIsPushButton">true</SetVariable>
+                <SetVariable name="state_0_text">CUE</SetVariable>
+                <SetVariable name="state_1_text">CUE</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,cue_gotoandstop</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,cue_indicator</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <ObjectName>RateTempButtons</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:left_right_1state_button.xml">
+                    <SetVariable name="ObjectName">TempRateDown</SetVariable>
+                    <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
+                    <SetVariable name="MinimumSize">20,20</SetVariable>
+                    <SetVariable name="MaximumSize">20,20</SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_down</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_right_1state_button.xml">
+                    <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
+                    <SetVariable name="ObjectName">TempRateUp</SetVariable>
+                    <SetVariable name="MinimumSize">20,20</SetVariable>
+                    <SetVariable name="MaximumSize">20,20</SetVariable>
+                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                    <SetVariable name="state_0_text"></SetVariable>
+                    <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,rate_temp_up</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_up_small</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <Template src="skin:hotcue.xml"/>
+    </Children>        
+  </WidgetGroup>
+</Template>
