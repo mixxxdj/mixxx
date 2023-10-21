@@ -74,7 +74,7 @@ void WaveformRendererLRRGB::paintGL() {
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactorAbs = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
+    const float heightFactorAbs = allGain * halfBreadth / 255.f;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
@@ -92,13 +92,12 @@ void WaveformRendererLRRGB::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    const int linesReserved = numVerticesPerLine * (length * 2 + 1);
-    const int colorsReserved = numVerticesPerLine * (length * 2 + 1);
+    const int reserved = numVerticesPerLine * (length * 2 + 1);
 
     m_vertices.clear();
-    m_vertices.reserve(linesReserved);
+    m_vertices.reserve(reserved);
     m_colors.clear();
-    m_colors.reserve(colorsReserved);
+    m_colors.reserve(reserved);
 
     m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
@@ -140,48 +139,61 @@ void WaveformRendererLRRGB::paintGL() {
         const float fpos = static_cast<float>(pos);
 
         for (int chn = 0; chn < 2; chn++) {
-            float maxLow{};
-            float maxMid{};
-            float maxHigh{};
-            float maxAll{};
-
+            // Find the max values for low, mid, high and all in the waveform data
+            uchar u8maxLow{};
+            uchar u8maxMid{};
+            uchar u8maxHigh{};
+            uchar u8maxAll{};
             // data is interleaved left / right
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
 
-                const float filteredLow = static_cast<float>(waveformData.filtered.low);
-                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
-
-                maxLow = math_max(maxLow, filteredLow);
-                maxMid = math_max(maxMid, filteredMid);
-                maxHigh = math_max(maxHigh, filteredHigh);
-
-                const float all = math_pow2(filteredLow) * lowGain +
-                        math_pow2(filteredMid) * midGain +
-                        math_pow2(filteredHigh) * highGain;
-                maxAll = math_max(maxAll, all);
+                u8maxLow = math_max(u8maxLow, waveformData.filtered.low);
+                u8maxMid = math_max(u8maxMid, waveformData.filtered.mid);
+                u8maxHigh = math_max(u8maxHigh, waveformData.filtered.high);
+                u8maxAll = math_max(u8maxAll, waveformData.filtered.all);
             }
 
+            // Cast to float
+            float maxLow = static_cast<float>(u8maxLow);
+            float maxMid = static_cast<float>(u8maxMid);
+            float maxHigh = static_cast<float>(u8maxHigh);
+            float maxAll = static_cast<float>(u8maxAll);
+
+            // Calculate the magnitude of the maxLow, maxMid and maxHigh values
+            const float magnitude = std::sqrt(
+                    math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh));
+
+            // Apply the gains
             maxLow *= lowGain;
             maxMid *= midGain;
             maxHigh *= highGain;
 
+            // Calculate the magnitude of the gained maxLow, maxMid and maxHigh values
+            const float magnitudeGained = std::sqrt(
+                    math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh));
+
+            // The maxAll value will be used to draw the amplitude. We scale them according to
+            // magnitude of the gained maxLow, maxMid and maxHigh values
+            if (magnitude != 0.f) {
+                const float factor = magnitudeGained / magnitude;
+                maxAll *= factor;
+            }
+
+            // Use the gained maxLow, maxMid and maxHigh values to calculate the color components
             float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;
             float green = maxLow * low_g + maxMid * mid_g + maxHigh * high_g;
             float blue = maxLow * low_b + maxMid * mid_b + maxHigh * high_b;
 
-            const float max = math_max3(red, green, blue);
-
-            // Normalize red, green, blue, using the maximum of the three
-
-            if (max == 0.f) {
-                // avoid division by 0
+            // Normalize the color components using the maximum of the three
+            const float maxComponent = math_max3(red, green, blue);
+            if (maxComponent == 0.f) {
+                // Avoid division by 0
                 red = 0.f;
                 green = 0.f;
                 blue = 0.f;
             } else {
-                const float normFactor = 1.f / max;
+                const float normFactor = 1.f / maxComponent;
                 red *= normFactor;
                 green *= normFactor;
                 blue *= normFactor;
@@ -193,15 +205,15 @@ void WaveformRendererLRRGB::paintGL() {
             m_vertices.addRectangle(fpos - 0.5f,
                     halfBreadth,
                     fpos + 0.5f,
-                    halfBreadth + heightFactor[chn] * std::sqrt(maxAll));
+                    halfBreadth + heightFactor[chn] * maxAll);
             m_colors.addForRectangle(red, green, blue);
         }
 
         xVisualSampleIndex += visualIncrementPerPixel;
     }
 
-    DEBUG_ASSERT(linesReserved == m_vertices.size());
-    DEBUG_ASSERT(colorsReserved == m_colors.size());
+    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reserved == m_colors.size());
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
