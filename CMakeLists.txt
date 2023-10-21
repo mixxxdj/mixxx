@@ -1430,6 +1430,7 @@ else()
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
       src/shaders/endoftrackshader.cpp
+      src/shaders/patternshader.cpp
       src/shaders/rgbashader.cpp
       src/shaders/rgbshader.cpp
       src/shaders/shader.cpp
