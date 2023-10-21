@@ -105,7 +105,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                     marksOnScreen[pMark] = drawOffset;
                 }
             } else {
-                const int markHalfHeight = static_cast<int>(pMark->m_image.height() / 2.0);
+                const int markHalfHeight =
+                        static_cast<int>(pMark->m_image.height() / 2.0 /
+                                m_waveformRenderer->getDevicePixelRatio());
                 const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfHeight;
 
                 bool visible = false;
@@ -113,7 +115,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 if (currentMarkPoint > -markHalfHeight &&
                         currentMarkPoint < m_waveformRenderer->getHeight() +
                                         markHalfHeight) {
-                    painter->drawImage(drawOffset, 0, pMark->m_image);
+                    painter->drawImage(0, drawOffset, pMark->m_image);
                     visible = true;
                 }
 
@@ -206,7 +208,13 @@ void WaveformRenderMark::slotCuesUpdated() {
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
-    pMark->m_image = pMark->generateImage(m_waveformRenderer->getBreadth(),
-            m_waveformRenderer->getDevicePixelRatio());
+    if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+        pMark->m_image = pMark->generateImage(m_waveformRenderer->getBreadth(),
+                m_waveformRenderer->getDevicePixelRatio());
+    } else {
+        pMark->m_image = pMark->generateImage(m_waveformRenderer->getBreadth(),
+                                      m_waveformRenderer->getDevicePixelRatio())
+                                 .transformed(QTransform().rotate(90));
+    }
     pMark->m_needsUpdate = false;
 }

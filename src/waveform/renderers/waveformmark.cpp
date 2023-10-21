@@ -125,21 +125,14 @@ void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
 };
 
 bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
-    qDebug() << "contains" << point << m_label.area();
-
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 5.0;
-    int position;
-    if (orientation == Qt::Horizontal) {
-        position = point.x();
-    } else {
-        position = point.y();
+    if (orientation == Qt::Vertical) {
+        point = QPoint(point.y(), m_breadth - point.x());
     }
-    bool lineHovered = m_linePosition >= position - lineHoverPadding &&
-            m_linePosition <= position + lineHoverPadding;
-
-    qDebug() << "---contains " << point << m_label.area() << m_linePosition;
+    bool lineHovered = m_linePosition >= point.x() - lineHoverPadding &&
+            m_linePosition <= point.x() + lineHoverPadding;
 
     return m_label.area().contains(point) || lineHovered;
 }
@@ -253,6 +246,8 @@ struct MarkerGeometry {
 QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
+
+    m_breadth = static_cast<int>(breadth);
 
     if (!m_pixmapPath.isEmpty()) {
         QString path = m_pixmapPath;

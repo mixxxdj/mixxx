@@ -103,7 +103,8 @@ class WaveformMark {
     Qt::Alignment m_align;
     QString m_pixmapPath;
 
-    float m_linePosition;
+    float m_linePosition{};
+    int m_breadth{};
 
     WaveformMarkLabel m_label;
 
