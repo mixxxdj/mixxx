@@ -1,6 +1,7 @@
 #include "waveformmark.h"
 
 #include <QOpenGLTexture>
+#include <QPainterPath>
 #include <QtDebug>
 
 #include "skin/legacy/skincontext.h"
@@ -306,16 +307,22 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
     painter.setWorldMatrixEnabled(false);
 
     // Draw marker lines
-    const float hcenter = markerGeometry.m_imageSize.width() / 2.f;
-    m_linePosition = hcenter;
+    const auto hcenter = markerGeometry.m_imageSize.width() / 2.f;
+    m_linePosition = static_cast<float>(hcenter);
 
     // Draw the center line
     painter.setPen(fillColor());
     painter.drawLine(QLineF(hcenter, 0.f, hcenter, markerGeometry.m_imageSize.height()));
 
     painter.setPen(borderColor());
-    painter.drawLine(QLineF(hcenter - 1.f, 0, hcenter - 1.f, markerGeometry.m_imageSize.height()));
-    painter.drawLine(QLineF(hcenter + 1.f, 0, hcenter + 1.f, markerGeometry.m_imageSize.height()));
+    painter.drawLine(QLineF(hcenter - 1.f,
+            0.f,
+            hcenter - 1.f,
+            markerGeometry.m_imageSize.height()));
+    painter.drawLine(QLineF(hcenter + 1.f,
+            0.f,
+            hcenter + 1.f,
+            markerGeometry.m_imageSize.height()));
 
     if (label.length() != 0) {
         painter.setPen(borderColor());
