@@ -443,6 +443,8 @@ class Track : public QObject {
     void loopRemove();
     void analyzed();
 
+    void cuesUpdatedWithCueList(const QList<CuePointer>& cuePointerList);
+
     void changed(TrackId trackId);
     void dirty(TrackId trackId);
     void clean(TrackId trackId);

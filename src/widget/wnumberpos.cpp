@@ -1,5 +1,4 @@
 #include "widget/wnumberpos.h"
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wnumberpos.cpp"
@@ -28,6 +27,9 @@ WNumberPos::WNumberPos(const QString& group, QWidget* parent)
     m_pTimeFormat->connectValueChanged(
             this, &WNumberPos::slotSetTimeFormat);
     slotSetTimeFormat(m_pTimeFormat->get());
+
+    m_pBeatCountNextCue = make_parented<ControlProxy>(
+            group, "beat_count_next_cue", this);
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
@@ -40,6 +42,8 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
         } else if (m_displayMode == TrackTime::DisplayMode::REMAINING) {
             m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
         } else if (m_displayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
+            m_displayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
+        } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
             m_displayMode = TrackTime::DisplayMode::ELAPSED;
         }
 
@@ -93,6 +97,16 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
             setText(QLatin1String("-") % timeFormat(-dTimeElapsed, precision)
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         }
+    } else if (m_displayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
+        if (m_pBeatCountNextCue && m_pBeatCountNextCue->get() >= 0) {
+            //ToDo (Maldini) - Count until outro after the last cue point
+            setText(QString::fromStdString(
+                            std::to_string((int)m_pBeatCountNextCue->get()) + " beats | " + "-") +
+                    timeFormat(dTimeRemaining, precision));
+        } else {
+            //Fallback to remaining time display
+            setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
+        }
     }
     m_dOldTimeElapsed = dTimeElapsed;
 }
@@ -113,12 +127,14 @@ void WNumberPos::slotSetDisplayMode(double remain) {
         m_displayMode = TrackTime::DisplayMode::REMAINING;
     } else if (remain == 2.0) {
         m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
+    } else if (remain == 3.0) {
+        m_displayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
     } else {
         m_displayMode = TrackTime::DisplayMode::ELAPSED;
     }
-
     slotSetTimeElapsed(m_dOldTimeElapsed);
 }
+
 void WNumberPos::slotSetTimeFormat(double v) {
     m_displayFormat = static_cast<TrackTime::DisplayFormat>(static_cast<int>(v));
 

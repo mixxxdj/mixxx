@@ -100,6 +100,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
             static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
+    } else if (positionDisplayType ==
+            static_cast<double>(TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING)) {
+        radioButtonBeatsUntilNextCueAndRemaining->setChecked(true);
+        m_pControlTrackTimeDisplay->set(
+                static_cast<double>(TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
@@ -620,6 +625,8 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
     } else if (b == radioButtonElapsedAndRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
+    } else if (b == radioButtonBeatsUntilNextCueAndRemaining) {
+        m_timeDisplayMode = TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING;
     } else {
         m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED;
     }
@@ -632,6 +639,8 @@ void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
         radioButtonRemaining->setChecked(true);
     } else if (m_timeDisplayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
         radioButtonElapsedAndRemaining->setChecked(true);
+    } else if (m_timeDisplayMode == TrackTime::DisplayMode::BEATS_UNTIL_NEXT_CUE_AND_REMAINING) {
+        radioButtonBeatsUntilNextCueAndRemaining->setChecked(true);
     } else { // Elapsed
         radioButtonElapsed->setChecked(true);
     }

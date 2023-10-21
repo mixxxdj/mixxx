@@ -2,8 +2,8 @@
 
 #include <QMouseEvent>
 
-#include "wnumber.h"
 #include "preferences/dialog/dlgprefdeck.h"
+#include "wnumber.h"
 
 class ControlProxy;
 
@@ -33,4 +33,6 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pTimeRemaining;
     ControlProxy* m_pShowTrackTimeRemaining;
     ControlProxy* m_pTimeFormat;
+
+    parented_ptr<ControlProxy> m_pBeatCountNextCue;
 };

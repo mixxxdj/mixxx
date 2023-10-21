@@ -17,10 +17,16 @@ constexpr double kSignificiantRateThreshold =
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pCOBeatActive(std::make_unique<ControlObject>(ConfigKey(group, "beat_active"))),
-          m_pLoopEnabled(std::make_unique<ControlProxy>(group, "loop_enabled", this)),
-          m_pLoopStartPosition(std::make_unique<ControlProxy>(group, "loop_start_position", this)),
-          m_pLoopEndPosition(std::make_unique<ControlProxy>(group, "loop_end_position", this)),
+          m_pCOBeatActive(std::make_unique<ControlObject>(
+                  ConfigKey(group, "beat_active"))),
+          m_pBeatCountNextCue(std::make_unique<ControlObject>(
+                  ConfigKey(group, "beat_count_next_cue"))),
+          m_pLoopEnabled(
+                  std::make_unique<ControlProxy>(group, "loop_enabled", this)),
+          m_pLoopStartPosition(std::make_unique<ControlProxy>(
+                  group, "loop_start_position", this)),
+          m_pLoopEndPosition(std::make_unique<ControlProxy>(
+                  group, "loop_end_position", this)),
           m_lastPlayDirectionWasForwards(true),
           m_lastEvaluatedPosition(mixxx::audio::kStartFramePos),
           m_prevBeatPosition(mixxx::audio::kStartFramePos),
@@ -29,6 +35,8 @@ ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
           m_internalState(StateMachine::outsideIndicationArea) {
     m_pCOBeatActive->setReadOnly();
     m_pCOBeatActive->forceSet(0.0);
+    m_pBeatCountNextCue->setReadOnly();
+    m_pBeatCountNextCue->forceSet(0.0);
 }
 
 ClockControl::~ClockControl() = default;
@@ -38,14 +46,21 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
         pBeats = pNewTrack->getBeats();
+        m_pTrackCues = pNewTrack->getCuePoints();
     }
     trackBeatsUpdated(pBeats);
+    QObject::connect(
+            pNewTrack.get(), &Track::cuesUpdatedWithCueList, this, &ClockControl::trackCuesUpdated);
 }
 
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // Clear on-beat control
     m_pCOBeatActive->forceSet(0.0);
     m_pBeats = pBeats;
+}
+
+void ClockControl::trackCuesUpdated(const QList<CuePointer>& cuePointerList) {
+    m_pTrackCues = cuePointerList;
 }
 
 void ClockControl::updateIndicators(const double dRate,
@@ -85,6 +100,7 @@ void ClockControl::updateIndicators(const double dRate,
                     &m_nextBeatPosition,
                     false); // Precise compare without tolerance needed
         }
+        updateBeatCounter(pBeats, currentPosition);
     } else {
         m_prevBeatPosition = mixxx::audio::kInvalidFramePos;
         m_nextBeatPosition = mixxx::audio::kInvalidFramePos;
@@ -203,4 +219,35 @@ void ClockControl::updateIndicators(const double dRate,
         m_lastPlayDirectionWasForwards = false;
     }
     m_lastEvaluatedPosition = currentPosition;
+}
+
+void ClockControl::updateBeatCounter(mixxx::BeatsPointer pBeats,
+        mixxx::audio::FramePos currentFramePos) {
+    //Initialize FramePos to hold an invalid position unless overridden
+    mixxx::audio::FramePos nextCueFramePos =
+            mixxx::audio::FramePos();
+
+    //Iterate through current Track cues and get the closest to the current play position
+    for (const auto& cue : qAsConst(m_pTrackCues)) {
+        mixxx::audio::FramePos cueFramePos = cue->getPosition();
+        if (cueFramePos.isValid()) {
+            if (cueFramePos >= currentFramePos) {
+                if (!nextCueFramePos.isValid()) {
+                    nextCueFramePos = cueFramePos;
+                } else if (nextCueFramePos >= cueFramePos) {
+                    nextCueFramePos = cueFramePos;
+                }
+            }
+        }
+    }
+
+    //ToDo (Maldini) - Get beat counters for every cue point to help with multi drop mixes
+    if (nextCueFramePos.isValid()) {
+        m_pBeatCountNextCue->forceSet(
+                pBeats->numBeatsInRange(
+                        currentFramePos, nextCueFramePos));
+    } else {
+        //ToDo (Maldini) - Count until outro after the last cue point
+        m_pBeatCountNextCue->forceSet(-1.0);
+    }
 }
