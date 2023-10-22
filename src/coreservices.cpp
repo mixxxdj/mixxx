@@ -38,6 +38,7 @@
 #include "util/translations.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "axkaremote/axkaremote.h"
 
 #ifdef __APPLE__
 #include "util/sandbox.h"
@@ -311,6 +312,8 @@ void CoreServices::initialize(QApplication* pApp) {
     m_pPlayerManager->addPreviewDeck();
 
     m_pEffectsManager->setup();
+
+    m_pAxkaRemote = std::make_unique<mixxx::AxkaRemote>(pConfig);
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();

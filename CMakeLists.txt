@@ -209,6 +209,7 @@ endif()
 #######################################################################
 # Compilers and toolchains
 
+#set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   # GNU is GNU GCC
   set(GNU_GCC true)
@@ -1197,6 +1198,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/axkaremote/axkaremote.cpp
 )
 target_precompile_headers(mixxx-lib PUBLIC
   src/audio/frame.h
@@ -2562,6 +2564,7 @@ find_package(Qt${QT_VERSION_MAJOR}
     Test
     Widgets
     Xml
+    HttpServer
     ${QT_EXTRA_COMPONENTS}
   REQUIRED
 )
@@ -2579,7 +2582,8 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::Svg
   Qt${QT_VERSION_MAJOR}::Test
   Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml)
+  Qt${QT_VERSION_MAJOR}::Xml
+  Qt${QT_VERSION_MAJOR}::HttpServer)
 if(QT_EXTRA_COMPONENTS)
   foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
@@ -3535,3 +3539,4 @@ if(APPLE AND MACOS_BUNDLE)
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+

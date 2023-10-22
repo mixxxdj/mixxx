@@ -88,7 +88,9 @@ in pkgs.qt6Packages.callPackage ({
     libGLU, libid3tag, libkeyfinder, libmad, libmodplug, libopus, libsecret, libshout,
     libsndfile, libusb1, libvorbis, libxcb, lilv, lv2, mp4v2, opusfile, pcre, portaudio,
     portmidi, protobuf, qtbase, qtkeychain, qtsvg, rubberband,
-    serd, sord, soundtouch, sratom, sqlite, taglib, upower, vamp-plugin-sdk, wavpack, gtest, gbenchmark, qtdeclarative, qt5compat, microsoft_gsl
+    serd, sord, soundtouch, sratom, sqlite, taglib, upower, vamp-plugin-sdk, wavpack, gtest, gbenchmark, qtdeclarative, qt5compat, microsoft_gsl,
+
+    qthttpserver
 }: stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # Reading the version from git output is very hard to do without wasting lots of diskspace and
@@ -142,6 +144,7 @@ in pkgs.qt6Packages.callPackage ({
 
     pkgs.microsoft_gsl
     pkgs.gbenchmark
+    qthttpserver
   ] ++ allLv2Plugins;
 
   postInstall = (if releaseMode then ''

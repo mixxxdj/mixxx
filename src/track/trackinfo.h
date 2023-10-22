@@ -34,6 +34,9 @@ class TrackInfo final {
 #if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, language, Language)
     MIXXX_DECL_PROPERTY(QString, lyricist, Lyricist)
+#endif // __EXTRA_METADATA__
+    MIXXX_DECL_PROPERTY(QString, lyrics, Lyrics)
+#if defined(__EXTRA_METADATA__)
     MIXXX_DECL_PROPERTY(QString, mood, Mood)
     MIXXX_DECL_PROPERTY(QString, movement, Movement)
     MIXXX_DECL_PROPERTY(QUuid, musicBrainzArtistId, MusicBrainzArtistId)

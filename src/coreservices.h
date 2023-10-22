@@ -32,6 +32,7 @@ namespace mixxx {
 class ControlIndicatorTimer;
 class DbConnectionPool;
 class ScreensaverManager;
+class AxkaRemote;
 
 class CoreServices : public QObject {
     Q_OBJECT
@@ -147,6 +148,8 @@ class CoreServices : public QObject {
 
     std::unique_ptr<SkinControls> m_pSkinControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
+
+    std::unique_ptr<mixxx::AxkaRemote> m_pAxkaRemote;
 
     Timer m_runtime_timer;
     const CmdlineArgs& m_cmdlineArgs;

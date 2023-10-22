@@ -1,6 +1,7 @@
 #include "track/taglib/trackmetadata_common.h"
 
 #include <taglib/tmap.h>
+#include <taglib/tpropertymap.h>
 
 #include "track/tracknumbers.h"
 #include "util/assert.h"
@@ -255,6 +256,7 @@ void importTrackMetadataFromTag(
     pTrackMetadata->refTrackInfo().setArtist(toQString(tag.artist()));
     pTrackMetadata->refTrackInfo().setGenre(toQString(tag.genre()));
     pTrackMetadata->refAlbumInfo().setTitle(toQString(tag.album()));
+    pTrackMetadata->refTrackInfo().setLyrics(toQString(tag.properties().value("LYRICS").toString()));
 
     if ((readMask & ReadTagFlag::OmitComment) == 0) {
         pTrackMetadata->refTrackInfo().setComment(toQString(tag.comment()));
@@ -281,6 +283,13 @@ void exportTrackMetadataIntoTag(
     pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
     pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
     pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
+    pTag->setProperties(({
+        auto properties = TagLib::PropertyMap();
+        properties["LYRICS"] = TagLib::StringList(
+            toTString(trackMetadata.getTrackInfo().getLyrics())
+        );
+        properties;
+    }));
 
     // Using setComment() from TagLib::Tag might have undesirable
     // effects if the tag type supports multiple comment fields for
