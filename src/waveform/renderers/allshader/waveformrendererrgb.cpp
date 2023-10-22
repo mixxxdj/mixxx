@@ -156,19 +156,11 @@ void WaveformRendererRGB::paintGL() {
             }
         }
 
-        float maxLow;
-        float maxMid;
-        float maxHigh;
-        float maxAllChn[2];
-
         // Cast to float
-        maxLow = static_cast<float>(u8maxLow);
-        maxMid = static_cast<float>(u8maxMid);
-        maxHigh = static_cast<float>(u8maxHigh);
-        maxAllChn[0] = static_cast<float>(u8maxAllChn[0]);
-        maxAllChn[1] = static_cast<float>(u8maxAllChn[1]);
-
-        float maxAll = math_max(maxAllChn[0], maxAllChn[1]);
+        float maxLow = static_cast<float>(u8maxLow);
+        float maxMid = static_cast<float>(u8maxMid);
+        float maxHigh = static_cast<float>(u8maxHigh);
+        float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
 
         // Calculate the magnitude of the maxLow, maxMid and maxHigh values
         const float magnitude = std::sqrt(
