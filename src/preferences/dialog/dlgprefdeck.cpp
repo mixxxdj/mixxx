@@ -267,9 +267,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
 
-    //
     // Key lock mode
-    //
     connect(buttonGroupKeyLockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -282,9 +280,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
-    //
     // Key unlock mode
-    //
     connect(buttonGroupKeyUnlockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -297,10 +293,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
-    //
     // Cue Mode
-    //
-
     // Add "(?)" with a manual link to the label
     labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
             coloredLinkString(
@@ -308,10 +301,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_CUE_MODES_URL));
 
-    //
     // Speed / Pitch reset configuration
-    //
-
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
     int configSPAutoReset = m_pConfig->getValue<int>(
@@ -329,10 +319,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
 
-    //
     // Ramping Temporary Rate Change configuration
-    //
-
     // Rate Ramp Sensitivity slider & spinbox
     connect(SliderRateRampSensitivity,
             QOverload<int>::of(&QAbstractSlider::valueChanged),
