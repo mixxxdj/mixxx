@@ -1344,7 +1344,6 @@ class HIDController {
             if (this.activeDeck === 3 || this.activeDeck === 4) {
                 return "[Channel3]";
             }
-            return undefined;
         } else if (group === "deck2") {
             if (this.activeDeck === 1 || this.activeDeck === 2) {
                 return "[Channel2]";
@@ -1352,7 +1351,6 @@ class HIDController {
             if (this.activeDeck === 3 || this.activeDeck === 4) {
                 return "[Channel4]";
             }
-            return undefined;
         }
         return group;
     }
