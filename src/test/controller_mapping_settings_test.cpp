@@ -3,12 +3,9 @@
 
 #include <QDomDocument>
 
-// FIXME (acolombier): here we need the CPP file so the templated methods gets
-// built. AFAIK, there is an alternate solution which is to include the cpp file
-// in the CMake build list
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
-#include "controllers/legacycontrollersettings.cpp"
+#include "controllers/legacycontrollersettings.h"
 #include "test/mixxxtest.h"
 
 class LegacyControllerMappingSettingsTest : public MixxxTest {

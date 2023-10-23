@@ -45,20 +45,20 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
         return nullptr;
     }
 
-    LegacyControllerMappingFileHandler* pHandler = nullptr;
+    std::unique_ptr<LegacyControllerMappingFileHandler> pHandler;
     if (mappingFile.fileName().endsWith(
                 MIDI_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
-        pHandler = new LegacyMidiControllerMappingFileHandler();
+        pHandler = std::make_unique<LegacyMidiControllerMappingFileHandler>();
     } else if (mappingFile.fileName().endsWith(
                        HID_MAPPING_EXTENSION, Qt::CaseInsensitive) ||
             mappingFile.fileName().endsWith(
                     BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
 #ifdef __HID__
-        pHandler = new LegacyHidControllerMappingFileHandler();
+        pHandler = std::make_unique<LegacyHidControllerMappingFileHandler>();
 #endif
     }
 
-    if (pHandler == nullptr) {
+    if (!pHandler) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "has an unrecognized extension.";
         return nullptr;

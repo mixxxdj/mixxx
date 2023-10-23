@@ -17,6 +17,7 @@
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
+#include "util/parented_ptr.h"
 
 /// @brief The abstract controller setting. Any type of setting will have to
 /// implement this base class
@@ -208,7 +209,27 @@ class LegacyControllerNumberSetting
                           InputWidget>>,
           public AbstractLegacyControllerSetting {
   public:
-    LegacyControllerNumberSetting(const QDomElement& element);
+    LegacyControllerNumberSetting(const QDomElement& element)
+            : AbstractLegacyControllerSetting(element) {
+        bool isOk = false;
+        m_minValue = ValueDeserializer(element.attribute("min"), &isOk);
+        if (!isOk) {
+            m_minValue = std::numeric_limits<int>::min();
+        }
+        m_maxValue = ValueDeserializer(element.attribute("max"), &isOk);
+        if (!isOk) {
+            m_maxValue = std::numeric_limits<int>::max();
+        }
+        m_stepValue = ValueDeserializer(element.attribute("step"), &isOk);
+        if (!isOk) {
+            m_stepValue = 1;
+        }
+        m_defaultValue = ValueDeserializer(element.attribute("default"), &isOk);
+        if (!isOk) {
+            m_defaultValue = 0;
+        }
+        reset();
+    }
 
     virtual ~LegacyControllerNumberSetting() = default;
 
@@ -288,7 +309,7 @@ class LegacyControllerNumberSetting
 };
 
 template<class T>
-bool matchSetting(const QDomElement& element);
+inline bool matchSetting(const QDomElement& element);
 
 inline int extractSettingIntegerValue(const QString& str, bool* ok = nullptr) {
     return str.toInt(ok);
@@ -314,7 +335,14 @@ class LegacyControllerRealSetting : public LegacyControllerNumberSetting<double,
                                             extractSettingDoubleValue,
                                             QDoubleSpinBox> {
   public:
-    LegacyControllerRealSetting(const QDomElement& element);
+    LegacyControllerRealSetting(const QDomElement& element)
+            : LegacyControllerNumberSetting(element) {
+        bool isOk = false;
+        m_precisionValue = element.attribute("precision").toInt(&isOk);
+        if (!isOk) {
+            m_precisionValue = 2;
+        }
+    }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerRealSetting(element);
@@ -371,7 +399,7 @@ class LegacyControllerEnumSetting
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
         return new LegacyControllerEnumSetting(element);
     }
-    static bool match(const QDomElement& element);
+    static inline bool match(const QDomElement& element);
 
   protected:
     LegacyControllerEnumSetting(const QDomElement& element,
@@ -396,3 +424,36 @@ class LegacyControllerEnumSetting
 
     friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
 };
+
+template<>
+inline bool matchSetting<int>(const QDomElement& element) {
+    return element.hasAttribute("type") &&
+            QString::compare(element.attribute("type"),
+                    "integer",
+                    Qt::CaseInsensitive) == 0;
+}
+template<>
+inline bool matchSetting<double>(const QDomElement& element) {
+    return element.hasAttribute("type") &&
+            QString::compare(element.attribute("type"),
+                    "real",
+                    Qt::CaseInsensitive) == 0;
+}
+
+template<class SettingType,
+        Serializer<SettingType> ValueSerializer,
+        Deserializer<SettingType> ValueDeserializer,
+        class InputWidget>
+inline bool LegacyControllerNumberSetting<SettingType,
+        ValueSerializer,
+        ValueDeserializer,
+        InputWidget>::match(const QDomElement& element) {
+    return matchSetting<SettingType>(element);
+}
+
+inline bool LegacyControllerEnumSetting::match(const QDomElement& element) {
+    return element.hasAttribute("type") &&
+            QString::compare(element.attribute("type"),
+                    "enum",
+                    Qt::CaseInsensitive) == 0;
+}

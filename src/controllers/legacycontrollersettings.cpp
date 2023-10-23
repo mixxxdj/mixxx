@@ -7,7 +7,6 @@
 #include <QComboBox>
 
 #include "moc_legacycontrollersettings.cpp"
-#include "util/parented_ptr.h"
 
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::__self = nullptr;
 
@@ -119,35 +118,6 @@ template<class SettingType,
         Serializer<SettingType> ValueSerializer,
         Deserializer<SettingType> ValueDeserializer,
         class InputWidget>
-LegacyControllerNumberSetting<SettingType,
-        ValueSerializer,
-        ValueDeserializer,
-        InputWidget>::LegacyControllerNumberSetting(const QDomElement& element)
-        : AbstractLegacyControllerSetting(element) {
-    bool isOk = false;
-    m_minValue = ValueDeserializer(element.attribute("min"), &isOk);
-    if (!isOk) {
-        m_minValue = std::numeric_limits<int>::min();
-    }
-    m_maxValue = ValueDeserializer(element.attribute("max"), &isOk);
-    if (!isOk) {
-        m_maxValue = std::numeric_limits<int>::max();
-    }
-    m_stepValue = ValueDeserializer(element.attribute("step"), &isOk);
-    if (!isOk) {
-        m_stepValue = 1;
-    }
-    m_defaultValue = ValueDeserializer(element.attribute("default"), &isOk);
-    if (!isOk) {
-        m_defaultValue = 0;
-    }
-    reset();
-}
-
-template<class SettingType,
-        Serializer<SettingType> ValueSerializer,
-        Deserializer<SettingType> ValueDeserializer,
-        class InputWidget>
 QWidget* LegacyControllerNumberSetting<SettingType,
         ValueSerializer,
         ValueDeserializer,
@@ -169,36 +139,7 @@ QWidget* LegacyControllerNumberSetting<SettingType,
 
     return spinBox;
 }
-
-template<class SettingType,
-        Serializer<SettingType> ValueSerializer,
-        Deserializer<SettingType> ValueDeserializer,
-        class InputWidget>
-bool LegacyControllerNumberSetting<SettingType,
-        ValueSerializer,
-        ValueDeserializer,
-        InputWidget>::match(const QDomElement& element) {
-    return matchSetting<SettingType>(element);
-}
-
-template<>
-bool matchSetting<int>(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "integer",
-                    Qt::CaseInsensitive) == 0;
-}
-
 REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerIntegerSetting);
-
-LegacyControllerRealSetting::LegacyControllerRealSetting(const QDomElement& element)
-        : LegacyControllerNumberSetting(element) {
-    bool isOk = false;
-    m_precisionValue = element.attribute("precision").toInt(&isOk);
-    if (!isOk) {
-        m_precisionValue = 2;
-    }
-}
 
 QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
     QDoubleSpinBox* spinBox = dynamic_cast<QDoubleSpinBox*>(
@@ -212,15 +153,6 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
     return spinBox;
 }
-
-template<>
-bool matchSetting<double>(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "real",
-                    Qt::CaseInsensitive) == 0;
-}
-
 REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerRealSetting);
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
@@ -277,13 +209,6 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
             });
 
     return comboBox;
-}
-
-bool LegacyControllerEnumSetting::match(const QDomElement& element) {
-    return element.hasAttribute("type") &&
-            QString::compare(element.attribute("type"),
-                    "enum",
-                    Qt::CaseInsensitive) == 0;
 }
 
 REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerEnumSetting);
