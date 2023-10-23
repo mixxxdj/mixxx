@@ -49,10 +49,13 @@ private:
 
   void updateLabel();
 
+  void ensureTrackMenuIsCreated();
+
   const QString m_group;
   const UserSettingsPointer m_pConfig;
+  Library* m_pLibrary;
   TrackPointer m_pCurrentTrack;
   QString m_property;
 
-  const parented_ptr<WTrackMenu> m_pTrackMenu;
+  parented_ptr<WTrackMenu> m_pTrackMenu;
 };
