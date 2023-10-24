@@ -2,6 +2,7 @@
 
 #include <QColor>
 #include <QImage>
+#include <memory>
 
 #include "shaders/patternshader.h"
 #include "util/class.h"
