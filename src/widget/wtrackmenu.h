@@ -63,6 +63,24 @@ class WTrackMenu : public QMenu {
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
+    // Make all deck track widgets provide the same features.
+    // Used by WTrackProperty, WTrackText & WTrackWidgetGroup.
+    static constexpr WTrackMenu::Features kDeckTrackMenuFeatures{
+            WTrackMenu::Feature::SearchRelated |
+            WTrackMenu::Feature::Playlist |
+            WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Metadata |
+            WTrackMenu::Feature::Reset |
+            WTrackMenu::Feature::Analyze |
+            WTrackMenu::Feature::BPM |
+            WTrackMenu::Feature::Color |
+            WTrackMenu::Feature::RemoveFromDisk |
+            WTrackMenu::Feature::FileBrowser |
+            WTrackMenu::Feature::Properties |
+            WTrackMenu::Feature::UpdateReplayGainFromPregain |
+            WTrackMenu::Feature::FindOnWeb |
+            WTrackMenu::Feature::SelectInLibrary};
+
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,

@@ -8,24 +8,6 @@
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
 
-namespace {
-constexpr WTrackMenu::Features kTrackMenuFeatures =
-        WTrackMenu::Feature::SearchRelated |
-        WTrackMenu::Feature::Playlist |
-        WTrackMenu::Feature::Crate |
-        WTrackMenu::Feature::Metadata |
-        WTrackMenu::Feature::Reset |
-        WTrackMenu::Feature::Analyze |
-        WTrackMenu::Feature::BPM |
-        WTrackMenu::Feature::Color |
-        WTrackMenu::Feature::RemoveFromDisk |
-        WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGainFromPregain |
-        WTrackMenu::Feature::FindOnWeb |
-        WTrackMenu::Feature::SelectInLibrary;
-} // namespace
-
 WTrackProperty::WTrackProperty(
         QWidget* pParent,
         UserSettingsPointer pConfig,
@@ -137,6 +119,6 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackProperty::ensureTrackMenuIsCreated() {
     if (m_pTrackMenu.get() == nullptr) {
         m_pTrackMenu = make_parented<WTrackMenu>(
-                this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
+                this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
     }
 }

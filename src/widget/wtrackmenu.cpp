@@ -47,6 +47,8 @@
 #include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wstarrating.h"
 
+constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
+
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
