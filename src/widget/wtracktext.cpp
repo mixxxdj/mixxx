@@ -33,8 +33,7 @@ WTrackText::WTrackText(QWidget* pParent,
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
-          m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+          m_pLibrary(pLibrary) {
     setAcceptDrops(true);
 }
 
@@ -86,6 +85,7 @@ void WTrackText::mouseMoveEvent(QMouseEvent *event) {
 void WTrackText::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
     if (m_pCurrentTrack) {
+        ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         m_pTrackMenu->slotShowDlgTrackInfo();
     }
@@ -102,8 +102,15 @@ void WTrackText::dropEvent(QDropEvent *event) {
 void WTrackText::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
+        ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-        // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
+    }
+}
+
+void WTrackText::ensureTrackMenuIsCreated() {
+    if (m_pTrackMenu.get() == nullptr) {
+        m_pTrackMenu = make_parented<WTrackMenu>(
+                this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
     }
 }
