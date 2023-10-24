@@ -1,25 +1,27 @@
-#include "shaders/rgbashader.h"
+#include "shaders/patternshader.h"
 
 using namespace mixxx;
 
-void RGBAShader::init() {
+void PatternShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
 uniform highp mat4 matrix;
 attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
-attribute highp vec4 color;
-varying highp vec4 vColor;
+attribute highp vec2 texcoor;
+varying highp vec2 vTexcoor;
 void main()
 {
-    vColor = color;
+    vTexcoor = texcoor;
     gl_Position = matrix * position;
 }
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-varying highp vec4 vColor;
+uniform sampler2D texture;
+uniform vec2 repetitions;
+varying highp vec2 vTexcoor;
 void main()
 {
-    gl_FragColor = vColor;
+    gl_FragColor = texture2D(texture, fract(vTexcoor * repetitions));
 }
 )--");
 
@@ -27,5 +29,7 @@ void main()
 
     m_matrixLocation = uniformLocation("matrix");
     m_positionLocation = attributeLocation("position");
-    m_colorLocation = attributeLocation("color");
+    m_texcoordLocation = attributeLocation("texcoor");
+    m_textureLocation = uniformLocation("texture");
+    m_repetitionsLocation = uniformLocation("repetitions");
 }

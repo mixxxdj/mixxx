@@ -182,13 +182,22 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v1.14
-        # Ubuntu 22.04 should use the CMake version from the repos, and Visual
-        # Studio on Windows comes with its own CMake version anyway.
+        uses: jwlawson/actions-setup-cmake@v1.13
+        # Ubuntu 22.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
           # This should always match the minimum required version in
           # our CMakeLists.txt
+          cmake-version: "3.21.x"
+
+      - name: "[Windows] Set up cmake"
+        uses: jwlawson/actions-setup-cmake@v1.13
+        # Ubuntu 22.04 should use the CMake version from the repos.
+        if: runner.os == 'Windows'
+        with:
+          # This is a workaround for a SSL false positive in cmake 3.26.4
+          # When downloading the manual. 3.21 is required for installing the
+          # ANGLE Dlls via IMPORTED_RUNTIME_ARTIFACTS
           cmake-version: "3.21.x"
 
       - name: "[Windows] Set up MSVC Developer Command Prompt"

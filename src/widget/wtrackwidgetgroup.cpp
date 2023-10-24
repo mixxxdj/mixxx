@@ -38,9 +38,8 @@ WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
-          m_trackColorAlpha(kDefaultTrackColorAlpha),
-          m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+          m_pLibrary(pLibrary),
+          m_trackColorAlpha(kDefaultTrackColorAlpha) {
     setAcceptDrops(true);
 }
 
@@ -125,8 +124,16 @@ void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
 void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
+        ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
+    }
+}
+
+void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
+    if (m_pTrackMenu.get() == nullptr) {
+        m_pTrackMenu = make_parented<WTrackMenu>(
+                this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
     }
 }

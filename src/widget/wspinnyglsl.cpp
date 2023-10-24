@@ -31,7 +31,7 @@ void WSpinnyGLSL::cleanupGL() {
 void WSpinnyGLSL::coverChanged() {
     if (isContextValid()) {
         makeCurrentIfNeeded();
-        m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+        m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
         doneCurrent();
     }
     // otherwise this will happen in initializeGL
@@ -53,11 +53,11 @@ void WSpinnyGLSL::resizeGL(int w, int h) {
 }
 
 void WSpinnyGLSL::updateTextures() {
-    m_pBgTexture.reset(createTexture(m_pBgImage));
-    m_pMaskTexture.reset(createTexture(m_pMaskImage));
-    m_pFgTextureScaled.reset(createTexture(m_fgImageScaled));
-    m_pGhostTextureScaled.reset(createTexture(m_ghostImageScaled));
-    m_pLoadedCoverTextureScaled.reset(createTexture(m_loadedCoverScaled));
+    m_pBgTexture = createTexture(m_pBgImage);
+    m_pMaskTexture = createTexture(m_pMaskImage);
+    m_pFgTextureScaled = createTexture(m_fgImageScaled);
+    m_pGhostTextureScaled = createTexture(m_ghostImageScaled);
+    m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
 }
 
 void WSpinnyGLSL::setupVinylSignalQuality() {
@@ -66,6 +66,7 @@ void WSpinnyGLSL::setupVinylSignalQuality() {
 void WSpinnyGLSL::updateVinylSignalQualityImage(
         const QColor& qual_color, const unsigned char* data) {
     m_vinylQualityColor = qual_color;
+    m_vinylQualityColor.setAlphaF(0.75f);
     if (m_pQTexture) {
         makeCurrentIfNeeded();
         m_pQTexture->bind();
@@ -97,7 +98,7 @@ void WSpinnyGLSL::paintGL() {
     m_textureShader.bind();
 
     int matrixLocation = m_textureShader.matrixLocation();
-    int samplerLocation = m_textureShader.samplerLocation();
+    int textureLocation = m_textureShader.textureLocation();
     int positionLocation = m_textureShader.positionLocation();
     int texcoordLocation = m_textureShader.texcoordLocation();
 
@@ -107,7 +108,7 @@ void WSpinnyGLSL::paintGL() {
     m_textureShader.enableAttributeArray(positionLocation);
     m_textureShader.enableAttributeArray(texcoordLocation);
 
-    m_textureShader.setUniformValue(samplerLocation, 0);
+    m_textureShader.setUniformValue(textureLocation, 0);
 
     if (m_pBgTexture) {
         drawTexture(m_pBgTexture.get());
@@ -185,16 +186,16 @@ void WSpinnyGLSL::drawTexture(QOpenGLTexture* texture) {
     const float posx1 = -posx2;
     const float posy1 = -posy2;
 
-    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
-    const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
+    const std::array<float, 8> posarray = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
+    const std::array<float, 8> texarray = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
     int positionLocation = m_textureShader.positionLocation();
     int texcoordLocation = m_textureShader.texcoordLocation();
 
     m_textureShader.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
+            positionLocation, GL_FLOAT, posarray.data(), 2);
     m_textureShader.setAttributeArray(
-            texcoordLocation, GL_FLOAT, texarray, 2);
+            texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
     texture->bind();
 
@@ -214,13 +215,13 @@ void WSpinnyGLSL::drawVinylQuality() {
     const float posx1 = -1.f;
     const float posy1 = -1.f;
 
-    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
-    const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
+    const std::array<float, 8> posarray = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
+    const std::array<float, 8> texarray = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
     m_vinylQualityShader.bind();
     int matrixLocation = m_vinylQualityShader.matrixLocation();
     int colorLocation = m_vinylQualityShader.colorLocation();
-    int samplerLocation = m_vinylQualityShader.samplerLocation();
+    int textureLocation = m_vinylQualityShader.textureLocation();
     int positionLocation = m_vinylQualityShader.positionLocation();
     int texcoordLocation = m_vinylQualityShader.texcoordLocation();
 
@@ -231,12 +232,12 @@ void WSpinnyGLSL::drawVinylQuality() {
     m_vinylQualityShader.enableAttributeArray(positionLocation);
     m_vinylQualityShader.enableAttributeArray(texcoordLocation);
 
-    m_vinylQualityShader.setUniformValue(samplerLocation, 0);
+    m_vinylQualityShader.setUniformValue(textureLocation, 0);
 
     m_vinylQualityShader.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
+            positionLocation, GL_FLOAT, posarray.data(), 2);
     m_vinylQualityShader.setAttributeArray(
-            texcoordLocation, GL_FLOAT, texarray, 2);
+            texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
     m_pQTexture->bind();
 

@@ -55,9 +55,9 @@ void WaveformRendererEndOfTrack::initializeGL() {
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const int colorLocation = m_shader.uniformLocation("color");
-    const int positionLocation = m_shader.attributeLocation("position");
-    const int gradientLocation = m_shader.attributeLocation("gradient");
+    const int colorLocation = m_shader.colorLocation();
+    const int positionLocation = m_shader.positionLocation();
+    const int gradientLocation = m_shader.gradientLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);

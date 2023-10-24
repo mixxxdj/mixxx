@@ -10,6 +10,7 @@
 #include "util/color/color.h"
 #include "util/colorcomponents.h"
 #include "util/painterscope.h"
+#include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/moc_waveformrendermark.cpp"
 #include "waveform/renderers/allshader/rgbadata.h"
@@ -78,10 +79,10 @@ void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture
 
     m_textureShader.bind();
 
-    int matrixLocation = m_textureShader.uniformLocation("matrix");
-    int samplerLocation = m_textureShader.uniformLocation("sampler");
-    int positionLocation = m_textureShader.attributeLocation("position");
-    int texcoordLocation = m_textureShader.attributeLocation("texcoor");
+    const int matrixLocation = m_textureShader.uniformLocation("matrix");
+    const int textureLocation = m_textureShader.uniformLocation("texture");
+    const int positionLocation = m_textureShader.attributeLocation("position");
+    const int texcoordLocation = m_textureShader.attributeLocation("texcoord");
 
     m_textureShader.setUniformValue(matrixLocation, matrix);
 
@@ -92,7 +93,7 @@ void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture
     m_textureShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray, 2);
 
-    m_textureShader.setUniformValue(samplerLocation, 0);
+    m_textureShader.setUniformValue(textureLocation, 0);
 
     texture->bind();
 
@@ -134,9 +135,9 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 
     m_rgbaShader.bind();
 
-    int matrixLocation = m_rgbaShader.uniformLocation("matrix");
-    int positionLocation = m_rgbaShader.attributeLocation("position");
-    int colorLocation = m_rgbaShader.attributeLocation("color");
+    const int matrixLocation = m_rgbaShader.matrixLocation();
+    const int positionLocation = m_rgbaShader.positionLocation();
+    const int colorLocation = m_rgbaShader.colorLocation();
 
     m_rgbaShader.setUniformValue(matrixLocation, matrix);
 
@@ -297,10 +298,7 @@ void allshader::WaveformRenderMark::generatePlayPosMarkTexture(float breadth) {
     }
     painter.end();
 
-    m_pPlayPosMarkTexture.reset(new QOpenGLTexture(image));
-    m_pPlayPosMarkTexture->setMinificationFilter(QOpenGLTexture::Linear);
-    m_pPlayPosMarkTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    m_pPlayPosMarkTexture->setWrapMode(QOpenGLTexture::ClampToBorder);
+    m_pPlayPosMarkTexture = createTexture(image);
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -361,7 +359,7 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
 
     QList<CuePointer> loadedCues = trackInfo->getCuePoints();
     for (const CuePointer& pCue : loadedCues) {
-        int hotCue = pCue->getHotCue();
+        const int hotCue = pCue->getHotCue();
         if (hotCue == Cue::kNoHotCue) {
             continue;
         }
@@ -379,7 +377,7 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
                 !pMark->fillColor().isValid() ||
                 newColor != pMark->fillColor()) {
             pMark->m_text = newLabel;
-            int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
+            const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
             pMark->setBaseColor(newColor, dimBrightThreshold);
             generateMarkImage(pMark, m_waveformRenderer->getBreadth());
         }
@@ -407,10 +405,7 @@ void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark,
             //  Also, without this some Qt-internal issue results in an offset
             //  image when calculating the center line of pixmaps in draw().
             pMark->m_image.setDevicePixelRatio(devicePixelRatio);
-            pMark->m_pTexture.reset(new QOpenGLTexture(pMark->m_image));
-            pMark->m_pTexture->setMinificationFilter(QOpenGLTexture::Linear);
-            pMark->m_pTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-            pMark->m_pTexture->setWrapMode(QOpenGLTexture::ClampToBorder);
+            pMark->m_pTexture = createTexture(pMark->m_image);
             return;
         }
     }
@@ -556,8 +551,5 @@ void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark,
         painter.drawText(labelRect, Qt::AlignCenter, label);
     }
 
-    pMark->m_pTexture.reset(new QOpenGLTexture(pMark->m_image));
-    pMark->m_pTexture->setMinificationFilter(QOpenGLTexture::Linear);
-    pMark->m_pTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    pMark->m_pTexture->setWrapMode(QOpenGLTexture::ClampToBorder);
+    pMark->m_pTexture = createTexture(pMark->m_image);
 }

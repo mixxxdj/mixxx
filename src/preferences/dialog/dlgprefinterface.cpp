@@ -252,6 +252,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         // m_colorScheme to avoid an empty skin preview.
         if (!foundConfigScheme) {
             m_colorScheme = schlist[0];
+            m_colorSchemeOnUpdate = schlist[0];
         }
     }
 }
