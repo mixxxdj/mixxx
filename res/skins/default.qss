@@ -140,17 +140,22 @@ WEffectChainPresetButton QMenu::item {
 
 /* Icons in those menus (copy, paste, cut, delete) */
 QLineEdit QMenu::icon,
-WLibraryTextBrowser QMenu::icon,
-/* - checkbox in Crate name context menu
-    "[ ] Auto DJ Track Source" */
-WLibrarySidebar QMenu::indicator,
-/* Column checkboxes in the table header menu */
-WTrackTableViewHeader QMenu::indicator {
+WLibraryTextBrowser QMenu::icon {
   /* Qt 5.12.8: negative margin-right increases the overall item width but has no effect
                 on the indicator itself.
                 positive margin-right pushes icon to the right...
      Qt 5.15.2: needs negative margin-right in order to eliminate the item's
-                padding-left (necessary to avoid text/icon overlap); */
+                padding-left (necessary to avoid text/icon overlap);
+     Qt 6     : use style of #MainMenu QMenu::indicator from default-menu-styles-linux.qss
+                Though, this breaks WTrackTableViewHeader QMenu::indicator and
+                WLibrarySidebar QMenu::indicator which obviously require the Qt5 style ¯\_(ツ)_/¯ */
+  margin: 0em -0.1em 0em -1.3em;
+  padding: 0em 0em 0em 2em;
+}
+/* - checkbox in Crate name context menu
+    "[ ] Auto DJ Track Source" */
+WLibrarySidebar QMenu::indicator,
+WTrackTableViewHeader QMenu::indicator {
   margin: 0 -1em 0 0.25em;
 }
 
