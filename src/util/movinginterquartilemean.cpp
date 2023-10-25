@@ -53,7 +53,7 @@ double MovingInterquartileMean::mean() {
     const int listSize = size();
     if (listSize <= 4) {
         double d_sum = 0;
-        foreach (double d, m_list) {
+        for (const double d : std::as_const(m_list)) {
             d_sum += d;
         }
         m_dMean = d_sum / listSize;
