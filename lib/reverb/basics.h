@@ -43,8 +43,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "util/types.h"
-typedef CSAMPLE sample_t;
+typedef float sample_t;
 
 // NOTE(rryan): 3/2014 Added these for the MSVC build.
 #include <QtGlobal>
@@ -67,7 +66,7 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 
 /* prototype that takes a sample and yields a sample */
-typedef CSAMPLE (*clip_func_t) (CSAMPLE);
+typedef sample_t (*clip_func_t) (sample_t);
 
 #ifndef max
 template <class X, class Y> X min (X x, Y y) { return x < (X)y ? x : (X)y; }
