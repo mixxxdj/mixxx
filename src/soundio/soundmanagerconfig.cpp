@@ -409,7 +409,7 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     }
 
     const unsigned int sampleRateKhz = static_cast<unsigned int>(m_sampleRate / 1000);
-    return std::bit_ceil(sampleRateKhz) << (audioBufferSizeIndex - 1);
+    return roundUpToPowerOf2(sampleRateKhz) << (audioBufferSizeIndex - 1);
 }
 
 // Set the audio buffer size
