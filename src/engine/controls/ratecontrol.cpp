@@ -32,8 +32,17 @@ const double RateControl::kPausedJogMultiplier = 18.0;
 
 // static
 constexpr double RateControl::kDefaultRateRange;
-constexpr double RateControl::kMinRateRange;
-constexpr double RateControl::kMaxRateRange;
+constexpr int RateControl::kMinRateRangePercent;
+constexpr int RateControl::kMaxRateRangePercent;
+QMap<int, QString> RateControl::s_rateRangesPercentAndTrStrings = {
+        {4, tr("4%")},
+        {6, tr("6% (semitone)")},
+        {8, tr("8% (Technics SL-1210)")},
+        {10, tr("10%")},
+        {16, tr("16%")},
+        {24, tr("24%")},
+        {50, tr("50%")},
+        {90, tr("90%")}};
 
 RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
@@ -76,6 +85,32 @@ RateControl::RateControl(const QString& group,
             &RateControl::slotRateRangeChangeRequest,
             Qt::DirectConnection);
     m_pRateRange->addAlias(ConfigKey(group, QStringLiteral("rateRange")));
+
+    m_pRateRangeNextButton = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "rate_range_next"));
+    m_pRateRangeNextButton->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pRateRangeNextButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateRangeNext,
+            Qt::DirectConnection);
+
+    m_pRateRangePrevButton = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "rate_range_prev"));
+    m_pRateRangePrevButton->setButtonMode(ControlPushButton::TRIGGER);
+    connect(m_pRateRangePrevButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::slotRateRangePrev,
+            Qt::DirectConnection);
+
+    m_pRateRangeSelectButton = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "rate_range_select"));
+    connect(m_pRateRangeSelectButton.get(),
+            &ControlObject::valueChanged,
+            this,
+            &RateControl::rateRangeSelect,
+            Qt::DirectConnection);
 
     // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
@@ -214,6 +249,23 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
 }
 
+// static
+int RateControl::verifyAndMaybeAddRateRange(int range) {
+    // Cap to valid range 1% - 400%
+    if (range < kMinRateRangePercent) {
+        range = kMinRateRangePercent;
+    } else if (range > kMaxRateRangePercent) {
+        range = kMaxRateRangePercent;
+    }
+
+    // Add range to list if required
+    if (!s_rateRangesPercentAndTrStrings.contains(range)) {
+        s_rateRangesPercentAndTrStrings.insert(range,
+                QStringLiteral("%1%").arg(QString::number(range)));
+    }
+    return range;
+}
+
 //static
 void RateControl::setRateRampMode(RampMode mode) {
     m_eRateRampMode = mode;
@@ -284,17 +336,62 @@ void RateControl::slotRateDirChanged(double) {
 }
 
 void RateControl::slotRateRangeChangeRequest(double value) {
-    // Cap to valid range 1% - 400%
-    if (value < kMinRateRange) {
-        value = kMinRateRange;
-    } else if (value > kMaxRateRange) {
-        value = kMaxRateRange;
-    }
-
+    value = verifyAndMaybeAddRateRange(static_cast<int>(value * 100)) / 100.0;
     m_pRateRange->setAndConfirm(value);
 
     // Update RateSlider with the new Range value but do not change m_pRateRatio
     slotRateRatioChanged(m_pRateRatio->get());
+}
+
+void RateControl::slotRateRangeNext(double value) {
+    if (value <= 0.0) {
+        return;
+    }
+    rateRangeSelect(1);
+}
+
+void RateControl::slotRateRangePrev(double value) {
+    if (value <= 0.0) {
+        return;
+    }
+    rateRangeSelect(-1);
+}
+
+void RateControl::rateRangeSelect(int direction) {
+    if (direction == 0) {
+        return;
+    }
+
+    int currRateRangePercent = static_cast<int>(m_pRateRange->get() * 100);
+    int newRateRangePercent;
+
+    if (direction < 0) { // previous range
+        // Try to find the previous value
+        if (currRateRangePercent == s_rateRangesPercentAndTrStrings.firstKey()) {
+            // we're at the first item, wrap around to last item
+            newRateRangePercent = s_rateRangesPercentAndTrStrings.lastKey();
+        } else {
+            // pick the previous value
+            newRateRangePercent = s_rateRangesPercentAndTrStrings
+                                          .constFind(currRateRangePercent)
+                                          .
+                                          operator--()
+                                          .key();
+        }
+    } else { // next range
+        if (currRateRangePercent == s_rateRangesPercentAndTrStrings.lastKey()) {
+            // Wrap around to the first item
+            newRateRangePercent = s_rateRangesPercentAndTrStrings.firstKey();
+        } else {
+            // Pick the next item
+            newRateRangePercent = s_rateRangesPercentAndTrStrings
+                                          .constFind(currRateRangePercent)
+                                          .
+                                          operator++()
+                                          .key();
+        }
+    }
+    m_pRateRange->setAndConfirm(newRateRangePercent / 100.0); // .0 to get a double
 }
 
 void RateControl::slotRateSliderChanged(double v) {

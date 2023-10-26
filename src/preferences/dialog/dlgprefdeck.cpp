@@ -4,6 +4,7 @@
 #include <QDoubleSpinBox>
 #include <QList>
 #include <QLocale>
+#include <QMap>
 #include <QToolTip>
 #include <QWidget>
 
@@ -22,6 +23,7 @@
 
 namespace {
 constexpr int kDefaultRateRangePercent = static_cast<int>(RateControl::kDefaultRateRange * 100);
+constexpr int kInvalidRateRangePercent = -1;
 constexpr double kRateDirectionInverted = -1;
 constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
 constexpr double kDefaultTemporaryRateChangeCoarse = 4.00; // percent
@@ -233,42 +235,25 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefDeck::slotRateInversionCheckbox);
 
+    // Rate range
+    int rateRangePercent = m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"),
+            kDefaultRateRangePercent);
+    // Might be a custom range. Clamp to valid range.
+    rateRangePercent = RateControl::verifyAndMaybeAddRateRange(rateRangePercent);
+    // Apply it to all decks. This resets all previous individual (per deck) ranges
+    // and maybe adds a custom range to RateControl::s_rateRangesPercentAndTrStrings.
+    setRateRangeForAllDecks(rateRangePercent);
+    // Now populate the combobox with the potentially extended default list.
     ComboBoxRateRange->clear();
-    ComboBoxRateRange->addItem(tr("4%"), 4);
-    ComboBoxRateRange->addItem(tr("6% (semitone)"), 6);
-    ComboBoxRateRange->addItem(tr("8% (Technics SL-1210)"), 8);
-    ComboBoxRateRange->addItem(tr("10%"), 10);
-    ComboBoxRateRange->addItem(tr("16%"), 16);
-    ComboBoxRateRange->addItem(tr("24%"), 24);
-    ComboBoxRateRange->addItem(tr("50%"), 50);
-    ComboBoxRateRange->addItem(tr("90%"), 90);
+    for (auto rateRangeIt = RateControl::s_rateRangesPercentAndTrStrings.constBegin();
+            rateRangeIt != RateControl::s_rateRangesPercentAndTrStrings.constEnd();
+            rateRangeIt++) {
+        ComboBoxRateRange->addItem(rateRangeIt.value(), rateRangeIt.key());
+    }
     connect(ComboBoxRateRange,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotRateRangeComboBox);
-
-    // RateRange is the legacy ConfigKey. RateRangePercent is used now.
-    if (m_pConfig->exists(ConfigKey("[Controls]", "RateRange")) &&
-        !m_pConfig->exists(ConfigKey("[Controls]", "RateRangePercent"))) {
-        int legacyIndex = m_pConfig->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
-        if (legacyIndex == 0) {
-            m_iRateRangePercent = 6;
-        } else if (legacyIndex == 1) {
-            m_iRateRangePercent = 8; // use kDefaultRateRangePercent?
-        } else {
-            m_iRateRangePercent = (legacyIndex-1) * 10;
-        }
-    } else {
-        // Custom range
-        m_iRateRangePercent = m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"),
-                                                  kDefaultRateRangePercent);
-    }
-    // Clamp to valid range. Custom range is added to combobox in slotUpdate().
-    if (!(m_iRateRangePercent >= RateControl::kMinRateRange * 100 &&
-                m_iRateRangePercent <= RateControl::kMaxRateRange * 100)) {
-        m_iRateRangePercent = kDefaultRateRangePercent;
-    }
-    setRateRangeForAllDecks(m_iRateRangePercent);
 
     // Key lock mode
     connect(buttonGroupKeyLockMode,
@@ -423,6 +408,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 }
 
 DlgPrefDeck::~DlgPrefDeck() {
+    // TODO Store rate range of deck 1 in case we didn't store the common range
+    // in slotApply() earlier because decks used different ranges??
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
     qDeleteAll(m_cueControls);
@@ -440,20 +427,34 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    int rateRangePercent = static_cast<int>(m_rateRangeControls[0]->get() * 100);
-    int index = ComboBoxRateRange->findData(rateRangePercent);
-    if (index == -1) { // not found
-        // Insert custom range at the correct pos (ascending order)
-        int insPos = 0;
-        for (int i = 0; i < ComboBoxRateRange->count(); i++) {
-            if (rateRangePercent < ComboBoxRateRange->itemData(i).toInt()) {
-                insPos = i;
-                break;
-            }
+    // Rate range
+    // Update the combobox in case one or more (custom) ranges were added
+    ComboBoxRateRange->clear();
+    for (auto rateRangeIt = RateControl::s_rateRangesPercentAndTrStrings.constBegin();
+            rateRangeIt != RateControl::s_rateRangesPercentAndTrStrings.constEnd();
+            rateRangeIt++) {
+        ComboBoxRateRange->addItem(rateRangeIt.value(), rateRangeIt.key());
+    }
+    // Check if all decks use the same range
+    QList<int> rangeValues;
+    for (auto rangeControl : m_rateRangeControls) {
+        int val = static_cast<int>(rangeControl->get() * 100);
+        if (!rangeValues.contains(val)) {
+            rangeValues << val;
         }
-        ComboBoxRateRange->insertItem(insPos,
-                QString::number(rateRangePercent).append("%"),
-                rateRangePercent);
+    }
+    // If there's only one range used, try to select the respective item.
+    // Else, show a hint that decks currently use different ranges.
+    int index = -1;
+    if (rangeValues.size() == 1) {
+        // Should always succeed since ranges in use should already been added to
+        // s_rateRangesPercentAndTrStrings by RateControl::slotRateRangeChangeRequest().
+        index = ComboBoxRateRange->findData(rangeValues.first());
+    } else {
+        index = 0;
+        ComboBoxRateRange->insertItem(index,
+                tr("(different ranges in use)"),
+                kInvalidRateRangePercent);
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
@@ -557,8 +558,15 @@ void DlgPrefDeck::slotMoveIntroStartCheckbox(bool checked) {
     m_bSetIntroStartAtMainCue = checked;
 }
 
-void DlgPrefDeck::slotRateRangeComboBox(int index) {
-    m_iRateRangePercent = ComboBoxRateRange->itemData(index).toInt();
+void DlgPrefDeck::slotRateRangeComboBox(int) {
+    m_iRateRangePercent = kInvalidRateRangePercent;
+    if (ComboBoxRateRange->currentIndex() == -1) {
+        return;
+    }
+    int selectedRange = ComboBoxRateRange->currentData().toInt();
+    if (selectedRange != 0) {
+        m_iRateRangePercent = selectedRange;
+    }
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
@@ -706,17 +714,19 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
 
-    // Set rate range
-    setRateRangeForAllDecks(m_iRateRangePercent);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
-                        m_iRateRangePercent);
+    // Set & store rate range
+    // Apply only if all decks use the same valid range (detected in slotUpdate()).
+    if (m_iRateRangePercent != kInvalidRateRangePercent) {
+        setRateRangeForAllDecks(m_iRateRangePercent);
+        m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
+                m_iRateRangePercent);
+    }
 
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
             m_bRateDownIncreasesSpeed);
 
     BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
-
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
     } else if (m_speedAutoReset) {
@@ -724,7 +734,6 @@ void DlgPrefDeck::slotApply() {
     } else if (m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
-
     m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
             configSPAutoReset);
 
@@ -770,8 +779,18 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         QString group = PlayerManager::groupForDeck(i);
         m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlProxy(
-                group, "rate_range"));
+        auto rateRangeControl = new ControlProxy(group, "rate_range");
+        m_rateRangeControls.push_back(rateRangeControl);
+        if (!initializing) {
+            // Set rate range for new deck
+            if (m_iRateRangePercent != kInvalidRateRangePercent) {
+                // Use the range used by all other decks.
+                rateRangeControl->set(m_iRateRangePercent);
+            } else {
+                // Use the default range.
+                rateRangeControl->set(kDefaultRateRangePercent);
+            }
+        }
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
@@ -789,7 +808,6 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 
@@ -803,8 +821,18 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
         QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlProxy(
-                group, "rate_range"));
+        auto rateRangeControl = new ControlProxy(group, "rate_range");
+        m_rateRangeControls.push_back(rateRangeControl);
+        if (!initializing) {
+            // Set rate range for new deck
+            if (m_iRateRangePercent != kInvalidRateRangePercent) {
+                // Use the range used by all other decks.
+                rateRangeControl->set(m_iRateRangePercent);
+            } else {
+                // Use the default range.
+                rateRangeControl->set(kDefaultRateRangePercent);
+            }
+        }
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
@@ -822,7 +850,6 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
     // The rate range hasn't been read from the config file when this is first called.
     if (!initializing) {
         setRateDirectionForAllDecks(m_rateDirectionControls[0]->get() == kRateDirectionInverted);
-        setRateRangeForAllDecks(static_cast<int>(m_rateRangeControls[0]->get() * 100.0));
     }
 }
 

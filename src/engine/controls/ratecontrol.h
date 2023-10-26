@@ -24,8 +24,11 @@ class RateControl : public EngineControl {
     Q_OBJECT
 public:
   static constexpr double kDefaultRateRange = 0.08;
-  static constexpr double kMinRateRange = 0.01;
-  static constexpr double kMaxRateRange = 4.0;
+  static constexpr int kMinRateRangePercent = 1;
+  static constexpr int kMaxRateRangePercent = 400;
+
+  static QMap<int, QString> s_rateRangesPercentAndTrStrings;
+  static int verifyAndMaybeAddRateRange(int range);
 
   RateControl(const QString& group, UserSettingsPointer pConfig);
 
@@ -81,6 +84,9 @@ public slots:
   void slotRateDirChanged(double);
   // accepts any value in valid range
   void slotRateRangeChangeRequest(double value);
+  void slotRateRangeNext(double value);
+  void slotRateRangePrev(double value);
+  void rateRangeSelect(int direction);
   void slotRateSliderChanged(double);
   void slotRateRatioChanged(double);
   void slotReverseRollActivate(double);
@@ -127,6 +133,9 @@ private:
   std::unique_ptr<ControlObject> m_pRateRatio;
   std::unique_ptr<ControlObject> m_pRateDir;
   std::unique_ptr<ControlObject> m_pRateRange;
+  std::unique_ptr<ControlPushButton> m_pRateRangeSelectButton;
+  std::unique_ptr<ControlPushButton> m_pRateRangeNextButton;
+  std::unique_ptr<ControlPushButton> m_pRateRangePrevButton;
   std::unique_ptr<ControlPotmeter> m_pRateSlider;
   std::unique_ptr<ControlPotmeter> m_pRateSearch;
   std::unique_ptr<ControlPushButton> m_pReverseButton;
