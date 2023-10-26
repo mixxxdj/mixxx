@@ -1107,8 +1107,8 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
 
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
-    if (!loopInfo.startPosition.isValid() ||
-            (position.isValid() && position <= loopInfo.startPosition)) {
+    if (position.isValid() &&
+            (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition)) {
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         return;
     }
