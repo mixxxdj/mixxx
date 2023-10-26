@@ -678,6 +678,14 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
 }
 
+TEST_F(LoopingControlTest, EjectResetsLoopInOutPositions) {
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    m_pChannel1->getEngineBuffer()->ejectTrack();
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopEndPoint);
+}
+
 TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
     m_pTrack1->trySetBpm(120.0);
     // Setting beatloop_size should not activate a loop
