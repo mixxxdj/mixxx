@@ -30,6 +30,11 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
+// static
+constexpr double RateControl::kDefaultRateRange;
+constexpr double RateControl::kMinRateRange;
+constexpr double RateControl::kMaxRateRange;
+
 RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
@@ -58,13 +63,19 @@ RateControl::RateControl(const QString& group,
     connect(m_pRateDir.get(),
             &ControlObject::valueChanged,
             this,
-            &RateControl::slotRateRangeChanged,
+            &RateControl::slotRateDirChanged,
             Qt::DirectConnection);
-    m_pRateRange = std::make_unique<ControlPotmeter>(
-            ConfigKey(group, "rateRange"), 0.01, 4.00);
-    connect(m_pRateRange.get(), &ControlObject::valueChanged,
-            this, &RateControl::slotRateRangeChanged,
+
+    m_pRateRange = std::make_unique<ControlObject>(ConfigKey(group, "rate_range"),
+            true,
+            false,
+            false,
+            0.08);
+    m_pRateRange->setAndConfirm(kDefaultRateRange);
+    m_pRateRange.get()->connectValueChangeRequest(this,
+            &RateControl::slotRateRangeChangeRequest,
             Qt::DirectConnection);
+    m_pRateRange->addAlias(ConfigKey(group, QStringLiteral("rateRange")));
 
     // Allow rate slider to go out of bounds so that sync lock rate
     // adjustments are not capped.
@@ -267,8 +278,22 @@ double RateControl::getPermanentRateChangeFineAmount() {
     return m_dPermanentRateChangeFine.getValue();
 }
 
-void RateControl::slotRateRangeChanged(double) {
+void RateControl::slotRateDirChanged(double) {
     // update RateSlider with the new Range value butdo not change m_pRateRatio
+    slotRateRatioChanged(m_pRateRatio->get());
+}
+
+void RateControl::slotRateRangeChangeRequest(double value) {
+    // Cap to valid range 1% - 400%
+    if (value < kMinRateRange) {
+        value = kMinRateRange;
+    } else if (value > kMaxRateRange) {
+        value = kMaxRateRange;
+    }
+
+    m_pRateRange->setAndConfirm(value);
+
+    // Update RateSlider with the new Range value but do not change m_pRateRatio
     slotRateRatioChanged(m_pRateRatio->get());
 }
 

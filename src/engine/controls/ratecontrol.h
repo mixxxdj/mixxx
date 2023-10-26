@@ -23,6 +23,10 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
+  static constexpr double kDefaultRateRange = 0.08;
+  static constexpr double kMinRateRange = 0.01;
+  static constexpr double kMaxRateRange = 4.0;
+
   RateControl(const QString& group, UserSettingsPointer pConfig);
 
   // Enumerations which hold the state of the pitchbend buttons.
@@ -74,7 +78,9 @@ public:
   bool isReverseButtonPressed();
 
 public slots:
-  void slotRateRangeChanged(double);
+  void slotRateDirChanged(double);
+  // accepts any value in valid range
+  void slotRateRangeChangeRequest(double value);
   void slotRateSliderChanged(double);
   void slotRateRatioChanged(double);
   void slotReverseRollActivate(double);
@@ -120,7 +126,7 @@ private:
 
   std::unique_ptr<ControlObject> m_pRateRatio;
   std::unique_ptr<ControlObject> m_pRateDir;
-  std::unique_ptr<ControlPotmeter> m_pRateRange;
+  std::unique_ptr<ControlObject> m_pRateRange;
   std::unique_ptr<ControlPotmeter> m_pRateSlider;
   std::unique_ptr<ControlPotmeter> m_pRateSearch;
   std::unique_ptr<ControlPushButton> m_pReverseButton;

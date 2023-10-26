@@ -21,7 +21,7 @@
 #include "widget/wnumberpos.h"
 
 namespace {
-constexpr int kDefaultRateRangePercent = 8;
+constexpr int kDefaultRateRangePercent = static_cast<int>(RateControl::kDefaultRateRange * 100);
 constexpr double kRateDirectionInverted = -1;
 constexpr RateControl::RampMode kDefaultRampingMode = RateControl::RampMode::Stepping;
 constexpr double kDefaultTemporaryRateChangeCoarse = 4.00; // percent
@@ -254,15 +254,18 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         if (legacyIndex == 0) {
             m_iRateRangePercent = 6;
         } else if (legacyIndex == 1) {
-            m_iRateRangePercent = 8;
+            m_iRateRangePercent = 8; // use kDefaultRateRangePercent?
         } else {
             m_iRateRangePercent = (legacyIndex-1) * 10;
         }
     } else {
+        // Custom range
         m_iRateRangePercent = m_pConfig->getValue(ConfigKey("[Controls]", "RateRangePercent"),
                                                   kDefaultRateRangePercent);
     }
-    if (!(m_iRateRangePercent > 0 && m_iRateRangePercent <= 90)) {
+    // Clamp to valid range. Custom range is added to combobox in slotUpdate().
+    if (!(m_iRateRangePercent >= RateControl::kMinRateRange * 100 &&
+                m_iRateRangePercent <= RateControl::kMaxRateRange * 100)) {
         m_iRateRangePercent = kDefaultRateRangePercent;
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
@@ -437,11 +440,20 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
 
-    double rateRange = m_rateRangeControls[0]->get();
-    int index = ComboBoxRateRange->findData(static_cast<int>(rateRange * 100.0));
-    if (index == -1) {
-        ComboBoxRateRange->addItem(QString::number(rateRange * 100.).append("%"),
-                rateRange * 100.);
+    int rateRangePercent = static_cast<int>(m_rateRangeControls[0]->get() * 100);
+    int index = ComboBoxRateRange->findData(rateRangePercent);
+    if (index == -1) { // not found
+        // Insert custom range at the correct pos (ascending order)
+        int insPos = 0;
+        for (int i = 0; i < ComboBoxRateRange->count(); i++) {
+            if (rateRangePercent < ComboBoxRateRange->itemData(i).toInt()) {
+                insPos = i;
+                break;
+            }
+        }
+        ComboBoxRateRange->insertItem(insPos,
+                QString::number(rateRangePercent).append("%"),
+                rateRangePercent);
     }
     ComboBoxRateRange->setCurrentIndex(index);
 
@@ -759,7 +771,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
         m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
-                group, "rateRange"));
+                group, "rate_range"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
@@ -792,7 +804,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
         m_rateControls.push_back(new ControlProxy(
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlProxy(
-                group, "rateRange"));
+                group, "rate_range"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
         m_cueControls.push_back(new ControlProxy(
