@@ -34,6 +34,7 @@ void setCoverArt(NSMutableDictionary* nowPlayingInfo, const QPixmap& pixmap) {
         // Wrap the converted image in an artwork object as required
         // Since the block escapes, we need to de-stackify it with 'copy'
         auto fetchArtworkImage = ^NSImage*(CGSize size) {
+            Q_UNUSED(size);
             return nsImage;
         };
         MPMediaItemArtwork* artwork = [[MPMediaItemArtwork alloc]
@@ -97,12 +98,14 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
 
     [center.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = updatePlayState(true);
         return commandHandlerStatusFor(success);
     }];
 
     [center.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = updatePlayState(false);
         return commandHandlerStatusFor(success);
     }];
@@ -110,6 +113,7 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
     [center.togglePlayPauseCommand
             addTargetWithHandler:^MPRemoteCommandHandlerStatus(
                     MPRemoteCommandEvent* event) {
+                Q_UNUSED(event);
                 bool success = togglePlayState();
                 return commandHandlerStatusFor(success);
             }];
@@ -125,6 +129,7 @@ void MacOSMediaPlayerService::setupCommandHandlers() {
 
     [center.nextTrackCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
             MPRemoteCommandEvent* event) {
+        Q_UNUSED(event);
         bool success = skipToNextTrack();
         return commandHandlerStatusFor(success);
     }];
@@ -280,6 +285,10 @@ void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequester,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedImageHash,
         bool coverInfoUpdated) {
+    Q_UNUSED(coverInfo);
+    Q_UNUSED(requestedImageHash);
+    Q_UNUSED(coverInfoUpdated);
+
     if (pRequester != this) {
         return;
     }
