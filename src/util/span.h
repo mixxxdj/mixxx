@@ -1,6 +1,6 @@
 #pragma once
 
-#if __has_include(<span>)
+#if __has_include(<span>) && __cplusplus >= 202002L
 #include <span>
 #else
 #include <gsl/span>
