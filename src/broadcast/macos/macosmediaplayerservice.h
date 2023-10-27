@@ -57,7 +57,7 @@ class MacOSMediaPlayerService : public QObject {
     void slotPlayPositionChanged(DeckAttributes* attributes, double position);
 
     /// Updates the cover art if needed.
-    void slotCoverFound(const QObject* pRequestor,
+    void slotCoverFound(const QObject* pRequester,
             const CoverInfo& coverInfo,
             const QPixmap& pixmap,
             mixxx::cache_key_t requestedImageHash,

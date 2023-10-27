@@ -4,6 +4,7 @@
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_macosmediaplayerservice.cpp"
 #include "track/track.h"
 #include "track/track_decl.h"
 #include "util/assert.h"
@@ -274,12 +275,12 @@ void MacOSMediaPlayerService::slotPlayPositionChanged(
     }
 }
 
-void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequestor,
+void MacOSMediaPlayerService::slotCoverFound(const QObject* pRequester,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
         mixxx::cache_key_t requestedImageHash,
         bool coverInfoUpdated) {
-    if (pRequestor != this) {
+    if (pRequester != this) {
         return;
     }
 
