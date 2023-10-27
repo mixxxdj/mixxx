@@ -134,7 +134,7 @@ LoopingControl::LoopingControl(const QString& group,
             m_pCOBeatLoop,
             &ControlObject::valueChanged,
             this,
-            [=, this](double value) { slotBeatLoop(value); },
+            [this](double value) { slotBeatLoop(value); },
             Qt::DirectConnection);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
