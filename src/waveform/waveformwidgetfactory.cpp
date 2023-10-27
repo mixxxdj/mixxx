@@ -567,6 +567,9 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int empty = findHandleIndexFromType(WaveformWidgetType::EmptyWaveform);
     int desired = findHandleIndexFromType(m_configType);
     if (desired == -1) {
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
+                 << " - configured type" << static_cast<int>(m_configType)
+                 << "not found -- using 'EmptyWaveform'";
         desired = empty;
     }
     return setWidgetTypeFromHandle(desired, true);
@@ -574,7 +577,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
 
 bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force) {
     if (handleIndex < 0 || handleIndex >= m_waveformWidgetHandles.size()) {
-        qDebug() << "WaveformWidgetFactory::setWidgetType - invalid handle --> use of 'EmptyWaveform'";
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromHandle"
+                    " - invalid handle --> using 'EmptyWaveform'";
         // fallback empty type
         setWidgetType(WaveformWidgetType::EmptyWaveform);
         return false;
@@ -582,7 +586,8 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
 
     WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[handleIndex];
     if (handle.m_type == m_type && !force) {
-        qDebug() << "WaveformWidgetFactory::setWidgetType - type already in use";
+        qDebug() << "WaveformWidgetFactory::setWidgetTypeFromHandle - type"
+                 << handle.getDisplayName() << "already in use";
         return true;
     }
 
@@ -590,7 +595,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     setWidgetType(handle.m_type);
 
     m_skipRender = true;
-    //qDebug() << "recreate start";
 
     //re-create/setup all waveform widgets
     for (auto& holder : m_waveformWidgetHolders) {
@@ -619,7 +623,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
     }
 
     m_skipRender = false;
-    //qDebug() << "recreate done";
     return true;
 }
 
@@ -681,7 +684,6 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
 }
 
 void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
-    //qDebug() << "setPlayMarkerPosition, position=" << position;
     m_playMarkerPosition = position;
     if (m_config) {
         m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
@@ -695,9 +697,7 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
     if (pWaveformWidget != nullptr && isZoomSync()) {
-        //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         double refZoom = pWaveformWidget->getZoomFactor();
-
         for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); ++i) {
             WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
             if (holder.m_waveformViewer != viewer) {
@@ -710,11 +710,6 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 void WaveformWidgetFactory::render() {
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
-
-    //int paintersSetupTime0 = 0;
-    //int paintersSetupTime1 = 0;
-
-    //qDebug() << "render()" << m_vsyncThread->elapsed();
 
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
@@ -1161,6 +1156,16 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
         }
     }
     return index;
+}
+
+QString WaveformWidgetFactory::getDisplayNameFromType(WaveformWidgetType::Type type) {
+    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
+        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+        if (handle.m_type == type) {
+            return handle.m_displayString;
+        }
+    }
+    return QString();
 }
 
 template<typename WaveformT>
