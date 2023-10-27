@@ -546,6 +546,7 @@ bool WaveformWidgetFactory::setWidgetType(
         // type is acceptable
         *pCurrentType = type;
         if (m_config) {
+            m_configType = type;
             m_config->setValue(
                     ConfigKey("[Waveform]", "WaveformType"),
                     static_cast<int>(*pCurrentType));
@@ -556,6 +557,7 @@ bool WaveformWidgetFactory::setWidgetType(
     // fallback
     *pCurrentType = WaveformWidgetType::EmptyWaveform;
     if (m_config) {
+        m_configType = *pCurrentType;
         m_config->setValue(
                 ConfigKey("[Waveform]", "WaveformType"),
                 static_cast<int>(*pCurrentType));
