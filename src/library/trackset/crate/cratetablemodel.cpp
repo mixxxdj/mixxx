@@ -154,7 +154,7 @@ int CrateTableModel::addTracksWithTrackIds(
         const QModelIndex& index, const QList<TrackId>& trackIds, int* pOutInsertionPos) {
     Q_UNUSED(index);
 
-    if (!pOutInsertionPos) {
+    if (pOutInsertionPos != nullptr) {
         // crate insertion is not done by position, and no duplicates will be added,.
         // 0 indicates this to the caller.
         *pOutInsertionPos = 0;
