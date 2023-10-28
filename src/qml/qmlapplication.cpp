@@ -5,7 +5,6 @@
 #include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
 #include "moc_qmlapplication.cpp"
-#include "preferences/dialog/dlgpreferences.h"
 #include "qml/asyncimageprovider.h"
 #include "qml/qmlconfigproxy.h"
 #include "qml/qmlcontrolproxy.h"
