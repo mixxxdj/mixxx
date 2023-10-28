@@ -62,6 +62,7 @@
             </MarkRange>
             <Mark>
               <Control>loop_start_position</Control>
+              <!--Text>&#8635;</Text-->
               <Icon>skin:../LateNight/classic/style/mark_loop.svg</Icon>
               <Align>top|left</Align>
               <Color><Variable name="LoopColor"/></Color>
@@ -86,7 +87,8 @@
             </MarkRange>
             <Mark>
               <Control>intro_start_position</Control>
-              <Text>&#9698;</Text>
+              <!--Text>&#9698;</Text-->
+              <Icon>skin:../LateNight/classic/style/mark_intro.svg</Icon>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
@@ -95,7 +97,8 @@
             <Mark>
               <Control>intro_end_position</Control>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-              <Text>&#9698;</Text>
+              <!--Text>&#9698;</Text-->
+              <Icon>skin:../LateNight/classic/style/mark_intro.svg</Icon>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
@@ -113,14 +116,16 @@
             <Mark>
               <Control>outro_start_position</Control>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
-              <Text>&#9699;</Text>
+              <!--Text>&#9699;</Text-->
+              <Icon>skin:../LateNight/classic/style/mark_outro.svg</Icon>
               <Align>top|right</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
               <TextColor>#FFFFFF</TextColor>
             </Mark>
             <Mark>
               <Control>outro_end_position</Control>
-              <Text>&#9699;</Text>
+              <!--Text>&#9699;</Text-->
+              <Icon>skin:../LateNight/classic/style/mark_outro.svg</Icon>
               <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
               <Align>top|left</Align>
               <Color><Variable name="IntroOutroColor"/></Color>
