@@ -31,20 +31,20 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
             kMaxTrackTableBackgroundColorOpacity);
 }
 
-bool WLibrary::registerView(const QString& name, QWidget* view) {
+bool WLibrary::registerView(const QString& name, QWidget* pView) {
     //qDebug() << "WLibrary::registerView" << name;
     const auto lock = lockMutex(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
     }
-    if (dynamic_cast<LibraryView*>(view) == nullptr) {
+    if (dynamic_cast<LibraryView*>(pView) == nullptr) {
         qDebug() << "WARNING: Attempted to register view" << name << "with WLibrary "
                  << "which does not implement the LibraryView interface. "
                  << "Ignoring.";
         return false;
     }
-    addWidget(view);
-    m_viewMap[name] = view;
+    addWidget(pView);
+    m_viewMap[name] = pView;
     return true;
 }
 
@@ -52,49 +52,49 @@ void WLibrary::switchToView(const QString& name) {
     const auto lock = lockMutex(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    LibraryView* oldLibraryView = dynamic_cast<LibraryView*>(
+    LibraryView* pOldLibrartView = dynamic_cast<LibraryView*>(
             currentWidget());
 
-    QWidget* widget = m_viewMap.value(name, nullptr);
-    if (widget != nullptr) {
-        LibraryView * lview = dynamic_cast<LibraryView*>(widget);
-        if (lview == nullptr) {
+    QWidget* pWidget = m_viewMap.value(name, nullptr);
+    if (pWidget != nullptr) {
+        LibraryView* pLibraryView = dynamic_cast<LibraryView*>(pWidget);
+        if (pLibraryView == nullptr) {
             qDebug() << "WARNING: Attempted to switch to view" << name << "with WLibrary "
                      << "which does not implement the LibraryView interface. "
                      << "Ignoring.";
             return;
         }
-        if (currentWidget() != widget) {
-            if (oldLibraryView) {
-                oldLibraryView->saveCurrentViewState();
+        if (currentWidget() != pWidget) {
+            if (pOldLibrartView) {
+                pOldLibrartView->saveCurrentViewState();
             }
             //qDebug() << "WLibrary::setCurrentWidget" << name;
-            setCurrentWidget(widget);
-            lview->onShow();
-            lview->restoreCurrentViewState();
+            setCurrentWidget(pWidget);
+            pLibraryView->onShow();
+            pLibraryView->restoreCurrentViewState();
         }
     }
 }
 
 void WLibrary::pasteFromSidebar() {
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
-    if (view) {
-        view->pasteFromSidebar();
+    QWidget* pCurrent = currentWidget();
+    LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    if (pView) {
+        pView->pasteFromSidebar();
     }
 }
 
 void WLibrary::search(const QString& name) {
     auto lock = lockMutex(&m_mutex);
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
-    if (view == nullptr) {
+    QWidget* pCurrent = currentWidget();
+    LibraryView* pView = dynamic_cast<LibraryView*>(pCurrent);
+    if (pView == nullptr) {
         qDebug() << "WARNING: Attempted to search in view" << name << "with WLibrary "
                  << "which does not implement the LibraryView interface. Ignoring.";
         return;
     }
     lock.unlock();
-    view->onSearch(name);
+    pView->onSearch(name);
 }
 
 LibraryView* WLibrary::getActiveView() const {
@@ -106,17 +106,17 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
-    QWidget* current = currentWidget();
-    WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
-    if (!tracksView) {
+    QWidget* pCurrent = currentWidget();
+    WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
+    if (!pTracksView) {
         // This view is no tracks view, but maybe a special tracks view with a
         // controls row (AutoDJ, Recording)?
         //qDebug() << "   view is no tracks view. look for tracks view child";
-        tracksView = current->findChild<WTrackTableView*>();
+        pTracksView = pCurrent->findChild<WTrackTableView*>();
     }
-    if (tracksView) {
+    if (pTracksView) {
         //qDebug() << "   tracks view found";
-        return tracksView->isTrackInCurrentView(trackId);
+        return pTracksView->isTrackInCurrentView(trackId);
     } else {
         // No tracks view, this is probably a root view WLibraryTextBrowser
         //qDebug() << "   no tracks view found";
@@ -130,15 +130,15 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
         return;
     }
 
-    QWidget* current = currentWidget();
-    WTrackTableView* tracksView = qobject_cast<WTrackTableView*>(current);
-    if (!tracksView) {
+    QWidget* pCurrent = currentWidget();
+    WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
+    if (!pTracksView) {
         //qDebug() << "   view is no tracks view. look for tracks view child";
-        tracksView = current->findChild<WTrackTableView*>();
+        pTracksView = pCurrent->findChild<WTrackTableView*>();
     }
-    if (tracksView) {
+    if (pTracksView) {
         //qDebug() << "   tracks view found";
-        tracksView->slotSelectTrack(trackId);
+        pTracksView->slotSelectTrack(trackId);
     } else {
         //qDebug() << "   no tracks view found";
     }
@@ -151,9 +151,9 @@ bool WLibrary::event(QEvent* pEvent) {
     return QStackedWidget::event(pEvent);
 }
 
-void WLibrary::keyPressEvent(QKeyEvent* event) {
-    if (event->key() == Qt::Key_Left && event->modifiers() & Qt::ControlModifier) {
+void WLibrary::keyPressEvent(QKeyEvent* pEvent) {
+    if (pEvent->key() == Qt::Key_Left && pEvent->modifiers() & Qt::ControlModifier) {
         emit setLibraryFocus(FocusWidget::Sidebar);
     }
-    QStackedWidget::keyPressEvent(event);
+    QStackedWidget::keyPressEvent(pEvent);
 }
