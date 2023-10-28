@@ -18,7 +18,6 @@
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlProxy;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
 

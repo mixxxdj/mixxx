@@ -6,7 +6,6 @@
 #include <QtDebug>
 
 #include "util/compatibility/qhash.h"
-#include "util/fifo.h"
 #include "util/types.h"
 
 /// Describes a group of channels, typically a pair for stereo sound in Mixxx.
