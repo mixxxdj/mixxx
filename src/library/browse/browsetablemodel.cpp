@@ -323,6 +323,10 @@ void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
         }
     }
     Clipboard::finish();
+
+    // TODO Investigate if we can also implement cut and paste (via QFile
+    // operations) so mixxx could manage files in the filesystem, rather than
+    // having to go switch between mixxx and the system file browser.
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList&) {
