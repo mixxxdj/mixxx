@@ -635,7 +635,7 @@ void WaveformWidgetFactory::setDefaultZoom(double zoom) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    for (const auto& holder : m_waveformWidgetHolders) {
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformViewer->setZoom(m_defaultZoom);
     }
 }
@@ -651,7 +651,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 
     double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
-    for (const auto& holder : m_waveformWidgetHolders) {
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformViewer->setZoom(refZoom);
     }
 }
@@ -662,7 +662,7 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
         return;
     }
 
-    for (const auto& holder : m_waveformWidgetHolders) {
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 }
@@ -691,20 +691,21 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
         m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
     }
 
-    for (const auto& holder : m_waveformWidgetHolders) {
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
         holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
     }
 }
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
-    if (pWaveformWidget != nullptr && isZoomSync()) {
-        double refZoom = pWaveformWidget->getZoomFactor();
-        for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); ++i) {
-            WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
-            if (holder.m_waveformViewer != viewer) {
-                holder.m_waveformViewer->setZoom(refZoom);
-            }
+    if (pWaveformWidget == nullptr || !isZoomSync()) {
+        return;
+    }
+    double refZoom = pWaveformWidget->getZoomFactor();
+
+    for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
+        if (holder.m_waveformViewer != viewer) {
+            holder.m_waveformViewer->setZoom(refZoom);
         }
     }
 }
@@ -788,7 +789,7 @@ void WaveformWidgetFactory::swap() {
         if (m_type) {   // no regular updates for an empty waveform
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (const auto& holder : m_waveformWidgetHolders) {
+            for (const auto& holder : std::as_const(m_waveformWidgetHolders)) {
                 WaveformWidgetAbstract* pWaveformWidget = holder.m_waveformWidget;
 
                 // Don't swap invalid / invisible widgets or widgets with an
@@ -1152,7 +1153,7 @@ WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int inde
 int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type) {
     int index = -1;
     for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
-        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+        const WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
         if (handle.m_type == type) {
             index = i;
         }
@@ -1161,8 +1162,7 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
 }
 
 QString WaveformWidgetFactory::getDisplayNameFromType(WaveformWidgetType::Type type) {
-    for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
-        WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
+    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
         if (handle.m_type == type) {
             return handle.m_displayString;
         }
