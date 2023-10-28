@@ -29,15 +29,21 @@
 // only to draw on a QImage. This is only done once when needed and the images are
 // then used as textures to be drawn with a GLSL shader.
 
+class TextureGraphics : public WaveformMark::Graphics {
+    std::unique_ptr<QOpenGLTexture> m_pTexture;
+
+  public:
+    TextureGraphics(std::unique_ptr<QOpenGLTexture>&& pTexture)
+            : m_pTexture{std::move(pTexture)} {
+    }
+    QOpenGLTexture* texture() const {
+        return m_pTexture.get();
+    }
+};
+
 allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget),
           m_bCuesUpdates(false) {
-}
-
-allshader::WaveformRenderMark::~WaveformRenderMark() {
-    for (const auto& pMark : m_marks) {
-        pMark->m_pTexture.reset();
-    }
 }
 
 void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
@@ -169,9 +175,13 @@ void allshader::WaveformRenderMark::paintGL() {
             continue;
         }
 
-        if (pMark->m_needsUpdate) {
+        if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
             generateMarkImage(pMark);
         }
+
+        QOpenGLTexture* pTexture =
+                static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
+                        ->texture();
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
@@ -183,7 +193,7 @@ void allshader::WaveformRenderMark::paintGL() {
             // Pixmaps are expected to have the mark stroke at the center,
             // and preferably have an odd width in order to have the stroke
             // exactly at the sample position.
-            const float markHalfWidth = pMark->m_pTexture->width() / devicePixelRatio / 2.f;
+            const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
             const float drawOffset = currentMarkPoint - markHalfWidth;
 
             bool visible = false;
@@ -191,7 +201,7 @@ void allshader::WaveformRenderMark::paintGL() {
             if (currentMarkPoint > -markHalfWidth &&
                     currentMarkPoint < m_waveformRenderer->getLength() +
                                     markHalfWidth) {
-                drawTexture(drawOffset, 0, pMark->m_pTexture.get());
+                drawTexture(drawOffset, 0, pTexture);
                 visible = true;
             }
 
@@ -379,7 +389,7 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
 }
 
 void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
-    pMark->m_pTexture = createTexture(pMark->generateImage(m_waveformRenderer->getBreadth(),
-            m_waveformRenderer->getDevicePixelRatio()));
-    pMark->m_needsUpdate = false;
+    pMark->m_pGraphics = std::make_unique<TextureGraphics>(
+            createTexture(pMark->generateImage(m_waveformRenderer->getBreadth(),
+                    m_waveformRenderer->getDevicePixelRatio())));
 }

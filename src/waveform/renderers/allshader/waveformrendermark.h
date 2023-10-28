@@ -21,7 +21,6 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
     Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRenderMark() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 

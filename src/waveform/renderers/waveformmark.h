@@ -21,6 +21,14 @@ class WaveformRenderMark;
 
 class WaveformMark {
   public:
+    class Graphics {
+      public:
+        Graphics()
+                : m_obsolete{false} {
+        }
+        bool m_obsolete;
+    };
+
     WaveformMark(
             const QString& group,
             const QDomNode& node,
@@ -116,10 +124,7 @@ class WaveformMark {
 
     friend class allshader::WaveformRenderMark;
 
-    std::unique_ptr<QOpenGLTexture> m_pTexture; // Used by allshader::WaveformRenderMark
-    QImage m_image;                             // Used by WaveformRenderMark
-    bool m_needsUpdate{true};                   // To indicate either the texture or the image has
-                                                // to be updated
+    std::unique_ptr<Graphics> m_pGraphics;
 
     int m_iHotCue;
 

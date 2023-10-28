@@ -121,7 +121,9 @@ WaveformMark::WaveformMark(const QString& group,
 WaveformMark::~WaveformMark() = default;
 
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
-    m_needsUpdate = true;
+    if (m_pGraphics) {
+        m_pGraphics->m_obsolete = true;
+    }
     m_fillColor = baseColor;
     m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
     m_labelColor = Color::chooseColorByBrightness(baseColor,

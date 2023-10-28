@@ -15,6 +15,19 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+class ImageGraphics : public WaveformMark::Graphics {
+    QImage m_image;
+
+  public:
+    ImageGraphics(QImage&& image)
+            : m_image{std::move(image)} {
+    }
+
+    const QImage& image() const {
+        return m_image;
+    }
+};
+
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :
     WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -50,9 +63,11 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         // Generate image on first paint can't be done in setup since we need to
         // wait for the render widget to be resized yet.
-        if (pMark->m_needsUpdate || pMark->m_image.isNull()) {
+        if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
             generateMarkImage(pMark);
         }
+
+        const QImage& image = static_cast<ImageGraphics*>(pMark->m_pGraphics.get())->image();
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
@@ -64,14 +79,14 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 // and preferably have an odd width in order to have the stroke
                 // exactly at the sample position.
                 const int markHalfWidth =
-                        static_cast<int>(pMark->m_image.width() / 2.0 /
+                        static_cast<int>(image.width() / 2.0 /
                                 m_waveformRenderer->getDevicePixelRatio());
                 const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfWidth;
 
                 bool visible = false;
                 // Check if the current point needs to be displayed.
                 if (currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
-                    painter->drawImage(drawOffset, 0, pMark->m_image);
+                    painter->drawImage(drawOffset, 0, image);
                     visible = true;
                 }
 
@@ -106,7 +121,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
             } else {
                 const int markHalfHeight =
-                        static_cast<int>(pMark->m_image.height() / 2.0 /
+                        static_cast<int>(image.height() / 2.0 /
                                 m_waveformRenderer->getDevicePixelRatio());
                 const int drawOffset = static_cast<int>(currentMarkPoint) - markHalfHeight;
 
@@ -115,7 +130,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 if (currentMarkPoint > -markHalfHeight &&
                         currentMarkPoint < m_waveformRenderer->getHeight() +
                                         markHalfHeight) {
-                    painter->drawImage(0, drawOffset, pMark->m_image);
+                    painter->drawImage(0, drawOffset, image);
                     visible = true;
                 }
 
@@ -157,7 +172,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 void WaveformRenderMark::onResize() {
     // Flag that the mark image has to be updated. New images will be created on next paint.
     for (const auto& pMark : m_marks) {
-        pMark->m_needsUpdate = true;
+        if (pMark->m_pGraphics) {
+            pMark->m_pGraphics->m_obsolete = true;
+        }
     }
 }
 
@@ -209,12 +226,13 @@ void WaveformRenderMark::slotCuesUpdated() {
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
-        pMark->m_image = pMark->generateImage(m_waveformRenderer->getBreadth(),
-                m_waveformRenderer->getDevicePixelRatio());
+        pMark->m_pGraphics = std::make_unique<ImageGraphics>(
+                pMark->generateImage(m_waveformRenderer->getBreadth(),
+                        m_waveformRenderer->getDevicePixelRatio()));
     } else {
-        pMark->m_image = pMark->generateImage(m_waveformRenderer->getBreadth(),
-                                      m_waveformRenderer->getDevicePixelRatio())
-                                 .transformed(QTransform().rotate(90));
+        pMark->m_pGraphics = std::make_unique<ImageGraphics>(
+                pMark->generateImage(m_waveformRenderer->getBreadth(),
+                             m_waveformRenderer->getDevicePixelRatio())
+                        .transformed(QTransform().rotate(90)));
     }
-    pMark->m_needsUpdate = false;
 }
