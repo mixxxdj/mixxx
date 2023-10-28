@@ -212,9 +212,12 @@ int PlaylistTableModel::addTracksWithTrackIds(const QModelIndex& insertionIndex,
             trackIds, m_iPlaylistId, position);
 
     if (trackIds.size() - tracksAdded > 0) {
+        QString playlistName = m_pTrackCollectionManager->internalCollection()
+                                       ->getPlaylistDAO()
+                                       .getPlaylistName(m_iPlaylistId);
         qDebug() << "PlaylistTableModel::addTracks could not add"
                  << trackIds.size() - tracksAdded
-                 << "to playlist" << m_iPlaylistId;
+                 << "to playlist id" << m_iPlaylistId << "name" << playlistName;
     }
     return tracksAdded;
 }

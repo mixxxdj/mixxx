@@ -114,7 +114,6 @@ class Library: public QObject {
     void slotRequestAddDir(const QString& directory);
     void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
-    void slotPasteFromSidebar();
     void onSkinLoadFinished();
 
   signals:

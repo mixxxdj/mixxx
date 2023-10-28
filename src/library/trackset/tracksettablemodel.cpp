@@ -1,5 +1,6 @@
 #include "library/trackset/tracksettablemodel.h"
 
+#include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_tracksettablemodel.cpp"
 

@@ -472,7 +472,7 @@ void Library::addFeature(LibraryFeature* feature) {
     connect(feature,
             &LibraryFeature::pasteFromSidebar,
             this,
-            &Library::slotPasteFromSidebar);
+            &Library::pasteFromSidebar);
     connect(feature,
             &LibraryFeature::showTrackModel,
             this,
@@ -526,10 +526,6 @@ void Library::onPlayerManagerTrackAnalyzerIdle() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->resumeAnalysis();
     }
-}
-
-void Library::slotPasteFromSidebar() {
-    emit pasteFromSidebar();
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
