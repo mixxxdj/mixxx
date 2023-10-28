@@ -62,7 +62,7 @@
             </MarkRange>
             <Mark>
               <Control>loop_start_position</Control>
-              <Text>&#8635;</Text>
+              <Icon>skin:../LateNight/classic/style/mark_loop.svg</Icon>
               <Align>top|left</Align>
               <Color><Variable name="LoopColor"/></Color>
               <TextColor>#FFFFFF</TextColor>

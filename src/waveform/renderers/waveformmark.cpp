@@ -111,6 +111,11 @@ WaveformMark::WaveformMark(const QString& group,
     if (!m_pixmapPath.isEmpty()) {
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
+
+    m_iconPath = context.selectString(node, "Icon");
+    if (!m_iconPath.isEmpty()) {
+        m_iconPath = context.makeSkinPath(m_iconPath);
+    }
 }
 
 WaveformMark::~WaveformMark() = default;
@@ -143,11 +148,11 @@ bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
 struct MarkerGeometry {
     bool m_isSymbol; // it the label normal text or a single symbol (e.g. open circle arrow)
     QFont m_font;
-    QRectF m_textRect;
+    QRectF m_contentRect;
     QRectF m_labelRect;
     QSizeF m_imageSize;
 
-    MarkerGeometry(const QString& label, Qt::Alignment align, float breadth) {
+    MarkerGeometry(const QString& label, bool useIcon, Qt::Alignment align, float breadth) {
         // If the label is 1 character long, and this character isn't a letter or a number,
         // we can assume it's a special symbol
         m_isSymbol = label.length() == 1 && !label[0].isLetterOrNumber();
@@ -169,6 +174,8 @@ struct MarkerGeometry {
         m_font.setWeight(75); // bold
         m_font.setItalic(false);
 
+        const qreal margin{3.f};
+
         qreal capHeight;
         {
             QFontMetricsF metrics{m_font};
@@ -186,27 +193,28 @@ struct MarkerGeometry {
                 // large font size
                 m_font.setPointSize(50.0);
                 metrics = QFontMetricsF(m_font);
-                m_textRect = metrics.tightBoundingRect(label);
+                m_contentRect = metrics.tightBoundingRect(label);
 
                 // Now we calculate how much bigger this is than our target
                 // size.
-                const auto ratioH = targetHeight / m_textRect.height();
-                const auto ratioW = targetWidth / m_textRect.width();
+                const auto ratioH = targetHeight / m_contentRect.height();
+                const auto ratioW = targetWidth / m_contentRect.width();
                 const auto ratio = std::min(ratioH, ratioW);
 
                 // And we scale the font size accordingly.
                 m_font.setPointSizeF(50.0 * ratio);
                 metrics = QFontMetricsF(m_font);
-                m_textRect = metrics.tightBoundingRect(label);
+                m_contentRect = metrics.tightBoundingRect(label);
+            } else if (useIcon) {
+                m_contentRect = QRectF(0.f, 0.f, std::ceil(capHeight), std::ceil(capHeight));
             } else {
-                m_textRect = QRectF{0.f,
-                        -metrics.capHeight(),
+                m_contentRect = QRectF{0.f,
+                        -capHeight,
                         metrics.boundingRect(label).width(),
-                        metrics.capHeight()};
+                        capHeight};
             }
         }
 
-        const qreal margin{3.f};
         const Qt::Alignment alignH = align & Qt::AlignHorizontal_Mask;
         const Qt::Alignment alignV = align & Qt::AlignVertical_Mask;
         const bool alignHCenter{alignH == Qt::AlignHCenter};
@@ -214,7 +222,7 @@ struct MarkerGeometry {
 
         m_labelRect = QRectF{0.f,
                 0.f,
-                std::ceil((m_textRect.width() + 2.f * margin) / widthRounding) *
+                std::ceil((m_contentRect.width() + 2.f * margin) / widthRounding) *
                         widthRounding,
                 std::ceil(capHeight + 2.f * margin)};
 
@@ -285,8 +293,10 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
         }
     }
 
+    const bool useIcon = m_iconPath != "";
+
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry(label, m_align, breadth);
+    const MarkerGeometry markerGeometry(label, useIcon, m_align, breadth);
 
     m_label.setAreaRect(markerGeometry.m_labelRect);
 
@@ -324,7 +334,7 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
             hcenter + 1.f,
             markerGeometry.m_imageSize.height()));
 
-    if (label.length() != 0) {
+    if (useIcon || label.length() != 0) {
         painter.setPen(borderColor());
 
         // Draw the label rounded rect with border
@@ -333,24 +343,30 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
         painter.fillPath(path, fillColor());
         painter.drawPath(path);
 
-        // Draw the text
-        painter.setBrush(Qt::transparent);
-        painter.setPen(labelColor());
-        painter.setFont(markerGeometry.m_font);
-
-        // Center m_textRect.width() and m_textRect.height() inside m_labelRect
+        // Center m_contentRect.width() and m_contentRect.height() inside m_labelRect
         // and apply the offset x,y so the text ends up in the centered width,height.
         QPointF pos(markerGeometry.m_labelRect.x() +
                         (markerGeometry.m_labelRect.width() -
-                                markerGeometry.m_textRect.width()) /
+                                markerGeometry.m_contentRect.width()) /
                                 2.f -
-                        markerGeometry.m_textRect.x(),
+                        markerGeometry.m_contentRect.x(),
                 markerGeometry.m_labelRect.y() +
                         (markerGeometry.m_labelRect.height() -
-                                markerGeometry.m_textRect.height()) /
+                                markerGeometry.m_contentRect.height()) /
                                 2.f -
-                        markerGeometry.m_textRect.y());
-        painter.drawText(pos, label);
+                        markerGeometry.m_contentRect.y());
+
+        if (useIcon) {
+            QSvgRenderer svgRenderer(m_iconPath);
+            svgRenderer.render(&painter, QRectF(pos, markerGeometry.m_contentRect.size()));
+        } else {
+            // Draw the text
+            painter.setBrush(Qt::transparent);
+            painter.setPen(labelColor());
+            painter.setFont(markerGeometry.m_font);
+
+            painter.drawText(pos, label);
+        }
     }
 
     painter.end();
