@@ -31,10 +31,10 @@
 	02111-1307, USA or point your web browser to http://www.gnu.org.
 */
 
-#include <cmath>
-#include <cstring>
-#include <assert.h>
-#include <cstdint>
+#include <cmath> // for M_PI
+#include <cstring> // for memset 
+#include <cassert> // for assert
+#include <cstdint> // for uint32_t
 
 typedef float sample_t;
 typedef uint32_t uint32;
