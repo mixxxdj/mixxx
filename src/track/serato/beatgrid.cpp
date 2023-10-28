@@ -1,7 +1,5 @@
 #include "track/serato/beatgrid.h"
 
-#include <QtEndian>
-
 #include "util/logger.h"
 
 namespace {

@@ -1,12 +1,8 @@
 #include "track/cue.h"
 
-#include <QtDebug>
-
 #include "audio/frame.h"
-#include "engine/engine.h"
 #include "moc_cue.cpp"
 #include "util/assert.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 

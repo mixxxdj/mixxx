@@ -4,11 +4,10 @@
 #include <taglib/vorbisfile.h>
 
 #include <QFile>
-#include <QFileInfo>
-#include <QThread>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
 
