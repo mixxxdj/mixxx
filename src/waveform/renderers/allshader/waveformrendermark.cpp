@@ -56,7 +56,7 @@ void allshader::WaveformRenderMark::initializeGL() {
     m_rgbaShader.init();
     m_textureShader.init();
 
-    for (const auto& pMark : m_marks) {
+    for (const auto& pMark : std::as_const(m_marks)) {
         generateMarkImage(pMark);
     }
     generatePlayPosMarkTexture();
@@ -159,22 +159,14 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 
 void allshader::WaveformRenderMark::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    QMap<WaveformMarkPointer, int> marksOnScreen;
+    QList<QPair<WaveformMarkPointer, int>> marksOnScreen;
 
     checkCuesUpdated();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (const auto& pMark : m_marks) {
-        if (!pMark->isValid()) {
-            continue;
-        }
-
-        if (pMark->hasVisible() && !pMark->isVisible()) {
-            continue;
-        }
-
+    for (const auto& pMark : std::as_const(m_marks)) {
         if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
             generateMarkImage(pMark);
         }
@@ -229,7 +221,7 @@ void allshader::WaveformRenderMark::paintGL() {
             }
 
             if (visible) {
-                marksOnScreen[pMark] = static_cast<int>(drawOffset);
+                marksOnScreen.append(qMakePair(pMark, drawOffset));
             }
         }
     }
@@ -327,7 +319,7 @@ void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
 }
 
 void allshader::WaveformRenderMark::resizeGL(int, int) {
-    for (const auto& pMark : m_marks) {
+    for (const auto& pMark : std::as_const(m_marks)) {
         generateMarkImage(pMark);
     }
     generatePlayPosMarkTexture();
@@ -386,6 +378,8 @@ void allshader::WaveformRenderMark::checkCuesUpdated() {
             generateMarkImage(pMark);
         }
     }
+
+    m_marks.update();
 }
 
 void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {

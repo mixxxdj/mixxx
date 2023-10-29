@@ -40,27 +40,12 @@ void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
-    // Maps mark objects to their positions in the widget.
-    QMap<WaveformMarkPointer, int> marksOnScreen;
-    /*
-    //DEBUG
-    for (int i = 0; i < m_markPoints.size(); i++) {
-        if (m_waveformWidget->getTrackSamples())
-            painter->drawText(40*i,12+12*(i%3),QString::number(m_markPoints[i]->get() / (double)m_waveformWidget->getTrackSamples()));
-    }
-    */
+    // Associates mark objects with their positions in the widget.
+    QList<QPair<WaveformMarkPointer, int>> marksOnScreen;
 
     painter->setWorldMatrixEnabled(false);
 
-    for (const auto& pMark : m_marks) {
-        if (!pMark->isValid()) {
-            continue;
-        }
-
-        if (pMark->hasVisible() && !pMark->isVisible()) {
-            continue;
-        }
-
+    for (const auto& pMark : std::as_const(m_marks)) {
         // Generate image on first paint can't be done in setup since we need to
         // wait for the render widget to be resized yet.
         if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
@@ -117,7 +102,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 if (visible) {
-                    marksOnScreen[pMark] = drawOffset;
+                    marksOnScreen.append(qMakePair(pMark, drawOffset));
                 }
             } else {
                 const int markHalfHeight =
@@ -161,7 +146,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 if (visible) {
-                    marksOnScreen[pMark] = drawOffset;
+                    marksOnScreen.append(qMakePair(pMark, drawOffset));
                 }
             }
         }
@@ -171,7 +156,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
 void WaveformRenderMark::onResize() {
     // Flag that the mark image has to be updated. New images will be created on next paint.
-    for (const auto& pMark : m_marks) {
+    for (const auto& pMark : std::as_const(m_marks)) {
         if (pMark->m_pGraphics) {
             pMark->m_pGraphics->m_obsolete = true;
         }
@@ -222,6 +207,8 @@ void WaveformRenderMark::slotCuesUpdated() {
             generateMarkImage(pMark);
         }
     }
+
+    m_marks.update();
 }
 
 void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
