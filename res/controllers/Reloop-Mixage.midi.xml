@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4+">
   <info>
     <name>Reloop Mixage</name>
-    <author>HorstBaerbel / gqzomer</author>
-    <description>Mapping for the Reloop Mixage Interface Edition controller (https://www.reloop.com/reloop-mixage-ie). Should also work on the non-interface version.</description>
+    <author>HorstBaerbel &amp; gqzomer</author>
+    <description>Mapping for the Reloop Mixage Interface Edition MK1, Interface Edition MK2 and Controller Edition.</description>
     <forums>https://mixxx.discourse.group/t/reloop-mixage-mapping/14779</forums>
     <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop%20Mixage</wiki>
-    <manual>https://www.reloop.com/media/catalog/product/pdf/2/2/4/224964_Reloop_IM.pdf</manual>
+    <manual>reloop_mixage</manual>
   </info>
   <controller id="Reloop Mixage">
     <scriptfiles>
       <file functionprefix="Mixage" filename="Reloop-Mixage.scripts.js" />
     </scriptfiles>
     <!-- The comments reference the buttons on the controller The T prefixes are taken from the controller overview of the manual -->
+    <!-- link to the manual from reloop https://www.reloop.com/media/catalog/product/pdf/2/2/4/224964_Reloop_IM.pdf -->
     <controls>
       <!-- T1 = Pitch Bend Minus Button -->
       <control>
@@ -195,7 +196,7 @@
       <!-- T9_SHIFT = Master Deck Assignment -->
       <control>
         <group>[Channel1]</group>
-        <key>sync_master</key>
+        <key>sync_leader</key>
         <status>0x90</status>
         <midino>0x46</midino>
         <options>
@@ -214,12 +215,12 @@
       </control>
       <!-- T10_TURN_SHIFT = Pan Balance Dial -->
       <control>
-        <group>[Channel1]</group>
-        <key>Mixage.handlePan</key>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>chain_preset_selector</key>
         <status>0xB0</status>
         <midino>0x60</midino>
         <options>
-          <script-binding />
+          <SelectKnob />
         </options>
       </control>
       <!-- T10_PRESS = ? -->
@@ -234,8 +235,8 @@
       </control>
       <!-- T10_PRESS_SHIFT = ? -->
       <control>
-        <group>[Channel1]</group>
-        <key></key>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x60</midino>
         <options>
@@ -445,11 +446,11 @@
       <!-- T19 = Play/Pause -->
       <control>
         <group>[Channel1]</group>
-        <key>play</key>
+        <key>Mixage.handlePlay</key>
         <status>0x90</status>
         <midino>0x0C</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T19_SHIFT = Cue 4 -->
@@ -763,7 +764,7 @@
       <!-- T9_SHIFT = Master Deck Assignment -->
       <control>
         <group>[Channel2]</group>
-        <key>sync_master</key>
+        <key>sync_leader</key>
         <status>0x90</status>
         <midino>0x54</midino>
         <options>
@@ -782,12 +783,12 @@
       </control>
       <!-- T10_TURN_SHIFT = Pan Balance Dial -->
       <control>
-        <group>[Channel2]</group>
-        <key>Mixage.handlePan</key>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>chain_preset_selector</key>
         <status>0xB0</status>
         <midino>0x62</midino>
         <options>
-          <script-binding />
+          <SelectKnob />
         </options>
       </control>
       <!-- T10_PRESS = ? -->
@@ -802,8 +803,8 @@
       </control>
       <!-- T10_PRESS_SHIFT = ? -->
       <control>
-        <group>[Channel2]</group>
-        <key></key>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>enabled</key>
         <status>0x90</status>
         <midino>0x62</midino>
         <options>
@@ -1013,11 +1014,11 @@
       <!-- T19 = Play/Pause -->
       <control>
         <group>[Channel2]</group>
-        <key>play</key>
+        <key>Mixage.handlePlay</key>
         <status>0x90</status>
         <midino>0x1A</midino>
         <options>
-          <normal />
+          <script-binding />
         </options>
       </control>
       <!-- T19_SHIFT = Cue 4 -->
