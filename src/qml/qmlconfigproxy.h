@@ -22,10 +22,13 @@ class QmlConfigProxy : public QObject {
     Q_INVOKABLE QVariantList getTrackColorPalette();
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
-    static inline QmlConfigProxy* s_pInstance = nullptr;
+    static inline void registerUserSettings(UserSettingsPointer pConfig) {
+        s_pUserSettings = std::move(pConfig);
+    }
 
   private:
-    static inline QJSEngine* s_pJsEngine = nullptr;
+    static inline UserSettingsPointer s_pUserSettings = nullptr;
+
     const UserSettingsPointer m_pConfig;
 };
 

@@ -36,9 +36,7 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#ifndef MIXXX_USE_QML
 #include "waveform/waveformwidgetfactory.h"
-#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"

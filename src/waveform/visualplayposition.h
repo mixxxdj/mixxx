@@ -9,11 +9,7 @@
 #include "util/performancetimer.h"
 
 class ControlProxy;
-#ifdef MIXXX_USE_QML
-typedef void VSyncThread;
-#else
 class VSyncThread;
-#endif
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time

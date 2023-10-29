@@ -17,10 +17,8 @@
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#ifndef MIXXX_USE_QML
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/visualsmanager.h"
-#endif
 
 namespace {
 

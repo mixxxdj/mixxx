@@ -19,6 +19,7 @@ jobs:
             os: ubuntu-22.04
             cmake_args: >-
               -DQT6=ON
+              -DQML=OFF
               -DBULK=ON
               -DFFMPEG=ON
               -DLOCALECOMPARE=ON

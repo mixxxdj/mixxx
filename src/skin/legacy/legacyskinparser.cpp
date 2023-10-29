@@ -30,9 +30,7 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
-#ifndef MIXXX_USE_QML
 #include "waveform/vsyncthread.h"
-#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -75,10 +73,8 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
-#ifndef MIXXX_USE_QML
 #include "widget/wspinny.h"
 #include "widget/wspinnyglsl.h"
-#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
@@ -86,11 +82,9 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
-#ifndef MIXXX_USE_QML
 #include "widget/wvumeter.h"
 #include "widget/wvumeterglsl.h"
 #include "widget/wvumeterlegacy.h"
-#endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
@@ -951,10 +945,10 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -992,15 +986,14 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
 
     return overviewWidget;
-#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1042,7 +1035,6 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
-#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
@@ -1274,10 +1266,10 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1348,15 +1340,14 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     pSpinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pSpinny->Init();
     return pSpinny;
-#endif
 }
 
 QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
 #ifdef MIXXX_USE_QML
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
@@ -1414,7 +1405,6 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     pVuMeterWidget->Init();
 
     return pVuMeterWidget;
-#endif
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
