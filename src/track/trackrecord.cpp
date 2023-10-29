@@ -23,44 +23,8 @@ TrackRecord::TrackRecord(TrackId id)
 }
 
 void TrackRecord::setKeys(const Keys& keys) {
-    refMetadata().refTrackInfo().setKeyText(KeyUtils::formatGlobalKey(keys));
+    refMetadata().refTrackInfo().setKeyText(keys.getGlobalKeyText());
     m_keys = std::move(keys);
-}
-
-bool TrackRecord::updateGlobalKey(
-        track::io::key::ChromaticKey key,
-        track::io::key::Source keySource) {
-    if (key == track::io::key::INVALID) {
-        return false;
-    } else {
-        Keys keys = KeyFactory::makeBasicKeys(key, keySource);
-        if (m_keys.getGlobalKey() != keys.getGlobalKey()) {
-            setKeys(keys);
-            return true;
-        }
-    }
-    return false;
-}
-
-UpdateResult TrackRecord::updateGlobalKeyNormalizeText(
-        const QString& keyText,
-        track::io::key::Source keySource) {
-    // Try to parse the input as a key.
-    mixxx::track::io::key::ChromaticKey newKey =
-            KeyUtils::guessKeyFromText(keyText);
-    if (newKey == mixxx::track::io::key::INVALID) {
-        // revert if we can't guess a valid key from it
-        return UpdateResult::Rejected;
-    }
-
-    // If the new key is the same as the old key, reject the change.
-    if (m_keys.getGlobalKey() == newKey) {
-        return UpdateResult::Unchanged;
-    }
-
-    Keys newKeys = KeyFactory::makeBasicKeys(newKey, keySource);
-    setKeys(newKeys);
-    return UpdateResult::Updated;
 }
 
 namespace {

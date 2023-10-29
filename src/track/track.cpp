@@ -8,6 +8,7 @@
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
+#include "track/keyfactory.h"
 #include "track/trackref.h"
 #include "util/assert.h"
 #include "util/color/color.h"
@@ -1418,17 +1419,20 @@ mixxx::track::io::key::ChromaticKey Track::getKey() const {
     return m_record.getGlobalKey();
 }
 
+// returns the formatted key for display purpose
 QString Track::getKeyText() const {
-    const auto locked = lockMutex(&m_qMutex);
-    return m_record.getGlobalKeyText();
+    Keys keys;
+    { // lock scope
+        QMutexLocker lock(&m_qMutex);
+        keys = m_record.getKeys();
+    }
+    return KeyUtils::formatGlobalKey(keys);
 }
 
+// normalizes the keyText before storing
 void Track::setKeyText(const QString& keyText,
                        mixxx::track::io::key::Source keySource) {
-    auto locked = lockMutex(&m_qMutex);
-    if (m_record.updateGlobalKeyNormalizeText(keyText, keySource) == mixxx::UpdateResult::Updated) {
-        afterKeysUpdated(&locked);
-    }
+    setKey(KeyUtils::guessKeyFromText(keyText), keySource);
 }
 
 void Track::setBpmLocked(bool bpmLocked) {

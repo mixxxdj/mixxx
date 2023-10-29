@@ -201,6 +201,7 @@ class SoundSourceProxy {
     static QHash<QMimeType, QString> s_fileTypeByMimeType;
 
     friend class TrackCollectionManager;
+    friend class TrackMetadataExportTest_keepWithespaceKey_Test;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
             Track* pTrack,
             const SyncTrackMetadataParams& syncParams);
