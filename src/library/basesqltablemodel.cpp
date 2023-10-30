@@ -528,7 +528,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
         bool first = true;
-        for (const SortColumn& sc : qAsConst(m_sortColumns)) {
+        for (const SortColumn& sc : std::as_const(m_sortColumns)) {
             QString sort_field;
             if (sc.m_column < m_tableColumns.size()) {
                 if (sc.m_column == kIdColumn) {

@@ -159,7 +159,7 @@ bool WLibraryTableView::restoreTrackModelState(
     pSelection->clearSelection();
     QModelIndexList selectedRows = state->selectedRows;
     if (!selectedRows.isEmpty()) {
-        for (auto index : qAsConst(selectedRows)) {
+        for (auto index : std::as_const(selectedRows)) {
             pSelection->select(index,
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }

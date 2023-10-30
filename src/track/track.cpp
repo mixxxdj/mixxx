@@ -955,7 +955,7 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
         return;
     }
     double frames = m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(milliseconds);
-    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
@@ -1215,13 +1215,13 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
         return false;
     }
     // disconnect existing cue points
-    for (const auto& pCue : qAsConst(m_cuePoints)) {
+    for (const auto& pCue : std::as_const(m_cuePoints)) {
         disconnect(pCue.get(), nullptr, this, nullptr);
     }
 
     m_cuePoints = cuePoints;
     // connect new cue points
-    for (const auto& pCue : qAsConst(m_cuePoints)) {
+    for (const auto& pCue : std::as_const(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Start listening to cue point updates AFTER setting
         // the track id. Otherwise we would receive unwanted
@@ -1278,7 +1278,7 @@ bool Track::importPendingCueInfosWhileLocked() {
     // user data that cannot be expressed in Serato. https://github.com/mixxxdj/mixxx/issues/11530
     // For now the save route is to skip the imports if Mixxx cues already exist.
     // TODO() Consider a merge strategy.
-    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
             cuePoints.append(pCue);
         } else {
@@ -1491,7 +1491,7 @@ bool Track::exportSeratoMetadata() {
             streamInfo->getSignalInfo().getSampleRate();
     QList<mixxx::CueInfo> cueInfos;
     cueInfos.reserve(m_cuePoints.size());
-    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+    for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         cueInfos.append(pCue->getCueInfo(sampleRate));
     }
 

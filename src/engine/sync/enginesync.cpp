@@ -245,7 +245,7 @@ Syncable* EngineSync::pickNewLeader(Syncable* pEnablingSyncable) {
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
-    for (const auto& pSyncable : qAsConst(m_syncables)) {
+    for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (!pSyncable->getBaseBpm().isValid()) {
             continue;
         }
@@ -321,7 +321,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* pPlayingNonSyncTarget = nullptr;
     Syncable* pStoppedNonSyncTarget = nullptr;
 
-    for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
+    for (const auto& pOtherSyncable : std::as_const(m_syncables)) {
         if (pOtherSyncable == requester) {
             continue;
         }
@@ -556,7 +556,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
-    for (Syncable* theSyncable : qAsConst(m_syncables)) {
+    for (Syncable* theSyncable : std::as_const(m_syncables)) {
         bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
             if (!isSynchonized) {
@@ -603,7 +603,7 @@ Syncable* EngineSync::getSyncableForGroup(const QString& group) {
 }
 
 bool EngineSync::syncDeckExists() const {
-    for (const auto& pSyncable : qAsConst(m_syncables)) {
+    for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (pSyncable->isSynchronized() && pSyncable->getBaseBpm().isValid()) {
             return true;
         }
@@ -690,7 +690,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         // explicit Leader and we should not initialize the beat distance.  Take it from the
         // internal clock instead, because that will be up to date with the playing deck(s).
         bool playingSyncables = false;
-        for (Syncable* pSyncable : qAsConst(m_syncables)) {
+        for (Syncable* pSyncable : std::as_const(m_syncables)) {
             if (pSyncable == pSource) {
                 continue;
             }

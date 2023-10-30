@@ -83,19 +83,19 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotResetToDefaults();
     }
 }

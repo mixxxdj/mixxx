@@ -532,7 +532,7 @@ void EnginePrimeExportJob::run() {
     // We will build up a map from Mixxx track id to EL track id during export.
     QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
 
-    for (const auto& trackRef : qAsConst(m_trackRefs)) {
+    for (const auto& trackRef : std::as_const(m_trackRefs)) {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -590,7 +590,7 @@ void EnginePrimeExportJob::run() {
     }
 
     // Add each track to the root crate, even if it also belongs to others.
-    for (const TrackRef& trackRef : qAsConst(m_trackRefs)) {
+    for (const TrackRef& trackRef : std::as_const(m_trackRefs)) {
         if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
@@ -614,7 +614,7 @@ void EnginePrimeExportJob::run() {
     emit jobProgress(currProgress);
 
     // Export all Mixxx crates
-    for (const CrateId& crateId : qAsConst(m_crateIds)) {
+    for (const CrateId& crateId : std::as_const(m_crateIds)) {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
