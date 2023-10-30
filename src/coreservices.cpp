@@ -529,6 +529,8 @@ bool CoreServices::initializeDatabase() {
 }
 
 std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+    // Note: We return here the base class pointer to make the coreservices.h usable
+    // in test classes where header included from dlgpreferences.h are not accessible.
     std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
             getScreensaverManager(),
             nullptr,
