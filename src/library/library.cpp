@@ -376,7 +376,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
@@ -449,7 +449,7 @@ void Library::bindLibraryWidget(
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 

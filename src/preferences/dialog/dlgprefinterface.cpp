@@ -80,7 +80,7 @@ DlgPrefInterface::DlgPrefInterface(
     DEBUG_ASSERT(!fileNames.contains(QStringLiteral("mixxx_en_US.qm")));
     fileNames.push_back(QStringLiteral("mixxx_en_US.qm"));
 
-    for (const auto& fileName : qAsConst(fileNames)) {
+    for (const auto& fileName : std::as_const(fileNames)) {
         // Extract locale name from file name
         QString localeName = fileName;
         // Strip prefix
