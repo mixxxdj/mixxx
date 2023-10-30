@@ -4,6 +4,7 @@
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "mixer/basetrackplayer.h"
