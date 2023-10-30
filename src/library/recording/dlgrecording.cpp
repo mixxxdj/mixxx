@@ -3,6 +3,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "moc_dlgrecording.cpp"
+#include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
