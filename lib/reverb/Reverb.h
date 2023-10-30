@@ -48,6 +48,7 @@
 #define REVERB_H
 
 #include <stdio.h>
+#include <cmath> // for M_PI
 
 #include "basics.h"
 #include "dsp/Delay.h"
