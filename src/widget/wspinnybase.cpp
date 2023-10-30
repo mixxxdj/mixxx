@@ -7,6 +7,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
 #include "moc_wspinnybase.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
