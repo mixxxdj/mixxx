@@ -1,10 +1,8 @@
 #pragma once
 
 #include <QStandardItemModel>
-#include <QMimeData>
 
 #include "library/trackmodel.h"
-#include "recording/recordingmanager.h"
 #include "library/browse/browsethread.h"
 
 //constants
@@ -32,6 +30,8 @@ constexpr int COLUMN_REPLAYGAIN = 20;
 constexpr int NUM_COLUMNS = 21;
 
 class TrackCollectionManager;
+class QMimeData;
+class RecordingManager;
 
 namespace mixxx {
 

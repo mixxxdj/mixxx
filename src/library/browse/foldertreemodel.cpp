@@ -3,14 +3,10 @@
 #include <Shellapi.h>
 #include <Shlobj.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <dirent.h>
-#include <unistd.h>
-#include <errno.h>
 #endif
 
-#include <QFileInfo>
+#include <QFileInfoList>
 
 #include "library/browse/browsefeature.h"
 #include "library/browse/foldertreemodel.h"
