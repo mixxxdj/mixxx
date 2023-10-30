@@ -1,5 +1,6 @@
 #include "widget/wlibrarytableview.h"
 
+#include <QApplication>
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
@@ -396,16 +397,21 @@ void WLibraryTableView::dataChanged(
         const QModelIndex& topLeft,
         const QModelIndex& bottomRight,
         const QVector<int>& roles) {
-    for (auto& role : roles) {
-        // If the tooltip is still visible update with the loaded cover.
-        if (role == Qt::ToolTipRole && QToolTip::isVisible()) {
+    for (const auto& role : roles) {
+        // Note: At this point the tooltip is already showing
+        // "Fetching image ..." or still in an effect progress.
+        // QToolTip::isVisible() is false for the later.
+        if (role == Qt::ToolTipRole) {
             QPoint globalPos = QCursor::pos();
-            QWidget* pViewPort = QApplication::widgetAt(QCursor::pos());
+            QWidget* pViewPort = QApplication::widgetAt(globalPos);
             if (pViewPort) {
-                QHelpEvent toolTipEvent(QEvent::ToolTip,
-                        pViewPort->mapFromGlobal(globalPos),
-                        globalPos);
-                viewportEvent(&toolTipEvent);
+                QPoint viewPortPos = pViewPort->mapFromGlobal(globalPos);
+                if (indexAt(viewPortPos) == topLeft) {
+                    QHelpEvent toolTipEvent(QEvent::ToolTip,
+                            pViewPort->mapFromGlobal(globalPos),
+                            globalPos);
+                    viewportEvent(&toolTipEvent);
+                }
             }
         }
     }
