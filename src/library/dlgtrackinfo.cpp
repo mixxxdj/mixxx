@@ -1,9 +1,7 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QSignalBlocker>
-#include <QStringBuilder>
 #include <QStyleFactory>
-#include <QTreeWidget>
 #include <QtDebug>
 
 #include "defs_urls.h"
@@ -16,11 +14,8 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
-#include "track/keyfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/color/color.h"
-#include "util/color/colorpalette.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"

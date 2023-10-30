@@ -11,6 +11,7 @@
 #include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "moc_dlglibraryexport.cpp"

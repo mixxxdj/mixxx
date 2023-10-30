@@ -2,10 +2,9 @@
 
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QtConcurrentRun>
+#include <QtConcurrent>
 #include <QtDebug>
 
-#include "library/coverartutils.h"
 #include "moc_coverartcache.cpp"
 #include "track/track.h"
 #include "util/logger.h"

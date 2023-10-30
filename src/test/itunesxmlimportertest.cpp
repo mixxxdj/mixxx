@@ -11,6 +11,7 @@
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/itunespathmapping.h"
 #include "library/itunes/itunesxmlimporter.h"
+#include "library/treeitem.h"
 #include "test/mixxxtest.h"
 
 class ITunesXMLImporterTest : public MixxxTest {

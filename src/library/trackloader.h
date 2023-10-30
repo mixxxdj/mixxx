@@ -4,9 +4,9 @@
 #include <QPointer>
 
 #include "track/track_decl.h"
-#include "track/trackref.h"
 
 class TrackCollectionManager;
+class TrackRef;
 
 namespace mixxx {
 

@@ -5,7 +5,7 @@
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "mixer/playermanager.h"
+#include "library/trackset/crate/crate.h"
 #include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"

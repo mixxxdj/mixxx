@@ -2,6 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/engine.h"
 #include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"

@@ -1,11 +1,11 @@
 #include "library/searchquery.h"
 
 #include <QRegularExpression>
-#include <QtDebug>
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
+#include "library/trackset/crate/cratestorage.h" // for CrateTrackSelectResult
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/db/dbconnection.h"

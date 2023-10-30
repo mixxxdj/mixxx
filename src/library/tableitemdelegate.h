@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QStyledItemDelegate>
-#include <QTableView>
+
+class QTableView;
 
 class TableItemDelegate : public QStyledItemDelegate {
     Q_OBJECT

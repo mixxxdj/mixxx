@@ -2,7 +2,9 @@
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateschema.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqllikewildcards.h"

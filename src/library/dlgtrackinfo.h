@@ -5,11 +5,9 @@
 #include <QModelIndex>
 #include <memory>
 
-#include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/keys.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
@@ -17,11 +15,11 @@
 #include "widget/wcolorpickeraction.h"
 
 class TrackModel;
-class DlgTagFetcher;
-class WCoverArtLabel;
-class WCoverArtMenu;
-class WStarRating;
 class WColorPickerAction;
+class WStarRating;
+class WCoverArtMenu;
+class WCoverArtLabel;
+class DlgTagFetcher;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or

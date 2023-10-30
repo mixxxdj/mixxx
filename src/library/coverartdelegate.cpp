@@ -1,10 +1,10 @@
 #include "library/coverartdelegate.h"
 
 #include <QPainter>
+#include <QTableView>
 #include <algorithm>
 
 #include "library/coverartcache.h"
-#include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"

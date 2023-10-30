@@ -7,6 +7,8 @@
 #include "engine/channels/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"

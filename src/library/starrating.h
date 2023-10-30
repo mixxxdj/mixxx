@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMetaType>
 #include <QPolygonF>
 #include <QSize>
 

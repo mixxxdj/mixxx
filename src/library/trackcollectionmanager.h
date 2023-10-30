@@ -5,17 +5,16 @@
 #include <QSet>
 #include <memory>
 
-#include "library/relocatedtrack.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
-#include "util/fileinfo.h"
 #include "util/parented_ptr.h"
 #include "util/thread_affinity.h"
 
 class LibraryScanner;
 class TrackCollection;
 class ExternalTrackCollection;
+class RelocatedTrack;
 
 // Manages Mixxx's internal database of tracks as well as external track collections.
 //
