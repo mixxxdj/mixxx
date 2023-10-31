@@ -625,9 +625,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
-  src/audio/types.cpp
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
+  src/audio/types.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
@@ -649,12 +649,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerinputmappingtablemodel.cpp
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
-  src/controllers/controllermappingtablemodel.cpp
   src/controllers/controllermappinginfo.cpp
   src/controllers/controllermappinginfoenumerator.cpp
+  src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
-  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -666,16 +665,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
-  src/controllers/scripting/controllerscriptenginebase.cpp
-  src/controllers/scripting/controllerscriptmoduleengine.cpp
-  src/controllers/scripting/colormapper.cpp
-  src/controllers/scripting/colormapperjsproxy.cpp
-  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
-  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
-  src/controllers/scripting/legacy/scriptconnection.cpp
-  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/midi/legacymidicontrollermapping.cpp
   src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
   src/controllers/midi/midicontroller.cpp
@@ -685,7 +677,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/midi/midiutils.cpp
   src/controllers/midi/portmidicontroller.cpp
   src/controllers/midi/portmidienumerator.cpp
+  src/controllers/scripting/colormapper.cpp
+  src/controllers/scripting/colormapperjsproxy.cpp
+  src/controllers/scripting/controllerscriptenginebase.cpp
+  src/controllers/scripting/controllerscriptmoduleengine.cpp
+  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
+  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
+  src/controllers/scripting/legacy/scriptconnection.cpp
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/softtakeover.cpp
+  src/coreservices.cpp
   src/database/mixxxdb.cpp
   src/database/schemamanager.cpp
   src/dialog/dlgabout.cpp
@@ -696,19 +697,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
-  src/effects/effectbuttonparameterslot.cpp
-  src/effects/effectchain.cpp
-  src/effects/effectchainmixmode.cpp
-  src/effects/effectparameter.cpp
-  src/effects/effectknobparameterslot.cpp
-  src/effects/effectparameterslotbase.cpp
-  src/effects/effectslot.cpp
-  src/effects/effectsmanager.cpp
-  src/effects/effectsmessenger.cpp
-  src/effects/visibleeffectslist.cpp
-  src/effects/backends/effectsbackend.cpp
-  src/effects/backends/effectmanifest.cpp
-  src/effects/backends/effectmanifestparameter.cpp
   src/effects/backends/builtin/autopaneffect.cpp
   src/effects/backends/builtin/balanceeffect.cpp
   src/effects/backends/builtin/bessel4lvmixeqeffect.cpp
@@ -716,15 +704,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/biquadfullkilleqeffect.cpp
   src/effects/backends/builtin/bitcrushereffect.cpp
   src/effects/backends/builtin/builtinbackend.cpp
+  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/echoeffect.cpp
   src/effects/backends/builtin/filtereffect.cpp
   src/effects/backends/builtin/flangereffect.cpp
+  src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/builtin/graphiceqeffect.cpp
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
-  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
   src/effects/backends/builtin/pitchshifteffect.cpp
@@ -732,18 +721,30 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
-  src/effects/backends/builtin/glitcheffect.cpp
+  src/effects/backends/effectmanifest.cpp
+  src/effects/backends/effectmanifestparameter.cpp
+  src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/chains/equalizereffectchain.cpp
   src/effects/chains/outputeffectchain.cpp
   src/effects/chains/pergroupeffectchain.cpp
   src/effects/chains/quickeffectchain.cpp
   src/effects/chains/standardeffectchain.cpp
+  src/effects/effectbuttonparameterslot.cpp
+  src/effects/effectchain.cpp
+  src/effects/effectchainmixmode.cpp
+  src/effects/effectknobparameterslot.cpp
+  src/effects/effectparameter.cpp
+  src/effects/effectparameterslotbase.cpp
+  src/effects/effectslot.cpp
+  src/effects/effectsmanager.cpp
+  src/effects/effectsmessenger.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectchainpresetmanager.cpp
   src/effects/presets/effectparameterpreset.cpp
   src/effects/presets/effectpreset.cpp
   src/effects/presets/effectpresetmanager.cpp
+  src/effects/visibleeffectslist.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderfdkaac.cpp
   src/encoder/encoderfdkaacsettings.cpp
@@ -935,8 +936,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/previewdeck.cpp
   src/mixer/sampler.cpp
   src/mixer/samplerbank.cpp
-  src/coreservices.cpp
   src/mixxxapplication.cpp
+  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -951,7 +952,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpalettesettings.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
@@ -960,8 +964,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefbeatsdlg.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
-  src/preferences/dialog/dlgprefmixer.cpp
-  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
   src/preferences/dialog/dlgprefdeckdlg.ui
   src/preferences/dialog/dlgprefeffects.cpp
@@ -975,6 +977,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgprefmixer.cpp
+  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -988,9 +992,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
-  src/preferences/colorpaletteeditor.cpp
-  src/preferences/colorpaletteeditormodel.cpp
-  src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
@@ -1046,12 +1047,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
-  src/track/track.cpp
-  src/track/trackinfo.cpp
-  src/track/trackmetadata.cpp
-  src/track/tracknumbers.cpp
-  src/track/trackrecord.cpp
-  src/track/trackref.cpp
   src/track/taglib/trackmetadata_ape.cpp
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp
@@ -1059,15 +1054,20 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp
+  src/track/track.cpp
+  src/track/trackinfo.cpp
+  src/track/trackmetadata.cpp
+  src/track/tracknumbers.cpp
+  src/track/trackrecord.cpp
+  src/track/trackref.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
-  src/util/colorcomponents.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
+  src/util/colorcomponents.cpp
   src/util/console.cpp
-  src/util/safelywritablefile.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
@@ -1084,10 +1084,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
-  src/util/imagefiledata.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/imagefiledata.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
@@ -1101,11 +1101,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/ringdelaybuffer.cpp
   src/util/rotary.cpp
   src/util/runtimeloggingcategory.cpp
+  src/util/safelywritablefile.cpp
   src/util/sample.cpp
   src/util/sandbox.cpp
-  src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
+  src/util/semanticversion.cpp
   src/util/stat.cpp
   src/util/statmodel.cpp
   src/util/statsmanager.cpp
@@ -1121,9 +1122,48 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/waveform/guitick.cpp
+  src/waveform/renderers/glslwaveformrenderersignal.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
+  src/waveform/renderers/glwaveformrenderbackground.cpp
+  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
+  src/waveform/renderers/glwaveformrendererrgb.cpp
+  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/waveformmark.cpp
+  src/waveform/renderers/waveformmarkrange.cpp
+  src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformrenderbackground.cpp
+  src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrendererabstract.cpp
+  src/waveform/renderers/waveformrendererendoftrack.cpp
+  src/waveform/renderers/waveformrendererfilteredsignal.cpp
+  src/waveform/renderers/waveformrendererhsv.cpp
+  src/waveform/renderers/waveformrendererpreroll.cpp
+  src/waveform/renderers/waveformrendererrgb.cpp
+  src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrendermark.cpp
+  src/waveform/renderers/waveformrendermarkrange.cpp
+  src/waveform/renderers/waveformsignalcolors.cpp
+  src/waveform/renderers/waveformwidgetrenderer.cpp
+  src/waveform/sharedglcontext.cpp
   src/waveform/visualplayposition.cpp
+  src/waveform/visualsmanager.cpp
+  src/waveform/vsyncthread.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
+  src/waveform/waveformmarklabel.cpp
+  src/waveform/waveformwidgetfactory.cpp
+  src/waveform/widgets/emptywaveformwidget.cpp
+  src/waveform/widgets/glrgbwaveformwidget.cpp
+  src/waveform/widgets/glsimplewaveformwidget.cpp
+  src/waveform/widgets/glslwaveformwidget.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
+  src/waveform/widgets/glwaveformwidget.cpp
+  src/waveform/widgets/glwaveformwidgetabstract.cpp
+  src/waveform/widgets/hsvwaveformwidget.cpp
+  src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/softwarewaveformwidget.cpp
+  src/waveform/widgets/waveformwidgetabstract.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1170,6 +1210,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
   src/widget/wnumberrate.cpp
+  src/widget/woverview.cpp
+  src/widget/woverviewhsv.cpp
+  src/widget/woverviewlmh.cpp
+  src/widget/woverviewrgb.cpp
   src/widget/wpixmapstore.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
@@ -1181,6 +1225,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
+  src/widget/wspinny.cpp
+  src/widget/wspinnybase.cpp
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1191,6 +1237,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtracktableviewheader.cpp
   src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
+  src/widget/wvumeter.cpp
+  src/widget/wvumeterbase.cpp
+  src/widget/wvumeterlegacy.cpp
+  src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
@@ -1356,60 +1406,11 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/xml.h
   ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
-target_sources(mixxx-lib PRIVATE
-  src/mixxxmainwindow.cpp
-  src/waveform/guitick.cpp
-  src/waveform/renderers/glslwaveformrenderersignal.cpp
-  src/waveform/renderers/glvsynctestrenderer.cpp
-  src/waveform/renderers/glwaveformrenderbackground.cpp
-  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/glwaveformrendererrgb.cpp
-  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
-  src/waveform/renderers/waveformmark.cpp
-  src/waveform/renderers/waveformmarkrange.cpp
-  src/waveform/renderers/waveformmarkset.cpp
-  src/waveform/renderers/waveformrenderbackground.cpp
-  src/waveform/renderers/waveformrenderbeat.cpp
-  src/waveform/renderers/waveformrendererabstract.cpp
-  src/waveform/renderers/waveformrendererendoftrack.cpp
-  src/waveform/renderers/waveformrendererfilteredsignal.cpp
-  src/waveform/renderers/waveformrendererhsv.cpp
-  src/waveform/renderers/waveformrendererpreroll.cpp
-  src/waveform/renderers/waveformrendererrgb.cpp
-  src/waveform/renderers/waveformrenderersignalbase.cpp
-  src/waveform/renderers/waveformrendermark.cpp
-  src/waveform/renderers/waveformrendermarkrange.cpp
-  src/waveform/renderers/waveformsignalcolors.cpp
-  src/waveform/renderers/waveformwidgetrenderer.cpp
-  src/waveform/sharedglcontext.cpp
-  src/waveform/visualsmanager.cpp
-  src/waveform/vsyncthread.cpp
-  src/waveform/waveformmarklabel.cpp
-  src/waveform/waveformwidgetfactory.cpp
-  src/waveform/widgets/emptywaveformwidget.cpp
-  src/waveform/widgets/glrgbwaveformwidget.cpp
-  src/waveform/widgets/glsimplewaveformwidget.cpp
-  src/waveform/widgets/glslwaveformwidget.cpp
-  src/waveform/widgets/glvsynctestwidget.cpp
-  src/waveform/widgets/glwaveformwidget.cpp
-  src/waveform/widgets/glwaveformwidgetabstract.cpp
-  src/waveform/widgets/hsvwaveformwidget.cpp
-  src/waveform/widgets/rgbwaveformwidget.cpp
-  src/waveform/widgets/softwarewaveformwidget.cpp
-  src/waveform/widgets/waveformwidgetabstract.cpp
-  src/widget/woverview.cpp
-  src/widget/woverviewhsv.cpp
-  src/widget/woverviewlmh.cpp
-  src/widget/woverviewrgb.cpp
-  src/widget/wspinny.cpp
-  src/widget/wspinnybase.cpp
-  src/widget/wvumeter.cpp
-  src/widget/wvumeterbase.cpp
-  src/widget/wvumeterlegacy.cpp
-  src/widget/wwaveformviewer.cpp
-)
 if (NOT QML)
   target_sources(mixxx-lib PRIVATE
+    # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+    # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+    # main target
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
   )
@@ -2640,7 +2641,7 @@ if(QML)
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
     src/qml/qmlwaveformoverview.cpp
-    # The following source needs to be in this target to get QML_ELEMENT properly interpreted
+    # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp
   )
