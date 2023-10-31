@@ -558,9 +558,9 @@ void DlgPrefController::slotApply() {
         return;
     }
 
-    QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
+    QString mappingFilePath = mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex());
 
-    QFileInfo mappingFileInfo(mappingPath);
+    auto mappingFileInfo = QFileInfo(mappingFilePath);
 
     if (m_pMapping) {
         m_pMapping->saveSettings(mappingFileInfo, m_pConfig, m_pController->getName());
@@ -570,7 +570,7 @@ void DlgPrefController::slotApply() {
             mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
 
     if (m_pMapping) {
-        m_pMapping->restoreSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+        m_pMapping->loadSettings(mappingFileInfo, m_pConfig, m_pController->getName());
     }
 
     slotShowMapping(m_pMapping);
@@ -607,7 +607,7 @@ void DlgPrefController::enableWizardAndIOTabs(bool enable) {
     m_ui.outputMappingsTab->setEnabled(enable);
 }
 
-QString DlgPrefController::mappingPathFromIndex(int index) const {
+QString DlgPrefController::mappingFilePathFromIndex(int index) const {
     if (index == 0) {
         // "No Mapping" item
         return QString();
@@ -617,8 +617,8 @@ QString DlgPrefController::mappingPathFromIndex(int index) const {
 }
 
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
-    QString mappingPath = mappingPathFromIndex(chosenIndex);
-    if (mappingPath.isEmpty()) { // User picked "No Mapping" item
+    QString mappingFilePath = mappingFilePathFromIndex(chosenIndex);
+    if (mappingFilePath.isEmpty()) { // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
@@ -644,7 +644,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     // Check if the mapping is different from the configured mapping
     if (m_GuiInitialized &&
             m_pControllerManager->getConfiguredMappingFileForDevice(
-                    m_pController->getName()) != mappingPath) {
+                    m_pController->getName()) != mappingFilePath) {
         setDirty(true);
     }
 
@@ -659,20 +659,20 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
     }
 
-    QFileInfo mappingFileInfo(mappingPath);
+    auto mappingFileInfo = QFileInfo(mappingFilePath);
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
                     mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
-        pMapping->restoreSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+        pMapping->loadSettings(mappingFileInfo, m_pConfig, m_pController->getName());
     }
 
     if (previousMappingSaved) {
         // We might have saved the previous preset with a new name, so update
         // the preset combobox.
-        enumerateMappings(mappingPath);
+        enumerateMappings(mappingFilePath);
     } else {
         slotShowMapping(pMapping);
     }
@@ -843,12 +843,12 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     if (pMapping) {
         auto settings = pMapping->getSettings();
-        const auto& layout = pMapping->getSettingsLayout();
+        auto pLayout = pMapping->getSettingsLayout();
 
         qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
-        if (layout.get() != nullptr && !settings.isEmpty()) {
-            m_ui.groupBoxSettings->layout()->addWidget(layout->build(m_ui.groupBoxSettings));
+        if (pLayout != nullptr && !settings.isEmpty()) {
+            m_ui.groupBoxSettings->layout()->addWidget(pLayout->build(m_ui.groupBoxSettings));
 
             for (const auto& setting : qAsConst(settings)) {
                 connect(setting.get(),

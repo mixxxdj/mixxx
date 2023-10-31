@@ -45,7 +45,7 @@ class LegacyControllerMappingFileHandler {
     /// @param root The root node (MixxxControllerPreset)
     /// @param mapping The mapping object to populate with the gathered data
     void parseMappingSettings(const QDomElement& root,
-            std::shared_ptr<LegacyControllerMapping> mapping) const;
+            LegacyControllerMapping* mapping) const;
 
     /// Adds script files from XML to the LegacyControllerMapping.
     ///
@@ -75,8 +75,8 @@ class LegacyControllerMappingFileHandler {
     /// @param layout The currently active layout, on which new setting item
     /// (leaf) should be attached
     void parseMappingSettingsElement(const QDomElement& current,
-            std::shared_ptr<LegacyControllerMapping> mapping,
-            const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout) const;
+            LegacyControllerMapping* pMapping,
+            LegacyControllerSettingsLayoutContainer* pLayout) const;
 
     // Sub-classes implement this.
     virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,

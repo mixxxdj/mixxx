@@ -1,8 +1,8 @@
 #include "controllers/legacycontrollermapping.h"
 
-void LegacyControllerMapping::restoreSettings(const QFileInfo& mappingFile,
+void LegacyControllerMapping::loadSettings(const QFileInfo& mappingFile,
         UserSettingsPointer pConfig,
-        const QString& controllerName) {
+        const QString& controllerName) const {
     QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
                                     .arg(controllerName, mappingFile.absoluteFilePath());
 
@@ -43,7 +43,7 @@ void LegacyControllerMapping::restoreSettings(const QFileInfo& mappingFile,
 
 void LegacyControllerMapping::saveSettings(const QFileInfo& mappingFile,
         UserSettingsPointer pConfig,
-        const QString& controllerName) {
+        const QString& controllerName) const {
     QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
                                     .arg(controllerName, mappingFile.absoluteFilePath());
     for (auto setting : getSettings()) {

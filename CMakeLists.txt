@@ -2171,8 +2171,6 @@ target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
-# This is required in order for tests to find MOCs in case they include CPP directly, such as when using templated classes in test/controller_mapping_settings_test.cpp
-target_include_directories(mixxx-test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
 
 find_package(benchmark)
 target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)

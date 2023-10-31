@@ -72,11 +72,11 @@ TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
             LegacyControllerBooleanSetting::createFrom(doc.documentElement());
     EXPECT_TRUE(setting->valid()) << "Unable to create a boolean setting";
 
-    setting->m_dirtyValue = true;
+    setting->m_editedValue = true;
     EXPECT_TRUE(setting->isDirty());
     setting->save();
     EXPECT_FALSE(setting->isDirty());
-    EXPECT_EQ(setting->m_currentValue, true);
+    EXPECT_EQ(setting->m_savedValue, true);
 
     bool ok;
     setting->parse("true", &ok);
@@ -170,11 +170,11 @@ TEST_F(LegacyControllerMappingSettingsTest, integerSettingEditing) {
             LegacyControllerIntegerSetting::createFrom(doc.documentElement());
     EXPECT_TRUE(setting->valid()) << "Unable to create an integer setting";
 
-    setting->m_dirtyValue = true;
+    setting->m_editedValue = true;
     EXPECT_TRUE(setting->isDirty());
     setting->save();
     EXPECT_FALSE(setting->isDirty());
-    EXPECT_EQ(setting->m_currentValue, true);
+    EXPECT_EQ(setting->m_savedValue, true);
 
     bool ok;
     setting->parse("42", &ok);
@@ -268,11 +268,11 @@ TEST_F(LegacyControllerMappingSettingsTest, doubleSettingEditing) {
             LegacyControllerRealSetting::createFrom(doc.documentElement());
     EXPECT_TRUE(setting->valid()) << "Unable to create a double setting";
 
-    setting->m_dirtyValue = 1.0;
+    setting->m_editedValue = 1.0;
     EXPECT_TRUE(setting->isDirty());
     setting->save();
     EXPECT_FALSE(setting->isDirty());
-    EXPECT_EQ(setting->m_currentValue, true);
+    EXPECT_EQ(setting->m_savedValue, true);
 
     bool ok;
     setting->parse("0.001", &ok);
@@ -357,11 +357,11 @@ TEST_F(LegacyControllerMappingSettingsTest, enumSettingEditing) {
             LegacyControllerEnumSetting::createFrom(doc.documentElement());
     EXPECT_TRUE(setting->valid()) << "Unable to create an enum setting";
 
-    setting->m_dirtyValue = 2;
+    setting->m_editedValue = 2;
     EXPECT_TRUE(setting->isDirty());
     setting->save();
     EXPECT_FALSE(setting->isDirty());
-    EXPECT_EQ(setting->m_currentValue, 2);
+    EXPECT_EQ(setting->m_savedValue, 2);
     EXPECT_EQ(setting->stringify(), "myOptionValue3");
     EXPECT_TRUE(setting->value().isString());
     EXPECT_EQ(setting->value().toString(), "myOptionValue3");
@@ -418,7 +418,7 @@ class LegacyDummyMappingFileHandler : public LegacyControllerMappingFileHandler 
             const QDir&) {
         auto pMapping = std::make_shared<LegacyDummyMapping>();
         pMapping->setFilePath(filePath);
-        parseMappingSettings(root, pMapping);
+        parseMappingSettings(root, pMapping.get());
         return pMapping;
     }
 };

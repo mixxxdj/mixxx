@@ -110,7 +110,7 @@ void LegacyControllerMappingFileHandler::parseMappingInfo(
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettings(
-        const QDomElement& root, std::shared_ptr<LegacyControllerMapping> mapping) const {
+        const QDomElement& root, LegacyControllerMapping* mapping) const {
     if (root.isNull() || !mapping) {
         return;
     }
@@ -124,14 +124,14 @@ void LegacyControllerMappingFileHandler::parseMappingSettings(
             std::make_unique<LegacyControllerSettingsLayoutContainer>(
                     LegacyControllerSettingsLayoutContainer::Disposition::
                             VERTICAL);
-    parseMappingSettingsElement(settings, mapping, settingLayout);
+    parseMappingSettingsElement(settings, mapping, settingLayout.get());
     mapping->setSettingLayout(std::move(settingLayout));
 }
 
 void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
         const QDomElement& current,
-        std::shared_ptr<LegacyControllerMapping> pMapping,
-        const std::unique_ptr<LegacyControllerSettingsLayoutContainer>& layout)
+        LegacyControllerMapping* pMapping,
+        LegacyControllerSettingsLayoutContainer* pLayout)
         const {
     for (QDomElement element = current.firstChildElement();
             !element.isNull();
@@ -153,7 +153,7 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
                 continue;
             }
             if (pMapping->addSetting(pSetting)) {
-                layout->addItem(pSetting);
+                pLayout->addItem(pSetting);
             } else {
                 qDebug() << "The parsed setting in file" << pMapping->filePath()
                          << "at line" << element.lineNumber()
@@ -170,14 +170,14 @@ void LegacyControllerMappingFileHandler::parseMappingSettingsElement(
                     std::make_unique<LegacyControllerSettingsLayoutContainer>(
                             LegacyControllerSettingsLayoutContainer::HORIZONTAL,
                             orientation);
-            parseMappingSettingsElement(element, pMapping, row);
-            layout->addItem(std::move(row));
+            parseMappingSettingsElement(element, pMapping, row.get());
+            pLayout->addItem(std::move(row));
         } else if (tagName == "group") {
             std::unique_ptr<LegacyControllerSettingsLayoutContainer> group =
                     std::make_unique<LegacyControllerSettingsGroup>(
                             element.attribute("label"));
-            parseMappingSettingsElement(element, pMapping, group);
-            layout->addItem(std::move(group));
+            parseMappingSettingsElement(element, pMapping, group.get());
+            pLayout->addItem(std::move(group));
         } else {
             qDebug() << "Ignoring unsupported tag" << tagName
                      << "in file" << pMapping->filePath()

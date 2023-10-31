@@ -67,8 +67,6 @@ class LegacyControllerSettingBuilder {
     QList<std::tuple<bool (*)(const QDomElement&),
             AbstractLegacyControllerSetting* (*)(const QDomElement&)>>
             m_supportedSettings;
-
-    static LegacyControllerSettingBuilder* __self;
 };
 
 #define CONCAT_(x, y) x##y

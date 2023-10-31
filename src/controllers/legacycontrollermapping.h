@@ -114,54 +114,54 @@ class LegacyControllerMapping {
         return m_scripts;
     }
 
-    inline const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
+    const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
         return m_settings;
     }
 
-    inline const std::unique_ptr<LegacyControllerSettingsLayoutElement>& getSettingsLayout() const {
-        return m_settingsLayout;
+    LegacyControllerSettingsLayoutElement* getSettingsLayout() {
+        return m_settingsLayout.get();
     }
 
-    inline void setDirty(bool bDirty) {
+    void setDirty(bool bDirty) {
         m_bDirty = bDirty;
     }
 
-    inline bool isDirty() const {
+    bool isDirty() const {
         return m_bDirty;
     }
 
-    inline void setDeviceId(const QString& id) {
+    void setDeviceId(const QString& id) {
         m_deviceId = id;
         setDirty(true);
     }
 
-    inline QString deviceId() const {
+    QString deviceId() const {
         return m_deviceId;
     }
 
-    inline void setFilePath(const QString& filePath) {
+    void setFilePath(const QString& filePath) {
         m_filePath = filePath;
         setDirty(true);
     }
 
-    inline QString filePath() const {
+    QString filePath() const {
         return m_filePath;
     }
 
-    inline QDir dirPath() const {
+    QDir dirPath() const {
         return QFileInfo(filePath()).absoluteDir();
     }
 
-    inline void setName(const QString& name) {
+    void setName(const QString& name) {
         m_name = name;
         setDirty(true);
     }
 
-    inline QString name() const {
+    QString name() const {
         return m_name;
     }
 
-    inline void setAuthor(const QString& author) {
+    void setAuthor(const QString& author) {
         m_author = author;
         setDirty(true);
     }
@@ -242,12 +242,12 @@ class LegacyControllerMapping {
 
     virtual bool isMappable() const = 0;
 
-    void restoreSettings(const QFileInfo& mappingFile,
+    void loadSettings(const QFileInfo& mappingFile,
             UserSettingsPointer pConfig,
-            const QString& controllerName);
+            const QString& controllerName) const;
     void saveSettings(const QFileInfo& mappingFile,
             UserSettingsPointer pConfig,
-            const QString& controllerName);
+            const QString& controllerName) const;
 
     // Optional list of controller device match details
     QList<QHash<QString, QString>> m_productMatches;
