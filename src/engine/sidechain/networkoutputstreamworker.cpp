@@ -1,7 +1,6 @@
 #include <engine/sidechain/networkoutputstreamworker.h>
 #include "engine/sidechain/enginenetworkstream.h"
 #include "util/logger.h"
-#include "util/sample.h"
 
 
 namespace {
