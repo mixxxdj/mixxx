@@ -506,20 +506,12 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         const QFileInfo fileInfo(playlistFile);
         // Get a valid name
         const QString baseName = fileInfo.baseName();
-        QString name;
-
-        bool validNameGiven = false;
-        int i = 0;
-        while (!validNameGiven) {
-            name = baseName;
-            if (i != 0) {
-                name += QString::number(i);
-            }
-
-            // Check name
-            int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-            validNameGiven = (existingId == kInvalidPlaylistId);
+        QString name = baseName;
+        // Check if there already is a playlist by that name. If yes, add
+        // increasing suffix (1++) until we find an unused name.
+        int i = 1;
+        while (m_playlistDao.getPlaylistIdFromName(name) != kInvalidPlaylistId) {
+            name = baseName + QChar(' ') + QString::number(i);
             ++i;
         }
 
