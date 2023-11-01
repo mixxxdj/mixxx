@@ -22,6 +22,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
@@ -525,6 +526,21 @@ bool CoreServices::initializeDatabase() {
 
     kLogger.info() << "Initializing or upgrading database schema";
     return MixxxDb::initDatabaseSchema(dbConnection);
+}
+
+std::shared_ptr<QDialog> CoreServices::makeDlgPreferences() const {
+    // Note: We return here the base class pointer to make the coreservices.h usable
+    // in test classes where header included from dlgpreferences.h are not accessible.
+    std::shared_ptr<DlgPreferences> pDlgPreferences = std::make_shared<DlgPreferences>(
+            getScreensaverManager(),
+            nullptr,
+            getSoundManager(),
+            getControllerManager(),
+            getVinylControlManager(),
+            getEffectsManager(),
+            getSettingsManager(),
+            getLibrary());
+    return pDlgPreferences;
 }
 
 void CoreServices::finalize() {
