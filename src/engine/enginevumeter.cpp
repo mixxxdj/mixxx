@@ -1,7 +1,5 @@
 #include "engine/enginevumeter.h"
 
-#include "control/controlpotmeter.h"
-#include "control/controlproxy.h"
 #include "moc_enginevumeter.cpp"
 #include "util/sample.h"
 

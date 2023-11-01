@@ -3,7 +3,8 @@
 #include <QObject>
 
 #include "util/types.h"
-#include "engine/effects/groupfeaturestate.h"
+
+struct GroupFeatureState;
 
 class EngineObject : public QObject {
     Q_OBJECT

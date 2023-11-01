@@ -3,19 +3,12 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
 
-class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
 class EngineMixer;
-class EngineVuMeter;
-class EngineEffectsManager;
 class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {

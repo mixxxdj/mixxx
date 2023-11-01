@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QObject>
-
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"

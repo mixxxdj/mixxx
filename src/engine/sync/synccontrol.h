@@ -1,9 +1,11 @@
 #pragma once
 
 #include <gtest/gtest_prod.h>
+
 #include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
+#include "engine/sync/syncable.h"
 
 class BpmControl;
 class RateControl;

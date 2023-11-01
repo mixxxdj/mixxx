@@ -1,15 +1,12 @@
 #pragma once
 
 #include "control/pollingcontrolproxy.h"
-#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/engineobject.h"
 #include "engine/enginevumeter.h"
-#include "preferences/usersettings.h"
 
-class ControlObject;
+class EffectsManager;
 class EngineBuffer;
-class EngineFilterBlock;
 class ControlPushButton;
 
 class EngineChannel : public EngineObject {

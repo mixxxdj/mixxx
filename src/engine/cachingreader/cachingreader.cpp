@@ -1,11 +1,8 @@
 #include "engine/cachingreader/cachingreader.h"
 
-#include <QFileInfo>
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "moc_cachingreader.cpp"
-#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
 #include "util/counter.h"

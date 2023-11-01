@@ -11,6 +11,7 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
 #include "soundio/sounddevice.h"
+#include "util/fifo.h"
 #include "util/memory.h"
 #include "util/performancetimer.h"
 
