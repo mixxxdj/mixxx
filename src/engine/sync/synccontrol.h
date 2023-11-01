@@ -1,18 +1,17 @@
 #pragma once
 
 #include <gtest/gtest_prod.h>
-
 #include <QScopedPointer>
 
 #include "engine/controls/enginecontrol.h"
-#include "engine/sync/enginesync.h"
 
-class EngineChannel;
 class BpmControl;
 class RateControl;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
+class EngineChannel;
+class EngineSync;
 
 /// SyncControl is the Sync Lock object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
