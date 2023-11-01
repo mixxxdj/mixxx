@@ -12,6 +12,7 @@
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"

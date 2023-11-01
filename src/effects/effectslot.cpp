@@ -8,6 +8,7 @@
 #include "control/controlpushbutton.h"
 #include "effects/defs.h"
 #include "effects/effectchain.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
