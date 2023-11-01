@@ -1314,6 +1314,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
+    addDeckControl("waveform_zoom_set_default",
+            tr("Waveform Zoom Reset To Default"),
+            tr("Reset the waveform zoom level to the default value selected in "
+               "Preferences -> Waveforms"),
+            guiMenu);
 
     guiMenu->addSeparator();
 
