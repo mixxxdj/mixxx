@@ -7,7 +7,6 @@
 #include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 namespace {

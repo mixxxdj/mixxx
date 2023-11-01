@@ -8,7 +8,6 @@
 #include <list>
 
 #include "engine/cachingreader/cachingreaderworker.h"
-#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/fifo.h"
