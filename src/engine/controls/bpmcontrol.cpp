@@ -24,7 +24,7 @@ constexpr double kBpmRangeSmallStep = 0.1;
 
 constexpr double kBpmAdjustMin = kBpmRangeMin;
 constexpr double kBpmAdjustStep = 0.01;
-constexpr double kBpmTabRounding = 1 / 12.0;
+constexpr double kBpmTapRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
@@ -40,12 +40,24 @@ constexpr int kLocalBpmSpan = 4;
 // of the next beat.
 constexpr double kPastBeatMatchThreshold = 1 / 8.0;
 
+mixxx::Bpm averageBpmRoundedWithinRange(double averageLength, double rateRatio) {
+    // (60 seconds per minute) * (1000 milliseconds per second) /
+    //   (X millis per beat)
+    // = Y beats/minute
+    auto averageBpm = mixxx::Bpm(60.0 * 1000.0 / averageLength / rateRatio);
+    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTapRounding,
+            averageBpm,
+            averageBpm + kBpmTapRounding);
+    return averageBpm;
+}
+
 } // namespace
 
 BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
+          m_bpmTapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
+          m_tempoTapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0) {
     m_dSyncTargetBeatDistance.setValue(0.0);
@@ -126,11 +138,30 @@ BpmControl::BpmControl(const QString& group,
             &BpmControl::slotUpdateRateSlider,
             Qt::DirectConnection);
 
+    // Tap the (file) BPM
     m_pBpmTap = std::make_unique<ControlPushButton>(ConfigKey(group, "bpm_tap"));
     connect(m_pBpmTap.get(),
             &ControlObject::valueChanged,
             this,
             &BpmControl::slotBpmTap,
+            Qt::DirectConnection);
+    connect(&m_bpmTapFilter,
+            &TapFilter::tapped,
+            this,
+            &BpmControl::slotBpmTapFilter,
+            Qt::DirectConnection);
+
+    // Tap the tempo (playback speed)
+    m_pTempoTap = std::make_unique<ControlPushButton>(ConfigKey(group, "tempo_tap"));
+    connect(m_pTempoTap.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTempoTap,
+            Qt::DirectConnection);
+    connect(&m_tempoTapFilter,
+            &TapFilter::tapped,
+            this,
+            &BpmControl::slotTempoTapFilter,
             Qt::DirectConnection);
 
     m_pTranslateBeats = std::make_unique<ControlPushButton>(
@@ -259,11 +290,11 @@ void BpmControl::slotBeatsUndoAdjustment(double v) {
 
 void BpmControl::slotBpmTap(double v) {
     if (v > 0) {
-        m_tapFilter.tap();
+        m_bpmTapFilter.tap();
     }
 }
 
-void BpmControl::slotTapFilter(double averageLength, int numSamples) {
+void BpmControl::slotBpmTapFilter(double averageLength, int numSamples) {
     // averageLength is the average interval in milliseconds tapped over
     // numSamples samples.  Have to convert to BPM now:
 
@@ -286,15 +317,37 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    auto averageBpm = mixxx::Bpm(60.0 * 1000.0 / averageLength / rateRatio);
-    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
-            averageBpm,
-            averageBpm + kBpmTabRounding);
+    auto averageBpm = averageBpmRoundedWithinRange(averageLength, rateRatio);
     const auto newBeats = pBeats->trySetBpm(averageBpm);
     if (!newBeats) {
         return;
     }
     pTrack->trySetBeats(*newBeats);
+}
+void BpmControl::slotTempoTap(double v) {
+    if (v > 0) {
+        m_tempoTapFilter.tap();
+    }
+}
+
+void BpmControl::slotTempoTapFilter(double averageLength, int numSamples) {
+    // averageLength is the average interval in milliseconds tapped over
+    // numSamples samples. Have to convert to BPM now:
+    if (averageLength <= 0 || numSamples < 4) {
+        return;
+    }
+
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+
+    auto averageBpm = averageBpmRoundedWithinRange(averageLength, 1.0);
+    m_pEngineBpm->set(averageBpm.value());
+    // NOTE(ronso0) When setting the control, m_pEngineBpm->valueChanged()
+    // is not emitted (with Qt6) (it is when setting via a ControlProxy),
+    // so call the slot directly.
+    slotUpdateRateSlider(averageBpm.value());
 }
 
 // static

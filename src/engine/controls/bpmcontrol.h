@@ -102,8 +102,12 @@ class BpmControl : public EngineControl {
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
     void slotTranslateBeatsMove(double);
-    void slotTapFilter(double,int);
-    void slotBpmTap(double);
+
+    void slotBpmTap(double value);
+    void slotBpmTapFilter(double averageLength, int numSamples);
+    void slotTempoTap(double value);
+    void slotTempoTapFilter(double averageLength, int numSamples);
+
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
@@ -154,8 +158,8 @@ class BpmControl : public EngineControl {
     std::unique_ptr<ControlLinPotmeter> m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
-    std::unique_ptr<ControlPushButton> m_pBpmTap;  // File BPM
-    std::unique_ptr<ControlPushButton> m_pRateTap; // Enigne BPM (playback rate)
+    std::unique_ptr<ControlPushButton> m_pBpmTap;   // File BPM
+    std::unique_ptr<ControlPushButton> m_pTempoTap; // Enigne BPM (playback rate)
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
@@ -172,7 +176,8 @@ class BpmControl : public EngineControl {
     QAtomicInt m_resetSyncAdjustment;
     std::unique_ptr<ControlProxy> m_pSyncMode;
 
-    TapFilter m_tapFilter; // threadsafe
+    TapFilter m_bpmTapFilter;   // threadsafe
+    TapFilter m_tempoTapFilter; // threadsafe
 
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;
