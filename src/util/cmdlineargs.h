@@ -38,6 +38,11 @@ class CmdlineArgs final {
         return m_controllerAbortOnWarning;
     }
     bool getDeveloper() const { return m_developer; }
+#ifdef MIXXX_USE_QML
+    bool isQml() const {
+        return m_qml;
+    }
+#endif
     bool getSafeMode() const { return m_safeMode; }
     bool useColors() const {
         return m_useColors;
@@ -81,6 +86,9 @@ class CmdlineArgs final {
     bool m_controllerDebug;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer; // Developer Mode
+#ifdef MIXXX_USE_QML
+    bool m_qml;
+#endif
     bool m_safeMode;
     bool m_useLegacyVuMeter;
     bool m_useLegacySpinny;

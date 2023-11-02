@@ -15,9 +15,8 @@
 #include "mixxxapplication.h"
 #ifdef MIXXX_USE_QML
 #include "qml/qmlapplication.h"
-#else
-#include "mixxxmainwindow.h"
 #endif
+#include "mixxxmainwindow.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -27,9 +26,7 @@
 namespace {
 
 // Exit codes
-#ifndef MIXXX_USE_QML
 constexpr int kFatalErrorOnStartupExitCode = 1;
-#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
@@ -43,9 +40,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
 
     int exitCode;
 #ifdef MIXXX_USE_QML
-    mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
-    exitCode = pApp->exec();
-#else
+    if (args.isQml()) {
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        exitCode = pApp->exec();
+    } else
+#endif
     {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
@@ -82,7 +81,6 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = pApp->exec();
         }
     }
-#endif
     return exitCode;
 }
 

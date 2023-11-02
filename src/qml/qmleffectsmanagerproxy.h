@@ -25,10 +25,13 @@ class QmlEffectsManagerProxy : public QObject {
             int unitNumber, int effectNumber) const;
 
     static QmlEffectsManagerProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
-    static inline QmlEffectsManagerProxy* s_pInstance = nullptr;
+    static void registerEffectsManager(std::shared_ptr<EffectsManager> pEffectsManager) {
+        s_pEffectManager = std::move(pEffectsManager);
+    }
 
   private:
-    static inline QJSEngine* s_pJsEngine = nullptr;
+    static inline std::shared_ptr<EffectsManager> s_pEffectManager;
+
     const std::shared_ptr<EffectsManager> m_pEffectsManager;
     QmlVisibleEffectsModel* m_pVisibleEffectsModel;
 };

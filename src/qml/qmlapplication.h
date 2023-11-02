@@ -15,7 +15,7 @@ class QmlApplication : public QObject {
     QmlApplication(
             QApplication* app,
             std::shared_ptr<CoreServices> pCoreServices);
-    ~QmlApplication() override = default;
+    ~QmlApplication() override;
 
   public slots:
     void loadQml(const QString& path);
