@@ -5,10 +5,14 @@
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectsbackend.h"
 #include "effects/effectsmanager.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/visibleeffectslist.h"
 #include "moc_dlgprefeffects.cpp"
 #include "preferences/effectchainpresetlistmodel.h"
 #include "preferences/effectmanifesttablemodel.h"
+
+class EffectsManager;
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,

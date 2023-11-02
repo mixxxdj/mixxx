@@ -7,7 +7,7 @@
 
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/effectchain.h"
-#include "effects/effectsmanager.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectxmlelements.h"
 #include "moc_effectchainpresetmanager.cpp"
 #include "util/filename.h"

@@ -9,6 +9,7 @@
 
 class QDomNode;
 class SkinContext;
+class EffectsManager;
 
 class WEffectChainPresetButton : public QPushButton, public WBaseWidget {
     Q_OBJECT
