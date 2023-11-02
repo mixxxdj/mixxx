@@ -752,6 +752,7 @@ class TraktorZ2Class {
 
     init(_id) {
         console.log(new Uint8Array(controller.getFeatureReport(0xF1)));  // 2x8Bit Logical 0...255
+        // HotPluging with only NIHardwareService.exe running raw data "F1 90 40".
         // Enabling "Route mic/aux input through Traktor" in Traktor Pro sends raw data "F1 93 00".
         // Disabling "Route mic/aux input through Traktor" in Traktor Pro sends raw data "F1 93 40".
 
