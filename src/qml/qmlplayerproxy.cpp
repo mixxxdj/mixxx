@@ -26,7 +26,10 @@ namespace mixxx {
 namespace qml {
 
 QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
-        : QObject(parent), m_pTrackPlayer(pTrackPlayer) {
+        : QObject(parent),
+          m_pTrackPlayer(pTrackPlayer),
+          m_pCurrentTrack(
+                  pTrackPlayer ? pTrackPlayer->getLoadedTrack() : nullptr) {
     connect(m_pTrackPlayer,
             &BaseTrackPlayer::loadingTrack,
             this,

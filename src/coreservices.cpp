@@ -27,6 +27,17 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 #include "skin/skincontrols.h"
+#ifdef MIXXX_USE_QML
+#include "controllers/scripting/controllerscriptenginebase.h"
+#include "qml/qmlconfigproxy.h"
+#include "qml/qmlcontrolproxy.h"
+#include "qml/qmldlgpreferencesproxy.h"
+#include "qml/qmleffectslotproxy.h"
+#include "qml/qmleffectsmanagerproxy.h"
+#include "qml/qmllibraryproxy.h"
+#include "qml/qmlplayermanagerproxy.h"
+#include "qml/qmlplayerproxy.h"
+#endif
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
@@ -446,6 +457,28 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_isInitialized = true;
+
+#ifdef MIXXX_USE_QML
+    initializeQMLSignletons();
+}
+
+void CoreServices::initializeQMLSignletons() {
+    // Any uncreateable non-singleton types registered here require
+    // arguments that we don't want to expose to QML directly. Instead, they
+    // can be retrieved by member properties or methods from the singleton
+    // types.
+    //
+    // The alternative would be to register their *arguments* in the QML
+    // system, which would improve nothing, or we had to expose them as
+    // singletons to that they can be accessed by components instantiated by
+    // QML, which would also be suboptimal.
+    mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(getEffectsManager());
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(getPlayerManager());
+    mixxx::qml::QmlConfigProxy::registerUserSettings(getSettings());
+    mixxx::qml::QmlLibraryProxy::registerLibrary(getLibrary());
+
+    ControllerScriptEngineBase::registerTrackCollectionManager(getTrackCollectionManager());
+#endif
 }
 
 void CoreServices::initializeKeyboard() {
@@ -552,6 +585,16 @@ void CoreServices::finalize() {
 
     Timer t("CoreServices::~CoreServices");
     t.start();
+
+#ifdef MIXXX_USE_QML
+    // Delete all the QML singletons in order to prevent controller leaks
+    mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
+    mixxx::qml::QmlPlayerManagerProxy::registerPlayerManager(nullptr);
+    mixxx::qml::QmlConfigProxy::registerUserSettings(nullptr);
+    mixxx::qml::QmlLibraryProxy::registerLibrary(nullptr);
+
+    ControllerScriptEngineBase::registerTrackCollectionManager(nullptr);
+#endif
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

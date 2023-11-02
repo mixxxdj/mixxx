@@ -291,6 +291,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                                       "you specify will be loaded into the next virtual deck.")
                             : QString());
 
+    const QCommandLineOption controllerPreviewScreens(QStringLiteral("controller-preview-screens"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Preview rendered controller screens in the Setting windows.")
+                            : QString());
+    parser.addOption(controllerPreviewScreens);
+
     if (forUserFeedback) {
         // We know form the first path, that there will be likely an error message, check again.
         // This is not the case if the user uses a Qt internal option that is unknown
@@ -355,6 +361,7 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     m_useLegacyVuMeter = parser.isSet(enableLegacyVuMeter);
     m_useLegacySpinny = parser.isSet(enableLegacySpinny);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);
+    m_controllerPreviewScreens = parser.isSet(controllerPreviewScreens);
     m_controllerAbortOnWarning = parser.isSet(controllerAbortOnWarning);
     m_developer = parser.isSet(developer);
 #ifdef MIXXX_USE_QML

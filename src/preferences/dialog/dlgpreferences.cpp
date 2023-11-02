@@ -275,7 +275,10 @@ DlgPreferences::~DlgPreferences() {
     // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
     // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
     // which causes a crash when accessed.
-    disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged, this, &DlgPreferences::changePage);
+    disconnect(contentsTreeWidget,
+            &QTreeWidget::currentItemChanged,
+            this,
+            &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
     // preference pages (and DlgPrefControllers dynamically generates and

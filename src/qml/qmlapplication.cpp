@@ -65,20 +65,6 @@ QmlApplication::QmlApplication(
     // Since DlgPreferences is only meant to be used in the main QML engine, it
     // follows a strict singleton pattern design
     QmlDlgPreferencesProxy::s_pInstance = new QmlDlgPreferencesProxy(pDlgPreferences, this);
-
-    // Any uncreateable non-singleton types registered here require arguments
-    // that we don't want to expose to QML directly. Instead, they can be
-    // retrieved by member properties or methods from the singleton types.
-    //
-    // The alternative would be to register their *arguments* in the QML
-    // system, which would improve nothing, or we had to expose them as
-    // singletons to that they can be accessed by components instantiated by
-    // QML, which would also be suboptimal.
-    QmlEffectsManagerProxy::registerEffectsManager(pCoreServices->getEffectsManager());
-    QmlPlayerManagerProxy::registerPlayerManager(pCoreServices->getPlayerManager());
-    QmlConfigProxy::registerUserSettings(pCoreServices->getSettings());
-    QmlLibraryProxy::registerLibrary(pCoreServices->getLibrary());
-
     loadQml(m_mainFilePath);
 
     pCoreServices->getControllerManager()->setUpDevices();
@@ -91,10 +77,6 @@ QmlApplication::QmlApplication(
 
 QmlApplication::~QmlApplication() {
     // Delete all the QML singletons in order to prevent leak detection in CoreService
-    QmlEffectsManagerProxy::registerEffectsManager(nullptr);
-    QmlPlayerManagerProxy::registerPlayerManager(nullptr);
-    QmlConfigProxy::registerUserSettings(nullptr);
-    QmlLibraryProxy::registerLibrary(nullptr);
     QmlDlgPreferencesProxy::s_pInstance->deleteLater();
 }
 

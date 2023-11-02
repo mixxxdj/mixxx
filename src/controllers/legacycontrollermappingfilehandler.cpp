@@ -1,21 +1,42 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 
+#include <QStringBuilder>
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "util/xml.h"
 
-namespace {
+#ifdef MIXXX_USE_QML
+QMap<QString, QImage::Format> LegacyControllerMappingFileHandler::kSupportedPixelFormat = {
+        {"RBG", QImage::Format_RGB888},
+        {"RBGA", QImage::Format_RGBA8888},
+        {"RGB565", QImage::Format_RGB16},
+};
 
-/// Find script file in the mapping or system path.
-///
-/// @param mapping The controller mapping the script belongs to.
-/// @param filename The script filename.
-/// @param systemMappingsPath The system mappings path to use as fallback.
-/// @return Returns a QFileInfo object. If the script was not found in either
-/// of the search directories, the QFileInfo object might point to a
-/// non-existing file.
-QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
+QMap<QString, std::endian> LegacyControllerMappingFileHandler::kEndianFormat = {
+        {"big", std::endian::big},
+        {"little", std::endian::little},
+};
+
+// static
+QFileInfo LegacyControllerMappingFileHandler::findLibraryPath(
+        std::shared_ptr<LegacyControllerMapping> mapping,
+        const QString& dirname,
+        const QDir& systemMappingsPath) {
+    // Always try to load module directory from the mapping's directory first
+    QFileInfo dir = QFileInfo(mapping->dirPath().absoluteFilePath(dirname));
+
+    // If the module directory does not exist, try to find it in the fallback dir
+    if (!dir.isDir()) {
+        dir = QFileInfo(systemMappingsPath.absoluteFilePath(dirname));
+    }
+    return dir;
+}
+#endif
+
+// Static
+QFileInfo LegacyControllerMappingFileHandler::findScriptFile(
+        std::shared_ptr<LegacyControllerMapping> mapping,
         const QString& filename,
         const QDir& systemMappingsPath) {
     // Always try to load script from the mapping's directory first
@@ -27,8 +48,6 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
     }
     return file;
 }
-
-} // namespace
 
 // static
 std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loadMapping(
@@ -134,17 +153,116 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     mapping->addScriptFile(REQUIRED_SCRIPT_FILE,
             "",
             findScriptFile(mapping, REQUIRED_SCRIPT_FILE, systemMappingsPath),
+            LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
             true);
 
     // Look for additional ones
     while (!scriptFile.isNull()) {
-        QString functionPrefix = scriptFile.attribute("functionprefix", "");
         QString filename = scriptFile.attribute("filename", "");
         QFileInfo file = findScriptFile(mapping, filename, systemMappingsPath);
-
-        mapping->addScriptFile(filename, functionPrefix, file);
+        if (file.suffix() == "qml") {
+#ifdef MIXXX_USE_QML
+            QString identifier = scriptFile.attribute("identifier", "");
+            mapping->addScriptFile(filename,
+                    identifier,
+                    file,
+                    LegacyControllerMapping::ScriptFileInfo::Type::QML);
+#else
+            qWarning() << "Unsupported render scene. Mixxx isn't built with QML support";
+            return;
+#endif
+        } else {
+            QString functionPrefix = scriptFile.attribute("functionprefix", "");
+            mapping->addScriptFile(filename,
+                    functionPrefix,
+                    file,
+                    LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT);
+        }
         scriptFile = scriptFile.nextSiblingElement("file");
     }
+
+#ifdef MIXXX_USE_QML
+    // Build a list of QML files to load
+    QDomElement screen = controller.firstChildElement("screens")
+                                 .firstChildElement("screen");
+
+    // Look for additional ones
+    while (!screen.isNull()) {
+        QString identifier = screen.attribute("identifier", "");
+        uint targetFps = screen.attribute("targetFps", "30").toUInt();
+        QString pixelFormatName = screen.attribute("pixelType", "RBG");
+        QString endianName = screen.attribute("endian", "little");
+        QString reversedColor = screen.attribute("reversed", "false").toLower();
+        QString rawData = screen.attribute("raw", "false").toLower();
+        uint splashoff = screen.attribute("splashoff", "0").toUInt();
+
+        if (!targetFps || targetFps > MAX_TARGET_FPS) {
+            qWarning() << "Invalid target FPS. Target FPS must be between 1 and" << MAX_TARGET_FPS;
+            return;
+        }
+
+        if (splashoff > MAX_SPLASHOFF_DURATION) {
+            qWarning() << QString(
+                    "Invalid splashoff duration. Splashoff duration must be "
+                    "between 0 and %1. Clamping to %2")
+                                  .arg(MAX_SPLASHOFF_DURATION)
+                                  .arg(MAX_SPLASHOFF_DURATION);
+            splashoff = MAX_SPLASHOFF_DURATION;
+        }
+
+        if (!kSupportedPixelFormat.contains(pixelFormatName)) {
+            qWarning() << "Unsupported pixel format" << pixelFormatName;
+            return;
+        }
+
+        if (!kEndianFormat.contains(endianName)) {
+            qWarning() << "Unknown endiant format" << endianName;
+            return;
+        }
+
+        QImage::Format pixelFormat = kSupportedPixelFormat.value(pixelFormatName);
+        std::endian endian = kEndianFormat.value(endianName);
+
+        uint width = screen.attribute("width", "0").toUInt();
+        uint height = screen.attribute("height", "0").toUInt();
+
+        if (!width || !height) {
+            qWarning() << "Invalid screen size. Screen size must have a width "
+                          "and height above 1 pixel";
+            return;
+        }
+
+        qDebug() << "Adding screen " << identifier;
+        mapping->addScreenInfo(identifier,
+                QSize(width, height),
+                targetFps,
+                splashoff,
+                pixelFormat,
+                endian,
+                reversedColor == "yes" || reversedColor == "true" || reversedColor == "1",
+                rawData == "yes" || rawData == "true" || rawData == "1");
+        screen = screen.nextSiblingElement("screen");
+    }
+    // Build a list of QML files to load
+    QDomElement qmlLibrary = controller.firstChildElement("qmllibraries")
+                                     .firstChildElement("library");
+
+    // Look for additional ones
+    while (!qmlLibrary.isNull()) {
+        QString libFilename = qmlLibrary.attribute("path", "");
+        QFileInfo path = findLibraryPath(mapping, libFilename, systemMappingsPath);
+        // TODO (ac) asserting file type would fail test - need to chose between one or another
+        // if (path.isDir()) {
+        qDebug() << "Adding QML directory " << libFilename;
+        mapping->addLibraryDirectory(path);
+        // } else {
+        //     qWarning() << "Unable to add controller QML library path."
+        //                << path.absolutePath()
+        //                << "is not a directory or is missing";
+        // }
+        qmlLibrary = qmlLibrary.nextSiblingElement("library");
+    }
+#endif
 }
 
 bool LegacyControllerMappingFileHandler::writeDocument(
@@ -228,7 +346,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
             continue;
         }
         qDebug() << "writing script block for" << filename;
-        QString functionPrefix = script.functionPrefix;
+        QString functionPrefix = script.identifier;
         QDomElement scriptFile = doc.createElement("file");
 
         scriptFile.setAttribute("filename", filename);

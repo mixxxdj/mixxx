@@ -104,6 +104,7 @@ case "$1" in
             qml-module-qtquick-controls2 \
             qml-module-qt-labs-qmlmodels \
             qml-module-qtquick-shapes \
+            qml6-module-* \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)

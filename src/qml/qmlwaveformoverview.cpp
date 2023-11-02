@@ -31,6 +31,7 @@ void QmlWaveformOverview::setPlayer(QmlPlayerProxy* pPlayer) {
 
     if (m_pPlayer != nullptr) {
         m_pPlayer->internalTrackPlayer()->disconnect(this);
+        setCurrentTrack(pPlayer->internalTrackPlayer()->getLoadedTrack());
     }
 
     m_pPlayer = pPlayer;

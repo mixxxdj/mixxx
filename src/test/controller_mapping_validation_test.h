@@ -6,7 +6,9 @@
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
-#include "test/mixxxtest.h"
+#include "library/trackcollectionmanager.h"
+#include "test/mixxxdbtest.h"
+#include "test/soundsourceproviderregistration.h"
 
 class FakeMidiControllerJSProxy : public ControllerJSProxy {
     Q_OBJECT
@@ -136,9 +138,41 @@ class FakeController : public Controller {
     std::shared_ptr<LegacyHidControllerMapping> m_pHidMapping;
 };
 
-class LegacyControllerMappingValidationTest : public MixxxTest {
+class EngineMixer;
+class EffectsManager;
+class SoundManager;
+class RecordingManager;
+class Library;
+class PlayerManager;
+
+// We can't inherit from LibraryTest because that creates a key_notation control object that is also
+// created by the Library object itself. The duplicated CO creation causes a debug assert.
+class LegacyControllerMappingValidationTest : public MixxxDbTest, SoundSourceProviderRegistration {
+  public:
+    LegacyControllerMappingValidationTest()
+            : MixxxDbTest(true) {
+    }
+
   protected:
     void SetUp() override;
+#ifdef MIXXX_USE_QML
+    void TearDown() override;
+
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const {
+        return m_pTrackCollectionManager->getOrAddTrack(
+                TrackRef::fromFilePath(trackLocation));
+    }
+
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
+    std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+    std::shared_ptr<EngineMixer> m_pEngine;
+    std::shared_ptr<SoundManager> m_pSoundManager;
+    std::shared_ptr<PlayerManager> m_pPlayerManager;
+    std::shared_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    std::shared_ptr<RecordingManager> m_pRecordingManager;
+    std::shared_ptr<Library> m_pLibrary;
+#endif
 
     bool testLoadMapping(const MappingInfo& mapping);
 

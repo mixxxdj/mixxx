@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 
 namespace {
@@ -43,7 +44,8 @@ void Controller::startEngine()
         qCWarning(m_logBase) << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this, m_logBase);
+    m_pScriptEngineLegacy = std::make_shared<ControllerScriptEngineLegacy>(this, m_logBase);
+    emit engineStarted(m_pScriptEngineLegacy);
 }
 
 void Controller::stopEngine() {
@@ -52,8 +54,8 @@ void Controller::stopEngine() {
         qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
         return;
     }
-    delete m_pScriptEngineLegacy;
-    m_pScriptEngineLegacy = nullptr;
+    m_pScriptEngineLegacy.reset();
+    emit engineStopped();
 }
 
 bool Controller::applyMapping() {
@@ -76,6 +78,10 @@ bool Controller::applyMapping() {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+#ifdef MIXXX_USE_QML
+    m_pScriptEngineLegacy->setLibraryDirectories(pMapping->getLibraryDirectories());
+    m_pScriptEngineLegacy->setInfoScrens(pMapping->getInfoScreens());
+#endif
     return m_pScriptEngineLegacy->initialize();
 }
 
@@ -122,7 +128,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (m_logInput().isDebugEnabled()) {
+    if (CmdlineArgs::Instance()
+                    .getControllerDebug()) {
         // Formatted packet display
         QString message = QString("t:%2, %3 bytes:\n")
                                   .arg(timestamp.formatMillisWithUnit(),

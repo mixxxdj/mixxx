@@ -53,11 +53,21 @@ class Controller : public QObject {
         return m_bLearning;
     }
 
+    inline std::shared_ptr<ControllerScriptEngineLegacy> getScriptEngine() const {
+        return m_pScriptEngineLegacy;
+    }
+
     virtual bool matchMapping(const MappingInfo& mapping) = 0;
 
   signals:
     /// Emitted when the controller is opened or closed.
     void openChanged(bool bOpen);
+
+    /// Emitted when the controller has started a new engine.
+    void engineStarted(std::shared_ptr<ControllerScriptEngineLegacy> engine);
+
+    /// Emitted when the controller has stopped its engine.
+    void engineStopped();
 
     // Making these slots protected/private ensures that other parts of Mixxx can
     // only signal them which allows us to use no locks.
@@ -98,10 +108,6 @@ class Controller : public QObject {
     // were required to specify it.
     virtual void send(const QList<int>& data, unsigned int length = 0);
 
-    // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void sendBytes(const QByteArray& data) = 0;
-
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
     virtual void startEngine();
@@ -113,9 +119,6 @@ class Controller : public QObject {
     // To be called when receiving events
     void triggerActivity();
 
-    inline ControllerScriptEngineLegacy* getScriptEngine() const {
-        return m_pScriptEngineLegacy;
-    }
     inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
@@ -135,6 +138,11 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
+  public slots:
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void sendBytes(const QByteArray& data) = 0;
+
   private: // but used by ControllerManager
 
     virtual int open() = 0;
@@ -150,7 +158,7 @@ class Controller : public QObject {
     }
 
   private:
-    ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
+    std::shared_ptr<ControllerScriptEngineLegacy> m_pScriptEngineLegacy;
 
     // Verbose and unique description of device type, defaults to empty
     QString m_sDeviceCategory;
