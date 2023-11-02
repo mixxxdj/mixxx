@@ -1,5 +1,6 @@
 #include "mixxxmainwindow.h"
 
+#include <QCloseEvent>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>

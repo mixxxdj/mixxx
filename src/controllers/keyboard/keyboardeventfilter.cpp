@@ -2,7 +2,6 @@
 
 #include <QEvent>
 #include <QKeyEvent>
-#include <QList>
 #include <QtDebug>
 
 #include "control/controlobject.h"
