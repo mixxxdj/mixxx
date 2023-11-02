@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/distortioneffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+
 namespace {
 inline CSAMPLE tanh_approx(CSAMPLE input) {
     return input / (1 + input * input / (3 + input * input / 5));
