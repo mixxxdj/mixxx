@@ -309,7 +309,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
     // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
     QSet<int> idsToBeUpdated;
-    for (const auto playlistId : qAsConst(playlistIds)) {
+    for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
             idsToBeUpdated.insert(playlistId);
         }

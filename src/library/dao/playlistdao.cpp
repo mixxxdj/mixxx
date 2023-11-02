@@ -627,7 +627,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& pos
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(sortedPositons)) {
+    for (const auto position : std::as_const(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

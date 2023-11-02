@@ -161,7 +161,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& pProfile : qAsConst(m_profiles)) {
+    for (const auto& pProfile : std::as_const(m_profiles)) {
         DEBUG_ASSERT(pProfile);
         saveProfile(&*pProfile);
     }

@@ -79,7 +79,7 @@ DlgPrefColors::~DlgPrefColors() {
 void DlgPrefColors::slotUpdate() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
-    for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
+    for (const auto& palette : std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
         QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
@@ -174,7 +174,7 @@ void DlgPrefColors::slotApply() {
     bool bTrackColorPaletteFound = false;
 
     for (const auto& palette :
-            qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
+            std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         if (!bHotcueColorPaletteFound &&
                 hotcueColorPaletteName == palette.getName()) {
             m_colorPaletteSettings.setHotcueColorPalette(palette);

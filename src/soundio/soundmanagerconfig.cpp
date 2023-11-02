@@ -180,7 +180,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             bool dupe(false);
-            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
+            for (const AudioOutput& otherOut : std::as_const(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -203,7 +203,7 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             bool dupe(false);
-            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
+            for (const AudioInput& otherIn : std::as_const(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;

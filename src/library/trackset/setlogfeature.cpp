@@ -694,7 +694,7 @@ void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistId
     // qDebug() << "slotPlaylistContentOrLockChanged() for"
     //          << playlistIds.count() << "playlist(s)";
     QSet<int> idsToBeUpdated;
-    for (const auto playlistId : qAsConst(playlistIds)) {
+    for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
             idsToBeUpdated.insert(playlistId);
         }

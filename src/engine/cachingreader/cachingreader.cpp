@@ -119,7 +119,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
 }
 
 void CachingReader::freeAllChunks() {
-    for (const auto& pChunk: qAsConst(m_chunks)) {
+    for (const auto& pChunk : std::as_const(m_chunks)) {
         // We will receive CHUNK_READ_INVALID for all pending chunk reads
         // which should free the chunks individually.
         if (pChunk->getState() == CachingReaderChunkForOwner::READ_PENDING) {

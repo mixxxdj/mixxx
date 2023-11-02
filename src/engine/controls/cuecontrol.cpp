@@ -342,7 +342,7 @@ void CueControl::connectControls() {
             Qt::DirectConnection);
 
     // Hotcue controls
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         connect(pControl, &HotcueControl::hotcuePositionChanged,
                 this, &CueControl::hotcuePositionChanged,
                 Qt::DirectConnection);
@@ -428,7 +428,7 @@ void CueControl::disconnectControls() {
     disconnect(m_pHotcueFocusColorPrev.get(), nullptr, this, nullptr);
     disconnect(m_pHotcueFocusColorNext.get(), nullptr, this, nullptr);
 
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         disconnect(pControl, nullptr, this, nullptr);
     }
 }
@@ -484,7 +484,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
         updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
 
-        for (const auto& pControl : qAsConst(m_hotcueControls)) {
+        for (const auto& pControl : std::as_const(m_hotcueControls)) {
             detachCue(pControl);
         }
 
@@ -1254,7 +1254,7 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 

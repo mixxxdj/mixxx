@@ -36,7 +36,7 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxVinylType2,
             ComboBoxVinylType3,
             ComboBoxVinylType4};
-    for (auto* box : qAsConst(m_vcTypeBoxes)) {
+    for (auto* box : std::as_const(m_vcTypeBoxes)) {
         box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
         box->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
         box->addItem(MIXXX_VINYL_SERATOCD);
@@ -56,13 +56,13 @@ DlgPrefVinyl::DlgPrefVinyl(
             ComboBoxVinylSpeed2,
             ComboBoxVinylSpeed3,
             ComboBoxVinylSpeed4};
-    for (auto* box : qAsConst(m_vcSpeedBoxes)) {
+    for (auto* box : std::as_const(m_vcSpeedBoxes)) {
         box->addItem(MIXXX_VINYL_SPEED_33);
         box->addItem(MIXXX_VINYL_SPEED_45);
     }
 
     m_vcLeadInBoxes = {LeadinTime1, LeadinTime2, LeadinTime3, LeadinTime4};
-    for (auto* box : qAsConst(m_vcLeadInBoxes)) {
+    for (auto* box : std::as_const(m_vcLeadInBoxes)) {
         box->setSuffix(" s");
     }
 
@@ -150,16 +150,16 @@ void DlgPrefVinyl::slotHide() {
 
 void DlgPrefVinyl::slotResetToDefaults() {
     // Default to Serato Side A.
-    for (auto* box : qAsConst(m_vcTypeBoxes)) {
+    for (auto* box : std::as_const(m_vcTypeBoxes)) {
         box->setCurrentIndex(0);
     }
 
     // Default to 33 RPM.
-    for (auto* box : qAsConst(m_vcTypeBoxes)) {
+    for (auto* box : std::as_const(m_vcTypeBoxes)) {
         box->setCurrentIndex(0);
     }
 
-    for (auto* box : qAsConst(m_vcLeadInBoxes)) {
+    for (auto* box : std::as_const(m_vcLeadInBoxes)) {
         box->setValue(MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN);
     }
 
@@ -260,7 +260,7 @@ void DlgPrefVinyl::slotApply() {
 
     // Save the vinylcontrol_speed_type in ControlObjects as well so it can be
     // retrieved quickly on the fly. (eg. WSpinny needs to know how fast to spin)
-    for (auto* co : qAsConst(m_COSpeeds)) {
+    for (auto* co : std::as_const(m_COSpeeds)) {
         int i = m_COSpeeds.indexOf(co);
         double speed = m_vcSpeedBoxes[i]->currentText() == MIXXX_VINYL_SPEED_33
                 ? MIXXX_VINYL_SPEED_33_NUM

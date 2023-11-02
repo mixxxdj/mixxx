@@ -569,7 +569,7 @@ void WTrackMenu::setupActions() {
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
 
         for (const auto& updateInExternalTrackCollection :
-                qAsConst(m_updateInExternalTrackCollections)) {
+                std::as_const(m_updateInExternalTrackCollections)) {
             m_pMetadataUpdateExternalCollectionsMenu->addAction(
                     updateInExternalTrackCollection.action);
         }
@@ -582,7 +582,7 @@ void WTrackMenu::setupActions() {
                     this,
                     [this] {
                         for (const auto& updateInExternalTrackCollection :
-                                qAsConst(m_updateInExternalTrackCollections)) {
+                                std::as_const(m_updateInExternalTrackCollections)) {
                             updateInExternalTrackCollection.action->setEnabled(
                                     updateInExternalTrackCollection
                                             .externalTrackCollection

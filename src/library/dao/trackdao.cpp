@@ -341,7 +341,7 @@ void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
 void TrackDAO::slotDatabaseTracksRelocated(const QList<RelocatedTrack>& relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
-    for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
+    for (const auto& relocatedTrack : std::as_const(relocatedTracks)) {
         const auto changedTrackId = relocatedTrack.updatedTrackRef().getId();
         DEBUG_ASSERT(changedTrackId.isValid());
         DEBUG_ASSERT(!removedTrackIds.contains(changedTrackId));

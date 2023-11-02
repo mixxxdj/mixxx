@@ -325,7 +325,7 @@ void SkinLoader::updateDuckingControl() {
         return;
     }
     double atLeastOneMicConfigured = 0.0;
-    for (auto* pMicCon : qAsConst(m_pMicConfiguredControls)) {
+    for (auto* pMicCon : std::as_const(m_pMicConfiguredControls)) {
         if (pMicCon->toBool()) {
             atLeastOneMicConfigured = 1.0;
             break;

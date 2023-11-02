@@ -894,7 +894,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QColor c(0,0,0);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1196,7 +1196,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QColor c(255,255,255);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1623,7 +1623,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
-        color.setNamedColor(fgColor);
+        color = QColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
@@ -1637,7 +1637,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColor;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
-        color.setNamedColor(bgColor);
+        color = QColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -1649,7 +1649,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowEven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowEven", &bgColorRowEven)) {
-        color.setNamedColor(bgColorRowEven);
+        color = QColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
@@ -1657,7 +1657,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowUneven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowUneven", &bgColorRowUneven)) {
-        color.setNamedColor(bgColorRowUneven);
+        color = QColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));

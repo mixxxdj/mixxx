@@ -127,7 +127,7 @@ void WEffectPushButton::parameterUpdated() {
 
     auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto& option : qAsConst(options)) {
+    for (const auto& option : std::as_const(options)) {
         // action is added automatically to actionGroup
         auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;

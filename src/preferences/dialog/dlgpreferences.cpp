@@ -297,7 +297,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         return;
     }
 
-    for (PreferencesPage page : qAsConst(m_allPages)) {
+    for (PreferencesPage page : std::as_const(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
             switchToPage(pCurrent->text(0), page.pDlg);
             break;

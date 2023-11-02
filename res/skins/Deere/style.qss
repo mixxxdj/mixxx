@@ -1625,6 +1625,17 @@ WPushButton[value="2"],
     background-color: #006596;
     border: 1px solid #006596;
 }
+WPushButton#SyncLeader[value="1"] {
+    background-color: #4B4B4B;
+    border: 1px solid #0092d9;
+}
+WPushButton#SyncLeader[value="0"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_off.svg) no-repeat center center;
+}
+WPushButton#SyncLeader[value="1"],
+WPushButton#SyncLeader[value="2"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_on.svg) no-repeat center center;
+}
 
 WPushButton[value="1"]:hover,
 WPushButton[value="2"]:hover,

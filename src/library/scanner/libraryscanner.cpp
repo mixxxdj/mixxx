@@ -245,7 +245,7 @@ void LibraryScanner::slotStartScan() {
             this,
             &LibraryScanner::slotFinishHashedScan);
 
-    for (const mixxx::FileInfo& rootDir : qAsConst(m_libraryRootDirs)) {
+    for (const mixxx::FileInfo& rootDir : std::as_const(m_libraryRootDirs)) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing

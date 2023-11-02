@@ -455,7 +455,7 @@ void DlgTagFetcher::fetchTagFinished(
         {
             int trackIndex = 0;
             QSet<QStringList> allColumnValues; // deduplication
-            for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
+            for (const auto& trackRelease : std::as_const(m_data.m_tags)) {
                 const auto columnValues = trackReleaseColumnValues(trackRelease);
                 // Add fetched tag into TreeItemWidget, if it is not added before
                 if (!allColumnValues.contains(columnValues)) {
