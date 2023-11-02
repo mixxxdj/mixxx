@@ -5,8 +5,11 @@
 #include <QDropEvent>
 #include <QMimeData>
 
+#include "effects/effectknobparameterslot.h"
+#include "effects/effectparameterslotbase.h"
 #include "effects/effectslot.h"
 #include "moc_weffectparameternamebase.cpp"
+#include "util/math.h"
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");

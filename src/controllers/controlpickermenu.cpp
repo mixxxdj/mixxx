@@ -1,8 +1,11 @@
 #include "controllers/controlpickermenu.h"
 
+#include "control/controlobject.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/standardeffectchain.h"
 #include "effects/defs.h"
+#include "effects/effectbuttonparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"

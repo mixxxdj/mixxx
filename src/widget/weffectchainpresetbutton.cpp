@@ -3,6 +3,10 @@
 #include <QCheckBox>
 #include <QWidgetAction>
 
+#include "effects/effectparameter.h"
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "moc_weffectchainpresetbutton.cpp"
 #include "util/parented_ptr.h"

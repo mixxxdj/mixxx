@@ -2,7 +2,7 @@
 
 #include <QList>
 
-#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
 
 QT_FORWARD_DECLARE_CLASS(QDomDocument);
 

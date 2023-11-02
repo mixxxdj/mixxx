@@ -1,5 +1,6 @@
 #include "effects/chains/pergroupeffectchain.h"
 
+#include "control/controlobject.h"
 #include "moc_pergroupeffectchain.cpp"
 
 class EffectsManager;

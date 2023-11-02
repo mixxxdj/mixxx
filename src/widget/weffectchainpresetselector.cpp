@@ -6,6 +6,8 @@
 
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "moc_weffectchainpresetselector.cpp"
 #include "widget/effectwidgetutils.h"
 

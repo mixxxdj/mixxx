@@ -7,7 +7,7 @@
 
 class EngineEffectChain;
 class EngineEffect;
-class GroupFeatureState;
+struct GroupFeatureState;
 
 /// EngineEffectsManager is the entry point for processing effects in the audio
 /// thread. It also passes EffectsRequests from EffectsMessenger down to the
