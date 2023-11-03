@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QWidget>
 
+#include "library/coverart.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
@@ -14,10 +15,13 @@ class DlgCoverArtFullSize;
 class CoverInfo;
 class CoverInfoRelative;
 
+/// This widget is for the Track Properties dialog.
+/// It can have a context menu (in DlgTrackfetcher it doesn't), and compared to
+/// WCoverArt it's updated by its parent, not by track change signals.
 class WCoverArtLabel : public QLabel {
     Q_OBJECT
   public:
-    explicit WCoverArtLabel(QWidget* parent = nullptr, WCoverArtMenu* m_pWCoverArtMenu = nullptr);
+    explicit WCoverArtLabel(QWidget* pParent = nullptr, WCoverArtMenu* m_pWCoverArtMenu = nullptr);
 
     ~WCoverArtLabel() override; // Verifies that the base destructor is virtual
 
@@ -27,7 +31,6 @@ class WCoverArtLabel : public QLabel {
 
   protected:
     void mousePressEvent(QMouseEvent* event) override;
-    void contextMenuEvent(QContextMenuEvent* event) override;
 
   private slots:
       void slotCoverMenu(const QPoint& pos);
@@ -44,4 +47,6 @@ class WCoverArtLabel : public QLabel {
     TrackPointer m_pLoadedTrack;
 
     QPixmap m_loadedCover;
+
+    CoverInfo m_coverInfo;
 };

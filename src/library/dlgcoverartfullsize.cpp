@@ -7,15 +7,16 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgtrackinfo.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
 #include "util/widgethelper.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(
-        QWidget* parent,
+        QWidget* pParent,
         BaseTrackPlayer* pPlayer,
         WCoverArtMenu* pCoverMenu)
-        : QDialog(parent),
+        : QDialog(pParent),
           m_pPlayer(pPlayer),
           m_pCoverMenu(pCoverMenu),
           m_coverPressed(false) {
@@ -32,7 +33,13 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
             &DlgCoverArtFullSize::customContextMenuRequested,
             this,
             &DlgCoverArtFullSize::slotCoverMenu);
-    if (m_pCoverMenu != nullptr) {
+
+    qWarning() << "       FullSize::";
+    // Only connect to the menu signals if this is not a grandchild of DlgTrackInfo.
+    // DlgTrackInfo is already connected to these signals, and catching these signals
+    // here would apply cover changes immediately, thus circumvent the Apply button there.
+    if (m_pCoverMenu && !(pParent && qobject_cast<DlgTrackInfo*>(pParent->parent()))) {
+        qWarning() << "                  connect to cover menu signals";
         connect(m_pCoverMenu,
                 &WCoverArtMenu::coverInfoSelected,
                 this,
@@ -41,9 +48,13 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
                 &WCoverArtMenu::reloadCoverArt,
                 this,
                 &DlgCoverArtFullSize::slotReloadCoverArt);
+    } else if (m_pCoverMenu) {
+        qWarning() << "                  dlgTI, don't connect to cover menu signals";
+    } else {
+        qWarning() << "                  no cover menu to connect to";
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(pPlayer,
                 &BaseTrackPlayer::newTrackLoaded,
                 this,
@@ -54,6 +65,7 @@ DlgCoverArtFullSize::DlgCoverArtFullSize(
 }
 
 void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
+    qWarning() << "   FullSize closeEvent";
     if (parentWidget()) {
         // Since the widget has a parent, this instance will be reused again.
         // We need to prevent qt from destroying it's children
@@ -66,7 +78,9 @@ void DlgCoverArtFullSize::closeEvent(QCloseEvent* event) {
 }
 
 void DlgCoverArtFullSize::init(TrackPointer pTrack) {
+    qWarning() << "   FullSize init from track";
     if (!pTrack) {
+        qWarning() << "            track == NULL";
         return;
     }
     // The real size will be calculated later.
@@ -78,9 +92,35 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     raise();
     activateWindow();
 
+    loadTrack(pTrack);
     // This must be called after show() to set the window title. Refer to the
-    // comment in slotLoadTrack for details.
-    slotLoadTrack(pTrack);
+    // comment in setWindowTitleFromTrack() for details.
+    setWindowTitleFromTrack();
+    slotTrackCoverArtUpdated();
+    // slotCoverFound() calls adjustImageAndDialogSize()
+}
+
+void DlgCoverArtFullSize::init(TrackPointer pTrack,
+        const CoverInfo& coverInfo) {
+    qWarning() << "   FullSize init from coverInfo";
+    qWarning() << "       type:" << static_cast<int>(coverInfo.type)
+               << "hasTrLoc:" << bool(!coverInfo.trackLocation.isEmpty());
+    //<< "hasImg:" << coverInfo.hasImage();
+    if (!pTrack) {
+        qWarning() << "            track == NULL";
+        return;
+    }
+
+    // The real size will be calculated later by adjustImageAndDialogSize().
+    resize(100, 100);
+    show();
+    raise();
+    activateWindow();
+
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
+    CoverArtCache::requestCover(this, coverInfo);
+    // slotCoverFound() calls adjustImageAndDialogSize()
 }
 
 void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
@@ -96,63 +136,86 @@ void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtB
     adjustImageAndDialogSize();
 }
 
-void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
-    if (m_pLoadedTrack != nullptr) {
+void DlgCoverArtFullSize::loadTrack(TrackPointer pTrack) {
+    if (m_pLoadedTrack == pTrack) {
+        return;
+    }
+    if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack = pTrack;
-    if (m_pLoadedTrack != nullptr) {
+    if (m_pLoadedTrack) {
         connect(m_pLoadedTrack.get(),
                 &Track::coverArtUpdated,
                 this,
                 &DlgCoverArtFullSize::slotTrackCoverArtUpdated);
-
-        // Somehow setting the widow title triggered a bug in Xlib that resulted
-        // in a deadlock before the check for isVisible() was added.
-        // Unfortunately the original bug was difficult to reproduce, so I am
-        // not sure if checking isVisible() before setting the window title
-        // actually works around the Xlib bug or merely makes it much less
-        // likely to be triggered. Before the isVisible() check was added,
-        // the window title was getting set on DlgCoverArtFullSize instances
-        // that had never been shown whenever a track was loaded.
-        // https://github.com/mixxxdj/mixxx/issues/9415
-        // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
-        if (isVisible()) {
-            QString windowTitle;
-            const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
-            const QString artist = m_pLoadedTrack->getArtist();
-            const QString album = m_pLoadedTrack->getAlbum();
-            const QString year = m_pLoadedTrack->getYear();
-            if (!albumArtist.isEmpty()) {
-                windowTitle = albumArtist;
-            } else if (!artist.isEmpty()) {
-                windowTitle += artist;
-            }
-            if (!album.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " - ";
-                }
-                windowTitle += album;
-            }
-            if (!year.isEmpty()) {
-                if (!windowTitle.isEmpty()) {
-                    windowTitle += " ";
-                }
-                windowTitle += QString("(%1)").arg(year);
-            }
-            setWindowTitle(windowTitle);
-        }
     }
+}
+
+void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
+    if (sender()) {
+        qWarning() << "   FullSize slotLoadTrack (signal from" << sender();
+    } else {
+        qWarning() << "   FullSize slotLoadTrack (internal)";
+    }
+    if (!pTrack) {
+        qWarning() << "            track is NULL";
+    }
+    loadTrack(pTrack);
+    setWindowTitleFromTrack();
     slotTrackCoverArtUpdated();
 }
 
+void DlgCoverArtFullSize::setWindowTitleFromTrack() {
+    // Somehow setting the widow title triggered a bug in Xlib that resulted
+    // in a deadlock before the check for isVisible() was added.
+    // Unfortunately the original bug was difficult to reproduce, so I am
+    // not sure if checking isVisible() before setting the window title
+    // actually works around the Xlib bug or merely makes it much less
+    // likely to be triggered. Before the isVisible() check was added,
+    // the window title was getting set on DlgCoverArtFullSize instances
+    // that had never been shown whenever a track was loaded.
+    // https://bugs.launchpad.net/mixxx/+bug/1789059
+    // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
+    if (!isVisible() || !m_pLoadedTrack) {
+        qWarning() << "    (FullSize setWindowTitleFromTrack)";
+        return;
+    }
+    qWarning() << "    FullSize setWindowTitleFromTrack";
+    QString windowTitle;
+    const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
+    const QString artist = m_pLoadedTrack->getArtist();
+    const QString album = m_pLoadedTrack->getAlbum();
+    const QString year = m_pLoadedTrack->getYear();
+    if (!albumArtist.isEmpty()) {
+        windowTitle = albumArtist;
+    } else if (!artist.isEmpty()) {
+        windowTitle += artist;
+    }
+    if (!album.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " - ";
+        }
+        windowTitle += album;
+    }
+    if (!year.isEmpty()) {
+        if (!windowTitle.isEmpty()) {
+            windowTitle += " ";
+        }
+        windowTitle += QString("(%1)").arg(year);
+    }
+    setWindowTitle(windowTitle);
+}
+
 void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
+    qWarning() << "     FullSize slotTrackCoverArtUpdated";
     if (m_pLoadedTrack) {
         CoverArtCache::requestTrackCover(this, m_pLoadedTrack);
     } else {
+        qWarning() << "            track is NULL";
         coverArt->setPixmap(QPixmap());
     }
 }
@@ -169,14 +232,16 @@ void DlgCoverArtFullSize::slotCoverFound(
             m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
+    qWarning() << "      FullSize coverFound";
 
     m_pixmap = pixmap;
-
     adjustImageAndDialogSize();
 }
 
 void DlgCoverArtFullSize::adjustImageAndDialogSize() {
     if (m_pixmap.isNull()) {
+        qWarning() << "       FullSize adjustImageAndDialogSize";
+        qWarning() << "            pix == Null, hide";
         coverArt->setPixmap(QPixmap());
         hide();
         return;
@@ -235,8 +300,11 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
 void DlgCoverArtFullSize::slotCoverInfoSelected(
         const CoverInfoRelative& coverInfo) {
     if (!m_pLoadedTrack) {
+        qWarning() << "   FullSize coverInfoSelected";
+        qWarning() << "            track == NULL";
         return;
     }
+    qWarning() << "   FullSize coverInfoSelected (other parent" << parent();
     m_pLoadedTrack->setCoverInfo(coverInfo);
 }
 
@@ -244,7 +312,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if ((m_pCoverMenu != nullptr && !m_pCoverMenu->isVisible()) || m_pCoverMenu == nullptr) {
+    if ((m_pCoverMenu && !m_pCoverMenu->isVisible()) || !m_pCoverMenu) {
         m_clickTimer.setSingleShot(true);
         m_clickTimer.start(500);
         m_coverPressed = true;
@@ -259,7 +327,7 @@ void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
 
 void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
     m_coverPressed = false;
-    if (m_pCoverMenu != nullptr && m_pCoverMenu->isVisible()) {
+    if (m_pCoverMenu && m_pCoverMenu->isVisible()) {
         return;
     }
 
@@ -290,7 +358,7 @@ void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void DlgCoverArtFullSize::slotCoverMenu(const QPoint& pos) {
-    if (m_pCoverMenu != nullptr) {
+    if (m_pCoverMenu) {
         m_pCoverMenu->popup(mapToGlobal(pos));
     }
 }

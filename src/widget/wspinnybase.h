@@ -127,7 +127,6 @@ class WSpinnyBase : public WGLWidget,
     TrackPointer m_pLoadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
-    CoverInfo m_lastRequestedCover;
     bool m_bShowCover;
 
     VinylControlManager* m_pVCManager;
@@ -155,6 +154,6 @@ class WSpinnyBase : public WGLWidget,
     bool m_bGhostPlayback;
 
     BaseTrackPlayer* m_pPlayer;
-    WCoverArtMenu* m_pCoverMenu;
-    DlgCoverArtFullSize* m_pDlgCoverArt;
+    const parented_ptr<WCoverArtMenu> m_pCoverMenu;
+    const parented_ptr<DlgCoverArtFullSize> m_pDlgCoverArt;
 };

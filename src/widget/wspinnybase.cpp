@@ -65,8 +65,8 @@ WSpinnyBase::WSpinnyBase(
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
           m_pPlayer(pPlayer),
-          m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgCoverArt(new DlgCoverArtFullSize(this, pPlayer, m_pCoverMenu)) {
+          m_pCoverMenu(make_parented<WCoverArtMenu>(this)),
+          m_pDlgCoverArt(make_parented<DlgCoverArtFullSize>(this, pPlayer, m_pCoverMenu)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
 #else
@@ -83,7 +83,7 @@ WSpinnyBase::WSpinnyBase(
                 &WSpinnyBase::slotCoverFound);
     }
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinnyBase::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinnyBase::slotLoadingTrack);
     }
@@ -251,7 +251,6 @@ void WSpinnyBase::slotLoadTrack(TrackPointer pTrack) {
                 this,
                 &WSpinnyBase::slotTrackCoverArtUpdated);
     }
-    m_lastRequestedCover = CoverInfo();
 
     setLoadedCover(QPixmap());
 
@@ -275,7 +274,6 @@ void WSpinnyBase::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrac
                 &WSpinnyBase::slotTrackCoverArtUpdated);
     }
     m_pLoadedTrack.reset();
-    m_lastRequestedCover = CoverInfo();
 
     setLoadedCover(QPixmap());
     coverChanged();
@@ -298,14 +296,15 @@ void WSpinnyBase::slotCoverFound(
     if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_pCoverMenu->setCoverArt(coverInfo);
         setLoadedCover(pixmap);
         coverChanged();
     }
 }
 
 void WSpinnyBase::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    if (m_pLoadedTrack != nullptr) {
-        // Will trigger slotTrackCoverArtUpdated().
+    if (m_pLoadedTrack) {
+        // Will trigger slotTrackCoverArtUpdated(), slotCoverFound() updates the menu
         m_pLoadedTrack->setCoverInfo(coverInfo);
     }
 }
@@ -328,7 +327,7 @@ void WSpinnyBase::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
+    if (!m_pVisualPlayPos.isNull() && vSyncThread) {
         m_pVisualPlayPos->getPlaySlipAtNextVSync(
                 vSyncThread,
                 &m_dAngleCurrentPlaypos,

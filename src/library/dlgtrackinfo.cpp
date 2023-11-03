@@ -55,10 +55,12 @@ DlgTrackInfo::DlgTrackInfo(
                           WColorPicker::Option::NoExtStyleSheet,
                   ColorPaletteSettings(m_pUserSettings).getTrackColorPalette(),
                   this)) {
+    qWarning() << " DlgTI ::";
     init();
 }
 
 void DlgTrackInfo::init() {
+    qWarning() << " DlgTI init";
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
 
@@ -522,7 +524,9 @@ void DlgTrackInfo::slotCoverFound(
     if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
+        qWarning() << " DlgTI coverFound";
         m_trackRecord.setCoverInfo(coverInfo);
+        // this also updates the cover menu with the new Coverinfo
         m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
 }
@@ -537,7 +541,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
-    qDebug() << "DlgTrackInfo::slotCoverInfoSelected" << coverInfo;
+    qWarning() << " DlgTI coverInfoSelected";
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }

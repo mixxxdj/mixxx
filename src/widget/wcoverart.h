@@ -16,6 +16,8 @@
 
 class DlgCoverArtFullSize;
 
+/// This widget is used for cover art in decks, or next to the library.
+/// It has a context menu and it's updated by track change signals.
 class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT
   public:
@@ -64,7 +66,7 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     const QString m_group;
     UserSettingsPointer m_pConfig;
     bool m_bEnable;
-    WCoverArtMenu* m_pMenu;
+    const parented_ptr<WCoverArtMenu> m_pMenu;
     TrackPointer m_loadedTrack;
     QPixmap m_loadedCover;
     QPixmap m_loadedCoverScaled;
@@ -72,6 +74,6 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     QPixmap m_defaultCoverScaled;
     CoverInfo m_lastRequestedCover;
     BaseTrackPlayer* m_pPlayer;
-    DlgCoverArtFullSize* m_pDlgFullSize;
+    const parented_ptr<DlgCoverArtFullSize> m_pDlgFullSize;
     QTimer m_clickTimer;
 };

@@ -27,9 +27,9 @@ WCoverArt::WCoverArt(QWidget* parent,
           m_group(group),
           m_pConfig(pConfig),
           m_bEnable(true),
-          m_pMenu(new WCoverArtMenu(this)),
+          m_pMenu(make_parented<WCoverArtMenu>(this)),
           m_pPlayer(pPlayer),
-          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer, m_pMenu)) {
+          m_pDlgFullSize(make_parented<DlgCoverArtFullSize>(this, pPlayer, m_pMenu)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
@@ -43,7 +43,7 @@ WCoverArt::WCoverArt(QWidget* parent,
     connect(m_pMenu, &WCoverArtMenu::coverInfoSelected, this, &WCoverArt::slotCoverInfoSelected);
     connect(m_pMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArt::slotReloadCoverArt);
 
-    if (m_pPlayer != nullptr) {
+    if (m_pPlayer) {
         connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WCoverArt::slotLoadTrack);
         connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WCoverArt::slotLoadingTrack);
 
@@ -53,8 +53,6 @@ WCoverArt::WCoverArt(QWidget* parent,
 }
 
 WCoverArt::~WCoverArt() {
-    delete m_pMenu;
-    delete m_pDlgFullSize;
 }
 
 void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
@@ -143,6 +141,7 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
+    qWarning() << "   CoverArt cover update";
     if (m_loadedTrack) {
         CoverArtCache::requestTrackCover(this, m_loadedTrack);
     }
@@ -163,7 +162,9 @@ void WCoverArt::slotCoverFound(
     if (pRequester == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
+        qWarning() << "    CoverArt cover found";
         m_lastRequestedCover = coverInfo;
+        m_pMenu->setCoverArt(m_lastRequestedCover);
         m_loadedCover = pixmap;
         m_loadedCoverScaled = scaledCoverArt(pixmap);
         update();
@@ -171,6 +172,7 @@ void WCoverArt::slotCoverFound(
 }
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
+    qWarning() << "   CoverArt load track";
     if (m_loadedTrack) {
         disconnect(m_loadedTrack.get(),
                 &Track::coverArtUpdated,
@@ -186,6 +188,8 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
                 &Track::coverArtUpdated,
                 this,
                 &WCoverArt::slotTrackCoverArtUpdated);
+    } else {
+        qWarning() << "            track == NULL";
     }
 
     if (!m_bEnable) {
@@ -265,7 +269,7 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
     }
 
     if (event->button() == Qt::LeftButton && m_loadedTrack &&
-            m_clickTimer.isActive()) { // init/close fullsize cover
+            m_clickTimer.isActive()) { // show/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else if (!m_loadedCover.isNull()) {
