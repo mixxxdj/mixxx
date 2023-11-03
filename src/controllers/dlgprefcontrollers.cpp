@@ -2,6 +2,7 @@
 
 #include <QDesktopServices>
 
+#include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"

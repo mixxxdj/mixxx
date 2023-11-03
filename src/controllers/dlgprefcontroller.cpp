@@ -6,20 +6,22 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QKeyEvent>
-#include <QStandardPaths>
-#include <QTableWidget>
-#include <QTableWidgetItem>
 
 #include "controllers/controller.h"
+#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
+#include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
+#include "controllers/controlpickermenu.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/midicontroller.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
 #include "util/string.h"
-#include "util/versionstore.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");

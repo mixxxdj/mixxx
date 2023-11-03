@@ -1,9 +1,12 @@
 #include "controllers/midi/midicontroller.h"
 
+#include <QJSValue>
+
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/midi/midiutils.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"

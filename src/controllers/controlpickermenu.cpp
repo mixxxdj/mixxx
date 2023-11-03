@@ -6,7 +6,6 @@
 #include "effects/defs.h"
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectknobparameterslot.h"
-#include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
