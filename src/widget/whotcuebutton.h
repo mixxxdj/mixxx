@@ -17,6 +17,13 @@ class WHotcueButton : public WPushButton {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
+    ConfigKey getLeftClickConfigKey() {
+        return createConfigKey(QStringLiteral("activate"));
+    }
+    ConfigKey getClearConfigKey() {
+        return createConfigKey(QStringLiteral("clear"));
+    }
+
     Q_PROPERTY(bool light MEMBER m_bCueColorIsLight);
     Q_PROPERTY(bool dark MEMBER m_bCueColorIsDark);
     Q_PROPERTY(QString type MEMBER m_type);
