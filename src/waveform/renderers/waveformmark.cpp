@@ -157,7 +157,7 @@ struct MarkerGeometry {
     MarkerGeometry(const QString& label, bool useIcon, Qt::Alignment align, float breadth) {
         // If the label is 1 character long, and this character isn't a letter or a number,
         // we can assume it's a special symbol
-        m_isSymbol = label.length() == 1 && !label[0].isLetterOrNumber();
+        m_isSymbol = !useIcon && label.length() == 1 && !label[0].isLetterOrNumber();
 
         // This alone would pick the OS default font, or that set by Qt5 Settings (qt5ct)
         // respectively. This would mostly not be notable since contemporary OS and distros
