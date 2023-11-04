@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>S4 Mk3 screens</name>
+        <author>A. Colombier</author>
+        <description>Test device screens</description>
+        <devices>
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720" out_epaddr="0x03" />
+        </devices>
+    </info>
+    <controller id="Traktor">
+        <screens>
+            <screen identifier="leftdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+            <screen identifier="rightdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+        </screens>
+        <scriptfiles>
+            <file filename="TraktorKontrolS4MK3Screens.qml" />
+        </scriptfiles>
+        <qmllibraries>
+            <library path="TraktorKontrolS4MK3Screens" />
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>

@@ -176,6 +176,50 @@ const MotorWindUpMilliseconds = 1200;
 const MotorWindDownMilliseconds = 900;
 
 /*
+ * Kontrol S4 Mk3 hardware-specific constants
+ */
+const wheelRelativeMax = 2 ** 16 - 1;
+const wheelAbsoluteMax = 2879;
+
+const wheelTimerMax = 2 ** 32 - 1;
+const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
+
+const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
+const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
+
+const wheelLEDmodes = {
+    off: 0,
+    dimFlash: 1,
+    spot: 2,
+    ringFlash: 3,
+    dimSpot: 4,
+    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
+};
+
+// The mode available, which the wheel can be used for.
+const wheelModes = {
+    jog: 0,
+    vinyl: 1,
+    motor: 2,
+    loopIn: 3,
+    loopOut: 4,
+};
+
+const moveModes = {
+    beat: 0,
+    bpm: 1,
+    grid: 2,
+    keyboard: 3,
+};
+
+// tracks state across input reports
+let wheelTimer = null;
+// This is a global variable so the S4Mk3Deck Components have access
+// to it and it is guaranteed to be calculated before processing
+// input for the Components.
+let wheelTimerDelta = 0;
+
+/*
  * HID report parsing library
  */
 class HIDInputReport {
@@ -469,6 +513,11 @@ class Deck extends ComponentContainer {
             component.color = this.groupsToColors[newGroup];
         });
         this.secondDeckModes = currentModes;
+
+        const data = engine.getRuntimeData() || {};
+        if (!data.group) { return; }
+        data.group[this.decks[0] === 1 ? "leftdeck":"rightdeck"] = this.group;
+        engine.setRuntimeData(data);
     }
     static groupForNumber(deckNumber) {
         return `[Channel${deckNumber}]`;
@@ -699,7 +748,7 @@ class HotcueButton extends PushButton {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 32) {
             throw Error("HotcueButton must have a number property of an integer between 1 and 32");
         }
-        this.outKey = `hotcue_${this.number}_enabled`;
+        this.outKey = `hotcue_${this.number}_status`;
         this.colorKey = `hotcue_${this.number}_color`;
         this.outConnect();
     }
@@ -789,7 +838,7 @@ class KeyboardButton extends PushButton {
         if (this.number + offset < 1 || this.number + offset > 24) {
             this.send(0);
         } else {
-            this.send(color + (value ? this.brightnessOn : this.brightnessOff));
+            this.send(value ? LedColors.yellow : color);
         }
     }
     outConnect() {
@@ -1292,7 +1341,7 @@ class QuickEffectButton extends Button {
 }
 
 /*
- * Kontrol S4 Mk3 hardware-specific constants
+ * Kontrol S4 Mk3 hardware-specific member constants
  */
 
 Pot.prototype.max = 2 ** 12 - 1;
@@ -1334,47 +1383,6 @@ Button.prototype.colorMap = new ColorMapper({
 
     0xCCCCCC: LedColors.white,
 });
-
-const wheelRelativeMax = 2 ** 16 - 1;
-const wheelAbsoluteMax = 2879;
-
-const wheelTimerMax = 2 ** 32 - 1;
-const wheelTimerTicksPerSecond = 100000000; // One tick every 10ns
-
-const baseRevolutionsPerSecond = BaseRevolutionsPerMinute / 60;
-const wheelTicksPerTimerTicksToRevolutionsPerSecond = wheelTimerTicksPerSecond / wheelAbsoluteMax;
-
-const wheelLEDmodes = {
-    off: 0,
-    dimFlash: 1,
-    spot: 2,
-    ringFlash: 3,
-    dimSpot: 4,
-    individuallyAddressable: 5, // set byte 4 to 0 and set byes 8 - 40 to color values
-};
-
-// The mode available, which the wheel can be used for.
-const wheelModes = {
-    jog: 0,
-    vinyl: 1,
-    motor: 2,
-    loopIn: 3,
-    loopOut: 4,
-};
-
-const moveModes = {
-    beat: 0,
-    bpm: 1,
-    grid: 2,
-    keyboard: 3,
-};
-
-// tracks state across input reports
-let wheelTimer = null;
-// This is a global variable so the S4Mk3Deck Components have access
-// to it and it is guaranteed to be calculated before processing
-// input for the Components.
-let wheelTimerDelta = 0;
 
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
@@ -1914,9 +1922,14 @@ class S4Mk3Deck extends Deck {
         this.leftEncoderPress = new PushButton({
             input: function(pressed) {
                 this.pressed = pressed;
-                if (pressed) {
+                if (pressed) { // TODO (ac) and shifted?
                     script.toggleControl(this.group, "pitch_adjust_set_default");
                 }
+
+                const data = engine.getRuntimeData() || {};
+                if (!data.displayBeatloopSize) { return; }
+                data.displayBeatloopSize[this.group] = !!pressed;
+                engine.setRuntimeData(data);
             },
         });
 
@@ -2230,9 +2243,20 @@ class S4Mk3Deck extends Deck {
             }
         });
         // The record button doesn't have a mapping by default, but you can add yours here
-        // this.recordPadModeButton = new Button({
-        //     ...
-        // });
+        this.recordPadModeButton = new Button({
+            deck: this,
+            onShortPress: function() {
+                const data = engine.getRuntimeData() || {};
+                if (!data.scrollingWavefom) { return; }
+                data.scrollingWavefom[this.deck.group] = !data.scrollingWavefom[this.deck.group];
+                engine.setRuntimeData(data);
+                this.output(data.scrollingWavefom[this.deck.group]);
+            },
+            // hack to switch the LED color when changing decks
+            outTrigger: function() {
+                this.deck.lightPadMode();
+            }
+        });
         this.samplesPadModeButton = new Button({
             deck: this,
             onShortPress: function() {
@@ -2249,9 +2273,20 @@ class S4Mk3Deck extends Deck {
             },
         });
         // The mute button doesn't have a mapping by default, but you can add yours here
-        // this.mutePadModeButton = new Button({
-        //    ...
-        // });
+        this.mutePadModeButton = new Button({
+            deck: this,
+            onShortPress: function() {
+                const data = engine.getRuntimeData() || {};
+                if (!data.viewArtwork) { return; }
+                data.viewArtwork[this.deck.group] = !data.viewArtwork[this.deck.group];
+                engine.setRuntimeData(data);
+                this.output(data.viewArtwork[this.deck.group]);
+            },
+            // hack to switch the LED color when changing decks
+            outTrigger: function() {
+                this.deck.lightPadMode();
+            }
+        });
 
         this.stemsPadModeButton = new Button({
             deck: this,
@@ -2554,21 +2589,26 @@ class S4Mk3Deck extends Deck {
             this.hotcuePadModeButton.send(this.hotcuePadModeButton.color + this.hotcuePadModeButton.brightnessOff);
         }
 
+        const data = engine.getRuntimeData() || {};
+
         // unfortunately the other pad mode buttons only have one LED color
         // const recordPadModeLEDOn = this.currentPadLayer === this.padLayers.hotcuePage3;
-        // this.recordPadModeButton.send(recordPadModeLEDOn ? 127 : 0);
+        this.recordPadModeButton.output(data.scrollingWavefom && data.scrollingWavefom[this.group]);
 
         const samplesPadModeLEDOn = this.currentPadLayer === this.padLayers.samplerPage;
         this.samplesPadModeButton.send(samplesPadModeLEDOn ? 127 : 0);
 
         // this.mutePadModeButtonLEDOn = this.currentPadLayer === this.padLayers.samplerPage2;
-        // const mutedModeButton.send(mutePadModeButtonLEDOn ? 127 : 0);
+        this.mutePadModeButton.output(data.viewArtwork && data.viewArtwork[this.group]);
         if (this.keyboardPlayMode !== null) {
             this.stemsPadModeButton.send(LedColors.green + this.stemsPadModeButton.brightnessOn);
         } else {
             const keyboardPadModeLEDOn = this.currentPadLayer === this.padLayers.keyboard;
             this.stemsPadModeButton.send(this.stemsPadModeButton.color + (keyboardPadModeLEDOn ? this.stemsPadModeButton.brightnessOn : this.stemsPadModeButton.brightnessOff));
         }
+        if (!data.keyboardMode) { return; }
+        data.keyboardMode[this.group] = this.currentPadLayer === this.padLayers.keyboard;
+        engine.setRuntimeData(data);
     }
 }
 
@@ -3008,7 +3048,6 @@ class S4MK3 {
             } else if (TightnessFactor < 0.5) {
                 // Super tight
                 const reduceFactor = (2 - Math.max(0, TightnessFactor) * 4);
-                console.log(reduceFactor);
                 velocityRight = expectedRightSpeed + Math.min(
                     maxVelocity,
                     Math.max(
@@ -3136,6 +3175,37 @@ class S4MK3 {
         for (const repordId of [0x01, 0x02]) {
             this.inReports[repordId].handleInput(controller.getInputReport(repordId));
         }
+
+        engine.setRuntimeData({
+            group: {
+                "leftdeck": "[Channel1]",
+                "rightdeck": "[Channel2]",
+            },
+            scrollingWavefom: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            viewArtwork: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            keyboardMode: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+            displayBeatloopSize: {
+                "[Channel1]": false,
+                "[Channel2]": false,
+                "[Channel3]": false,
+                "[Channel4]": false,
+            },
+        });
     }
     shutdown() {
         // button LEDs

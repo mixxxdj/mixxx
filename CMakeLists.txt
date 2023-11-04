@@ -2650,7 +2650,10 @@ if(QML)
     src/qml/qmlplayermanagerproxy.cpp
     src/qml/qmlplayerproxy.cpp
     src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlwaveformdisplay.cpp
     src/qml/qmlwaveformoverview.cpp
+    # The following renderer is exclusively used in QML
+    src/waveform/renderers/waveformdisplayrange.cpp
     # The following sources need to be in this target to get QML_ELEMENT properly interpreted
     src/control/controlmodel.cpp
     src/control/controlsortfiltermodel.cpp

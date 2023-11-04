@@ -932,6 +932,9 @@ void WTrackTableView::activateSelectedTrack() {
 }
 
 void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
+    if (!selectionModel()) {
+        return;
+    }
     auto indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
         return;
