@@ -145,7 +145,7 @@ bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
     return m_label.area().contains(point) || lineHovered;
 }
 
-// Helper class to calculate the geometry and fontsize needed by generateImage
+// Helper struct to calculate the geometry and fontsize needed by generateImage
 // to draw the label and text
 struct MarkerGeometry {
     bool m_isSymbol; // it the label normal text or a single symbol (e.g. open circle arrow)
