@@ -40,9 +40,11 @@ class LegacyControllerSettingBuilder {
     /// @param match the match function of the new setting
     /// @param creator the creator function of the new setting
     /// @return Always true
-    bool registerType(bool (*match)(const QDomElement&),
-            AbstractLegacyControllerSetting* (*creator)(const QDomElement&)) {
-        m_supportedSettings.append(std::make_tuple(match, creator));
+    template<class T>
+    bool registerType() {
+        m_supportedSettings.append(SupportedSetting{
+                &T::match,
+                &T::createFrom});
         return true;
     }
 
@@ -53,8 +55,8 @@ class LegacyControllerSettingBuilder {
     /// otherwise
     static AbstractLegacyControllerSetting* build(const QDomElement& element) {
         for (const auto& settingType : qAsConst(instance()->m_supportedSettings)) {
-            if (std::get<0>(settingType)(element)) {
-                return std::get<1>(settingType)(element);
+            if (settingType.matcher(element)) {
+                return settingType.builder(element);
             }
         }
 
@@ -62,16 +64,23 @@ class LegacyControllerSettingBuilder {
     }
 
   private:
+    struct SupportedSetting {
+        bool (*matcher)(const QDomElement&);
+        AbstractLegacyControllerSetting* (*builder)(const QDomElement&);
+    };
+
     LegacyControllerSettingBuilder() = default;
 
-    QList<std::tuple<bool (*)(const QDomElement&),
-            AbstractLegacyControllerSetting* (*)(const QDomElement&)>>
+    QList<SupportedSetting>
             m_supportedSettings;
 };
 
 #define CONCAT_(x, y) x##y
 #define CONCAT(x, y) CONCAT_(x, y)
-#define REGISTER_LEGACY_CONTROLLER_SETTING(...)                       \
-    bool CONCAT(kSettingRegistered_, __COUNTER__) =                   \
-            LegacyControllerSettingBuilder::instance()->registerType( \
-                    __VA_ARGS__::match, __VA_ARGS__::createFrom)
+
+// This macros can be used alongside a setting type declaration implementing the
+// LegacyControllerSettingFactory class. It will register the setting type to
+// the builder singleton.
+#define REGISTER_LEGACY_CONTROLLER_SETTING(...)           \
+    const bool CONCAT(kSettingRegistered_, __COUNTER__) = \
+            LegacyControllerSettingBuilder::instance()->registerType<__VA_ARGS__>()

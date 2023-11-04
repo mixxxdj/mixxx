@@ -125,9 +125,9 @@ QWidget* LegacyControllerNumberSetting<SettingType,
     auto spinBox = make_parented<InputWidget>(pParent);
     spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-    spinBox->setRange(this->m_minValue, this->m_maxValue);
-    spinBox->setSingleStep(this->m_stepValue);
-    spinBox->setValue(this->m_savedValue);
+    spinBox->setRange(m_minValue, m_maxValue);
+    spinBox->setSingleStep(m_stepValue);
+    spinBox->setValue(m_savedValue);
 
     connect(spinBox,
             QOverload<SettingType>::of(&InputWidget::valueChanged),

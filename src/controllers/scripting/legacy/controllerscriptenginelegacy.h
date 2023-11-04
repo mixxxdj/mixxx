@@ -39,6 +39,11 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings);
 
   private:
+    struct Setting {
+        QString name;
+        QJSValue value;
+    };
+
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void shutdown() override;
 
@@ -53,7 +58,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<LegacyControllerMapping::ScriptFileInfo> m_scriptFiles;
-    QList<std::tuple<QString, QJSValue>> m_settings;
+    QList<Setting> m_settings;
 
     QFileSystemWatcher m_fileWatcher;
 

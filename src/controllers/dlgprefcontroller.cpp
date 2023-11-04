@@ -843,7 +843,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
 
     if (pMapping) {
         auto settings = pMapping->getSettings();
-        auto pLayout = pMapping->getSettingsLayout();
+        auto* pLayout = pMapping->getSettingsLayout();
 
         qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
