@@ -178,43 +178,40 @@ struct MarkerGeometry {
 
         const qreal margin{3.f};
 
-        qreal capHeight;
-        {
-            QFontMetricsF metrics{m_font};
-            capHeight = metrics.capHeight();
+        QFontMetricsF metrics{m_font};
+        const qreal capHeight = metrics.capHeight();
 
-            if (m_isSymbol) {
-                // Symbols can be aligned and sized in an way that is not ideal.
-                // We auto-scale the font size so the symbol fits in capHeight
-                // (the height of a flat capital letter such as H) but without
-                // exceeded a width of capHeight * 1.1
-                const auto targetHeight = std::ceil(capHeight);
-                const auto targetWidth = std::ceil(capHeight * 1.1f);
+        if (m_isSymbol) {
+            // Symbols can be aligned and sized in an way that is not ideal.
+            // We auto-scale the font size so the symbol fits in capHeight
+            // (the height of a flat capital letter such as H) but without
+            // exceeded a width of capHeight * 1.1
+            const auto targetHeight = std::ceil(capHeight);
+            const auto targetWidth = std::ceil(capHeight * 1.1f);
 
-                // As a starting point we look at the tight bounding rect at a
-                // large font size
-                m_font.setPointSize(50.0);
-                metrics = QFontMetricsF(m_font);
-                m_contentRect = metrics.tightBoundingRect(label);
+            // As a starting point we look at the tight bounding rect at a
+            // large font size
+            m_font.setPointSize(50.0);
+            metrics = QFontMetricsF(m_font);
+            m_contentRect = metrics.tightBoundingRect(label);
 
-                // Now we calculate how much bigger this is than our target
-                // size.
-                const auto ratioH = targetHeight / m_contentRect.height();
-                const auto ratioW = targetWidth / m_contentRect.width();
-                const auto ratio = std::min(ratioH, ratioW);
+            // Now we calculate how much bigger this is than our target
+            // size.
+            const auto ratioH = targetHeight / m_contentRect.height();
+            const auto ratioW = targetWidth / m_contentRect.width();
+            const auto ratio = std::min(ratioH, ratioW);
 
-                // And we scale the font size accordingly.
-                m_font.setPointSizeF(50.0 * ratio);
-                metrics = QFontMetricsF(m_font);
-                m_contentRect = metrics.tightBoundingRect(label);
-            } else if (useIcon) {
-                m_contentRect = QRectF(0.f, 0.f, std::ceil(capHeight), std::ceil(capHeight));
-            } else {
-                m_contentRect = QRectF{0.f,
-                        -capHeight,
-                        metrics.boundingRect(label).width(),
-                        capHeight};
-            }
+            // And we scale the font size accordingly.
+            m_font.setPointSizeF(50.0 * ratio);
+            metrics = QFontMetricsF(m_font);
+            m_contentRect = metrics.tightBoundingRect(label);
+        } else if (useIcon) {
+            m_contentRect = QRectF(0.f, 0.f, std::ceil(capHeight), std::ceil(capHeight));
+        } else {
+            m_contentRect = QRectF{0.f,
+                    -capHeight,
+                    metrics.boundingRect(label).width(),
+                    capHeight};
         }
 
         const Qt::Alignment alignH = align & Qt::AlignHorizontal_Mask;
