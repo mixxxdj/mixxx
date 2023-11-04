@@ -20,19 +20,19 @@ void WSingletonContainer::setup(const QDomNode& node, const SkinContext& context
     QDomElement containerNode = node.toElement();
     QString objectName;
     if (!context.hasNodeSelectString(node, "ObjectName", &objectName)) {
-        SKIN_WARNING(node, context)
-                << "Need objectName attribute for Singleton tag";
+        SKIN_WARNING(node, context, QStringLiteral("Need ObjectName attribute for Singleton tag"));
         return;
     }
     if (objectName.isEmpty()) {
-        SKIN_WARNING(node, context)
-                << "Singleton tag's ObjectName is empty";
+        SKIN_WARNING(node, context, QStringLiteral("Singleton tag's ObjectName is empty"));
         return;
     }
     m_pWidget = context.getSingletonWidget(objectName);
     if (m_pWidget == nullptr) {
-        SKIN_WARNING(node, context)
-                << "Asked for an unknown singleton widget:" << objectName;
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("Asked for an unknown singleton widget: %1")
+                        .arg(objectName));
     }
 }
 

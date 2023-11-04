@@ -80,8 +80,10 @@ void WVuMeterBase::setup(const QDomNode& node, const SkinContext& context) {
     if (height() < 2 || width() < 2) {
         // This triggers a QT bug and displays a white widget instead.
         // We warn here, because the skin designer may not use the affected mode.
-        SKIN_WARNING(node, context)
-                << "VuMeterBase needs to have 2 pixel in all extents to be visible on all targets.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("VuMeterBase needs to have 2 pixel in all "
+                               "extents to be visible on all targets."));
     }
 
     setFocusPolicy(Qt::NoFocus);

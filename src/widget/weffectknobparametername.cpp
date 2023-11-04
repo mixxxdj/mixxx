@@ -22,8 +22,10 @@ void WEffectKnobParameterName::setup(const QDomNode& node, const SkinContext& co
             EffectWidgetUtils::getParameterSlotFromNode(
                     node, context, m_pEffectSlot);
     VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot) {
-        SKIN_WARNING(node, context)
-                << "EffectParameter node could not attach to effect parameter";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectParameter node could not attach to "
+                               "effect parameter"));
     }
     setEffectParameterSlot(m_pParameterSlot);
 }

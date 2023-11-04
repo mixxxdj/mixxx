@@ -35,22 +35,19 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
 
         if (m_pConfig->exists(m_configKey)) {
             sizesJoined = m_pConfig->getValueString(m_configKey);
-            msg = "Reading .cfg file: '"
-                    + m_configKey.group + " "
-                    + m_configKey.item + " "
-                    + sizesJoined
-                    + "' does not match the number of children nodes:"
-                    + QString::number(this->count());
+            msg = "Reading .cfg file: '" + m_configKey.group + " " +
+                    m_configKey.item + " " + sizesJoined +
+                    "' does not match the number of children nodes:" +
+                    QString::number(count());
             ok = true;
         }
     }
 
     // nothing in mixxx.cfg? Load default values
     if (!ok && context.hasNodeSelectString(node, "SplitSizes", &sizesJoined)) {
-        msg = "<SplitSizes> for <Splitter> ("
-                + sizesJoined
-                + ") does not match the number of children nodes:"
-                + QString::number(this->count());
+        msg = "<SplitSizes> for <Splitter> (" + sizesJoined +
+                ") does not match the number of children nodes:" +
+                QString::number(count());
     }
 
     // found some value for splitsizes?
@@ -64,8 +61,8 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
                 break;
             }
         }
-        if (sizesList.length() != this->count()) {
-            SKIN_WARNING(node, context) << msg;
+        if (sizesList.length() != count()) {
+            SKIN_WARNING(node, context, msg);
             ok = false;
         }
         if (ok) {
@@ -85,12 +82,11 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
                 break;
             }
         }
-        if (collapsibleList.length() != this->count()) {
-            msg = "<Collapsible> for <Splitter> ("
-                            + collapsibleJoined
-                            + ") does not match the number of children nodes:"
-                            + QString::number(this->count());
-            SKIN_WARNING(node, context) << msg;
+        if (collapsibleList.length() != count()) {
+            msg = "<Collapsible> for <Splitter> (" + collapsibleJoined +
+                    ") does not match the number of children nodes:" +
+                    QString::number(count());
+            SKIN_WARNING(node, context, msg);
             ok = false;
         }
         if (ok) {
