@@ -136,7 +136,6 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logOutput;
 
   private: // but used by ControllerManager
-
     virtual int open() = 0;
     virtual int close() = 0;
     // Requests that the device poll if it is a polling device. Returns true
