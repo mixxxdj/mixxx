@@ -5,6 +5,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
+#include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "waveform/vsyncthread.h"
 
