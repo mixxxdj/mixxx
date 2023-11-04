@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "controllers/controllerruntimedata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -47,6 +48,11 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         m_spinbackActive[i] = false;
         m_softStartActive[i] = false;
     }
+
+    connect(m_pEngine->getRuntimeData().get(),
+            &ControllerRuntimeData::updated,
+            this,
+            &ControllerScriptInterfaceLegacy::onRuntimeDataUpdated);
 }
 
 ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
@@ -137,6 +143,88 @@ void ControllerScriptInterfaceLegacy::setValue(
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
             coScript->set(newValue);
+        }
+    }
+}
+
+QJSValue ControllerScriptInterfaceLegacy::getRuntimeData() {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+
+    if (!pRuntimeData) {
+        qWarning() << "Unable to fetch the runtime data";
+        return QJSValue();
+    }
+
+    return pJsEngine->toScriptValue(pRuntimeData->get());
+}
+
+void ControllerScriptInterfaceLegacy::setRuntimeData(const QJSValue& value) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return;
+    }
+    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+
+    if (!pRuntimeData) {
+        qWarning() << "Unable to fetch the runtime data";
+        return;
+    }
+
+    pRuntimeData->set(value.toVariant());
+    qDebug() << "runtime data set successfully";
+}
+
+QJSValue ControllerScriptInterfaceLegacy::onRuntimeDataUpdate(const QJSValue& callback) {
+    if (!callback.isCallable()) {
+        m_pScriptEngineLegacy->throwJSError(
+                "Tried to connect runtime data update handler"
+                " to an invalid callback. Make sure that your code contains no "
+                "syntax errors.");
+        return QJSValue();
+    }
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+
+    if (!pRuntimeData) {
+        qWarning() << "Unable to fetch the runtime data";
+        return QJSValue();
+    }
+
+    ScriptConnection connection;
+    connection.engineJSProxy = this;
+    connection.controllerEngine = m_pScriptEngineLegacy;
+    connection.callback = callback;
+    connection.id = QUuid::createUuid();
+
+    m_runtimeDataConnections.append(connection);
+
+    return pJsEngine->newQObject(
+            new ScriptConnectionJSProxy(m_runtimeDataConnections.last()));
+}
+
+void ControllerScriptInterfaceLegacy::onRuntimeDataUpdated(const QVariant& value) {
+    auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
+    const auto args = QJSValueList{
+            pJsEngine->toScriptValue(value),
+    };
+
+    for (const auto& connection : m_runtimeDataConnections) {
+        QJSValue func = connection.callback; // copy function because QJSValue::call is not const
+        QJSValue result = func.call(args);
+        if (result.isError()) {
+            if (m_pScriptEngineLegacy != nullptr) {
+                m_pScriptEngineLegacy->showScriptExceptionDialog(result);
+            }
+            qWarning() << "ControllerEngine: Invocation of connection " << connection.id.toString()
+                       << "connected to runtime data failed:"
+                       << result.toString();
         }
     }
 }
@@ -283,6 +371,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeConnectionInternal(
 
 bool ControllerScriptInterfaceLegacy::removeScriptConnection(
         const ScriptConnection& connection) {
+    // TODO handle runtimeData connection
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
 
@@ -299,6 +388,7 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
         return;
     }
 
+    // TODO handle runtimeData connection
     ControlObjectScript* coScript =
             getControlObjectScript(connection.key.group, connection.key.item);
     if (coScript == nullptr) {

@@ -8,6 +8,7 @@
 
 class Controller;
 class QJSEngine;
+class ControllerRuntimeData;
 #ifdef MIXXX_USE_QML
 class TrackCollectionManager;
 #endif
@@ -47,12 +48,22 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+    void setRuntimeData(std::shared_ptr<ControllerRuntimeData> runtimeData) {
+        m_pRuntimeData = std::move(runtimeData);
+    }
+
+    std::shared_ptr<ControllerRuntimeData> getRuntimeData() const {
+        return m_pRuntimeData;
+    }
+
 #ifdef MIXXX_USE_QML
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
 #endif
 
   protected:
+    std::shared_ptr<ControllerRuntimeData> m_pRuntimeData;
+
     virtual void shutdown();
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);

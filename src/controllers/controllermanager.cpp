@@ -6,8 +6,10 @@
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/controllerruntimedata.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidienumerator.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
@@ -89,7 +91,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           // its own event loop.
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
-          m_skipPoll(false) {
+          m_skipPoll(false),
+          m_pRuntimeData(std::make_shared<ControllerRuntimeData>(this)) {
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
 
@@ -293,6 +296,12 @@ void ControllerManager::slotSetUpDevices() {
             qWarning() << "There was a problem opening" << name;
             continue;
         }
+        VERIFY_OR_DEBUG_ASSERT(pController->getScriptEngine()) {
+            qWarning() << "Unable to acquire the controller engine. Has the "
+                          "controller open successfully?";
+            continue;
+        }
+        pController->getScriptEngine()->setRuntimeData(m_pRuntimeData);
         pController->applyMapping();
     }
 
@@ -385,6 +394,13 @@ void ControllerManager::openController(Controller* pController) {
     // If successfully opened the device, apply the mapping and save the
     // preference setting.
     if (result == 0) {
+        VERIFY_OR_DEBUG_ASSERT(pController->getScriptEngine()) {
+            qWarning() << "Unable to acquire the controller engine. Has the "
+                          "controller open successfully?";
+            return;
+        }
+        pController->getScriptEngine()->setRuntimeData(m_pRuntimeData);
+
         pController->applyMapping();
 
         // Update configuration to reflect controller is enabled.
