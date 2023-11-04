@@ -15,6 +15,7 @@ Item {
 
     property string group // required
     property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
+    property int zoomControlRatio: 100
 
     Item {
         id: waveformContainer
@@ -118,7 +119,7 @@ Item {
         Item {
             id: waveform
 
-            property real effectiveZoomFactor: (1 / rateRatioControl.value) * (100 / zoomControl.value)
+            property real effectiveZoomFactor: (1 / rateRatioControl.value) * (root.zoomControlRatio / zoomControl.value)
 
             width: waveformContainer.duration * effectiveZoomFactor
             height: parent.height

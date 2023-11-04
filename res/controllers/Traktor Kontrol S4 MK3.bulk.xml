@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.4.0" schemaVersion="1">
+     <info>
+        <name>Traktor Kontrol S4 MK3 (Screens)</name>
+        <author>A. Colombier</author>
+        <description>Mapping for Traktor Kontrol S4 MK3 screens</description>
+        <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
+        <devices>
+            <!--
+                On Windows, you will need to install a libusb-ready driver.
+                https://github.com/libusb/libusb/wiki/Windows#how-to-use-libusb-on-windows
+
+                Tested with WinUSB v6.1.7600.16385 installed with Zadig (https://github.com/pbatard/libwdi/wiki/Zadig)
+            -->
+            <product protocol="bulk" vendor_id="0x17cc" product_id="0x1720" out_epaddr="0x03" interface_number="0x04" />
+        </devices>
+    </info>
+    <controller id="Traktor" direction="out">
+        <screens>
+            <screen identifier="leftdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+            <screen identifier="rightdeck" width="320" height="240" targetFps="60" pixelType="RGB565" reversed="true" endian="big" splashoff="300" />
+        </screens>
+        <scriptfiles>
+            <file filename="TraktorKontrolS4MK3Screens.qml" />
+        </scriptfiles>
+        <qmllibraries>
+            <library path="TraktorKontrolS4MK3Screens" />
+        </qmllibraries>
+    </controller>
+</MixxxControllerPreset>
