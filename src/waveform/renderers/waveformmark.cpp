@@ -261,13 +261,10 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
         QString path = m_pixmapPath;
         // Use devicePixelRatio to properly scale the image
         QImage image = *WImageStore::getImage(path, devicePixelRatio);
-        // QImage image = QImage(path);
         //  If loading the image didn't fail, then we're done. Otherwise fall
         //  through and render a label.
         if (!image.isNull()) {
-            image =
-                    image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
-            // WImageStore::correctImageColors(&m_image);
+            image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
             //  Set the pixel/device ratio AFTER loading the image in order to get
             //  a truly scaled source image.
             //  See https://doc.qt.io/qt-5/qimage.html#setDevicePixelRatio
