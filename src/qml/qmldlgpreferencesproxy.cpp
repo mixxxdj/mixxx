@@ -1,6 +1,7 @@
 #include "qmldlgpreferencesproxy.h"
 
 #include "moc_qmldlgpreferencesproxy.cpp"
+#include "util/assert.h"
 
 namespace mixxx {
 namespace qml {
