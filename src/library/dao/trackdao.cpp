@@ -2252,7 +2252,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     VERIFY_OR_DEBUG_ASSERT(!trackIds.isEmpty()) {
         return false;
     }
-    // Update both timesplay and last_played_at according to the
+    // Update both timesplayed and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played
     // and MAX for the last time it has been played.
@@ -2302,13 +2302,13 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         "UPDATE library SET "
                         "timesplayed=0,"
                         "last_played_at=NULL "
-                        "WHERE library.id NOT IN("
+                        "WHERE id NOT IN("
                         "SELECT PlaylistTracks.track_id "
                         "FROM PlaylistTracks "
                         "JOIN Playlists ON "
                         "PlaylistTracks.playlist_id=Playlists.id "
-                        "WHERE Playlists.hidden=:playlistHidden "
-                        "AND PlaylistTracks.track_id IN (%1))")
+                        "WHERE Playlists.hidden=:playlistHidden) "
+                        "AND id IN (%1)")
                         .arg(trackIdList));
         updateNotPlayed.bindValue(
                 QStringLiteral(":playlistHidden"),
