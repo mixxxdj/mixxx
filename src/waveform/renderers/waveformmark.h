@@ -112,8 +112,8 @@ class WaveformMark {
     QString m_pixmapPath;
     QString m_iconPath;
 
-    float m_linePosition{};
-    int m_breadth{};
+    float m_linePosition;
+    int m_breadth;
 
     WaveformMarkLabel m_label;
 

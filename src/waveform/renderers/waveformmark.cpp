@@ -58,7 +58,7 @@ WaveformMark::WaveformMark(const QString& group,
         const SkinContext& context,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_iHotCue(hotCue) {
+        : m_linePosition{}, m_breadth{}, m_iHotCue{hotCue} {
     QString positionControl;
     QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
