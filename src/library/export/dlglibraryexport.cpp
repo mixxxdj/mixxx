@@ -210,7 +210,7 @@ void DlgLibraryExport::exportRequested() {
     if (m_pCratesList->isEnabled()) {
         const auto selectedItems = m_pCratesList->selectedItems();
         for (auto* pItem : selectedItems) {
-            CrateId id{pItem->data(Qt::UserRole).value<int>()};
+            CrateId id{pItem->data(Qt::UserRole)};
             pRequest->crateIdsToExport.insert(id);
         }
     }

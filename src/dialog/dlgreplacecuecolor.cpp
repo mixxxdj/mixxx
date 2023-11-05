@@ -342,7 +342,7 @@ void DlgReplaceCueColor::slotApply() {
             continue;
         }
         CueDatabaseRow row = {DbId(selectQuery.value(idColumn)),
-                TrackId(selectQuery.value(trackIdColumn).toInt()),
+                TrackId(selectQuery.value(trackIdColumn)),
                 *color};
         rows << row;
         trackIds << row.trackId;

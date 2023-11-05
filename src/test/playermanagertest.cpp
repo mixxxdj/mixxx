@@ -188,7 +188,8 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 
 TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     // Save an invalid trackid in playermanager.
-    auto pTrack = Track::newDummy(getTestDir().filePath(kTrackLocationTest1), TrackId(10));
+    auto pTrack = Track::newDummy(
+            getTestDir().filePath(kTrackLocationTest1), TrackId(QVariant(10)));
     ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);
