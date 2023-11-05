@@ -139,7 +139,7 @@ QDebug SkinContext::logWarning(const char* file,
         const int line,
         const QDomNode& node,
         const QString& message) const {
-    return qWarning() << QString("SKIN ERROR at %1:%2 <%3>: %4 | %5:%6")
+    return qWarning() << QString("Skin parsing failed at %1:%2 <%3>: %4 | %5:%6")
                                  .arg(m_xmlPath,
                                          QString::number(node.lineNumber()),
                                          node.nodeName(),
