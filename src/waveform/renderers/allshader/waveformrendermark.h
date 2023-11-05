@@ -21,7 +21,6 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
     Q_OBJECT
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRenderMark() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -42,8 +41,8 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
   private:
     void checkCuesUpdated();
 
-    void generateMarkImage(WaveformMarkPointer pMark, float breadth);
-    void generatePlayPosMarkTexture(float breadth);
+    void generateMarkImage(WaveformMarkPointer pMark);
+    void generatePlayPosMarkTexture();
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,

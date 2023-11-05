@@ -60,4 +60,9 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
     pEvent->accept();
 }
 
+void WaveformWidget::leaveEvent(QEvent* pEvent) {
+    QApplication::sendEvent(parentWidget(), pEvent);
+    pEvent->accept();
+}
+
 } // namespace allshader
