@@ -1,17 +1,10 @@
 #pragma once
 
-#include <QStringListModel>
-#include <QtSql>
 #include <QFuture>
-#include <QtConcurrentRun>
 #include <QFutureWatcher>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 #include "library/banshee/bansheedbconnection.h"
-
 
 class BansheePlaylistModel;
 
