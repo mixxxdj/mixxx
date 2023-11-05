@@ -15,8 +15,6 @@ ControlModel::ControlModel(QObject* pParent)
     // Add all controls to Model
     const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
             ControlDoublePrivate::getAllInstances();
-    const QHash<ConfigKey, ConfigKey> controlAliases =
-            ControlDoublePrivate::getControlAliases();
 
     for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
         if (!pControl) {
@@ -26,14 +24,6 @@ ControlModel::ControlModel(QObject* pParent)
         addControl(pControl->getKey(),
                 pControl->name(),
                 pControl->description());
-
-        ConfigKey aliasKey = controlAliases[pControl->getKey()];
-        if (aliasKey.isValid()) {
-            addControl(aliasKey,
-                    pControl->name(),
-                    QStringLiteral("Alias for ") + pControl->getKey().group +
-                            pControl->getKey().item);
-        }
     }
 }
 
