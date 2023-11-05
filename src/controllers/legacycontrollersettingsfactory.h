@@ -69,18 +69,8 @@ class LegacyControllerSettingBuilder {
         AbstractLegacyControllerSetting* (*builder)(const QDomElement&);
     };
 
-    LegacyControllerSettingBuilder() = default;
+    LegacyControllerSettingBuilder();
 
     QList<SupportedSetting>
             m_supportedSettings;
 };
-
-#define CONCAT_(x, y) x##y
-#define CONCAT(x, y) CONCAT_(x, y)
-
-// This macros can be used alongside a setting type declaration implementing the
-// LegacyControllerSettingFactory class. It will register the setting type to
-// the builder singleton.
-#define REGISTER_LEGACY_CONTROLLER_SETTING(...)           \
-    const bool CONCAT(kSettingRegistered_, __COUNTER__) = \
-            LegacyControllerSettingBuilder::instance()->registerType<__VA_ARGS__>()

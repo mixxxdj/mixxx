@@ -18,6 +18,15 @@ LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::instance() {
     return s_self;
 }
 
+LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
+    // Each possible setting types must be added there. This will allow the
+    // builder to know each type of supported setting
+    registerType<LegacyControllerBooleanSetting>();
+    registerType<LegacyControllerIntegerSetting>();
+    registerType<LegacyControllerRealSetting>();
+    registerType<LegacyControllerEnumSetting>();
+}
+
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
     m_variableName = element.attribute("variable").trimmed();
     m_label = element.attribute("label", m_variableName).trimmed();
@@ -112,8 +121,6 @@ bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
                     Qt::CaseInsensitive) == 0;
 }
 
-REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerBooleanSetting);
-
 template<class SettingType,
         Serializer<SettingType> ValueSerializer,
         Deserializer<SettingType> ValueDeserializer,
@@ -139,7 +146,6 @@ QWidget* LegacyControllerNumberSetting<SettingType,
 
     return spinBox;
 }
-REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerIntegerSetting);
 
 QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
     QDoubleSpinBox* spinBox = dynamic_cast<QDoubleSpinBox*>(
@@ -153,7 +159,6 @@ QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
 
     return spinBox;
 }
-REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerRealSetting);
 
 LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         const QDomElement& element)
@@ -210,5 +215,3 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
 
     return comboBox;
 }
-
-REGISTER_LEGACY_CONTROLLER_SETTING(LegacyControllerEnumSetting);
