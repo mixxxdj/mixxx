@@ -10,7 +10,7 @@ WRateRange::WRateRange(const QString& group, QWidget* parent)
           m_nodePosition(VerticalPosition::Top),
           m_nodeDisplay(DisplayType::Default) {
     m_pRateRangeControl = new ControlProxy(
-            group, "rateRange", this, ControlFlag::NoAssertIfMissing);
+            group, "rate_range", this, ControlFlag::NoAssertIfMissing);
     m_pRateRangeControl->connectValueChanged(this, &WRateRange::setValue);
     m_pRateDirControl = new ControlProxy(
             group, "rate_dir", this, ControlFlag::NoAssertIfMissing);
