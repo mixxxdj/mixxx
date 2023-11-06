@@ -140,7 +140,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_endOfTrackColor = QColor(200, 25, 20);
     const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
-        m_endOfTrackColor.setNamedColor(endOfTrackColorName);
+        m_endOfTrackColor = QColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
 

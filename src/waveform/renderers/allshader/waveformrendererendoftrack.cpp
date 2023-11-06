@@ -44,7 +44,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
     m_color = QColor(200, 25, 20);
     const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
-        m_color.setNamedColor(endOfTrackColorName);
+        m_color = QColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
 }
