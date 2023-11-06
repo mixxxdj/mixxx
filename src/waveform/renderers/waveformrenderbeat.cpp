@@ -20,7 +20,7 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
+    m_beatColor = QColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 }
 
