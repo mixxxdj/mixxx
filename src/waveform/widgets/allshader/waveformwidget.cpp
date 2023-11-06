@@ -1,6 +1,7 @@
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 #include <QApplication>
+#include <QWheelEvent>
 
 #include "moc_waveformwidget.cpp"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
