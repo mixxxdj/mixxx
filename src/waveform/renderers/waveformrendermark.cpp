@@ -41,7 +41,7 @@ void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context)
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     PainterScope PainterScope(painter);
     // Associates mark objects with their positions in the widget.
-    QList<QPair<WaveformMarkPointer, int>> marksOnScreen;
+    QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
     painter->setWorldMatrixEnabled(false);
 
@@ -102,7 +102,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 if (visible) {
-                    marksOnScreen.append(qMakePair(pMark, drawOffset));
+                    marksOnScreen.append(
+                            WaveformWidgetRenderer::WaveformMarkOnScreen{
+                                    pMark, drawOffset});
                 }
             } else {
                 const int markHalfHeight =
@@ -146,7 +148,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 if (visible) {
-                    marksOnScreen.append(qMakePair(pMark, drawOffset));
+                    marksOnScreen.append(
+                            WaveformWidgetRenderer::WaveformMarkOnScreen{
+                                    pMark, drawOffset});
                 }
             }
         }

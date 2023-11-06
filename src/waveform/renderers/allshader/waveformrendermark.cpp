@@ -159,7 +159,7 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 
 void allshader::WaveformRenderMark::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
-    QList<QPair<WaveformMarkPointer, int>> marksOnScreen;
+    QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
     checkCuesUpdated();
 
@@ -221,7 +221,9 @@ void allshader::WaveformRenderMark::paintGL() {
             }
 
             if (visible) {
-                marksOnScreen.append(qMakePair(pMark, drawOffset));
+                marksOnScreen.append(
+                        WaveformWidgetRenderer::WaveformMarkOnScreen{
+                                pMark, static_cast<int>(drawOffset)});
             }
         }
     }

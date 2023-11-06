@@ -422,12 +422,12 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
     // drawoffset from the drawing and c) storing it in WaveformMark.
 
     for (auto it = m_markPositions.crbegin(); it != m_markPositions.crend(); ++it) {
-        const WaveformMarkPointer& pMark = it->first;
+        const WaveformMarkPointer& pMark = it->m_pMark;
         VERIFY_OR_DEBUG_ASSERT(pMark) {
             continue;
         }
 
-        int markImagePositionInWidgetSpace = it->second;
+        int markImagePositionInWidgetSpace = it->m_offsetOnScreen;
         QPoint pointInImageSpace;
         if (getOrientation() == Qt::Horizontal) {
             pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());
