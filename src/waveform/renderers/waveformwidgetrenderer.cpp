@@ -413,13 +413,13 @@ ConstWaveformPointer WaveformWidgetRenderer::getWaveform() const {
 }
 
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) const {
-    // The m_markPositions list follows the order of drawing, so we search the list
-    // in reverse order to find the hovered mark.
+    // The m_markPositions list follows the order of drawing, so we search the
+    // list in reverse order to find the hovered mark.
     //
-    // TODO It would be preferable to use WaveformMarkSet::findHoveredMark here, as
-    // done by WOverview, but that requires a) making WaveformMarkSet m_marks a member
-    // of this class and b) decoupling the calculation of the drawoffset from the 
-    // drawing and c) storing it in WaveformMark. 
+    // TODO It would be preferable to use WaveformMarkSet::findHoveredMark here,
+    // as done by WOverview, but that requires a) making WaveformMarkSet m_marks
+    // a member of this class and b) decoupling the calculation of the
+    // drawoffset from the drawing and c) storing it in WaveformMark.
 
     for (auto it = m_markPositions.crbegin(); it != m_markPositions.crend(); ++it) {
         const WaveformMarkPointer& pMark = it->first;
