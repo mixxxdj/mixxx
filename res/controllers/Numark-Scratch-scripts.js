@@ -52,8 +52,8 @@ NumarkScratch.init = function() {
         };
     };
 
-    engine.makeConnection("[Channel1]", "VuMeter", createVuCallback(0));
-    engine.makeConnection("[Channel2]", "VuMeter", createVuCallback(1));
+    engine.makeConnection("[Channel1]", "vu_meter", createVuCallback(0));
+    engine.makeConnection("[Channel2]", "vu_meter", createVuCallback(1));
 
     // Trigger is needed to initialize lights to 0x01
     NumarkScratch.deck.forEachComponent(function(component) {
@@ -168,7 +168,7 @@ NumarkScratch.EffectUnit.prototype = new components.ComponentContainer();
 NumarkScratch.XfaderContainer = function() {
     this.crossfader = new components.Pot({
         midi: [0xBF, 0x08],
-        group: "[Master]",
+        group: "[Mixer]",
         inKey: "crossfader",
     });
 
