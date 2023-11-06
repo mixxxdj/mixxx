@@ -5,9 +5,9 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
-#include <QMenu>
+#include <QLineEdit>
 #include <QMessageBox>
-#include <QStandardItemModel>
+#include <QPushButton>
 #include <QTableView>
 
 #include "moc_colorpaletteeditor.cpp"

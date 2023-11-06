@@ -1,9 +1,7 @@
 #pragma once
 
 #include <QMap>
-#include <QWidget>
 #include <memory>
-#include <optional>
 
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -11,11 +9,8 @@
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 
-class ControlProxy;
-class ControlPotmeter;
-class PlayerManager;
-class MixxxMainWindow;
 class ControlObject;
+class QWidget;
 
 namespace mixxx {
 class ScreensaverManager;

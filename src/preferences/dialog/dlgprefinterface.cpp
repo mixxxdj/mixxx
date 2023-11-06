@@ -1,12 +1,9 @@
 #include "preferences/dialog/dlgprefinterface.h"
 
 #include <QDir>
-#include <QDoubleSpinBox>
 #include <QList>
 #include <QLocale>
 #include <QScreen>
-#include <QToolTip>
-#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"

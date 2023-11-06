@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include <QDropEvent>
-#include <QMimeData>
+#include <QFocusEvent>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectsbackend.h"
@@ -9,6 +8,7 @@
 #include "effects/visibleeffectslist.h"
 #include "moc_dlgprefeffects.cpp"
 #include "preferences/effectchainpresetlistmodel.h"
+#include "preferences/effectmanifesttablemodel.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,

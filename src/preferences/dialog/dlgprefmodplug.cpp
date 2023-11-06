@@ -4,6 +4,7 @@
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
+#include "util/string.h"
 
 #define kConfigKey "[Modplug]"
 

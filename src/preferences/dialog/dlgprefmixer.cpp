@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgprefmixer.h"
 
 #include <QButtonGroup>
-#include <QHBoxLayout>
 #include <QPainterPath>
 #include <QStandardItemModel>
 

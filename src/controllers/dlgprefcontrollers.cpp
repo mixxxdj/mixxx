@@ -8,6 +8,7 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "util/string.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
