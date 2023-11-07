@@ -8,6 +8,10 @@
 #include "util/sample.h"
 #include "util/types.h"
 
+namespace {
+constexpr double makeUpCoeff = 0.03;
+} // anonymous namespace
+
 class CompressorGroupState : public EffectState {
   public:
     CompressorGroupState(const mixxx::EngineParameters& engineParameters);
