@@ -153,13 +153,11 @@ void CompressorEffect::processChannel(
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     //CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
     //CSAMPLE kneeHalf = kneeParam / 2.0f;
-    CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
     CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * pState->samplerate));
     CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * pState->samplerate));
 
     CSAMPLE stateDB = pState->previousStateDB;
 
-    CSAMPLE maxGain = thresholdParam;
     for (SINT i = 0; i < numSamples; i += channelCount) {
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {
@@ -185,29 +183,26 @@ void CompressorEffect::processChannel(
 
 
         overDB = stateDB;
-        CSAMPLE gainReductionDB = overDB * (1.0 / ratioParam - 1.0);
-        CSAMPLE gain = db2ratio(gainReductionDB + gainParamDB);
+        CSAMPLE gain = db2ratio(overDB * (1.0 / ratioParam - 1.0));
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
-
-        CSAMPLE totalGain = maxSampleDB + gainReductionDB;
-        if (totalGain > maxGain) {
-            maxGain = totalGain;
-        }
     }
     pState->previousStateDB = stateDB;
 
     if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
-        CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
-        CSAMPLE minGainReductionDB = -maxGain - 3.0;
-        makeUpStateDB = makeUpCoeff * minGainReductionDB + (1 - makeUpCoeff) * makeUpStateDB;
-        for (SINT i = 0; i < numSamples; i += channelCount) {
-            CSAMPLE gain = db2ratio(makeUpStateDB);
-            pOutput[i] = pOutput[i] * gain;
-            pOutput[i + 1] = pOutput[i + 1] * gain;
+        CSAMPLE makeUpState = pState->previousMakeUpGain;
+        CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
+        if (maxSample > CSAMPLE_ZERO) {
+            CSAMPLE minGainReduction = (1 / maxSample) * makeUpCoeff;
+            makeUpState = makeUpAttackCoeff * minGainReduction + (1 - makeUpAttackCoeff) * makeUpState;
+            pState->previousMakeUpGain = makeUpState;
+
+            SampleUtil::applyGain(pOutput, makeUpState, numSamples);
         }
-        pState->previousMakeUpGain = makeUpStateDB;
     }
+
+    CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
+    SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
 
     
     if (m_pClipping->toInt() == ClippingOn) {

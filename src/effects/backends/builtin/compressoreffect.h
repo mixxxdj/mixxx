@@ -9,7 +9,8 @@
 #include "util/types.h"
 
 namespace {
-constexpr double makeUpCoeff = 0.03;
+constexpr double makeUpAttackCoeff = 0.03;
+const double makeUpCoeff = 1 / pow(10, 0.15);
 } // anonymous namespace
 
 class CompressorGroupState : public EffectState {
