@@ -238,15 +238,6 @@ jobs:
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-          # https://unix.stackexchange.com/questions/696224/using-openssl-to-display-all-certificates-of-a-pem-file
-          # https://stackoverflow.com/questions/16576537/how-can-i-find-exactly-what-my-codesign-identity-is
-
-          echo "==> Available certificates"
-          security find-certificate -a -p Mixxx.keychain | while openssl x509 -noout -text; do :; done | grep "Certificate\|Validity\|Subject\|Not"
-
-          echo "==> Available code signing identities"
-          security find-identity -v -p codesigning Mixxx.keychain
-
       - name: "[Windows] Set up Windows code signing"
         env:
           WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
