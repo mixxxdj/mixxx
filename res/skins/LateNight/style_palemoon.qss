@@ -2549,6 +2549,11 @@ WLibrarySidebar {
 WLibrarySidebar {
   outline: none;
 }
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+WTrackTableView::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,

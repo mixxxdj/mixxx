@@ -165,6 +165,12 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+WTrackTableView::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
+
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
 WLibrarySidebar::branch:selected,
