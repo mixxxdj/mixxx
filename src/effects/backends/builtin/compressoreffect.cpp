@@ -116,7 +116,7 @@ CompressorGroupState::CompressorGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
           samplerate(engineParameters.sampleRate()),
-          previousMakeUpGain(-1),
+          previousMakeUpGain(0),
           previousStateDB(0) {
 }
 
@@ -149,32 +149,22 @@ void CompressorEffect::processChannel(
     int channelCount = engineParameters.channelCount();
     SINT numFrames = engineParameters.framesPerBuffer();
 
-    //CSAMPLE max = SampleUtil::maxAbsAmplitude(pInput, numSamples);
-    //if (max == CSAMPLE_ZERO) {
-    //    SampleUtil::copy(pOutput, pInput, numSamples);
-    //    return;
-    //}
-
     CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     //CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
     //CSAMPLE kneeHalf = kneeParam / 2.0f;
     CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
-    CSAMPLE attackParam = m_pAttack->value();
-    CSAMPLE releaseParam = m_pRelease->value();
-    CSAMPLE attackCoeff = exp(-1000.0 / (attackParam * pState->samplerate));
-    CSAMPLE releaseCoeff = exp(-1000.0 / (releaseParam * pState->samplerate));
-    CSAMPLE makeUpCoeff = 0.03;
+    CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * pState->samplerate));
+    CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * pState->samplerate));
 
     CSAMPLE stateDB = pState->previousStateDB;
-    CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
 
-    std::vector<int> gains(numFrames);
     CSAMPLE maxGain = thresholdParam;
     for (SINT i = 0; i < numSamples; i += channelCount) {
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {
-            gains[i / channelCount] = 0.0;
+            pOutput[i] = CSAMPLE_ZERO;
+            pOutput[i + 1] = CSAMPLE_ZERO;
             continue;
         }
 
@@ -196,38 +186,35 @@ void CompressorEffect::processChannel(
 
         overDB = stateDB;
         CSAMPLE gainReductionDB = overDB * (1.0 / ratioParam - 1.0);
-        gains[i / channelCount] = gainReductionDB;
+        CSAMPLE gain = db2ratio(gainReductionDB + gainParamDB);
+        pOutput[i] = pInput[i] * gain;
+        pOutput[i + 1] = pInput[i + 1] * gain;
+
         CSAMPLE totalGain = maxSampleDB + gainReductionDB;
         if (totalGain > maxGain) {
             maxGain = totalGain;
         }
     }
+    pState->previousStateDB = stateDB;
 
-    CSAMPLE autoMakeUp = 0;
     if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
+        CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
         CSAMPLE minGainReductionDB = -maxGain - 3.0;
-        if (makeUpStateDB == -1) {
-            //std::string msg2 = std::string("makeUpStateDB: ") + std::to_string(makeUpStateDB) + std::string(" minGainReductionDB: ") + std::to_string(minGainReductionDB) + std::string("\n");
-            //OutputDebugStringA(msg2.c_str());
-            makeUpStateDB = minGainReductionDB;
-        }
         makeUpStateDB = makeUpCoeff * minGainReductionDB + (1 - makeUpCoeff) * makeUpStateDB;
-        autoMakeUp = makeUpStateDB;
+        for (SINT i = 0; i < numSamples; i += channelCount) {
+            CSAMPLE gain = db2ratio(makeUpStateDB);
+            pOutput[i] = pOutput[i] * gain;
+            pOutput[i + 1] = pOutput[i + 1] * gain;
+        }
+        pState->previousMakeUpGain = makeUpStateDB;
     }
 
-    for (SINT i = 0; i < numSamples; i += channelCount) {
-        CSAMPLE gain = db2ratio(gains[i / channelCount] + gainParamDB + autoMakeUp);
-        pOutput[i] = pInput[i] * gain;
-        pOutput[i + 1] = pInput[i + 1] * gain;
-    }
     
     if (m_pClipping->toInt() == ClippingOn) {
         SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
     }
 
 
-    pState->previousStateDB = stateDB;
-    pState->previousMakeUpGain = makeUpStateDB;
     //std::string msg2 = std::string("makeUpStateDB: ") + std::to_string(makeUpStateDB) + std::string(" stateDB: ") + std::to_string(stateDB) + std::string("\n");
     //OutputDebugStringA(msg2.c_str());
 
@@ -254,27 +241,4 @@ void CompressorEffect::processChannel(
 
     SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
     */
-    
-
-   /* if (thresholdParam < 0.01) {
-        SampleUtil::copy(pOutput, pInput, numSamples);
-        return;
-    }
-
-    switch (m_pAutoMakeUp->toInt()) {
-    case Off:
-        processCompressor<SoftClippingParameters>(
-                thresholdParam, pState, pOutput, pInput, engineParameters);
-        break;
-
-    case On:
-        processCompressor<HardClippingParameters>(
-                thresholdParam, pState, pOutput, pInput, engineParameters);
-        break;
-
-    default:
-        // We should never enter here, but we act as a noop effect just in case.
-        SampleUtil::copy(pOutput, pInput, numSamples);
-        return;
-    }*/
 }
