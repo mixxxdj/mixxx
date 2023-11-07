@@ -18,6 +18,7 @@
 #endif
 #include "effects/backends/builtin/autopaneffect.h"
 #include "effects/backends/builtin/distortioneffect.h"
+#include "effects/backends/builtin/compressoreffect.h"
 #include "effects/backends/builtin/echoeffect.h"
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 #include "effects/backends/builtin/metronomeeffect.h"
@@ -56,6 +57,7 @@ BuiltInBackend::BuiltInBackend() {
     registerEffect<TremoloEffect>();
     registerEffect<PitchShiftEffect>();
     registerEffect<DistortionEffect>();
+    registerEffect<CompressorEffect>();
 }
 
 std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
