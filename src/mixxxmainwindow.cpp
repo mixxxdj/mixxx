@@ -314,16 +314,7 @@ void MixxxMainWindow::initialize() {
 
     QWidget* oldWidget = m_pCentralWidget;
 
-    // Load default styles that can be overridden by skins
-    const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
-    QFile file(resPath + "/skins/default.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray fileBytes = file.readAll();
-        QString style = QString::fromLocal8Bit(fileBytes);
-        setStyleSheet(style);
-    } else {
-        qWarning() << "Failed to load default skin styles /skins/default.qss!";
-    }
+    tryParseAndSetDefaultStyleSheet();
 
     if (!loadConfiguredSkin()) {
         reportCriticalErrorAndQuit(
@@ -1096,6 +1087,8 @@ void MixxxMainWindow::rebootMixxxView() {
     bool wasFullScreen = isFullScreen();
     slotViewFullScreen(false);
 
+    tryParseAndSetDefaultStyleSheet();
+
     if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
@@ -1141,6 +1134,19 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     }
     emit skinLoaded();
     return m_pCentralWidget != nullptr;
+}
+
+// Try to load default styles that can be overridden by skins
+void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
+    const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
+    QFile file(resPath + "/skins/default.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileBytes = file.readAll();
+        QString style = QString::fromUtf8(fileBytes);
+        setStyleSheet(style);
+    } else {
+        qWarning() << "Failed to load default skin styles /skins/default.qss!";
+    }
 }
 
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {

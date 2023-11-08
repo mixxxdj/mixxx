@@ -101,6 +101,7 @@ class MixxxMainWindow : public QMainWindow {
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();
+    void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
