@@ -315,13 +315,14 @@ void MixxxMainWindow::initialize() {
     QWidget* oldWidget = m_pCentralWidget;
 
     // Load default styles that can be overridden by skins
-    QFile file(":/skins/default.qss");
+    const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
+    QFile file(resPath + "/skins/default.qss");
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray fileBytes = file.readAll();
         QString style = QString::fromLocal8Bit(fileBytes);
         setStyleSheet(style);
     } else {
-        qWarning() << "Failed to load default skin styles!";
+        qWarning() << "Failed to load default skin styles /skins/default.qss!";
     }
 
     if (!loadConfiguredSkin()) {
