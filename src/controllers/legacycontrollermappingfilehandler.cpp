@@ -33,6 +33,9 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
 // static
 std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loadMapping(
         const QFileInfo& mappingFile, const QDir& systemMappingsPath) {
+    if (mappingFile.path().isEmpty()) {
+        return nullptr;
+    }
     if (!mappingFile.exists() || !mappingFile.isReadable()) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "does not exist or is unreadable.";
