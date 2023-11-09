@@ -8,6 +8,8 @@
     </info>
     <controller id="PIONEER">
         <scriptfiles>
+            <file filename="lodash.mixxx.js" />
+            <file filename="midi-components-0.0.js" />
             <file functionprefix="PioneerDDJSB" filename="Pioneer-DDJ-SB-scripts.js"/>
         </scriptfiles>
         <controls>
@@ -219,39 +221,12 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x94</status>
-                <midino>0x65</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>prev_chain</key>
                 <status>0x98</status>
                 <midino>0x68</midino>
                 <options>
                     <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x95</status>
-                <midino>0x65</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x94</status>
-                <midino>0x64</midino>
-                <options>
-                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -273,37 +248,10 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x95</status>
-                <midino>0x64</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x94</status>
-                <midino>0x63</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.deckToggleButton</key>
                 <status>0x91</status>
                 <midino>0x60</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButtonShifted</key>
-                <status>0x95</status>
-                <midino>0x63</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -651,37 +599,10 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x94</status>
-                <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x95</status>
-                <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x94</status>
-                <midino>0x48</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -705,24 +626,6 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x95</status>
-                <midino>0x48</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x94</status>
-                <midino>0x47</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
@@ -736,15 +639,6 @@
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxButton</key>
-                <status>0x95</status>
-                <midino>0x47</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1605,15 +1499,6 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxKnobLSB</key>
-                <status>0xB4</status>
-                <midino>0x26</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.clearHotCueButtons</key>
                 <status>0x98</status>
@@ -1645,15 +1530,6 @@
                 <key>PioneerDDJSB.jogRingTick</key>
                 <status>0xB0</status>
                 <midino>0x21</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxKnobLSB</key>
-                <status>0xB5</status>
-                <midino>0x26</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1731,15 +1607,6 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>PioneerDDJSB.fxKnobShiftedLSB</key>
-                <status>0xB4</status>
-                <midino>0x20</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x98</status>
@@ -1753,15 +1620,6 @@
                 <key>PioneerDDJSB.hotCueButtons</key>
                 <status>0x97</status>
                 <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>PioneerDDJSB.fxKnobShiftedLSB</key>
-                <status>0xB5</status>
-                <midino>0x20</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1911,24 +1769,6 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.fxKnobMSB</key>
-                <status>0xB4</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.fxKnobMSB</key>
-                <status>0xB5</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSB.tempoSliderMSB</key>
                 <status>0xB0</status>
@@ -1956,21 +1796,183 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>PioneerDDJSB.fxKnobShiftedMSB</key>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[1].input</key>
+                <status>0x94</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[1].input</key>
+                <status>0x94</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[2].input</key>
+                <status>0x94</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[2].input</key>
+                <status>0x94</status>
+                <midino>0x64</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[3].input</key>
+                <status>0x94</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].button[3].input</key>
+                <status>0x94</status>
+                <midino>0x65</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].knob.inputMSB</key>
+                <status>0xB4</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJSB.effectUnit[1].knob.inputLSB</key>
+                <status>0xB4</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit]</group>
+                <key>PioneerDDJSB.effectUnit[1].knob.inputMSB</key>
                 <status>0xB4</status>
                 <midino>0x00</midino>
                 <options>
-                    <script-binding/>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit]</group>
+                <key>PioneerDDJSB.effectUnit[1].knob.inputLSB</key>
+                <status>0xB4</status>
+                <midino>0x20</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[1].input</key>
+                <status>0x95</status>
+                <midino>0x47</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[1].input</key>
+                <status>0x95</status>
+                <midino>0x63</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[2].input</key>
+                <status>0x95</status>
+                <midino>0x48</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[2].input</key>
+                <status>0x95</status>
+                <midino>0x64</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[3].input</key>
+                <status>0x95</status>
+                <midino>0x49</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].button[3].input</key>
+                <status>0x95</status>
+                <midino>0x65</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].knob.inputMSB</key>
+                <status>0xB5</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].knob.inputLSB</key>
+                <status>0xB5</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+            <control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>PioneerDDJSB.effectUnit[2].knob.inputMSB</key>
+                <status>0xB5</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding />
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.fxKnobShiftedMSB</key>
+                <key>PioneerDDJSB.effectUnit[2].knob.inputLSB</key>
                 <status>0xB5</status>
-                <midino>0x00</midino>
+                <midino>0x20</midino>
                 <options>
-                    <script-binding/>
+                    <script-binding />
                 </options>
             </control>
         </controls>

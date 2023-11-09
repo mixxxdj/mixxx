@@ -39,6 +39,11 @@ PioneerDDJSB.jumpPreviewPosition = 0.5;
 
 
 PioneerDDJSB.init = function(id) {
+
+    PioneerDDJSB.effectUnit = [];
+    PioneerDDJSB.effectUnit[1] = new PioneerDDJSB.EffectUnit(1);
+    PioneerDDJSB.effectUnit[2] = new PioneerDDJSB.EffectUnit(2);
+
     PioneerDDJSB.scratchSettings = {
         'alpha': 1.0 / 8,
         'beta': 1.0 / 8 / 32,
@@ -61,35 +66,11 @@ PioneerDDJSB.init = function(id) {
         '[Sampler4]': 0x03
     };
 
-    PioneerDDJSB.fxGroups = {
-        '[EffectRack1_EffectUnit1]': 0x00,
-        '[EffectRack1_EffectUnit2]': 0x01
-    };
-
-    PioneerDDJSB.fxControls = {
-        'group_[Channel1]_enable': 0x00,
-        'group_[Channel3]_enable': 0x00,
-        'group_[Headphone]_enable': 0x01,
-        'group_[Channel2]_enable': 0x02,
-        'group_[Channel4]_enable': 0x02
-    };
-
     PioneerDDJSB.shiftPressed = false;
 
     PioneerDDJSB.chFaderStart = [
         null,
         null
-    ];
-
-    PioneerDDJSB.fxButtonPressed = [
-        [false, false, false],
-        [false, false, false]
-    ];
-
-    // used for soft takeover workaround
-    PioneerDDJSB.fxParamsActiveValues = [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
     ];
 
     PioneerDDJSB.scratchMode = [false, false, false, false];
@@ -182,39 +163,22 @@ PioneerDDJSB.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     }
 
     script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
-        if (!isUnbinding) {
-            engine.trigger('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_' + channelGroup + '_enable');
-        }
-    }
 };
 
 PioneerDDJSB.bindNonDeckControlConnections = function(isUnbinding) {
-    var samplerIndex,
-        fxUnitIndex;
+    var samplerIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
         PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
-    }
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
     }
 };
 
 PioneerDDJSB.bindAllControlConnections = function(isUnbinding) {
     var samplerIndex,
-        fxUnitIndex,
         channelIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
         PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
-    }
-
-    for (fxUnitIndex = 1; fxUnitIndex <= 2; fxUnitIndex++) {
-        engine.connectControl('[EffectRack1_EffectUnit' + fxUnitIndex + ']', 'group_[Headphone]_enable', 'PioneerDDJSB.fxLeds', isUnbinding);
     }
 
     for (channelIndex = 1; channelIndex <= 2; channelIndex++) {
@@ -580,20 +544,6 @@ PioneerDDJSB.deckConverter = function(group) {
     return group % 2;
 };
 
-PioneerDDJSB.fxLedControl = function(deck, ledNumber, shift, active) {
-    var fxLedsBaseChannel = 0x94,
-        fxLedsBaseControl = (shift ? 0x63 : 0x47),
-        midiChannelOffset = PioneerDDJSB.deckConverter(deck);
-
-    if (midiChannelOffset !== null) {
-        midi.sendShortMsg(
-            fxLedsBaseChannel + midiChannelOffset,
-            fxLedsBaseControl + ledNumber,
-            active ? 0x7F : 0x00
-        );
-    }
-};
-
 PioneerDDJSB.padLedControl = function(deck, groupNumber, shiftGroup, ledNumber, shift, active) {
     var padLedsBaseChannel = 0x97,
         padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + (+groupNumber) + (+ledNumber),
@@ -625,14 +575,6 @@ PioneerDDJSB.nonPadLedControl = function(deck, ledNumber, active) {
 ///////////////////////////////////////////////////////////////
 //                             LEDS                          //
 ///////////////////////////////////////////////////////////////
-
-PioneerDDJSB.fxLeds = function(value, group, control) {
-    var deck = PioneerDDJSB.fxGroups[group],
-        ledNumber = PioneerDDJSB.fxControls[control];
-
-    PioneerDDJSB.fxLedControl(deck, ledNumber, false, value);
-    PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
-};
 
 PioneerDDJSB.headphoneCueLed = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.headphoneCue, value);
@@ -898,88 +840,81 @@ PioneerDDJSB.rotarySelectorShiftedClick = function(channel, control, value, _sta
 //                             FX                            //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB.fxKnobMSB = [0, 0];
-PioneerDDJSB.fxKnobShiftedMSB = [0, 0];
+PioneerDDJSB.EffectUnit = function(unitNumber) {
+    var eu = this;
+    this.group = "[EffectRack1_EffectUnit" + unitNumber + "]";
+    engine.setValue(this.group, "show_focus", 1);
 
-PioneerDDJSB.fxButton = function(channel, control, value, status, group) {
-    var deck = channel - 4,
-        button = control - 0x47,
-        channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
+    this.EffectButton = function(buttonNumber) {
+        this.buttonNumber = buttonNumber;
 
-    PioneerDDJSB.fxButtonPressed[deck][button] = (value === 0x7F);
+        this.group = eu.group;
+        this.midi = [0x93 + unitNumber, 0x46 + buttonNumber];
 
-    if (button === 1) {
-        engine.trigger(group, 'group_[Headphone]_enable');
-    } else {
-        engine.trigger(group, 'group_' + channel + '_enable');
-    }
-};
-
-PioneerDDJSB.fxButtonShifted = function(channel, control, value, status, group) {
-    var button = control - 0x63,
-        channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
-
-    if (value) {
-        if (button === 1) {
-            script.toggleControl(group, 'group_[Headphone]_enable');
-        } else {
-            script.toggleControl(group, 'group_' + channel + '_enable');
-        }
-    }
-};
-
-PioneerDDJSB.fxKnobShiftedMSB = function(channel, control, value, status) {
-    PioneerDDJSB.fxKnobShiftedMSB[channel - 4] = value;
-};
-
-PioneerDDJSB.fxKnobShiftedLSB = function(channel, control, value, status) {
-    var deck = channel - 4,
-        fullValue = (PioneerDDJSB.fxKnobShiftedMSB[deck] << 7) + value;
-
-    if (PioneerDDJSB.softTakeoverEmulation(deck, 4, PioneerDDJSB.fxKnobShiftedMSB[deck])) {
-        engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'super1', fullValue / 0x3FFF);
-    }
-};
-
-PioneerDDJSB.fxKnobMSB = function(channel, control, value, status) {
-    PioneerDDJSB.fxKnobMSB[channel - 4] = value;
-};
-
-PioneerDDJSB.fxKnobLSB = function(channel, control, value, status) {
-    var deck = channel - 4,
-        anyButtonPressed = false,
-        fullValue = (PioneerDDJSB.fxKnobMSB[deck] << 7) + value,
-        parameter;
-
-    for (parameter = 0; parameter < 3; parameter++) {
-        if (PioneerDDJSB.fxButtonPressed[deck][parameter]) {
-            anyButtonPressed = true;
-        }
-    }
-
-    if (!anyButtonPressed) {
-        if (PioneerDDJSB.softTakeoverEmulation(deck, 3, PioneerDDJSB.fxKnobMSB[deck])) {
-            engine.setValue('[EffectRack1_EffectUnit' + (deck + 1) + ']', 'mix', fullValue / 0x3FFF);
-        }
-    } else {
-        for (parameter = 0; parameter < 3; parameter++) {
-            if (PioneerDDJSB.fxButtonPressed[deck][parameter] && PioneerDDJSB.softTakeoverEmulation(deck, parameter, PioneerDDJSB.fxKnobMSB[deck])) {
-                engine.setParameter(
-                    '[EffectRack1_EffectUnit' + (deck + 1) + '_Effect1]',
-                    'parameter' + (parameter + 1),
-                    fullValue / 0x3FFF
-                );
+        components.Button.call(this);
+    };
+    this.EffectButton.prototype = new components.Button({
+        input: function(channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                this.isLongPressed = false;
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + this.buttonNumber + "]";
+                    script.toggleControl(effectGroup, "enabled");
+                    this.isLongPressed = true;
+                }, true);
+            } else {
+                if (!this.isLongPressed) {
+                    var focusedEffect = engine.getValue(eu.group, "focused_effect");
+                    if (focusedEffect === this.buttonNumber) {
+                        engine.setValue(eu.group, "focused_effect", 0);
+                    } else {
+                        engine.setValue(eu.group, "focused_effect", this.buttonNumber);
+                    }
+                }
+                this.isLongPressed = false;
+                engine.stopTimer(this.longPressTimer);
             }
+        },
+        outKey: "focused_effect",
+        output: function(value, _group, _control) {
+            this.send((value === this.buttonNumber) ? this.on : this.off);
+        },
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 28,
+    });
+
+    this.button = [];
+    for (var i = 1; i <= 3; i++) {
+        this.button[i] = new this.EffectButton(i);
+
+        var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + i + "]";
+        engine.softTakeover(effectGroup, "meta", true);
+        engine.softTakeover(eu.group, "mix", true);
+    }
+
+    this.knob = new components.Pot({
+        unshift: function() {
+            this.input = function(channel, control, value, _status) {
+                value = (this.MSB << 7) + value;
+
+                var focusedEffect = engine.getValue(eu.group, "focused_effect");
+                if (focusedEffect === 0) {
+                    engine.setParameter(eu.group, "mix", value / this.max);
+                } else {
+                    var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + focusedEffect + "]";
+                    engine.setParameter(effectGroup, "meta", value / this.max);
+                }
+            };
+        },
+    });
+
+    this.knobSoftTakeoverHandler = engine.makeConnection(eu.group, "focused_effect", function(value, _group, _control) {
+        if (value === 0) {
+            engine.softTakeoverIgnoreNextValue(eu.group, "mix");
+        } else {
+            var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + value + "]";
+            engine.softTakeoverIgnoreNextValue(effectGroup, "meta");
         }
-    }
-};
-
-PioneerDDJSB.softTakeoverEmulation = function(deck, index, currentValue) {
-    var deltaToActive = currentValue - PioneerDDJSB.fxParamsActiveValues[deck][index];
-
-    if (Math.abs(deltaToActive) < 15) {
-        PioneerDDJSB.fxParamsActiveValues[deck][index] = currentValue;
-        return true;
-    }
-    return false;
+    }.bind(this));
 };
