@@ -437,7 +437,7 @@ void DlgPrefMixer::slotResetToDefaults() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(sliderVal));
+    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
 
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
     radioButtonAdditive->setChecked(true);
@@ -728,7 +728,7 @@ void DlgPrefMixer::slotUpdate() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
+    SliderXFader->setValue(static_cast<int>(std::round(sliderVal)));
 
     m_xFaderMode = m_pConfig->getValueString(kXfaderModeKey).toInt();
     if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
@@ -903,12 +903,14 @@ void DlgPrefMixer::slotUpdateXFader() {
 
     // m_transform is in the range of 1 to 1000 while 50 % slider results
     // to ~2, which represents a medium rounded fader curve.
-    m_transform = RescalerUtils::linearToOneByX(
-                          SliderXFader->value(),
-                          SliderXFader->minimum(),
-                          SliderXFader->maximum(),
-                          EngineXfader::kTransformMax) -
+    double transform = RescalerUtils::linearToOneByX(
+                               SliderXFader->value(),
+                               SliderXFader->minimum(),
+                               SliderXFader->maximum(),
+                               EngineXfader::kTransformMax) -
             1 + EngineXfader::kTransformMin;
+    // Round to 4 decimal places to avoid round-trip offsets with default 1.0
+    m_transform = std::round(transform * 10000) / 10000;
     m_cal = EngineXfader::getPowerCalibration(m_transform);
 
     drawXfaderDisplay();
