@@ -42,6 +42,8 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
 EffectChainPresetPointer createEmptyChainPreset() {
     EffectManifestPointer pEmptyManifest(new EffectManifest());
     pEmptyManifest->setName(kNoEffectString);
+    // Center the Super knob, eliminates the colored (bipolar) knob ring
+    pEmptyManifest->setMetaknobDefault(0.5);
     // Required for the QuickEffect selector in DlgPrefEQ
     pEmptyManifest->setShortName(kNoEffectString);
     auto pEmptyChainPreset =
