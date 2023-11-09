@@ -1,4 +1,4 @@
-var PioneerDDJSB = function () {};
+var PioneerDDJSB = {};
 
 /*
     Find the latest code at https://github.com/jardiacaj/mixxx
@@ -38,7 +38,7 @@ PioneerDDJSB.jumpPreviewPosition = 0.5;
 ///////////////////////////////////////////////////////////////
 
 
-PioneerDDJSB.init = function (id) {
+PioneerDDJSB.init = function(id) {
     PioneerDDJSB.scratchSettings = {
         'alpha': 1.0 / 8,
         'beta': 1.0 / 8 / 32,
@@ -126,7 +126,7 @@ PioneerDDJSB.init = function (id) {
     PioneerDDJSB.initDeck('[Channel2]');
 };
 
-PioneerDDJSB.shutdown = function () {
+PioneerDDJSB.shutdown = function() {
     PioneerDDJSB.bindAllControlConnections(true);
     PioneerDDJSB.setAllSoftTakeover(true);
     PioneerDDJSB.bindDeckControlConnections('[Channel3]', true);
@@ -139,11 +139,11 @@ PioneerDDJSB.shutdown = function () {
 ///////////////////////////////////////////////////////////////
 
 
-PioneerDDJSB.bindSamplerControlConnections = function (samplerGroup, isUnbinding) {
+PioneerDDJSB.bindSamplerControlConnections = function(samplerGroup, isUnbinding) {
     engine.connectControl(samplerGroup, 'duration', 'PioneerDDJSB.samplerLeds', isUnbinding);
 };
 
-PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
+PioneerDDJSB.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     var i,
         index,
         controlsToFunctions = {
@@ -191,7 +191,7 @@ PioneerDDJSB.bindDeckControlConnections = function (channelGroup, isUnbinding) {
     }
 };
 
-PioneerDDJSB.bindNonDeckControlConnections = function (isUnbinding) {
+PioneerDDJSB.bindNonDeckControlConnections = function(isUnbinding) {
     var samplerIndex,
         fxUnitIndex;
 
@@ -204,7 +204,7 @@ PioneerDDJSB.bindNonDeckControlConnections = function (isUnbinding) {
     }
 };
 
-PioneerDDJSB.bindAllControlConnections = function (isUnbinding) {
+PioneerDDJSB.bindAllControlConnections = function(isUnbinding) {
     var samplerIndex,
         fxUnitIndex,
         channelIndex;
@@ -222,7 +222,7 @@ PioneerDDJSB.bindAllControlConnections = function (isUnbinding) {
     }
 };
 
-PioneerDDJSB.setDeckSoftTakeover = function (channel, isUnbinding) {
+PioneerDDJSB.setDeckSoftTakeover = function(channel, isUnbinding) {
     engine.softTakeover(channel, "volume", !isUnbinding);
     engine.softTakeover(channel, "rate", !isUnbinding);
     engine.softTakeover(channel, "pregain", !isUnbinding);
@@ -232,7 +232,7 @@ PioneerDDJSB.setDeckSoftTakeover = function (channel, isUnbinding) {
     engine.softTakeover("[QuickEffectRack1_" + channel + "]", "super1", !isUnbinding);
 };
 
-PioneerDDJSB.setAllSoftTakeover = function (isUnbinding) {
+PioneerDDJSB.setAllSoftTakeover = function(isUnbinding) {
     var channelIndex;
     for (channelIndex = 1; channelIndex <= 4; channelIndex++) {
         PioneerDDJSB.setDeckSoftTakeover('[Channel' + channelIndex + ']', isUnbinding);
@@ -249,13 +249,13 @@ PioneerDDJSB.deckSwitchTable = {
     '[Channel2]': '[Channel2]'
 };
 
-PioneerDDJSB.initDeck = function (group) {
+PioneerDDJSB.initDeck = function(group) {
     PioneerDDJSB.bindDeckControlConnections(group, false);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftKeyLock, PioneerDDJSB.channelGroups[group] > 1);
     PioneerDDJSB.triggerVinylLed(PioneerDDJSB.channelGroups[group]);
 };
 
-PioneerDDJSB.deckToggleButton = function (channel, control, value, status, group) {
+PioneerDDJSB.deckToggleButton = function(channel, control, value, status, group) {
     var deckNumber = PioneerDDJSB.channelGroups[PioneerDDJSB.deckSwitchTable[group]] + 1;
 
     if (value) {
@@ -287,11 +287,11 @@ PioneerDDJSB.highResMSB = {
     '[Channel4]': {}
 };
 
-PioneerDDJSB.tempoSliderMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.tempoSliderMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].tempoSlider = value;
 };
 
-PioneerDDJSB.tempoSliderLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.tempoSliderLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].tempoSlider << 7) + value;
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -300,11 +300,11 @@ PioneerDDJSB.tempoSliderLSB = function (channel, control, value, status, group) 
     );
 };
 
-PioneerDDJSB.gainKnobMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.gainKnobMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].gainKnob = value;
 };
 
-PioneerDDJSB.gainKnobLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.gainKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].gainKnob << 7) + value;
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -313,11 +313,11 @@ PioneerDDJSB.gainKnobLSB = function (channel, control, value, status, group) {
     );
 };
 
-PioneerDDJSB.filterHighKnobMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterHighKnobMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].filterHigh = value;
 };
 
-PioneerDDJSB.filterHighKnobLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterHighKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterHigh << 7) + value;
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -326,11 +326,11 @@ PioneerDDJSB.filterHighKnobLSB = function (channel, control, value, status, grou
     );
 };
 
-PioneerDDJSB.filterMidKnobMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterMidKnobMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].filterMid = value;
 };
 
-PioneerDDJSB.filterMidKnobLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterMidKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterMid << 7) + value;
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -339,11 +339,11 @@ PioneerDDJSB.filterMidKnobLSB = function (channel, control, value, status, group
     ;
 };
 
-PioneerDDJSB.filterLowKnobMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterLowKnobMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].filterLow = value;
 };
 
-PioneerDDJSB.filterLowKnobLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterLowKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterLow << 7) + value;
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -352,11 +352,11 @@ PioneerDDJSB.filterLowKnobLSB = function (channel, control, value, status, group
     );
 };
 
-PioneerDDJSB.deckFaderMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.deckFaderMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].deckFader = value;
 };
 
-PioneerDDJSB.deckFaderLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.deckFaderLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].deckFader << 7) + value;
     if (PioneerDDJSB.shiftPressed &&
         engine.getValue(PioneerDDJSB.deckSwitchTable[group], 'volume') === 0 &&
@@ -380,11 +380,11 @@ PioneerDDJSB.deckFaderLSB = function (channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'volume', fullValue / 0x3FFF);
 };
 
-PioneerDDJSB.filterKnobMSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterKnobMSB = function(channel, control, value, status, group) {
     PioneerDDJSB.highResMSB[group].filterKnob = value;
 };
 
-PioneerDDJSB.filterKnobLSB = function (channel, control, value, status, group) {
+PioneerDDJSB.filterKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterKnob << 7) + value;
     if (PioneerDDJSB.shiftPressed) {
         engine.setValue(
@@ -402,42 +402,42 @@ PioneerDDJSB.filterKnobLSB = function (channel, control, value, status, group) {
 //           SINGLE MESSAGE MIDI INPUT HANDLERS              //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB.shiftButton = function (channel, control, value, status, group) {
+PioneerDDJSB.shiftButton = function(channel, control, value, status, group) {
     PioneerDDJSB.shiftPressed = (value == 0x7F);
     for (index in PioneerDDJSB.chFaderStart) {
         PioneerDDJSB.chFaderStart[index] = null;
     }
 };
 
-PioneerDDJSB.playButton = function (channel, control, value, status, group) {
+PioneerDDJSB.playButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'play');
     }
 };
 
-PioneerDDJSB.headphoneCueButton = function (channel, control, value, status, group) {
+PioneerDDJSB.headphoneCueButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'pfl');
     }
 };
 
-PioneerDDJSB.hotCueButtons = function (channel, control, value, status, group) {
+PioneerDDJSB.hotCueButtons = function(channel, control, value, status, group) {
     var hotCueIndex = (control >= 0x40 ? control - 0x40 + 5 : control + 1);
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + hotCueIndex + '_activate', value);
 };
 
-PioneerDDJSB.clearHotCueButtons = function (channel, control, value, status, group) {
+PioneerDDJSB.clearHotCueButtons = function(channel, control, value, status, group) {
     var hotCueIndex = (control >= 0x48 ? control - 0x48 + 5 : control - 7);
     if (value) {
         engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'hotcue_' + hotCueIndex + '_clear', 1);
     }
 };
 
-PioneerDDJSB.cueButton = function (channel, control, value, status, group) {
+PioneerDDJSB.cueButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'cue_default', value);
 };
 
-PioneerDDJSB.beatloopButtons = function (channel, control, value, status, group) {
+PioneerDDJSB.beatloopButtons = function(channel, control, value, status, group) {
     var index = (control <= 0x13 ? control - 0x10 : control - 0x14);
     if (value) {
         engine.setValue(
@@ -448,7 +448,7 @@ PioneerDDJSB.beatloopButtons = function (channel, control, value, status, group)
     }
 };
 
-PioneerDDJSB.beatloopRollButtons = function (channel, control, value, status, group) {
+PioneerDDJSB.beatloopRollButtons = function(channel, control, value, status, group) {
     var index = (control <= 0x53 ? control - 0x50 : control - 0x54);
     engine.setValue(
         PioneerDDJSB.deckSwitchTable[group],
@@ -457,7 +457,7 @@ PioneerDDJSB.beatloopRollButtons = function (channel, control, value, status, gr
     );
 };
 
-PioneerDDJSB.vinylButton = function (channel, control, value, status, group) {
+PioneerDDJSB.vinylButton = function(channel, control, value, status, group) {
     if (PioneerDDJSB.invertVinylSlipButton) {
         PioneerDDJSB.toggleSlip(channel, control, value, status, group);
     } else {
@@ -465,7 +465,7 @@ PioneerDDJSB.vinylButton = function (channel, control, value, status, group) {
     }
 };
 
-PioneerDDJSB.slipButton = function (channel, control, value, status, group) {
+PioneerDDJSB.slipButton = function(channel, control, value, status, group) {
     if (PioneerDDJSB.invertVinylSlipButton) {
         PioneerDDJSB.toggleScratch(channel, control, value, status, group);
     } else {
@@ -473,91 +473,91 @@ PioneerDDJSB.slipButton = function (channel, control, value, status, group) {
     }
 };
 
-PioneerDDJSB.toggleSlip = function (channel, control, value, status, group) {
+PioneerDDJSB.toggleSlip = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'slip_enabled');
     }
 };
 
-PioneerDDJSB.keyLockButton = function (channel, control, value, status, group) {
+PioneerDDJSB.keyLockButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'keylock');
     }
 };
 
-PioneerDDJSB.loopInButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopInButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_in', value ? 1 : 0);
 };
 
-PioneerDDJSB.loopOutButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopOutButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_out', value ? 1 : 0);
 };
 
-PioneerDDJSB.loopExitButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopExitButton = function(channel, control, value, status, group) {
     if (value) {
         engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'reloop_exit', 1);
     }
 };
 
-PioneerDDJSB.loopHalveButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopHalveButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_halve', value ? 1 : 0);
 };
 
-PioneerDDJSB.loopDoubleButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopDoubleButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_double', value ? 1 : 0);
 };
 
-PioneerDDJSB.loopMoveBackButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopMoveBackButton = function(channel, control, value, status, group) {
     if (value) {
         engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_move', -1);
     }
 };
 
-PioneerDDJSB.loopMoveForwardButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loopMoveForwardButton = function(channel, control, value, status, group) {
     if (value) {
         engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'loop_move', 1);
     }
 };
 
-PioneerDDJSB.loadButton = function (channel, control, value, status, group) {
+PioneerDDJSB.loadButton = function(channel, control, value, status, group) {
     if (value) {
         engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'LoadSelectedTrack', 1);
     }
 };
 
-PioneerDDJSB.reverseRollButton = function (channel, control, value, status, group) {
+PioneerDDJSB.reverseRollButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'reverseroll', value);
 };
 
-PioneerDDJSB.brakeButton = function (channel, control, value, status, group) {
+PioneerDDJSB.brakeButton = function(channel, control, value, status, group) {
     script.brake(channel, control, value, status, PioneerDDJSB.deckSwitchTable[group]);
 };
 
-PioneerDDJSB.syncButton = function (channel, control, value, status, group) {
+PioneerDDJSB.syncButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'sync_enabled');
     }
 };
 
-PioneerDDJSB.quantizeButton = function (channel, control, value, status, group) {
+PioneerDDJSB.quantizeButton = function(channel, control, value, status, group) {
     if (value) {
         script.toggleControl(PioneerDDJSB.deckSwitchTable[group], 'quantize');
     }
 };
 
-PioneerDDJSB.lowKillButton = function (channel, control, value, status, group) {
+PioneerDDJSB.lowKillButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'filterLowKill', value ? 1 : 0);
 };
 
-PioneerDDJSB.midKillButton = function (channel, control, value, status, group) {
+PioneerDDJSB.midKillButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'filterMidKill', value ? 1 : 0);
 };
 
-PioneerDDJSB.highKillButton = function (channel, control, value, status, group) {
+PioneerDDJSB.highKillButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'filterHighKill', value ? 1 : 0);
 };
 
-PioneerDDJSB.muteButton = function (channel, control, value, status, group) {
+PioneerDDJSB.muteButton = function(channel, control, value, status, group) {
     engine.setValue(PioneerDDJSB.deckSwitchTable[group], 'mute', value);
 };
 
@@ -566,7 +566,7 @@ PioneerDDJSB.muteButton = function (channel, control, value, status, group) {
 //                          LED HELPERS                      //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB.deckConverter = function (group) {
+PioneerDDJSB.deckConverter = function(group) {
     var index;
 
     if (typeof group === "string") {
@@ -580,7 +580,7 @@ PioneerDDJSB.deckConverter = function (group) {
     return group % 2;
 };
 
-PioneerDDJSB.fxLedControl = function (deck, ledNumber, shift, active) {
+PioneerDDJSB.fxLedControl = function(deck, ledNumber, shift, active) {
     var fxLedsBaseChannel = 0x94,
         fxLedsBaseControl = (shift ? 0x63 : 0x47),
         midiChannelOffset = PioneerDDJSB.deckConverter(deck);
@@ -594,7 +594,7 @@ PioneerDDJSB.fxLedControl = function (deck, ledNumber, shift, active) {
     }
 };
 
-PioneerDDJSB.padLedControl = function (deck, groupNumber, shiftGroup, ledNumber, shift, active) {
+PioneerDDJSB.padLedControl = function(deck, groupNumber, shiftGroup, ledNumber, shift, active) {
     var padLedsBaseChannel = 0x97,
         padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + (+groupNumber) + (+ledNumber),
         midiChannelOffset = PioneerDDJSB.deckConverter(deck);
@@ -608,7 +608,7 @@ PioneerDDJSB.padLedControl = function (deck, groupNumber, shiftGroup, ledNumber,
     }
 };
 
-PioneerDDJSB.nonPadLedControl = function (deck, ledNumber, active) {
+PioneerDDJSB.nonPadLedControl = function(deck, ledNumber, active) {
     var nonPadLedsBaseChannel = 0x90,
         midiChannelOffset = PioneerDDJSB.deckConverter(deck);
 
@@ -626,7 +626,7 @@ PioneerDDJSB.nonPadLedControl = function (deck, ledNumber, active) {
 //                             LEDS                          //
 ///////////////////////////////////////////////////////////////
 
-PioneerDDJSB.fxLeds = function (value, group, control) {
+PioneerDDJSB.fxLeds = function(value, group, control) {
     var deck = PioneerDDJSB.fxGroups[group],
         ledNumber = PioneerDDJSB.fxControls[control];
 
@@ -634,72 +634,72 @@ PioneerDDJSB.fxLeds = function (value, group, control) {
     PioneerDDJSB.fxLedControl(deck, ledNumber, true, value);
 };
 
-PioneerDDJSB.headphoneCueLed = function (value, group, control) {
+PioneerDDJSB.headphoneCueLed = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.headphoneCue, value);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftHeadphoneCue, value);
 };
 
-PioneerDDJSB.keyLockLed = function (value, group, control) {
+PioneerDDJSB.keyLockLed = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.keyLock, value);
 };
 
-PioneerDDJSB.playLeds = function (value, group, control) {
+PioneerDDJSB.playLeds = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.play, value);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftPlay, value);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.cue, value);
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftCue, value);
 };
 
-PioneerDDJSB.slipLed = function (value, group, control) {
+PioneerDDJSB.slipLed = function(value, group, control) {
     var led = (PioneerDDJSB.invertVinylSlipButton ? PioneerDDJSB.nonPadLeds.vinyl : PioneerDDJSB.nonPadLeds.shiftVinyl);
     PioneerDDJSB.nonPadLedControl(group, led, value);
 };
 
-PioneerDDJSB.quantizeLed = function (value, group, control) {
+PioneerDDJSB.quantizeLed = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.shiftSync, value);
 };
 
-PioneerDDJSB.syncLed = function (value, group, control) {
+PioneerDDJSB.syncLed = function(value, group, control) {
     PioneerDDJSB.nonPadLedControl(group, PioneerDDJSB.nonPadLeds.sync, value);
 };
 
-PioneerDDJSB.loopInLed = function (value, group, control) {
+PioneerDDJSB.loopInLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, false, 0, false, value);
 };
 
-PioneerDDJSB.loopOutLed = function (value, group, control) {
+PioneerDDJSB.loopOutLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, false, 1, false, value);
 };
 
-PioneerDDJSB.loopExitLed = function (value, group, control) {
+PioneerDDJSB.loopExitLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, false, 2, false, value);
 };
 
-PioneerDDJSB.loopHalveLed = function (value, group, control) {
+PioneerDDJSB.loopHalveLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, false, 3, false, value);
 };
 
-PioneerDDJSB.loopDoubleLed = function (value, group, control) {
+PioneerDDJSB.loopDoubleLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, false, 3, true, value);
 };
 
-PioneerDDJSB.lowKillLed = function (value, group, control) {
+PioneerDDJSB.lowKillLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, true, 0, false, value);
 };
 
-PioneerDDJSB.midKillLed = function (value, group, control) {
+PioneerDDJSB.midKillLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, true, 1, false, value);
 };
 
-PioneerDDJSB.highKillLed = function (value, group, control) {
+PioneerDDJSB.highKillLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, true, 2, false, value);
 };
 
-PioneerDDJSB.muteLed = function (value, group, control) {
+PioneerDDJSB.muteLed = function(value, group, control) {
     PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.manualLoop, true, 3, false, value);
 };
 
-PioneerDDJSB.samplerLeds = function (value, group, control) {
+PioneerDDJSB.samplerLeds = function(value, group, control) {
     var sampler = PioneerDDJSB.samplerGroups[group],
         channel;
 
@@ -711,7 +711,7 @@ PioneerDDJSB.samplerLeds = function (value, group, control) {
     }
 };
 
-PioneerDDJSB.beatloopLeds = function (value, group, control) {
+PioneerDDJSB.beatloopLeds = function(value, group, control) {
     var index,
         padNum,
         shifted;
@@ -725,7 +725,7 @@ PioneerDDJSB.beatloopLeds = function (value, group, control) {
     }
 };
 
-PioneerDDJSB.beatlooprollLeds = function (value, group, control) {
+PioneerDDJSB.beatlooprollLeds = function(value, group, control) {
     var index,
         padNum,
         shifted;
@@ -739,7 +739,7 @@ PioneerDDJSB.beatlooprollLeds = function (value, group, control) {
     }
 };
 
-PioneerDDJSB.hotCueLeds = function (value, group, control) {
+PioneerDDJSB.hotCueLeds = function(value, group, control) {
     var shiftedGroup = false,
         padNum = null,
         hotCueNum;
@@ -760,23 +760,23 @@ PioneerDDJSB.hotCueLeds = function (value, group, control) {
 ///////////////////////////////////////////////////////////////
 
 // Work out the jog-wheel change / delta
-PioneerDDJSB.getJogWheelDelta = function (value) {
+PioneerDDJSB.getJogWheelDelta = function(value) {
     // The Wheel control centers on 0x40; find out how much it's moved by.
     return value - 0x40;
 };
 
-PioneerDDJSB.jogRingTick = function (channel, control, value, status, group) {
+PioneerDDJSB.jogRingTick = function(channel, control, value, status, group) {
     PioneerDDJSB.pitchBendFromJog(PioneerDDJSB.deckSwitchTable[group], PioneerDDJSB.getJogWheelDelta(value));
 };
 
-PioneerDDJSB.jogRingTickShift = function (channel, control, value, status, group) {
+PioneerDDJSB.jogRingTickShift = function(channel, control, value, status, group) {
     PioneerDDJSB.pitchBendFromJog(
         PioneerDDJSB.deckSwitchTable[group],
         PioneerDDJSB.getJogWheelDelta(value) * PioneerDDJSB.jogwheelShiftMultiplier
     );
 };
 
-PioneerDDJSB.jogPlatterTick = function (channel, control, value, status, group) {
+PioneerDDJSB.jogPlatterTick = function(channel, control, value, status, group) {
     var deck = PioneerDDJSB.channelGroups[PioneerDDJSB.deckSwitchTable[group]];
     if (PioneerDDJSB.scratchMode[deck]) {
         engine.scratchTick(deck + 1, PioneerDDJSB.getJogWheelDelta(value));
@@ -785,7 +785,7 @@ PioneerDDJSB.jogPlatterTick = function (channel, control, value, status, group) 
     }
 };
 
-PioneerDDJSB.jogPlatterTickShift = function (channel, control, value, status, group) {
+PioneerDDJSB.jogPlatterTickShift = function(channel, control, value, status, group) {
     var deck = PioneerDDJSB.channelGroups[PioneerDDJSB.deckSwitchTable[group]];
     if (PioneerDDJSB.scratchMode[deck]) {
         engine.scratchTick(deck + 1, PioneerDDJSB.getJogWheelDelta(value));
@@ -797,7 +797,7 @@ PioneerDDJSB.jogPlatterTickShift = function (channel, control, value, status, gr
     }
 };
 
-PioneerDDJSB.jogTouch = function (channel, control, value, status, group) {
+PioneerDDJSB.jogTouch = function(channel, control, value, status, group) {
     var deck = PioneerDDJSB.channelGroups[PioneerDDJSB.deckSwitchTable[group]];
     if (PioneerDDJSB.scratchMode[deck]) {
         if (value) {
@@ -815,7 +815,7 @@ PioneerDDJSB.jogTouch = function (channel, control, value, status, group) {
     }
 };
 
-PioneerDDJSB.toggleScratch = function (channel, control, value, status, group) {
+PioneerDDJSB.toggleScratch = function(channel, control, value, status, group) {
     var deck = PioneerDDJSB.channelGroups[PioneerDDJSB.deckSwitchTable[group]];
     if (value) {
         PioneerDDJSB.scratchMode[deck] = !PioneerDDJSB.scratchMode[deck];
@@ -826,12 +826,12 @@ PioneerDDJSB.toggleScratch = function (channel, control, value, status, group) {
     }
 };
 
-PioneerDDJSB.triggerVinylLed = function (deck) {
+PioneerDDJSB.triggerVinylLed = function(deck) {
     var led = (PioneerDDJSB.invertVinylSlipButton ? PioneerDDJSB.nonPadLeds.shiftVinyl : PioneerDDJSB.nonPadLeds.vinyl);
     PioneerDDJSB.nonPadLedControl(deck % 2, led, PioneerDDJSB.scratchMode[deck]);
 };
 
-PioneerDDJSB.pitchBendFromJog = function (channel, movement) {
+PioneerDDJSB.pitchBendFromJog = function(channel, movement) {
     var group = (typeof channel === "string" ? channel : '[Channel' + channel + 1 + ']');
     engine.setValue(group, 'jog', movement / 5 * PioneerDDJSB.jogwheelSensitivity);
 };
@@ -844,7 +844,7 @@ PioneerDDJSB.pitchBendFromJog = function (channel, movement) {
 
 PioneerDDJSB.rotarySelectorChanged = false;
 
-PioneerDDJSB.getRotaryDelta = function (value) {
+PioneerDDJSB.getRotaryDelta = function(value) {
     var delta = 0x40 - Math.abs(0x40 - value),
         isCounterClockwise = value > 0x40;
 
@@ -854,21 +854,21 @@ PioneerDDJSB.getRotaryDelta = function (value) {
     return delta;
 };
 
-PioneerDDJSB.rotarySelector = function (channel, control, value, status) {
+PioneerDDJSB.rotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSB.getRotaryDelta(value);
     engine.setValue('[Playlist]', 'SelectTrackKnob', delta);
 
     PioneerDDJSB.rotarySelectorChanged = true;
 };
 
-PioneerDDJSB.shiftedRotarySelector = function (channel, control, value, status) {
+PioneerDDJSB.shiftedRotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSB.getRotaryDelta(value),
         f = (delta > 0 ? 'SelectNextPlaylist' : 'SelectPrevPlaylist');
 
     engine.setValue('[Playlist]', f, Math.abs(delta));
 };
 
-PioneerDDJSB.rotarySelectorClick = function (channel, control, value, _status) {
+PioneerDDJSB.rotarySelectorClick = function(channel, control, value, _status) {
     if (PioneerDDJSB.rotarySelectorChanged === true) {
         if (value) {
             engine.setValue('[PreviewDeck1]', 'LoadSelectedTrackAndPlay', true);
@@ -887,7 +887,7 @@ PioneerDDJSB.rotarySelectorClick = function (channel, control, value, _status) {
     }
 };
 
-PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, _status) {
+PioneerDDJSB.rotarySelectorShiftedClick = function(channel, control, value, _status) {
     if (value) {
         engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1);
     }
@@ -901,7 +901,7 @@ PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, _st
 PioneerDDJSB.fxKnobMSB = [0, 0];
 PioneerDDJSB.fxKnobShiftedMSB = [0, 0];
 
-PioneerDDJSB.fxButton = function (channel, control, value, status, group) {
+PioneerDDJSB.fxButton = function(channel, control, value, status, group) {
     var deck = channel - 4,
         button = control - 0x47,
         channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
@@ -915,7 +915,7 @@ PioneerDDJSB.fxButton = function (channel, control, value, status, group) {
     }
 };
 
-PioneerDDJSB.fxButtonShifted = function (channel, control, value, status, group) {
+PioneerDDJSB.fxButtonShifted = function(channel, control, value, status, group) {
     var button = control - 0x63,
         channel = PioneerDDJSB.deckSwitchTable['[Channel' + (button === 0 ? 1 : 2) + ']'];
 
@@ -928,11 +928,11 @@ PioneerDDJSB.fxButtonShifted = function (channel, control, value, status, group)
     }
 };
 
-PioneerDDJSB.fxKnobShiftedMSB = function (channel, control, value, status) {
+PioneerDDJSB.fxKnobShiftedMSB = function(channel, control, value, status) {
     PioneerDDJSB.fxKnobShiftedMSB[channel - 4] = value;
 };
 
-PioneerDDJSB.fxKnobShiftedLSB = function (channel, control, value, status) {
+PioneerDDJSB.fxKnobShiftedLSB = function(channel, control, value, status) {
     var deck = channel - 4,
         fullValue = (PioneerDDJSB.fxKnobShiftedMSB[deck] << 7) + value;
 
@@ -941,11 +941,11 @@ PioneerDDJSB.fxKnobShiftedLSB = function (channel, control, value, status) {
     }
 };
 
-PioneerDDJSB.fxKnobMSB = function (channel, control, value, status) {
+PioneerDDJSB.fxKnobMSB = function(channel, control, value, status) {
     PioneerDDJSB.fxKnobMSB[channel - 4] = value;
 };
 
-PioneerDDJSB.fxKnobLSB = function (channel, control, value, status) {
+PioneerDDJSB.fxKnobLSB = function(channel, control, value, status) {
     var deck = channel - 4,
         anyButtonPressed = false,
         fullValue = (PioneerDDJSB.fxKnobMSB[deck] << 7) + value,
@@ -974,7 +974,7 @@ PioneerDDJSB.fxKnobLSB = function (channel, control, value, status) {
     }
 };
 
-PioneerDDJSB.softTakeoverEmulation = function (deck, index, currentValue) {
+PioneerDDJSB.softTakeoverEmulation = function(deck, index, currentValue) {
     var deltaToActive = currentValue - PioneerDDJSB.fxParamsActiveValues[deck][index];
 
     if (Math.abs(deltaToActive) < 15) {
