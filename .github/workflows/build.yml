@@ -136,7 +136,7 @@ jobs:
       SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: 2C2B5D3EDCE82BA55E22E9A67F16F8D03E390870
-      MACOS_CODESIGN_OPENSSL_PASSWORD: ${{ secrets.MACOS_CODESIGN_OPENSSL_PASSWORD }}
+      MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
       MACOS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_PASSWORD }}
 
     runs-on: ${{ matrix.os }}
@@ -221,13 +221,10 @@ jobs:
 
       - name: "[macOS] Import Apple code signing identity"
         id: apple_codesign
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
         run: |
-          # Decrypt the certificate
-          openssl enc -aes-256-cbc -d -md sha512 \
-            -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
-            -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
-            -out ~/certificate.p12
+          # Decode the certificate
+          echo "${{ env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}" | base64 -d -o ~/certificate.p12
 
           # Create a temporary keychain for the certificate and import it.
           security create-keychain -p mixxx Mixxx.keychain
@@ -377,17 +374,16 @@ jobs:
         working-directory: build
 
       - name: "[macOS] Sign, Notarize, and Staple Package"
-        if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
+        if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
         # TODO: This timeout may be a bit too conservative under some
         # circumstances. Feel free to increase the timeout once the
         # notarization step is fixed.
         timeout-minutes: 5
         env:
-          APPLE_ID_USERNAME: rryan@mixxx.org
-          APPLE_BUNDLE_ID: org.mixxx.mixxx
+          APPLE_ID_USERNAME: daschuer@mixxx.org
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
-          ASC_PROVIDER: FLYL4D545V
+          APPLE_TEAM_ID: JBLRSP95FC
 
       - name: "[Windows] Sign Package"
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
