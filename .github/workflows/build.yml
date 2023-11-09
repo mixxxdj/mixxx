@@ -381,9 +381,9 @@ jobs:
         # notarization step is fixed.
         timeout-minutes: 5
         env:
-          APPLE_ID_USERNAME: rryan@mixxx.org
+          APPLE_ID_USERNAME: daschuer@mixxx.org
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
-          APPLE_TEAM_ID: FLYL4D545V
+          APPLE_TEAM_ID: JBLRSP95FC
 
       - name: "[Windows] Sign Package"
         if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
