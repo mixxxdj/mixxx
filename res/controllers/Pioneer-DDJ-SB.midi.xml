@@ -237,15 +237,6 @@
                 </options>
             </control>
             <control>
-                <group>[PreviewDeck1]</group>
-                <key>play</key>
-                <status>0x96</status>
-                <midino>0x66</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>PioneerDDJSB.fxButtonShifted</key>
                 <status>0x95</status>
@@ -858,21 +849,12 @@
                 </options>
             </control>
             <control>
-                <group>[Playlist]</group>
+                <group>[PreviewDeck1]</group>
                 <key>PioneerDDJSB.rotarySelectorClick</key>
                 <status>0x96</status>
                 <midino>0x41</midino>
                 <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[PreviewDeck1]</group>
-                <key>LoadSelectedTrackAndPlay</key>
-                <status>0x96</status>
-                <midino>0x41</midino>
-                <options>
-                    <normal/>
+                    <script-binding />
                 </options>
             </control>
             <control>

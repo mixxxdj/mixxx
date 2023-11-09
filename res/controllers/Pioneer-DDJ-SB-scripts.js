@@ -28,6 +28,11 @@ PioneerDDJSB.jogwheelSensitivity = 1.0;
 // Set to 1 to disable jogwheel sensitivity increase when holding shift.
 PioneerDDJSB.jogwheelShiftMultiplier = 20;
 
+// If true, releasing browser knob jumps forward to jumpPreviewPosition.
+PioneerDDJSB.jumpPreviewEnabled = true;
+// Position in the track to jump to. 0 is the beginning of the track and 1 is the end.
+PioneerDDJSB.jumpPreviewPosition = 0.5;
+
 ///////////////////////////////////////////////////////////////
 //                      INIT & SHUTDOWN                      //
 ///////////////////////////////////////////////////////////////
@@ -837,6 +842,8 @@ PioneerDDJSB.pitchBendFromJog = function (channel, movement) {
 ///////////////////////////////////////////////////////////////
 // Handles the rotary selector for choosing tracks, library items, crates, etc.
 
+PioneerDDJSB.rotarySelectorChanged = false;
+
 PioneerDDJSB.getRotaryDelta = function (value) {
     var delta = 0x40 - Math.abs(0x40 - value),
         isCounterClockwise = value > 0x40;
@@ -850,6 +857,8 @@ PioneerDDJSB.getRotaryDelta = function (value) {
 PioneerDDJSB.rotarySelector = function (channel, control, value, status) {
     var delta = PioneerDDJSB.getRotaryDelta(value);
     engine.setValue('[Playlist]', 'SelectTrackKnob', delta);
+
+    PioneerDDJSB.rotarySelectorChanged = true;
 };
 
 PioneerDDJSB.shiftedRotarySelector = function (channel, control, value, status) {
@@ -859,7 +868,26 @@ PioneerDDJSB.shiftedRotarySelector = function (channel, control, value, status) 
     engine.setValue('[Playlist]', f, Math.abs(delta));
 };
 
-PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, status) {
+PioneerDDJSB.rotarySelectorClick = function (channel, control, value, _status) {
+    if (PioneerDDJSB.rotarySelectorChanged === true) {
+        if (value) {
+            engine.setValue('[PreviewDeck1]', 'LoadSelectedTrackAndPlay', true);
+        } else {
+            if (PioneerDDJSB.jumpPreviewEnabled) {
+                engine.setValue('[PreviewDeck1]', 'playposition', PioneerDDJSB.jumpPreviewPosition);
+            }
+            PioneerDDJSB.rotarySelectorChanged = false;
+        }
+    } else {
+        if (value) {
+            engine.setValue('[PreviewDeck1]', 'stop', 1);
+        } else {
+            PioneerDDJSB.rotarySelectorChanged = true;
+        }
+    }
+};
+
+PioneerDDJSB.rotarySelectorShiftedClick = function (channel, control, value, _status) {
     if (value) {
         engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1);
     }
