@@ -27,7 +27,8 @@ EffectsManager::EffectsManager(
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey(kMixerProfile, kLowEqFrequency), 0., 22040),
-          m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040) {
+          m_hiEqFreq(ConfigKey(kMixerProfile, kHighEqFrequency), 0., 22040),
+          m_initializedFromEffectsXml(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
@@ -72,6 +73,12 @@ void EffectsManager::setup() {
     addStandardEffectChains();
     addOutputEffectChain();
     // EQ and QuickEffect chain slots are initialized when PlayerManager creates decks.
+    // Now read effects.xml to load defaults or restore previous states of standard
+    // effect chains and QuickEffect chain, though only for decks that have been
+    // created by now. For decks added later on see addDeck().
+    // Note: flip this bool now so any deck potentially being added while
+    // readEffectsXml() is running is also initialized.
+    m_initializedFromEffectsXml = true;
     readEffectsXml();
 }
 
@@ -131,6 +138,12 @@ EffectChainPointer EffectsManager::getStandardEffectChain(int unitNumber) const 
 void EffectsManager::addDeck(const ChannelHandleAndGroup& deckHandleGroup) {
     addEqualizerEffectChain(deckHandleGroup);
     addQuickEffectChain(deckHandleGroup);
+    // If a deck is added after setup() was run we need to read effects.xml
+    // again to initialize its QuickEffect chain, either with defaults or the
+    // previous state.
+    if (m_initializedFromEffectsXml) {
+        readEffectsXmlSingleDeck(deckHandleGroup.m_name);
+    }
 }
 
 void EffectsManager::addEqualizerEffectChain(const ChannelHandleAndGroup& deckHandleGroup) {
@@ -200,6 +213,25 @@ void EffectsManager::readEffectsXml() {
     }
 
     m_pVisibleEffectsList->readEffectsXml(doc, m_pBackendManager);
+}
+
+void EffectsManager::readEffectsXmlSingleDeck(const QString& deckGroup) {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
+    QDomDocument doc;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        doc.setContent(&file);
+    }
+    file.close();
+
+    EffectChainPresetPointer pQuickEffectChainPreset =
+            m_pChainPresetManager->readEffectsXmlSingleDeck(doc, deckGroup);
+
+    auto pQuickEffectChainSlot = m_quickEffectChains.value(deckGroup);
+    if (pQuickEffectChainSlot) {
+        pQuickEffectChainSlot->loadChainPreset(pQuickEffectChainPreset);
+    }
 }
 
 void EffectsManager::saveEffectsXml() {
