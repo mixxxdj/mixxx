@@ -28,6 +28,8 @@ class EffectsManager {
     void setup();
     void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
 
+    void loadDefaultEqsAndQuickEffects();
+
     EffectChainPointer getEffectChain(const QString& group) const;
     EqualizerEffectChainPointer getEqualizerEffectChain(
             const QString& deckGroupName) const {

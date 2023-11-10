@@ -7,8 +7,6 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "effects/backends/builtin/biquadfullkilleqeffect.h"
-#include "effects/backends/builtin/filtereffect.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectknobparameterslot.h"
@@ -30,9 +28,6 @@ const ConfigKey kEqsOnlyKey = ConfigKey(kMixerProfile, QStringLiteral("EQsOnly")
 const ConfigKey kSingleEqKey = ConfigKey(kMixerProfile, QStringLiteral("SingleEQEffect"));
 const ConfigKey kEqAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("EqAutoReset"));
 const ConfigKey kGainAutoResetKey = ConfigKey(kMixerProfile, QStringLiteral("GainAutoReset"));
-const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
-        EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
-const QString kDefaultQuickEffectChainName = FilterEffect::getManifest()->name();
 const QString kDefaultMainEqId = QString();
 
 const ConfigKey kHighEqFreqKey = ConfigKey(kMixerProfile, kHighEqFrequency);
@@ -464,15 +459,8 @@ void DlgPrefMixer::slotResetToDefaults() {
     radioButtonAdditive->setChecked(true);
     checkBoxReverse->setChecked(false);
 
-    // EQ //////////////////////////////////
-    for (const auto& pBox : std::as_const(m_deckEqEffectSelectors)) {
-        pBox->setCurrentIndex(
-                pBox->findData(kDefaultEqId));
-    }
-    for (const auto& pBox : std::as_const(m_deckQuickEffectSelectors)) {
-        pBox->setCurrentIndex(
-                pBox->findText(kDefaultQuickEffectChainName));
-    }
+    // EQ & QuickEffects //////////////////////////////////
+    m_pEffectsManager->loadDefaultEqsAndQuickEffects();
     CheckBoxBypass->setChecked(false);
     CheckBoxEqOnly->setChecked(true);
     CheckBoxSingleEqEffect->setChecked(true);

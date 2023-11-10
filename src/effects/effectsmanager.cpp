@@ -172,6 +172,27 @@ void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandle
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
+void EffectsManager::loadDefaultEqsAndQuickEffects() {
+    auto pDefaultEqEffect = m_pChainPresetManager->getDefaultEqEffect();
+    for (auto it = m_equalizerEffectChains.begin();
+            it != m_equalizerEffectChains.end();
+            it++) {
+        auto pEqChainSlot = it.value();
+        const auto pEqEffectSlot = pEqChainSlot->getEffectSlot(0);
+        VERIFY_OR_DEBUG_ASSERT(pEqEffectSlot) {
+            return;
+        }
+        pEqEffectSlot->loadEffectWithDefaults(pDefaultEqEffect);
+    }
+
+    auto pDefaultQuickEffectPreset =
+            m_pChainPresetManager->getDefaultQuickEffectPreset();
+    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
+        auto pChainSlot = it.value();
+        pChainSlot->loadChainPreset(pDefaultQuickEffectPreset);
+    }
+}
+
 EffectChainPointer EffectsManager::getEffectChain(
         const QString& group) const {
     return m_effectChainSlotsByGroup.value(group);
