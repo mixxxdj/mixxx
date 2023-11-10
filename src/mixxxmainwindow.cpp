@@ -37,6 +37,7 @@
 #include "database/mixxxdb.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/parser.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
@@ -415,9 +416,12 @@ void MixxxMainWindow::initialize() {
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
 
-    // Import playlist if passed to cmd line args
-    const QString playlistFile = CmdlineArgs::Instance().getPlaylistFilePath();
-    m_pCoreServices->getLibrary()->importPlaylistFromFile(playlistFile);
+    // Import playlist if passed in args.qlMusicFiles (command line arguments)
+    const QList<QString>& musicFiles = CmdlineArgs::Instance().getMusicFiles();
+    for (int i = 0; i < musicFiles.count(); ++i) {
+        if (Parser::isPlaylistFilenameSupported(musicFiles.at(i)))
+            m_pCoreServices->getLibrary()->importPlaylistFromFile(musicFiles.at(i));
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
