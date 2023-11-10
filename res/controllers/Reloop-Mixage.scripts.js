@@ -1,6 +1,6 @@
 // Name: Reloop Mixage
 // Author: HorstBaerbel / gqzomer
-// Version: 1.1.0 requires Mixxx 2.4 or higher
+// Version: 1.1.1 requires Mixxx 2.4 or higher
 
 var Mixage = {};
 
@@ -8,9 +8,6 @@ var Mixage = {};
 Mixage.scratchByWheelTouch = false; // Set to true to scratch by touching the jog wheel instead of having to toggle the disc button. Default is false
 Mixage.scratchTicksPerRevolution = 620; // Number of jog wheel ticks that make a full revolution when scratching. Reduce to "scratch more" of the track, increase to "scratch less". Default is 620 (measured)
 Mixage.jogWheelScrollSpeed = 1.0; // Scroll speed when the jog wheel is used to scroll through the track. The higher, the faster. Default is 1.0
-Mixage.autoMaximizeLibrary = false; // Set to true to automatically max- and minimize the library when the browse button is used. Default is false
-Mixage.libraryHideTimeout = 4000; // Time in ms after which the library will automatically minimized. Default is 4000
-Mixage.libraryReducedHideTimeout = 500; // Time in ms after which the library will be minimized after loading a song into a deck. Default is 500
 
 // ----- Internal variables (don't touch) -----
 
@@ -21,8 +18,6 @@ Mixage.fxOnConnection = [];
 Mixage.fxSelectConnection = [];
 
 // timers
-Mixage.libraryHideTimer = 0;
-Mixage.libraryRemainingTime = 0;
 Mixage.traxxPressTimer = 0;
 Mixage.loopLengthPressTimer = 0;
 Mixage.dryWetPressTimer = 0;
@@ -183,7 +178,7 @@ Mixage.init = function(_id, _debugging) {
 
         // make connections for status LEDs
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
-        Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() {  Mixage.toggleReloopLED(channel); }));
+        Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() { Mixage.toggleReloopLED(channel); }));
         Mixage.fxSelectConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
 
         // get current status and set LEDs accordingly
@@ -238,6 +233,8 @@ Mixage.toggleReloopLED = function(group) {
 
         if (engine.getValue(group, "loop_start_position") !== -1 && engine.getValue(group, "loop_end_position") !== -1) {
             Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 1000);
+        } else {
+            Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 0);
         }
     } else {
         Mixage.blinkLED(Mixage.ledMap[group].reloop, group, 0);
@@ -377,46 +374,10 @@ Mixage.handleFxSelect = function(value, group) {
     }
 };
 
-// Set the library visible and hide it when libraryHideTimeOut is reached
-Mixage.setLibraryMaximized = function(visible) {
-    if (visible === true) {
-        Mixage.libraryRemainingTime = Mixage.libraryHideTimeout;
-        // maximize library if not maximized already
-        if (engine.getValue("[Master]", "maximize_library") !== true) {
-            engine.setValue("[Master]", "maximize_library", true);
-            if (Mixage.libraryHideTimer === 0) {
-                // timer not running. start it
-                Mixage.libraryHideTimer = engine.beginTimer(Mixage.libraryHideTimeout / 5, Mixage.libraryCheckTimeout());
-            }
-        }
-    } else {
-        if (Mixage.libraryHideTimer !== 0) {
-            engine.stopTimer(Mixage.libraryHideTimer);
-            Mixage.libraryHideTimer = 0;
-        }
-        Mixage.libraryRemainingTime = 0;
-        engine.setValue("[Master]", "maximize_library", false);
-    }
-};
-
-// hides the library after a given period of inactivity
-Mixage.libraryCheckTimeout = function() {
-    Mixage.libraryRemainingTime -= Mixage.libraryHideTimeout / 5;
-    if (Mixage.libraryRemainingTime <= 0) {
-        engine.stopTimer(Mixage.libraryHideTimer);
-        Mixage.libraryHideTimer = 0;
-        Mixage.libraryRemainingTime = 0;
-        engine.setValue("[Master]", "maximize_library", false);
-    }
-};
-
 // Callback function for handleTraxPress
 // previews a track on a quick press and maximize/minimize the library on double press
 Mixage.TraxPressCallback = function(_channel, _control, _value, _status, group, event) {
     if (event === QUICK_PRESS) {
-        if (Mixage.autoMaximizeLibrary) {
-            Mixage.setLibraryMaximized(true);
-        }
         if (engine.getValue("[PreviewDeck1]", "play")) {
             engine.setValue("[PreviewDeck1]", "stop", true);
         } else {
@@ -547,17 +508,16 @@ Mixage.handleTraxPress = function(channel, control, value, status, group) {
     }
 };
 
-// Handles turning of the Traxx button
-Mixage.handleTraxTurn = function(_channel, control, value, _status, _group) {
+// select track when turning the Traxx button
+Mixage.selectTrack = function(_channel, _control, value, _status, _group) {
     var diff = value - 64; // 0x40 (64) centered control
-    if (Mixage.autoMaximizeLibrary) {
-        Mixage.setLibraryMaximized(true);
-    }
-    if (control === 0x5E) { // was shift pressed?
-        engine.setValue("[Playlist]", "SelectPlaylist", diff);
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", diff);
-    }
+    engine.setValue("[Playlist]", "SelectTrackKnob", diff);
+};
+
+// select playlist when turning the Traxx button
+Mixage.selectPlaylist = function(_channel, _control, value, _status, _group) {
+    var diff = value - 64; // 0x40 (64) centered control
+    engine.setValue("[Playlist]", "SelectPlaylist", diff);
 };
 
 // Stops a preview that might be playing and loads the selected track regardless
@@ -565,7 +525,6 @@ Mixage.handleTrackLoading = function(_channel, _control, value, _status, group) 
     if (value === DOWN) {
         engine.setValue("[PreviewDeck1]", "stop", true);
         engine.setValue(group, "LoadSelectedTrack", true);
-        Mixage.libraryRemainingTime = Mixage.libraryReducedHideTimeout;
     }
 };
 

@@ -1173,8 +1173,8 @@
       </control>
       <!-- T20_TURN = Trax Encoder -->
       <control>
-        <group>[Library]</group>
-        <key>Mixage.handleTraxTurn</key>
+        <group>[Playlist]</group>
+        <key>Mixage.selectTrack</key>
         <status>0xB0</status>
         <midino>0x1F</midino>
         <options>
@@ -1183,8 +1183,8 @@
       </control>
       <!-- T20_TURN_SHIFT = Folder Navigation -->
       <control>
-        <group>[Library]</group>
-        <key>Mixage.handleTraxTurn</key>
+        <group>[Playlist]</group>
+        <key>Mixage.selectPlaylist</key>
         <status>0xB0</status>
         <midino>0x5E</midino>
         <options>
