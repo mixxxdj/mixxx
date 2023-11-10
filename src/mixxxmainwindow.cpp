@@ -414,6 +414,10 @@ void MixxxMainWindow::initialize() {
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
+
+    // Import playlist if passed to cmd line args
+    const QString playlistFile = CmdlineArgs::Instance().getPlaylistFilePath();
+    m_pCoreServices->getLibrary()->importPlaylistFromFile(playlistFile);
 }
 
 MixxxMainWindow::~MixxxMainWindow() {

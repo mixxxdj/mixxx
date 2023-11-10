@@ -103,6 +103,8 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
 
+    void importPlaylistFromFile(QString playlistFile);
+
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
 #endif

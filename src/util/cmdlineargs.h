@@ -73,6 +73,10 @@ class CmdlineArgs final {
         return m_scaleFactor;
     }
 
+    const QString& getPlaylistFilePath() const {
+        return m_playlistFilePath;
+    }
+
   private:
     enum class ParseMode {
         Initial,
@@ -103,4 +107,5 @@ class CmdlineArgs final {
     QString m_settingsPath;
     QString m_resourcePath;
     QString m_timelinePath;
+    QString m_playlistFilePath;
 };
