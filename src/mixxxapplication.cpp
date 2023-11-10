@@ -17,6 +17,7 @@
 #include "util/color/rgbcolor.h"
 #include "util/fileinfo.h"
 #include "util/math.h"
+#include "waveform/waveformwidgetfactory.h"
 
 // When linking Qt statically, the Q_IMPORT_PLUGIN is needed for each linked plugin.
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
@@ -179,3 +180,11 @@ bool MixxxApplication::touchIsRightButton() {
     return m_pTouchShift->toBool();
 }
 #endif
+
+bool MixxxApplication::hasTimeSensitiveEvents() const {
+    return WaveformWidgetFactory::instance()->hasPendingTimeSensitiveEvents();
+}
+
+void MixxxApplication::processTimeSensitiveEvents() {
+    QCoreApplication::sendPostedEvents(WaveformWidgetFactory::instance());
+}

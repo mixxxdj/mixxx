@@ -141,6 +141,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
+    bool hasPendingTimeSensitiveEvents() const;
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);

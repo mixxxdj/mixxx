@@ -3,13 +3,13 @@
 #include <QPainter>
 #include <QTableView>
 
+#include "mixxxapplication.h"
 #include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"
 #include "widget/wtracktableview.h"
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
-        : QStyledItemDelegate(pTableView),
-          m_pTableView(pTableView) {
+        : DefaultDelegate(pTableView) {
     DEBUG_ASSERT(m_pTableView);
     auto* pTrackTableView = qobject_cast<WTrackTableView*>(m_pTableView);
     if (pTrackTableView) {
@@ -21,6 +21,8 @@ void TableItemDelegate::paint(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
+    processTimeSensitiveEvents(painter);
+
     PainterScope painterScope(painter);
     painter->setClipRect(option.rect);
 
@@ -78,5 +80,5 @@ void TableItemDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    QStyledItemDelegate::paint(painter, option, index);
+    DefaultDelegate::paint(painter, option, index);
 }

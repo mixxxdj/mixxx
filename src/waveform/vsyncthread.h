@@ -41,6 +41,19 @@ class VSyncThread : public QThread {
     int getSyncIntervalTimeMicros() const {
         return m_syncIntervalTimeMicros;
     }
+    bool hasPendingRender() const {
+        return m_hasPendingRender.load();
+    }
+    bool hasPendingSwap() const {
+        return m_hasPendingSwap.load();
+    }
+
+    void setHasPendingRender(bool value) {
+        m_hasPendingRender.store(value);
+    }
+    void setHasPendingSwap(bool value) {
+        m_hasPendingSwap.store(value);
+    }
   signals:
     void vsyncRender();
     void vsyncSwap();
@@ -59,4 +72,6 @@ class VSyncThread : public QThread {
     double m_displayFrameRate;
     int m_vSyncPerRendering;
     mixxx::Duration m_sinceLastSwap;
+    std::atomic<bool> m_hasPendingRender{};
+    std::atomic<bool> m_hasPendingSwap{};
 };

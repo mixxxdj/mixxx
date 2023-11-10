@@ -847,6 +847,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
   src/library/dao/trackschema.cpp
+  src/library/defaultdelegate.cpp
   src/library/dlganalysis.cpp
   src/library/dlganalysis.ui
   src/library/dlgcoverartfullsize.cpp
@@ -1128,6 +1129,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/visualplayposition.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
+  src/waveform/waveformwidgetfactory.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1404,7 +1406,6 @@ else()
     src/waveform/visualsmanager.cpp
     src/waveform/vsyncthread.cpp
     src/waveform/waveformmarklabel.cpp
-    src/waveform/waveformwidgetfactory.cpp
     src/waveform/widgets/emptywaveformwidget.cpp
     src/waveform/widgets/glrgbwaveformwidget.cpp
     src/waveform/widgets/glsimplewaveformwidget.cpp

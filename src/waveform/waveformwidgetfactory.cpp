@@ -708,6 +708,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
+    m_vsyncThread->setHasPendingRender(false);
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -783,6 +784,7 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
+    m_vsyncThread->setHasPendingSwap(false);
     ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -1223,4 +1225,8 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
     format.setSwapInterval(0);
 #endif
     return format;
+}
+
+bool WaveformWidgetFactory::hasPendingTimeSensitiveEvents() const {
+    return m_vsyncThread->hasPendingSwap() || m_vsyncThread->hasPendingRender();
 }
