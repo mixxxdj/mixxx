@@ -21,6 +21,7 @@ Mixage.fxSelectConnection = [];
 Mixage.traxxPressTimer = 0;
 Mixage.loopLengthPressTimer = 0;
 Mixage.dryWetPressTimer = 0;
+Mixage.scratchTogglePressTimer = 0;
 
 // constants
 Mixage.numEffectUnits = 4;
@@ -633,15 +634,22 @@ Mixage.handleShift = function(_channel, _control, value, _status, group) {
 Mixage.scratchToggle = function(_channel, _control, value, _status, group) {
     if (value === DOWN) {
         Mixage.scratchPressed[group] = true;
-        Mixage.stopLoopAdjust(group);
-        Mixage.scratchToggleState[group] = !Mixage.scratchToggleState[group];
-        Mixage.toggleLED(Mixage.scratchToggleState[group], group, "scratch_active");
-        if (Mixage.scrollToggleState[group]) {
-            Mixage.scrollToggleState[group] = !Mixage.scrollToggleState[group];
-            Mixage.toggleLED(Mixage.scrollToggleState[group], group, "scroll_active");
-        }
+        Mixage.scratchTogglePressTimer = engine.beginTimer(400, function() {
+            Mixage.scratchTogglePressTimer = 0;
+        }, true);
     } else {
         Mixage.scratchPressed[group] = false;
+        if (Mixage.scratchTogglePressTimer !== 0) {
+            engine.stopTimer(Mixage.scratchTogglePressTimer);
+            Mixage.scratchTogglePressTimer = 0;
+            Mixage.stopLoopAdjust(group);
+            Mixage.scratchToggleState[group] = !Mixage.scratchToggleState[group];
+            Mixage.toggleLED(Mixage.scratchToggleState[group], group, "scratch_active");
+            if (Mixage.scrollToggleState[group]) {
+                Mixage.scrollToggleState[group] = !Mixage.scrollToggleState[group];
+                Mixage.toggleLED(Mixage.scrollToggleState[group], group, "scroll_active");
+            }
+        }
     }
 };
 
