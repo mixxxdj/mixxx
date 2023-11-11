@@ -376,10 +376,6 @@ jobs:
       - name: "[macOS] Sign, Notarize, and Staple Package"
         if: runner.os == 'macOS' && env.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
         run: packaging/macos/sign_notarize_staple.sh build/*.dmg
-        # TODO: This timeout may be a bit too conservative under some
-        # circumstances. Feel free to increase the timeout once the
-        # notarization step is fixed.
-        timeout-minutes: 5
         env:
           APPLE_ID_USERNAME: daschuer@mixxx.org
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
