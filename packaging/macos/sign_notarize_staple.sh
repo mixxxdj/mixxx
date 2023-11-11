@@ -17,42 +17,22 @@ trap "rm -rf '$tmp_dir'" EXIT
 echo "==> Signing $DMG_FILE"
 codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
+
+echo "==> Notarizing $DMG_FILE"
+
 credentials=(
     --apple-id "${APPLE_ID_USERNAME}"
     --password "${APPLE_APP_SPECIFIC_PASSWORD}"
     --team-id "${APPLE_TEAM_ID}"
 )
+submit_out="$tmp_dir/submit_out.txt"
 
-status_plist="$tmp_dir/status.plist"
-
-echo "==> Notarizing $DMG_FILE"
-xcrun notarytool submit "${credentials[@]}" --output-format plist --wait "${DMG_FILE}" \
-    > "$status_plist"
-
-cat "$status_plist"
-
-id="$(/usr/libexec/PlistBuddy -c 'Print id' "$status_plist")"
-status="$(/usr/libexec/PlistBuddy -c 'Print status' "$status_plist")"
-
-print_notary_log() {
-    xcrun notarytool log "${credentials[@]}" "$id"
-}
-
-case "${status}" in
-    Accepted)
-        echo "Notarization succeeded"
-        ;;
-    Invalid|Rejected)
-        echo "Notarization failed: ${status}"
-        print_notary_log
-        exit 1
-        ;;
-    *)
-        echo "Unknown notarization status: ${status}"
-        print_notary_log
-        exit 1
-        ;;
-esac
+xcrun notarytool submit "${credentials[@]}" "${DMG_FILE}" 2>&1 | tee "$submit_out"
+REQUEST_ID="$(grep -e " id: " "$submit_out" | grep -oE '([0-9a-f-]{36})'| head -n1)"
+rm "$submit_out"
+xcrun notarytool wait "$REQUEST_ID" "${credentials[@]}" --timeout 15m ||:
+xcrun notarytool log "$REQUEST_ID" "${credentials[@]}" ||:
+xcrun notarytool info "$REQUEST_ID" "${credentials[@]}"
 
 echo "==> Stapling $DMG_FILE"
 xcrun stapler staple -q "${DMG_FILE}"
