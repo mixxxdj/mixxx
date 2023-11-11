@@ -876,8 +876,8 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
             }
         },
         outKey: "focused_effect",
-        output: function(value, _group, _control) {
-            this.send((value === this.buttonNumber) ? this.on : this.off);
+        outValueScale: function(value) {
+            return (value === this.buttonNumber) ? this.on : this.off;
         },
         sendShifted: true,
         shiftControl: true,
