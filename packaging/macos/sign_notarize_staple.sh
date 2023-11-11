@@ -15,7 +15,7 @@ tmp_dir="$(mktemp -dt mixxx_notarize)"
 trap "rm -rf '$tmp_dir'" EXIT
 
 echo "==> Signing $DMG_FILE"
-codesign --verbose=4 --timestamp --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
+codesign --verbose=4 --sign "${APPLE_CODESIGN_IDENTITY}" "${DMG_FILE}"
 
 credentials=(
     --apple-id "${APPLE_ID_USERNAME}"
