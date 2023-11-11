@@ -28,7 +28,7 @@
       <!-- T1_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_earlier</key>
+        <key>pitch_down</key>
         <status>0x90</status>
         <midino>0x40</midino>
         <options>
@@ -48,7 +48,7 @@
       <!-- T2_SHIFT = ? -->
       <control>
         <group>[Channel1]</group>
-        <key>beats_translate_later</key>
+        <key>pitch_up</key>
         <status>0x90</status>
         <midino>0x41</midino>
         <options>
@@ -596,7 +596,7 @@
       <!-- T1_SHIFT = ? -->
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_earlier</key>
+        <key>pitch_down</key>
         <status>0x90</status>
         <midino>0x4E</midino>
         <options>
@@ -616,7 +616,7 @@
       <!-- T2_SHIFT = ? -->
       <control>
         <group>[Channel2]</group>
-        <key>beats_translate_later</key>
+        <key>pitch_up</key>
         <status>0x90</status>
         <midino>0x4F</midino>
         <options>
@@ -1215,14 +1215,14 @@
     <outputs>
       <output>
         <group>[Channel1]</group>
-        <key>beats_translate_earlier</key>
+        <key>pitch_down</key>
         <status>0x90</status>
         <midino>0x01</midino>
         <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel1]</group>
-        <key>beats_translate_later</key>
+        <key>pitch_up</key>
         <status>0x90</status>
         <midino>0x02</midino>
         <minimum>0.5</minimum>
@@ -1243,14 +1243,14 @@
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>beats_translate_earlier</key>
+        <key>pitch_down</key>
         <status>0x90</status>
         <midino>0x0F</midino>
         <minimum>0.5</minimum>
       </output>
       <output>
         <group>[Channel2]</group>
-        <key>beats_translate_later</key>
+        <key>pitch_up</key>
         <status>0x90</status>
         <midino>0x10</midino>
         <minimum>0.5</minimum>
