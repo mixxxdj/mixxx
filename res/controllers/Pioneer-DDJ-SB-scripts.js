@@ -894,16 +894,13 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
     }
 
     this.knob = new components.Pot({
-        unshift: function() {
+        inSetParameter: function(channel, control, value, _status) {
             this.input = function(channel, control, value, _status) {
-                value = (this.MSB << 7) + value;
-
-                var focusedEffect = engine.getValue(eu.group, "focused_effect");
-                if (focusedEffect === 0) {
-                    engine.setParameter(eu.group, "mix", value / this.max);
+                if (engine.getValue(eu.group, "focused_effect") === 0) {
+                    engine.setParameter(eu.group, "mix", value);
                 } else {
                     var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + focusedEffect + "]";
-                    engine.setParameter(effectGroup, "meta", value / this.max);
+                    engine.setParameter(effectGroup, "meta", value);
                 }
             };
         },
