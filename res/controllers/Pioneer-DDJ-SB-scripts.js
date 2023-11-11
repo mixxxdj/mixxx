@@ -31,7 +31,7 @@ PioneerDDJSB.jogwheelShiftMultiplier = 20;
 // If true, releasing browser knob jumps forward to jumpPreviewPosition.
 PioneerDDJSB.jumpPreviewEnabled = true;
 // Position in the track to jump to. 0 is the beginning of the track and 1 is the end.
-PioneerDDJSB.jumpPreviewPosition = 0.5;
+PioneerDDJSB.jumpPreviewPosition = 0.3;
 
 ///////////////////////////////////////////////////////////////
 //                      INIT & SHUTDOWN                      //
