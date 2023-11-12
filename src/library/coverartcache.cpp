@@ -89,18 +89,19 @@ QPixmap CoverArtCache::getCachedCover(
     QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
 
     QPixmap pixmap;
-    if (QPixmapCache::find(cacheKey, &pixmap)) {
-        if (kLogger.traceEnabled()) {
-            kLogger.trace()
-                    << "requestCover cache hit"
-                    << coverInfo;
-        }
-    } else {
+    if (!QPixmapCache::find(cacheKey, &pixmap)) {
         if (kLogger.traceEnabled()) {
             kLogger.trace()
                     << "requestCover cache miss"
                     << coverInfo;
         }
+        return QPixmap();
+    }
+
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "requestCover cache hit"
+                << coverInfo;
     }
     return pixmap;
 }
