@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_PortAudio QUIET portaudio-2.0)
