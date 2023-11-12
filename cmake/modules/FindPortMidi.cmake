@@ -74,20 +74,37 @@ find_package_handle_standard_args(
   VERSION_VAR PortMidi_VERSION
 )
 
-if(PortMidi_FOUND)
-  set(PortMidi_LIBRARIES ${PortMidi_LIBRARY})
+if(PortMidi_FOUND AND NOT TARGET PortMidi::portmidi)
+  add_library(PortMidi::portmidi UNKNOWN IMPORTED)
+  set_target_properties(PortMidi::portmidi
+    PROPERTIES
+      IMPORTED_LOCATION "${PortMidi_LIBRARY}"
+      INTERFACE_COMPILE_OPTIONS "${PC_PortMidi_CFLAGS_OTHER}"
+      INTERFACE_INCLUDE_DIRECTORIES "${PortMidi_INCLUDE_DIR}"
+  )
+
+  set(PortMidi_LIBRARIES PortMidi::portmidi)
   # Depending on the library configuration PortTime might be statically
   # linked with PortMidi.
   if(PortTime_LIBRARY)
-    list(APPEND PortMidi_LIBRARIES ${PortTime_LIBRARY})
+    if(NOT TARGET PortTime::porttime)
+      add_library(PortTime::porttime UNKNOWN IMPORTED)
+      set_target_properties(PortTime::porttime
+        PROPERTIES
+          IMPORTED_LOCATION "${PortTime_LIBRARY}"
+          INTERFACE_COMPILE_OPTIONS "${PC_PortTime_CFLAGS_OTHER}"
+          INTERFACE_INCLUDE_DIRECTORIES "${PortTime_INCLUDE_DIR}"
+      )
+    endif()
+    list(APPEND PortMidi_LIBRARIES PortTime::porttime)
   endif()
   set(PortMidi_INCLUDE_DIRS ${PortMidi_INCLUDE_DIR} ${PortTime_INCLUDE_DIR})
 
-  is_static_library(PortMidi_IS_STATIC ${PortMidi_LIBRARY})
+  is_static_library(PortMidi_IS_STATIC PortMidi::portmidi)
   if(PortMidi_IS_STATIC)
     find_package(ALSA)
     if(ALSA_FOUND)
-      set_property(TARGET ${PortMidi_LIBRARY} APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+      set_property(TARGET PortMidi::portmidi APPEND PROPERTY INTERFACE_LINK_LIBRARIES
         ALSA::ALSA
       )
     endif()
