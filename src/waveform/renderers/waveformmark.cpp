@@ -173,7 +173,7 @@ struct MarkerGeometry {
         // party the resulting font size is hard to predict (affects all supported OS).
 
         m_font.setPixelSize(13);
-        m_font.setWeight(75); // bold
+        m_font.setWeight(QFont::Bold);
         m_font.setItalic(false);
 
         const qreal margin{3.f};
