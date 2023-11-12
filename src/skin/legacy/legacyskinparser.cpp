@@ -1778,8 +1778,23 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
-    pWidget->installEventFilter(
-            m_pControllerManager->getControllerLearningEventFilter());
+    auto* pCLEFilter = m_pControllerManager->getControllerLearningEventFilter();
+    pWidget->installEventFilter(pCLEFilter);
+    // For HotcueButton, widget connections are created in its own setup(), not
+    // via <Connection> nodes. In order to make Hotcue controls learnable for
+    // ControllerLearningEventFilter we need to add the clickInfo manually.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::LeftButton,
+            controlFromConfigKey(pWidget->getLeftClickConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+    // Shift + right click = clear hotcue
+    // ControllerLearningEventFilter doesn't (yet) care about keyboard events or
+    // modifiers, so let's use just right-click to make this learnable as well.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::RightButton,
+            controlFromConfigKey(pWidget->getClearConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+
     pWidget->Init();
     return pWidget;
 }

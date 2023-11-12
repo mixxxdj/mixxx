@@ -67,7 +67,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     auto* pLeftConnection = new ControlParameterWidgetConnection(
             this,
-            createConfigKey(QStringLiteral("activate")),
+            getLeftClickConfigKey(), // "activate"
             nullptr,
             ControlParameterWidgetConnection::DIR_FROM_WIDGET,
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);

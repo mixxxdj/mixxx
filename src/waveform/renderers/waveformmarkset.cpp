@@ -69,3 +69,43 @@ WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
 WaveformMarkPointer WaveformMarkSet::getDefaultMark() const {
     return m_pDefaultMark;
 }
+
+void WaveformMarkSet::update() {
+    std::map<WaveformMarkSortKey, WaveformMarkPointer> map;
+    for (const auto& pMark : std::as_const(m_marks)) {
+        if (pMark->isValid() && pMark->isVisible()) {
+            double samplePosition = pMark->getSamplePosition();
+            if (samplePosition != Cue::kNoPosition) {
+                // Create a stable key for sorting, because the WaveformMark's samplePosition is a
+                // ControlObject which can change at any time by other threads. Such a change causes
+                // another updateCues() call, rebuilding map.
+                auto key = WaveformMarkSortKey(samplePosition, pMark->getHotCue());
+                map.emplace(key, pMark);
+            }
+        }
+    }
+
+    m_marksToRender.clear();
+    m_marksToRender.reserve(static_cast<QList<WaveformMarkPointer>::size_type>(map.size()));
+    std::transform(map.begin(),
+            map.end(),
+            std::back_inserter(m_marksToRender),
+            [](auto const& pair) { return pair.second; });
+}
+
+WaveformMarkPointer WaveformMarkSet::findHoveredMark(
+        QPoint pos, Qt::Orientation orientation) const {
+    // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
+    // before hotcues in m_marksToRender so if there is a hotcue in the same
+    // location, the hotcue gets rendered on top. When right clicking, the
+    // the hotcue rendered on top must be assigned to m_pHoveredMark to show
+    // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
+    // reverse and the loop breaks as soon as m_pHoveredMark is set.
+    for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
+        const WaveformMarkPointer& pMark = *it;
+        if (pMark->contains(pos, orientation)) {
+            return pMark;
+        }
+    }
+    return nullptr;
+}

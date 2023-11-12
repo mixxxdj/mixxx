@@ -26,6 +26,11 @@ class WaveformWidgetRenderer {
     static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
 
+    struct WaveformMarkOnScreen {
+        WaveformMarkPointer m_pMark;
+        int m_offsetOnScreen;
+    };
+
   public:
     explicit WaveformWidgetRenderer(const QString& group);
     virtual ~WaveformWidgetRenderer();
@@ -149,7 +154,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
+    void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
     }
 
@@ -217,7 +222,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markPositions;
+    QList<WaveformMarkOnScreen> m_markPositions;
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,
