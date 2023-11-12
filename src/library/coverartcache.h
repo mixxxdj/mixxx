@@ -30,9 +30,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     static void requestUncachedCover(
             const QObject* pRequester,
             const CoverInfo& coverInfo,
-            int desiredWidth) {
-        requestUncachedCoverPrivate(pRequester, TrackPointer(), coverInfo, desiredWidth);
-    }
+            int desiredWidth);
 
     static void requestUncachedCover(
             const QObject* pRequester,
@@ -86,12 +84,6 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const TrackPointer& /*optional*/ pTrack,
             const CoverInfo& coverInfo,
             int desiredWidth = 0); // <= 0: original size
-
-    static void requestUncachedCoverPrivate(
-            const QObject* pRequester,
-            const TrackPointer& /*optional*/ pTrack,
-            const CoverInfo& coverInfo,
-            int desiredWidth);
 
     void tryLoadCover(
             const QObject* pRequester,

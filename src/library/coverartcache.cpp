@@ -107,9 +107,8 @@ QPixmap CoverArtCache::getCachedCover(
 }
 
 // static
-void CoverArtCache::requestUncachedCoverPrivate(
+void CoverArtCache::requestUncachedCover(
         const QObject* pRequester,
-        const TrackPointer& pTrack,
         const CoverInfo& coverInfo,
         int desiredWidth) {
     CoverArtCache* pCache = CoverArtCache::instance();
@@ -118,7 +117,7 @@ void CoverArtCache::requestUncachedCoverPrivate(
     }
     pCache->tryLoadCover(
             pRequester,
-            pTrack,
+            TrackPointer(),
             coverInfo,
             desiredWidth);
 }
@@ -131,7 +130,12 @@ void CoverArtCache::requestUncachedCover(
     VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return;
     }
-    requestUncachedCoverPrivate(
+
+    CoverArtCache* pCache = CoverArtCache::instance();
+    VERIFY_OR_DEBUG_ASSERT(pCache) {
+        return;
+    }
+    pCache->tryLoadCover(
             pRequester,
             pTrack,
             pTrack->getCoverInfoWithLocation(),
