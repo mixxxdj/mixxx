@@ -89,6 +89,14 @@ if(PortAudio_FOUND)
     )
     is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
     if(PortAudio_IS_STATIC)
+      if(PortAudio_ALSA_H)
+        find_package(ALSA)
+        if(ALSA_FOUND)
+          set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            ALSA::ALSA
+          )
+        endif()
+      endif()
       find_package(JACK)
       if(JACK_FOUND)
         set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
