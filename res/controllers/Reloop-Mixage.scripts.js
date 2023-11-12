@@ -141,7 +141,7 @@ Mixage.connectionMap = {
 
 // Set or remove functions to call when the state of a mixxx control changes
 Mixage.connectControlsToFunctions = function(group, remove) {
-    for (var control in Mixage.connectionMap) {
+    for (const control in Mixage.connectionMap) {
         if (remove !== undefined) {
             Mixage.connectionMap[control][group].disconnect();
         } else {
@@ -707,7 +707,7 @@ Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
     var diff = value - 64; // 0x40 (64) centered control
     if (Mixage.adjustLoop[group]) {  // loop adjustment
         // triple the adjustment rate if the top of the jogwheel is being touched
-        var factor = Mixage.wheelTouched[group] ? 100 : 33;
+        const factor = Mixage.wheelTouched[group] ? 100 : 33;
         if (Mixage.adjustLoopIn[group]) {
             var newStartPosition = engine.getValue(group, "loop_start_position") + (diff * factor);
             if (newStartPosition < engine.getValue(group, "loop_end_position")) {
@@ -723,7 +723,7 @@ Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
     } else if (Mixage.scratchByWheelTouch || Mixage.scratchToggleState[group] || Mixage.scrollToggleState[group]) {
         if (Mixage.scrollToggleState[group]) { // scroll deck
             // triple the scroll rate if the top of the jogwheel is being touched
-            var speedFactor = Mixage.wheelTouched[group] ? 0.00020 : 0.000066;
+            const speedFactor = Mixage.wheelTouched[group] ? 0.00020 : 0.000066;
             var currentPosition = engine.getValue(group, "playposition");
             engine.setValue(group, "playposition", currentPosition + speedFactor * diff * Mixage.jogWheelScrollSpeed);
         } else if (Mixage.wheelTouched[group]) {
@@ -774,11 +774,11 @@ Mixage.handleLoopLengthPress = function(_channel, _control, value, _status, grou
 Mixage.handleLoopLength = function(_channel, _control, value, _status, group) {
     var diff = (value - 64); // 0x40 (64) centered control
     if (Mixage.loopLengthPressed[group]) {
-        var beatjumpSize = engine.getParameter(group, "beatjump_size");
-        var newBeatJumpSize = diff > 0 ? 2 * beatjumpSize : beatjumpSize / 2;
+        const beatjumpSize = engine.getParameter(group, "beatjump_size");
+        const newBeatJumpSize = diff > 0 ? 2 * beatjumpSize : beatjumpSize / 2;
         engine.setParameter(group, "beatjump_size", newBeatJumpSize);
     } else {
-        var loopScale = diff > 0 ? "loop_double" : "loop_halve";
+        const loopScale = diff > 0 ? "loop_double" : "loop_halve";
         engine.setValue(group, loopScale, true);
     }
 };
