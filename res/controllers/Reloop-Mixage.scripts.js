@@ -26,8 +26,8 @@ Mixage.scratchTogglePressTimer = 0;
 // constants
 Mixage.numEffectUnits = 4;
 Mixage.numEffectSlots = 3;
-var ON = 0x7F, OFF = 0x00, DOWN = 0x7F;
-var QUICK_PRESS = 1, DOUBLE_PRESS = 2;
+const ON = 0x7F, OFF = 0x00, DOWN = 0x7F;
+const QUICK_PRESS = 1, DOUBLE_PRESS = 2;
 
 // these objects store the state of different buttons and modes
 Mixage.channels = [
@@ -402,10 +402,10 @@ Mixage.toggleEffect = function(group) {
     const effectUnit = "EffectRack1_EffectUnit" + unitNr;
     const effectUnitGroup = "["+effectUnit+"]";
     const focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
-    var enabledFxSlots = [];
+    const enabledFxSlots = [];
 
     if (focusedEffect === 0) {
-        for (var effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
+        for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
             enabledFxSlots.push(engine.getValue("[" + effectUnit + "_Effect" + effectSlot + "]", "enabled"));
         }
 
@@ -415,7 +415,7 @@ Mixage.toggleEffect = function(group) {
             });
         } else {
             Mixage.effectSlotState[effectUnitGroup] = enabledFxSlots;
-            for (effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
+            for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
                 engine.setValue("[" + effectUnit + "_Effect" + effectSlot + "]", "enabled", 0);
             }
         }
