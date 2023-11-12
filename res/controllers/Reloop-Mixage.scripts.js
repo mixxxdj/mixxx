@@ -16,7 +16,6 @@ Mixage.vuMeterConnection = [];
 Mixage.loopConnection = [];
 Mixage.fxOnConnection = [];
 Mixage.fxSelectConnection = [];
-Mixage.fxPresetConnection = [];
 
 // timers
 Mixage.traxxPressTimer = 0;
@@ -84,8 +83,6 @@ Mixage.adjustLoopOut = {
 Mixage.effectSlotState = {
     "[EffectRack1_EffectUnit1]": new Array(Mixage.numEffectSlots).fill(1),
     "[EffectRack1_EffectUnit2]": new Array(Mixage.numEffectSlots).fill(1),
-    "[EffectRack1_EffectUnit3]": new Array(Mixage.numEffectSlots).fill(1),
-    "[EffectRack1_EffectUnit4]": new Array(Mixage.numEffectSlots).fill(1),
 };
 
 Mixage.blinkTimer = {
@@ -189,7 +186,6 @@ Mixage.init = function(_id, _debugging) {
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
         Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() { Mixage.toggleReloopLED(channel); }));
         Mixage.fxSelectConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
-        // Mixage.fxPresetConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "loaded_chain_preset", function(_v, g) { Mixage.getLoadedPresetEffects(g); }));
 
         // get current status and set LEDs accordingly
         Mixage.toggleFxLED(channel);
@@ -204,7 +200,6 @@ Mixage.shutdown = function() {
     Mixage.loopConnection.forEach(function(connection) { connection.disconnect(); });
     Mixage.fxSelectConnection.forEach(function(connection) { connection.disconnect(); });
     Mixage.fxOnConnection.forEach(function(connection) { connection.disconnect(); });
-    Mixage.fxPresetConnection.forEach(function(connection) { connection.disconnect(); });
 
     // Disconnect all controls from functions
     Mixage.channels.forEach(function(channel) { Mixage.connectControlsToFunctions(channel, true); });
@@ -425,20 +420,8 @@ Mixage.toggleEffect = function(group) {
             }
         }
     } else {
-        script.toggleControl("[" + effectUnitGroup + "_Effect" + focusedEffect + "]", "enabled");
+        script.toggleControl("[" + effectUnit + "_Effect" + focusedEffect + "]", "enabled");
     }
-};
-
-Mixage.getLoadedPresetEffects = function(effectUnit) {
-    var loadedFxSlots = [];
-
-    for (var effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
-        var effectSlotString =  effectUnit.slice(0, -1) + "_Effect" + effectSlot + "]";
-        loadedFxSlots.push(engine.getValue(effectSlotString, "loaded"));
-        engine.setValue(effectSlotString, "enabled", 0);
-    }
-
-    Mixage.effectSlotState[effectUnit] = loadedFxSlots;
 };
 
 // ----- functions mapped to buttons -----
