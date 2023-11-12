@@ -153,25 +153,25 @@ Mixage.connectControlsToFunctions = function(group, remove) {
 Mixage.init = function(_id, _debugging) {
 
     // all button LEDs off
-    for (var i = 0; i < 255; i++) {
+    for (let i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
 
     // find controls and make engine connections for each channel in Mixage.channels
     // A predefined list with channels is used instead of a for loop to prevent engine connections to be overwritten
     Mixage.channels.forEach(function(channel) {
-        var deck = script.deckFromGroup(channel);
+        const deck = script.deckFromGroup(channel);
         Mixage.connectControlsToFunctions(channel);
 
         // set soft takeovers for effectslot amount
-        for (var effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
-            var groupString = "[EffectRack1_EffectUnit"+ deck +"_Effect" + effectSlot + "]";
+        for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
+            const groupString = "[EffectRack1_EffectUnit"+ deck +"_Effect" + effectSlot + "]";
             engine.softTakeover(groupString, "meta", true);
         }
 
-        for (var effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
+        for (let effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
             // make connections for the fx on LEDs
-            var fxGroup = "group_"+channel+"_enable";
+            const fxGroup = "group_"+channel+"_enable";
             Mixage.fxOnConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+effectUnit+"]", fxGroup, function() { Mixage.toggleFxLED(channel); }));
 
             // set soft takeovers for effectunit meta
@@ -205,7 +205,7 @@ Mixage.shutdown = function() {
     Mixage.channels.forEach(function(channel) { Mixage.connectControlsToFunctions(channel, true); });
 
     // all button LEDs off
-    for (var i = 0; i < 255; i++) {
+    for (let i = 0; i < 255; i++) {
         midi.sendShortMsg(0x90, i, 0);
     }
 };
@@ -217,10 +217,10 @@ Mixage.toggleLED = function(value, group, control) {
 
 // Toggles the FX On LED / Off when no effect unit is activated for a channel / On when any effect unit is active for a channel
 Mixage.toggleFxLED = function(group) {
-    var fxChannel = "group_" + group + "_enable";
-    var enabledFxGroups = [];
+    const fxChannel = "group_" + group + "_enable";
+    const enabledFxGroups = [];
 
-    for (var i = 1; i <= Mixage.numEffectUnits; i++) {
+    for (let i = 1; i <= Mixage.numEffectUnits; i++) {
         enabledFxGroups.push(engine.getValue("[EffectRack1_EffectUnit" + i + "]", fxChannel));
     }
 
@@ -352,7 +352,7 @@ Mixage.blinkLED = function(control, group, time) {
     }
 
     if (time > 0) { // if a time is given start blinking the led
-        var cycles = Math.round(time / 250); //convert time to cycles of 250ms
+        const cycles = Math.round(time / 250); //convert time to cycles of 250ms
         Mixage.blinkTimer[group][control] = {};
         Mixage.blinkTimer[group][control].toggle = 0;
         Mixage.blinkTimer[group][control].counter = 0;
@@ -398,10 +398,10 @@ Mixage.TraxPressCallback = function(_channel, _control, _value, _status, group, 
 
 // toggles the focussed effect or all effect slots in an effect unit on or off
 Mixage.toggleEffect = function(group) {
-    var unitNr = script.deckFromGroup(group);
-    var effectUnit = "EffectRack1_EffectUnit" + unitNr;
-    var effectUnitGroup = "["+effectUnit+"]";
-    var focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
+    const unitNr = script.deckFromGroup(group);
+    const effectUnit = "EffectRack1_EffectUnit" + unitNr;
+    const effectUnitGroup = "["+effectUnit+"]";
+    const focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
     var enabledFxSlots = [];
 
     if (focusedEffect === 0) {
@@ -497,7 +497,7 @@ Mixage.handleLoopOut = function(_channel, _control, value, _status, group) {
 // Toggle play and make sure the preview deck stops when starting to play in a deck
 // brake or softStart a while the scratch toggle button is held
 Mixage.handlePlay = function(_channel, _control, value, _status, group) {
-    var deck = script.deckFromGroup(group);
+    const deck = script.deckFromGroup(group);
     if (value === DOWN && Mixage.scratchPressed[group]) { // scratch toggle is pressed
         if (engine.getValue(group, "play") === 0) {
             engine.softStart(deck, true, 1.5);
@@ -525,13 +525,13 @@ Mixage.handleTraxPress = function(channel, control, value, status, group) {
 
 // select track when turning the Traxx button
 Mixage.selectTrack = function(_channel, _control, value, _status, _group) {
-    var diff = value - 64; // 0x40 (64) centered control
+    const diff = value - 64; // 0x40 (64) centered control
     engine.setValue("[Playlist]", "SelectTrackKnob", diff);
 };
 
 // select playlist when turning the Traxx button
 Mixage.selectPlaylist = function(_channel, _control, value, _status, _group) {
-    var diff = value - 64; // 0x40 (64) centered control
+    const diff = value - 64; // 0x40 (64) centered control
     engine.setValue("[Playlist]", "SelectPlaylist", diff);
 };
 
@@ -545,18 +545,18 @@ Mixage.handleTrackLoading = function(_channel, _control, value, _status, group) 
 
 // Cycle through the effectslots of the effectunit that corresponds to a channel
 Mixage.nextEffect = function(_channel, _control, value, _status, group) {
-    var unitNr = script.deckFromGroup(group);
-    var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const unitNr = script.deckFromGroup(group);
+    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
     if (value === DOWN) {
         if (engine.getValue(controlString, "focused_effect") === Mixage.numEffectSlots) { // after cycling through all effectslot go back to the start
-            for (var i = 1; i === Mixage.numEffectSlots; i++) {
-                var groupString = "[EffectRack1_EffectUnit" + unitNr + "_Effect" + i + "]";
+            for (let i = 1; i === Mixage.numEffectSlots; i++) {
+                const groupString = "[EffectRack1_EffectUnit" + unitNr + "_Effect" + i + "]";
                 engine.softTakeoverIgnoreNextValue(groupString, "meta");
             }
             engine.softTakeoverIgnoreNextValue(controlString, "super1");
             engine.setValue(controlString, "focused_effect", 0);
         } else { // next effect slot
-            var currentSelection = engine.getValue(controlString, "focused_effect");
+            const currentSelection = engine.getValue(controlString, "focused_effect");
             engine.setValue(controlString, "focused_effect", currentSelection + 1);
         }
     }
@@ -565,16 +565,16 @@ Mixage.nextEffect = function(_channel, _control, value, _status, group) {
 // Handle turning of the Dry/Wet nob
 // control the dry/wet when no effect slot is selected else selects the effect for the currently selected effect slot
 Mixage.handleEffectDryWet = function(_channel, _control, value, _status, group) {
-    var unitNr = script.deckFromGroup(group);
-    var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
-    var diff = (value - 64); // 0x40 (64) centered control
+    const unitNr = script.deckFromGroup(group);
+    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const diff = (value - 64); // 0x40 (64) centered control
     if (Mixage.dryWetPressed[group]) {
         engine.setValue(controlString, "chain_preset_selector", diff);
     } else if (engine.getValue(controlString, "focused_effect") === 0) { // no effect slot is selected
-        var dryWetValue = engine.getValue(controlString, "mix");
+        const dryWetValue = engine.getValue(controlString, "mix");
         engine.setValue(controlString, "mix", dryWetValue + (diff / 16.0));
     } else {
-        var focussedEffect = engine.getValue(controlString, "focused_effect");
+        const focussedEffect = engine.getValue(controlString, "focused_effect");
         engine.setValue("[EffectRack1_EffectUnit" + unitNr + "_Effect" + focussedEffect + "]", "effect_selector", diff);
     }
 };
@@ -598,9 +598,9 @@ Mixage.handleDryWetPressed = function(_channel, _control, value, _status, group)
 
 // Controls the meta for an effect slot if selected, otherwise controls the meta for an effect unit
 Mixage.handleFxAmount = function(_channel, _control, value, _status, group) {
-    var unitNr = script.deckFromGroup(group);
-    var controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
-    var focussedEffect = engine.getValue(controlString, "focused_effect");
+    const unitNr = script.deckFromGroup(group);
+    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const focussedEffect = engine.getValue(controlString, "focused_effect");
     if (focussedEffect === 0) { // no effect slot is selected
         engine.setValue(controlString, "super1", value / 127);
     } else {
@@ -611,16 +611,16 @@ Mixage.handleFxAmount = function(_channel, _control, value, _status, group) {
 // Turn off any effect units that are enabled for the channel, if none are enabled enable the corresponding effect unit
 Mixage.handleFxPress = function(_channel, _control, value, _status, group) {
     if (value === DOWN) {
-        var fxChannel = "group_" + group + "_enable";
-        var unitNr = script.deckFromGroup(group);
-        var enabledFxGroups = [];
+        const fxChannel = "group_" + group + "_enable";
+        const unitNr = script.deckFromGroup(group);
+        const enabledFxGroups = [];
 
-        for (var i = 1; i <= Mixage.numEffectUnits; i++) {
+        for (let i = 1; i <= Mixage.numEffectUnits; i++) {
             enabledFxGroups.push(engine.getValue("[EffectRack1_EffectUnit" + i + "]", fxChannel));
         }
 
         if (enabledFxGroups.indexOf(1) !== -1) {
-            for (var effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
+            for (let effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
                 engine.setValue("[EffectRack1_EffectUnit" + effectUnit + "]", fxChannel, false);
             }
         } else {
@@ -638,7 +638,7 @@ Mixage.handleFilter = function(_channel, _control, value, _status, group) {
 // Handles setting soft takeovers when pressing shift
 Mixage.handleShift = function(_channel, _control, value, _status, group) {
     if (value === DOWN) {
-        var unitNr = script.deckFromGroup(group);
+        const unitNr = script.deckFromGroup(group);
         engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_"+group+"]", "super1");
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+unitNr+"]", "super1");
     }
@@ -682,7 +682,7 @@ Mixage.scrollToggle = function(_channel, _control, value, _status, group) {
 
 // The touch function on the wheels that enables/disables scratching
 Mixage.wheelTouch = function(_channel, _control, value, _status, group) {
-    var unitNr = script.deckFromGroup(group);
+    const unitNr = script.deckFromGroup(group);
 
     if (value === DOWN) {
         Mixage.wheelTouched[group] = true;
@@ -692,8 +692,8 @@ Mixage.wheelTouch = function(_channel, _control, value, _status, group) {
 
     if (Mixage.scratchByWheelTouch || Mixage.scratchToggleState[group]) {
         if (value === DOWN) {
-            var alpha = 1.0 / 8.0;
-            var beta = alpha / 32.0;
+            const alpha = 1.0 / 8.0;
+            const beta = alpha / 32.0;
             engine.scratchEnable(unitNr, Mixage.scratchTicksPerRevolution, 33.33, alpha, beta);
         } else {
             engine.scratchDisable(unitNr);
@@ -703,19 +703,19 @@ Mixage.wheelTouch = function(_channel, _control, value, _status, group) {
 
 // The wheel that controls the scratching / jogging
 Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
-    var deckNr = script.deckFromGroup(group);
-    var diff = value - 64; // 0x40 (64) centered control
+    const deckNr = script.deckFromGroup(group);
+    const diff = value - 64; // 0x40 (64) centered control
     if (Mixage.adjustLoop[group]) {  // loop adjustment
         // triple the adjustment rate if the top of the jogwheel is being touched
         const factor = Mixage.wheelTouched[group] ? 100 : 33;
         if (Mixage.adjustLoopIn[group]) {
-            var newStartPosition = engine.getValue(group, "loop_start_position") + (diff * factor);
+            const newStartPosition = engine.getValue(group, "loop_start_position") + (diff * factor);
             if (newStartPosition < engine.getValue(group, "loop_end_position")) {
                 engine.setValue(group, "loop_start_position", newStartPosition);
             }
         }
         if (Mixage.adjustLoopOut[group]) {
-            var newEndPosition = engine.getValue(group, "loop_end_position") + (diff * factor);
+            const newEndPosition = engine.getValue(group, "loop_end_position") + (diff * factor);
             if (newEndPosition > engine.getValue(group, "loop_start_position")) {
                 engine.setValue(group, "loop_end_position", newEndPosition);
             }
@@ -724,7 +724,7 @@ Mixage.wheelTurn = function(_channel, _control, value, _status, group) {
         if (Mixage.scrollToggleState[group]) { // scroll deck
             // triple the scroll rate if the top of the jogwheel is being touched
             const speedFactor = Mixage.wheelTouched[group] ? 0.00020 : 0.000066;
-            var currentPosition = engine.getValue(group, "playposition");
+            const currentPosition = engine.getValue(group, "playposition");
             engine.setValue(group, "playposition", currentPosition + speedFactor * diff * Mixage.jogWheelScrollSpeed);
         } else if (Mixage.wheelTouched[group]) {
             engine.scratchTick(deckNr, diff); // scratch deck
@@ -746,7 +746,7 @@ Mixage.handleBeatLoopPress = function(_channel, _control, value, _status, group)
 
 // move the track or an active loop "beatjump_size" number of beats
 Mixage.handleBeatMove = function(_channel, _control, value, _status, group) {
-    var beatjumpSize = (value - 64) * engine.getValue(group, "beatjump_size");
+    const beatjumpSize = (value - 64) * engine.getValue(group, "beatjump_size");
     engine.setValue(group, "beatjump", beatjumpSize);
 };
 
@@ -772,7 +772,7 @@ Mixage.handleLoopLengthPress = function(_channel, _control, value, _status, grou
 
 // changes the loop length if Mixage.loopLengthPressed[group] is false otherwise adjusts the "beatjump_size"
 Mixage.handleLoopLength = function(_channel, _control, value, _status, group) {
-    var diff = (value - 64); // 0x40 (64) centered control
+    const diff = (value - 64); // 0x40 (64) centered control
     if (Mixage.loopLengthPressed[group]) {
         const beatjumpSize = engine.getParameter(group, "beatjump_size");
         const newBeatJumpSize = diff > 0 ? 2 * beatjumpSize : beatjumpSize / 2;
