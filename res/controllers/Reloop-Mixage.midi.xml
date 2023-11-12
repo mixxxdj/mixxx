@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1+">
+  <info>
+    <name>Reloop Mixage</name>
+    <author>HorstBaerbel</author>
+    <description>Mapping for the Reloop Mixage Interface Edition controller (https://www.reloop.com/reloop-mixage-ie). Should also work on the non-interface version.</description>
+    <forums>https://mixxx.discourse.group/t/reloop-mixage-mapping/14779</forums>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki/Reloop%20Mixage</wiki>
+  </info>
+  <controller id="Reloop Mixage">
+    <scriptfiles>
+      <file functionprefix="Mixage" filename="Reloop-Mixage.scripts.js" />
+    </scriptfiles>
+    <controls>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_play</key>
+        <status>0x90</status>
+        <midino>0x0A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x09</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x0B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>sync_enabled</key>
+        <status>0x90</status>
+        <midino>0x17</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_default</key>
+        <status>0x90</status>
+        <midino>0x19</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>cue_play</key>
+        <status>0x90</status>
+        <midino>0x18</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x10</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>crossfader</key>
+        <status>0xB0</status>
+        <midino>0x31</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x55</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTurn</key>
+        <status>0xB0</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>keylock</key>
+        <status>0x90</status>
+        <midino>0x47</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x1C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleDeckSyncMode</key>
+        <status>0x90</status>
+        <midino>0x46</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleDeckSyncMode</key>
+        <status>0x90</status>
+        <midino>0x54</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>Mixage.handleEffectChannelOn</key>
+        <status>0x90</status>
+        <midino>0x08</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>Mixage.handleEffectChannelOn</key>
+        <status>0x90</status>
+        <midino>0x16</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>Mixage.handleEffectChannelSelect</key>
+        <status>0x90</status>
+        <midino>0x07</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>Mixage.handleEffectChannelSelect</key>
+        <status>0x90</status>
+        <midino>0x15</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>Mixage.handleEffectDryWet</key>
+        <status>0xB0</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>Mixage.handleEffectDryWet</key>
+        <status>0xB0</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit1]</group>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x21</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EffectRack1_EffectUnit2]</group>
+        <key>Mixage.handleDryWetPressed</key>
+        <status>0x90</status>
+        <midino>0x23</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handlePan</key>
+        <status>0xB0</status>
+        <midino>0x60</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handlePan</key>
+        <status>0xB0</status>
+        <midino>0x62</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x37</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x36</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel1]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x35</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter1</key>
+        <status>0xB0</status>
+        <midino>0x3D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter2</key>
+        <status>0xB0</status>
+        <midino>0x3C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[EqualizerRack1_[Channel2]_Effect1]</group>
+        <key>parameter3</key>
+        <status>0xB0</status>
+        <midino>0x3B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel1]]</group>
+        <key>super1</key>
+        <status>0xB0</status>
+        <midino>0x34</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[QuickEffectRack1_[Channel2]]</group>
+        <key>super1</key>
+        <status>0xB0</status>
+        <midino>0x3A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x0C</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x03</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scrollToggle</key>
+        <status>0x90</status>
+        <midino>0x11</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x04</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.scratchToggle</key>
+        <status>0x90</status>
+        <midino>0x12</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_in</key>
+        <status>0x90</status>
+        <midino>0x44</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>loop_out</key>
+        <status>0x90</status>
+        <midino>0x45</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>beatloop_activate</key>
+        <status>0x90</status>
+        <midino>0x05</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>reloop_toggle</key>
+        <status>0x90</status>
+        <midino>0x06</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleBeatMove</key>
+        <status>0xB0</status>
+        <midino>0x5F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleBeatMoveLength</key>
+        <status>0xB0</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.handleBeatMovePressed</key>
+        <status>0x90</status>
+        <midino>0x20</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_in</key>
+        <status>0x90</status>
+        <midino>0x52</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>loop_out</key>
+        <status>0x90</status>
+        <midino>0x53</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>beatloop_activate</key>
+        <status>0x90</status>
+        <midino>0x13</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>reloop_toggle</key>
+        <status>0x90</status>
+        <midino>0x14</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleBeatMoveLength</key>
+        <status>0xB0</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleBeatMove</key>
+        <status>0xB0</status>
+        <midino>0x61</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.handleBeatMovePressed</key>
+        <status>0x90</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x25</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x33</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate_temp_down</key>
+        <status>0x90</status>
+        <midino>0x0F</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate_temp_up</key>
+        <status>0x90</status>
+        <midino>0x02</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>pregain</key>
+        <status>0xB0</status>
+        <midino>0x39</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>Mixage.wheelTouch</key>
+        <status>0x90</status>
+        <midino>0x24</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x0D</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x1B</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x4C</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x5A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0x90</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0xB0</status>
+        <midino>0x1F</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Library]</group>
+        <key>Mixage.handleLibrary</key>
+        <status>0xB0</status>
+        <midino>0x5E</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Master]</group>
+        <key>headMix</key>
+        <status>0xB0</status>
+        <midino>0x32</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x0E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x38</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xE1</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <status>0xB0</status>
+        <midino>0x3E</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>rate</key>
+        <status>0xE0</status>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x1A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>play</key>
+        <status>0x90</status>
+        <midino>0x4D</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[PreviewDeck1]</group>
+        <key>stop</key>
+        <status>0x90</status>
+        <midino>0x5B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x48</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x49</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x90</status>
+        <midino>0x4A</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x90</status>
+        <midino>0x4B</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_1_activate</key>
+        <status>0x90</status>
+        <midino>0x56</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_2_activate</key>
+        <status>0x90</status>
+        <midino>0x57</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_3_activate</key>
+        <status>0x90</status>
+        <midino>0x58</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>hotcue_4_activate</key>
+        <status>0x90</status>
+        <midino>0x59</midino>
+        <options>
+          <normal />
+        </options>
+      </control>
+    </controls>
+    <outputs />
+  </controller>
+</MixxxControllerPreset>
