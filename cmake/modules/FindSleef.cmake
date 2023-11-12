@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_Sleef QUIET sleef)
@@ -58,6 +60,11 @@ find_library(Sleef_LIBRARY
   NAMES ${PC_Sleef_LIBRARIES}
   PATHS ${PC_Sleef_LIBRARY_DIRS})
 mark_as_advanced(Sleef_LIBRARY)
+
+find_library(SleefDFT_LIBRARY
+  NAMES sleefdft
+  PATHS ${PC_Sleef_LIBRARY_DIRS})
+mark_as_advanced(SleefDFT_LIBRARY)
 
 if(DEFINED PC_Sleef_VERSION AND NOT PC_Sleef_VERSION STREQUAL "")
   set(Sleef_VERSION "${PC_Sleef_VERSION}")
@@ -99,6 +106,26 @@ if(Sleef_FOUND)
   set(Sleef_LIBRARIES "${Sleef_LIBRARY}")
   set(Sleef_INCLUDE_DIRS "${Sleef_INCLUDE_DIR}")
   set(Sleef_DEFINITIONS ${PC_Sleef_CFLAGS_OTHER})
+
+  if(SleefDFT_LIBRARY AND NOT TARGET Sleef::sleefdft)
+    add_library(Sleef::sleefdft UNKNOWN IMPORTED)
+    set_target_properties(Sleef::sleefdft
+      PROPERTIES
+        IMPORTED_LOCATION "${SleefDFT_LIBRARY}"
+        INTERFACE_COMPILE_OPTIONS "${PC_Sleef_CFLAGS_OTHER}"
+        INTERFACE_INCLUDE_DIRECTORIES "${Sleef_INCLUDE_DIR}"
+    )
+
+    is_static_library(SleefDFT_IS_STATIC Sleef::sleefdft)
+    if(SleefDFT_IS_STATIC)
+      find_package(OpenMP)
+      if(OpenMP_CXX_FOUND)
+        set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          OpenMP::OpenMP_CXX
+        )
+      endif()
+    endif()
+  endif()
 
   if(NOT TARGET Sleef::sleef)
     add_library(Sleef::sleef UNKNOWN IMPORTED)
