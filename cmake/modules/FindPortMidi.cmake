@@ -37,6 +37,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_path(PortMidi_INCLUDE_DIR
   NAMES portmidi.h
   PATH_SUFFIXES portmidi
@@ -80,4 +82,14 @@ if(PortMidi_FOUND)
     list(APPEND PortMidi_LIBRARIES ${PortTime_LIBRARY})
   endif()
   set(PortMidi_INCLUDE_DIRS ${PortMidi_INCLUDE_DIR} ${PortTime_INCLUDE_DIR})
+
+  is_static_library(PortMidi_IS_STATIC ${PortMidi_LIBRARY})
+  if(PortMidi_IS_STATIC)
+    find_package(ALSA)
+    if(ALSA_FOUND)
+      set_property(TARGET ${PortMidi_LIBRARY} APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        ALSA::ALSA
+      )
+    endif()
+  endif()
 endif()
