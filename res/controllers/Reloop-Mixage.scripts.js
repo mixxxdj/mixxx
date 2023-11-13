@@ -183,9 +183,8 @@ Mixage.init = function(_id, _debugging) {
         // set soft takeover for filter effect
         engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
-        const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
-        
         // make connections for status LEDs
+        const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
         Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() { Mixage.toggleReloopLED(channel); }));
         Mixage.fxSelectConnection.push(engine.makeConnection(effectUnit, "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
