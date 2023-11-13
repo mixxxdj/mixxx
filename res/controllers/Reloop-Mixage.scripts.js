@@ -165,31 +165,34 @@ Mixage.init = function(_id, _debugging) {
 
         // set soft takeovers for effectslot amount
         for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
-            const groupString = "[EffectRack1_EffectUnit"+ deck +"_Effect" + effectSlot + "]";
+            const groupString = `[EffectRack1_EffectUnit${deck}_Effect${effectSlot}]`;
             engine.softTakeover(groupString, "meta", true);
         }
 
         for (let effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
             // make connections for the fx on LEDs
-            const fxGroup = "group_"+channel+"_enable";
-            Mixage.fxOnConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+effectUnit+"]", fxGroup, function() { Mixage.toggleFxLED(channel); }));
+            const fxControl = `group_${channel}_enable`;
+            const fxGroup = `[EffectRack1_EffectUnit${effectUnit}]`;
+            Mixage.fxOnConnection.push(engine.makeConnection(fxGroup, fxControl, function() { Mixage.toggleFxLED(channel); }));
 
             // set soft takeovers for effectunit meta
-            engine.softTakeover("[EffectRack1_EffectUnit"+effectUnit+"]", "super1", true);
-            engine.setValue("[EffectRack1_EffectUnit"+effectUnit+"]", "show_focus", 1);
+            engine.softTakeover(fxGroup, "super1", true);
+            engine.setValue(fxGroup, "show_focus", 1);
         }
 
         // set soft takeover for filter effect
-        engine.softTakeover("[QuickEffectRack1_"+channel+"]", "super1", true);
+        engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
+        const effectUnit = `[EffectRack1_EffectUnit${deck}]`
+        
         // make connections for status LEDs
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
         Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() { Mixage.toggleReloopLED(channel); }));
-        Mixage.fxSelectConnection.push(engine.makeConnection("[EffectRack1_EffectUnit"+deck+"]", "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
+        Mixage.fxSelectConnection.push(engine.makeConnection(effectUnit, "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
 
         // get current status and set LEDs accordingly
         Mixage.toggleFxLED(channel);
-        Mixage.handleFxSelect(engine.getValue("[EffectRack1_EffectUnit"+deck+"]", "focused_effect"), channel);
+        Mixage.handleFxSelect(engine.getValue(effectUnit, "focused_effect"), channel);
     });
 };
 
@@ -217,11 +220,11 @@ Mixage.toggleLED = function(value, group, control) {
 
 // Toggles the FX On LED / Off when no effect unit is activated for a channel / On when any effect unit is active for a channel
 Mixage.toggleFxLED = function(group) {
-    const fxChannel = "group_" + group + "_enable";
+    const fxChannel = `group_${group}_enable`;
     const enabledFxGroups = [];
 
     for (let i = 1; i <= Mixage.numEffectUnits; i++) {
-        enabledFxGroups.push(engine.getValue("[EffectRack1_EffectUnit" + i + "]", fxChannel));
+        enabledFxGroups.push(engine.getValue(`[EffectRack1_EffectUnit${i}]`, fxChannel));
     }
 
     if (enabledFxGroups.indexOf(1) !== -1) {
@@ -371,12 +374,13 @@ Mixage.blinkLED = function(control, group, time) {
 
 // Runs every time the focused_effect for a channel is changed either by controller or mixxx
 Mixage.handleFxSelect = function(value, group) {
+    const unitNr = script.deckFromGroup(group)
     if (value === 0) {
         Mixage.toggleLED(OFF, group, "fx_sel");
-        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "super1");
+        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}]`, "super1");
     } else {
         Mixage.toggleLED(ON, group, "fx_sel");
-        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit2_Effect" + value + "]", "meta");
+        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}_Effect${value}]`, "meta");
     }
 };
 
@@ -399,28 +403,28 @@ Mixage.TraxPressCallback = function(_channel, _control, _value, _status, group, 
 // toggles the focussed effect or all effect slots in an effect unit on or off
 Mixage.toggleEffect = function(group) {
     const unitNr = script.deckFromGroup(group);
-    const effectUnit = "EffectRack1_EffectUnit" + unitNr;
-    const effectUnitGroup = "["+effectUnit+"]";
+    const effectUnit = `EffectRack1_EffectUnit${unitNr}`;
+    const effectUnitGroup = `[${effectUnit}]`;
     const focusedEffect = engine.getValue(effectUnitGroup, "focused_effect");
     const enabledFxSlots = [];
 
     if (focusedEffect === 0) {
         for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
-            enabledFxSlots.push(engine.getValue("[" + effectUnit + "_Effect" + effectSlot + "]", "enabled"));
+            enabledFxSlots.push(engine.getValue(`[${effectUnit}_Effect${effectSlot}]`, "enabled"));
         }
 
         if (enabledFxSlots.indexOf(1) === -1) {
             Mixage.effectSlotState[effectUnitGroup].map(function(state, effect) {
-                engine.setValue("[" + effectUnit + "_Effect" + (effect +1) + "]", "enabled", state);
+                engine.setValue(`[${effectUnit}_Effect${effect+1}]`, "enabled", state);
             });
         } else {
             Mixage.effectSlotState[effectUnitGroup] = enabledFxSlots;
             for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
-                engine.setValue("[" + effectUnit + "_Effect" + effectSlot + "]", "enabled", 0);
+                engine.setValue(`[${effectUnit}_Effect${effectSlot}]`, "enabled", 0);
             }
         }
     } else {
-        script.toggleControl("[" + effectUnit + "_Effect" + focusedEffect + "]", "enabled");
+        script.toggleControl(`[${effectUnit}_Effect${focusedEffect}]`, "enabled");
     }
 };
 
@@ -546,11 +550,11 @@ Mixage.handleTrackLoading = function(_channel, _control, value, _status, group) 
 // Cycle through the effectslots of the effectunit that corresponds to a channel
 Mixage.nextEffect = function(_channel, _control, value, _status, group) {
     const unitNr = script.deckFromGroup(group);
-    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const controlString = `[EffectRack1_EffectUnit${unitNr}]`;
     if (value === DOWN) {
         if (engine.getValue(controlString, "focused_effect") === Mixage.numEffectSlots) { // after cycling through all effectslot go back to the start
             for (let i = 1; i === Mixage.numEffectSlots; i++) {
-                const groupString = "[EffectRack1_EffectUnit" + unitNr + "_Effect" + i + "]";
+                const groupString = `[EffectRack1_EffectUnit${unitNr}_Effect${i}]`;
                 engine.softTakeoverIgnoreNextValue(groupString, "meta");
             }
             engine.softTakeoverIgnoreNextValue(controlString, "super1");
@@ -566,7 +570,7 @@ Mixage.nextEffect = function(_channel, _control, value, _status, group) {
 // control the dry/wet when no effect slot is selected else selects the effect for the currently selected effect slot
 Mixage.handleEffectDryWet = function(_channel, _control, value, _status, group) {
     const unitNr = script.deckFromGroup(group);
-    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const controlString = `[EffectRack1_EffectUnit${unitNr}]`;
     const diff = (value - 64); // 0x40 (64) centered control
     if (Mixage.dryWetPressed[group]) {
         engine.setValue(controlString, "chain_preset_selector", diff);
@@ -575,7 +579,7 @@ Mixage.handleEffectDryWet = function(_channel, _control, value, _status, group) 
         engine.setValue(controlString, "mix", dryWetValue + (diff / 16.0));
     } else {
         const focussedEffect = engine.getValue(controlString, "focused_effect");
-        engine.setValue("[EffectRack1_EffectUnit" + unitNr + "_Effect" + focussedEffect + "]", "effect_selector", diff);
+        engine.setValue(`[EffectRack1_EffectUnit${unitNr}_Effect${focussedEffect}]`, "effect_selector", diff);
     }
 };
 
@@ -599,32 +603,32 @@ Mixage.handleDryWetPressed = function(_channel, _control, value, _status, group)
 // Controls the meta for an effect slot if selected, otherwise controls the meta for an effect unit
 Mixage.handleFxAmount = function(_channel, _control, value, _status, group) {
     const unitNr = script.deckFromGroup(group);
-    const controlString = "[EffectRack1_EffectUnit" + unitNr + "]";
+    const controlString = `[EffectRack1_EffectUnit${unitNr}]`;
     const focussedEffect = engine.getValue(controlString, "focused_effect");
     if (focussedEffect === 0) { // no effect slot is selected
         engine.setValue(controlString, "super1", value / 127);
     } else {
-        engine.setValue("[EffectRack1_EffectUnit" + unitNr + "_Effect" + focussedEffect + "]", "meta", value / 127);
+        engine.setValue(`[EffectRack1_EffectUnit${unitNr}_Effect${focussedEffect}]`, "meta", value / 127);
     }
 };
 
 // Turn off any effect units that are enabled for the channel, if none are enabled enable the corresponding effect unit
 Mixage.handleFxPress = function(_channel, _control, value, _status, group) {
     if (value === DOWN) {
-        const fxChannel = "group_" + group + "_enable";
+        const fxChannel = `group_${group}_enable`;
         const unitNr = script.deckFromGroup(group);
         const enabledFxGroups = [];
 
         for (let i = 1; i <= Mixage.numEffectUnits; i++) {
-            enabledFxGroups.push(engine.getValue("[EffectRack1_EffectUnit" + i + "]", fxChannel));
+            enabledFxGroups.push(engine.getValue(`[EffectRack1_EffectUnit${i}]`, fxChannel));
         }
 
         if (enabledFxGroups.indexOf(1) !== -1) {
             for (let effectUnit = 1; effectUnit <= Mixage.numEffectUnits; effectUnit++) {
-                engine.setValue("[EffectRack1_EffectUnit" + effectUnit + "]", fxChannel, false);
+                engine.setValue(`[EffectRack1_EffectUnit${effectUnit}]`, fxChannel, false);
             }
         } else {
-            engine.setValue("[EffectRack1_EffectUnit" + unitNr + "]", fxChannel, true);
+            engine.setValue(`[EffectRack1_EffectUnit${unitNr}]`, fxChannel, true);
         }
     }
 };
@@ -632,15 +636,15 @@ Mixage.handleFxPress = function(_channel, _control, value, _status, group) {
 // This function is necessary to allow for soft takeover of the filter amount button
 // see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
 Mixage.handleFilter = function(_channel, _control, value, _status, group) {
-    engine.setValue("[QuickEffectRack1_"+ group +"]", "super1", value / 127);
+    engine.setValue(`[QuickEffectRack1_${group}]`, "super1", value / 127);
 };
 
 // Handles setting soft takeovers when pressing shift
 Mixage.handleShift = function(_channel, _control, value, _status, group) {
     if (value === DOWN) {
         const unitNr = script.deckFromGroup(group);
-        engine.softTakeoverIgnoreNextValue("[QuickEffectRack1_"+group+"]", "super1");
-        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit"+unitNr+"]", "super1");
+        engine.softTakeoverIgnoreNextValue(`[QuickEffectRack1_${group}]`, "super1");
+        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}]`, "super1");
     }
 };
 
