@@ -14,8 +14,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     pManifest->setShortName(QObject::tr("Compressor"));
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
-    pManifest->setDescription(
-            "A single-band compressor effect");
+    pManifest->setDescription("A single-band compressor effect");
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
 
@@ -59,8 +58,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setId("ratio");
     ratio->setName(QObject::tr("Ratio (:1)"));
     ratio->setShortName(QObject::tr("Ratio"));
-    ratio->setDescription(QObject::tr(
-            "The amount of ratio."));
+    ratio->setDescription(QObject::tr("The amount of ratio."));
     ratio->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     //ratio->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     ratio->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
@@ -71,8 +69,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     knee->setId("knee");
     knee->setName(QObject::tr("Knee (dB)"));
     knee->setShortName(QObject::tr("Knee"));
-    knee->setDescription(QObject::tr(
-            "The amount of knee."));
+    knee->setDescription(QObject::tr("The amount of knee."));
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     //knee->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
@@ -83,8 +80,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     attack->setId("attack");
     attack->setName(QObject::tr("Attack (ms)"));
     attack->setShortName(QObject::tr("Attack"));
-    attack->setDescription(QObject::tr(
-            "Attack"));
+    attack->setDescription(QObject::tr("Attack"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     attack->setRange(0, 30, 250);
@@ -93,18 +89,16 @@ EffectManifestPointer CompressorEffect::getManifest() {
     release->setId("release");
     release->setName(QObject::tr("Release (ms)"));
     release->setShortName(QObject::tr("Release"));
-    release->setDescription(QObject::tr(
-            "Release"));
+    release->setDescription(QObject::tr("Release"));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     release->setRange(0, 150, 2000);
 
     EffectManifestParameterPointer gain = pManifest->addParameter();
     gain->setId("gain");
-    gain->setName(QObject::tr("Make up gain"));
+    gain->setName(QObject::tr("Output gain"));
     gain->setShortName(QObject::tr("Gain"));
-    gain->setDescription(QObject::tr(
-            "Gain"));
+    gain->setDescription(QObject::tr("Gain"));
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setRange(-25, 0, 25);
@@ -142,13 +136,36 @@ void CompressorEffect::processChannel(
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
 
-    // TODO test: Marc Benjamin, Zana - Edge of Paradise; Cassette - Tell Me Why; Adele - Skyfall
-    // url: https://github.com/p-hlp/CTAGDRC
-
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
-    SINT numFrames = engineParameters.framesPerBuffer();
 
+    // Compression
+    applyCompression(pState, numSamples, channelCount, pInput, pOutput);
+
+    // Auto make up
+    if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
+        CSAMPLE makeUpState = pState->previousMakeUpGain;
+        CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
+        if (maxSample > CSAMPLE_ZERO) {
+            CSAMPLE minGainReduction = (1 / maxSample) * makeUpCoeff;
+            makeUpState = makeUpAttackCoeff * minGainReduction + (1 - makeUpAttackCoeff) * makeUpState;
+            pState->previousMakeUpGain = makeUpState;
+
+            SampleUtil::applyGain(pOutput, makeUpState, numSamples);
+        }
+    }
+
+    // Output gain
+    CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
+    SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
+
+    // Clipping
+    if (m_pClipping->toInt() == ClippingOn) {
+        SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
+    }
+}
+
+void CompressorEffect::applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput) {
     CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     //CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
@@ -157,7 +174,6 @@ void CompressorEffect::processChannel(
     CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * pState->samplerate));
 
     CSAMPLE stateDB = pState->previousStateDB;
-
     for (SINT i = 0; i < numSamples; i += channelCount) {
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {
@@ -181,59 +197,10 @@ void CompressorEffect::processChannel(
             stateDB = overDB + releaseCoeff * (stateDB - overDB);
         }
 
-
         overDB = stateDB;
         CSAMPLE gain = db2ratio(overDB * (1.0 / ratioParam - 1.0));
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
     }
     pState->previousStateDB = stateDB;
-
-    if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
-        CSAMPLE makeUpState = pState->previousMakeUpGain;
-        CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
-        if (maxSample > CSAMPLE_ZERO) {
-            CSAMPLE minGainReduction = (1 / maxSample) * makeUpCoeff;
-            makeUpState = makeUpAttackCoeff * minGainReduction + (1 - makeUpAttackCoeff) * makeUpState;
-            pState->previousMakeUpGain = makeUpState;
-
-            SampleUtil::applyGain(pOutput, makeUpState, numSamples);
-        }
-    }
-
-    CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
-    SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
-
-    
-    if (m_pClipping->toInt() == ClippingOn) {
-        SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
-    }
-
-
-    //std::string msg2 = std::string("makeUpStateDB: ") + std::to_string(makeUpStateDB) + std::string(" stateDB: ") + std::to_string(stateDB) + std::string("\n");
-    //OutputDebugStringA(msg2.c_str());
-
-    /*
-    if (m_pAutoMakeUp->toInt() == On) {
-         CSAMPLE sum = CSAMPLE_ZERO;
-        for (SINT i = 0; i < numSamples; i += channelCount) {
-            sum += std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
-        }
-        CSAMPLE max = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
-        if (max != CSAMPLE_ZERO) {
-            CSAMPLE averageDB = -ratio2db(max) - 2;
-            CSAMPLE makeUpSatetDB = pState->previousMakeUpGain;
-
-            makeUpSatetDB = averageDB + makeUpCoeff * (makeUpSatetDB - averageDB);
-            std::string msg = std::string("makeUpCoeff: ") + std::to_string(makeUpCoeff) + std::string(" averageDB: ") + std::to_string(averageDB) + std::string(" makeUpSatetDB: ") + std::to_string(makeUpSatetDB) + std::string("\n");
-            OutputDebugStringA(msg.c_str());
-
-            gainParamDB += averageDB;
-            pState->previousMakeUpGain = makeUpSatetDB;
-        }
-    }
-
-
-    SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
-    */
 }
