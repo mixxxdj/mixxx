@@ -66,4 +66,6 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
     EngineEffectParameterPointer m_pGain;
 
     DISALLOW_COPY_AND_ASSIGN(CompressorEffect);
+
+    void applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput);
 };
