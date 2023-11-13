@@ -99,10 +99,9 @@ if(rubberband_FOUND)
       endif()
       find_package(Sleef)
       if (Sleef_FOUND)
-        find_library(sleefdft_path sleefdft REQUIRED)
         set_property(TARGET rubberband::rubberband APPEND PROPERTY INTERFACE_LINK_LIBRARIES
           Sleef::sleef
-          ${sleefdft_path}
+          Sleef::sleefdft
         )
       endif()
     endif()
