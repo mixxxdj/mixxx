@@ -183,7 +183,7 @@ Mixage.init = function(_id, _debugging) {
         // set soft takeover for filter effect
         engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
-        const effectUnit = `[EffectRack1_EffectUnit${deck}]`
+        const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
         
         // make connections for status LEDs
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
@@ -374,7 +374,7 @@ Mixage.blinkLED = function(control, group, time) {
 
 // Runs every time the focused_effect for a channel is changed either by controller or mixxx
 Mixage.handleFxSelect = function(value, group) {
-    const unitNr = script.deckFromGroup(group)
+    const unitNr = script.deckFromGroup(group);
     if (value === 0) {
         Mixage.toggleLED(OFF, group, "fx_sel");
         engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}]`, "super1");
