@@ -118,6 +118,10 @@ if(Sleef_FOUND)
 
     is_static_library(SleefDFT_IS_STATIC Sleef::sleefdft)
     if(SleefDFT_IS_STATIC)
+      set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        Sleef::sleef
+      )
+
       find_package(OpenMP)
       if(OpenMP_CXX_FOUND)
         set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
