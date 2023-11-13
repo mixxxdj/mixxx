@@ -341,7 +341,7 @@ Mixage.stopLoopAdjust = function(group, adjustpoint) {
 };
 
 // Start blinking the LED for a given control based on the time parameter, stops blinking a control light if time is set to zero
-// blinking is syncronized with the "indicator_250millis" control and the time parameter is rounded to the closest
+// blinking is synchronized with the "indicator_250millis" control and the time parameter is rounded to the closest
 Mixage.blinkLED = function(control, group, time) {
 
     // remove any connection that might be present
@@ -509,7 +509,7 @@ Mixage.handlePlay = function(_channel, _control, value, _status, group) {
     }
 };
 
-// Checks wether the Traxx button is double pressed
+// Checks whether the Traxx button is double pressed
 Mixage.handleTraxPress = function(channel, control, value, status, group) {
     if (value === DOWN) {
         if (Mixage.traxxPressTimer === 0) { // first press
