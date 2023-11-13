@@ -168,8 +168,8 @@ void CompressorEffect::processChannel(
 void CompressorEffect::applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput) {
     CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
-    //CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
-    //CSAMPLE kneeHalf = kneeParam / 2.0f;
+    CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
+    CSAMPLE kneeHalf = kneeParam / 2.0f;
     CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * pState->samplerate));
     CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * pState->samplerate));
 
@@ -184,21 +184,21 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState, const SINT
 
         CSAMPLE maxSampleDB = ratio2db(maxSample);
         CSAMPLE overDB = maxSampleDB - thresholdParam;
-        //if (overDB <= kneeHalf) {
-        //    overDB = 0.0f;
-        //} else if (overDB > -kneeHalf && overDB <= kneeHalf) {
-        //    overDB = 0.5f * (overDB + kneeHalf) * (overDB + kneeHalf) / kneeParam;
-        //}
+        if (overDB <= -kneeHalf) {
+            overDB = 0.0f;
+        } else if (overDB > -kneeHalf && overDB <= kneeHalf) {
+            overDB = 0.5f * (overDB + kneeHalf) * (overDB + kneeHalf) / kneeParam;
+        }
+        CSAMPLE compressedDB = overDB * (1.0 / ratioParam - 1.0);
 
         // atack/release
-        if (overDB > stateDB) {
-            stateDB = overDB + attackCoeff * (stateDB - overDB);
+        if (compressedDB > stateDB) {
+            stateDB = compressedDB + attackCoeff * (stateDB - compressedDB);
         } else {
-            stateDB = overDB + releaseCoeff * (stateDB - overDB);
+            stateDB = compressedDB + releaseCoeff * (stateDB - compressedDB);
         }
 
-        overDB = stateDB;
-        CSAMPLE gain = db2ratio(overDB * (1.0 / ratioParam - 1.0));
+        CSAMPLE gain = db2ratio(stateDB);
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
     }
