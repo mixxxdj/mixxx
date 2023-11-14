@@ -1,13 +1,14 @@
 #pragma once
 
-#include <QDir>
 #include <QFileInfo>
 #include <QList>
 #include <QPixmap>
-#include <QScreen>
 #include <QString>
 
 #include "skin/skin.h"
+
+class QScreen;
+class QDir;
 
 namespace mixxx {
 namespace skin {

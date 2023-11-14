@@ -1,16 +1,15 @@
 #include "engine/cachingreader/cachingreaderworker.h"
 
 #include <QAtomicInt>
-#include <QFileInfo>
 #include <QtDebug>
 
 #include "analyzer/analyzersilence.h"
-#include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
+#include "util/fifo.h"
 #include "util/logger.h"
 #include "util/span.h"
 

@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QDomDocument>
-#include <QEvent>
 #include <QSvgWidget>
 
 #include "dialog/ui_dlgkeywheel.h"

@@ -4,7 +4,6 @@
 
 #include <QAtomicInt>
 #include <QMutex>
-#include <cfloat>
 #include <initializer_list>
 
 #include "audio/frame.h"
@@ -18,7 +17,6 @@
 #include "preferences/usersettings.h"
 #include "track/bpm.h"
 #include "track/track_decl.h"
-#include "util/rotary.h"
 #include "util/types.h"
 
 //for the writer
@@ -45,7 +43,6 @@ class ControlPotmeter;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class EngineBufferScaleRubberBand;
 class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;

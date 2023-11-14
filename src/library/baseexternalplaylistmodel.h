@@ -1,16 +1,12 @@
 #pragma once
 
-#include <QItemDelegate>
-#include <QModelIndex>
 #include <QObject>
 #include <QString>
-#include <QtSql>
 
 #include "library/basesqltablemodel.h"
-#include "library/dao/playlistdao.h"
-#include "library/dao/trackdao.h"
-#include "library/librarytablemodel.h"
 #include "library/trackmodel.h"
+
+class QModelIndex;
 
 class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -27,7 +23,7 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
     bool isColumnInternal(int column) override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
     Capabilities getCapabilities() const override;
     QString modelKey(bool noSearch) const override;
 

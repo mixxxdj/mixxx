@@ -3,7 +3,6 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
-#include <QTableView>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
@@ -170,7 +169,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// Return the raw data value at the given index.
     ///
     /// Expected types by ColumnCache field (pass-through = not validated):
-    /// COLUMN_LIBRARYTABLE_ID: DbId::value_type (pass-through)
+    /// COLUMN_LIBRARYTABLE_ID: int (pass-through)
     /// COLUMN_LIBRARYTABLE_ARTIST: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_TITLE: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_ALBUM: QString (pass-through)

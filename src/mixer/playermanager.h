@@ -8,8 +8,6 @@
 
 #include "analyzer/trackanalysisscheduler.h"
 #include "engine/channelhandle.h"
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/compatibility/qmutex.h"

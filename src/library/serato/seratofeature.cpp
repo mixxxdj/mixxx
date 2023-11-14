@@ -1,22 +1,19 @@
 #include "library/serato/seratofeature.h"
 
 #include <QMap>
-#include <QMessageBox>
-#include <QSettings>
 #include <QTextCodec>
+#include <QtConcurrent>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/serato/seratoplaylistmodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_seratofeature.cpp"
-#include "track/cue.h"
-#include "track/keyfactory.h"
 #include "util/assert.h"
-#include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "widget/wlibrary.h"

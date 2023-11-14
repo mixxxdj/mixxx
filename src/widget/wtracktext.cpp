@@ -1,9 +1,5 @@
 #include "widget/wtracktext.h"
 
-#include <QDebug>
-#include <QUrl>
-
-#include "control/controlobject.h"
 #include "moc_wtracktext.cpp"
 #include "track/track.h"
 #include "util/dnd.h"

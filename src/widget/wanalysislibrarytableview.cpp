@@ -1,6 +1,5 @@
 #include "widget/wanalysislibrarytableview.h"
 
-#include "library/trackcollection.h"
 #include "moc_wanalysislibrarytableview.cpp"
 
 WAnalysisLibraryTableView::WAnalysisLibraryTableView(

@@ -9,10 +9,10 @@
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/duration.h"
+#include "util/fifo.h"
 #include "util/performancetimer.h"
 
 class SoundManager;
-class ControlProxy;
 
 class SoundDevicePortAudio : public SoundDevice {
   public:

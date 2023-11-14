@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QTime>
+#include <QMutex>
 #include <vector>
 
-#include "soundio/soundmanagerutil.h"
 #include "util/types.h"
-#include "vinylcontrol/steadypitch.h"
 #include "vinylcontrol/vinylcontrol.h"
 
 #ifdef _MSC_VER
@@ -19,6 +17,10 @@ extern "C" {
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
 #define QUALITY_RING_SIZE 32
+
+class ControlProxy;
+class SteadyPitch;
+struct VinylSignalQualityReport;
 
 class VinylControlXwax : public VinylControl {
     Q_OBJECT

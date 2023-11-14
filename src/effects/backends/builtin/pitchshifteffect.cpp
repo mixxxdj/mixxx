@@ -1,7 +1,11 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 
+#include <rubberband/RubberBandStretcher.h>
+
 #include <QString>
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 namespace {

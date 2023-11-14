@@ -3,7 +3,6 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
 #include "moc_sounddevicenetwork.cpp"

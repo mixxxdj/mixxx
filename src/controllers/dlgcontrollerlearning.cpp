@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
+#include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_dlgcontrollerlearning.cpp"
 #include "util/versionstore.h"

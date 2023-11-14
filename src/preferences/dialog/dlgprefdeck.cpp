@@ -1,24 +1,16 @@
 #include "preferences/dialog/dlgprefdeck.h"
 
-#include <QDir>
 #include <QDoubleSpinBox>
-#include <QList>
-#include <QLocale>
-#include <QToolTip>
-#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/enginebuffer.h"
 #include "mixer/basetrackplayer.h"
-#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
-#include "widget/wnumberpos.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;

@@ -2,8 +2,8 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/engine.h"
-#include "library/trackcollection.h"
+#include "engine/channels/enginedeck.h"
+#include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"

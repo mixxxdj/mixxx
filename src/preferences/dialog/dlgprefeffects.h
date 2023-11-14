@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QButtonGroup>
-
+#include "effects/defs.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
-#include "preferences/effectmanifesttablemodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
 class EffectsManager;
+class EffectManifestTableModel;
 
 class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT

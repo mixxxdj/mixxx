@@ -4,21 +4,17 @@
 #include <QOpenGLTexture>
 #include <QPainterPath>
 
-#include "control/controlobject.h"
-#include "engine/controls/cuecontrol.h"
 #include "track/track.h"
 #include "util/color/color.h"
 #include "util/colorcomponents.h"
-#include "util/painterscope.h"
 #include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/moc_waveformrendermark.cpp"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
-#include "waveform/waveform.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
+#include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wimagestore.h"
-#include "widget/wskincolor.h"
 
 // On the use of QPainter:
 //

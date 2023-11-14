@@ -1,10 +1,8 @@
 #include "library/sidebarmodel.h"
 
-#include <QApplication>
+#include <QTimer>
 #include <QUrl>
-#include <QtDebug>
 
-#include "library/browse/browsefeature.h"
 #include "library/libraryfeature.h"
 #include "library/treeitem.h"
 #include "moc_sidebarmodel.cpp"

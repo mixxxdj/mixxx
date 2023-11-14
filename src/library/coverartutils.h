@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QFuture>
 #include <QImage>
 #include <QList>
@@ -8,15 +9,12 @@
 #include <QStringList>
 
 #include "track/track_decl.h"
-#include "util/cache.h"
-#include "util/fileinfo.h"
-#include "util/imageutils.h"
 
-class CoverInfo;
 class CoverInfoRelative;
 
 namespace mixxx {
 
+class FileInfo;
 class FileAccess;
 
 } // namespace mixxx

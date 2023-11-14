@@ -2,8 +2,6 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/taglib/trackmetadata.h"
-
 namespace mixxx {
 
 // Universal default implementation of IMetadataSource using TagLib.

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QWidget>
 #include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"

@@ -1,6 +1,7 @@
 #include "widget/wvumeterlegacy.h"
 
 #include "moc_wvumeterlegacy.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/widgethelper.h"

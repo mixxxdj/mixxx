@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QEvent>
 
 #include "control/controlobject.h"
 #include "widget/controlwidgetconnection.h"
+
+class QEvent;
 
 struct ControlInfo {
     ControlInfo()

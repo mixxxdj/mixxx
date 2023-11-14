@@ -11,6 +11,7 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/networkoutputstreamworker.h"
 #include "soundio/sounddevice.h"
+#include "util/fifo.h"
 #include "util/memory.h"
 #include "util/performancetimer.h"
 
@@ -18,7 +19,6 @@
 #define CPU_OVERLOAD_DURATION 500 // in ms
 
 class SoundManager;
-class ControlProxy;
 class EngineNetworkStream;
 class SoundDeviceNetworkThread;
 

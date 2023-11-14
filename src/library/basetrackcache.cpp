@@ -1,6 +1,7 @@
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"
+#include "library/searchquery.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
 #include "moc_basetrackcache.cpp"

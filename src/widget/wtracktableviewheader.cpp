@@ -1,6 +1,6 @@
 #include "widget/wtracktableviewheader.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
 
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"

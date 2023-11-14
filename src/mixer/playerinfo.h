@@ -5,7 +5,6 @@
 #include <QMap>
 #include <QMutex>
 #include <QObject>
-#include <QTimerEvent>
 
 #include "control/controlproxy.h"
 #include "track/track_decl.h"

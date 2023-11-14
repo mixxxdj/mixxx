@@ -4,7 +4,6 @@
 #include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
 
-class SoundDevice;
 class SoundManagerConfig;
 
 /**

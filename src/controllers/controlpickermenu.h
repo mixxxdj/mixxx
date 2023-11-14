@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QObject>
 
-#include "preferences/usersettings.h"
+class ConfigKey;
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT

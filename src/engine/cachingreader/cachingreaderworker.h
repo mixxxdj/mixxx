@@ -1,10 +1,7 @@
 #pragma once
 
 #include <QMutex>
-#include <QSemaphore>
 #include <QString>
-#include <QThread>
-#include <QtDebug>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -12,7 +9,9 @@
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {

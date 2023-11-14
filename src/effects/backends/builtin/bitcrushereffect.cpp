@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/bitcrushereffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 // static

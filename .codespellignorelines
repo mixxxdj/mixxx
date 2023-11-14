@@ -71,3 +71,4 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
     // Source: FIPS 180-4 Secure Hash Standard (SHS)
         // ALAC/CAF has been added in version 1.0.26
         QStringLiteral("caf"),
+void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)

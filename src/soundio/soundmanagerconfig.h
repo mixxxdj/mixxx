@@ -11,7 +11,6 @@
 #include "audio/types.h"
 #include "soundio/soundmanagerutil.h"
 
-class SoundDevice;
 class SoundManager;
 
 class SoundManagerConfig {

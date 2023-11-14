@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/filtereffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
 
 namespace {

@@ -1,14 +1,11 @@
 #include "waveformrendererhsv.h"
 
-#include "track/track.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)

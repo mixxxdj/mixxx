@@ -1,10 +1,8 @@
 #include "library/autodj/autodjfeature.h"
 
 #include <QMenu>
-#include <QMetaObject>
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
 #include "library/library.h"
@@ -13,11 +11,9 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
-#include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
-#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -187,8 +183,8 @@ bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
 }
 
 // Add a crate to the auto-DJ queue.
-void AutoDJFeature::slotAddCrateToAutoDj(int iCrateId) {
-    m_pTrackCollection->updateAutoDjCrate(CrateId(iCrateId), true);
+void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
+    m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
@@ -301,9 +297,10 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            int iCrateId = crate.getId().value();
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, iCrateId] { slotAddCrateToAutoDj(iCrateId); });
+            auto crateId = crate.getId();
+            connect(pAction.get(), &QAction::triggered, this, [this, crateId] {
+                slotAddCrateToAutoDj(crateId);
+            });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

@@ -1,7 +1,6 @@
 #include "engine/sync/enginesync.h"
 
 #include <QMetaType>
-#include <QStringList>
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"

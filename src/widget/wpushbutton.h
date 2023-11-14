@@ -1,19 +1,16 @@
 #pragma once
 
-#include <QFocusEvent>
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QString>
 #include <QTimer>
 #include <QVector>
 
 #include "control/controlpushbutton.h"
-#include "skin/legacy/skincontext.h"
 #include "util/fpclassify.h"
-#include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WPushButton : public WWidget {
     Q_OBJECT

@@ -6,15 +6,11 @@
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectchainpresetmanager.h"
 #include "engine/effects/engineeffectchain.h"
-#include "engine/engine.h"
-#include "mixer/playermanager.h"
 #include "moc_effectchain.cpp"
-#include "util/defs.h"
-#include "util/math.h"
 #include "util/sample.h"
-#include "util/xml.h"
 
 EffectChain::EffectChain(const QString& group,
         EffectsManager* pEffectsManager,

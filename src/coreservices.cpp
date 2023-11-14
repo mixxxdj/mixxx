@@ -2,7 +2,6 @@
 
 #include <QApplication>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QStandardPaths>
 
 #ifdef __BROADCAST__
@@ -27,12 +26,12 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
-#include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"

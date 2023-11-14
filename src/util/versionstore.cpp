@@ -1,11 +1,8 @@
 #include "util/versionstore.h"
 
-#include <soundtouch/SoundTouch.h>
-
 #include <QCoreApplication>
+#include <QDebug>
 #include <QStandardPaths>
-#include <QStringList>
-#include <QtDebug>
 #include <QtGlobal>
 
 #ifdef __BROADCAST__
@@ -18,6 +15,7 @@
 #include <portaudio.h>
 #include <rubberband/RubberBandStretcher.h>
 #include <sndfile.h>
+#include <soundtouch/SoundTouch.h>
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 

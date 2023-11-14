@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
-#include <memory>
 
 #include "audio/types.h"
 #include "control/pollingcontrolproxy.h"
@@ -17,13 +16,7 @@
 #include "util/types.h"
 
 class EngineMixer;
-class AudioOutput;
-class AudioInput;
-class AudioSource;
-class AudioDestination;
 class ControlObject;
-class ControlProxy;
-class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"

@@ -10,7 +10,6 @@
 #include "waveform/renderers/waveformrendererrgb.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 
 RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
         : NonGLWaveformWidgetAbstract(group, parent) {

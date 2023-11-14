@@ -5,6 +5,7 @@
 #include "findonwebmenuservices/findonwebmenudiscogs.h"
 #include "findonwebmenuservices/findonwebmenulastfm.h"
 #include "findonwebmenuservices/findonwebmenusoundcloud.h"
+#include "util/parented_ptr.h"
 
 namespace mixxx {
 

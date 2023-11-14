@@ -1,15 +1,8 @@
 #pragma once
 
-#include <QPainter>
-#include <QTime>
-#include <QVector>
-#include <QtDebug>
-
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
-#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
 
@@ -18,6 +11,8 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
+class QPainter;
+class WaveformRendererAbstract;
 
 class WaveformWidgetRenderer {
   public:

@@ -1,12 +1,20 @@
 #pragma once
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
-#include "audio/frame.h"
 #include "preferences/usersettings.h"
 #include "util/span.h"
 
-class CuePointer;
+class AnalyzerTrack;
+class Track;
+
+namespace mixxx {
+namespace audio {
+
+class FramePos;
+class SampleRate;
+
+} // namespace audio
+} // namespace mixxx
 
 class AnalyzerSilence : public Analyzer {
   public:

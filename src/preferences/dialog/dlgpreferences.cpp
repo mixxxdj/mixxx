@@ -7,13 +7,15 @@
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
 
 #include "controllers/dlgprefcontrollers.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
+#include "util/color/color.h"
+#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -39,12 +41,6 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif // __MODPLUG__
-
-#include "controllers/controllermanager.h"
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
-#include "util/color/color.h"
-#include "util/widgethelper.h"
 
 #ifdef __APPLE__
 #include "util/darkappearance.h"

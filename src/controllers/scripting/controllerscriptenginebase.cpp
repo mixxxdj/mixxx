@@ -1,10 +1,10 @@
 #include "controllers/scripting/controllerscriptenginebase.h"
 
-#include "control/controlobject.h"
+#include <QJSEngine>
+
 #include "controllers/controller.h"
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "errordialoghandler.h"
-#include "mixer/playermanager.h"
 #include "moc_controllerscriptenginebase.cpp"
 #include "util/cmdlineargs.h"
 

@@ -1,12 +1,11 @@
 #include "widget/whotcuebutton.h"
 
-#include <QStyleOption>
-#include <QStylePainter>
-#include <QtDebug>
+#include <QMouseEvent>
 
 #include "mixer/playerinfo.h"
 #include "moc_whotcuebutton.cpp"
 #include "track/track.h"
+#include "widget/controlwidgetconnection.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;

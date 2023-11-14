@@ -1,7 +1,10 @@
 #include "library/dlghidden.h"
 
+#include <QItemSelection>
+
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/hiddentablemodel.h"
-#include "library/trackcollectionmanager.h"
+#include "library/library.h"
 #include "moc_dlghidden.cpp"
 #include "util/assert.h"
 #include "widget/wlibrary.h"

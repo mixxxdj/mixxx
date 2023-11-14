@@ -1,8 +1,6 @@
 #include "controllers/delegates/midioptionsdelegate.h"
 
 #include <QComboBox>
-#include <QTableView>
-#include <QtDebug>
 
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"

@@ -1,9 +1,6 @@
 #pragma once
 
-#include <optional>
-
 #include "analyzer/analyzertrack.h"
-#include "track/track_decl.h"
 #include "track/trackid.h"
 
 /// A track to be scheduled for analysis with additional options.

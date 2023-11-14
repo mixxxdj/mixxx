@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QComboBox>
-#include <QDomNode>
 
-#include "effects/effectslot.h"
-#include "skin/legacy/skincontext.h"
+#include "effects/defs.h"
+#include "widget/wbasewidget.h"
 
 class EffectsManager;
+class QDomNode;
+class SkinContext;
 
 class WEffectSelector : public QComboBox, public WBaseWidget {
     Q_OBJECT

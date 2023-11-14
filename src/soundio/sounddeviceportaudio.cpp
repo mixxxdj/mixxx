@@ -7,7 +7,6 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "sounddevicenetwork.h"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
@@ -19,7 +18,6 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "util/trace.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
 #include "waveform/visualplayposition.h"
 
 #ifdef PA_USE_ALSA

@@ -7,7 +7,8 @@
 #include "util/duration.h"
 #include "util/memory.h"
 #include "util/performancetimer.h"
-#include "waveform/visualplayposition.h"
+
+class VisualPlayPosition;
 
 namespace {
 

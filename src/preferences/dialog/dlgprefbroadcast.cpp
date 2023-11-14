@@ -1,10 +1,9 @@
-#include <QtDebug>
-#include <QInputDialog>
-#include <QMetaMethod>
-#include <QMetaProperty>
-#include <QAbstractItemDelegate>
-#include <QMessageBox>
+#include "preferences/dialog/dlgprefbroadcast.h"
+
 #include <QHeaderView>
+#include <QInputDialog>
+#include <QMessageBox>
+#include <QtDebug>
 
 // this is needed to define SHOUT_META_* macros used in version guard
 #include <shoutidjc/shout.h>
@@ -14,7 +13,7 @@
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
 #include "moc_dlgprefbroadcast.cpp"
-#include "preferences/dialog/dlgprefbroadcast.h"
+#include "preferences/broadcastsettingsmodel.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
 

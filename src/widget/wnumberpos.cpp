@@ -1,10 +1,10 @@
 #include "widget/wnumberpos.h"
 
-#include "control/controlobject.h"
+#include <QMouseEvent>
+
 #include "control/controlproxy.h"
 #include "moc_wnumberpos.cpp"
 #include "util/duration.h"
-#include "util/math.h"
 
 WNumberPos::WNumberPos(const QString& group, QWidget* parent)
         : WNumber(parent),

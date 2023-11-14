@@ -1,24 +1,18 @@
 #include "skin/skinloader.h"
 
-#include <QApplication>
 #include <QDir>
 #include <QString>
 #include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "controllers/controllermanager.h"
-#include "effects/effectsmanager.h"
-#include "library/library.h"
 #include "mixer/playermanager.h"
 #include "moc_skinloader.cpp"
-#include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "util/debug.h"
 #include "util/timer.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 namespace mixxx {
 namespace skin {

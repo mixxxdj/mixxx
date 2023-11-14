@@ -1,14 +1,9 @@
 #include "waveformrenderersignalbase.h"
 
-#include <QDomNode>
-
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/colorcomponents.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");

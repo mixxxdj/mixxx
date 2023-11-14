@@ -3,7 +3,9 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "library/searchquery.h"
 #include "library/searchqueryparser.h"
+#include "library/trackset/crate/crate.h"
 #include "test/librarytest.h"
 #include "track/track.h"
 #include "util/assert.h"

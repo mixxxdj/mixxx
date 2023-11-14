@@ -2,11 +2,8 @@
 
 #include <QChar>
 #include <QDir>
-#include <QDirIterator>
 #include <QFileInfo>
-#include <QImage>
 #include <QtDebug>
-#include <QtSql>
 
 #ifdef __SQLITE3__
 #include <sqlite3.h>
@@ -18,10 +15,8 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
-#include "library/dao/trackschema.h"
 #include "library/library_prefs.h"
 #include "library/queryutil.h"
-#include "library/trackset/crate/cratestorage.h"
 #include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beats.h"
@@ -29,7 +24,6 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
-#include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
@@ -2289,7 +2283,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         .arg(trackIdList));
         updatePlayed.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         VERIFY_OR_DEBUG_ASSERT(!updatePlayed.hasError()) {
             return false;
         }
@@ -2312,7 +2306,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         .arg(trackIdList));
         updateNotPlayed.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         VERIFY_OR_DEBUG_ASSERT(!updateNotPlayed.hasError()) {
             return false;
         }
@@ -2335,7 +2329,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         "AND PlaylistTracks.track_id=:trackId"));
         playCounterQuery.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         auto trackUpdateQuery = FwdSqlQuery(
                 m_database,
                 QStringLiteral(
@@ -2346,7 +2340,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
         for (const auto& trackId : trackIds) {
             playCounterQuery.bindValue(
                     QStringLiteral(":trackId"),
-                    trackId.toVariant());
+                    trackId);
             VERIFY_OR_DEBUG_ASSERT(!playCounterQuery.hasError()) {
                 continue;
             }
@@ -2369,7 +2363,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
-                    trackId.toVariant());
+                    trackId);
             trackUpdateQuery.bindValue(
                     QStringLiteral(":timesplayed"),
                     timesplayed);

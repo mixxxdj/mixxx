@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgprefmixer.h"
 
 #include <QButtonGroup>
-#include <QHBoxLayout>
 #include <QPainterPath>
 #include <QStandardItemModel>
 
@@ -12,7 +11,10 @@
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/quickeffectchain.h"
+#include "effects/effectparameterslotbase.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
+#include "effects/presets/effectchainpreset.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefmixer.cpp"

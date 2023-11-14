@@ -1,12 +1,11 @@
 #include "widget/wstatuslight.h"
 
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
 
 #include "moc_wstatuslight.cpp"
+#include "skin/legacy/skincontext.h"
 
 WStatusLight::WStatusLight(QWidget * parent)
         : WWidget(parent),

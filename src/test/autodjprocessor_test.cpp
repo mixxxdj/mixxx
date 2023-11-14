@@ -10,6 +10,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "engine/engine.h"
+#include "library/playlisttablemodel.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -179,11 +180,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
 
 class AutoDJProcessorTest : public LibraryTest {
   protected:
-    static TrackId nextTrackId(TrackId trackId) {
-        return TrackId(trackId.value() + 1);
-    }
-
-    TrackPointer newTestTrack(TrackId trackId) const {
+    TrackPointer newTestTrack(TrackId trackId = {}) const {
         TrackPointer pTrack(
                 Track::newDummy(getTestDir().filePath(kTrackLocationTest), trackId));
         EXPECT_EQ(
@@ -264,7 +261,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerIntro) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
@@ -338,7 +335,7 @@ TEST_F(AutoDJProcessorTest, FullIntroOutro_LongerOutro) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
@@ -418,7 +415,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerIntro) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
@@ -494,7 +491,7 @@ TEST_F(AutoDJProcessorTest, FadeAtOutroStart_LongerOutro) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Pretend that track is 1 minute and 40 seconds long.
     pTrack->setDuration(100);
     // Load track and mark it playing.
@@ -803,7 +800,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1) {
     ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -842,7 +839,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck1_TrackLoadFailed) {
     ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -898,7 +895,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2) {
     ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 2.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -938,7 +935,7 @@ TEST_F(AutoDJProcessorTest, EnabledSuccess_PlayingDeck2_TrackLoadFailed) {
     ASSERT_TRUE(testId.isValid());
 
     // Pretend a track is playing on deck 2.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1012,7 +1009,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {
     // Crossfader starts on the right.
     mixer.crossfader.set(1.0);
     // Pretend a track is playing on deck 2.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1099,7 +1096,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadFailed) {
     // Crossfader starts on the right.
     mixer.crossfader.set(1.0);
     // Pretend a track is playing on deck 2.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck2.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1202,7 +1199,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadSuccess) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1289,7 +1286,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_LoadOnDeck1_TrackLoadFailed) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1395,7 +1392,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1482,7 +1479,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Pretend that track is 2 minutes long.
     pTrack->setDuration(120);
     // Load track and mark it playing.
@@ -1564,7 +1561,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.
@@ -1616,7 +1613,7 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekBeforeTransition) {
     // Crossfader starts on the left.
     mixer.crossfader.set(-1.0);
     // Pretend a track is playing on deck 1.
-    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    TrackPointer pTrack = newTestTrack();
     // Load track and mark it playing.
     deck1.slotLoadTrack(pTrack, true);
     // Indicate the track loaded successfully.

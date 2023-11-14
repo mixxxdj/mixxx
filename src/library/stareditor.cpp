@@ -1,6 +1,8 @@
 #include "library/stareditor.h"
 
-#include <QStylePainter>
+#include <QItemSelectionModel>
+#include <QMouseEvent>
+#include <QTableView>
 
 #include "library/starrating.h"
 #include "moc_stareditor.cpp"

@@ -70,8 +70,9 @@ class CoverInfoRelative {
         *this = CoverInfoRelative();
     }
 
-    void setImage(
-            const QImage& image = QImage());
+    void setImageDigest(
+            const QImage& image);
+
     void setImageDigest(
             QByteArray imageDigest,
             quint16 legacyHash = defaultLegacyHash()) {
@@ -79,11 +80,15 @@ class CoverInfoRelative {
         m_legacyHash = legacyHash;
     }
 
-    bool hasImage() const {
-        return cacheKey() != CoverImageUtils::defaultCacheKey();
+    bool hasCacheKey() const {
+        return !m_imageDigest.isEmpty() || m_legacyHash != defaultLegacyHash();
     }
 
-    const QByteArray imageDigest() const {
+    bool hasImage() const {
+        return type != NONE;
+    }
+
+    const QByteArray& imageDigest() const {
         return m_imageDigest;
     }
     mixxx::cache_key_t cacheKey() const {
@@ -177,13 +182,6 @@ class CoverInfo : public CoverInfoRelative {
         }
     };
     LoadedImage loadImage(TrackPointer pTrack = {}) const;
-
-    /// Verify the image digest and update it if necessary.
-    /// If the corresponding image has already been loaded it
-    /// could be provided as a parameter to avoid reloading
-    /// if actually needed.
-    bool refreshImageDigest(
-            const QImage& loadedImage = QImage());
 
     QString trackLocation;
 };

@@ -1,10 +1,8 @@
 #include "effects/backends/builtin/autopaneffect.h"
 
-#include <QtDebug>
-
-#include "util/experiment.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 constexpr float kPositionRampingThreshold = 0.002f;
 

@@ -1,6 +1,5 @@
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
-#include <sndfile.h>
 
 const int EncoderFlacSettings::DEFAULT_QUALITY_VALUE = 5;
 const QString EncoderFlacSettings::BITS_GROUP = "FLAC_BITS";

@@ -1,5 +1,6 @@
 #include "effects/chains/equalizereffectchain.h"
 
+#include "control/controlobject.h"
 #include "effects/effectslot.h"
 #include "moc_equalizereffectchain.cpp"
 

@@ -1,5 +1,11 @@
 #include "util/texture.h"
 
+#include <QImage>
+#include <QOpenGLTexture>
+#include <QPixmap>
+
+#include "widget/paintable.h"
+
 std::unique_ptr<QOpenGLTexture> createTexture(const QImage& image) {
     if (image.isNull()) {
         return nullptr;

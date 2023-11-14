@@ -1,12 +1,18 @@
 #pragma once
 
+#include <memory>
+
 #include "control/controlproxy.h"
 #include "control/pollingcontrolproxy.h"
-#include "effects/effectsmanager.h"
+#include "effects/defs.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmixerdlg.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
+
+class QComboBox;
+class QWidget;
+class EffectsManager;
 
 class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     Q_OBJECT

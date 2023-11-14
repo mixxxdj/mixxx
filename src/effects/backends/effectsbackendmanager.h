@@ -1,8 +1,9 @@
 #pragma once
 
-#include "effects/backends/effectsbackend.h"
+#include "effects/defs.h"
 
 class ControlObject;
+class EffectProcessor;
 
 /// EffectsBackendManager initializes EffectsBackends, maintains the list of
 /// available EffectManifests, and creates EffectProcessors from EffectManifests.

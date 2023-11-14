@@ -4,10 +4,7 @@
 #include <QList>
 
 #include "effects/backends/effectsbackendmanager.h"
-#include "effects/presets/effectchainpreset.h"
 #include "preferences/usersettings.h"
-
-class EffectsManager;
 
 struct EffectsXmlData {
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
@@ -69,7 +66,11 @@ class EffectChainPresetManager : public QObject {
     bool savePreset(EffectChainPresetPointer pPreset);
     void updatePreset(EffectChainPointer pChainSlot);
 
+    EffectChainPresetPointer getDefaultQuickEffectPreset();
+
     EffectsXmlData readEffectsXml(const QDomDocument& doc, const QStringList& deckStrings);
+    EffectChainPresetPointer readEffectsXmlSingleDeck(
+            const QDomDocument& doc, const QString& deckString);
     void saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data);
 
   signals:

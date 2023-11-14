@@ -4,15 +4,11 @@
 
 #include <QLibrary>
 #include <QThread>
-#include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
 #include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"

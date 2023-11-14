@@ -3,8 +3,6 @@
 
 #include "waveformmarkset.h"
 #include "engine/controls/cuecontrol.h"
-#include "control/controlobject.h"
-#include "util/memory.h"
 
 WaveformMarkSet::WaveformMarkSet() {
 }

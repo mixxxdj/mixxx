@@ -1,12 +1,13 @@
 #pragma once
 
+#include <engine/sidechain/networkoutputstreamworker.h>
+
 #include <QVector>
 
 #include "audio/types.h"
-#include "engine/sidechain/networkinputstreamworker.h"
-#include "engine/sidechain/networkoutputstreamworker.h"
-#include "util/fifo.h"
 #include "util/types.h"
+
+class NetworkInputStreamWorker;
 
 class EngineNetworkStream {
   public:

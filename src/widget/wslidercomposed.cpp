@@ -7,8 +7,6 @@
 
 #include "moc_wslidercomposed.cpp"
 #include "util/debug.h"
-#include "util/duration.h"
-#include "util/math.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wskincolor.h"

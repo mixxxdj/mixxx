@@ -3,16 +3,17 @@
 #include <QMutex>
 #include <QSharedPointer>
 #include <QTimer>
+#include <memory>
 
-#include "controllers/controllerenumerator.h"
-#include "controllers/controllermappinginfo.h"
-#include "controllers/controllermappinginfoenumerator.h"
-#include "controllers/legacycontrollermapping.h"
 #include "preferences/usersettings.h"
+#include "util/duration.h"
 
 // Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
+class MappingInfoEnumerator;
+class LegacyControllerMapping;
+class ControllerEnumerator;
 
 /// Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);

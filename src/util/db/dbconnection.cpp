@@ -8,7 +8,6 @@
 #include "util/db/dbconnection.h"
 
 #include "util/db/sqllikewildcards.h"
-#include "util/memory.h"
 #include "util/logger.h"
 #include "util/assert.h"
 

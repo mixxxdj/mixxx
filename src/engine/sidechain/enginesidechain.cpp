@@ -16,7 +16,6 @@
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
-#include "util/timer.h"
 #include "util/trace.h"
 
 #define SIDECHAIN_BUFFER_SIZE 65536

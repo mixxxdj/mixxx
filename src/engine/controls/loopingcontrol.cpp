@@ -6,6 +6,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
@@ -13,7 +14,6 @@
 #include "util/compatibility/qatomic.h"
 #include "util/make_const_iterator.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;

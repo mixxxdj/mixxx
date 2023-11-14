@@ -1,15 +1,18 @@
 #include "controllers/midi/midicontroller.h"
 
+#include <QJSValue>
+
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/midioutputhandler.h"
 #include "controllers/midi/midiutils.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
 #include "util/make_const_iterator.h"
 #include "util/math.h"
-#include "util/screensaver.h"
 
 MidiController::MidiController(const QString& deviceName)
         : Controller(deviceName) {

@@ -1,7 +1,5 @@
 #include "vinylcontrol/vinylcontrolxwax.h"
 
-#include <limits.h>
-
 #include <QtDebug>
 
 #include "audio/types.h"
@@ -11,6 +9,9 @@
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/timer.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
+#include "vinylcontrol/steadypitch.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 /****** TODO *******
    Stuff to maybe implement here

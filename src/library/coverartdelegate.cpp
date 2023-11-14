@@ -1,10 +1,10 @@
 #include "library/coverartdelegate.h"
 
 #include <QPainter>
+#include <QTableView>
 #include <algorithm>
 
 #include "library/coverartcache.h"
-#include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
 #include "moc_coverartdelegate.cpp"
 #include "track/track.h"
@@ -78,23 +78,12 @@ void CoverArtDelegate::slotInhibitLazyLoading(
 void CoverArtDelegate::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedImageHash,
-        bool coverInfoUpdated) {
+        const QPixmap& pixmap) {
     Q_UNUSED(pixmap);
     if (pRequester != this) {
         return;
     }
-    if (coverInfoUpdated) {
-        const auto pTrack =
-                loadTrackByLocation(coverInfo.trackLocation);
-        if (pTrack) {
-            kLogger.info()
-                    << "Updating cover info of track"
-                    << coverInfo.trackLocation;
-            pTrack->setCoverInfo(coverInfo);
-        }
-    }
+    mixxx::cache_key_t requestedImageHash = coverInfo.cacheKey();
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
     if (pixmap.isNull()) {
@@ -131,11 +120,9 @@ void CoverArtDelegate::paintItem(
             return;
         }
         const double scaleFactor = qobject_cast<QWidget*>(parent())->devicePixelRatioF();
-        QPixmap pixmap = m_pCache->tryLoadCover(this,
+        QPixmap pixmap = CoverArtCache::getCachedCover(
                 coverInfo,
-                static_cast<int>(option.rect.width() * scaleFactor),
-                m_inhibitLazyLoading ? CoverArtCache::Loading::CachedOnly
-                                     : CoverArtCache::Loading::Default);
+                static_cast<int>(option.rect.width() * scaleFactor));
         if (pixmap.isNull()) {
             // Cache miss
             if (m_inhibitLazyLoading) {
@@ -144,8 +131,21 @@ void CoverArtDelegate::paintItem(
                 // non-cache we can request an update.
                 m_cacheMissRows.append(index.row());
             } else {
-                // If we asked for a non-cache image and got a null pixmap,
-                // then our request was queued.
+                if (coverInfo.imageDigest().isEmpty()) {
+                    // This happens if we have the legacy hash
+                    // The CoverArtCache will take care of the update
+                    const auto pTrack = loadTrackByLocation(coverInfo.trackLocation);
+                    CoverArtCache::requestUncachedCover(
+                            this,
+                            pTrack,
+                            static_cast<int>(option.rect.width() * scaleFactor));
+                } else {
+                    // This is the fast path with an internal temporary track
+                    CoverArtCache::requestUncachedCover(
+                            this,
+                            coverInfo,
+                            static_cast<int>(option.rect.width() * scaleFactor));
+                }
                 m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
         } else {

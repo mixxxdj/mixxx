@@ -1,5 +1,6 @@
 #include "mixxxmainwindow.h"
 
+#include <QCloseEvent>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
@@ -14,17 +15,17 @@
 #include <QtDBus>
 #endif
 
-#include "widget/wglwidget.h"
-
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
 #endif
 
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "coreservices.h"
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/effectsmanager.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -32,19 +33,14 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
@@ -52,38 +48,18 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/debug.h"
-#include "util/experiment.h"
-#include "util/font.h"
-#include "util/logger.h"
-#include "util/math.h"
 #include "util/sandbox.h"
-#include "util/screensaver.h"
-#include "util/time.h"
 #include "util/timer.h"
-#include "util/translations.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wglwidget.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
-#endif
-
-#if defined(Q_OS_LINUX)
-#include <X11/Xlib.h>
-#include <X11/Xlibint.h>
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
-
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include <QtX11Extras/QX11Info>
-#endif
 #endif
 
 namespace {

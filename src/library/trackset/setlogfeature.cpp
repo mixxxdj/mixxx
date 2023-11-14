@@ -2,9 +2,7 @@
 
 #include <QDateTime>
 #include <QMenu>
-#include <QtDebug>
 
-#include "control/controlobject.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/playlisttablemodel.h"
@@ -13,7 +11,6 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
 #include "util/make_const_iterator.h"

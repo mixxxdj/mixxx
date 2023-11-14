@@ -4,8 +4,12 @@
 
 #include "control/controlindicatortimer.h"
 #include "database/mixxxdb.h"
+#include "effects/effectsmanager.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
@@ -188,7 +192,8 @@ TEST_F(PlayerManagerTest, UnEjectReplaceTrackTest) {
 
 TEST_F(PlayerManagerTest, UnEjectInvalidTrackIdTest) {
     // Save an invalid trackid in playermanager.
-    auto pTrack = Track::newDummy(getTestDir().filePath(kTrackLocationTest1), TrackId(10));
+    auto pTrack = Track::newDummy(
+            getTestDir().filePath(kTrackLocationTest1), TrackId(QVariant(10)));
     ASSERT_NE(nullptr, pTrack);
     m_pPlayerManager->slotSaveEjectedTrack(pTrack);
     auto deck1 = m_pPlayerManager->getDeck(1);

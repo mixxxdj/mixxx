@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QSqlDatabase>
-
 #include "preferences/usersettings.h"
-
 #include "util/db/dbconnectionpool.h"
 
+class QSqlDatabase;
 
 class MixxxDb : public QObject {
     Q_OBJECT

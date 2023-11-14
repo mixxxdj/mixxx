@@ -1,8 +1,6 @@
 #pragma once
 
-#include <QtGlobal>
-
-QT_FORWARD_DECLARE_CLASS(WGLWidget);
+class WGLWidget;
 
 // Creating a QGLContext on its own doesn't work. We've tried that. You can't
 // create a context on your own. It has to be associated with a real paint

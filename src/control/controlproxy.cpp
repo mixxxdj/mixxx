@@ -1,7 +1,5 @@
 #include "control/controlproxy.h"
 
-#include <QtDebug>
-
 #include "control/control.h"
 #include "moc_controlproxy.cpp"
 

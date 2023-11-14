@@ -1,6 +1,5 @@
 #include "library/scanner/importfilestask.h"
 
-#include "library/scanner/libraryscanner.h"
 #include "moc_importfilestask.cpp"
 #include "util/timer.h"
 
