@@ -56,7 +56,7 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     FwdSqlQuery query(database, sqlStmt);
     query.bindValue(
             QStringLiteral(":unequalHash"),
-            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+            QVariant(mixxx::invalidCacheKey()));
     const auto numRows = execRowCountQuery(query);
     VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()

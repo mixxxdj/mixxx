@@ -1074,7 +1074,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
   src/util/db/dbconnectionpooler.cpp
-  src/util/db/dbid.cpp
   src/util/db/fwdsqlquery.cpp
   src/util/db/fwdsqlqueryselectresult.cpp
   src/util/db/sqlite.cpp

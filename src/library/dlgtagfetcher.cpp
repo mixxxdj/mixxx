@@ -539,11 +539,7 @@ void DlgTagFetcher::tagSelected() {
 void DlgTagFetcher::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+        const QPixmap& pixmap) {
     if (pRequester == this &&
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
@@ -587,9 +583,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     QPixmap fetchedCoverArtPixmap;
     fetchedCoverArtPixmap.loadFromData(data);
     CoverInfo coverInfo;
-    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
-    coverInfo.setImage();
 
     loadingProgressBar->setVisible(false);
     statusMessage->clear();

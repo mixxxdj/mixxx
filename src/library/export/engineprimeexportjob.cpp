@@ -94,8 +94,7 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
     mixxx::FileInfo srcFileInfo = pTrack->getFileInfo();
-    const auto trackId = pTrack->getId().value();
-    QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
+    QString dstFilename = pTrack->getId().toString() + " - " + srcFileInfo.fileName();
     QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
             srcFileInfo.lastModified() > QFileInfo{dstPath}.lastModified()) {
@@ -549,7 +548,7 @@ void EnginePrimeExportJob::run() {
 
         DEBUG_ASSERT(m_pLastLoadedTrack != nullptr);
 
-        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().value()
+        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().toString()
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
         try {
             exportTrack(m_pRequest,
@@ -560,7 +559,7 @@ void EnginePrimeExportJob::run() {
                     m_pLastLoadedWaveform.get());
         } catch (std::exception& e) {
             qWarning() << "Failed to export track"
-                       << m_pLastLoadedTrack->getId().value() << ":"
+                       << m_pLastLoadedTrack->getId().toString() << ":"
                        << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);
@@ -629,7 +628,7 @@ void EnginePrimeExportJob::run() {
             return;
         }
 
-        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().value() << "...";
+        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().toString() << "...";
         try {
             exportCrate(
                     pExtRootCrate.get(),
@@ -637,7 +636,7 @@ void EnginePrimeExportJob::run() {
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);
         } catch (std::exception& e) {
-            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
+            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().toString()
                        << ":" << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);

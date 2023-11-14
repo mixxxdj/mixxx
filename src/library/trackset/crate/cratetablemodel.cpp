@@ -12,7 +12,7 @@
 
 namespace {
 
-const QString kModelName = "crate";
+const QString kModelName = QStringLiteral("crate");
 
 } // anonymous namespace
 
@@ -35,9 +35,9 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     QString currSearch = currentSearch();
     if (m_selectedCrate.isValid()) {
         if (!currSearch.trimmed().isEmpty()) {
-            m_searchTexts.insert(m_selectedCrate.value(), currSearch);
+            m_searchTexts.insert(m_selectedCrate, currSearch);
         } else {
-            m_searchTexts.remove(m_selectedCrate.value());
+            m_searchTexts.remove(m_selectedCrate);
         }
     }
 
@@ -77,7 +77,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
             m_pTrackCollectionManager->internalCollection()->getTrackSource());
 
     // Restore search text
-    setSearch(m_searchTexts.value(m_selectedCrate.value()));
+    setSearch(m_searchTexts.value(m_selectedCrate));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
@@ -205,18 +205,17 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 QString CrateTableModel::modelKey(bool noSearch) const {
     if (m_selectedCrate.isValid()) {
         if (noSearch) {
-            return kModelName + QStringLiteral(":") +
-                    QString::number(m_selectedCrate.value());
+            return kModelName + QChar(':') + m_selectedCrate.toString();
         }
-        return kModelName + QStringLiteral(":") +
-                QString::number(m_selectedCrate.value()) +
-                QStringLiteral("#") +
+        return kModelName + QChar(':') +
+                m_selectedCrate.toString() +
+                QChar('#') +
                 currentSearch();
     } else {
         if (noSearch) {
             return kModelName;
         }
-        return kModelName + QStringLiteral("#") +
+        return kModelName + QChar('#') +
                 currentSearch();
     }
 }

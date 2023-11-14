@@ -804,7 +804,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
                          fieldIndex(ColumnCache::
                                          COLUMN_LIBRARYTABLE_COVERART_COLOR))
                     .data());
-    if (coverInfo.hasImage()) {
+    if (coverInfo.hasCacheKey()) {
         coverInfo.type = static_cast<CoverInfo::Type>(
                 index.sibling(index.row(),
                              fieldIndex(ColumnCache::

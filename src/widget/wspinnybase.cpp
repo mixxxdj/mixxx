@@ -290,11 +290,7 @@ void WSpinnyBase::slotTrackCoverArtUpdated() {
 void WSpinnyBase::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
+        const QPixmap& pixmap) {
     if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {

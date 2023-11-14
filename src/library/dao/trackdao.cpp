@@ -2289,7 +2289,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         .arg(trackIdList));
         updatePlayed.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         VERIFY_OR_DEBUG_ASSERT(!updatePlayed.hasError()) {
             return false;
         }
@@ -2312,7 +2312,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         .arg(trackIdList));
         updateNotPlayed.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         VERIFY_OR_DEBUG_ASSERT(!updateNotPlayed.hasError()) {
             return false;
         }
@@ -2335,7 +2335,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
                         "AND PlaylistTracks.track_id=:trackId"));
         playCounterQuery.bindValue(
                 QStringLiteral(":playlistHidden"),
-                PlaylistDAO::PLHT_SET_LOG);
+                QVariant(PlaylistDAO::PLHT_SET_LOG));
         auto trackUpdateQuery = FwdSqlQuery(
                 m_database,
                 QStringLiteral(
@@ -2346,7 +2346,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
         for (const auto& trackId : trackIds) {
             playCounterQuery.bindValue(
                     QStringLiteral(":trackId"),
-                    trackId.toVariant());
+                    trackId);
             VERIFY_OR_DEBUG_ASSERT(!playCounterQuery.hasError()) {
                 continue;
             }
@@ -2369,7 +2369,7 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
             }
             trackUpdateQuery.bindValue(
                     QStringLiteral(":trackId"),
-                    trackId.toVariant());
+                    trackId);
             trackUpdateQuery.bindValue(
                     QStringLiteral(":timesplayed"),
                     timesplayed);

@@ -16,66 +16,44 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     static void requestCover(
             const QObject* pRequester,
             const CoverInfo& coverInfo) {
-        requestCover(pRequester, coverInfo, TrackPointer());
+        requestCoverImpl(pRequester, TrackPointer(), coverInfo);
     }
+
     static void requestTrackCover(
             const QObject* pRequester,
             const TrackPointer& pTrack);
 
-    /* This method is used to request a cover art pixmap.
-     *
-     * @param pRequester : an arbitrary pointer (can be any number you'd like,
-     *      really) that will be provided in the coverFound signal for this
-     *      request. This allows you to match requests with their responses.
-     *
-     * @param onlyCached : if it is 'true', the method will NOT try to load
-     *      covers from the given 'coverLocation' and it will also NOT run the
-     *      search algorithm.
-     *      In this way, the method will just look into CoverCache and return
-     *      a Pixmap if it is already loaded in the QPixmapCache.
-     */
-    enum class Loading {
-        CachedOnly,
-        NoSignal,
-        Default, // signal when done
-    };
-    QPixmap tryLoadCover(
+    static QPixmap getCachedCover(
+            const CoverInfo& coverInfo,
+            int desiredWidth);
+
+    static void requestUncachedCover(
             const QObject* pRequester,
-            const CoverInfo& info,
-            int desiredWidth = 0, // <= 0: original size
-            Loading loading = Loading::Default) {
-        return tryLoadCover(
-                pRequester,
-                TrackPointer(),
-                info,
-                desiredWidth,
-                loading);
-    }
+            const CoverInfo& coverInfo,
+            int desiredWidth);
+
+    static void requestUncachedCover(
+            const QObject* pRequester,
+            const TrackPointer& pTrack,
+            int desiredWidth);
 
     // Only public for testing
     struct FutureResult {
         FutureResult()
                 : pRequester(nullptr),
-                  requestedCacheKey(CoverImageUtils::defaultCacheKey()),
-                  signalWhenDone(false),
-                  coverInfoUpdated(false) {
+                  requestedCacheKey(CoverImageUtils::defaultCacheKey()) {
         }
         FutureResult(
                 const QObject* pRequestorArg,
-                mixxx::cache_key_t requestedCacheKeyArg,
-                bool signalWhenDoneArg)
+                mixxx::cache_key_t requestedCacheKeyArg)
                 : pRequester(pRequestorArg),
-                  requestedCacheKey(requestedCacheKeyArg),
-                  signalWhenDone(signalWhenDoneArg),
-                  coverInfoUpdated(false) {
+                  requestedCacheKey(requestedCacheKeyArg) {
         }
 
         const QObject* pRequester;
         mixxx::cache_key_t requestedCacheKey;
-        bool signalWhenDone;
 
         CoverArt coverArt;
-        bool coverInfoUpdated;
     };
     // Load cover from path indicated in coverInfo. WARNING: This is run in a
     // worker thread.
@@ -83,8 +61,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
             const QObject* pRequester,
             TrackPointer pTrack,
             CoverInfo coverInfo,
-            int desiredWidth,
-            bool emitSignals);
+            int desiredWidth);
 
   private slots:
     // Called when loadCover is complete in the main thread.
@@ -94,9 +71,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     void coverFound(
             const QObject* requester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
 
   protected:
     CoverArtCache();
@@ -104,22 +79,17 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
     friend class Singleton<CoverArtCache>;
 
   private:
-    static void requestCover(
+    static void requestCoverImpl(
             const QObject* pRequester,
+            const TrackPointer& /*optional*/ pTrack,
             const CoverInfo& coverInfo,
-            const TrackPointer& /*optional*/ pTrack);
+            int desiredWidth = 0); // <= 0: original size
 
-    QPixmap tryLoadCover(
+    void tryLoadCover(
             const QObject* pRequester,
             const TrackPointer& pTrack,
             const CoverInfo& info,
-            int desiredWidth,
-            Loading loading);
+            int desiredWidth);
 
     QSet<QPair<const QObject*, mixxx::cache_key_t>> m_runningRequests;
 };
-
-inline
-QDebug operator<<(QDebug dbg, CoverArtCache::Loading loading) {
-    return dbg << static_cast<int>(loading);
-}
