@@ -7,7 +7,6 @@
 #include "moc_controller.cpp"
 #include "util/screensaver.h"
 
-
 namespace {
 QString loggingCategoryPrefix(const QString& deviceName) {
     return QStringLiteral("controller.") +
