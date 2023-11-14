@@ -291,6 +291,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Decrease internal Leader BPM by 0.1"),
             syncMenu);
     syncMenu->addSeparator();
+    addControl("[AbletonLink]",
+            "sync_enabled",
+            tr("Link button"),
+            tr("Joins or disconnect from Ableton Link session"),
+            syncMenu);
+    addControl("[AbletonLink]",
+            "num_peers",
+            tr("Ableton Link number of peers"),
+            tr("Number of connected Ableton Link peers"),
+            syncMenu);
+
+    syncMenu->addSeparator();
     addDeckAndSamplerControl("sync_leader",
             tr("Sync Leader"),
             tr("Sync mode 3-state toggle / indicator (Off, Soft Leader, "

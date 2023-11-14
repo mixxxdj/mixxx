@@ -93,7 +93,7 @@ TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -137,7 +137,7 @@ TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output is empty.
     assertMainBufferMatchesGolden(testName);
@@ -208,7 +208,7 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -279,7 +279,7 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -376,7 +376,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -473,7 +473,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);

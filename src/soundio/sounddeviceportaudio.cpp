@@ -43,6 +43,9 @@ constexpr int kCpuUsageUpdateRate = 30; // in 1/s, fits to display frame rate
 // callbacks can be always wrong due to a setup/open jitter
 constexpr int m_invalidTimeInfoWarningCount = 3;
 
+// Some PortAudio drivers return zero output latency, this is the detection threshold
+constexpr double kMinReasonableAudioLatencySecs = 0.001;
+
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
@@ -96,7 +99,9 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_syncBuffers(2),
           m_invalidTimeInfoCount(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_lastCallbackEntrytoDacSecs(0),
+          m_cummulatedBufferTime(0),
+          m_meanOutputLatency(MovingInterquartileMean(501)) {
     // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(deviceInfo->defaultSampleRate);
@@ -379,19 +384,22 @@ SoundDeviceStatus SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffer
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
     m_sampleRate = mixxx::audio::SampleRate::fromDouble(streamDetails->sampleRate);
-    double currentLatencyMSec = streamDetails->outputLatency * 1000;
+    m_outputLatencyMillis = streamDetails->outputLatency * 1000;
     qDebug() << "   Actual sample rate: " << m_sampleRate << "Hz, latency:"
-             << currentLatencyMSec << "ms";
+             << m_outputLatencyMillis << "ms";
 
     if (isClkRefDevice) {
         // Update the samplerate and latency ControlObjects, which allow the
         // waveform view to properly correct for the latency.
         ControlObject::set(
                 ConfigKey(kAppGroup, QStringLiteral("output_latency_ms")),
-                currentLatencyMSec);
+                m_outputLatencyMillis);
         ControlObject::set(ConfigKey(kAppGroup, QStringLiteral("samplerate")), m_sampleRate);
         m_invalidTimeInfoCount = 0;
         m_clkRefTimer.start();
+
+        m_hostTimeFilter.reset();
+        m_meanOutputLatency.clear();
     }
     m_pStream = pStream;
     return SoundDeviceStatus::Ok;
@@ -990,7 +998,8 @@ int SoundDevicePortAudio::callbackProcessClkRef(
     {
         ScopedTimer t(u"SoundDevicePortAudio::callbackProcess prepare %1",
                 m_deviceId.debugName());
-        m_pSoundManager->onDeviceOutputCallback(framesPerBuffer);
+        m_pSoundManager->onDeviceOutputCallback(
+                framesPerBuffer, m_absTimeWhenPrevOutputBufferReachesDac);
     }
 
     if (out) {
@@ -1047,6 +1056,40 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     PaTime callbackEntrytoDacSecs = timeInfo->outputBufferDacTime
             - timeInfo->currentTime;
     double bufferSizeSec = framesPerBuffer / m_sampleRate.toDouble();
+
+    // Use Ableton's HostTimeFilter class to create a smooth linear regression
+    // between absolute sound card time and absolute host time
+    PaTime soundCardTimeNow = Pa_GetStreamTime(
+            m_pStream); // There is a delay & jitter to timeInfo->currentTime
+
+    m_cummulatedBufferTime += bufferSizeSec;
+    auto filteredHostTimeNow =
+            m_hostTimeFilter.sampleTimeToHostTime(m_cummulatedBufferTime);
+
+    qWarning() << "Pa_GetStreamTime: "
+               << static_cast<long long>(soundCardTimeNow * 1000000)
+               << "timeInfo->currentTime: "
+               << static_cast<long long>(timeInfo->currentTime * 1000000)
+               << "timeInfo->outputBufferDacTime: "
+               << static_cast<long long>(
+                          timeInfo->outputBufferDacTime * 1000000)
+               << "m_absTimeWhenPrevOutputBufferReachesDac: "
+               << m_absTimeWhenPrevOutputBufferReachesDac.count();
+
+    // Only use latency from PortAudios timeInfo, if it's in reasonable range,
+    // otherwise use latency value from PortAudios streamInfo
+    if (callbackEntrytoDacSecs > kMinReasonableAudioLatencySecs &&
+            timeSinceLastCbSecs < bufferSizeSec * 2) {
+        m_meanOutputLatency.insert(timeInfo->outputBufferDacTime - soundCardTimeNow);
+
+        m_absTimeWhenPrevOutputBufferReachesDac = filteredHostTimeNow +
+                std::chrono::microseconds(static_cast<long long>(
+                        m_meanOutputLatency.mean() * 1000000));
+    } else {
+        m_absTimeWhenPrevOutputBufferReachesDac = filteredHostTimeNow +
+                std::chrono::microseconds(
+                        static_cast<long long>(m_outputLatencyMillis * 1000));
+    }
 
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);

@@ -277,9 +277,11 @@ const CSAMPLE* EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.data();
 }
 
-void EngineMixer::processChannels(int iBufferSize) {
+void EngineMixer::processChannels(int iBufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
     // Update internal sync lock rate.
-    m_pEngineSync->onCallbackStart(m_sampleRate, iBufferSize);
+    m_pEngineSync->onCallbackStart(
+            m_sampleRate, iBufferSize, absTimeWhenPrevOutputBufferReachesDac);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -398,7 +400,8 @@ void EngineMixer::processChannels(int iBufferSize) {
     }
 }
 
-void EngineMixer::process(const int iBufferSize) {
+void EngineMixer::process(const int iBufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac) {
     DEBUG_ASSERT(iBufferSize <= static_cast<int>(kMaxEngineSamples));
 
     static bool haveSetName = false;
@@ -422,7 +425,7 @@ void EngineMixer::process(const int iBufferSize) {
     }
 
     // Prepare all channels for output
-    processChannels(iBufferSize);
+    processChannels(iBufferSize, absTimeWhenPrevOutputBufferReachesDac);
 
     // Compute headphone mix
     // Head phone left/right mix

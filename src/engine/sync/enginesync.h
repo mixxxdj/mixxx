@@ -7,6 +7,7 @@
 #include "preferences/usersettings.h"
 
 class InternalClock;
+class AbletonLink;
 class EngineChannel;
 
 /// EngineSync is the heart of the Mixxx Sync Lock engine.  It knows which objects
@@ -59,7 +60,9 @@ class EngineSync : public SyncableListener {
 
     void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getLeaderChannel() const;
-    void onCallbackStart(mixxx::audio::SampleRate sampleRate, int bufferSize);
+    void onCallbackStart(mixxx::audio::SampleRate sampleRate,
+            int bufferSize,
+            std::chrono::microseconds absTimeWhenPrevOutputBufferReachesDac);
     void onCallbackEnd(mixxx::audio::SampleRate sampleRate, int bufferSize);
 
   private:
@@ -166,6 +169,8 @@ class EngineSync : public SyncableListener {
     UserSettingsPointer m_pConfig;
     /// The InternalClock syncable.
     InternalClock* m_pInternalClock;
+    /// The Ableton Link syncable.
+    AbletonLink* m_pAbletonLink;
     /// The current Syncable that is the leader.
     Syncable* m_pLeaderSyncable;
     /// The list of all Syncables registered via addSyncableDeck.
