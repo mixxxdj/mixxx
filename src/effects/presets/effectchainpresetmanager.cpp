@@ -660,14 +660,19 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     return success;
 }
 
-EffectsXmlData EffectChainPresetManager::readEffectsXml(
-        const QDomDocument& doc, const QStringList& deckStrings) {
+EffectChainPresetPointer EffectChainPresetManager::getDefaultQuickEffectPreset() {
     EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
             FilterEffect::getId(), EffectBackendType::BuiltIn);
     auto defaultQuickEffectChainPreset =
             EffectChainPresetPointer(pDefaultQuickEffectManifest
                             ? new EffectChainPreset(pDefaultQuickEffectManifest)
                             : new EffectChainPreset());
+    return defaultQuickEffectChainPreset;
+}
+
+EffectsXmlData EffectChainPresetManager::readEffectsXml(
+        const QDomDocument& doc, const QStringList& deckStrings) {
+    auto defaultQuickEffectChainPreset = getDefaultQuickEffectPreset();
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     QHash<QString, EffectChainPresetPointer> quickEffectPresets;
@@ -784,6 +789,36 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
+}
+
+EffectChainPresetPointer EffectChainPresetManager::readEffectsXmlSingleDeck(
+        const QDomDocument& doc, const QString& deckString) {
+    QDomElement root = doc.documentElement();
+
+    auto pQuickEffectChainPreset = getDefaultQuickEffectPreset();
+
+    // Read name of last loaded QuickEffect preset
+    QDomElement quickEffectPresetsElement =
+            XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
+    QDomNodeList quickEffectNodeList =
+            quickEffectPresetsElement.elementsByTagName(
+                    EffectXml::kChainPresetName);
+    for (int i = 0; i < quickEffectNodeList.count(); ++i) {
+        QDomElement presetNameElement = quickEffectNodeList.at(i).toElement();
+        if (presetNameElement.isNull()) {
+            continue;
+        }
+        if (presetNameElement.attribute(QStringLiteral("group")) == deckString) {
+            auto pPreset = m_effectChainPresets.value(presetNameElement.text());
+            if (pPreset != nullptr || presetNameElement.text() == kNoEffectString) {
+                // Replace the default preset.
+                // Load empty preset if the chain was cleared explicitly ('---' preset)
+                pQuickEffectChainPreset = pPreset;
+            }
+        }
+    }
+
+    return pQuickEffectChainPreset;
 }
 
 void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data) {
