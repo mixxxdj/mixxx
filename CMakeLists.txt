@@ -130,6 +130,15 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+if(QT6)
+  if (DEFINED ENV{GITHUB_ACTIONS})
+    message("Running experimental Qt6 build for GitHub Actions")
+  else()
+    message(FATAL_ERROR
+        "Mixxx 2.4 does not fully support Qt6, use 2.5/main instead. "
+        "Qt6 support is available for CI checks only and requires the environment variable GITHUB_ACTIONS to be set.")
+  endif()
+endif()
 
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 if(QOPENGL)
