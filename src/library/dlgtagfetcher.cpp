@@ -595,10 +595,9 @@ void DlgTagFetcher::slotCoverFound(
 }
 
 void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
-    DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
-            static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
-                    m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
-                            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium)));
+    const int fetcherQuality = m_pConfig->getValue(
+            mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
+            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium));
 
     // Cover art links task can retrieve us variable number of links with different cover art sizes
     // Every single successful response has 2 links.
@@ -618,8 +617,8 @@ void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
         return;
     }
 
-    if (allUrls.size() > static_cast<int>(fetcherQuality)) {
-        getCoverArt(allUrls.at(static_cast<int>(fetcherQuality)));
+    if (allUrls.size() > fetcherQuality) {
+        getCoverArt(allUrls.at(fetcherQuality));
     } else {
         getCoverArt(allUrls.last());
     }
