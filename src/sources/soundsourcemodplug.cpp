@@ -1,12 +1,12 @@
 #include "sources/soundsourcemodplug.h"
 
+#include <QFile>
+
 #include "audio/streaminfo.h"
 #include "track/trackmetadata.h"
 #include "util/logger.h"
 #include "util/sample.h"
 #include "util/timer.h"
-
-#include <QFile>
 
 namespace mixxx {
 
