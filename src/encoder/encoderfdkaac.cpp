@@ -8,6 +8,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"

@@ -4,10 +4,7 @@
 #include <QList>
 
 #include "effects/backends/effectsbackendmanager.h"
-#include "effects/presets/effectchainpreset.h"
 #include "preferences/usersettings.h"
-
-class EffectsManager;
 
 struct EffectsXmlData {
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;

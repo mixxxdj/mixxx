@@ -3,7 +3,6 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 #include "util/xml.h"
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/imgloader.h"

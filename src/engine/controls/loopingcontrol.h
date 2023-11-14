@@ -5,15 +5,13 @@
 
 #include "control/controlvalue.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/controls/ratecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/cue.h"
 #include "track/track_decl.h"
 
 class ControlPushButton;
 class ControlObject;
-
+class RateControl;
 class LoopMoveControl;
 class BeatJumpControl;
 class BeatLoopingControl;

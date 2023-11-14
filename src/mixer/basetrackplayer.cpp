@@ -3,7 +3,6 @@
 #include <QMessageBox>
 
 #include "control/controlobject.h"
-#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/engine.h"
@@ -13,13 +12,11 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetrackplayer.cpp"
-#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/visualsmanager.h"
 #endif
 
 namespace {

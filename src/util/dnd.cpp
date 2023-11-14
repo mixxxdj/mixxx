@@ -1,8 +1,7 @@
 #include "util/dnd.h"
 
 #include "control/controlobject.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
+#include "library/parser.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"

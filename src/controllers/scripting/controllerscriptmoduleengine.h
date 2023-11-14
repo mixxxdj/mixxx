@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QFileInfo>
+#include <QFileSystemWatcher>
+
 #include "controllers/scripting/controllerscriptenginebase.h"
 
 /// ControllerScriptModuleEngine loads and executes script module files for controller mappings.

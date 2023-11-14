@@ -2,7 +2,8 @@
 
 #include <QSqlDatabase>
 #include <QString>
-#include <QVariant>
+
+class QVariant;
 
 // All library-specific preferences go in the library settings table
 class SettingsDAO final {

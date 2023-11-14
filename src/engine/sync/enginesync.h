@@ -2,7 +2,6 @@
 
 #include <gtest/gtest_prod.h>
 
-#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 

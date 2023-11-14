@@ -1,16 +1,8 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 
-#include <QColor>
-#include <QDomNode>
-#include <QObject>
-#include <QVector>
-
-#include "preferences/usersettings.h"
-#include "track/track.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 allshader::WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {

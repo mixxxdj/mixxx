@@ -1,10 +1,10 @@
 #pragma once
 
-#include <QModelIndex>
-#include <QPainter>
-#include <QStyleOptionViewItem>
-
 #include "library/tableitemdelegate.h"
+
+class QModelIndex;
+class QPainter;
+class QStyleOptionViewItem;
 
 class ColorDelegate : public TableItemDelegate {
     Q_OBJECT

@@ -5,12 +5,10 @@
 #include <QPainterPath>
 
 #include "skin/legacy/skincontext.h"
-#include "track/track.h"
 #include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 std::unique_ptr<QOpenGLTexture> generateTexture(float markerLength,

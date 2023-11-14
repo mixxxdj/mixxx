@@ -1,5 +1,7 @@
 #include "controllers/hid/hiddevice.h"
 
+#include <hidapi.h>
+
 #include <QDebugStateSaver>
 
 #include "controllers/controllermappinginfo.h"

@@ -1,6 +1,5 @@
 #include "controllers/delegates/midibytedelegate.h"
 
-#include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_midibytedelegate.cpp"
 #include "widget/hexspinbox.h"

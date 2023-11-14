@@ -4,8 +4,6 @@
 #include "control/pollingcontrolproxy.h"
 #include "engine/engineobject.h"
 
-class ControlPotmeter;
-
 class EngineVuMeter : public EngineObject {
     Q_OBJECT
   public:

@@ -1,6 +1,5 @@
 #include "sources/soundsourceproxy.h"
 
-#include <QApplication>
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QRegularExpression>
@@ -38,11 +37,9 @@
 #include "sources/soundsourcemediafoundation.h"
 #endif
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
 #include "track/track.h"
-#include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/regex.h"
 

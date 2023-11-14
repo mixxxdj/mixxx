@@ -9,10 +9,10 @@
 
 #include "broadcast/broadcastmanager.h"
 #include "broadcast/defs_broadcast.h"
-#include "engine/enginemixer.h"
+#include "control/controlpushbutton.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
 #include "moc_broadcastmanager.cpp"
+#include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
 

@@ -3,10 +3,10 @@
 #include <QPair>
 #include <QSemaphore>
 #include <QThread>
-#include <QTime>
 
 #include "util/performancetimer.h"
-#include "widget/wglwidget.h"
+
+class WGLWidget;
 
 class VSyncThread : public QThread {
     Q_OBJECT

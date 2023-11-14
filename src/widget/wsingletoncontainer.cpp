@@ -4,8 +4,6 @@
 
 #include "moc_wsingletoncontainer.cpp"
 #include "skin/legacy/skincontext.h"
-#include "util/assert.h"
-#include "widget/wlibrary.h"
 
 WSingletonContainer::WSingletonContainer(QWidget* pParent)
         : WWidgetGroup(pParent), m_pWidget(nullptr), m_pLayout(nullptr) { }

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QColor>
-#include <QJSValue>
 #include <QMap>
+#include <QRgb>
 
 #include "util/assert.h"
 

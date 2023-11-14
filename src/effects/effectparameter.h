@@ -1,13 +1,8 @@
 #pragma once
 
-#include <QObject>
-
 #include "effects/backends/effectmanifestparameter.h"
-#include "effects/effectslot.h"
 #include "util/class.h"
 
-class Effect;
-class EffectsManager;
 class EngineEffect;
 class EffectParameterPreset;
 

@@ -5,7 +5,6 @@
 #include <QList>
 #include <QScopedPointer>
 #include <QSemaphore>
-#include <QString>
 #include <QThread>
 #include <QThreadPool>
 
@@ -17,11 +16,11 @@
 #include "library/dao/trackdao.h"
 #include "library/scanner/scannerglobal.h"
 #include "track/track_decl.h"
-#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 
 class ScannerTask;
 class LibraryScannerDlg;
+class QString;
 
 class LibraryScanner : public QThread {
     FRIEND_TEST(LibraryScannerTest, ScannerRoundtrip);

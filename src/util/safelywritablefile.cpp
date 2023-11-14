@@ -1,7 +1,6 @@
 #include "util/safelywritablefile.h"
 
 #include <QFileInfo>
-#include <QThread>
 
 #include "util/assert.h"
 #include "util/logger.h"

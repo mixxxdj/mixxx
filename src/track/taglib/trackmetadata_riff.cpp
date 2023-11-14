@@ -1,5 +1,7 @@
 #include "track/taglib/trackmetadata_riff.h"
 
+#include "track/taglib/trackmetadata_common.h"
+
 namespace mixxx {
 
 namespace taglib {

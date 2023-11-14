@@ -1,15 +1,15 @@
 #pragma once
 
-#include <QAction>
 #include <QHeaderView>
 #include <QMap>
 #include <QMenu>
-#include <QWidget>
-#include <QContextMenuEvent>
 
 #include "proto/headers.pb.h"
 
 class TrackModel;
+class QAction;
+class QWidget;
+class QContextMenuEvent;
 
 // Thanks to StackOverflow http://stackoverflow.com/questions/1163030/qt-qtableview-and-horizontalheader-restorestate
 // answer with this code snippet: http://codepad.org/2gPIMPYU

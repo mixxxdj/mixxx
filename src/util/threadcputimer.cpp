@@ -10,7 +10,6 @@
 #include <hal.h>
 #include <hal_data.h>
 #elif defined(Q_OS_UNIX)
-#include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
 #elif defined(Q_OS_WIN)

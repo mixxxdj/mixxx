@@ -1,12 +1,12 @@
 #include "widget/wbeatspinbox.h"
 
-#include <QLineEdit>
+#include <QKeyEvent>
 #include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "library/library_decl.h"
 #include "moc_wbeatspinbox.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 
 namespace {

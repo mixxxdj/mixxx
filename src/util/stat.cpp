@@ -1,7 +1,6 @@
 #include <limits>
 
 #include <QStringList>
-#include <QtDebug>
 
 #include "util/stat.h"
 #include "util/time.h"

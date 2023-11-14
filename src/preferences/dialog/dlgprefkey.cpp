@@ -1,13 +1,10 @@
 #include "preferences/dialog/dlgprefkey.h"
 
-#include <QLineEdit>
-#include <QMessageBox>
-
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),

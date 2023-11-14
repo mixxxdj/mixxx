@@ -1,8 +1,10 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
 #include "moc_vinylcontrolcontrol.cpp"
 #include "track/track.h"
-#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),

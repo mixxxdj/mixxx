@@ -1,6 +1,5 @@
 #pragma once
 
-#include "library/basesqltablemodel.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/tracksettablemodel.h"
 

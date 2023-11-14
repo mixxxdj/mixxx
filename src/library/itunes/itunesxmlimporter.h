@@ -1,9 +1,8 @@
 #pragma once
 
+#include <QFile>
 #include <QHash>
-#include <QSqlDatabase>
 #include <QXmlStreamReader>
-#include <atomic>
 #include <memory>
 
 #include "library/itunes/itunesdao.h"
@@ -11,6 +10,7 @@
 #include "library/itunes/itunespathmapping.h"
 
 class ITunesFeature;
+class TrackRef;
 
 /// An importer that parses an iTunes XML library.
 class ITunesXMLImporter : public ITunesImporter {

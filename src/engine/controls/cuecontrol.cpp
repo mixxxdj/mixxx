@@ -7,9 +7,7 @@
 #include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {

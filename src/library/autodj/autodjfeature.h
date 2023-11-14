@@ -1,19 +1,14 @@
 #pragma once
 
-#include <QAction>
 #include <QList>
-#include <QModelIndex>
 #include <QObject>
-#include <QPoint>
 #include <QPointer>
-#include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
 
 #include "library/dao/autodjcratesdao.h"
 #include "library/libraryfeature.h"
 #include "library/trackset/crate/crate.h"
-#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -21,9 +16,11 @@ class DlgAutoDJ;
 class Library;
 class PlayerManagerInterface;
 class TrackCollection;
-class TrackCollectionManager;
 class AutoDJProcessor;
 class WLibrarySidebar;
+class QAction;
+class QModelIndex;
+class QPoint;
 
 class AutoDJFeature : public LibraryFeature {
     Q_OBJECT
@@ -80,7 +77,7 @@ class AutoDJFeature : public LibraryFeature {
 
     // A context-menu item that allows crates to be removed from the
     // auto-DJ list.
-    QAction *m_pRemoveCrateFromAutoDj;
+    QAction* m_pRemoveCrateFromAutoDj;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 

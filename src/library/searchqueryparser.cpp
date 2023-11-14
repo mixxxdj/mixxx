@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "library/searchquery.h"
+#include "library/trackcollection.h"
 #include "track/keyutils.h"
 #include "util/assert.h"
 

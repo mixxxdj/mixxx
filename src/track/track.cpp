@@ -1,16 +1,12 @@
 #include "track/track.h"
 
 #include <QDebug>
-#include <QDirIterator>
 #include <atomic>
 
-#include "engine/engine.h"
 #include "library/library_prefs.h"
 #include "moc_track.cpp"
 #include "sources/metadatasource.h"
-#include "track/trackref.h"
 #include "util/assert.h"
-#include "util/color/color.h"
 #include "util/logger.h"
 
 namespace {

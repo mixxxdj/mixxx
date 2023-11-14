@@ -9,11 +9,8 @@
 #include "track/beats.h"
 #include "util/tapfilter.h"
 
-class ControlObject;
 class ControlLinPotmeter;
 class ControlPushButton;
-class EngineBuffer;
-class SyncControl;
 
 /// BpmControl is an EngineControl that manages the bpm and beat distance of
 /// tracks.  It understands the tempo of the underlying track and the musical

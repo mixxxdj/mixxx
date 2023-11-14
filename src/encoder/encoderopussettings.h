@@ -1,7 +1,7 @@
 #pragma once
 
 #include "encoder/encoderrecordingsettings.h"
-#include "encoder/encoder.h"
+#include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 
 #define OPUS_BITRATE_MODES_COUNT 3

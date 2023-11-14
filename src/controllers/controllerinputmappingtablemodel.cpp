@@ -1,10 +1,13 @@
 #include "controllers/controllerinputmappingtablemodel.h"
 
+#include <QTableView>
+
 #include "controllers/delegates/controldelegate.h"
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_controllerinputmappingtablemodel.cpp"

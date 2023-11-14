@@ -2,7 +2,6 @@
 
 #include <QHash>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSet>
 
 #include "library/dao/dao.h"
@@ -27,6 +26,7 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 #define AUTODJ_TABLE "Auto DJ"
 
 class AutoDJProcessor;
+class QSqlDatabase;
 
 constexpr int kInvalidPlaylistId = -1;
 

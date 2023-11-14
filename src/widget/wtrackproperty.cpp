@@ -1,10 +1,9 @@
 #include "widget/wtrackproperty.h"
 
 #include <QDebug>
-#include <QUrl>
 
-#include "control/controlobject.h"
 #include "moc_wtrackproperty.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"

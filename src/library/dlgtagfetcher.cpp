@@ -7,10 +7,12 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/library_prefs.h"
+#include "library/trackmodel.h"
 #include "moc_dlgtagfetcher.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "track/track.h"
 #include "track/tracknumbers.h"
+#include "util/imagefiledata.h"
 
 namespace {
 

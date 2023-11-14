@@ -1,10 +1,11 @@
 #pragma once
 
-#include "controllers/controller.h"
-#include "controllers/hid/hiddevice.h"
-#include "controllers/hid/hidioglobaloutputreportfifo.h"
+#include <QByteArray>
+
 #include "util/compatibility/qmutex.h"
-#include "util/duration.h"
+
+struct RuntimeLoggingCategory;
+typedef struct hid_device_ hid_device;
 
 class HidIoOutputReport {
   public:

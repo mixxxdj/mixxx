@@ -1,10 +1,9 @@
 #include "widget/wtrackmenu.h"
 
-#include <qlist.h>
-
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QInputDialog>
+#include <QList>
 #include <QListWidget>
 #include <QModelIndex>
 #include <QVBoxLayout>
@@ -15,20 +14,20 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
-#include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/trackmodel.h"
 #include "library/trackmodeliterator.h"
 #include "library/trackprocessing.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -43,13 +42,10 @@
 #include "util/widgethelper.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
-#include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
-#include "widget/wskincolor.h"
 #include "widget/wstarrating.h"
-#include "widget/wwidget.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");

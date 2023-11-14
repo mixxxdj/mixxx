@@ -1,18 +1,16 @@
 #include "preferences/dialog/dlgprefcolors.h"
 
-#include <QColorDialog>
+#include <QLineEdit>
 #include <QPainter>
-#include <QStandardItemModel>
-#include <QtDebug>
+#include <QTableView>
 
-#include "control/controlobject.h"
 #include "dialog/dlgreplacecuecolor.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "moc_dlgprefcolors.cpp"
+#include "preferences/colorpaletteeditor.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/math.h"
-#include "util/memory.h"
 
 namespace {
 

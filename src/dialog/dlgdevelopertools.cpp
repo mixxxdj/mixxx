@@ -1,10 +1,10 @@
 #include "dialog/dlgdevelopertools.h"
 
 #include <QDateTime>
+#include <QDir>
 
 #include "control/control.h"
 #include "moc_dlgdevelopertools.cpp"
-#include "util/cmdlineargs.h"
 #include "util/logging.h"
 #include "util/statsmanager.h"
 

@@ -4,7 +4,6 @@
 #include "engine/controls/loopingcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 ReadAheadManager::ReadAheadManager()

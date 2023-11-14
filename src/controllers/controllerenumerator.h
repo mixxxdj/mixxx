@@ -1,6 +1,9 @@
 #pragma once
 
-#include "controllers/controller.h"
+#include <QList>
+#include <QObject>
+
+class Controller;
 
 /// Base class handling discovery and enumeration of DJ controllers.
 ///

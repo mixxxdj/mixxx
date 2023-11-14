@@ -3,14 +3,12 @@
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
-#include <QPalette>
 #include <QScrollBar>
 
-#include "library/trackmodel.h"
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QFocusEvent;
 
 namespace {
 // number of entries in the model cache

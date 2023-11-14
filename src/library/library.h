@@ -1,12 +1,10 @@
 #pragma once
 
-#include <QAbstractItemModel>
 #include <QFont>
 #include <QList>
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
@@ -14,7 +12,6 @@
 #endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
-#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
@@ -22,7 +19,6 @@ class AnalysisFeature;
 class BrowseFeature;
 class ControlObject;
 class CrateFeature;
-class ExternalTrackCollection;
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -32,12 +28,11 @@ class PlayerManager;
 class PlaylistFeature;
 class RecordingManager;
 class SidebarModel;
-class TrackCollection;
 class TrackCollectionManager;
-class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class QAbstractItemModel;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {

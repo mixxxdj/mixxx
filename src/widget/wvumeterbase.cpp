@@ -1,5 +1,6 @@
 #include "widget/wvumeterbase.h"
 
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/widgethelper.h"

@@ -1,6 +1,5 @@
 #include "util/imageutils.h"
 
-#include <QByteArray>
 #include <QCryptographicHash>
 
 namespace {

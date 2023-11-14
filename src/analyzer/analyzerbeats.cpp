@@ -11,7 +11,6 @@
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "library/rekordbox/rekordboxconstants.h"
 #include "track/beatfactory.h"
-#include "track/beatutils.h"
 #include "track/track.h"
 
 // static

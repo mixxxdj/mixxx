@@ -2,11 +2,14 @@
 
 #include <QRegularExpression>
 #include <QString>
-#include <QtSql>
+#include <memory>
 
 #include "library/searchquery.h"
-#include "library/trackcollection.h"
 #include "util/class.h"
+
+class TrackCollection;
+class QueryNode;
+class AndNode;
 
 class SearchQueryParser {
   public:

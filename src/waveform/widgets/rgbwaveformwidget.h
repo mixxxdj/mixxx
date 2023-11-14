@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "nonglwaveformwidgetabstract.h"
+
+class QWidget;
 
 class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
     Q_OBJECT

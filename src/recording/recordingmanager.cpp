@@ -1,12 +1,11 @@
 #include "recording/recordingmanager.h"
 
+#include <QDateTime>
 #include <QDir>
 #include <QMessageBox>
 #include <QMutex>
 #include <QStorageInfo>
-#include <climits>
 
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginemixer.h"
 #include "engine/sidechain/enginerecord.h"

@@ -2,17 +2,18 @@
 
 #include <QAbstractTableModel>
 #include <QHash>
-#include <QModelIndex>
 #include <QSortFilterProxyModel>
 #include <QStyledItemDelegate>
 #include <QTableView>
 #include <QVariant>
 #include <QVector>
+#include <memory>
 
-#include "controllers/controlpickermenu.h"
-#include "controllers/hid/legacyhidcontrollermapping.h"
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/midi/legacymidicontrollermapping.h"
+#include "util/assert.h"
+
+class ControlPickerMenu;
+class LegacyControllerMapping;
+class LegacyMidiControllerMapping;
 
 class ControllerMappingTableModel : public QAbstractTableModel {
     Q_OBJECT

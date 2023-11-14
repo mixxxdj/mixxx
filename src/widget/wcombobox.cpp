@@ -1,9 +1,11 @@
 #include "widget/wcombobox.h"
 
+#include <QDomNode>
+#include <QEvent>
 #include <QIcon>
-#include <QtDebug>
 
 #include "moc_wcombobox.cpp"
+#include "skin/legacy/skincontext.h"
 
 WComboBox::WComboBox(QWidget* pParent)
         : QComboBox(pParent),

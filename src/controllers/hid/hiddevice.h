@@ -1,11 +1,11 @@
 #pragma once
 
-#include <hidapi.h>
-
 #include <QObject>
+#include <QString>
 #include <string>
 
 struct ProductInfo;
+struct hid_device_info;
 
 namespace mixxx {
 

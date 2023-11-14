@@ -3,12 +3,8 @@
 #include <QMap>
 
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/samplebuffer.h"
 
 class EchoGroupState : public EffectState {

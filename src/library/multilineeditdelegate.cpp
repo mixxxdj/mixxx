@@ -1,8 +1,8 @@
 #include "library/multilineeditdelegate.h"
 
 #include <QAbstractTextDocumentLayout>
-#include <QDebug>
 #include <QScrollBar>
+#include <QTableView>
 #include <cmath>
 
 #include "moc_multilineeditdelegate.cpp"

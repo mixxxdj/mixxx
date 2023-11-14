@@ -5,10 +5,8 @@
 #include <QString>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
-#include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/memory.h"
 

@@ -8,7 +8,6 @@
 #include <QFontMetrics>
 #include <QMessageBox>
 #include <QStandardPaths>
-#include <QStringList>
 #include <QUrl>
 
 #include "defs_urls.h"
@@ -19,7 +18,6 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
-#include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 using namespace mixxx::library::prefs;

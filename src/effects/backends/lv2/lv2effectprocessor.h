@@ -5,7 +5,6 @@
 #include "effects/backends/effectprocessor.h"
 #include "effects/backends/lv2/lv2manifest.h"
 #include "effects/defs.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 
 // Refer to EffectProcessor for documentation

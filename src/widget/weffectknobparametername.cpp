@@ -1,8 +1,5 @@
 #include "widget/weffectknobparametername.h"
 
-#include <QtDebug>
-
-#include "effects/effectsmanager.h"
 #include "moc_weffectknobparametername.cpp"
 #include "widget/effectwidgetutils.h"
 
