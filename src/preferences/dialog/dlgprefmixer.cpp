@@ -11,7 +11,7 @@
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/quickeffectchain.h"
-#include "effects/effectparameterslotbase.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/presets/effectchainpreset.h"
@@ -182,38 +182,57 @@ DlgPrefMixer::DlgPrefMixer(
 // Create EQ & QuickEffect selectors and deck label for each added deck
 void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
+        // 1-based for display
         int deckNo = m_deckEqEffectSelectors.size() + 1;
+        // 0-based for engine
         QString deckGroup = PlayerManager::groupForDeck(deckNo - 1);
-
-        auto pLabel = make_parented<QLabel>(QObject::tr("Deck %1").arg(deckNo), this);
+        QLabel* pLabel = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
 
         // Create the EQ selector //////////////////////////////////////////////
         auto pEqComboBox = make_parented<QComboBox>(this);
         setScrollSafeGuard(pEqComboBox);
         m_deckEqEffectSelectors.append(pEqComboBox);
 
-        // Load EQ from from mixxx.cfg, add and select it in the combobox(es).
-        // If the ConfigKey exists the EQ is loaded. If the value is empty no
-        // EQ was selected ('---').
-        // If the key doesn't exist the default EQ is loaded.
-        QString configuredEffect = m_pConfig->getValue<QString>(
-                ConfigKey(kMixerProfile, kEffectForGroupPrefix + deckGroup),
-                kDefaultEqId);
-        const EffectManifestPointer pEQManifest =
-                m_pBackendManager->getManifestFromUniqueId(configuredEffect);
-        // We just add the one required item to the box so applyDeckEQs() can load it.
-        if (pEQManifest) {
-            pEqComboBox->addItem(pEQManifest->name(), QVariant(pEQManifest->uniqueId()));
-        } else {
-            // the previous EQ was 'none' or its uid can't be found
-            pEqComboBox->addItem(kNoEffectString);
-        }
-        pEqComboBox->setCurrentIndex(0);
+        // Migrate EQ from mixxx.cfg, add it to the combobox, remove keys
+        const ConfigKey groupKey =
+                ConfigKey(kMixerProfile, kEffectForGroupPrefix + deckGroup);
+        const QString configuredEffect = m_pConfig->getValueString(groupKey);
+        // If the EQ key doesn't exist (isNull()), we keeo the default EQ which
+        // has already been loaded by EffectsManager. Later on
+        // slotPopulateDeckEqSelectors() will read the effect, so nothing to do.
+        // Else, we use the uid from the config to load an EQ (or none).
+        bool loadEQ = false;
+        EffectManifestPointer pEqManifest;
+        if (!configuredEffect.isNull()) {
+            loadEQ = true;
+            pEqManifest = m_pBackendManager->getManifestFromUniqueId(configuredEffect);
 
+            // remove key so we migrate only once
+            m_pConfig->remove(groupKey);
+        }
+
+        auto pEqChain = m_pEffectsManager->getEqualizerEffectChain(deckGroup);
+        VERIFY_OR_DEBUG_ASSERT(pEqChain) {
+            return;
+        }
+        auto pEqEffectSlot = pEqChain->getEffectSlot(0);
+        VERIFY_OR_DEBUG_ASSERT(pEqEffectSlot) {
+            return;
+        }
+        if (loadEQ) {
+            pEqEffectSlot->loadEffectWithDefaults(pEqManifest);
+        }
         connect(pEqComboBox,
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotEQEffectSelectionChanged);
+        // Update the combobox in case the effect was changed from anywhere else
+        connect(pEqEffectSlot.data(),
+                &EffectSlot::effectChanged,
+                this,
+                [this]() {
+                    slotPopulateDeckEqSelectors();
+                });
 
         // Create the QuickEffect selector /////////////////////////////////////
         auto pQuickEffectComboBox = make_parented<QComboBox>(this);
@@ -223,7 +242,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this,
                 &DlgPrefMixer::slotQuickEffectSelectionChanged);
-        // Change the QuickEffect when it was changed in WEffectChainPresetSelector
+        // Update the combobox when the effect was changed in WEffectChainPresetSelector
         // or with controllers
         EffectChainPointer pChain = m_pEffectsManager->getQuickEffectChain(deckGroup);
         DEBUG_ASSERT(pChain);
@@ -251,7 +270,6 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
                 1,
                 1);
     }
-    applyDeckEQs();
 
     // This also selects all currently loaded EQs and QuickEffects
     slotPopulateDeckEqSelectors();
@@ -526,8 +544,8 @@ void DlgPrefMixer::applyDeckEQs() {
             needLoad = effectIndex != m_eqIndiciesOnUpdate[deck];
         }
 
-        QString deckGroup = PlayerManager::groupForDeck(deck);
-        auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(deckGroup);
+        auto pChainSlot = m_pEffectsManager->getEqualizerEffectChain(
+                PlayerManager::groupForDeck(deck));
         DEBUG_ASSERT(pChainSlot);
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
         DEBUG_ASSERT(pEffectSlot);
@@ -535,14 +553,15 @@ void DlgPrefMixer::applyDeckEQs() {
 
         const EffectManifestPointer pManifest =
                 m_pBackendManager->getManifestFromUniqueId(
-                        pBox->itemData(effectIndex).toString());
+                        pBox->currentData().toString());
+        if (pManifest != nullptr && pManifest->isMixingEQ() && !m_eqBypass) {
+            pChainSlot->setFilterWaveform(true);
+        } else {
+            pChainSlot->setFilterWaveform(false);
+        }
+
         if (needLoad) {
             pEffectSlot->loadEffectWithDefaults(pManifest);
-            if (pManifest && pManifest->isMixingEQ() && !m_eqBypass) {
-                pChainSlot->setFilterWaveform(true);
-            } else {
-                pChainSlot->setFilterWaveform(false);
-            }
         }
 
         if (startingUp) {
@@ -550,14 +569,6 @@ void DlgPrefMixer::applyDeckEQs() {
         } else {
             m_eqIndiciesOnUpdate[deck] = effectIndex;
         }
-
-        QString effectId;
-        if (pManifest) {
-            effectId = pManifest->uniqueId();
-        }
-        // TODO store this in effects.xml
-        m_pConfig->set(ConfigKey(kMixerProfile, kEffectForGroupPrefix + deckGroup),
-                effectId);
     }
     m_ignoreEqQuickEffectBoxSignals = false;
 }

@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
 
+#include "effects/backends/builtin/biquadfullkilleqeffect.h"
 #include "effects/backends/builtin/filtereffect.h"
 #include "effects/backends/effectmanifest.h"
 #include "effects/effectchain.h"
@@ -660,6 +661,14 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     return success;
 }
 
+EffectManifestPointer EffectChainPresetManager::getDefaultEqEffect() {
+    EffectManifestPointer pDefaultEqEffect = m_pBackendManager->getManifest(
+            BiquadFullKillEQEffect::getId(), EffectBackendType::BuiltIn);
+    VERIFY_OR_DEBUG_ASSERT(!pDefaultEqEffect.isNull()) {
+    }
+    return pDefaultEqEffect;
+}
+
 EffectChainPresetPointer EffectChainPresetManager::getDefaultQuickEffectPreset() {
     EffectManifestPointer pDefaultQuickEffectManifest = m_pBackendManager->getManifest(
             FilterEffect::getId(), EffectBackendType::BuiltIn);
@@ -672,12 +681,16 @@ EffectChainPresetPointer EffectChainPresetManager::getDefaultQuickEffectPreset()
 
 EffectsXmlData EffectChainPresetManager::readEffectsXml(
         const QDomDocument& doc, const QStringList& deckStrings) {
+    auto pDefaultEqEffect = getDefaultEqEffect();
     auto defaultQuickEffectChainPreset = getDefaultQuickEffectPreset();
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
     QHash<QString, EffectChainPresetPointer> quickEffectPresets;
+    QHash<QString, EffectManifestPointer> eqEffectManifests;
+    // configure default EQs and QuickEffects per deck
     for (const auto& deckString : deckStrings) {
         quickEffectPresets.insert(deckString, defaultQuickEffectChainPreset);
+        eqEffectManifests.insert(deckString, pDefaultEqEffect);
     }
 
     // Read state of standard chains
@@ -769,6 +782,26 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     emit effectChainPresetListUpdated();
     emit quickEffectChainPresetListUpdated();
 
+    // Read ids of effects that were loaded into Equalizer slots on last shutdown
+    QDomElement eqEffectsElement =
+            XmlParse::selectElement(root, EffectXml::kEqualizerEffects);
+    QDomNodeList eqEffectNodeList =
+            eqEffectsElement.elementsByTagName(
+                    EffectXml::kEffectId);
+    for (int i = 0; i < eqEffectNodeList.count(); ++i) {
+        QDomElement effectIdElement = eqEffectNodeList.at(i).toElement();
+        if (!effectIdElement.isNull()) {
+            QString deckGroup = effectIdElement.attribute(QStringLiteral("group"));
+            QString uid = effectIdElement.text();
+            auto pManifest = m_pBackendManager->getManifestFromUniqueId(uid);
+            // Replace default EQ effect with pManifest for this deck group.
+            // Also load empty manifests to restore empty EQ effects.
+            if (pManifest != nullptr || uid == kNoEffectString) {
+                eqEffectManifests.insert(deckGroup, pManifest);
+            }
+        }
+    }
+
     // Read names of presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
@@ -788,13 +821,40 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         }
     }
 
-    return EffectsXmlData{quickEffectPresets, standardEffectChainPresets};
+    return EffectsXmlData{
+            eqEffectManifests, quickEffectPresets, standardEffectChainPresets};
 }
 
-EffectChainPresetPointer EffectChainPresetManager::readEffectsXmlSingleDeck(
+EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
         const QDomDocument& doc, const QString& deckString) {
     QDomElement root = doc.documentElement();
 
+    // EQ effect
+    auto pEqEffect = getDefaultEqEffect();
+
+    // Read id of last loaded EQ effect
+    QDomElement eqEffectsElement =
+            XmlParse::selectElement(root, EffectXml::kEqualizerEffects);
+    QDomNodeList eqEffectNodeList =
+            eqEffectsElement.elementsByTagName(
+                    EffectXml::kEffectId);
+    for (int i = 0; i < eqEffectNodeList.count(); ++i) {
+        QDomElement effectIdElement = eqEffectNodeList.at(i).toElement();
+        if (effectIdElement.isNull()) {
+            continue;
+        }
+        if (effectIdElement.attribute(QStringLiteral("group")) == deckString) {
+            QString uid = effectIdElement.text();
+            auto pManifest = m_pBackendManager->getManifestFromUniqueId(uid);
+            // Replace the default EQ effect.
+            // Load empty effect if the slot was cleared explicitly ('---' preset)
+            if (pManifest != nullptr || uid == kNoEffectString) {
+                pEqEffect = pManifest;
+            }
+        }
+    }
+
+    // Quick Effect
     auto pQuickEffectChainPreset = getDefaultQuickEffectPreset();
 
     // Read name of last loaded QuickEffect preset
@@ -818,7 +878,7 @@ EffectChainPresetPointer EffectChainPresetManager::readEffectsXmlSingleDeck(
         }
     }
 
-    return pQuickEffectChainPreset;
+    return EffectXmlDataSingleDeck{pEqEffect, pQuickEffectChainPreset};
 }
 
 void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data) {
@@ -857,6 +917,23 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
                 pPreset->name());
     }
     rootElement.appendChild(quickEffectChainPresetListElement);
+
+    // Save ids of effects loaded to slot 1 of EQ chains
+    QDomElement eqEffectsElement =
+            pDoc->createElement(EffectXml::kEqualizerEffects);
+    for (auto it = data.eqEffectManifests.begin();
+            it != data.eqEffectManifests.end();
+            it++) {
+        // Save element with '---' if no EQ is loaded
+        QString uid = it.value().isNull() ? kNoEffectString : it.value()->uniqueId();
+        QDomElement eqEffectElement = XmlParse::addElement(
+                *pDoc,
+                eqEffectsElement,
+                EffectXml::kEffectId,
+                uid);
+        eqEffectElement.setAttribute(QStringLiteral("group"), it.key());
+    }
+    rootElement.appendChild(eqEffectsElement);
 
     // Save which presets are loaded to QuickEffects
     QDomElement quickEffectPresetsElement =
