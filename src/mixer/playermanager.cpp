@@ -110,15 +110,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
-          m_pCONumDecks(new ControlObject(
+          m_pCONumDecks(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_decks")), true, true)),
-          m_pCONumSamplers(new ControlObject(
+          m_pCONumSamplers(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_samplers")), true, true)),
-          m_pCONumPreviewDecks(new ControlObject(
+          m_pCONumPreviewDecks(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_preview_decks")), true, true)),
-          m_pCONumMicrophones(new ControlObject(
+          m_pCONumMicrophones(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
-          m_pCONumAuxiliaries(new ControlObject(
+          m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
@@ -160,12 +160,6 @@ PlayerManager::~PlayerManager() {
     delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
     delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
-
-    delete m_pCONumSamplers;
-    delete m_pCONumDecks;
-    delete m_pCONumPreviewDecks;
-    delete m_pCONumMicrophones;
-    delete m_pCONumAuxiliaries;
 
     if (m_pTrackAnalysisScheduler) {
         m_pTrackAnalysisScheduler->stop();
