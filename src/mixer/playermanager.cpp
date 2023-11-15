@@ -342,6 +342,7 @@ void PlayerManager::slotChangeNumSamplers(double v) {
         addSamplerInner();
     }
     m_pCONumSamplers->setAndConfirm(m_samplers.size());
+    emit numberOfSamplersChanged(m_samplers.count());
 }
 
 void PlayerManager::slotChangeNumPreviewDecks(double v) {
