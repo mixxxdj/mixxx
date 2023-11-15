@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QList>
+#include <QObject>
 
 #include "effects/defs.h"
 

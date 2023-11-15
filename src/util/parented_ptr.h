@@ -1,5 +1,8 @@
 #pragma once
 
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#include <QObject>
+#endif
 #include <QPointer>
 #include <memory>
 
