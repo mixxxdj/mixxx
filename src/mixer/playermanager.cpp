@@ -86,6 +86,10 @@ T* findFirstStoppedPlayerInList(const QList<T*>& players) {
     return nullptr;
 }
 
+inline QString getDefaultSamplerPath(UserSettingsPointer pConfig) {
+    return pConfig->getSettingsPath() + QStringLiteral("/samplers.xml");
+}
+
 } // anonymous namespace
 
 //static
@@ -144,8 +148,7 @@ PlayerManager::~PlayerManager() {
 
     const auto locker = lockMutex(&m_mutex);
 
-    m_pSamplerBank->saveSamplerBankToPath(
-        m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->saveSamplerBankToPath(getDefaultSamplerPath(m_pConfig));
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -453,8 +456,7 @@ void PlayerManager::addDeckInner() {
 }
 
 void PlayerManager::loadSamplers() {
-    m_pSamplerBank->loadSamplerBankFromPath(
-            m_pConfig->getSettingsPath() + "/samplers.xml");
+    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
 }
 
 void PlayerManager::addSampler() {
