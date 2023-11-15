@@ -258,7 +258,10 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
 
+    qWarning() << "     .";
+    qWarning() << "     load track, clear cache";
     m_coverCache.clear();
+    qWarning() << "     .";
 
     m_pTrack = pTrack;
     if (!m_pTrack) {
@@ -579,9 +582,18 @@ void DlgTagFetcher::tagSelected() {
     QString cacheKey = selectedTagAlbumId.toString();
     auto it = m_coverCache.constFind(cacheKey);
     if (it != m_coverCache.constEnd()) {
+        qWarning() << "     .";
+        qWarning() << "     found cached cover for release" << cacheKey;
         QPixmap pix = it.value();
+        qWarning() << "     pix is null?" << pix.isNull() << pix.size();
+        qWarning() << "     load";
         loadPixmapToLabel(pix);
+        qWarning() << "     .";
         return;
+    } else {
+        qWarning() << "     .";
+        qWarning() << "     no cache hit, request cover links";
+        qWarning() << "     .";
     }
 
     statusMessage->setVisible(false);
@@ -649,7 +661,22 @@ void DlgTagFetcher::slotLoadFetchedCoverArt(const QUuid& albumReleaseId,
     m_fetchedCoverArtByteArrays = data;
 
     // Cache the fetched cover image
-    m_coverCache.insert(albumReleaseId.toString(), fetchedCoverArtPixmap);
+    qWarning() << "     .";
+    qWarning() << "     cache size:" << m_coverCache.size();
+    QString cacheKey = albumReleaseId.toString();
+    qWarning() << "     cache cover for release" << cacheKey;
+    m_coverCache.insert(cacheKey, fetchedCoverArtPixmap);
+    qWarning() << "     cache size:" << m_coverCache.size();
+    // Test
+    auto it = m_coverCache.constFind(cacheKey);
+    qWarning() << "     TEST";
+    if (it != m_coverCache.constEnd()) {
+        qWarning() << "     .";
+        qWarning() << "     found cached cover for release" << cacheKey;
+        QPixmap pix = it.value();
+        qWarning() << "     pix is okay:" << !pix.isNull() << pix.size();
+        qWarning() << "     .";
+    }
     loadPixmapToLabel(fetchedCoverArtPixmap);
 }
 
