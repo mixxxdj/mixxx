@@ -174,10 +174,9 @@ void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandle
 
 void EffectsManager::loadDefaultEqsAndQuickEffects() {
     auto pDefaultEqEffect = m_pChainPresetManager->getDefaultEqEffect();
-    for (auto it = m_equalizerEffectChains.begin();
-            it != m_equalizerEffectChains.end();
-            it++) {
-        auto pEqChainSlot = it.value();
+    QHashIterator<QString, EqualizerEffectChainPointer> eqIt(m_equalizerEffectChains);
+    while (eqIt.hasNext()) {
+        auto pEqChainSlot = eqIt.next().value();
         const auto pEqEffectSlot = pEqChainSlot->getEffectSlot(0);
         VERIFY_OR_DEBUG_ASSERT(pEqEffectSlot) {
             return;
@@ -187,8 +186,9 @@ void EffectsManager::loadDefaultEqsAndQuickEffects() {
 
     auto pDefaultQuickEffectPreset =
             m_pChainPresetManager->getDefaultQuickEffectPreset();
-    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
-        auto pChainSlot = it.value();
+    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
+    while (qeIt.hasNext()) {
+        auto pChainSlot = qeIt.next().value();
         pChainSlot->loadChainPreset(pDefaultQuickEffectPreset);
     }
 }
@@ -215,8 +215,9 @@ void EffectsManager::readEffectsXml() {
     // Note: QuickEffect and EQ chains are created only for existing main decks,
     // thus only for those the configured presets are requested
     QStringList deckStrings;
-    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
-        deckStrings << it.key();
+    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
+    while (qeIt.hasNext()) {
+        deckStrings << qeIt.next().key();
     }
     EffectsXmlData data = m_pChainPresetManager->readEffectsXml(doc, deckStrings);
 
@@ -228,25 +229,25 @@ void EffectsManager::readEffectsXml() {
         m_outputEffectChain->loadChainPreset(data.outputChainPreset);
     }
 
-    for (auto it = data.eqEffectManifests.begin();
-            it != data.eqEffectManifests.end();
-            it++) {
-        auto pChainSlot = m_equalizerEffectChains.value(it.key());
+    QHashIterator<QString, EffectManifestPointer> eqIt(data.eqEffectManifests);
+    while (eqIt.hasNext()) {
+        eqIt.next();
+        auto pChainSlot = m_equalizerEffectChains.value(eqIt.key());
         if (pChainSlot) {
             const auto pEffectSlot = pChainSlot->getEffectSlot(0);
             VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
                 return;
             }
-            pEffectSlot->loadEffectWithDefaults(it.value());
+            pEffectSlot->loadEffectWithDefaults(eqIt.value());
         }
     }
 
-    for (auto it = data.quickEffectChainPresets.begin();
-            it != data.quickEffectChainPresets.end();
-            it++) {
-        auto pChainSlot = m_quickEffectChains.value(it.key());
+    QHashIterator<QString, EffectChainPresetPointer> qeDataIt(data.quickEffectChainPresets);
+    while (qeDataIt.hasNext()) {
+        qeDataIt.next();
+        auto pChainSlot = m_quickEffectChains.value(qeDataIt.key());
         if (pChainSlot) {
-            pChainSlot->loadChainPreset(it.value());
+            pChainSlot->loadChainPreset(qeDataIt.value());
         }
     }
 
@@ -292,19 +293,23 @@ void EffectsManager::saveEffectsXml() {
     doc.appendChild(rootElement);
 
     QHash<QString, EffectManifestPointer> eqEffectManifests;
-    for (auto it = m_equalizerEffectChains.begin(); it != m_equalizerEffectChains.end(); it++) {
-        const auto pEffectSlot = it.value().data()->getEffectSlot(0);
+    QHashIterator<QString, EqualizerEffectChainPointer> eqIt(m_equalizerEffectChains);
+    while (eqIt.hasNext()) {
+        eqIt.next();
+        const auto pEffectSlot = eqIt.value().data()->getEffectSlot(0);
         VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
             return;
         }
         auto pManifest = pEffectSlot->getManifest();
-        eqEffectManifests.insert(it.key(), pManifest);
+        eqEffectManifests.insert(eqIt.key(), pManifest);
     }
 
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
-    for (auto it = m_quickEffectChains.begin(); it != m_quickEffectChains.end(); it++) {
-        auto pPreset = EffectChainPresetPointer::create(it.value().data());
-        quickEffectChainPresets.insert(it.key(), pPreset);
+    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
+    while (qeIt.hasNext()) {
+        qeIt.next();
+        auto pPreset = EffectChainPresetPointer::create(qeIt.value().data());
+        quickEffectChainPresets.insert(qeIt.key(), pPreset);
     }
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;

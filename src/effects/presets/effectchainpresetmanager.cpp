@@ -666,8 +666,7 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
 EffectManifestPointer EffectChainPresetManager::getDefaultEqEffect() {
     EffectManifestPointer pDefaultEqEffect = m_pBackendManager->getManifest(
             BiquadFullKillEQEffect::getId(), EffectBackendType::BuiltIn);
-    VERIFY_OR_DEBUG_ASSERT(!pDefaultEqEffect.isNull()) {
-    }
+    DEBUG_ASSERT(!pDefaultEqEffect.isNull());
     return pDefaultEqEffect;
 }
 
@@ -939,32 +938,32 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     // Save ids of effects loaded to slot 1 of EQ chains
     QDomElement eqEffectsElement =
             pDoc->createElement(EffectXml::kEqualizerEffects);
-    for (auto it = data.eqEffectManifests.begin();
-            it != data.eqEffectManifests.end();
-            it++) {
+    QHashIterator<QString, EffectManifestPointer> eqIt(data.eqEffectManifests);
+    while (eqIt.hasNext()) {
+        eqIt.next();
         // Save element with '---' if no EQ is loaded
-        QString uid = it.value().isNull() ? kNoEffectString : it.value()->uniqueId();
+        QString uid = eqIt.value().isNull() ? kNoEffectString : eqIt.value()->uniqueId();
         QDomElement eqEffectElement = XmlParse::addElement(
                 *pDoc,
                 eqEffectsElement,
                 EffectXml::kEffectId,
                 uid);
-        eqEffectElement.setAttribute(QStringLiteral("group"), it.key());
+        eqEffectElement.setAttribute(QStringLiteral("group"), eqIt.key());
     }
     rootElement.appendChild(eqEffectsElement);
 
     // Save which presets are loaded to QuickEffects
     QDomElement quickEffectPresetsElement =
             pDoc->createElement(EffectXml::kQuickEffectChainPresets);
-    for (auto it = data.quickEffectChainPresets.begin();
-            it != data.quickEffectChainPresets.end();
-            it++) {
+    QHashIterator<QString, EffectChainPresetPointer> qeIt(data.quickEffectChainPresets);
+    while (qeIt.hasNext()) {
+        qeIt.next();
         QDomElement quickEffectElement = XmlParse::addElement(
                 *pDoc,
                 quickEffectPresetsElement,
                 EffectXml::kChainPresetName,
-                it.value()->name());
-        quickEffectElement.setAttribute(QStringLiteral("group"), it.key());
+                qeIt.value()->name());
+        quickEffectElement.setAttribute(QStringLiteral("group"), qeIt.key());
     }
     rootElement.appendChild(quickEffectPresetsElement);
 }
