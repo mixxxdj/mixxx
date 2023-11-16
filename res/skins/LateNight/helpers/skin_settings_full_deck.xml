@@ -116,7 +116,7 @@ Description:
       <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
         <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
         <SetVariable name="Text">Vinyl Control</SetVariable>
-        <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+        <SetVariable name="Setting">[Skin],show_vinylcontrol</SetVariable>
       </Template>
 
       <WidgetGroup><Size>0me,5f</Size></WidgetGroup>

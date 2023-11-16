@@ -222,12 +222,9 @@ QList<TreeItem*> findRekordboxDevices() {
         QFileInfo rbDBFileInfo(device.filePath() + QStringLiteral("/") + kPdbPath);
 
         if (rbDBFileInfo.exists() && rbDBFileInfo.isFile()) {
-            QList<QString> data;
-            data << device.filePath();
-            data << IS_RECORDBOX_DEVICE;
             auto* pFoundDevice = new TreeItem(
                     device.fileName(),
-                    QVariant(data));
+                    QVariant(QList<QString>{device.filePath(), IS_RECORDBOX_DEVICE}));
             foundDevices << pFoundDevice;
         }
     }
@@ -694,12 +691,8 @@ void buildPlaylistTree(
 
         QString currentPath = playlistPath + kPLaylistPathDelimiter + playlistItemName;
 
-        QList<QString> data;
-
-        data << currentPath;
-        data << IS_NOT_RECORDBOX_DEVICE;
-
-        TreeItem* child = parent->appendChild(playlistItemName, QVariant(data));
+        TreeItem* child = parent->appendChild(playlistItemName,
+                QVariant(QList<QString>{currentPath, IS_NOT_RECORDBOX_DEVICE}));
 
         // Create a playlist for this child
         QSqlQuery queryInsertIntoPlaylist(database);
@@ -737,7 +730,7 @@ void buildPlaylistTree(
                 " (playlist_id, track_id, position) "
                 "VALUES (:playlist_id, :track_id, :position)");
 
-        if (playlistTrackMap.count(childID)) {
+        if (playlistTrackMap.contains(childID)) {
             // Add playlist tracks for children
             for (uint32_t trackIndex = 1; trackIndex <=
                     static_cast<uint32_t>(playlistTrackMap[childID].size());
@@ -1493,7 +1486,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : qAsConst(items)) {
+    for (const auto& item : std::as_const(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));

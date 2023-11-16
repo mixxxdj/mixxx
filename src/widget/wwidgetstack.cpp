@@ -1,8 +1,8 @@
 #include "widget/wwidgetstack.h"
 
 #include <QApplication>
-#include <QtDebug>
 
+#include "control/controlobject.h"
 #include "moc_wwidgetstack.cpp"
 
 WidgetStackControlListener::WidgetStackControlListener(
@@ -169,7 +169,7 @@ void WWidgetStack::slotSetIndex(int index) {
     // index widget re-focus that widget.
     // For now, its only purpose is to keep the keyboard focus on
     // library widgets in the Library singleton when toggling
-    // [Master],maximize_library
+    // [Skin],show_maximized_library
     QWidget* prevFocusWidget = QApplication::focusWidget();
     setCurrentIndex(index);
     if (currentWidget()->isAncestorOf(prevFocusWidget)) {

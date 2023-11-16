@@ -1,6 +1,5 @@
 #pragma once
 
-#include "library/basesqltablemodel.h"
 #include "library/trackset/crate/crateid.h"
 #include "library/trackset/tracksettablemodel.h"
 
@@ -27,5 +26,5 @@ class CrateTableModel final : public TrackSetTableModel {
 
   private:
     CrateId m_selectedCrate;
-    QHash<int, QString> m_searchTexts;
+    QHash<CrateId, QString> m_searchTexts;
 };

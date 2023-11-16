@@ -1,17 +1,16 @@
 #pragma once
 
 #include <QMutex>
-#include <QSemaphore>
 #include <QString>
-#include <QThread>
-#include <QtDebug>
 
 #include "audio/frame.h"
 #include "engine/cachingreader/cachingreaderchunk.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"
 #include "track/track_decl.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 // POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
@@ -114,7 +113,7 @@ class CachingReaderWorker : public EngineWorker {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoaded(TrackPointer pTrack, int sampleRate, double numSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

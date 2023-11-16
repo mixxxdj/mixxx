@@ -237,7 +237,9 @@ class WTrackMenu : public QMenu {
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QMenu* m_pRemoveFromDiskMenu{};
+#endif
 
     // Update ReplayGain from Track
     QAction* m_pUpdateReplayGainAct{};

@@ -6,7 +6,6 @@
 #include <QAtomicPointer>
 #include <QList>
 
-#include "control/controlproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
@@ -20,6 +19,7 @@
 class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
+class ControlProxy;
 
 enum class CueMode {
     Mixxx,

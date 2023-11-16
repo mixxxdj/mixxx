@@ -3,20 +3,14 @@
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRendererSimple::WaveformRendererSimple(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
-}
-
-WaveformRendererSimple::~WaveformRendererSimple() {
 }
 
 void WaveformRendererSimple::onSetup(const QDomNode& node) {
@@ -150,9 +144,9 @@ void WaveformRendererSimple::paintGL() {
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
-    const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int colorLocation = m_shader.uniformLocation("color");
-    const int positionLocation = m_shader.attributeLocation("position");
+    const int matrixLocation = m_shader.matrixLocation();
+    const int colorLocation = m_shader.colorLocation();
+    const int positionLocation = m_shader.positionLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);
@@ -180,3 +174,5 @@ void WaveformRendererSimple::paintGL() {
     m_shader.disableAttributeArray(positionLocation);
     m_shader.release();
 }
+
+} // namespace allshader

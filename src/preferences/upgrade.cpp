@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QScopedPointer>
-#include <QTranslator>
 #include <QVersionNumber>
 
 #include "config.h"
@@ -15,11 +14,11 @@
 #include "library/trackcollection.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
 #include "util/versionstore.h"
+#include "waveform/widgets/waveformwidgettype.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -28,6 +27,45 @@ Upgrade::Upgrade()
 
 Upgrade::~Upgrade() {
 }
+
+namespace {
+// mapping to proactively move users to the new all-shader waveform types
+WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+    // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
+    using WWT = WaveformWidgetType;
+    switch (waveformType) {
+    case WWT::EmptyWaveform:
+    case WWT::SoftwareSimpleWaveform:
+    case WWT::SoftwareWaveform:
+    case WWT::GLVSyncTest:
+    case WWT::QtVSyncTest:
+    case WWT::AllShaderRGBWaveform:
+    case WWT::AllShaderLRRGBWaveform:
+    case WWT::AllShaderFilteredWaveform:
+    case WWT::AllShaderSimpleWaveform:
+    case WWT::AllShaderHSVWaveform:
+    case WWT::Count_WaveformwidgetType:
+        return waveformType;
+    case WWT::QtSimpleWaveform:
+    case WWT::GLSimpleWaveform:
+        return WaveformWidgetType::AllShaderSimpleWaveform;
+    case WWT::GLFilteredWaveform:
+    case WWT::GLSLFilteredWaveform:
+        return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WWT::QtWaveform:
+    case WWT::RGBWaveform:
+    case WWT::GLRGBWaveform:
+    case WWT::GLSLRGBWaveform:
+    case WWT::QtRGBWaveform:
+    case WWT::GLSLRGBStackedWaveform:
+        return WWT::AllShaderRGBWaveform;
+    case WWT::HSVWaveform:
+    case WWT::QtHSVWaveform:
+        return WWT::AllShaderHSVWaveform;
+    }
+    return WWT::AllShaderRGBWaveform;
+}
+} // namespace
 
 // We return the UserSettings here because we have to make changes to the
 // configuration and the location of the file may change between releases.
@@ -426,8 +464,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = VersionStore::version();
-            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
+            configVersion = "1.12.0";
+            config->set(ConfigKey("[Config]", "Version"),
+                    ConfigValue(configVersion));
         }
         else {
             qDebug() << "Upgrade failed!\n";
@@ -436,9 +475,36 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     const auto configFileVersion = QVersionNumber::fromString(configVersion);
 
+    // When upgrading from 2.3.x or older to 2.4, or when upgrading
+    // from 2.4.0-beta once we are out of beta
+    if (QVersionNumber::fromString(configVersion) < QVersionNumber(2, 4, 0) ||
+            (VersionStore::version() != "2.4.0-beta" &&
+                    configVersion.startsWith("2.4.0-"))) {
+        // Proactively move users to an all-shader waveform widget type and set the
+        // framerate to 60 fps
+        bool ok = false;
+        auto waveformType =
+                config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
+                        .toInt(&ok);
+        if (ok) {
+            config->set(ConfigKey("[Waveform]", "WaveformType"),
+                    ConfigValue(upgradeToAllShaders(
+                            static_cast<WaveformWidgetType::Type>(
+                                    waveformType))));
+        }
+        config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
+
+        // mark the configuration as updated
+        configVersion = "2.4.0";
+        config->set(ConfigKey("[Config]", "Version"),
+                ConfigValue(configVersion));
+    }
+
     // This variable indicates the first known version that requires no changes.
-    const QVersionNumber cleanVersion(1, 12, 0);
-    if (configFileVersion >= cleanVersion) {
+    // If additional upgrades are added for later versions, they should go before
+    // this block and cleanVersion should be bumped to the latest version.
+    const QVersionNumber cleanVersion(2, 4, 0);
+    if (QVersionNumber::fromString(configVersion) >= cleanVersion) {
         // No special upgrade required, just update the value.
         configVersion = VersionStore::version();
         config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));

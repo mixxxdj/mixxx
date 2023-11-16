@@ -7,7 +7,6 @@
 #include "track/trackref.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
-#include "util/sandbox.h"
 
 // forward declaration(s)
 class GlobalTrackCache;
@@ -26,9 +25,7 @@ private:
     friend class GlobalTrackCache;
     // Try to determine and return the relocated file info
     // or otherwise return just the provided file info.
-    virtual mixxx::FileAccess relocateCachedTrack(
-            TrackId trackId,
-            mixxx::FileAccess fileAccess) = 0;
+    virtual mixxx::FileAccess relocateCachedTrack(TrackId trackId) = 0;
 
   protected:
     virtual ~GlobalTrackCacheRelocator() = default;

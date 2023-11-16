@@ -27,7 +27,7 @@ namespace mixxx {
 /// libraries, we need to convert between the two values.
 ///
 /// See this for details:
-/// https://github.com/Holzhaus/serato-tags/blob/master/docs/colors.md#track-colors
+/// https://github.com/Holzhaus/serato-tags/blob/main/docs/colors.md#track-colors
 RgbColor::optional_t SeratoStoredTrackColor::toDisplayedColor() const {
     RgbColor::code_t colorCode = m_color;
     if (colorCode == SeratoStoredColor::kNoColor) {

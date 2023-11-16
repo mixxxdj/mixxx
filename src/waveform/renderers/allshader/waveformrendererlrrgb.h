@@ -13,7 +13,6 @@ class WaveformRendererLRRGB;
 class allshader::WaveformRendererLRRGB final : public allshader::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererLRRGB(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererLRRGB() override;
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;

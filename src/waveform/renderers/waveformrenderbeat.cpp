@@ -1,15 +1,13 @@
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
-
 #include "waveform/renderers/waveformrenderbeat.h"
 
-#include "control/controlobject.h"
+#include <QPainter>
+
 #include "track/track.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
-#include "util/painterscope.h"
+
+class QPaintEvent;
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -20,7 +18,7 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
+    m_beatColor = QColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
 }
 
@@ -49,7 +47,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_beatColor.setAlphaF(alpha/100.0);
 #endif
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }

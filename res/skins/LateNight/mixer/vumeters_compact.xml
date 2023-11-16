@@ -8,7 +8,7 @@
     <Layout>vertical</Layout>
     <Children>
 
-      <WidgetGroup><!-- 1 / Master / 2 -->
+      <WidgetGroup><!-- 1 / Main / 2 -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
@@ -24,12 +24,12 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>VuMeterMaster_Compact</ObjectName>
+            <ObjectName>VuMeterMain_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
               <SingletonContainer>
-                <ObjectName>VuMeterMaster_Light</ObjectName>
+                <ObjectName>VuMeterMain_Light</ObjectName>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
@@ -45,7 +45,7 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- 1 / Master / 2 -->
+      </WidgetGroup><!-- 1 / Main / 2 -->
 
       <WidgetGroup><!-- 3 / (Main) / 4 -->
         <Layout>horizontal</Layout>
@@ -63,7 +63,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>VuMeterMaster_Compact</ObjectName>
+            <ObjectName>VuMeterMain_Compact</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
@@ -72,12 +72,12 @@
                 <Size>14f,96f</Size>
                 <Children>
                   <WidgetGroup>
-                    <!-- <TooltipId>master_VuMeter</TooltipId> -->
-                    <ObjectName>VuMasterCover</ObjectName>
+                    <!-- <TooltipId>main_VuMeter</TooltipId> -->
+                    <ObjectName>VuMainCover</ObjectName>
                   </WidgetGroup>
                   <!-- Unfortnately we can load a Singleton only once,
                       so we need a separate vu meter instance -->
-                  <Template src="skin:../LateNight/mixer/vumeter_master.xml"/>
+                  <Template src="skin:../LateNight/mixer/vumeter_main.xml"/>
                 </Children>
               </WidgetGroup>
             </Children>

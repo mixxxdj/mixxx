@@ -1,5 +1,7 @@
 #include "widget/weffectparameterknobcomposed.h"
 
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
 #include "moc_weffectparameterknobcomposed.cpp"
 #include "widget/effectwidgetutils.h"
 

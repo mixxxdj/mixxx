@@ -1,15 +1,17 @@
 #pragma once
 
+#include <QDateTime>
 #include <QHash>
-#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QString>
 #include <gsl/pointers>
 #include <map>
 
 #include "library/dao/dao.h"
-#include "library/itunes/itunespathmapping.h"
-#include "library/treeitem.h"
+
+class QSqlDatabase;
+struct ITunesPathMapping;
+class TreeItem;
 
 const int kRootITunesPlaylistId = -1;
 
@@ -19,6 +21,7 @@ struct ITunesTrack {
     QString title;
     QString album;
     QString albumArtist;
+    QString composer;
     QString genre;
     QString grouping;
     int year;
@@ -29,6 +32,9 @@ struct ITunesTrack {
     int trackNumber;
     int bpm;
     int bitrate;
+    int playCount;
+    QDateTime lastPlayedAt;
+    QDateTime dateAdded;
 
 #if __cplusplus >= 202002L
     bool operator==(const ITunesTrack&) const = default;
@@ -40,6 +46,7 @@ struct ITunesTrack {
                 title == other.title &&
                 album == other.album &&
                 albumArtist == other.albumArtist &&
+                composer == other.composer &&
                 genre == other.genre &&
                 grouping == other.grouping &&
                 year == other.year &&
@@ -49,7 +56,10 @@ struct ITunesTrack {
                 comment == other.comment &&
                 trackNumber == other.trackNumber &&
                 bpm == other.bpm &&
-                bitrate == other.bitrate);
+                bitrate == other.bitrate &&
+                playCount == other.playCount &&
+                lastPlayedAt == other.lastPlayedAt &&
+                dateAdded == other.dateAdded);
     }
 #endif
 };

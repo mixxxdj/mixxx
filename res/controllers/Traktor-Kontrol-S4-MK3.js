@@ -2079,8 +2079,8 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.libraryViewButton = new Button({
-            group: "[Master]",
-            key: "maximize_library",
+            group: "[Skin]",
+            key: "show_maximized_library",
             libraryEncoder: this.libraryEncoder,
             libraryEncoderPress: this.libraryEncoderPress,
             onShortRelease: function() {
@@ -2603,7 +2603,7 @@ class S4Mk3MixerColumn extends ComponentContainer {
             mixer: this,
             input: MixerControlsMixAuxOnShift ? function(value) {
                 if (this.mixer.shifted && this.group !== `[Channel${idx}]`) { // FIXME only if group != [ChannelX]
-                    const controlKey = (this.group === `[Microphone${idx}]` || this.group === "[Microphone]") ? "talkover" : "master";
+                    const controlKey = (this.group === `[Microphone${idx}]` || this.group === "[Microphone]") ? "talkover" : "main_mix";
                     const isPlaying = engine.getValue(this.group, controlKey);
                     if ((value !== 0) !== isPlaying) {
                         engine.setValue(this.group, controlKey, value !== 0);
@@ -2722,8 +2722,8 @@ class S4Mk3MixerColumn extends ComponentContainer {
 
 class S4MK3 {
     constructor() {
-        if (engine.getValue("[Master]", "num_samplers") < 16) {
-            engine.setValue("[Master]", "num_samplers", 16);
+        if (engine.getValue("[App]", "num_samplers") < 16) {
+            engine.setValue("[App]", "num_samplers", 16);
         }
 
         this.inReports = [];
@@ -2885,7 +2885,7 @@ class S4MK3 {
 
         const that = this;
         /* eslint no-unused-vars: "off" */
-        const meterConnection = engine.makeConnection("[Master]", "guiTick50ms", function(_value) {
+        const meterConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", function(_value) {
             const deckMeters = new Uint8Array(78).fill(0);
             // Each column has 14 segments, but treat the top one specially for the clip indicator.
             const deckSegments = 13;
@@ -2898,7 +2898,7 @@ class S4MK3 {
                         deckGroup = deckNum !== 1 ? `[Microphone${deckNum}]` : "[Microphone]";
                     }
                 }
-                const deckLevel = engine.getValue(deckGroup, "VuMeter");
+                const deckLevel = engine.getValue(deckGroup, "vu_meter");
                 const columnBaseIndex = (deckNum - 1) * (deckSegments + 2);
                 const scaledLevel = deckLevel * deckSegments;
                 const segmentsToLightFully = Math.floor(scaledLevel);
@@ -2912,7 +2912,7 @@ class S4MK3 {
                         deckMeters[columnBaseIndex + segmentsToLightFully + 1] = 125;
                     }
                 }
-                if (engine.getValue(deckGroup, "PeakIndicator")) {
+                if (engine.getValue(deckGroup, "peak_indicator")) {
                     deckMeters[columnBaseIndex + deckSegments + 1] = 127;
                 }
             }

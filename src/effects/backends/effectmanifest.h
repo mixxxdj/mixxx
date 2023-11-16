@@ -3,7 +3,6 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QString>
-#include <QtDebug>
 
 #include "effects/backends/effectmanifestparameter.h"
 #include "effects/backends/effectsbackend.h"
@@ -27,7 +26,7 @@ class EffectManifest {
     EffectManifest()
             : m_backendType(EffectBackendType::Unknown),
               m_isMixingEQ(false),
-              m_isMasterEQ(false),
+              m_isMainEQ(false),
               m_effectRampsFromDry(false),
               m_bAddDryToWet(false),
               m_metaknobDefault(0.0) {
@@ -104,12 +103,12 @@ class EffectManifest {
         m_isMixingEQ = value;
     }
 
-    const bool& isMasterEQ() const {
-        return m_isMasterEQ;
+    const bool& isMainEQ() const {
+        return m_isMainEQ;
     }
 
-    void setIsMasterEQ(const bool value) {
-        m_isMasterEQ = value;
+    void setIsMainEQ(const bool value) {
+        m_isMainEQ = value;
     }
 
     bool hasMetaKnobLinking() const;
@@ -183,7 +182,7 @@ class EffectManifest {
     QString m_description;
     /// This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
-    bool m_isMasterEQ;
+    bool m_isMainEQ;
     QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
     bool m_bAddDryToWet;

@@ -3,21 +3,16 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QPointer>
-#include <QStringListModel>
-#include <QtConcurrentRun>
-#include <QtSql>
 #include <atomic>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/itunes/itunesimporter.h"
-#include "library/trackcollection.h"
-#include "library/treeitem.h"
-#include "library/treeitemmodel.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
 class WLibrarySidebar;
+class ITunesImporter;
+class BaseTrackCache;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -30,6 +25,11 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+
+    // This is called from the ITunesXMLImporter thread and generally threadsafe
+    bool isImportCanceled() const {
+        return m_cancelImport.load();
+    }
 
   public slots:
     void activate() override;

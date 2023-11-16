@@ -1,5 +1,7 @@
 #include "widget/wcolorpickeraction.h"
 
+#include <QHBoxLayout>
+
 #include "moc_wcolorpickeraction.cpp"
 
 WColorPickerAction::WColorPickerAction(WColorPicker::Options options, const ColorPalette& palette, QWidget* parent)

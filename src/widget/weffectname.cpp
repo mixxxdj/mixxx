@@ -1,8 +1,5 @@
 #include "widget/weffectname.h"
 
-#include <QtDebug>
-
-#include "effects/effectsmanager.h"
 #include "moc_weffectname.cpp"
 #include "widget/effectwidgetutils.h"
 

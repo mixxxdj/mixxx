@@ -1,7 +1,9 @@
 #include "effects/backends/builtin/bessel8lvmixeqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
+#include "engine/effects/engineeffectparameter.h"
 
 // static
 QString Bessel8LVMixEQEffect::getId() {
@@ -28,9 +30,9 @@ EffectManifestPointer Bessel8LVMixEQEffect::getManifest() {
     return pManifest;
 }
 
-Bessel8LVMixEQEffect::Bessel8LVMixEQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+Bessel8LVMixEQEffect::Bessel8LVMixEQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void Bessel8LVMixEQEffect::loadEngineEffectParameters(
@@ -41,11 +43,6 @@ void Bessel8LVMixEQEffect::loadEngineEffectParameters(
     m_pKillLow = parameters.value("killLow");
     m_pKillMid = parameters.value("killMid");
     m_pKillHigh = parameters.value("killHigh");
-}
-
-Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
 }
 
 void Bessel8LVMixEQEffect::processChannel(
@@ -86,7 +83,7 @@ void Bessel8LVMixEQEffect::processChannel(
                 fLow,
                 fMid,
                 fHigh,
-                m_pLoFreqCorner->get(),
-                m_pHiFreqCorner->get());
+                m_pLoFreqCorner.get(),
+                m_pHiFreqCorner.get());
     }
 }

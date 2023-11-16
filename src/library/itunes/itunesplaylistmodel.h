@@ -3,8 +3,6 @@
 #include <QObject>
 
 #include "library/baseexternalplaylistmodel.h"
-#include "library/basetrackcache.h"
-#include "library/trackcollectionmanager.h"
 
 class ITunesPlaylistModel : public BaseExternalPlaylistModel {
     Q_OBJECT

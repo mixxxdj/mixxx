@@ -3,7 +3,6 @@
 #include "control/controlpushbutton.h"
 #include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
-#include "util/event.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -153,7 +152,7 @@ void VinylControlProcessor::reloadConfig() {
 }
 
 void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
-    if (input.getType() != AudioInput::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
     }
@@ -177,7 +176,7 @@ void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
 }
 
 void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
-    if (input.getType() != AudioInput::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
     }
@@ -206,7 +205,7 @@ void VinylControlProcessor::receiveBuffer(const AudioInput& input,
         const CSAMPLE* pBuffer,
         unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
-    if (input.getType() != AudioInput::VINYLCONTROL) {
+    if (input.getType() != AudioPathType::VinylControl) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
         return;
     }

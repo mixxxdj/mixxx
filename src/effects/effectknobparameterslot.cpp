@@ -1,15 +1,11 @@
 #include "effects/effectknobparameterslot.h"
 
-#include <QtDebug>
-
 #include "control/controleffectknob.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
 #include "effects/effectparameter.h"
-#include "effects/effectslot.h"
 #include "moc_effectknobparameterslot.cpp"
-#include "util/xml.h"
 
 EffectKnobParameterSlot::EffectKnobParameterSlot(
         const QString& group, const unsigned int iParameterSlotNumber)

@@ -1,5 +1,8 @@
 #include "effects/backends/builtin/loudnesscontoureffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 #include "util/math.h"
 
 namespace {
@@ -125,7 +128,7 @@ void LoudnessContourEffect::processChannel(
                 gainKnob = math_clamp(gainKnob, 0.03, 1.0); // Limit at 0 .. -30 dB
                 double gainKnobDb = ratio2db(gainKnob);
                 filterGainDb = loudness * gainKnobDb / kMaxLoGain;
-                gain = 1; // No need for adjust gain because master gain follows
+                gain = 1; // No need for adjust gain because main gain follows
             } else {
                 filterGainDb = -loudness;
                 // compensate filter boost to avoid clipping

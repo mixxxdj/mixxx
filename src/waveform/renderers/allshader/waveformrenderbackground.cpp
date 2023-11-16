@@ -2,15 +2,12 @@
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformRenderBackground::WaveformRenderBackground(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRenderer(waveformWidgetRenderer),
           m_backgroundColor(0, 0, 0) {
-}
-
-WaveformRenderBackground::~WaveformRenderBackground() {
 }
 
 void WaveformRenderBackground::setup(const QDomNode& node,
@@ -31,3 +28,5 @@ void WaveformRenderBackground::paintGL() {
             1.f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
+
+} // namespace allshader

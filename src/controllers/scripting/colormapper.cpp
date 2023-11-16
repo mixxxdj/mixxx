@@ -2,7 +2,6 @@
 
 #include <QVariant>
 #include <cmath>
-#include <cstdint>
 
 #include "util/logger.h"
 

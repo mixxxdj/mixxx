@@ -1,17 +1,15 @@
 #include "library/export/engineprimeexportjob.h"
 
 #include <QHash>
-#include <QMetaMethod>
 #include <QStringList>
-#include <QtGlobal>
 #include <array>
-#include <chrono>
 #include <cstdint>
-#include <djinterop/djinterop.hpp>
 #include <memory>
 #include <stdexcept>
 
+#include "library/export/engineprimeexportrequest.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
 #include "moc_engineprimeexportjob.cpp"
 #include "track/track.h"
@@ -94,8 +92,7 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
     mixxx::FileInfo srcFileInfo = pTrack->getFileInfo();
-    const auto trackId = pTrack->getId().value();
-    QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
+    QString dstFilename = pTrack->getId().toString() + " - " + srcFileInfo.fileName();
     QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
             srcFileInfo.lastModified() > QFileInfo{dstPath}.lastModified()) {
@@ -143,7 +140,7 @@ bool tryGetBeatgrid(BeatsPointer pBeats,
 
     int numBeatsToCue = pBeats->numBeatsInRange(firstBeatPlayPos, cueBeatPlayPos);
     const auto firstBarAlignedBeatPlayPos = pBeats->findNBeatsFromPosition(
-            cueBeatPlayPos, numBeatsToCue & ~0x3);
+            cueBeatPlayPos, -1 * (numBeatsToCue & ~0x3));
     if (!firstBarAlignedBeatPlayPos.isValid()) {
         return false;
     }
@@ -210,13 +207,11 @@ void exportMetadata(
     snapshot.sample_count = frameCount;
     snapshot.sample_rate = pTrack->getSampleRate();
 
-    // Set track loudness.
-    // Note that the djinterop API method for setting loudness may be revised
-    // in future, as more is discovered about the exact meaning of the loudness
-    // field in the Engine Library format.  Make the assumption for now that
-    // ReplayGain ratio is an appropriate value to set, which has been validated
-    // by basic experimental testing.
-    snapshot.average_loudness = pTrack->getReplayGain().getRatio();
+    // Track loudness controls how the waveforms are scaled on Engine players.
+    // However, getting it wrong and accidentally scaling a waveform beyond a sensible maximum
+    // can result in no waveform being shown at all.  In order to be safe, no loudness information
+    // is exported, resulting in waveforms being displayed as-is.
+    snapshot.average_loudness = 0;
 
     // Set main cue-point.
     mixxx::audio::FramePos cuePlayPos = pTrack->getMainCuePosition();
@@ -534,7 +529,7 @@ void EnginePrimeExportJob::run() {
     // We will build up a map from Mixxx track id to EL track id during export.
     QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
 
-    for (const auto& trackRef : qAsConst(m_trackRefs)) {
+    for (const auto& trackRef : std::as_const(m_trackRefs)) {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -551,7 +546,7 @@ void EnginePrimeExportJob::run() {
 
         DEBUG_ASSERT(m_pLastLoadedTrack != nullptr);
 
-        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().value()
+        qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().toString()
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
         try {
             exportTrack(m_pRequest,
@@ -562,7 +557,7 @@ void EnginePrimeExportJob::run() {
                     m_pLastLoadedWaveform.get());
         } catch (std::exception& e) {
             qWarning() << "Failed to export track"
-                       << m_pLastLoadedTrack->getId().value() << ":"
+                       << m_pLastLoadedTrack->getId().toString() << ":"
                        << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);
@@ -592,7 +587,7 @@ void EnginePrimeExportJob::run() {
     }
 
     // Add each track to the root crate, even if it also belongs to others.
-    for (const TrackRef& trackRef : qAsConst(m_trackRefs)) {
+    for (const TrackRef& trackRef : std::as_const(m_trackRefs)) {
         if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
@@ -616,7 +611,7 @@ void EnginePrimeExportJob::run() {
     emit jobProgress(currProgress);
 
     // Export all Mixxx crates
-    for (const CrateId& crateId : qAsConst(m_crateIds)) {
+    for (const CrateId& crateId : std::as_const(m_crateIds)) {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -631,7 +626,7 @@ void EnginePrimeExportJob::run() {
             return;
         }
 
-        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().value() << "...";
+        qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().toString() << "...";
         try {
             exportCrate(
                     pExtRootCrate.get(),
@@ -639,7 +634,7 @@ void EnginePrimeExportJob::run() {
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);
         } catch (std::exception& e) {
-            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
+            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().toString()
                        << ":" << e.what();
             m_lastErrorMessage = e.what();
             emit failed(m_lastErrorMessage);

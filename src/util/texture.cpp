@@ -1,29 +1,35 @@
 #include "util/texture.h"
 
-QOpenGLTexture* createTexture(const QImage& image) {
+#include <QImage>
+#include <QOpenGLTexture>
+#include <QPixmap>
+
+#include "widget/paintable.h"
+
+std::unique_ptr<QOpenGLTexture> createTexture(const QImage& image) {
     if (image.isNull()) {
         return nullptr;
     }
-    QOpenGLTexture* pTexture = new QOpenGLTexture(image);
+    auto pTexture = std::make_unique<QOpenGLTexture>(image);
     pTexture->setMinificationFilter(QOpenGLTexture::Linear);
     pTexture->setMagnificationFilter(QOpenGLTexture::Linear);
-    pTexture->setWrapMode(QOpenGLTexture::ClampToBorder);
+    pTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
 
     return pTexture;
 }
 
-QOpenGLTexture* createTexture(const QPixmap& pixmap) {
+std::unique_ptr<QOpenGLTexture> createTexture(const QPixmap& pixmap) {
     return createTexture(pixmap.toImage());
 }
 
-QOpenGLTexture* createTexture(const QSharedPointer<Paintable>& pPaintable) {
+std::unique_ptr<QOpenGLTexture> createTexture(const QSharedPointer<Paintable>& pPaintable) {
     if (pPaintable.isNull()) {
         return nullptr;
     }
     return createTexture(pPaintable->toImage());
 }
 
-QOpenGLTexture* createTexture(const std::shared_ptr<QImage>& pImage) {
+std::unique_ptr<QOpenGLTexture> createTexture(const std::shared_ptr<QImage>& pImage) {
     if (!pImage) {
         return nullptr;
     }

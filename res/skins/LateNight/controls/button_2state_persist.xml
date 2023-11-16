@@ -4,7 +4,7 @@ Description:
 Variables:
   ObjectName        : object name
   ToolTipID         : standard Tooltip from mixxx db
-    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/TooltipIds.cpp
+    see: https://github.com/mixxxdj/mixxx/blob/main/src/skin/legacy/tooltips.cpp
   Size              : button size
   state_X_text      : label text for state X
   state_X_pressed   : background graphic for pressed state X

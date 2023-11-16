@@ -1,17 +1,17 @@
 #include "widget/wbeatspinbox.h"
 
-#include <QLineEdit>
+#include <QKeyEvent>
 #include <QRegularExpression>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "library/library_decl.h"
 #include "moc_wbeatspinbox.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 
 namespace {
 const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
-}
+} // namespace
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         const ConfigKey& configKey,
@@ -295,7 +295,7 @@ void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
         ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QDoubleSpinBox::keyPressEvent(pEvent);
+    QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
 bool WBeatLineEdit::event(QEvent* pEvent) {

@@ -5,7 +5,6 @@
 #include "config.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "mixer/playermanager.h"
 #include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
 #include "util/experiment.h"
@@ -14,6 +13,7 @@
 namespace {
 
 constexpr int kMaxLoadToDeckActions = 4;
+const QString kSkinGroup = QStringLiteral("[Skin]");
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -209,7 +209,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+1", "Menubar|View|Show Skin Settings"))));
     pViewShowSkinSettings->setStatusTip(showSkinSettingsText);
     pViewShowSkinSettings->setWhatsThis(buildWhatsThis(showSkinSettingsTitle, showSkinSettingsText));
-    createVisibilityControl(pViewShowSkinSettings, ConfigKey("[Master]", "skin_settings"));
+    createVisibilityControl(pViewShowSkinSettings,
+            ConfigKey(kSkinGroup, QStringLiteral("show_settings")));
     pViewMenu->addAction(pViewShowSkinSettings);
 
     // Microphone Section
@@ -224,7 +225,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     pViewShowMicrophone->setStatusTip(showMicrophoneText);
     pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
-    createVisibilityControl(pViewShowMicrophone, ConfigKey("[Microphone]", "show_microphone"));
+    createVisibilityControl(pViewShowMicrophone,
+            ConfigKey(kSkinGroup, QStringLiteral("show_microphones")));
     pViewMenu->addAction(pViewShowMicrophone);
 
 #ifdef __VINYLCONTROL__
@@ -239,7 +241,8 @@ void WMainMenuBar::initialize() {
             tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     pViewVinylControl->setStatusTip(showVinylControlText);
     pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    createVisibilityControl(pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    createVisibilityControl(pViewVinylControl,
+            ConfigKey(kSkinGroup, QStringLiteral("show_vinylcontrol")));
     pViewMenu->addAction(pViewVinylControl);
 #endif
 
@@ -254,7 +257,8 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
-    createVisibilityControl(pViewShowPreviewDeck, ConfigKey("[PreviewDeck]", "show_previewdeck"));
+    createVisibilityControl(pViewShowPreviewDeck,
+            ConfigKey(kSkinGroup, QStringLiteral("show_preview_decks")));
     pViewMenu->addAction(pViewShowPreviewDeck);
 
 
@@ -269,7 +273,8 @@ void WMainMenuBar::initialize() {
                 tr("Ctrl+6", "Menubar|View|Show Cover Art"))));
     pViewShowCoverArt->setStatusTip(showCoverArtText);
     pViewShowCoverArt->setWhatsThis(buildWhatsThis(showCoverArtTitle, showCoverArtText));
-    createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
+    createVisibilityControl(pViewShowCoverArt,
+            ConfigKey(kSkinGroup, QStringLiteral("show_library_coverart")));
     pViewMenu->addAction(pViewShowCoverArt);
 
 
@@ -284,7 +289,8 @@ void WMainMenuBar::initialize() {
                 tr("Space", "Menubar|View|Maximize Library"))));
     pViewMaximizeLibrary->setStatusTip(maximizeLibraryText);
     pViewMaximizeLibrary->setWhatsThis(buildWhatsThis(maximizeLibraryTitle, maximizeLibraryText));
-    createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
+    createVisibilityControl(pViewMaximizeLibrary,
+            ConfigKey(kSkinGroup, QStringLiteral("show_maximized_library")));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
     pViewMenu->addSeparator();
@@ -753,11 +759,11 @@ void WMainMenuBar::createVisibilityControl(QAction* pAction,
 
 void WMainMenuBar::onNumberOfDecksChanged(int decks) {
     int deck = 0;
-    for (QAction* pVinylControlEnabled : qAsConst(m_vinylControlEnabledActions)) {
+    for (QAction* pVinylControlEnabled : std::as_const(m_vinylControlEnabledActions)) {
         pVinylControlEnabled->setVisible(deck++ < decks);
     }
     deck = 0;
-    for (QAction* pLoadToDeck : qAsConst(m_loadToDeckActions)) {
+    for (QAction* pLoadToDeck : std::as_const(m_loadToDeckActions)) {
         pLoadToDeck->setVisible(deck++ < decks);
     }
 }

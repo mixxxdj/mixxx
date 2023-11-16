@@ -1,15 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QScopedPointer>
 #include <QString>
 #include <QThread>
 #include <future>
 
 #include "library/coverart.h"
-#include "library/coverartutils.h"
-#include "util/fileinfo.h"
-#include "util/imagefiledata.h"
 
 // This is a QThread class for copying the cover art.
 

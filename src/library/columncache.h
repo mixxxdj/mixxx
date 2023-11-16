@@ -6,7 +6,6 @@
 
 #include "track/keyutils.h"
 #include "control/controlproxy.h"
-#include "preferences/usersettings.h"
 
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.

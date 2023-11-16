@@ -10,18 +10,15 @@
 #include <QtGlobal>
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "effects/effectsmanager.h"
 #include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
-#include "recording/recordingmanager.h"
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
@@ -900,7 +897,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QColor c(0,0,0);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1204,7 +1201,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QColor c(255,255,255);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1307,26 +1304,20 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WSpinnyBase* pSpinny;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
+            !CmdlineArgs::Instance().getUseLegacySpinny()) {
+        pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    } else
 #endif
-        {
-            pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
-        }
+    {
+        pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pSpinny->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pSpinny = new WSpinnyGLSL(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        } else
-#endif
-        {
-            pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
-        }
     }
     commonWidgetSetup(node, pSpinny);
 
@@ -1364,7 +1355,7 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     return nullptr;
 #else
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
+    if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
                     !pWaveformWidgetFactory->isOpenGlesAvailable())) {
         // Legacy WVuMeter
@@ -1395,26 +1386,19 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
     WVuMeterBase* pVuMeterWidget;
-    if (qApp->platformName() == QLatin1String("xcb")) {
 #ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL();
-        } else
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+        pVuMeterWidget = new WVuMeterGLSL(pParent);
+    } else
 #endif
-        {
-            pVuMeterWidget = new WVuMeter();
-        }
+    {
+        pVuMeterWidget = new WVuMeter(pParent);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pVuMeterWidget->setParent(m_pParent);
-    } else {
-#ifdef MIXXX_USE_QOPENGL
-        if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
-            pVuMeterWidget = new WVuMeterGLSL(m_pParent);
-        } else
-#endif
-        {
-            pVuMeterWidget = new WVuMeter(m_pParent);
-        }
     }
     commonWidgetSetup(node, pVuMeterWidget);
 
@@ -1646,7 +1630,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
-        color.setNamedColor(fgColor);
+        color = QColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
@@ -1660,7 +1644,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColor;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
-        color.setNamedColor(bgColor);
+        color = QColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -1672,7 +1656,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowEven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowEven", &bgColorRowEven)) {
-        color.setNamedColor(bgColorRowEven);
+        color = QColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
@@ -1680,7 +1664,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowUneven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowUneven", &bgColorRowUneven)) {
-        color.setNamedColor(bgColorRowUneven);
+        color = QColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
@@ -1801,8 +1785,23 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
-    pWidget->installEventFilter(
-            m_pControllerManager->getControllerLearningEventFilter());
+    auto* pCLEFilter = m_pControllerManager->getControllerLearningEventFilter();
+    pWidget->installEventFilter(pCLEFilter);
+    // For HotcueButton, widget connections are created in its own setup(), not
+    // via <Connection> nodes. In order to make Hotcue controls learnable for
+    // ControllerLearningEventFilter we need to add the clickInfo manually.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::LeftButton,
+            controlFromConfigKey(pWidget->getLeftClickConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+    // Shift + right click = clear hotcue
+    // ControllerLearningEventFilter doesn't (yet) care about keyboard events or
+    // modifiers, so let's use just right-click to make this learnable as well.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::RightButton,
+            controlFromConfigKey(pWidget->getClearConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+
     pWidget->Init();
     return pWidget;
 }

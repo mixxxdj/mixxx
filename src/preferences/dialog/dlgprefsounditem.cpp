@@ -60,7 +60,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     while (deviceComboBox->count() > 1) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         if (!hasSufficientChannels(*pDevice)) {
             continue;
         }
@@ -83,7 +83,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
-        for (const auto& pDevice: qAsConst(m_devices)) {
+        for (const auto& pDevice : std::as_const(m_devices)) {
             if (pDevice->getDeviceId() == selection) {
                 if (m_isInput) {
                     numChannels = pDevice->getNumInputChannels();
@@ -230,7 +230,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     if (selection == SoundDeviceId()) {
         return SoundDevicePointer();
     }
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         if (selection == pDevice->getDeviceId()) {
             //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
             return pDevice;

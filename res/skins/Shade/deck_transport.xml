@@ -22,7 +22,7 @@
         </State>
         <Pos>5,0</Pos>
         <Connection>
-          <ConfigKey>[Microphone],show_microphone</ConfigKey>
+          <ConfigKey>[Skin],show_microphones</ConfigKey>
         </Connection>
       </PushButton>
 
@@ -48,7 +48,7 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>master_enable</TooltipId>
+        <TooltipId>main_enable</TooltipId>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
@@ -62,7 +62,7 @@
         </State>
         <Pos>5,35</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],master</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],main_mix</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>
@@ -87,7 +87,7 @@
         </State>
         <Pos>53,0</Pos>
         <Connection>
-          <ConfigKey>[Samplers],show_samplers</ConfigKey>
+          <ConfigKey>[Skin],show_samplers</ConfigKey>
         </Connection>
       </PushButton>
 

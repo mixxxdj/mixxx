@@ -1,23 +1,17 @@
 #include "library/itunes/itunesxmlimporter.h"
 
-#include <QSqlQuery>
+#include <QDateTime>
 #include <QString>
 #include <QUrl>
 #include <memory>
 #include <utility>
 
 #include "library/itunes/itunesdao.h"
+#include "library/itunes/itunesfeature.h"
 #include "library/itunes/itunesimporter.h"
 #include "library/itunes/ituneslocalhosttoken.h"
-#include "library/queryutil.h"
-#include "library/treeitemmodel.h"
+#include "library/treeitem.h"
 #include "util/lcs.h"
-
-#ifdef __SQLITE3__
-#include <sqlite3.h>
-#else                        // __SQLITE3__
-#define SQLITE_CONSTRAINT 19 // Abort due to constraint violation
-#endif                       // __SQLITE3__
 
 namespace {
 
@@ -28,6 +22,7 @@ const QString kName = "Name";
 const QString kArtist = "Artist";
 const QString kAlbum = "Album";
 const QString kAlbumArtist = "Album Artist";
+const QString kComposer = "Composer";
 const QString kGenre = "Genre";
 const QString kGrouping = "Grouping";
 const QString kBPM = "BPM";
@@ -40,18 +35,20 @@ const QString kTrackNumber = "Track Number";
 const QString kRating = "Rating";
 const QString kTrackType = "Track Type";
 const QString kRemote = "Remote";
+const QString kPlayCount = "Play Count";
+const QString kPlayDateUTC = "Play Date UTC";
+const QString kDateAdded = "Date Added";
 
 } // anonymous namespace
 
-ITunesXMLImporter::ITunesXMLImporter(LibraryFeature* parentFeature,
+ITunesXMLImporter::ITunesXMLImporter(
+        ITunesFeature* pParentFeature,
         const QString& xmlFilePath,
-        const std::atomic<bool>& cancelImport,
         std::unique_ptr<ITunesDAO> dao)
-        : m_parentFeature(parentFeature),
+        : ITunesImporter(pParentFeature),
           m_xmlFilePath(xmlFilePath),
           m_xmlFile(xmlFilePath),
           m_xml(&m_xmlFile),
-          m_cancelImport(cancelImport),
           m_dao(std::move(dao)) {
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
@@ -73,7 +70,7 @@ ITunesImport ITunesXMLImporter::importLibrary() {
         return iTunesImport;
     }
 
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
         if (m_xml.isStartElement()) {
             if (m_xml.name() == QLatin1String("key")) {
@@ -90,9 +87,9 @@ ITunesImport ITunesXMLImporter::importLibrary() {
                 } else if (key == "Playlists") {
                     parsePlaylists();
 
-                    // The parent feature may ne null during testing
-                    std::unique_ptr<TreeItem> pRootItem = m_parentFeature
-                            ? TreeItem::newRoot(m_parentFeature)
+                    // The parent feature may be null during testing
+                    std::unique_ptr<TreeItem> pRootItem = m_pParentFeature
+                            ? TreeItem::newRoot(m_pParentFeature)
                             : std::make_unique<TreeItem>();
                     m_dao->appendPlaylistTree(pRootItem.get());
 
@@ -213,7 +210,7 @@ void ITunesXMLImporter::parseTracks() {
     qDebug() << "Parse iTunes music collection";
 
     // read all sunsequent <dict> until we reach the closing ENTRY tag
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {
@@ -249,6 +246,7 @@ void ITunesXMLImporter::parseTrack() {
     QString artist;
     QString album;
     QString albumArtist;
+    QString composer;
     QString year;
     QString genre;
     QString grouping;
@@ -263,6 +261,10 @@ void ITunesXMLImporter::parseTrack() {
     QString comment;
     QString tracknumber;
     QString tracktype;
+
+    int playCount = 0;
+    QDateTime lastPlayedAt;
+    QDateTime dateAdded;
 
     while (!m_xml.atEnd()) {
         m_xml.readNext();
@@ -296,6 +298,10 @@ void ITunesXMLImporter::parseTrack() {
                 }
                 if (key == kAlbumArtist) {
                     albumArtist = content;
+                    continue;
+                }
+                if (key == kComposer) {
+                    composer = content;
                     continue;
                 }
                 if (key == kGenre) {
@@ -355,6 +361,18 @@ void ITunesXMLImporter::parseTrack() {
                     tracktype = content;
                     continue;
                 }
+                if (key == kPlayCount) {
+                    playCount = content.toInt();
+                    continue;
+                }
+                if (key == kPlayDateUTC) {
+                    lastPlayedAt = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
+                if (key == kDateAdded) {
+                    dateAdded = QDateTime::fromString(content, Qt::ISODate);
+                    continue;
+                }
             }
         }
         // exit loop on closing </dict>
@@ -377,6 +395,7 @@ void ITunesXMLImporter::parseTrack() {
             .title = title,
             .album = album,
             .albumArtist = albumArtist,
+            .composer = composer,
             .genre = genre,
             .grouping = grouping,
             .year = year.toInt(),
@@ -387,6 +406,9 @@ void ITunesXMLImporter::parseTrack() {
             .trackNumber = tracknumber.toInt(),
             .bpm = bpm,
             .bitrate = bitrate,
+            .playCount = playCount,
+            .lastPlayedAt = lastPlayedAt,
+            .dateAdded = dateAdded,
     };
 
     if (!m_dao->importTrack(track)) {
@@ -397,7 +419,7 @@ void ITunesXMLImporter::parseTrack() {
 void ITunesXMLImporter::parsePlaylists() {
     qDebug() << "Parse iTunes playlists";
 
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
         // We process and iterate the <dict> tags holding playlist summary information here
         if (m_xml.isStartElement() && m_xml.name() == kDict) {
@@ -436,7 +458,7 @@ void ITunesXMLImporter::parsePlaylist() {
     bool isPlaylistItemsStarted = false;
 
     // We process and iterate the <dict> tags holding playlist summary information here
-    while (!m_xml.atEnd() && !m_cancelImport.load()) {
+    while (!m_xml.atEnd() && !canceled()) {
         m_xml.readNext();
 
         if (m_xml.isStartElement()) {

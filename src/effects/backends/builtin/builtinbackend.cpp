@@ -1,8 +1,6 @@
 
 #include "effects/backends/builtin/builtinbackend.h"
 
-#include <QtDebug>
-
 #include "effects/backends/builtin/balanceeffect.h"
 #include "effects/backends/builtin/bessel4lvmixeqeffect.h"
 #include "effects/backends/builtin/bessel8lvmixeqeffect.h"

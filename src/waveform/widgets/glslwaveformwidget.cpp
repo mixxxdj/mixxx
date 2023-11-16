@@ -1,7 +1,6 @@
 #include "glslwaveformwidget.h"
 
 #include <QPainter>
-#include <QtDebug>
 
 #include "moc_glslwaveformwidget.cpp"
 #include "util/performancetimer.h"
@@ -12,8 +11,6 @@
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
@@ -38,9 +35,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     makeCurrentIfNeeded();
 
@@ -96,16 +90,4 @@ void GLSLWaveformWidget::resize(int width, int height) {
     makeCurrentIfNeeded();
     WaveformWidgetAbstract::resize(width, height);
     doneCurrent();
-}
-
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (event->button() == Qt::RightButton) {
-        makeCurrentIfNeeded();
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        if (m_signalRenderer) {
-            m_signalRenderer->debugClick();
-        }
-#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        doneCurrent();
-    }
 }

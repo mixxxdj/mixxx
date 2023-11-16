@@ -3,7 +3,6 @@
 #include "moc_timer.cpp"
 #include "util/experiment.h"
 #include "util/time.h"
-#include "waveform/guitick.h"
 
 Timer::Timer(const QString& key, Stat::ComputeFlags compute)
         : m_key(key),
@@ -84,7 +83,7 @@ mixxx::Duration SuspendableTimer::elapsed(bool report) {
 GuiTickTimer::GuiTickTimer(QObject* pParent)
         : QObject(pParent),
           m_pGuiTick(make_parented<ControlProxy>(
-              "[Master]", "guiTickTime", this)),
+                  QStringLiteral("[App]"), QStringLiteral("gui_tick_full_period_s"), this)),
           m_bActive(false) {
 }
 

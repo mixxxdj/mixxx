@@ -1,5 +1,6 @@
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
+#include <QPainter>
 #include <algorithm>
 
 #include "moc_vinylcontrolsignalwidget.cpp"

@@ -2,11 +2,9 @@
 
 #include <QAction>
 #include <QFileDialog>
-#include <QFileInfo>
 #include <QMenu>
 #include <QMessageBox>
-#include <QUrl>
-#include <QXmlStreamReader>
+#include <QtConcurrent>
 #include <QtDebug>
 #include <memory>
 #include <utility>
@@ -17,11 +15,11 @@
 #include "library/dao/settingsdao.h"
 #include "library/itunes/itunesdao.h"
 #include "library/itunes/itunesimporter.h"
-#include "library/itunes/ituneslocalhosttoken.h"
 #include "library/itunes/itunesplaylistmodel.h"
 #include "library/itunes/itunesxmlimporter.h"
 #include "library/library.h"
 #include "library/queryutil.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
@@ -314,11 +312,11 @@ std::unique_ptr<ITunesImporter> ITunesFeature::makeImporter() {
 #ifdef __MACOS_ITUNES_LIBRARY__
     if (isMacOSImporterUsed()) {
         qDebug() << "Using ITunesMacOSImporter to read default iTunes library";
-        return std::make_unique<ITunesMacOSImporter>(this, m_cancelImport, std::move(dao));
+        return std::make_unique<ITunesMacOSImporter>(this, std::move(dao));
     }
 #endif
     qDebug() << "Using ITunesXMLImporter to read iTunes library from " << m_dbfile;
-    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, m_cancelImport, std::move(dao));
+    return std::make_unique<ITunesXMLImporter>(this, m_dbfile, std::move(dao));
 }
 
 // This method is executed in a separate thread

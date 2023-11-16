@@ -1,6 +1,5 @@
 #pragma once
 
-#include "encoder/encoderwavesettings.h"
 #ifdef Q_OS_WIN
 // Enable unicode in libsndfile on Windows
 // (sf_open uses UTF-8 otherwise)

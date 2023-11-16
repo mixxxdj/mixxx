@@ -292,7 +292,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     // ensure that each hotcue number is unique (by using a map), apply the
     // timing offset and split up cues and loops.
     QList<CueInfo> cueList;
-    for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
+    for (const CueInfo& cueInfo : std::as_const(cueInfos)) {
         if (!cueInfo.getHotCueIndex()) {
             continue;
         }

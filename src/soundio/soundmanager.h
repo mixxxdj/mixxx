@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
-#include <memory>
 
 #include "audio/types.h"
 #include "control/pollingcontrolproxy.h"
@@ -16,14 +15,8 @@
 #include "util/cmdlineargs.h"
 #include "util/types.h"
 
-class EngineMaster;
-class AudioOutput;
-class AudioInput;
-class AudioSource;
-class AudioDestination;
+class EngineMixer;
 class ControlObject;
-class ControlProxy;
-class SoundDeviceNotFound;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -40,7 +33,7 @@ class SoundDeviceNotFound;
 class SoundManager : public QObject {
     Q_OBJECT
   public:
-    SoundManager(UserSettingsPointer pConfig, EngineMaster *_master);
+    SoundManager(UserSettingsPointer pConfig, EngineMixer* pEngineMixer);
     ~SoundManager() override;
 
     // Returns a list of all devices we've enumerated that match the provided
@@ -130,7 +123,7 @@ class SoundManager : public QObject {
         return m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING;
     }
 
-    EngineMaster *m_pMaster;
+    EngineMixer* m_pEngineMixer;
     UserSettingsPointer m_pConfig;
     bool m_paInitialized;
     mixxx::audio::SampleRate m_jackSampleRate;
@@ -149,6 +142,6 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    PollingControlProxy m_masterAudioLatencyOverloadCount;
-    PollingControlProxy m_masterAudioLatencyOverload;
+    PollingControlProxy m_audioLatencyOverloadCount;
+    PollingControlProxy m_audioLatencyOverload;
 };

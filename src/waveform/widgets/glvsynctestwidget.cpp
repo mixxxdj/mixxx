@@ -1,26 +1,14 @@
 #include "waveform/widgets/glvsynctestwidget.h"
 
 #include <QPainter>
-#include <QtDebug>
 
 #include "moc_glvsynctestwidget.cpp"
 #include "util/performancetimer.h"
 #include "waveform/renderers/glvsynctestrenderer.h"
 #include "waveform/renderers/glwaveformrenderbackground.h"
-#include "waveform/renderers/glwaveformrenderersimplesignal.h"
-#include "waveform/renderers/waveformrenderbeat.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/sharedglcontext.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
-
     addRenderer<GLWaveformRenderBackground>(); // 172 µs
     //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
     //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)

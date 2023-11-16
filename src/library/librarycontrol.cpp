@@ -1,12 +1,12 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
-#include <QItemSelectionModel>
+#include <QKeyEvent>
 #include <QModelIndex>
-#include <QModelIndexList>
 #include <QWindow>
 #include <QtDebug>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "library/library.h"
@@ -17,7 +17,10 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-#include "widget/wtracktableview.h"
+
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),
@@ -62,9 +65,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
           m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_pSearchbox(nullptr),
-          m_numDecks("[Master]", "num_decks", this),
-          m_numSamplers("[Master]", "num_samplers", this),
-          m_numPreviewDecks("[Master]", "num_preview_decks", this) {
+          m_numDecks(kAppGroup, QStringLiteral("num_decks"), this),
+          m_numSamplers(kAppGroup, QStringLiteral("num_samplers"), this),
+          m_numPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks"), this) {
     qRegisterMetaType<FocusWidget>("FocusWidget");
 
     slotNumDecksChanged(m_numDecks.get());
@@ -195,6 +198,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 
     // Auto DJ controls
     m_pAutoDjAddTop = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddTop"));
+    m_pAutoDjAddTop->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddTop")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddTop.get(),
             &ControlPushButton::valueChanged,
@@ -203,6 +208,8 @@ LibraryControl::LibraryControl(Library* pLibrary)
 #endif
 
     m_pAutoDjAddBottom = std::make_unique<ControlPushButton>(ConfigKey("[Library]","AutoDjAddBottom"));
+    m_pAutoDjAddBottom->addAlias(ConfigKey(
+            QStringLiteral("[Playlist]"), QStringLiteral("AutoDjAddBottom")));
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     connect(m_pAutoDjAddBottom.get(),
             &ControlPushButton::valueChanged,
@@ -413,9 +420,6 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotLoadSelectedIntoFirstStopped);
-
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddTop"), ConfigKey("[Library]", "AutoDjAddTop"));
-    ControlDoublePrivate::insertAlias(ConfigKey("[Playlist]", "AutoDjAddBottom"), ConfigKey("[Library]", "AutoDjAddBottom"));
 
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QApplication* app = qApp;
@@ -760,7 +764,8 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 
     if (m_focusedWidget == FocusWidget::None) {
-        return setLibraryFocus(FocusWidget::TracksTable);
+        setLibraryFocus(FocusWidget::TracksTable);
+        return;
     }
 
     // Send the event pointer to the currently focused widget
@@ -836,17 +841,20 @@ void LibraryControl::setLibraryFocus(FocusWidget newFocusWidget) {
         VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
             return;
         }
-        return m_pSearchbox->setFocus();
+        m_pSearchbox->setFocus();
+        return;
     case FocusWidget::Sidebar:
         VERIFY_OR_DEBUG_ASSERT(m_pSidebarWidget) {
             return;
         }
-        return m_pSidebarWidget->setFocus();
+        m_pSidebarWidget->setFocus();
+        return;
     case FocusWidget::TracksTable:
         VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
             return;
         }
-        return m_pLibraryWidget->getActiveView()->setFocus();
+        m_pLibraryWidget->getActiveView()->setFocus();
+        return;
     case FocusWidget::None:
         // What could be the goal, what are the consequences of manually
         // removing focus from a widget?
@@ -937,7 +945,8 @@ void LibraryControl::slotGoToItem(double v) {
         }
         return;
     case FocusWidget::TracksTable:
-        return m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+        m_pLibraryWidget->getActiveView()->activateSelectedTrack();
+        return;
     case FocusWidget::Dialog: {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
@@ -963,7 +972,7 @@ void LibraryControl::slotGoToItem(double v) {
     case FocusWidget::Searchbar:
     case FocusWidget::None:
     default:
-        return setLibraryFocus(FocusWidget::TracksTable);
+        setLibraryFocus(FocusWidget::TracksTable);
     }
 }
 

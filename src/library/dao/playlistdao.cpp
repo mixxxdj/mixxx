@@ -2,13 +2,10 @@
 
 #include <QRandomGenerator>
 #include <QtDebug>
-#include <QtSql>
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
-#include "library/trackcollection.h"
 #include "moc_playlistdao.cpp"
-#include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
@@ -562,7 +559,7 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
             "WHERE p1.id NOT IN ("
             "SELECT p2.id FROM PlaylistTracks AS p2 "
             "INNER JOIN library ON library.id=p2.track_id "
-            "WHERE p2.playlist_id=p1.playlist_id "
+            "WHERE p2.playlist_id=:id "
             "AND library.mixxx_deleted=0) "
             "AND p1.playlist_id=:id"));
     query.bindValue(":id", playlistId);
@@ -626,7 +623,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& pos
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(sortedPositons)) {
+    for (const auto position : std::as_const(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

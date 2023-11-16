@@ -22,22 +22,22 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 if [ -n "${BUILDENV_ARM64}" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-arm64-osx-min1100-8b09457"
-        BUILDENV_SHA256="4f11969c161de83685a164bdb720a4341f9b8d152f21f304976bf36b8f50ca2f"
+        BUILDENV_NAME="mixxx-deps-rel-2.4-arm64-osx-min1100-3e909e2"
+        BUILDENV_SHA256="f6f84f552e76f8e1e6617b22476da4642ce2fbcbc1e4eb593ad6b0aeb05ae206"
     else
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-61b0d50"
-        BUILDENV_SHA256="604c9abd8d5e669b24e98d7b40b296c7fead5167182af23024c01c8a0a74adee"
+        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-0309294"
+        BUILDENV_SHA256="9d1fa3bdec1d3aa9237687d978db66abac77a8c4cfdbc59b1f192b125943419b"
     fi
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-x64-osx-min1012-8b09457"
-        BUILDENV_SHA256="c38ead596098dfa4dfc42919de903629247b3bb75e20b384f69d4b1bc5b9df8d"
+        BUILDENV_NAME="mixxx-deps-rel-2.4-x64-osx-min1012-3e909e2"
+        BUILDENV_SHA256="d345ce3b894328e28f4c4ecc3d5413d531e69f522a36f515beffa461fa8ebee3"
     else
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-61b0d50"
-        BUILDENV_SHA256="fda61cf347091884eca6e0bb76945cfed497442ba1a632bbcd1a703a8378efec"
+        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-0309294"
+        BUILDENV_SHA256="3f2174fa7945bb42759c8678efe9e45e447db4609e57d174a1bbfeee20371547"
     fi
 fi
 

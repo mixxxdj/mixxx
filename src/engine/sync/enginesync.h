@@ -2,9 +2,6 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QString>
-
-#include "audio/types.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
@@ -81,6 +78,10 @@ class EngineSync : public SyncableListener {
     /// Iterate over decks, and based on sync and play status, pick a new Leader.
     /// if enabling_syncable is not null, we treat it as if it were enabled because we may
     /// be in the process of enabling it.
+    Syncable* pickNewLeader(Syncable* enabling_syncable);
+
+    /// Return the explicit leader if the one has been selected or picks a new leader using
+    /// pickNewLeader();
     Syncable* pickLeader(Syncable* enabling_syncable);
 
     /// Find a deck to match against, used in the case where there is no sync Leader.

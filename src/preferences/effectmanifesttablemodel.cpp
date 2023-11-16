@@ -2,6 +2,7 @@
 
 #include <QMimeData>
 
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "moc_effectmanifesttablemodel.cpp"

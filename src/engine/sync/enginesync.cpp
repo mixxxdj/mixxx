@@ -1,7 +1,6 @@
 #include "engine/sync/enginesync.h"
 
 #include <QMetaType>
-#include <QStringList>
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
@@ -46,26 +45,42 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     // decks that need to change as a result.
     Syncable* oldLeader = m_pLeaderSyncable;
     switch (mode) {
-    case SyncMode::LeaderExplicit:
-    case SyncMode::LeaderSoft: {
+    case SyncMode::LeaderExplicit: {
         if (pSyncable->getBaseBpm().isValid()) {
             activateLeader(pSyncable, mode);
-        } else {
-            // Because we don't have a valid bpm, we can't be the leader
-            // (or else everyone would try to be syncing to zero bpm).
-            // Override and make us a follower instead.
-            activateFollower(pSyncable);
+            break;
         }
-        break;
+        // Because we don't have a valid bpm, we can't be the leader
+        // (or else everyone would try to be syncing to zero bpm).
+        // Fall threough to SyncMode::Follower instead
+        [[fallthrough]];
+    }
+    case SyncMode::LeaderSoft: {
+        if (pSyncable->getBaseBpm().isValid() &&
+                pSyncable->isPlaying() &&
+                pSyncable->isAudible()) {
+            activateLeader(pSyncable, mode);
+            break;
+        }
+        [[fallthrough]];
     }
     case SyncMode::Follower: {
-        // A request for follower mode may be converted into an enabling of soft
-        // leader mode.
-        activateFollower(pSyncable);
-        Syncable* newLeader = pickLeader(pSyncable);
-        if (newLeader && newLeader != m_pLeaderSyncable) {
-            // if the leader has changed, activate it (this updates m_pLeaderSyncable)
-            activateLeader(newLeader, SyncMode::LeaderSoft);
+        // This request is also used to verifies and moves a soft leader
+        if (!m_pLeaderSyncable || m_pLeaderSyncable == pSyncable ||
+                m_pLeaderSyncable->getSyncMode() != SyncMode::LeaderExplicit) {
+            // Pick a new leader, in case we would have none after becoming follower
+            Syncable* pNewLeader = pickNewLeader(pSyncable);
+            // Note: A request for follower mode may have been converted into
+            // enabling of soft leader mode if this still be best choice
+            if (pNewLeader) {
+                activateLeader(pNewLeader, SyncMode::LeaderSoft);
+            }
+            if (pNewLeader != pSyncable) {
+                // We have a different leader now, become follower
+                activateFollower(pSyncable);
+            }
+        } else {
+            activateFollower(pSyncable);
         }
         break;
     }
@@ -194,23 +209,29 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
     }
 
     if (wasLeader) {
-        Syncable* newLeader = pickLeader(nullptr);
+        Syncable* newLeader = pickNewLeader(nullptr);
         if (newLeader != nullptr) {
             activateLeader(newLeader, SyncMode::LeaderSoft);
         }
     }
 }
 
-Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::pickLeader";
-    }
+Syncable* EngineSync::pickLeader(Syncable* pEnablingSyncable) {
     if (m_pLeaderSyncable &&
             m_pLeaderSyncable->getSyncMode() == SyncMode::LeaderExplicit &&
             m_pLeaderSyncable->getBaseBpm().isValid()) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "EngineSync::pickLeader(): explicit leader found ";
+        }
         return m_pLeaderSyncable;
     }
+    return pickNewLeader(pEnablingSyncable);
+}
 
+Syncable* EngineSync::pickNewLeader(Syncable* pEnablingSyncable) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::pickNewLeader";
+    }
     // First preference: some other sync deck that is playing.
     // Note, if we are using PREFER_LOCK_BPM we don't use this option.
     Syncable* first_other_playing_deck = nullptr;
@@ -223,12 +244,12 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
-    for (const auto& pSyncable : qAsConst(m_syncables)) {
+    for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (!pSyncable->getBaseBpm().isValid()) {
             continue;
         }
 
-        if (pSyncable != enabling_syncable) {
+        if (pSyncable != pEnablingSyncable) {
             if (!pSyncable->getChannel()->isPrimaryDeck()) {
                 continue;
             }
@@ -241,7 +262,7 @@ Syncable* EngineSync::pickLeader(Syncable* enabling_syncable) {
             if (playing_deck_count == 0) {
                 first_playing_deck = pSyncable;
             }
-            if (!first_other_playing_deck && pSyncable != enabling_syncable) {
+            if (!first_other_playing_deck && pSyncable != pEnablingSyncable) {
                 first_other_playing_deck = pSyncable;
             }
             playing_deck_count++;
@@ -299,12 +320,12 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* pPlayingNonSyncTarget = nullptr;
     Syncable* pStoppedNonSyncTarget = nullptr;
 
-    for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
+    for (const auto& pOtherSyncable : std::as_const(m_syncables)) {
         if (pOtherSyncable == requester) {
             continue;
         }
         // Skip non-leader decks, like preview decks.
-        if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
+        if (!pOtherSyncable->getChannel()->isMainMixEnabled()) {
             continue;
         }
         if (!pOtherSyncable->getChannel()->isPrimaryDeck()) {
@@ -505,7 +526,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
         // Only consider channels that have a track loaded, are in the leader
         // mix, and are primary decks.
-        if (pChannel->isActive() && pChannel->isMasterEnabled() && pChannel->isPrimaryDeck()) {
+        if (pChannel->isActive() && pChannel->isMainMixEnabled() && pChannel->isPrimaryDeck()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm().isValid()) {
                 if (pBuffer->getSpeed() != 0.0) {
@@ -534,7 +555,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
-    for (Syncable* theSyncable : qAsConst(m_syncables)) {
+    for (Syncable* theSyncable : std::as_const(m_syncables)) {
         bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
             if (!isSynchonized) {
@@ -581,7 +602,7 @@ Syncable* EngineSync::getSyncableForGroup(const QString& group) {
 }
 
 bool EngineSync::syncDeckExists() const {
-    for (const auto& pSyncable : qAsConst(m_syncables)) {
+    for (const auto& pSyncable : std::as_const(m_syncables)) {
         if (pSyncable->isSynchronized() && pSyncable->getBaseBpm().isValid()) {
             return true;
         }
@@ -668,7 +689,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         // explicit Leader and we should not initialize the beat distance.  Take it from the
         // internal clock instead, because that will be up to date with the playing deck(s).
         bool playingSyncables = false;
-        for (Syncable* pSyncable : qAsConst(m_syncables)) {
+        for (Syncable* pSyncable : std::as_const(m_syncables)) {
             if (pSyncable == pSource) {
                 continue;
             }

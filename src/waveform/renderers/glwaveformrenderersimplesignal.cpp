@@ -1,10 +1,8 @@
 #include "waveform/renderers/glwaveformrenderersimplesignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
@@ -45,7 +43,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }

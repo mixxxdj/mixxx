@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QVariant>

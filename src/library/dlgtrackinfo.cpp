@@ -1,8 +1,7 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QSignalBlocker>
-#include <QStringBuilder>
-#include <QTreeWidget>
+#include <QStyleFactory>
 #include <QtDebug>
 
 #include "defs_urls.h"
@@ -15,10 +14,8 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
-#include "track/keyfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
-#include "util/color/colorpalette.h"
+#include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
@@ -512,14 +509,10 @@ void DlgTrackInfo::focusField(const QString& property) {
 }
 
 void DlgTrackInfo::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
+        const QPixmap& pixmap) {
+    if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
@@ -533,7 +526,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
     }
     slotCoverInfoSelected(
             CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+                    m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -771,9 +764,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
-    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
     auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileAccess.info(),
+            fileInfo,
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
     trackRecord.replaceMetadataFromSource(
@@ -783,7 +776,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(guessedCoverInfo));
     replaceTrackRecord(
             std::move(trackRecord),
-            fileAccess.info().location());
+            fileInfo.location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

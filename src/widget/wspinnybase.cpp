@@ -1,25 +1,20 @@
 #include "widget/wspinnybase.h"
 
 #include <QApplication>
-#include <QMimeData>
-#include <QStylePainter>
-#include <QUrl>
-#include <QWindow>
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "library/dlgcoverartfullsize.h"
+#include "mixer/basetrackplayer.h"
 #include "moc_wspinnybase.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/fpclassify.h"
-#include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
-#include "widget/wspinny.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -43,6 +38,7 @@ WSpinnyBase::WSpinnyBase(
           m_pVinylControlEnabled(nullptr),
           m_pSignalEnabled(nullptr),
           m_pSlipEnabled(nullptr),
+          m_pShowCoverProxy(nullptr),
           m_bShowCover(true),
           m_dInitialPos(0.),
           m_iVinylInput(-1),
@@ -73,9 +69,6 @@ WSpinnyBase::WSpinnyBase(
 #endif // __VINYLCONTROL__
     // Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinnyBase(): Created WGLWidget, Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -290,14 +283,10 @@ void WSpinnyBase::slotTrackCoverArtUpdated() {
 }
 
 void WSpinnyBase::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
-    if (pRequestor == this &&
+        const QPixmap& pixmap) {
+    if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         setLoadedCover(pixmap);

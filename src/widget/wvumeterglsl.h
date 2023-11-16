@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QOpenGLTexture>
+#include <QOpenGLFunctions>
 #include <memory>
 
 #include "shaders/textureshader.h"
-#include "widget/wpixmapstore.h"
 #include "widget/wvumeterbase.h"
-#include "widget/wwidget.h"
 
-class WVuMeterGLSL : public WVuMeterBase {
+class QOpenGLTexture;
+
+class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     Q_OBJECT
   public:
     explicit WVuMeterGLSL(QWidget* pParent = nullptr);

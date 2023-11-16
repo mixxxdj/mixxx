@@ -1,21 +1,16 @@
 #include "widget/wwaveformviewer.h"
 
-#include <QDomNode>
 #include <QDragEnterEvent>
 #include <QEvent>
-#include <QMimeData>
-#include <QPainter>
-#include <QUrl>
-#include <QtDebug>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wwaveformviewer.cpp"
-#include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/nonglwaveformwidgetabstract.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wglwidget.h"
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -62,6 +57,7 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
+    Q_UNUSED(event);
     if (m_waveformWidget) {
         m_waveformWidget->resize(width(), height());
     }

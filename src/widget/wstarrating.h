@@ -1,18 +1,13 @@
 #pragma once
 
-#include <QEvent>
-#include <QMouseEvent>
-#include <QStylePainter>
-
 #include "control/controlpushbutton.h"
 #include "library/starrating.h"
-#include "skin/legacy/skincontext.h"
-#include "track/track_decl.h"
-#include "track/trackid.h"
 #include "widget/wwidget.h"
 
 class ControlObject;
 class ControlPushButton;
+class QDomNode;
+class SkinContext;
 
 class WStarRating : public WWidget {
     Q_OBJECT

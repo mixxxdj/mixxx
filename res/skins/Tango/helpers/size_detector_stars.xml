@@ -48,7 +48,7 @@ Controls:
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- Basic mixer incl. VU Meter master -->
+              <WidgetGroup><!-- Basic mixer incl. VU Meter main -->
                 <ObjectName>SizeTest</ObjectName>
                 <Layout>horizontal</Layout>
                 <Size>150f,20f</Size>
@@ -65,7 +65,7 @@ Controls:
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -106,7 +106,7 @@ Controls:
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>

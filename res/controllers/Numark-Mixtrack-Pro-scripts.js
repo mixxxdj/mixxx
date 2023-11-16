@@ -120,8 +120,8 @@ NumarkMixTrackPro.init = function(id) {	// called when the MIDI device is opened
 
 
 // Clipping LED
-	engine.connectControl("[Channel1]","PeakIndicator","NumarkMixTrackPro.Channel1Clip");
-	engine.connectControl("[Channel2]","PeakIndicator","NumarkMixTrackPro.Channel2Clip");
+	engine.connectControl("[Channel1]","peak_indicator","NumarkMixTrackPro.Channel1Clip");
+	engine.connectControl("[Channel2]","peak_indicator","NumarkMixTrackPro.Channel2Clip");
 
 // Stutter beat light
 	engine.connectControl("[Channel1]","beat_active","NumarkMixTrackPro.Stutter1Beat");

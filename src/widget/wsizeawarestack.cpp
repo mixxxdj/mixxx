@@ -1,8 +1,6 @@
 #include "widget/wsizeawarestack.h"
 
 #include <QResizeEvent>
-#include <QStackedLayout>
-#include <QtDebug>
 
 #include "moc_wsizeawarestack.cpp"
 

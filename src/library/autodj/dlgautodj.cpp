@@ -1,10 +1,12 @@
 #include "library/autodj/dlgautodj.h"
 
-#include <QApplication>
+#include <QKeyEvent>
+#include <QLineEdit>
 #include <QMessageBox>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "library/playlisttablemodel.h"
-#include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -404,7 +406,7 @@ void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
         ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QWidget::keyPressEvent(pEvent);
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgAutoDJ::saveCurrentViewState() {

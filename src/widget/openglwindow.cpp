@@ -4,6 +4,7 @@
 #include <QResizeEvent>
 
 #include "moc_openglwindow.cpp"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wglwidget.h"
@@ -11,33 +12,7 @@
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget),
           m_dirty(false) {
-    QSurfaceFormat format;
-    format.setVersion(2, 1);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-
-    // setSwapInterval sets the application preferred swap interval
-    // in minimum number of video frames that are displayed before a buffer swap occurs
-    // - 0 will turn the vertical refresh syncing off
-    // - 1 (default) means swapping after drawig a video frame to the buffer
-    // - n means swapping after drawing n video frames to the buffer
-    //
-    // The vertical sync setting requested by the OpenGL application, can be overwritten
-    // if a user changes the "Wait for vertical refresh" setting in AMD graphic drivers
-    // for Windows.
-
-#if defined(__APPLE__)
-    // On OS X, syncing to vsync has good performance FPS-wise and
-    // eliminates tearing. (This is an comment from pre QOpenGLWindow times)
-    format.setSwapInterval(1);
-#else
-    // It seems that on Windows (at least for some AMD drivers), the setting 1 is not
-    // not properly handled. We saw frame rates divided by exact integers, like it should
-    // be with values >1 (see https://github.com/mixxxdj/mixxx/issues/11617)
-    // Reported as https://bugreports.qt.io/browse/QTBUG-114882
-    // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
-    format.setSwapInterval(0);
-#endif
-    setFormat(format);
+    setFormat(WaveformWidgetFactory::getSurfaceFormat());
 }
 
 OpenGLWindow::~OpenGLWindow() {
@@ -109,7 +84,7 @@ bool OpenGLWindow::event(QEvent* pEv) {
             }
 
             pEv->ignore();
-            return false;
+            return false; // clazy:exclude=base-class-event
         }
 
         if (t == QEvent::Resize || t == QEvent::Move || t == QEvent::Expose) {

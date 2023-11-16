@@ -30,7 +30,7 @@
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #FxUnitControlsExpanded, #FxUnitControlsCollapsed,
 #FxSlotsExpanded, #FxSlotsCollapsed,
@@ -63,7 +63,7 @@ WStarRating {
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit2, #FxUnit3, #FxUnit4,
 #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini,
@@ -93,14 +93,14 @@ WLibrary,
    border: 1px solid #7d350d;
   }
 
-/* borders of embedded regions like deck buttons & Master mixer */
+/* borders of embedded regions like deck buttons & Main mixer */
 #WaveformBox1,
 #WaveformBox2,
 #WaveformBox3,
 #WaveformBox4,
 #DeckRow_5_LoopCuesTransport,
 #DeckRow_5_LoopCuesTransportCompact,
-#MasterControls, #HeadphoneControls,
+#MainControls, #HeadphoneControls,
 #FxParametersBg,
 #SamplerHotcues,
 WSearchLineEdit,
@@ -126,7 +126,7 @@ WSearchLineEdit,
   /* some get a background image */
   #DeckRow_5_LoopCuesTransport,
   #DeckRow_5_LoopCuesTransportCompact,
-  #MasterControls, #HeadphoneControls,
+  #MainControls, #HeadphoneControls,
   #FxParametersBg,
   #SamplerHotcues {
     background-image: url(skin:../LateNight/classic/style/background_tile.png);
@@ -180,8 +180,8 @@ WSearchLineEdit,
   }
 
 #VuMeterBox,
-#VuMeterBoxMaster,
-#VuMeterBoxMasterSingle,
+#VuMeterBoxMain,
+#VuMeterBoxMainSingle,
 #LatencyMeterBox {
   background-color: #040404;
   }
@@ -192,7 +192,7 @@ WSearchLineEdit,
     border: 1px solid red;
   }
 
-#VuMasterCover {
+#VuMainCover {
   background-color: rgba(21, 21, 21, 150);
 }
 
@@ -232,14 +232,14 @@ WSearchLineEdit,
 
 #DeckRateSeparator,
 #DeckRateSeparatorCompact,
-#MasterMixerSeparator,
+#MainMixerSeparator,
 #SkinSettingsSeparator {
   /* needs a background color to paint the borders */
   background-color: transparent;
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #MasterMixerSeparator {
+  #MainMixerSeparator {
     min-width: 0px;
     max-width: 0px;
   }
@@ -353,7 +353,7 @@ WLibrary {
 #VuMeterDeck2_Compact,
 #VuMeterDeck3_Compact,
 #VuMeterDeck4_Compact,
-#VuMeterMaster_Compact,
+#VuMeterMain_Compact,
 #FxUnit1, #FxUnit3,
 #FxUnit2, #FxUnit4,
 #FxRackFillerR,
@@ -720,14 +720,14 @@ WLibrary {
       background-color: #262626;
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   margin: 2px 2px 2px 0px;
   }
-  #MasterControls {
+  #MainControls {
     padding: 2px;
     margin-bottom: 2px;
   }
-  #MasterHeadphoneSeparator {
+  #MainHeadphoneSeparator {
     min-height: 0px;
     max-height: 0px;
     }
@@ -745,14 +745,14 @@ WLibrary {
 #VuMeterChannel_4Decks {
   margin: 6px 0px 6px 11px;
 }
-#VuMeterMaster_2Decks {
+#VuMeterMain_2Decks {
   margin: 0px 0px 2px 0px;
 }
-#VuMeterMaster_4Decks {
+#VuMeterMain_4Decks {
   margin: 5px 0px;
 }
 
-#VuMeterMaster_Compact {
+#VuMeterMain_Compact {
   margin-right: 4px;
   margin-left: 4px;
   padding: 0px 5px;
@@ -1115,6 +1115,7 @@ WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 WCoverArtMenu,
@@ -1228,7 +1229,7 @@ QPushButton#pushButtonRecording:checked {
   color: #999;
 }
 
-#MixerMasterHeadphone WLabel,
+#MixerMainHeadphone WLabel,
 #FxKnobLabel,
 #FxButtonLabel {
   padding: 0px;
@@ -2073,7 +2074,6 @@ WTrackTableView::item:selected,
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;
@@ -2101,6 +2101,7 @@ WLibrarySidebar {
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
@@ -2415,6 +2416,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2447,6 +2449,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -2484,6 +2488,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectChainPresetSelector:item:selected,
@@ -2525,7 +2530,8 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #494949;
 }
 
@@ -2601,6 +2607,7 @@ QLineEdit QMenu::item:disabled {
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
   QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator,
   WEffectChainPresetButton QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;

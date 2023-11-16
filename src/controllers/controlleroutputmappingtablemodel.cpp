@@ -4,6 +4,7 @@
 #include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_controlleroutputmappingtablemodel.cpp"
@@ -22,7 +23,7 @@ void ControllerOutputMappingTableModel::apply() {
         // Clear existing output mappings and insert all the output mappings in
         // the table into the mapping.
         QMultiHash<ConfigKey, MidiOutputMapping> mappings;
-        for (const MidiOutputMapping& mapping : qAsConst(m_midiOutputMappings)) {
+        for (const MidiOutputMapping& mapping : std::as_const(m_midiOutputMappings)) {
             // There can be multiple output mappings for the same output
             // control, so we need to use a QMultiHash here.
             mappings.insert(mapping.controlKey, mapping);

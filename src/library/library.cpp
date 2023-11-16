@@ -1,13 +1,11 @@
 #include "library/library.h"
 
+#include <QApplication>
 #include <QDir>
-#include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QPointer>
-#include <QTranslator>
 
+#include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
@@ -20,7 +18,6 @@
 #include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
@@ -36,9 +33,7 @@
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
-#include "recording/recordingmanager.h"
 #include "util/assert.h"
-#include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
@@ -50,7 +45,7 @@ namespace {
 
 const mixxx::Logger kLogger("Library");
 
-} // anonymous namespace
+} // namespace
 
 using namespace mixxx::library::prefs;
 
@@ -376,7 +371,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
@@ -449,7 +444,7 @@ void Library::bindLibraryWidget(
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 

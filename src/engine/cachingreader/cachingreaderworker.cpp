@@ -1,16 +1,15 @@
 #include "engine/cachingreader/cachingreaderworker.h"
 
 #include <QAtomicInt>
-#include <QFileInfo>
 #include <QtDebug>
 
 #include "analyzer/analyzersilence.h"
-#include "control/controlobject.h"
 #include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility/qmutex.h"
 #include "util/event.h"
+#include "util/fifo.h"
 #include "util/logger.h"
 #include "util/span.h"
 
@@ -234,8 +233,8 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
-    const SINT sampleCount =
-            CachingReaderChunk::frames2samples(
+    const double sampleCount =
+            CachingReaderChunk::dFrames2samples(
                     m_pAudioSource->frameLength());
 
     // This code is a workaround until we have found a better solution to

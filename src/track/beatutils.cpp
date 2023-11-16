@@ -1,10 +1,6 @@
 #include "track/beatutils.h"
 
-#include <QList>
-#include <QMap>
-#include <QString>
 #include <QtDebug>
-#include <algorithm>
 
 #include "util/math.h"
 

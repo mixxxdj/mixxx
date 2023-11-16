@@ -1,11 +1,6 @@
 #pragma once
 
-#include <QObject>
-#include <QScopedPointer>
-#include <QString>
-
 #include "engine/channels/enginechannel.h"
-#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
@@ -14,12 +9,14 @@
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
+#include "util/performancetimer.h"
 
-class EngineMaster;
+class EngineMixer;
 class ControlObject;
-class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class QString;
+class EngineDeck;
 
 constexpr int kUnreplaceDelay = 500;
 
@@ -62,11 +59,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
   public:
     BaseTrackPlayerImpl(PlayerManager* pParent,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
-            bool defaultMaster,
+            bool defaultMainMix,
             bool defaultHeadphones,
             bool primaryDeck);
     ~BaseTrackPlayerImpl() override;
@@ -74,7 +71,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer getLoadedTrack() const final;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
-    // connected. Delete me when EngineMaster supports AudioInput assigning.
+    // connected. Delete me when EngineMixer supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
     void setupEqControls() final;
@@ -124,7 +121,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void disconnectLoadedTrack();
 
     UserSettingsPointer m_pConfig;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     TrackPointer m_pLoadedTrack;
     TrackId m_pPrevFailedTrackId;
     EngineDeck* m_pChannel;

@@ -9,6 +9,7 @@
 #include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
+#include "library/multilineeditdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
@@ -394,6 +395,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
+        return new MultiLineEditDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
@@ -543,16 +546,20 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
-    // Get image from cover art cache
-    CoverArtCache* pCache = CoverArtCache::instance();
-    QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
-            absoluteHeightOfCoverartToolTip); // Height also used as default for the width, in assumption that covers are squares
-    pixmap = pCache->tryLoadCover(this,
-            getCoverInfo(index),
-            absoluteHeightOfCoverartToolTip,
-            CoverArtCache::Loading::NoSignal);
+    const auto coverInfo = getCoverInfo(index);
+    if (!coverInfo.hasImage()) {
+        return QPixmap();
+    }
+    QPixmap pixmap = CoverArtCache::getCachedCover(
+            coverInfo,
+            absoluteHeightOfCoverartToolTip);
     if (pixmap.isNull()) {
-        // Cache miss -> Don't show a tooltip
+        // Cache miss -> Don't show a tooltip, refresh cache
+        // Height used for the width, in assumption that covers are squares
+        CoverArtCache::requestUncachedCover(
+                nullptr,
+                coverInfo,
+                absoluteHeightOfCoverartToolTip);
         return QVariant();
     }
     QByteArray data;

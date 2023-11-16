@@ -3,23 +3,20 @@
 #include <QMessageBox>
 
 #include "control/controlobject.h"
-#include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/engine.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_basetrackplayer.cpp"
-#include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/sandbox.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/visualsmanager.h"
 #endif
 
 namespace {
@@ -27,6 +24,7 @@ namespace {
 constexpr double kNoTrackColor = -1;
 constexpr double kShiftCuesOffsetMillis = 10;
 constexpr double kShiftCuesOffsetSmallMillis = 1;
+const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
     return (color ? static_cast<double>(*color) : kNoTrackColor);
@@ -40,16 +38,16 @@ BaseTrackPlayer::BaseTrackPlayer(PlayerManager* pParent, const QString& group)
 BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         PlayerManager* pParent,
         UserSettingsPointer pConfig,
-        EngineMaster* pMixingEngine,
+        EngineMixer* pMixingEngine,
         EffectsManager* pEffectsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup,
-        bool defaultMaster,
+        bool defaultMainMix,
         bool defaultHeadphones,
         bool primaryDeck)
         : BaseTrackPlayer(pParent, handleGroup.name()),
           m_pConfig(pConfig),
-          m_pEngineMaster(pMixingEngine),
+          m_pEngineMixer(pMixingEngine),
           m_pLoadedTrack(),
           m_pPrevFailedTrackId(),
           m_replaygainPending(false),
@@ -71,8 +69,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
 
-    // Set the routing option defaults for the master and headphone mixes.
-    m_pChannel->setMaster(defaultMaster);
+    // Set the routing option defaults for the main and headphone mixes.
+    m_pChannel->setMainMix(defaultMainMix);
     m_pChannel->setPfl(defaultHeadphones);
 
     // Connect our signals and slots with the EngineBuffer's signals and
@@ -88,8 +86,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     connect(m_pEject.get(),
             &ControlObject::valueChanged,
             this,
-            &BaseTrackPlayerImpl::slotEjectTrack,
-            Qt::DirectConnection);
+            &BaseTrackPlayerImpl::slotEjectTrack);
 
     // Get loop point control objects
     m_pLoopInPoint = make_parented<ControlProxy>(
@@ -583,7 +580,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
                 // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
-                if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+                if (!m_pEngineMixer->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     m_pRateRatio->set(1.0);
                 }
             }
@@ -635,14 +632,14 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
 }
 
 void BaseTrackPlayerImpl::slotCloneDeck() {
-    Syncable* syncable = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
+    Syncable* syncable = m_pEngineMixer->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
     if (syncable) {
         slotCloneChannel(syncable->getChannel());
     }
 }
 
 void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {
-    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    EngineChannel* pChannel = m_pEngineMixer->getChannel(group);
     if (!pChannel) {
         return;
     }
@@ -697,7 +694,7 @@ void BaseTrackPlayerImpl::slotLoadTrackFromSampler(double d) {
 }
 
 void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
-    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    EngineChannel* pChannel = m_pEngineMixer->getChannel(group);
     if (!pChannel) {
         return;
     }
@@ -775,13 +772,16 @@ EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
 }
 
 void BaseTrackPlayerImpl::setupEqControls() {
-    const QString group = getGroup();
-    m_pLowFilter = make_parented<ControlProxy>(group, "filterLow", this);
-    m_pMidFilter = make_parented<ControlProxy>(group, "filterMid", this);
-    m_pHighFilter = make_parented<ControlProxy>(group, "filterHigh", this);
-    m_pLowFilterKill = make_parented<ControlProxy>(group, "filterLowKill", this);
-    m_pMidFilterKill = make_parented<ControlProxy>(group, "filterMidKill", this);
-    m_pHighFilterKill = make_parented<ControlProxy>(group, "filterHighKill", this);
+    const QString group = kEffectGroupFormat.arg(getGroup());
+    m_pLowFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter1"), this);
+    m_pMidFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter2"), this);
+    m_pHighFilter = make_parented<ControlProxy>(group, QStringLiteral("parameter3"), this);
+    m_pLowFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter1"), this);
+    m_pMidFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter2"), this);
+    m_pHighFilterKill = make_parented<ControlProxy>(
+            group, QStringLiteral("button_parameter3"), this);
 }
 
 void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {

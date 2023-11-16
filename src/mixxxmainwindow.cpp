@@ -1,27 +1,31 @@
 #include "mixxxmainwindow.h"
 
+#include <QCloseEvent>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QOpenGLContext>
+#include <QUrl>
 
-#include "widget/wglwidget.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QGLFormat>
+#endif
+
+#ifdef __LINUX__
+#include <QtDBus>
+#endif
 
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
-#else
-#include <QGLFormat>
 #endif
 
-#include <QUrl>
-#ifdef __LINUX__
-#include <QtDBus>
-#endif
-#include <QtDebug>
-
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "coreservices.h"
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/effectsmanager.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -29,19 +33,14 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
@@ -49,36 +48,18 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/debug.h"
-#include "util/experiment.h"
-#include "util/font.h"
-#include "util/logger.h"
-#include "util/math.h"
 #include "util/sandbox.h"
-#include "util/screensaver.h"
-#include "util/time.h"
 #include "util/timer.h"
-#include "util/translations.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wglwidget.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
-#endif
-
-#if defined(Q_OS_LINUX)
-#include <X11/Xlib.h>
-#include <X11/Xlibint.h>
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
-
-#include <QtX11Extras/QX11Info>
 #endif
 
 namespace {
@@ -149,22 +130,33 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
 #ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt 6 will nno longer crash if no GL is available and
+    // QGLFormat::hasOpenGL() has been removed.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+#else
     if (!CmdlineArgs::Instance().getSafeMode()) {
-        // This widget and its QOpenGLWindow will be used to query QOpenGL
-        // information (version, driver, etc) in WaveformWidgetFactory.
-        // The "SharedGLContext" terminology here doesn't really apply,
-        // but allows us to take advantage of the existing classes.
-        WInitialGLWidget* widget = new WInitialGLWidget(this);
-        widget->setGeometry(QRect(0, 0, 3, 3));
-        SharedGLContext::setWidget(widget);
-        // When the widget's QOpenGLWindow has been initialized, we continue
-        // with the actual initialization
-        connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
-        widget->show();
-        // note: the format is set in the WGLWidget's OpenGLWindow constructor
-    } else {
-        initialize();
+#endif
+        QOpenGLContext context;
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
+        if (context.create()) {
+            // This widget and its QOpenGLWindow will be used to query QOpenGL
+            // information (version, driver, etc) in WaveformWidgetFactory.
+            // The "SharedGLContext" terminology here doesn't really apply,
+            // but allows us to take advantage of the existing classes.
+            WInitialGLWidget* widget = new WInitialGLWidget(this);
+            widget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(widget);
+            // When the widget's QOpenGLWindow has been initialized, we continue
+            // with the actual initialization
+            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            widget->show();
+            return;
+        }
+        qDebug() << "QOpenGLContext::create() failed";
     }
+    qInfo() << "Initializing without OpenGL";
+    initialize();
 }
 #endif
 

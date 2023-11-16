@@ -1,11 +1,13 @@
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 #include <QApplication>
+#include <QWheelEvent>
 
 #include "moc_waveformwidget.cpp"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 
-using namespace allshader;
+namespace allshader {
 
 WaveformWidget::WaveformWidget(const QString& group, QWidget* parent)
         : WGLWidget(parent), WaveformWidgetAbstract(group) {
@@ -59,3 +61,10 @@ void WaveformWidget::wheelEvent(QWheelEvent* pEvent) {
     QApplication::sendEvent(parentWidget(), pEvent);
     pEvent->accept();
 }
+
+void WaveformWidget::leaveEvent(QEvent* pEvent) {
+    QApplication::sendEvent(parentWidget(), pEvent);
+    pEvent->accept();
+}
+
+} // namespace allshader

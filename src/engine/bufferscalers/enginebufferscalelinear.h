@@ -1,17 +1,17 @@
 #pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
-#include "engine/readaheadmanager.h"
+
+class ReadAheadManager;
 
 /** Number of samples to read ahead */
 constexpr int kiLinearScaleReadAheadLength = 10240;
-
 
 class EngineBufferScaleLinear : public EngineBufferScale  {
     Q_OBJECT
   public:
     explicit EngineBufferScaleLinear(
-            ReadAheadManager *pReadAheadManager);
+            ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleLinear() override;
 
     double scaleBuffer(

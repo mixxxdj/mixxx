@@ -1,14 +1,11 @@
 #pragma once
 
 #include <QWidget>
-#include <QMouseEvent>
-#include <QEvent>
-#include <QStyle>
 #include <QSize>
-#include <QPaintEvent>
 #include <QStyleOptionViewItem>
-#include <QTableView>
 #include <QModelIndex>
+
+class QTableView;
 
 #include "library/starrating.h"
 
@@ -19,7 +16,7 @@ class StarEditor : public QWidget {
                const QModelIndex& index,
                const QStyleOptionViewItem& option);
 
-    QSize sizeHint() const;
+    QSize sizeHint() const override;
     void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
     }
@@ -33,11 +30,11 @@ class StarEditor : public QWidget {
     void editingFinished();
 
   protected:
-    void paintEvent(QPaintEvent* event);
-    void mouseMoveEvent(QMouseEvent* event);
-    void mouseReleaseEvent(QMouseEvent* event);
+    void paintEvent(QPaintEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
     //if the mouse leaves the editing index set starCount to 0
-    void leaveEvent(QEvent*);
+    void leaveEvent(QEvent*) override;
 
   private:
     int starAtPosition(int x);

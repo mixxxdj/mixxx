@@ -3,7 +3,6 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 #include "util/xml.h"
 #include "skin/legacy/imgsource.h"
 #include "skin/legacy/imgloader.h"
@@ -51,11 +50,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
 
-            // This calls SkinContext::updateVariables in skincontext.cpp which
-            // iterates over all <SetVariable> nodes in the selected color scheme node
+            // This calls SkinContext::updateVariables which iterates over all
+            // <SetVariable> nodes in the selected color scheme node.
             pContext->updateVariables(schemeNode);
 
             if (pStyle) {
+                // read scheme's stylesheet (node text or stylesheet file)
                 *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
             }
         }

@@ -58,10 +58,6 @@ bool WGLWidget::isContextValid() const {
     return m_pOpenGLWindow && m_pOpenGLWindow->context() && m_pOpenGLWindow->context()->isValid();
 }
 
-bool WGLWidget::isContextSharing() const {
-    return true;
-}
-
 void WGLWidget::makeCurrentIfNeeded() {
     if (m_pOpenGLWindow && m_pOpenGLWindow->context() != QOpenGLContext::currentContext()) {
         m_pOpenGLWindow->makeCurrent();
@@ -83,6 +79,8 @@ void WGLWidget::initializeGL() {
 }
 
 void WGLWidget::resizeGL(int w, int h) {
+    Q_UNUSED(w);
+    Q_UNUSED(h);
     // to be implemented in derived widgets if needed
 }
 
