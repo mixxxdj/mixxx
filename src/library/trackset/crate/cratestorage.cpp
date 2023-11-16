@@ -72,7 +72,7 @@ class CrateQueryBinder final {
         m_query.bindValue(placeholder, QVariant(crate.isLocked()));
     }
     void bindArchived(const QString& placeholder, const Crate& crate) const {
-        m_query.bindValue(placeholder, crate.isArchived());
+        m_query.bindValue(placeholder, QVariant(crate.isArchived()));
     }
     void bindAutoDjSource(const QString& placeholder, const Crate& crate) const {
         m_query.bindValue(placeholder, QVariant(crate.isAutoDjSource()));
