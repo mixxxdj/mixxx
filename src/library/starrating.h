@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QMetaType>
 #include <QPolygonF>
 #include <QSize>
 
@@ -13,7 +12,7 @@ QT_FORWARD_DECLARE_CLASS(QRect);
  * The StarRating class represents a rating as a number of stars.
  * In addition to holding the data, it is also capable of painting the stars on a QPaintDevice,
  * which in this example is either a view or an editor.
- * The myStarCount member variable stores the current rating, and myMaxStarCount stores
+ * The m_starCount member variable stores the current rating, and m_maxStarCount stores
  * the highest possible rating (typically 5).
  */
 class StarRating {

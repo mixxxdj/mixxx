@@ -1,6 +1,5 @@
 #include "preferences/dialog/dlgprefreplaygain.h"
 
-#include "control/controlobject.h"
 #include "moc_dlgprefreplaygain.cpp"
 #include "util/math.h"
 
@@ -41,6 +40,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderReplayGainBoost);
+
     connect(SliderDefaultBoost,
             &QAbstractSlider::valueChanged,
             this,
@@ -49,6 +50,8 @@ DlgPrefReplayGain::DlgPrefReplayGain(QWidget* parent, UserSettingsPointer pConfi
             &QAbstractSlider::sliderReleased,
             this,
             &DlgPrefReplayGain::slotApply);
+    setScrollSafeGuard(SliderDefaultBoost);
+
     connect(checkBoxReanalyze,
             &QCheckBox::stateChanged,
             this,

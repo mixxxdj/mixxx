@@ -5,13 +5,28 @@
 
 #include "track/track_decl.h"
 #include "util/memory.h"
-#include "waveform/renderers/glwaveformrenderersignal.h"
 
-QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
-QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
+#ifdef MIXXX_USE_QOPENGL
+class QOpenGLFramebufferObject;
+class QOpenGLShader;
+class QOpenGLShaderProgram;
+#else
+class QGLFramebufferObject;
+class QGLShader;
+class QGLShaderProgram;
+#endif
 
 class GLSLWaveformRendererSignal : public QObject,
                                    public GLWaveformRendererSignal {
+#ifdef MIXXX_USE_QOPENGL
+    using FrameBufferObject = QOpenGLFramebufferObject;
+    using Shader = QOpenGLShader;
+    using ShaderProgram = QOpenGLShaderProgram;
+#else
+    using FrameBufferObject = QGLFramebufferObject;
+    using Shader = QGLShader;
+    using ShaderProgram = QGLShaderProgram;
+#endif
     Q_OBJECT
   public:
     enum class ColorType {
@@ -26,7 +41,7 @@ class GLSLWaveformRendererSignal : public QObject,
     ~GLSLWaveformRendererSignal() override;
 
     void onSetup(const QDomNode& node) override;
-    void onInitializeGL() override;
+    void initializeGL() override;
     void draw(QPainter* painter, QPaintEvent* event) override;
 
     void onSetTrack() override;
@@ -50,7 +65,7 @@ class GLSLWaveformRendererSignal : public QObject,
     int m_textureRenderedWaveformCompletion;
 
     // Frame buffer for two pass rendering.
-    std::unique_ptr<QGLFramebufferObject> m_framebuffer;
+    std::unique_ptr<FrameBufferObject> m_framebuffer;
 
     bool m_bDumpPng;
 
@@ -58,7 +73,7 @@ class GLSLWaveformRendererSignal : public QObject,
     bool m_shadersValid;
     ColorType m_colorType;
     const QString m_pFragShader;
-    std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
+    std::unique_ptr<ShaderProgram> m_frameShaderProgram;
 };
 
 class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {

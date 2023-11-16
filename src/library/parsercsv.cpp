@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QtDebug>
 
+#include "errordialoghandler.h"
+#include "library/basesqltablemodel.h"
 #include "library/parser.h"
 
 namespace {
@@ -49,7 +51,7 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
                     ? std::distance(std::begin(tokens_list), it)
                     : std::optional<std::size_t>{};
         };
-        if (tokens.size()) {
+        if (!tokens.isEmpty()) {
             std::optional<std::size_t> locationColumnIndex = detect_location_column(
                     tokens[0],
                     [&](auto i) { return i == QObject::tr("Location"); });
@@ -72,6 +74,11 @@ QList<QString> ParserCsv::parseAllLocations(const QString& playlistFile) {
         }
         file.close();
     }
+
+    qDebug() << "ParserCsv::parse() failed"
+             << playlistFile
+             << file.errorString();
+
     return locations;
 }
 
@@ -132,9 +139,13 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(nullptr,
-                QObject::tr("Playlist Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+        ErrorDialogHandler* pDialogHandler = ErrorDialogHandler::instance();
+        ErrorDialogProperties* props = pDialogHandler->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(QObject::tr("Playlist Export Failed"));
+        props->setText(QObject::tr("Could not create file") + " " + file_str);
+        props->setDetails(file.errorString());
+        pDialogHandler->requestErrorDialog(props);
         return false;
     }
     //Base folder of file
@@ -223,7 +234,7 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QMessageBox::warning(nullptr,
                 QObject::tr("Readable text Export Failed"),
-                QObject::tr("Could not create file") + " " + file_str);
+                QObject::tr("Could not create file") + " " + file_str + "\n" + file.errorString());
         return false;
     }
 

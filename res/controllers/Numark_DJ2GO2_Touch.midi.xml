@@ -745,6 +745,15 @@
       </control>
       <control>
         <group>[Channel2]</group>
+        <key>DJ2GO2Touch.rightDeck.loopOut.input</key>
+        <status>0x95</status>
+        <midino>0x22</midino>
+        <options>
+          <script-binding/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
         <key>DJ2GO2Touch.rightDeck.reLoopStop.input</key>
         <status>0x95</status>
         <midino>0x24</midino>
@@ -883,29 +892,29 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.crossfader.input</key>
+        <key>crossfader</key>
         <status>0xBF</status>
         <midino>0x08</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.masterGain.input</key>
+        <key>gain</key>
         <status>0xBF</status>
         <midino>0x0A</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Master]</group>
-        <key>DJ2GO2Touch.cueGain.input</key>
+        <key>headGain</key>
         <status>0xBF</status>
         <midino>0x0C</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>

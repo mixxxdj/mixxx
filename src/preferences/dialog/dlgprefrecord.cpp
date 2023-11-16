@@ -1,10 +1,9 @@
 #include "preferences/dialog/dlgprefrecord.h"
 
 #include <QFileDialog>
+#include <QRadioButton>
 #include <QStandardPaths>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"
@@ -99,6 +98,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         comboBoxSplitting->setCurrentIndex(4);
     }
 
+    setScrollSafeGuard(comboBoxSplitting);
+
     // Do the one-time connection of signals here.
     connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
     connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
@@ -124,7 +125,7 @@ DlgPrefRecord::~DlgPrefRecord()
 {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    for (QRadioButton* button : qAsConst(m_formatButtons)) {
+    for (QRadioButton* button : std::as_const(m_formatButtons)) {
         if (LosslessEncLayout->indexOf(button) != -1) {
             LosslessEncLayout->removeWidget(button);
         } else {
@@ -132,7 +133,7 @@ DlgPrefRecord::~DlgPrefRecord()
         }
         button->deleteLater();
     }
-    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+    for (QAbstractButton* widget : std::as_const(m_optionWidgets)) {
         OptionGroupsLayout->removeWidget(widget);
         widget->deleteLater();
     }
@@ -265,7 +266,7 @@ void DlgPrefRecord::setupEncoderUI() {
         TextCompression->setVisible(false);
     }
 
-    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+    for (QAbstractButton* widget : std::as_const(m_optionWidgets)) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
         disconnect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
@@ -284,7 +285,7 @@ void DlgPrefRecord::setupEncoderUI() {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
-        for (const QString& name : qAsConst(group.controlNames)) {
+        for (const QString& name : std::as_const(group.controlNames)) {
             QAbstractButton* widget;
             if (group.controlNames.size() == 1) {
                 QCheckBox* button = new QCheckBox(name, this);
@@ -328,7 +329,7 @@ void DlgPrefRecord::updateTextQuality() {
     bool isVbr = false;
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
-        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+        for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
@@ -435,7 +436,7 @@ void DlgPrefRecord::saveEncoding() {
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
+        for (const QAbstractButton* widget : std::as_const(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);

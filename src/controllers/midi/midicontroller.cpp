@@ -1,14 +1,18 @@
 #include "controllers/midi/midicontroller.h"
 
+#include <QJSValue>
+
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/midioutputhandler.h"
 #include "controllers/midi/midiutils.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
-#include "util/screensaver.h"
 
 MidiController::MidiController(const QString& deviceName)
         : Controller(deviceName) {
@@ -279,7 +283,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                 status,
                 mapping.control.group,
         };
-        if (!pEngine->executeFunction(function, args)) {
+        if (!pEngine->executeFunction(&function, args)) {
             qCWarning(m_logBase) << "MidiController: Invalid script function"
                                  << mapping.control.item;
         }
@@ -307,8 +311,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (auto it = m_fourteen_bit_queued_mappings.begin();
-             it != m_fourteen_bit_queued_mappings.end(); ++it) {
+        for (auto it = m_fourteen_bit_queued_mappings.constBegin();
+                it != m_fourteen_bit_queued_mappings.constEnd();
+                ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options & mapping.options) &
                         (MidiOption::FourteenBitLSB | MidiOption::FourteenBitMSB)) {
@@ -316,7 +321,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                             << "MidiController: 14-bit MIDI mapping has "
                                "mis-matched LSB/MSB options."
                             << "Ignoring both messages.";
-                    m_fourteen_bit_queued_mappings.erase(it);
+                    constErase(&m_fourteen_bit_queued_mappings, it);
                     return;
                 }
 
@@ -343,7 +348,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                 newValue = math_min(newValue, 127.0);
 
                 // Erase the queued message since we processed it.
-                m_fourteen_bit_queued_mappings.erase(it);
+                constErase(&m_fourteen_bit_queued_mappings, it);
 
                 found = true;
                 break;

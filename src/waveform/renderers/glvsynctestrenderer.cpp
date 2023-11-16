@@ -1,11 +1,9 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -26,11 +24,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    maybeInitializeGL();
-
     PerformanceTimer timer;
     //mixxx::Duration t5, t6, t7, t8, t9, t10, t11, t12, t13;
-
 
     timer.start();
 
@@ -54,7 +49,7 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }

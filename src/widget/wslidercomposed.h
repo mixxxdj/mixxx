@@ -1,18 +1,13 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
-#include <QDomNode>
-#include <QWheelEvent>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QResizeEvent>
 
-#include "skin/legacy/skincontext.h"
-#include "util/widgetrendertimer.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+
+class QDomNode;
+class SkinContext;
 
 /** A widget for a slider composed of a background pixmap and a handle. */
 class WSliderComposed : public WWidget  {
@@ -75,7 +70,6 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
-    WidgetRenderTimer m_renderTimer;
 
     friend class SliderEventHandler<WSliderComposed>;
 };

@@ -1,18 +1,31 @@
 #include "mixxxmainwindow.h"
 
+#include <QCloseEvent>
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
-#include <QGLFormat>
+#include <QOpenGLContext>
 #include <QUrl>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QGLFormat>
+#endif
+
 #ifdef __LINUX__
 #include <QtDBus>
 #endif
-#include <QtDebug>
 
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/tooltipqopengl.h"
+#include "widget/winitialglwidget.h"
+#endif
+
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "coreservices.h"
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/effectsmanager.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -20,19 +33,14 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
@@ -40,36 +48,18 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/debug.h"
-#include "util/experiment.h"
-#include "util/font.h"
-#include "util/logger.h"
-#include "util/math.h"
 #include "util/sandbox.h"
-#include "util/screensaver.h"
-#include "util/time.h"
 #include "util/timer.h"
-#include "util/translations.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wglwidget.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
-#endif
-
-#if defined(Q_OS_LINUX)
-#include <X11/Xlib.h>
-#include <X11/Xlibint.h>
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
-
-#include <QtX11Extras/QX11Info>
 #endif
 
 namespace {
@@ -84,8 +74,8 @@ namespace {
 inline bool supportsGlobalMenu() {
 #ifndef QT_NO_DBUS
     QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto iface = conn.interface()) {
-        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    if (const auto* pIface = conn.interface()) {
+        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
     }
 #endif
     return false;
@@ -138,15 +128,50 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     m_pVisualsManager = new VisualsManager();
 }
 
+#ifdef MIXXX_USE_QOPENGL
+void MixxxMainWindow::initializeQOpenGL() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt 6 will nno longer crash if no GL is available and
+    // QGLFormat::hasOpenGL() has been removed.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+#else
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+#endif
+        QOpenGLContext context;
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
+        if (context.create()) {
+            // This widget and its QOpenGLWindow will be used to query QOpenGL
+            // information (version, driver, etc) in WaveformWidgetFactory.
+            // The "SharedGLContext" terminology here doesn't really apply,
+            // but allows us to take advantage of the existing classes.
+            WInitialGLWidget* widget = new WInitialGLWidget(this);
+            widget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(widget);
+            // When the widget's QOpenGLWindow has been initialized, we continue
+            // with the actual initialization
+            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            widget->show();
+            return;
+        }
+        qDebug() << "QOpenGLContext::create() failed";
+    }
+    qInfo() << "Initializing without OpenGL";
+    initialize();
+}
+#endif
+
 void MixxxMainWindow::initialize() {
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
     // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-            pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
-                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    m_toolTipsCfg = pConfig->getValue(
+            ConfigKey("[Controls]", "Tooltips"),
+            mixxx::TooltipsPreference::TOOLTIPS_ON);
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -194,6 +219,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
+#ifndef MIXXX_USE_QOPENGL
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
@@ -218,11 +244,12 @@ void MixxxMainWindow::initialize() {
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QGLWidget* pContextWidget = new QGLWidget(this);
+        WGLWidget* pContextWidget = new WGLWidget(this);
         pContextWidget->setGeometry(QRect(0, 0, 3, 3));
         pContextWidget->hide();
         SharedGLContext::setWidget(pContextWidget);
     }
+#endif
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
@@ -631,6 +658,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
 void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     QString appTitle = VersionStore::applicationName();
+    QString filePath;
 
     // If we have a track, use getInfo() to format a summary string and prepend
     // it to the title.
@@ -640,12 +668,17 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
         if (!trackInfo.isEmpty()) {
             appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
+        filePath = pTrack->getLocation();
     }
-    this->setWindowTitle(appTitle);
+    setWindowTitle(appTitle);
+
+    // Display a draggable proxy icon for the track in the title bar on
+    // platforms that support it, e.g. macOS
+    setWindowFilePath(filePath);
 }
 
 void MixxxMainWindow::createMenuBar() {
-    ScopedTimer t("MixxxMainWindow::createMenuBar");
+    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -659,7 +692,7 @@ void MixxxMainWindow::connectMenuBar() {
     // This function might be invoked multiple times on startup
     // so all connections must be unique!
 
-    ScopedTimer t("MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
@@ -1015,6 +1048,9 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 }
 
 void MixxxMainWindow::rebootMixxxView() {

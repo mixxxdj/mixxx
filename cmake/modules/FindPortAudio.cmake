@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_PortAudio QUIET portaudio-2.0)
@@ -67,12 +69,15 @@ find_library(PortAudio_LIBRARY
 )
 mark_as_advanced(PortAudio_LIBRARY)
 
+if(DEFINED PC_PortAudio_VERSION AND NOT PC_PortAudio_VERSION STREQUAL "")
+  set(PortAudio_VERSION "${PC_PortAudio_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   PortAudio
-  DEFAULT_MSG
-  PortAudio_LIBRARY
-  PortAudio_INCLUDE_DIR
+  REQUIRED_VARS PortAudio_LIBRARY PortAudio_INCLUDE_DIR
+  VERSION_VAR PortAudio_VERSION
 )
 
 if(PortAudio_FOUND)
@@ -86,6 +91,14 @@ if(PortAudio_FOUND)
     )
     is_static_library(PortAudio_IS_STATIC PortAudio::PortAudio)
     if(PortAudio_IS_STATIC)
+      if(PortAudio_ALSA_H)
+        find_package(ALSA)
+        if(ALSA_FOUND)
+          set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            ALSA::ALSA
+          )
+        endif()
+      endif()
       find_package(JACK)
       if(JACK_FOUND)
         set_property(TARGET PortAudio::PortAudio APPEND PROPERTY INTERFACE_LINK_LIBRARIES

@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QItemSelection>
-
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/ui_dlgmissing.h"
 #include "preferences/usersettings.h"
@@ -11,6 +7,9 @@
 class WLibrary;
 class WTrackTableView;
 class MissingTableModel;
+class QItemSelection;
+class Library;
+class KeyboardEventFilter;
 
 class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT

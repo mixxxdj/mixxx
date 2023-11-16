@@ -2,15 +2,13 @@
 
 #include <QRandomGenerator>
 #include <QtDebug>
-#include <QtSql>
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
-#include "library/trackcollection.h"
 #include "moc_playlistdao.cpp"
-#include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -212,10 +210,10 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     transaction.commit();
     //TODO: Crap, we need to shuffle the positions of all the playlists?
 
-    for (QMultiHash<TrackId, int>::iterator it = m_playlistsTrackIsIn.begin();
-            it != m_playlistsTrackIsIn.end();) {
+    for (auto it = m_playlistsTrackIsIn.constBegin();
+            it != m_playlistsTrackIsIn.constEnd();) {
         if (it.value() == playlistId) {
-            it = m_playlistsTrackIsIn.erase(it);
+            it = constErase(&m_playlistsTrackIsIn, it);
         } else {
             ++it;
         }
@@ -562,7 +560,7 @@ void PlaylistDAO::removeHiddenTracks(const int playlistId) {
             "WHERE p1.id NOT IN ("
             "SELECT p2.id FROM PlaylistTracks AS p2 "
             "INNER JOIN library ON library.id=p2.track_id "
-            "WHERE p2.playlist_id=p1.playlist_id "
+            "WHERE p2.playlist_id=:id "
             "AND library.mixxx_deleted=0) "
             "AND p1.playlist_id=:id"));
     query.bindValue(":id", playlistId);
@@ -626,7 +624,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& pos
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(sortedPositons)) {
+    for (const auto position : std::as_const(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

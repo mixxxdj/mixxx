@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QMimeType>
-#include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
 #include "network/networktask.h"
 #include "util/optional.h"
 #include "util/performancetimer.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 

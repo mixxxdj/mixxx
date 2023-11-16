@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_LibUSB QUIET libusb-1.0)
@@ -63,12 +65,15 @@ find_library(LibUSB_LIBRARY
 )
 mark_as_advanced(LibUSB_LIBRARY)
 
+if(DEFINED PC_LibUSB_VERSION AND NOT PC_LibUSB_VERSION STREQUAL "")
+  set(LibUSB_VERSION "${PC_LibUSB_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   LibUSB
-  DEFAULT_MSG
-  LibUSB_LIBRARY
-  LibUSB_INCLUDE_DIR
+  REQUIRED_VARS LibUSB_LIBRARY LibUSB_INCLUDE_DIR
+  VERSION_VAR LibUSB_VERSION
 )
 
 if(LibUSB_FOUND)
@@ -84,5 +89,15 @@ if(LibUSB_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_LibUSB_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${LibUSB_INCLUDE_DIR}"
     )
+
+    is_static_library(LibUSB_IS_STATIC LibUSB::LibUSB)
+    if(LibUSB_IS_STATIC)
+      find_package(Libudev)
+      if(Libudev_FOUND)
+        set_property(TARGET LibUSB::LibUSB APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          Libudev::Libudev
+        )
+      endif()
+    endif()
   endif()
 endif()

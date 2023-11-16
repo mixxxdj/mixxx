@@ -1,11 +1,15 @@
 #include "widget/weffectparameternamebase.h"
 
 #include <QDrag>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QMimeData>
-#include <QtDebug>
 
+#include "effects/effectknobparameterslot.h"
+#include "effects/effectparameterslotbase.h"
 #include "effects/effectslot.h"
-#include "effects/effectsmanager.h"
+#include "moc_weffectparameternamebase.cpp"
+#include "util/math.h"
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");

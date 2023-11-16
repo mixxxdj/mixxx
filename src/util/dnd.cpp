@@ -1,8 +1,7 @@
 #include "util/dnd.h"
 
 #include "control/controlobject.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
+#include "library/parser.h"
 #include "mixer/playermanager.h"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "sources/soundsourceproxy.h"
@@ -132,7 +131,7 @@ QList<mixxx::FileInfo> DragAndDropHelper::supportedTracksFromUrls(
 
         if (acceptPlaylists && Parser::isPlaylistFilenameSupported(file)) {
             const QList<QString> track_list = Parser::parse(file);
-            for (auto& playlistFile : track_list) {
+            for (const auto& playlistFile : track_list) {
                 addFileToList(mixxx::FileInfo(playlistFile), &fileInfos);
             }
         } else {

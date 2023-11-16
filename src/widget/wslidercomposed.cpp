@@ -1,41 +1,34 @@
 #include "widget/wslidercomposed.h"
 
+#include <QStringView>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
 
 #include "moc_wslidercomposed.cpp"
 #include "util/debug.h"
-#include "util/duration.h"
-#include "util/math.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wskincolor.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent)
-    : WWidget(parent),
-      m_dHandleLength(0.0),
-      m_dSliderLength(0.0),
-      m_bHorizontal(false),
-      m_dBarWidth(0.0),
-      m_dBarBgWidth(0.0),
-      m_dBarStart(0.0),
-      m_dBarEnd(0.0),
-      m_dBarBgStart(0.0),
-      m_dBarBgEnd(0.0),
-      m_dBarAxisPos(0.0),
-      m_bBarUnipolar(true),
-      m_barColor(nullptr),
-      m_barBgColor(nullptr),
-      m_barPenCap(Qt::FlatCap),
-      m_pSlider(nullptr),
-      m_pHandle(nullptr),
-      m_renderTimer(mixxx::Duration::fromMillis(20),
-                    mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer,
-            &WidgetRenderTimer::update,
-            this,
-            QOverload<>::of(&QWidget::update));
+WSliderComposed::WSliderComposed(QWidget* parent)
+        : WWidget(parent),
+          m_dHandleLength(0.0),
+          m_dSliderLength(0.0),
+          m_bHorizontal(false),
+          m_dBarWidth(0.0),
+          m_dBarBgWidth(0.0),
+          m_dBarStart(0.0),
+          m_dBarEnd(0.0),
+          m_dBarBgStart(0.0),
+          m_dBarBgEnd(0.0),
+          m_dBarAxisPos(0.0),
+          m_bBarUnipolar(true),
+          m_barColor(nullptr),
+          m_barBgColor(nullptr),
+          m_barPenCap(Qt::FlatCap),
+          m_pSlider(nullptr),
+          m_pHandle(nullptr) {
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -80,18 +73,22 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         QString bgMargins;
         if (context.hasNodeSelectString(node, "BarMargins", &margins)) {
             int comma = margins.indexOf(",");
-            bool m1ok;
-            bool m2ok;
+            if (comma > 0 && comma < margins.size()) {
+                bool m1ok;
+                bool m2ok;
+                QStringView marginsView(margins);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            double m1 = (margins.left(comma)).toDouble(&m1ok);
-            double m2 = (margins.mid(comma + 1)).toDouble(&m2ok);
+                double m1 = (marginsView.first(comma)).toDouble(&m1ok);
+                double m2 = (marginsView.sliced(comma + 1)).toDouble(&m2ok);
 #else
-            double m1 = (margins.leftRef(comma)).toDouble(&m1ok);
-            double m2 = (margins.midRef(comma + 1)).toDouble(&m2ok);
+                QLocale c(QLocale::C);
+                double m1 = c.toDouble(marginsView.left(comma), &m1ok);
+                double m2 = c.toDouble(marginsView.mid(comma + 1), &m2ok);
 #endif
-            if (m1ok && m2ok) {
-                m_dBarStart = m1 * scaleFactor;
-                m_dBarEnd = m2 * scaleFactor;
+                if (m1ok && m2ok) {
+                    m_dBarStart = m1 * scaleFactor;
+                    m_dBarEnd = m2 * scaleFactor;
+                }
             }
         }
 
@@ -110,18 +107,22 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             }
             if (context.hasNodeSelectString(node, "BarBgMargins", &bgMargins)) {
                 int comma = bgMargins.indexOf(",");
-                bool m1ok;
-                bool m2ok;
+                if (comma > 0 && comma + 1 < margins.size()) {
+                    bool m1ok;
+                    bool m2ok;
+                    QStringView bgMarginsView(bgMargins);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-                double m1 = (bgMargins.left(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.mid(comma + 1)).toDouble(&m2ok);
+                    double m1 = (bgMarginsView.first(comma)).toDouble(&m1ok);
+                    double m2 = (bgMarginsView.sliced(comma + 1)).toDouble(&m2ok);
 #else
-                double m1 = (bgMargins.leftRef(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.midRef(comma + 1)).toDouble(&m2ok);
+                    QLocale c(QLocale::C);
+                    double m1 = c.toDouble(bgMarginsView.left(comma), &m1ok);
+                    double m2 = c.toDouble(bgMarginsView.mid(comma + 1), &m2ok);
 #endif
-                if (m1ok && m2ok) {
-                    m_dBarBgStart = m1 * scaleFactor;
-                    m_dBarBgEnd = m2 * scaleFactor;
+                    if (m1ok && m2ok) {
+                        m_dBarBgStart = m1 * scaleFactor;
+                        m_dBarBgEnd = m2 * scaleFactor;
+                    }
                 }
             } else {
                 m_dBarBgStart = m_dBarStart;
@@ -371,9 +372,5 @@ double WSliderComposed::calculateHandleLength() {
 }
 
 void WSliderComposed::inputActivity() {
-#ifdef __APPLE__
-    m_renderTimer.activity();
-#else
     update();
-#endif
 }

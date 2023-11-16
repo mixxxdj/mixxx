@@ -7,12 +7,13 @@ constexpr char kFidSpecLowPassButterworth1[] = "LpBu1";
 constexpr char kFidSpecHighPassButterworth1[] = "HpBu1";
 } // namespace
 
-EngineFilterLinkwitzRiley2Low::EngineFilterLinkwitzRiley2Low(int sampleRate, double freqCorner1) {
+EngineFilterLinkwitzRiley2Low::EngineFilterLinkwitzRiley2Low(
+        mixxx::audio::SampleRate sampleRate, double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterLinkwitzRiley2Low::setFrequencyCorners(int sampleRate,
-                                             double freqCorner1) {
+void EngineFilterLinkwitzRiley2Low::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     // Copy the old coefficients into m_oldCoef
     setCoefs2(sampleRate,
             1,
@@ -28,12 +29,13 @@ void EngineFilterLinkwitzRiley2Low::setFrequencyCorners(int sampleRate,
             0);
 }
 
-EngineFilterLinkwitzRiley2High::EngineFilterLinkwitzRiley2High(int sampleRate, double freqCorner1) {
+EngineFilterLinkwitzRiley2High::EngineFilterLinkwitzRiley2High(
+        mixxx::audio::SampleRate sampleRate, double freqCorner1) {
     setFrequencyCorners(sampleRate, freqCorner1);
 }
 
-void EngineFilterLinkwitzRiley2High::setFrequencyCorners(int sampleRate,
-                                             double freqCorner1) {
+void EngineFilterLinkwitzRiley2High::setFrequencyCorners(mixxx::audio::SampleRate sampleRate,
+        double freqCorner1) {
     setCoefs2(sampleRate,
             1,
             kFidSpecHighPassButterworth1,

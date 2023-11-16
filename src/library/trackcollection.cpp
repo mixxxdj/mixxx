@@ -1,8 +1,7 @@
 #include "library/trackcollection.h"
 
-#include <QApplication>
-
 #include "library/basetrackcache.h"
+#include "library/trackset/crate/crate.h"
 #include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
@@ -258,7 +257,7 @@ bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         QSet<int> playlistIds;
         m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
-        for (const auto& playlistId : qAsConst(playlistIds)) {
+        for (const auto& playlistId : std::as_const(playlistIds)) {
             if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
                 allPlaylistIds.insert(playlistId);
             }

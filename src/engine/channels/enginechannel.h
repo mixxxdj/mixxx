@@ -1,15 +1,12 @@
 #pragma once
 
 #include "control/pollingcontrolproxy.h"
-#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/engineobject.h"
 #include "engine/enginevumeter.h"
-#include "preferences/usersettings.h"
 
-class ControlObject;
+class EffectsManager;
 class EngineBuffer;
-class EngineFilterBlock;
 class ControlPushButton;
 
 class EngineChannel : public EngineObject {
@@ -51,8 +48,8 @@ class EngineChannel : public EngineObject {
 
     void setPfl(bool enabled);
     virtual bool isPflEnabled() const;
-    void setMaster(bool enabled);
-    virtual bool isMasterEnabled() const;
+    void setMainMix(bool enabled);
+    virtual bool isMainMixEnabled() const;
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
@@ -92,7 +89,7 @@ class EngineChannel : public EngineObject {
     void slotOrientationCenter(double v);
 
   private:
-    ControlPushButton* m_pMaster;
+    ControlPushButton* m_pMainMix;
     ControlPushButton* m_pPFL;
     ControlPushButton* m_pOrientation;
     ControlPushButton* m_pOrientationLeft;

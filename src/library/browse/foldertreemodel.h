@@ -1,15 +1,10 @@
 #pragma once
 
-#include <QAbstractItemModel>
 #include <QModelIndex>
-#include <QVariant>
-#include <QList>
 #include <QHash>
 
 #include "library/treeitemmodel.h"
-#include "library/treeitem.h"
 
-class TreeItem;
 // This class represents a folder item within the Browse Feature
 // The class is derived from TreeItemModel to support lazy model
 // initialization.

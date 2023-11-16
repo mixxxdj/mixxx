@@ -3,7 +3,6 @@
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
-#include <QList>
 
 #include "util/memory.h"
 

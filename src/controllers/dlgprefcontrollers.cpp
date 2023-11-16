@@ -2,12 +2,14 @@
 
 #include <QDesktopServices>
 
+#include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "util/string.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
@@ -23,7 +25,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     createLinkColor();
     setupControllerWidgets();
 
-    connect(btnOpenUserMappings, &QPushButton::clicked, this, [=, this]() {
+    connect(btnOpenUserMappings, &QPushButton::clicked, this, [this]() {
         QString mappingsPath = userMappingsPath(m_pConfig);
         openLocalFile(mappingsPath);
     });
@@ -83,19 +85,19 @@ void DlgPrefControllers::slotUpdate() {
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+    for (DlgPrefController* pControllerDlg : std::as_const(m_controllerPages)) {
         pControllerDlg->slotResetToDefaults();
     }
 }
@@ -109,13 +111,16 @@ bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     if (controllerIndex >= 0) {
         DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
         if (pControllerDlg) {
-            m_pDlgPreferences->switchToPage(pControllerDlg);
+            const QString pageTitle = m_pControllersRootItem->text(0) + " - " +
+                    clickedItem->text(0);
+            m_pDlgPreferences->switchToPage(pageTitle, pControllerDlg);
         }
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
         // Switch to the root page and expand the controllers tree item.
         m_pDlgPreferences->expandTreeItem(clickedItem);
-        m_pDlgPreferences->switchToPage(this);
+        const QString pageTitle = clickedItem->text(0);
+        m_pDlgPreferences->switchToPage(pageTitle, this);
         return true;
     }
     return false;

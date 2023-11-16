@@ -4,13 +4,12 @@
 #include <QString>
 #include <memory>
 
-#include "coreservices.h"
-#include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "soundio/sounddevicestatus.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
+class ControlObject;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
@@ -20,6 +19,8 @@ class VisualsManager;
 class WMainMenuBar;
 
 namespace mixxx {
+
+class CoreServices;
 
 namespace skin {
 class SkinLoader;
@@ -41,6 +42,9 @@ class MixxxMainWindow : public QMainWindow {
     MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
     ~MixxxMainWindow() override;
 
+#ifdef MIXXX_USE_QOPENGL
+    void initializeQOpenGL();
+#endif
     /// Initialize main window after creation. Should only be called once.
     void initialize();
     /// creates the menu_bar and inserts the file Menu

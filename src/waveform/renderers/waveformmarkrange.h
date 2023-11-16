@@ -3,15 +3,19 @@
 #include <QColor>
 #include <QImage>
 #include <QString>
+#include <memory>
 
 #include "control/controlproxy.h"
-#include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
 QT_FORWARD_DECLARE_CLASS(QDomNode);
 
 class SkinContext;
 class WaveformSignalColors;
+
+namespace allshader {
+class WaveformRenderMarkRange;
+}
 
 class WaveformMarkRange {
   public:
@@ -71,5 +75,6 @@ class WaveformMarkRange {
     DurationTextLocation m_durationTextLocation;
 
     friend class WaveformRenderMarkRange;
+    friend class allshader::WaveformRenderMarkRange;
     friend class WOverview;
 };

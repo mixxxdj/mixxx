@@ -1,10 +1,9 @@
 #pragma once
+
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 class TremoloState : public EffectState {

@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
+
+message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
 
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
@@ -45,6 +47,24 @@ if(POLICY CMP0135)
   cmake_policy(SET CMP0135 NEW)
 endif()
 
+function(FATAL_ERROR_MISSING_ENV)
+  if(WIN32)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´?")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/windows_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/windows_buildenv.bat´(includes Debug)?")
+    endif()
+  elseif(APPLE)
+    if(CMAKE_BUILD_TYPE MATCHES "Debug")
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´")
+    else()
+      message(FATAL_ERROR "Did you download the Mixxx build environment using ´${CMAKE_SOURCE_DIR}/tools/macos_release_buildenv.bat´ or ´${CMAKE_SOURCE_DIR}/tools/macos_buildenv.bat´(includes Debug)?")
+    endif()
+  else()
+    message(FATAL_ERROR "Did you install the Debian dev packages via ´${CMAKE_SOURCE_DIR}/tools/debian_buildenv.sh´ or the equivalent packages using your package manager?")
+  endif()
+endfunction()
+
 # We use here ENV{MIXXX_VCPKG_ROOT} as a workaround to find the overlay folders
 # in manifest mode https://github.com/microsoft/vcpkg/issues/12289.
 # Note: VCPKG_ROOT, the default location for the vcpkg cli tool is later
@@ -59,7 +79,8 @@ if(DEFINED MIXXX_VCPKG_ROOT)
     # and we configure the CMAKE_TOOLCHAIN_FILE and overlays accordingly
     message(STATUS "Using MIXXX_VCPKG_ROOT: $ENV{MIXXX_VCPKG_ROOT}")
   else()
-    message(FATAL_ERROR "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    message(STATUS "MIXXX_VCPKG_ROOT not correct (missing $ENV{MIXXX_VCPKG_ROOT}/overlay/ports)")
+    FATAL_ERROR_MISSING_ENV()
   endif()
 
   if(NOT DEFINED VCPKG_OVERLAY_PORTS)
@@ -108,28 +129,44 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
   endif()
 endif()
 
-option(QT6 "Build with Qt6" OFF)
+include(CMakeDependentOption)
+
+option(QT6 "Build with Qt6" ON)
+cmake_dependent_option(QML "Build with QML" ON "QT6" OFF)
+option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
+
+if(QOPENGL)
+  add_compile_definitions(MIXXX_USE_QOPENGL)
+endif()
+
+if(QML)
+  add_compile_definitions(MIXXX_USE_QML)
+endif()
 
 if(APPLE)
-  if(QT6)
-    # Minimum macOS version supported by Qt 6
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
-    if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
-    endif()
+  # Check if xcode-select is installed
+  execute_process(COMMAND xcode-select -v
+    RESULT_VARIABLE XCODE_SELECT_RESULT
+    OUTPUT_QUIET
+  )
+  if(XCODE_SELECT_RESULT)
+    # xcode-select command failed, meaning it is not installed or not configured properly
+    message(FATAL_ERROR "'xcode-select -v' failed with '${XCODE_SELECT_RESULT}'. You may need to install Xcode and run 'sudo xcode-select --install'.")
+  endif()
+
+  if(VCPKG_TARGET_TRIPLET MATCHES "^arm64-osx")
+    # Minimum macOS version for arm64 Support
+    set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
+    set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target architecture")
+    set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
+    set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
   else()
-    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
-      # Minimum macOS version for arm64 Support
-      set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
-      set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
-      set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "The target system processor")
-      set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Setting this enables CMAKE_CROSSCOMPILE")
+    if(QT6)
+      # Minimum macOS version supported by Qt 6
+      set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     else()
       # Minimum macOS version supported by Qt 5.12
       set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "Minimum macOS version the build will be able to run on")
-      if(NOT VCPKG_TARGET_TRIPLET)
-        set(VCPKG_TARGET_TRIPLET "x64-osx-min1012")
-      endif()
       # Needed for deployment target < 10.14
       add_compile_options(-fno-aligned-allocation)
     endif()
@@ -137,6 +174,7 @@ if(APPLE)
 endif()
 
 project(mixxx VERSION 2.5.0)
+enable_language(C CXX)
 # Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
 set(MIXXX_VERSION_PRERELEASE "alpha") # set to "alpha" "beta" or ""
 
@@ -147,7 +185,6 @@ set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everythi
 set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-include(CMakeDependentOption)
 include(CheckSymbolExists)
 include(CheckIncludeFileCXX)
 include(ExternalProject)
@@ -160,8 +197,9 @@ if(DEFINED _VCPKG_INSTALLED_DIR)
   if(NOT EXISTS "${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
     # Fail early if this part of CMAKE_PREFIX_PATH does not exist
     # else the library lookups below will fail with misleading error messages
-    message(FATAL_ERROR "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
+    message(STATUS "VCPKG_TARGET_TRIPLET dir not found: ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET} "
         "Make sure the VCPKG build environment is installed and contains the build for the selected triplet.")
+    FATAL_ERROR_MISSING_ENV()
   else()
     message(STATUS "Using VCPKG_TARGET_TRIPLET: ${VCPKG_TARGET_TRIPLET}")
   endif()
@@ -400,7 +438,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
     # interfere with debugging
-    if(NOT PROFILING AND NOT CLANG_SANITIZERS)
+    if(NOT PROFILING AND NOT SANITIZERS)
       add_compile_options(-fomit-frame-pointer)
     endif()
 
@@ -506,6 +544,64 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
+if(NOT MSVC)
+  find_program(MOLD_EXECUTABLE mold)
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  if(MOLD_SUPPORT)
+    if(MOLD_EXECUTABLE)
+      message(STATUS "Selecting mold as linker")
+      set(SELECT_MOLD_WITH_FUSE true)
+      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
+      # Earlier versions must use the -B option.
+      if (GNU_GCC)
+        execute_process(
+          COMMAND gcc -dumpfullversion
+          ERROR_QUIET
+          OUTPUT_VARIABLE GCC_VERSION_STRING
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
+          set(SELECT_MOLD_WITH_FUSE false)
+        endif()
+      endif()
+      if (SELECT_MOLD_WITH_FUSE)
+        add_link_options("-fuse-ld=mold")
+      else()
+        add_link_options("-B${MOLD_EXECUTABLE}")
+      endif()
+    else()
+      message(FATAL_ERROR "Could NOT find mold (missing executable)")
+    endif()
+  else()
+    find_program(LLD_EXECUTABLE lld)
+    if(LLD_EXECUTABLE)
+      execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+        ERROR_QUIET
+        OUTPUT_VARIABLE LLD_VERSION_STRING
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+      string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
+      if(LLD_VERSION_MATCH)
+        set(LLD_VERSION ${CMAKE_MATCH_1})
+        message(STATUS "Found lld with version: ${LLD_VERSION}")
+      else()
+        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+      endif()
+    endif()
+    # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
+    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    if(LLD_SUPPORT)
+      if(LLD_EXECUTABLE)
+        message(STATUS "Selecting lld as linker")
+        add_link_options("-fuse-ld=lld")
+      else()
+        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+      endif()
+    endif()
+  endif()
+endif()
+
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -529,9 +625,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/analyzer/plugins/buffering_utils.cpp
   src/analyzer/trackanalysisscheduler.cpp
   src/audio/frame.cpp
-  src/audio/types.cpp
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
+  src/audio/types.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
@@ -542,8 +638,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlindicatortimer.cpp
   src/control/controllinpotmeter.cpp
   src/control/controllogpotmeter.cpp
-  src/control/controlmodel.cpp
-  src/control/controlsortfiltermodel.cpp
   src/control/controlobject.cpp
   src/control/controlobjectscript.cpp
   src/control/controlpotmeter.cpp
@@ -555,12 +649,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerinputmappingtablemodel.cpp
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
-  src/controllers/controllermappingtablemodel.cpp
   src/controllers/controllermappinginfo.cpp
   src/controllers/controllermappinginfoenumerator.cpp
+  src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
-  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -572,16 +665,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
-  src/controllers/scripting/controllerscriptenginebase.cpp
-  src/controllers/scripting/controllerscriptmoduleengine.cpp
-  src/controllers/scripting/colormapper.cpp
-  src/controllers/scripting/colormapperjsproxy.cpp
-  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
-  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
-  src/controllers/scripting/legacy/scriptconnection.cpp
-  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/midi/legacymidicontrollermapping.cpp
   src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
   src/controllers/midi/midicontroller.cpp
@@ -591,7 +677,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/midi/midiutils.cpp
   src/controllers/midi/portmidicontroller.cpp
   src/controllers/midi/portmidienumerator.cpp
+  src/controllers/scripting/colormapper.cpp
+  src/controllers/scripting/colormapperjsproxy.cpp
+  src/controllers/scripting/controllerscriptenginebase.cpp
+  src/controllers/scripting/controllerscriptmoduleengine.cpp
+  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
+  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
+  src/controllers/scripting/legacy/scriptconnection.cpp
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/softtakeover.cpp
+  src/coreservices.cpp
   src/database/mixxxdb.cpp
   src/database/schemamanager.cpp
   src/dialog/dlgabout.cpp
@@ -602,19 +697,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
-  src/effects/effectbuttonparameterslot.cpp
-  src/effects/effectchain.cpp
-  src/effects/effectchainmixmode.cpp
-  src/effects/effectparameter.cpp
-  src/effects/effectknobparameterslot.cpp
-  src/effects/effectparameterslotbase.cpp
-  src/effects/effectslot.cpp
-  src/effects/effectsmanager.cpp
-  src/effects/effectsmessenger.cpp
-  src/effects/visibleeffectslist.cpp
-  src/effects/backends/effectsbackend.cpp
-  src/effects/backends/effectmanifest.cpp
-  src/effects/backends/effectmanifestparameter.cpp
   src/effects/backends/builtin/autopaneffect.cpp
   src/effects/backends/builtin/balanceeffect.cpp
   src/effects/backends/builtin/bessel4lvmixeqeffect.cpp
@@ -622,15 +704,16 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/biquadfullkilleqeffect.cpp
   src/effects/backends/builtin/bitcrushereffect.cpp
   src/effects/backends/builtin/builtinbackend.cpp
+  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/echoeffect.cpp
   src/effects/backends/builtin/filtereffect.cpp
   src/effects/backends/builtin/flangereffect.cpp
+  src/effects/backends/builtin/glitcheffect.cpp
   src/effects/backends/builtin/graphiceqeffect.cpp
   src/effects/backends/builtin/linkwitzriley8eqeffect.cpp
   src/effects/backends/builtin/loudnesscontoureffect.cpp
   src/effects/backends/builtin/metronomeeffect.cpp
   src/effects/backends/builtin/moogladder4filtereffect.cpp
-  src/effects/backends/builtin/distortioneffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
   src/effects/backends/builtin/pitchshifteffect.cpp
@@ -638,17 +721,30 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
+  src/effects/backends/effectmanifest.cpp
+  src/effects/backends/effectmanifestparameter.cpp
+  src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectsbackendmanager.cpp
   src/effects/chains/equalizereffectchain.cpp
   src/effects/chains/outputeffectchain.cpp
   src/effects/chains/pergroupeffectchain.cpp
   src/effects/chains/quickeffectchain.cpp
   src/effects/chains/standardeffectchain.cpp
+  src/effects/effectbuttonparameterslot.cpp
+  src/effects/effectchain.cpp
+  src/effects/effectchainmixmode.cpp
+  src/effects/effectknobparameterslot.cpp
+  src/effects/effectparameter.cpp
+  src/effects/effectparameterslotbase.cpp
+  src/effects/effectslot.cpp
+  src/effects/effectsmanager.cpp
+  src/effects/effectsmessenger.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectchainpresetmanager.cpp
   src/effects/presets/effectparameterpreset.cpp
   src/effects/presets/effectpreset.cpp
   src/effects/presets/effectpresetmanager.cpp
+  src/effects/visibleeffectslist.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderfdkaac.cpp
   src/encoder/encoderfdkaacsettings.cpp
@@ -686,7 +782,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/effects/engineeffectsmanager.cpp
   src/engine/enginebuffer.cpp
   src/engine/enginedelay.cpp
-  src/engine/enginemaster.cpp
+  src/engine/enginemixer.cpp
   src/engine/engineobject.cpp
   src/engine/enginepregain.cpp
   src/engine/enginesidechaincompressor.cpp
@@ -772,6 +868,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/hiddentablemodel.cpp
   src/library/itunes/itunesdao.cpp
   src/library/itunes/itunesfeature.cpp
+  src/library/itunes/itunesimporter.cpp
   src/library/itunes/itunesplaylistmodel.cpp
   src/library/itunes/itunesxmlimporter.cpp
   src/library/library_prefs.cpp
@@ -782,6 +879,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/locationdelegate.cpp
   src/library/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
+  src/library/multilineeditdelegate.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
@@ -792,8 +890,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
   src/library/recording/recordingfeature.cpp
-  src/library/rekordbox/rekordbox_anlz.cpp
-  src/library/rekordbox/rekordbox_pdb.cpp
+  src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
+  src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
   src/library/rekordbox/rekordboxfeature.cpp
   src/library/rhythmbox/rhythmboxfeature.cpp
   src/library/scanner/importfilestask.cpp
@@ -838,8 +936,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixer/previewdeck.cpp
   src/mixer/sampler.cpp
   src/mixer/samplerbank.cpp
-  src/coreservices.cpp
   src/mixxxapplication.cpp
+  src/mixxxmainwindow.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -854,7 +952,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/colorpaletteeditor.cpp
+  src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpaletteeditormodel.cpp
+  src/preferences/colorpalettesettings.cpp
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
@@ -863,8 +964,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefbeatsdlg.ui
   src/preferences/dialog/dlgprefcolors.cpp
   src/preferences/dialog/dlgprefcolorsdlg.ui
-  src/preferences/dialog/dlgprefmixer.cpp
-  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefdeck.cpp
   src/preferences/dialog/dlgprefdeckdlg.ui
   src/preferences/dialog/dlgprefeffects.cpp
@@ -878,6 +977,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgprefmixer.cpp
+  src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -891,9 +992,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
-  src/preferences/colorpaletteeditor.cpp
-  src/preferences/colorpaletteeditormodel.cpp
-  src/preferences/colorpalettesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
@@ -908,6 +1006,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
+  src/skin/skincontrols.cpp
   src/skin/skinloader.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
@@ -948,12 +1047,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/serato/markers.cpp
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
-  src/track/track.cpp
-  src/track/trackinfo.cpp
-  src/track/trackmetadata.cpp
-  src/track/tracknumbers.cpp
-  src/track/trackrecord.cpp
-  src/track/trackref.cpp
   src/track/taglib/trackmetadata_ape.cpp
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp
@@ -961,19 +1054,24 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/taglib/trackmetadata_mp4.cpp
   src/track/taglib/trackmetadata_riff.cpp
   src/track/taglib/trackmetadata_xiph.cpp
+  src/track/track.cpp
+  src/track/trackinfo.cpp
+  src/track/trackmetadata.cpp
+  src/track/tracknumbers.cpp
+  src/track/trackrecord.cpp
+  src/track/trackref.cpp
   src/util/battery/battery.cpp
   src/util/cache.cpp
   src/util/cmdlineargs.cpp
   src/util/color/color.cpp
   src/util/color/colorpalette.cpp
   src/util/color/predefinedcolorpalettes.cpp
+  src/util/colorcomponents.cpp
   src/util/console.cpp
-  src/util/safelywritablefile.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
   src/util/db/dbconnectionpooler.cpp
-  src/util/db/dbid.cpp
   src/util/db/fwdsqlquery.cpp
   src/util/db/fwdsqlqueryselectresult.cpp
   src/util/db/sqlite.cpp
@@ -985,29 +1083,29 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
-  src/util/imagefiledata.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/filename.cpp
+  src/util/imagefiledata.cpp
   src/util/imagefiledata.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
   src/util/logging.cpp
   src/util/mac.cpp
+  src/util/moc_included_test.cpp
   src/util/movinginterquartilemean.cpp
-  src/util/performancetimer.cpp
   src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
   src/util/ringdelaybuffer.cpp
   src/util/rotary.cpp
   src/util/runtimeloggingcategory.cpp
+  src/util/safelywritablefile.cpp
   src/util/sample.cpp
-  src/util/samplebuffer.cpp
   src/util/sandbox.cpp
-  src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/screensavermanager.cpp
+  src/util/semanticversion.cpp
   src/util/stat.cpp
   src/util/statmodel.cpp
   src/util/statsmanager.cpp
@@ -1020,13 +1118,51 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/valuetransformer.cpp
   src/util/versionstore.cpp
   src/util/widgethelper.cpp
-  src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
   src/util/workerthreadscheduler.cpp
   src/util/xml.cpp
+  src/waveform/guitick.cpp
+  src/waveform/renderers/glslwaveformrenderersignal.cpp
+  src/waveform/renderers/glvsynctestrenderer.cpp
+  src/waveform/renderers/glwaveformrenderbackground.cpp
+  src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
+  src/waveform/renderers/glwaveformrendererrgb.cpp
+  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
+  src/waveform/renderers/waveformmark.cpp
+  src/waveform/renderers/waveformmarkrange.cpp
+  src/waveform/renderers/waveformmarkset.cpp
+  src/waveform/renderers/waveformrenderbackground.cpp
+  src/waveform/renderers/waveformrenderbeat.cpp
+  src/waveform/renderers/waveformrendererabstract.cpp
+  src/waveform/renderers/waveformrendererendoftrack.cpp
+  src/waveform/renderers/waveformrendererfilteredsignal.cpp
+  src/waveform/renderers/waveformrendererhsv.cpp
+  src/waveform/renderers/waveformrendererpreroll.cpp
+  src/waveform/renderers/waveformrendererrgb.cpp
+  src/waveform/renderers/waveformrenderersignalbase.cpp
+  src/waveform/renderers/waveformrendermark.cpp
+  src/waveform/renderers/waveformrendermarkrange.cpp
+  src/waveform/renderers/waveformsignalcolors.cpp
+  src/waveform/renderers/waveformwidgetrenderer.cpp
+  src/waveform/sharedglcontext.cpp
   src/waveform/visualplayposition.cpp
+  src/waveform/visualsmanager.cpp
+  src/waveform/vsyncthread.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
+  src/waveform/waveformmarklabel.cpp
+  src/waveform/waveformwidgetfactory.cpp
+  src/waveform/widgets/emptywaveformwidget.cpp
+  src/waveform/widgets/glrgbwaveformwidget.cpp
+  src/waveform/widgets/glsimplewaveformwidget.cpp
+  src/waveform/widgets/glslwaveformwidget.cpp
+  src/waveform/widgets/glvsynctestwidget.cpp
+  src/waveform/widgets/glwaveformwidget.cpp
+  src/waveform/widgets/glwaveformwidgetabstract.cpp
+  src/waveform/widgets/hsvwaveformwidget.cpp
+  src/waveform/widgets/rgbwaveformwidget.cpp
+  src/waveform/widgets/softwarewaveformwidget.cpp
+  src/waveform/widgets/waveformwidgetabstract.cpp
   src/widget/controlwidgetconnection.cpp
   src/widget/findonwebmenufactory.cpp
   src/widget/findonwebmenuservices/findonwebmenudiscogs.cpp
@@ -1073,6 +1209,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
   src/widget/wnumberrate.cpp
+  src/widget/woverview.cpp
+  src/widget/woverviewhsv.cpp
+  src/widget/woverviewlmh.cpp
+  src/widget/woverviewrgb.cpp
   src/widget/wpixmapstore.cpp
   src/widget/wpushbutton.cpp
   src/widget/wraterange.cpp
@@ -1084,6 +1224,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wsizeawarestack.cpp
   src/widget/wskincolor.cpp
   src/widget/wslidercomposed.cpp
+  src/widget/wspinny.cpp
+  src/widget/wspinnybase.cpp
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
@@ -1095,85 +1237,237 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
   src/widget/wvumeter.cpp
+  src/widget/wvumeterbase.cpp
+  src/widget/wvumeterlegacy.cpp
+  src/widget/wwaveformviewer.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
-if(QT6)
+set(MIXXX_COMMON_PRECOMPILED_HEADER
+  src/util/assert.h
+)
+target_precompile_headers(mixxx-lib PUBLIC
+  src/audio/frame.h
+  src/audio/signalinfo.h
+  src/audio/streaminfo.h
+  src/audio/types.h
+  src/control/control.h
+  src/control/controlaudiotaperpot.h
+  src/control/controlbehavior.h
+  src/control/controlcompressingproxy.h
+  src/control/controleffectknob.h
+  src/control/controlencoder.h
+  src/control/controlindicator.h
+  src/control/controlindicatortimer.h
+  src/control/controllinpotmeter.h
+  src/control/controllogpotmeter.h
+  src/control/controlmodel.h
+  src/control/controlobject.h
+  src/control/controlobjectscript.h
+  src/control/controlpotmeter.h
+  src/control/controlproxy.h
+  src/control/controlpushbutton.h
+  src/control/controlsortfiltermodel.h
+  src/control/controlttrotary.h
+  src/control/controlvalue.h
+  src/control/convert.h
+  src/control/pollingcontrolproxy.h
+  src/controllers/defs_controllers.h
+  src/defs_urls.h
+  src/effects/defs.h
+  src/engine/channelhandle.h
+  src/engine/engine.h
+  src/errordialoghandler.h
+  src/track/track.h
+  src/track/track_decl.h
+  src/track/trackid.h
+  src/track/trackinfo.h
+  src/track/trackiterator.h
+  src/track/trackmetadata.h
+  src/track/tracknumbers.h
+  src/track/trackrecord.h
+  src/track/trackref.h
+  src/util/alphabetafilter.h
+  src/util/battery/battery.h
+  src/util/cache.h
+  src/util/circularbuffer.h
+  src/util/class.h
+  src/util/cmdlineargs.h
+  src/util/color/color.h
+  src/util/color/colorpalette.h
+  src/util/color/predefinedcolorpalettes.h
+  src/util/color/rgbcolor.h
+  src/util/colorcomponents.h
+  src/util/compatibility/qatomic.h
+  src/util/compatibility/qbytearray.h
+  src/util/compatibility/qhash.h
+  src/util/compatibility/qmutex.h
+  src/util/console.h
+  src/util/counter.h
+  src/util/datetime.h
+  src/util/db/dbconnection.h
+  src/util/db/dbconnectionpool.h
+  src/util/db/dbconnectionpooled.h
+  src/util/db/dbconnectionpooler.h
+  src/util/db/dbentity.h
+  src/util/db/dbfieldindex.h
+  src/util/db/dbid.h
+  src/util/db/dbnamedentity.h
+  src/util/db/fwdsqlquery.h
+  src/util/db/fwdsqlqueryselectresult.h
+  src/util/db/sqlite.h
+  src/util/db/sqllikewildcards.h
+  src/util/db/sqlqueryfinisher.h
+  src/util/db/sqlstorage.h
+  src/util/db/sqlstringformatter.h
+  src/util/db/sqlsubselectmode.h
+  src/util/db/sqltransaction.h
+  src/util/debug.h
+  src/util/defs.h
+  src/util/denormalsarezero.h
+  src/util/desktophelper.h
+  src/util/dnd.h
+  src/util/duration.h
+  src/util/event.h
+  src/util/experiment.h
+  src/util/fifo.h
+  src/util/file.h
+  src/util/fileaccess.h
+  src/util/fileinfo.h
+  src/util/filename.h
+  src/util/font.h
+  src/util/fpclassify.h
+  src/util/gitinfostore.h
+  src/util/imagefiledata.h
+  src/util/imageutils.h
+  src/util/indexrange.h
+  src/util/itemiterator.h
+  src/util/lcs.h
+  src/util/logger.h
+  src/util/logging.h
+  src/util/mac.h
+  src/util/macros.h
+  src/util/math.h
+  src/util/memory.h
+  src/util/messagepipe.h
+  src/util/movinginterquartilemean.h
+  src/util/mutex.h
+  src/util/optional.h
+  src/util/painterscope.h
+  src/util/parented_ptr.h
+  src/util/path.h
+  src/util/performancetimer.h
+  src/util/platform.h
+  src/util/qt.h
+  src/util/quuid.h
+  src/util/rampingvalue.h
+  src/util/rangelist.h
+  src/util/readaheadsamplebuffer.h
+  src/util/reference.h
+  src/util/regex.h
+  src/util/rescaler.h
+  src/util/ringdelaybuffer.h
+  src/util/rotary.h
+  src/util/runtimeloggingcategory.h
+  src/util/safelywritablefile.h
+  src/util/sample.h
+  src/util/sample_autogen.h
+  src/util/samplebuffer.h
+  src/util/sandbox.h
+  src/util/scopedoverridecursor.h
+  src/util/screensaver.h
+  src/util/screensavermanager.h
+  src/util/semanticversion.h
+  src/util/singleton.h
+  src/util/span.h
+  src/util/stat.h
+  src/util/statmodel.h
+  src/util/statsmanager.h
+  src/util/string.h
+  src/util/tapfilter.h
+  src/util/task.h
+  src/util/taskmonitor.h
+  src/util/thread_affinity.h
+  src/util/thread_annotations.h
+  src/util/threadcputimer.h
+  src/util/time.h
+  src/util/timer.h
+  src/util/trace.h
+  src/util/translations.h
+  src/util/types.h
+  src/util/unique_ptr_vector.h
+  src/util/valuetransformer.h
+  src/util/versionstore.h
+  src/util/widgethelper.h
+  src/util/workerthread.h
+  src/util/workerthreadscheduler.h
+  src/util/xml.h
+  ${MIXXX_COMMON_PRECOMPILED_HEADER}
+)
+if (NOT QML)
   target_sources(mixxx-lib PRIVATE
-    src/qml/asyncimageprovider.cpp
-    src/qml/qmlapplication.cpp
-    src/qml/qmlcontrolproxy.cpp
-    src/qml/qmlconfigproxy.cpp
-    src/qml/qmldlgpreferencesproxy.cpp
-    src/qml/qmleffectmanifestparametersmodel.cpp
-    src/qml/qmleffectsmanagerproxy.cpp
-    src/qml/qmleffectslotproxy.cpp
-    src/qml/qmllibraryproxy.cpp
-    src/qml/qmllibrarytracklistmodel.cpp
-    src/qml/qmlplayermanagerproxy.cpp
-    src/qml/qmlplayerproxy.cpp
-    src/qml/qmlvisibleeffectsmodel.cpp
-    src/qml/qmlwaveformoverview.cpp
+    # The following sources need to be in the QML target in order to get QML_ELEMENT properly interpreted.
+    # However, if we build Mixxx without QML support, these are still required, so it gets appended to the
+    # main target
+    src/control/controlmodel.cpp
+    src/control/controlsortfiltermodel.cpp
+  )
+endif()
+if(QOPENGL)
+  target_sources(mixxx-lib PRIVATE
+    src/shaders/endoftrackshader.cpp
+    src/shaders/patternshader.cpp
+    src/shaders/rgbashader.cpp
+    src/shaders/rgbshader.cpp
+    src/shaders/shader.cpp
+    src/shaders/textureshader.cpp
+    src/shaders/unicolorshader.cpp
+    src/shaders/vinylqualityshader.cpp
+    src/util/texture.cpp
+    src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
+    src/waveform/renderers/allshader/waveformrenderbackground.cpp
+    src/waveform/renderers/allshader/waveformrenderbeat.cpp
+    src/waveform/renderers/allshader/waveformrenderer.cpp
+    src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+    src/waveform/renderers/allshader/waveformrendererfiltered.cpp
+    src/waveform/renderers/allshader/waveformrendererhsv.cpp
+    src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
+    src/waveform/renderers/allshader/waveformrendererpreroll.cpp
+    src/waveform/renderers/allshader/waveformrendererrgb.cpp
+    src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
+    src/waveform/renderers/allshader/waveformrenderersimple.cpp
+    src/waveform/renderers/allshader/waveformrendermark.cpp
+    src/waveform/renderers/allshader/waveformrendermarkrange.cpp
+    src/waveform/widgets/allshader/filteredwaveformwidget.cpp
+    src/waveform/widgets/allshader/hsvwaveformwidget.cpp
+    src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
+    src/waveform/widgets/allshader/rgbwaveformwidget.cpp
+    src/waveform/widgets/allshader/simplewaveformwidget.cpp
+    src/waveform/widgets/allshader/waveformwidget.cpp
+    src/widget/openglwindow.cpp
+    src/widget/tooltipqopengl.cpp
+    src/widget/wglwidgetqopengl.cpp
+    src/widget/winitialglwidget.cpp
+    src/widget/wspinnyglsl.cpp
+    src/widget/wvumeterglsl.cpp
   )
 else()
   target_sources(mixxx-lib PRIVATE
-    src/mixxxmainwindow.cpp
-    src/waveform/guitick.cpp
-    src/waveform/renderers/glslwaveformrenderersignal.cpp
-    src/waveform/renderers/glvsynctestrenderer.cpp
-    src/waveform/renderers/glwaveformrenderbackground.cpp
-    src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
-    src/waveform/renderers/glwaveformrendererrgb.cpp
-    src/waveform/renderers/glwaveformrenderersimplesignal.cpp
     src/waveform/renderers/qtvsynctestrenderer.cpp
     src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
     src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
-    src/waveform/renderers/waveformmark.cpp
-    src/waveform/renderers/waveformmarkrange.cpp
-    src/waveform/renderers/waveformmarkset.cpp
-    src/waveform/renderers/waveformrenderbackground.cpp
-    src/waveform/renderers/waveformrenderbeat.cpp
-    src/waveform/renderers/waveformrendererabstract.cpp
-    src/waveform/renderers/waveformrendererendoftrack.cpp
-    src/waveform/renderers/waveformrendererfilteredsignal.cpp
-    src/waveform/renderers/waveformrendererhsv.cpp
-    src/waveform/renderers/waveformrendererpreroll.cpp
-    src/waveform/renderers/waveformrendererrgb.cpp
-    src/waveform/renderers/waveformrenderersignalbase.cpp
-    src/waveform/renderers/waveformrendermark.cpp
-    src/waveform/renderers/waveformrendermarkrange.cpp
-    src/waveform/renderers/waveformsignalcolors.cpp
-    src/waveform/renderers/waveformwidgetrenderer.cpp
-    src/waveform/sharedglcontext.cpp
-    src/waveform/visualsmanager.cpp
-    src/waveform/vsyncthread.cpp
-    src/waveform/waveformmarklabel.cpp
-    src/waveform/waveformwidgetfactory.cpp
-    src/waveform/widgets/emptywaveformwidget.cpp
-    src/waveform/widgets/glrgbwaveformwidget.cpp
-    src/waveform/widgets/glsimplewaveformwidget.cpp
-    src/waveform/widgets/glslwaveformwidget.cpp
-    src/waveform/widgets/glvsynctestwidget.cpp
-    src/waveform/widgets/glwaveformwidget.cpp
-    src/waveform/widgets/hsvwaveformwidget.cpp
     src/waveform/widgets/qthsvwaveformwidget.cpp
     src/waveform/widgets/qtrgbwaveformwidget.cpp
     src/waveform/widgets/qtsimplewaveformwidget.cpp
     src/waveform/widgets/qtvsynctestwidget.cpp
     src/waveform/widgets/qtwaveformwidget.cpp
-    src/waveform/widgets/rgbwaveformwidget.cpp
-    src/waveform/widgets/softwarewaveformwidget.cpp
-    src/waveform/widgets/waveformwidgetabstract.cpp
-    src/widget/woverview.cpp
-    src/widget/woverviewhsv.cpp
-    src/widget/woverviewlmh.cpp
-    src/widget/woverviewrgb.cpp
-    src/widget/wspinny.cpp
-      src/widget/wvumetergl.cpp
-    src/widget/wwaveformviewer.cpp
+    src/widget/wglwidgetqglwidget.cpp
   )
 endif()
+
+set_source_files_properties(src/util/moc_included_test.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
+
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
 if(UNIX AND NOT APPLE)
@@ -1182,11 +1476,22 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(APPLE)
+  enable_language(OBJC OBJCXX)
+
   # Enable Automatic Reference Counting (ARC) when compiling Objective-C(++).
   # This frees us from having to worry about memory management when interfacing
   # with Apple frameworks (e.g. as in itunesmacosimporter.mm) since the compiler
   # will automatically insert retain/release calls on Objective-C objects.
   target_compile_options(mixxx-lib PUBLIC -fobjc-arc)
+
+  # Disable deprecation warnings for OpenGL on macOS as we won't switch to
+  # Apple's Metal API in the foreseeable future.
+  target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
+
+  target_sources(mixxx-lib PRIVATE
+    src/util/darkappearance.mm
+    src/util/macosversion.mm
+  )
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
   if(MACOS_ITUNES_LIBRARY)
@@ -1200,40 +1505,30 @@ endif()
 
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  target_compile_definitions(mixxx-lib PRIVATE QT_QML_DEBUG)
+  target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
   message(STATUS "Enabling QML Debugging! This poses a security risk as Mixxx will open a TCP port for debugging")
 endif()
 
 # Disable warnings in generated source files
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
-  APPEND_STRING
-  PROPERTY CXX_CLANG_TIDY ""
-)
-set_property(
-  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
-  APPEND_STRING
-  PROPERTY CXX_CLANG_TIDY ""
-)
 if(GNU_GCC OR LLVM_CLANG)
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter
   )
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
   )
 elseif(MSVC)
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS /w
   )
   set_property(
-    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS /w
   )
@@ -1244,6 +1539,7 @@ if(MSVC)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
+    # Warning Level 3 (production quality)
     target_compile_options(mixxx-lib PUBLIC /W3)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
@@ -1347,11 +1643,8 @@ if(WIN32)
   # max-and-std-cpp-min-not-available-in-visual-c-2010
   target_compile_definitions(mixxx-lib PUBLIC NOMINMAX UNICODE)
 
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    target_compile_definitions(mixxx-lib PUBLIC WIN32)
-  else()
-    target_compile_definitions(mixxx-lib PUBLIC WIN64)
-  endif()
+  # shoutidjc/shout.h checks for WIN32 to see if we are on Windows.
+  target_compile_definitions(mixxx-lib PUBLIC WIN32)
 
   target_link_libraries(mixxx-lib PRIVATE shell32)
 
@@ -1384,9 +1677,7 @@ if(QT6)
 else()
   add_executable(mixxx WIN32 src/main.cpp)
 endif()
-# ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
-# src/qmldlgpreferencesproxy.h, which is #included from src/qmlapplication.h.
-target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/mixxx-lib_autogen/include")
+
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PRIVATE mixxx-lib mixxx-gitinfostore)
 
@@ -1660,34 +1951,23 @@ if(MSVC)
   )
 endif()
 
-if(WIN32)
-  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
-  # Qt does not link these and vcpkg does not build them as a dependency of Qt,
-  # so copy them manually.
-  find_file(EGL_DLL libEGL.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-  find_file(GLESv2_DLL libGLESv2.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-  install(FILES ${EGL_DLL} ${GLESv2_DLL} DESTINATION "${MIXXX_INSTALL_BINDIR}")
+if(WIN32 AND NOT QT6)
+  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is on the ignore list.
+  # It does not work with Debug, because the debug version is compiled without the a d suffix
+  find_package(unofficial-angle CONFIG REQUIRED)
+  install(IMPORTED_RUNTIME_ARTIFACTS
+    unofficial::angle::libEGL
+    unofficial::angle::libGLESv2
+    CONFIGURATIONS RelWithDebInfo Release
+    DESTINATION "${MIXXX_INSTALL_BINDIR}"
+    RUNTIME_DEPENDENCY_SET mixxx
+    COMPONENT applocal)
+  set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
 
 #
 # Tests
 #
-
-# CMake + googletest: https://crascit.com/2015/07/25/cmake-gtest/
-
-# Prevent GoogleTest from overriding our compiler/linker options
-# when building with Visual Studio
-set(gtest_force_shared_crt ON CACHE BOOL "Pass Mixxx compiler/linker options to GoogleTest" FORCE)
-
-# Prevent installation of GoogleTest libraries
-set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
-
-# Add googletest directly to our build. This adds the following targets:
-# gtest, gtest_main, gmock and gmock_main
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
-)
 
 add_executable(mixxx-test
   src/test/analyserwaveformtest.cpp
@@ -1704,6 +1984,7 @@ add_executable(mixxx-test
   src/test/broadcastsettings_test.cpp
   src/test/cache_test.cpp
   src/test/channelhandle_test.cpp
+  src/test/chrono_clock_resolution_test.cpp
   src/test/colorconfig_test.cpp
   src/test/colormapperjsproxy_test.cpp
   src/test/colorpalette_test.cpp
@@ -1711,7 +1992,9 @@ add_executable(mixxx-test
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
+  src/test/controlobjectaliastest.cpp
   src/test/controlobjectscripttest.cpp
+  src/test/controlpotmetertest.cpp
   src/test/coreservicestest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
@@ -1729,7 +2012,7 @@ add_executable(mixxx-test
   src/test/enginebuffertest.cpp
   src/test/engineeffectsdelay_test.cpp
   src/test/enginefilterbiquadtest.cpp
-  src/test/enginemastertest.cpp
+  src/test/enginemixertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/fileinfo_test.cpp
@@ -1797,25 +2080,15 @@ add_executable(mixxx-test
   src/test/wbatterytest.cpp
   src/test/wpushbutton_test.cpp
   src/test/wwidgetstack_test.cpp
+  src/util/moc_included_test.cpp
 )
+target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
+find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore gtest gmock)
+target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
 
-#
-# Benchmark tests
-#
-
-# Disable testing of google/benchmark
-set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
-
-# Prevent installation of google/benchmark artifacts
-set(BENCHMARK_ENABLE_INSTALL OFF CACHE BOOL "Disable installation of google/benchmark" FORCE)
-
-add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/benchmark"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/benchmark"
-)
-target_link_libraries(mixxx-test PRIVATE benchmark)
+find_package(benchmark)
+target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
 
 # Test Suite
 include(CTest)
@@ -1861,11 +2134,15 @@ if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.
     STATUS MANUAL_PDF_DOWNLOAD
     TLS_VERIFY ON
   )
-  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
-    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
-      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
-      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
-      "manual.")
+  list(GET MANUAL_PDF_DOWNLOAD 0 MANUAL_PDF_DOWNLOAD_ERROR)
+  if(NOT MANUAL_PDF_DOWNLOAD_ERROR EQUAL 0)
+    list(GET MANUAL_PDF_DOWNLOAD 1 MANUAL_PDF_DOWNLOAD_MESSGAE)
+    message(FATAL_ERROR "Manual PDF download failed with: "
+        "${MANUAL_PDF_DOWNLOAD_MESSGAE} Code: ${MANUAL_PDF_DOWNLOAD_ERROR}. "
+        "Either download it yourself and move it to "
+        "'${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+        "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+        "manual.")
   endif()
   file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
 endif()
@@ -1944,8 +2221,13 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+find_package(Chromaprint)
+# This is the first package form the environment, if this fails give hints how to install the environment
+if(NOT Chromaprint_FOUND)
+  FATAL_ERROR_MISSING_ENV()
+else()
+  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
+endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
@@ -1980,19 +2262,20 @@ endif()
 # Denon Engine Prime library export support (using libdjinterop)
 option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  set(LIBDJINTEROP_VERSION 0.16.1)
-  # Look for an existing installation of libdjinterop and use that if available.
-  # Otherwise, download and build from GitHub.
-  # Note: Version 0.17.0 is not yet compatible
-  find_package(DjInterop ${LIBDJINTEROP_VERSION} EXACT)
+  # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
+  # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
+  set(LIBDJINTEROP_VERSION 0.20.0)
+  # Look whether an existing installation of libdjinterop matches the required version.
+  find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
+  if(NOT DjInterop_FOUND)
+    find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT MODULE)
+  endif()
+
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
-    message(STATUS "Using existing system installation of libdjinterop")
-    target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
+    message(STATUS "STATIC link existing system installation of libdjinterop")
     target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
   else()
-    # Fetch djinterop sources from GitHub and build them statically.
-
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
     if (APPLE AND NOT SQLite3_IS_STATIC)
@@ -2014,8 +2297,10 @@ if(ENGINEPRIME)
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
     ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
-      URL_HASH SHA256=25461f5cc3ea80850d8400872f4fef08ad3730d9f2051719cccf2460f5ac15ad
+      URL
+        "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
+        "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
+      URL_HASH SHA256=0cf85b30629b59277437e2be7e8073c22797e8749920ba2dd5e72c21e14d68db
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2028,7 +2313,13 @@ if(ENGINEPRIME)
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR:PATH=lib
         -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
+      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target DjInterop
       BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
     )
@@ -2079,11 +2370,17 @@ endif()
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/fidlib)
 target_link_libraries(mixxx-lib PRIVATE fidlib)
 
+# Create a list from CMAKE_PREFIX_PATH with an alternate separator
+# This is required to forward CMAKE_PREFIX_PATH in ExternalProject_Add()
+# using the LIST_SEPARATOR option
+string(REPLACE ";" "|" CMAKE_PREFIX_PATH_ALT_SEP "${CMAKE_PREFIX_PATH}")
+
 # KeyFinder
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
-  set(LIBKEYFINDER_VERSION 2.2.6)
-  find_package(KeyFinder ${LIBKEYFINDER_VERSION})
+  set(MIN_LIBKEYFINDER_VERSION 2.2.4)
+  set(FETCH_LIBKEYFINDER_VERSION 2.2.6)
+  find_package(KeyFinder ${MIN_LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
   else()
@@ -2100,10 +2397,10 @@ if(KEYFINDER)
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${LIBKEYFINDER_VERSION}.zip"
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${FETCH_LIBKEYFINDER_VERSION}.zip"
       URL_HASH SHA256=f15deb56c2dcaa6b10dc3717a7d2f42a8407c04ad550f694de42118be998d256
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
-      DOWNLOAD_NAME "libkeyfinder-${LIBKEYFINDER_VERSION}.zip"
+      DOWNLOAD_NAME "libkeyfinder-${FETCH_LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       LIST_SEPARATOR "|"
       CMAKE_ARGS
@@ -2113,10 +2410,16 @@ if(KEYFINDER)
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
+        -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMEN_TARGET}
+        -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+        -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
+        -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
+      LIST_SEPARATOR |
     )
 
     # This is a bit of a hack to make sure that the include directory actually
@@ -2159,11 +2462,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
 endif()
 target_link_libraries(mixxx-lib PRIVATE FpClassify)
 
-# googletest
-# Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
-# in production code
-target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
-
 # LAME
 find_package(mp3lame REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE mp3lame::mp3lame)
@@ -2184,7 +2482,7 @@ add_library(MP3GuessEnc STATIC EXCLUDE_FROM_ALL
   lib/mp3guessenc-0.27.4/bit_utils.c
 )
 if(WIN32)
-  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__)
+  target_compile_definitions(MP3GuessEnc PRIVATE __WINDOWS__ _CRT_SECURE_NO_WARNINGS)
 endif()
 target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
@@ -2204,7 +2502,7 @@ target_link_libraries(mixxx-lib PRIVATE Vorbis::vorbis Vorbis::vorbisenc Vorbis:
 
 # PortAudio
 find_package(PortAudio REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE PortAudio::PortAudio)
+target_link_libraries(mixxx-lib PUBLIC PortAudio::PortAudio)
 
 # PortAudio Ring Buffer
 add_library(PortAudioRingBuffer STATIC EXCLUDE_FROM_ALL
@@ -2220,21 +2518,15 @@ target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
 
 # Protobuf
 add_subdirectory(src/proto)
-target_link_libraries(mixxx-lib PRIVATE mixxx-proto)
+target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
-if(QT6)
-  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
-  set(QT6_NEW_COMPONENTS "SvgWidgets;Core5Compat")
-else()
-  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
-endif()
-find_package(Qt${QT_VERSION_MAJOR}
-  COMPONENTS
+set(
+  QT_COMPONENTS
     Concurrent
     Core
     Gui
@@ -2248,32 +2540,48 @@ find_package(Qt${QT_VERSION_MAJOR}
     Test
     Widgets
     Xml
-    ${QT6_NEW_COMPONENTS}
+)
+set(QT_EXTRA_COMPONENTS "")
+if(QT6)
+  find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
+  list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
+  list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
+else()
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
+endif()
+if(QML)
+  list(APPEND QT_EXTRA_COMPONENTS "Quick")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
+endif()
+find_package(Qt${QT_VERSION_MAJOR}
+  COMPONENTS
+    ${QT_COMPONENTS}
+    ${QT_EXTRA_COMPONENTS}
   REQUIRED
 )
 # PUBLIC is required below to find included headers
-target_link_libraries(mixxx-lib PUBLIC
-  Qt${QT_VERSION_MAJOR}::Concurrent
-  Qt${QT_VERSION_MAJOR}::Core
-  Qt${QT_VERSION_MAJOR}::Gui
-  Qt${QT_VERSION_MAJOR}::Network
-  Qt${QT_VERSION_MAJOR}::OpenGL
-  Qt${QT_VERSION_MAJOR}::PrintSupport
-  Qt${QT_VERSION_MAJOR}::Qml
-  Qt${QT_VERSION_MAJOR}::QuickWidgets
-  Qt${QT_VERSION_MAJOR}::Sql
-  Qt${QT_VERSION_MAJOR}::Svg
-  Qt${QT_VERSION_MAJOR}::Test
-  Qt${QT_VERSION_MAJOR}::Widgets
-  Qt${QT_VERSION_MAJOR}::Xml)
-if(QT6)
-  foreach(COMPONENT ${QT6_NEW_COMPONENTS})
-    target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
+foreach(COMPONENT ${QT_COMPONENTS})
+  target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+endforeach()
+if(QT_EXTRA_COMPONENTS)
+  foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
+    target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
   endforeach()
+endif()
 
+if(QML)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
-  set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
-  qt_add_qml_module(mixxx-lib
+  qt_add_library(mixxx-qml-lib STATIC)
+  foreach(COMPONENT ${QT_COMPONENTS})
+    target_link_libraries(mixxx-qml-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+  endforeach()
+  if(QT_EXTRA_COMPONENTS)
+    foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
+      target_link_libraries(mixxx-qml-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
+    endforeach()
+  endif()
+  set_target_properties(mixxx-qml-lib PROPERTIES AUTOMOC ON)
+  qt_add_qml_module(mixxx-qml-lib
     URI Mixxx
     VERSION 1.0
     RESOURCE_PREFIX /mixxx.org/imports
@@ -2281,27 +2589,24 @@ if(QT6)
     QML_FILES
       res/qml/Mixxx/MathUtils.mjs
       res/qml/Mixxx/PlayerDropArea.qml
-    NO_GENERATE_QMLDIR
   )
-
-  # Generation of the `qmldir` file has been disabled (via `NO_GENERATE_QMLDIR`
-  # above) due to QTBUG-100326, which breaks JavaScript module imports:
-  # https://bugreports.qt.io/browse/QTBUG-100326
-  # Instead, a handwritten `qmldir` file that works around the issue needs to
-  # be added to the resources here.
-  set_source_files_properties("res/qml/Mixxx/qmldir" PROPERTIES QT_RESOURCE_ALIAS "qmldir")
-  qt_add_resources(mixxx-libplugin qmldir
-    FILES "res/qml/Mixxx/qmldir"
-    PREFIX "/mixxx.org/imports/Mixxx"
-  )
-  # to make also qmllint happy
-  configure_file(res/qml/Mixxx/qmldir qml/Mixxx/qmldir COPYONLY)
+  target_link_libraries(mixxx-lib PRIVATE mixxx-qml-lib)
 
   # FIXME: Currently we need to add these include directories due to
   # QTBUG-87221. We should figure out a better way to fix this.
   # See: https://bugreports.qt.io/browse/QTBUG-87221
-  target_include_directories(mixxx-lib PRIVATE src/control src/qml)
-  target_link_libraries(mixxx-lib PRIVATE mixxx-libplugin)
+  target_include_directories(mixxx-qml-lib PRIVATE src/control src/qml)
+  target_include_directories(mixxx-qml-lib PUBLIC src/ ${CMAKE_BINARY_DIR}/src)
+  target_include_directories(mixxx-qml-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include lib/portaudio)
+
+  target_link_libraries(mixxx-qml-lib PUBLIC mixxx-proto)
+  target_link_libraries(mixxx-qml-libplugin PUBLIC mixxx-proto)
+
+  target_precompile_headers(mixxx-qml-lib PUBLIC
+    ${MIXXX_COMMON_PRECOMPILED_HEADER}
+  )
+
+  target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-libplugin)
 
   qt_add_library(mixxx-qml-mixxxcontrols STATIC)
   set_target_properties(mixxx-qml-mixxxcontrols PROPERTIES AUTOMOC ON)
@@ -2318,7 +2623,27 @@ if(QT6)
       res/qml/Mixxx/Controls/WaveformOverviewMarker.qml
       res/qml/Mixxx/Controls/WaveformOverview.qml
   )
-  target_link_libraries(mixxx-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
+  target_link_libraries(mixxx-qml-lib PRIVATE mixxx-qml-mixxxcontrolsplugin)
+
+  target_sources(mixxx-qml-lib PRIVATE
+    src/qml/asyncimageprovider.cpp
+    src/qml/qmlapplication.cpp
+    src/qml/qmlcontrolproxy.cpp
+    src/qml/qmlconfigproxy.cpp
+    src/qml/qmldlgpreferencesproxy.cpp
+    src/qml/qmleffectmanifestparametersmodel.cpp
+    src/qml/qmleffectsmanagerproxy.cpp
+    src/qml/qmleffectslotproxy.cpp
+    src/qml/qmllibraryproxy.cpp
+    src/qml/qmllibrarytracklistmodel.cpp
+    src/qml/qmlplayermanagerproxy.cpp
+    src/qml/qmlplayerproxy.cpp
+    src/qml/qmlvisibleeffectsmodel.cpp
+    src/qml/qmlwaveformoverview.cpp
+    # The following sources need to be in this target to get QML_ELEMENT properly interpreted
+    src/control/controlmodel.cpp
+    src/control/controlsortfiltermodel.cpp
+  )
 
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
@@ -2363,12 +2688,70 @@ if(Qt_IS_STATIC)
       Qt${QT_VERSION_MAJOR}::QMacStylePlugin
     )
   endif()
+else()
+  if(QT6 AND (WIN32 OR APPLE))
+    # Qt6 does not automatically install plugins like in Qt 5
 
+    find_package(libjpeg-turbo CONFIG REQUIRED)
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      # QJpegPlugin dependency
+      libjpeg-turbo::jpeg
+      DESTINATION "${MIXXX_INSTALL_DATADIR}"
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      # platform plugins
+      Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      Qt${QT_VERSION_MAJOR}::QGifPlugin
+      Qt${QT_VERSION_MAJOR}::QICOPlugin
+      Qt${QT_VERSION_MAJOR}::QJpegPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/imageformats"
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
+
+    install(IMPORTED_RUNTIME_ARTIFACTS
+      Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
+      DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
+      RUNTIME_DEPENDENCY_SET mixxx
+      COMPONENT applocal)
+
+    if(WIN32)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+    endif()
+    if(APPLE)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+      install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QMacStylePlugin
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
+        RUNTIME_DEPENDENCY_SET mixxx
+        COMPONENT applocal)
+    endif()
+
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
+  endif()
 endif()
 
-
 if(APPLE)
-  if(Qt_IS_STATIC)
+  if(Qt_IS_STATIC OR QT6)
     target_link_libraries(mixxx-lib PRIVATE
         "-weak_framework Accelerate"
         "-weak_framework AppKit"
@@ -2397,14 +2780,14 @@ elseif(UNIX AND NOT APPLE)
   else()
     find_package(X11 REQUIRED)
     find_package(Qt5 COMPONENTS X11Extras REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE Qt5::X11Extras)
+    target_link_libraries(mixxx-lib PUBLIC Qt5::X11Extras)
   endif()
   if(${X11_FOUND})
     target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
     target_link_libraries(mixxx-lib PRIVATE "${X11_LIBRARIES}")
   endif()
   find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE
+  target_link_libraries(mixxx-lib PUBLIC
     Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
@@ -2472,11 +2855,15 @@ endif()
 if(APPLE OR WIN32)
   # qt_de.qm is just one arbitrary file in the directory that needs to be located;
   # there is no particular reason to look for this file versus any other one in the directory.
-  find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  if(QT6)
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt6_DIR}/../../translations/Qt6" REQUIRED NO_DEFAULT_PATH)
+  else()
+    find_file(QT_TRANSLATION_FILE qt_de.qm PATHS "${Qt5_DIR}/../../../translations" "${Qt5_DIR}/../../qt5/translations" REQUIRED NO_DEFAULT_PATH)
+  endif()
   get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
   install(
-    DIRECTORY "${QT_TRANSLATIONS}"
-    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    DIRECTORY "${QT_TRANSLATIONS}/"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}/translations"
     # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     FILES_MATCHING REGEX
@@ -2630,26 +3017,26 @@ if(CLANG_COLORDIAG)
 endif()
 
 # Clang Sanitizers
-set(CLANG_SANITIZERS "")
-option(CLANG_ASAN "Clang Address Sanitizer" OFF)
-if(CLANG_ASAN)
-  list(APPEND CLANG_SANITIZERS "address")
+set(SANITIZERS "")
+option(SANITIZE_ADDRESS "Address Sanitizer" OFF)
+if(SANITIZE_ADDRESS)
+  list(APPEND SANITIZERS "address")
 endif()
-option(CLANG_UBSAN "Clang Undefined Behaviour Sanitizer" OFF)
-if(CLANG_UBSAN)
-  list(APPEND CLANG_SANITIZERS "undefined")
+option(SANITIZE_UNDEFINED "Clang Undefined Behaviour Sanitizer" OFF)
+if(SANITIZE_UNDEFINED)
+  list(APPEND SANITIZERS "undefined")
 endif()
-option(CLANG_TSAN "Clang Thread Sanitizer" OFF)
-if(CLANG_TSAN)
-  list(APPEND CLANG_SANITIZERS "thread")
+option(SANITIZE_THREAD "Clang Thread Sanitizer" OFF)
+if(SANITIZE_THREAD)
+  list(APPEND SANITIZERS "thread")
 endif()
-if(NOT CLANG_SANITIZERS STREQUAL "")
-  if(NOT LLVM_CLANG)
-    message(FATAL_ERROR "Clang Sanitizers are only available when using Clang.")
+if(NOT SANITIZERS STREQUAL "")
+  if(NOT (LLVM_CLANG OR GNU_GCC))
+    message(FATAL_ERROR "Sanitizers are only available on Clang or GCC")
   endif()
-  list(JOIN CLANG_SANITIZERS "," CLANG_SANITZERS_JOINED)
-  target_compile_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
-  target_link_options(mixxx-lib PUBLIC -fsanitize=${CLANG_SANITZERS_JOINED})
+  list(JOIN SANITIZERS "," SANITZERS_JOINED)
+  target_compile_options(mixxx-lib PUBLIC -fsanitize=${SANITZERS_JOINED})
+  target_link_options(mixxx-lib PUBLIC -fsanitize=${SANITZERS_JOINED})
 endif()
 
 # CoreAudio MP3/AAC Decoder
@@ -2663,7 +3050,12 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
+  set_property(
+    SOURCE lib/apple/CAStreamBasicDescription.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS -Wno-deprecated-anon-enum-enum-conversion
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
 
@@ -2682,9 +3074,9 @@ if(FAAD)
     src/sources/soundsourcem4a.cpp
     src/sources/libfaadloader.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __FAAD__)
+  target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
-    target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
+    target_compile_definitions(mixxx-lib PUBLIC __MP4V2__)
     target_link_libraries(mixxx-lib PRIVATE MP4v2::MP4v2)
   else()
     target_link_libraries(mixxx-lib PRIVATE MP4::MP4)
@@ -2820,6 +3212,9 @@ if(BROADCAST)
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
     target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    if(WIN32)
+      target_compile_definitions(shout_mixxx PRIVATE __WINDOWS__ _CRT_NONSTDC_NO_WARNINGS)
+    endif()
     target_link_libraries(mixxx-lib PRIVATE shout_mixxx)
   else()
     target_link_libraries(mixxx-lib PRIVATE Shoutidjc::Shoutidjc)
@@ -2836,6 +3231,9 @@ if(BROADCAST)
     src/encoder/encoderbroadcastsettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
+  if (QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __BROADCAST__)
+  endif()
 endif()
 
 # Opus (RFC 6716)
@@ -2888,6 +3286,7 @@ if(MEDIAFOUNDATION)
   )
   target_link_libraries(mixxx-lib PRIVATE
     ${MediaFoundation_LIBRARIES}
+    Version.lib
   )
 endif()
 
@@ -2910,6 +3309,10 @@ endif()
 find_package(Microsoft.GSL CONFIG)
 if(Microsoft.GSL_FOUND)
   target_link_libraries(mixxx-lib PRIVATE Microsoft.GSL::GSL)
+  if (QML)
+    target_link_libraries(mixxx-qml-lib PRIVATE Microsoft.GSL::GSL)
+    target_link_libraries(mixxx-qml-libplugin PRIVATE Microsoft.GSL::GSL)
+  endif()
 else()
   # check if the headers have been installed without cmake config (< 3.1.0)
   check_include_file_cxx(gsl/gsl HAVE_GSL_GSL)
@@ -2979,6 +3382,7 @@ if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hidiothread.cpp
+    src/controllers/hid/hidioglobaloutputreportfifo.cpp
     src/controllers/hid/hidiooutputreport.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
@@ -2989,7 +3393,7 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
+default_option(BULK "USB Bulk controller support" "LibUSB_FOUND;NOT WIN32")
 if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
@@ -3099,7 +3503,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES jammy kinetic lunar mantic)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
@@ -3113,7 +3517,23 @@ set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/dialog
 
 set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_SOURCE_DIR}/packaging/CPackConfig.cmake" )
 
+if(WIN32)
+    # override not working default NSIS
+    set(CPACK_GENERATOR WIX)
+endif()
+
 include(CPack)
+
+if (APPLOCAL_COMPONENT_DEFINED)
+    cpack_add_component(applocal
+        HIDDEN
+        REQUIRED)
+
+    # In order to run Mixx from the build directory install applocal components
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
+endif()
 
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")

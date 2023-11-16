@@ -46,10 +46,24 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 QImage CoverArtUtils::extractEmbeddedCover(
         mixxx::FileAccess trackFileAccess) {
     QImage image;
-    // Both resetMissingTagMetadata = false/true have the same effect
-    constexpr auto resetMissingTagMetadata = false;
+    // Since pTrackMetadataBoth is null, resetMissingTagMetadata
+    // has no effect
+    const auto resetMissingTagMetadata = false;
     SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
             std::move(trackFileAccess),
+            nullptr,
+            &image,
+            resetMissingTagMetadata);
+    return image;
+}
+
+QImage CoverArtUtils::extractEmbeddedCover(
+        TrackPointer pTrack) {
+    QImage image;
+    // Since pTrackMetadataBoth is null, resetMissingTagMetadata
+    // has no effect
+    const auto resetMissingTagMetadata = false;
+    SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
             nullptr,
             &image,
             resetMissingTagMetadata);
@@ -162,7 +176,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         if (!image.isNull()) {
             coverInfoRelative.type = CoverInfo::FILE;
             coverInfoRelative.coverLocation = bestInfo->fileName();
-            coverInfoRelative.setImage(image);
+            coverInfoRelative.setImageDigest(image);
         }
     }
 
@@ -177,7 +191,7 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
         CoverInfoRelative coverInfo;
         coverInfo.source = CoverInfo::GUESSED;
         coverInfo.type = CoverInfo::METADATA;
-        coverInfo.setImage(embeddedCover);
+        coverInfo.setImageDigest(embeddedCover);
         DEBUG_ASSERT(coverInfo.coverLocation.isNull());
         return coverInfo;
     }
@@ -196,46 +210,46 @@ CoverInfoRelative CoverInfoGuesser::guessCoverInfo(
 }
 
 CoverInfoRelative CoverInfoGuesser::guessCoverInfoForTrack(
-        const Track& track) {
-    const auto fileAccess = track.getFileAccess();
+        TrackPointer pTrack) {
+    const auto fileInfo = pTrack->getFileInfo();
     if (kLogger.debugEnabled()) {
         kLogger.debug()
                 << "Guessing cover art for track"
-                << fileAccess.info();
+                << fileInfo;
     }
+
+    QImage embeddedCover = CoverArtUtils::extractEmbeddedCover(pTrack);
+
     return guessCoverInfo(
-            fileAccess.info(),
-            track.getAlbum(),
-            CoverArtUtils::extractEmbeddedCover(fileAccess));
+            fileInfo,
+            pTrack->getAlbum(),
+            embeddedCover);
 }
 
 void CoverInfoGuesser::guessAndSetCoverInfoForTrack(
-        Track& track) {
-    track.setCoverInfo(guessCoverInfoForTrack(track));
+        TrackPointer pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    pTrack->setCoverInfo(guessCoverInfoForTrack(pTrack));
 }
 
 void CoverInfoGuesser::guessAndSetCoverInfoForTracks(
         const TrackPointerList& tracks) {
     for (const auto& pTrack : tracks) {
-        VERIFY_OR_DEBUG_ASSERT(pTrack) {
-            continue;
-        }
-        guessAndSetCoverInfoForTrack(*pTrack);
+        guessAndSetCoverInfoForTrack(pTrack);
     }
 }
 
 QFuture<void> guessTrackCoverInfoConcurrently(
         TrackPointer pTrack) {
-    VERIFY_OR_DEBUG_ASSERT(pTrack) {
-        return {};
-    }
     if (s_enableConcurrentGuessingOfTrackCoverInfo) {
         return QtConcurrent::run([pTrack] {
-            CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+            CoverInfoGuesser().guessAndSetCoverInfoForTrack(pTrack);
         });
     } else {
         // Disabled only during tests
-        CoverInfoGuesser().guessAndSetCoverInfoForTrack(*pTrack);
+        CoverInfoGuesser().guessAndSetCoverInfoForTrack(pTrack);
         return {};
     }
 }

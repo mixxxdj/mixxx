@@ -7,10 +7,12 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/library_prefs.h"
+#include "library/trackmodel.h"
 #include "moc_dlgtagfetcher.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "track/track.h"
 #include "track/tracknumbers.h"
+#include "util/imagefiledata.h"
 
 namespace {
 
@@ -142,7 +144,8 @@ void DlgTagFetcher::init() {
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::applyTagsAndCover);
+    connect(btnApplyCover, &QPushButton::clicked, this, &DlgTagFetcher::applyCover);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
     connect(tags, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::tagSelected);
@@ -165,6 +168,7 @@ void DlgTagFetcher::init() {
     loadingProgressBar->setMaximum(kMaximumValueOfQProgressBar);
 
     btnRetry->setDisabled(true);
+    btnApplyCover->setDisabled(true);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -234,6 +238,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    btnApplyCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
@@ -261,7 +266,7 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     }
 }
 
-void DlgTagFetcher::apply() {
+void DlgTagFetcher::applyTagsAndCover() {
     int tagIndex = m_data.m_selectedTag;
     if (tagIndex < 0) {
         return;
@@ -325,6 +330,19 @@ void DlgTagFetcher::apply() {
     }
 #endif // __EXTRA_METADATA__
 
+    applyCover();
+
+    m_pTrack->replaceMetadataFromSource(
+            std::move(trackMetadata),
+            // Prevent re-import of outdated metadata from file tags
+            // by explicitly setting the synchronization time stamp
+            // to the current time.
+            QDateTime::currentDateTimeUtc());
+
+    statusMessage->setText(tr("Metadata & Cover Art applied"));
+}
+
+void DlgTagFetcher::applyCover() {
     if (!m_fetchedCoverArtByteArrays.isNull()) {
         VERIFY_OR_DEBUG_ASSERT(m_isCoverArtCopyWorkerRunning == false) {
             return;
@@ -370,20 +388,12 @@ void DlgTagFetcher::apply() {
 
         m_pWorker->start();
     }
-
-    statusMessage->setText(tr("Selected metadata applied"));
-
-    m_pTrack->replaceMetadataFromSource(
-            std::move(trackMetadata),
-            // Prevent re-import of outdated metadata from file tags
-            // by explicitly setting the synchronization time stamp
-            // to the current time.
-            QDateTime::currentDateTimeUtc());
 }
 
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    btnApplyCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
 }
@@ -433,8 +443,9 @@ void DlgTagFetcher::fetchTagFinished(
         loadingProgressBar->setFormat(emptyMessage);
         return;
     } else {
-        btnApply->setEnabled(true);
-        btnRetry->setEnabled(false);
+        btnApply->setDisabled(true);
+        btnApplyCover->setDisabled(true);
+        btnRetry->setDisabled(true);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
 
@@ -446,7 +457,7 @@ void DlgTagFetcher::fetchTagFinished(
         {
             int trackIndex = 0;
             QSet<QStringList> allColumnValues; // deduplication
-            for (const auto& trackRelease : qAsConst(m_data.m_tags)) {
+            for (const auto& trackRelease : std::as_const(m_data.m_tags)) {
                 const auto columnValues = trackReleaseColumnValues(trackRelease);
                 // Add fetched tag into TreeItemWidget, if it is not added before
                 if (!allColumnValues.contains(columnValues)) {
@@ -514,6 +525,7 @@ void DlgTagFetcher::tagSelected() {
     m_pWFetchedCoverArtLabel->loadData(QByteArray());
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
+    btnApplyCover->setDisabled(true);
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
@@ -527,14 +539,10 @@ void DlgTagFetcher::tagSelected() {
 }
 
 void DlgTagFetcher::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
+        const QPixmap& pixmap) {
+    if (pRequester == this &&
             m_pTrack &&
             m_pTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
@@ -544,9 +552,8 @@ void DlgTagFetcher::slotCoverFound(
 
 void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
     DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
-            static_cast<DlgPrefLibrary::CoverArtFetcherQuality>(
-                    m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
-                            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium)));
+            m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
+                    DlgPrefLibrary::CoverArtFetcherQuality::Medium);
 
     // Cover art links task can retrieve us variable number of links with different cover art sizes
     // Every single successful response has 2 links.
@@ -577,18 +584,18 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     QPixmap fetchedCoverArtPixmap;
     fetchedCoverArtPixmap.loadFromData(data);
     CoverInfo coverInfo;
-    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
-    coverInfo.setImage();
 
     loadingProgressBar->setVisible(false);
-    statusMessage->setText(tr("Cover art is ready to be applied"));
+    statusMessage->clear();
     statusMessage->setVisible(true);
 
     m_fetchedCoverArtByteArrays = data;
     m_pWFetchedCoverArtLabel->loadData(
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
+
+    btnApplyCover->setDisabled(data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
@@ -611,7 +618,7 @@ void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo
     qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
     m_pTrack->setCoverInfo(coverInfo);
     loadCurrentTrackCover();
-    statusMessage->setText(tr("Metadata & Cover Art applied"));
+    statusMessage->setText(tr("Selected cover art applied"));
 }
 
 void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,

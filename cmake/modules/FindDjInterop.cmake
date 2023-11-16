@@ -68,7 +68,7 @@ endif()
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   DjInterop
-  REQUIRED_VARS DjInterop_LIBRARY DjInterop_INCLUDE_DIR
+  REQUIRED_VARS DjInterop_LIBRARY DjInterop_INCLUDE_DIR DjInterop_VERSION
   VERSION_VAR DjInterop_VERSION
 )
 

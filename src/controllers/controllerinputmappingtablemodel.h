@@ -1,12 +1,13 @@
 #pragma once
 
-#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
 #include <QModelIndex>
-#include <QTableView>
 
 #include "controllers/controllermappingtablemodel.h"
 #include "controllers/midi/midimessage.h"
+
+class QAbstractItemDelegate;
+class QTableView;
 
 /// Table Model for the "Inputs" table view in the preferences dialog.
 ///

@@ -2,11 +2,11 @@
 
 #include <QObject>
 
-#include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "library/library_decl.h"
 #include "util/memory.h"
 
+class ControlEncoder;
 class ControlObject;
 class ControlPushButton;
 class Library;
@@ -62,8 +62,10 @@ class LibraryControl : public QObject {
     void sidebarWidgetDeleted();
     void searchboxWidgetDeleted();
 
-    // Update m_pFocusedWidget and m_pFocusedWidgetCO
+    // Update m_focusedWidget and m_pFocusedWidgetCO
+    void slotFocusedWidgetChanged(QWidget* oldW, QWidget* newW);
     void updateFocusedWidgetControls();
+    void refocusPrevLibraryWidget();
 
     void slotMoveUp(double);
     void slotMoveDown(double);
@@ -134,7 +136,9 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveFocusBackward;
     std::unique_ptr<ControlEncoder> m_pMoveFocus;
     std::unique_ptr<ControlPushButton> m_pFocusedWidgetCO;
-    FocusWidget m_pFocusedWidget;
+    FocusWidget m_focusedWidget;
+    std::unique_ptr<ControlPushButton> m_pRefocusPrevWidgetCO;
+    FocusWidget m_prevFocusedWidget;
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;

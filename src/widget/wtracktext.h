@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QMouseEvent>
-
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -46,8 +42,11 @@ class WTrackText : public WLabel, public TrackDropTarget {
 
     void updateLabel();
 
+    void ensureTrackMenuIsCreated();
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
+    Library* m_pLibrary;
     TrackPointer m_pCurrentTrack;
-    const parented_ptr<WTrackMenu> m_pTrackMenu;
+    parented_ptr<WTrackMenu> m_pTrackMenu;
 };

@@ -1,17 +1,13 @@
 #pragma once
 
 #include <QElapsedTimer>
-#include <QLoggingCategory>
-#include <QTimerEvent>
 
 #include "controllers/controllermappinginfo.h"
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
-#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
 class ControllerJSProxy;
+class ControllerScriptEngineLegacy;
 
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the

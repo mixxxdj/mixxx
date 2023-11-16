@@ -1,18 +1,18 @@
 #pragma once
 
 #include <QComboBox>
-#include <QCompleter>
-#include <QDomNode>
-#include <QEvent>
 #include <QTimer>
-#include <QToolButton>
 
 #include "library/library_decl.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
+class QDomNode;
 class SkinContext;
+class QCompleter;
+class QEvent;
+class QToolButton;
 
 class WSearchLineEdit : public QComboBox, public WBaseWidget {
     Q_OBJECT

@@ -1,9 +1,7 @@
 #pragma once
-
 #include <QDomNode>
 #include <QImage>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/cue.h"
 #include "util/memory.h"
@@ -11,30 +9,44 @@
 
 class SkinContext;
 class WaveformSignalColors;
+class QOpenGLTexture;
 
-class WOverview;
+namespace allshader {
+class WaveformRenderMark;
+}
 
 class WaveformMark {
   public:
+    class Graphics {
+      public:
+        Graphics()
+                : m_obsolete{false} {
+        }
+        bool m_obsolete;
+    };
+
     WaveformMark(
             const QString& group,
             const QDomNode& node,
             const SkinContext& context,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
+    ~WaveformMark();
 
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
 
-    int getHotCue() const { return m_iHotCue; };
+    int getHotCue() const {
+        return m_iHotCue;
+    };
 
-    //The m_pPositionCO related function
+    // The m_pPositionCO related function
     bool isValid() const {
         return m_pPositionCO && m_pPositionCO->valid();
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectSamplePositionChanged(Receiver receiver, Slot slot) const {
         m_pPositionCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     };
@@ -68,7 +80,7 @@ class WaveformMark {
         return m_pVisibleCO->toBool();
     }
 
-    template <typename Receiver, typename Slot>
+    template<typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
         m_pVisibleCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
@@ -88,12 +100,16 @@ class WaveformMark {
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
+    QImage generateImage(float breath, float devicePixelRatio);
+
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
+    QString m_iconPath;
 
     float m_linePosition;
+    int m_breadth;
 
     WaveformMarkLabel m_label;
 
@@ -101,8 +117,12 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pPositionCO;
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
+
+    friend class allshader::WaveformRenderMark;
+
+    std::unique_ptr<Graphics> m_pGraphics;
+
     int m_iHotCue;
-    QImage m_image;
 
     QColor m_fillColor;
     QColor m_borderColor;
@@ -113,21 +133,34 @@ class WaveformMark {
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
-inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    double leftPosition = lhs->getSamplePosition();
-    int leftHotcue = lhs->getHotCue();
-    double rightPosition = rhs->getSamplePosition();
-    int rightHotcue = rhs->getHotCue();
-    if (leftPosition == rightPosition) {
-        // Sort WaveformMarks without hotcues before those with hotcues;
-        // if both have hotcues, sort numerically by hotcue number.
-        if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
-            return true;
-        } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
-            return false;
-        } else {
-            return leftHotcue < rightHotcue;
-        }
+// This class provides an immutable sortkey for the WaveformMark using sample
+// position and hotcue number. IMPORTANT: The Mark's position may be changed after
+// a key's creation, and those updates will not be reflected in these sortkeys.
+// Currently they are used to render marks on the Overview, a situation where
+// temporarily incorrect sort order is acceptable.
+class WaveformMarkSortKey {
+  public:
+    WaveformMarkSortKey(double samplePosition, int hotcue)
+            : m_samplePosition(samplePosition),
+              m_hotcue(hotcue) {
     }
-    return leftPosition < rightPosition;
-}
+
+    bool operator<(const WaveformMarkSortKey& other) const {
+        if (m_samplePosition == other.m_samplePosition) {
+            // Sort WaveformMarks without hotcues before those with hotcues;
+            // if both have hotcues, sort numerically by hotcue number.
+            if (m_hotcue == Cue::kNoHotCue && other.m_hotcue != Cue::kNoHotCue) {
+                return true;
+            } else if (m_hotcue != Cue::kNoHotCue && other.m_hotcue == Cue::kNoHotCue) {
+                return false;
+            } else {
+                return m_hotcue < other.m_hotcue;
+            }
+        }
+        return m_samplePosition < other.m_samplePosition;
+    }
+
+  private:
+    double m_samplePosition;
+    int m_hotcue;
+};

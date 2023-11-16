@@ -56,7 +56,7 @@ void cleanUpDatabase(const QSqlDatabase& database) {
     FwdSqlQuery query(database, sqlStmt);
     query.bindValue(
             QStringLiteral(":unequalHash"),
-            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+            QVariant(mixxx::invalidCacheKey()));
     const auto numRows = execRowCountQuery(query);
     VERIFY_OR_DEBUG_ASSERT(numRows >= 0) {
         kLogger.warning()
@@ -245,7 +245,7 @@ void LibraryScanner::slotStartScan() {
             this,
             &LibraryScanner::slotFinishHashedScan);
 
-    for (const mixxx::FileInfo& rootDir : qAsConst(m_libraryRootDirs)) {
+    for (const mixxx::FileInfo& rootDir : std::as_const(m_libraryRootDirs)) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing
@@ -489,7 +489,7 @@ void LibraryScanner::cancel() {
 
 void LibraryScanner::queueTask(ScannerTask* pTask) {
     //kLogger.debug() << "queueTask" << pTask;
-    ScopedTimer timer("LibraryScanner::queueTask");
+    ScopedTimer timer(u"LibraryScanner::queueTask");
     if (m_scannerGlobal.isNull() || m_scannerGlobal->shouldCancel()) {
         return;
     }
@@ -531,7 +531,7 @@ void LibraryScanner::queueTask(ScannerTask* pTask) {
 
 void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
                                                bool newDirectory, mixxx::cache_key_t hash) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryHashedAndScanned");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryHashedAndScanned");
     //kLogger.debug() << "sloDirectoryHashedAndScanned" << directoryPath
     //          << newDirectory << hash;
 
@@ -550,7 +550,7 @@ void LibraryScanner::slotDirectoryHashedAndScanned(const QString& directoryPath,
 }
 
 void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
-    ScopedTimer timer("LibraryScanner::slotDirectoryUnchanged");
+    ScopedTimer timer(u"LibraryScanner::slotDirectoryUnchanged");
     //kLogger.debug() << "slotDirectoryUnchanged" << directoryPath;
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedDirectory(directoryPath);
@@ -560,7 +560,7 @@ void LibraryScanner::slotDirectoryUnchanged(const QString& directoryPath) {
 
 void LibraryScanner::slotTrackExists(const QString& trackPath) {
     //kLogger.debug() << "slotTrackExists" << trackPath;
-    ScopedTimer timer("LibraryScanner::slotTrackExists");
+    ScopedTimer timer(u"LibraryScanner::slotTrackExists");
     if (m_scannerGlobal) {
         m_scannerGlobal->addVerifiedTrack(trackPath);
     }
@@ -568,7 +568,7 @@ void LibraryScanner::slotTrackExists(const QString& trackPath) {
 
 void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     //kLogger.debug() << "slotAddNewTrack" << trackPath;
-    ScopedTimer timer("LibraryScanner::addNewTrack");
+    ScopedTimer timer(u"LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack = m_trackDao.addTracksAddFile(
             trackPath,

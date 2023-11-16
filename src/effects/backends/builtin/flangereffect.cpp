@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/flangereffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {

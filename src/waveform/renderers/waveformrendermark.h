@@ -4,11 +4,8 @@
 
 #include "skin/legacy/skincontext.h"
 #include "util/class.h"
-#include "util/color/color.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
-#include "track/cue.h"
-#include "preferences/configobject.h"
 
 class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     Q_OBJECT

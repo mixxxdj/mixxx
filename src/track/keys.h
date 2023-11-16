@@ -10,8 +10,6 @@
 
 typedef QList<QPair<mixxx::track::io::key::ChromaticKey, double>> KeyChangeList;
 
-class KeyFactory;
-
 class Keys final {
   public:
     explicit Keys(const QByteArray* pByteArray = nullptr);

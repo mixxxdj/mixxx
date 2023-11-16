@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QWidget>
-
 #include "preferences/usersettings.h"
 #include "widget/wtracktableview.h"
 

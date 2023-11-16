@@ -1,20 +1,21 @@
 #pragma once
 
-#include <QImage>
-#include <QSqlDatabase>
 #include <cmath>
 #include <limits>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
 #include "library/dao/analysisdao.h"
 #include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
 //NOTS vrince some test to segment sound, to apply color in the waveform
 //#define TEST_HEAT_MAP
+#ifdef TEST_HEAT_MAP
+class QImage;
+#endif
 
 class EngineFilterIIRBase;
+class QSqlDatabase;
 
 inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
@@ -141,10 +142,10 @@ class AnalyzerWaveform : public Analyzer {
             const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
-    bool initialize(const AnalyzerTrack& tio,
+    bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
-            SINT totalSamples) override;
-    bool processSamples(const CSAMPLE* buffer, SINT bufferLength) override;
+            SINT frameLength) override;
+    bool processSamples(const CSAMPLE* buffer, SINT count) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 

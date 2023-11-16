@@ -6,19 +6,18 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QRadioButton>
-#include <QTreeWidget>
-#include <QWidget>
-#include <memory>
 
-#include "library/export/engineprimeexportrequest.h"
-#include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "util/optional.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
+class QWidget;
+class CrateId;
 
 namespace mixxx {
+
+struct EnginePrimeExportRequest;
 
 /// The DlgLibraryExport class is a UI window that gathers information from
 /// the user about how they would like to export the Mixxx library.

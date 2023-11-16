@@ -13,11 +13,10 @@
 #include "coreservices.h"
 #include "errordialoghandler.h"
 #include "mixxxapplication.h"
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 #include "qml/qmlapplication.h"
-#else
-#include "mixxxmainwindow.h"
 #endif
+#include "mixxxmainwindow.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -27,9 +26,7 @@
 namespace {
 
 // Exit codes
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 constexpr int kFatalErrorOnStartupExitCode = 1;
-#endif
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 constexpr char kScaleFactorEnvVar[] = "QT_SCALE_FACTOR";
@@ -42,10 +39,12 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
     CmdlineArgs::Instance().parseForUserFeedback();
 
     int exitCode;
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
-    exitCode = pApp->exec();
-#else
+#ifdef MIXXX_USE_QML
+    if (args.isQml()) {
+        mixxx::qml::QmlApplication qmlApplication(pApp, pCoreServices);
+        exitCode = pApp->exec();
+    } else
+#endif
     {
         // This scope ensures that `MixxxMainWindow` is destroyed *before*
         // CoreServices is shut down. Otherwise a debug assertion complaining about
@@ -59,7 +58,15 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
                 &mainWindow,
                 &MixxxMainWindow::initializationProgressUpdate);
         pCoreServices->initialize(pApp);
+
+#ifdef MIXXX_USE_QOPENGL
+        // Will call initialize when the initial wglwidget's
+        // qopenglwindow has been exposed
+        mainWindow.initializeQOpenGL();
+#else
         mainWindow.initialize();
+#endif
+
         pCoreServices->getControllerManager()->setUpDevices();
 
         // If startup produced a fatal error, then don't even start the
@@ -74,7 +81,6 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             exitCode = pApp->exec();
         }
     }
-#endif
     return exitCode;
 }
 
@@ -123,6 +129,9 @@ int main(int argc, char * argv[]) {
     // This needs to be set before initializing the QApplication.
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+#endif
+#ifdef MIXXX_USE_QOPENGL
+    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
 #endif
 
     // workaround for https://bugreports.qt.io/browse/QTBUG-84363

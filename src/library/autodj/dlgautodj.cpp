@@ -1,10 +1,12 @@
 #include "library/autodj/dlgautodj.h"
 
-#include <QApplication>
+#include <QKeyEvent>
+#include <QLineEdit>
 #include <QMessageBox>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
 #include "library/playlisttablemodel.h"
-#include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -349,12 +351,12 @@ void DlgAutoDJ::slotTransitionModeChanged(int newIndex) {
     m_pAutoDJProcessor->setTransitionMode(
             static_cast<AutoDJProcessor::TransitionMode>(
                     fadeModeCombobox->itemData(newIndex).toInt()));
-    // Move focus to tracks table to immediately allow keyboard shortcuts again.
-    setFocus();
+    // Clicking on a transition mode item moves keyboard focus to the list widget.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
-void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
-    bool checked = static_cast<bool>(checkState);
+void DlgAutoDJ::slotRepeatPlaylistChanged(bool checked) {
     m_pConfig->setValue(ConfigKey(kPreferenceGroupName, kRepeatPlaylistPreference),
             checked);
 }
@@ -394,15 +396,16 @@ void DlgAutoDJ::setFocus() {
 }
 
 void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
-    // Return, Enter and Escape key move focus to the AutoDJ queue to immediately
-    // allow keyboard shortcuts again.
+    // If we receive key events either the mode selector or the spinbox are focused.
+    // Return, Enter and Escape move focus back to the previously focused
+    // library widget in order to immediately allow keyboard shortcuts again.
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
-        setFocus();
+        ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QWidget::keyPressEvent(pEvent);
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgAutoDJ::saveCurrentViewState() {

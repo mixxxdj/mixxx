@@ -2,12 +2,10 @@
 
 #include <QDesktopServices>
 #include <QMenu>
-#include <QUrlQuery>
 #include <QtDebug>
 
+#include "moc_wfindonwebmenu.cpp"
 #include "track/track.h"
-#include "util/parented_ptr.h"
-#include "util/widgethelper.h"
 
 WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
         : QMenu(tr("Find on Web"), parent) {

@@ -1,8 +1,8 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include <QMessageBox>
 #include <QStringList>
 #include <QUrl>
+#include <QtConcurrent>
 #include <QtDebug>
 
 #include "library/baseexternalplaylistmodel.h"
@@ -94,8 +94,9 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(this,
+std::unique_ptr<BaseSqlTableModel>
+RhythmboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.rhythmbox_playlist",
             "rhythmbox_playlists",

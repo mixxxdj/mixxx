@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/controls/enginecontrol.h"
-#include "control/controlvalue.h"
 #include "util/parented_ptr.h"
 
 class ControlObject;

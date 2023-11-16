@@ -4,13 +4,17 @@
 
 namespace {
 constexpr int kMaxNumOfRecursions = 128;
-}
+} // namespace
 
 // Event queue compressing proxy
 CompressingProxy::CompressingProxy(const ConfigKey& key,
         const RuntimeLoggingCategory& logger,
         QObject* pParent)
-        : QObject(pParent), m_key(key), m_logger(logger), m_recursionDepth(0) {
+        : QObject(pParent),
+          m_key(key),
+          m_logger(logger),
+          m_recursiveSearchForLastEventOngoing(false),
+          m_recursionDepth(0) {
 }
 
 // This function is called recursive by QCoreApplication::sendPostedEvents, until no more events are in the queue.

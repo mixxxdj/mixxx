@@ -1,34 +1,18 @@
-//
-// C++ Implementation: woverview
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "woverview.h"
 
 #include <QBrush>
-#include <QMimeData>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPainter>
-#include <QUrl>
-#include <QtDebug>
+#include <QVBoxLayout>
 
 #include "analyzer/analyzerprogress.h"
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
 #include "moc_woverview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/dnd.h"
 #include "util/duration.h"
 #include "util/math.h"
@@ -140,7 +124,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     m_endOfTrackColor = QColor(200, 25, 20);
     const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
-        m_endOfTrackColor.setNamedColor(endOfTrackColorName);
+        m_endOfTrackColor = QColor(endOfTrackColorName);
         m_endOfTrackColor = WSkinColor::getCorrectColor(m_endOfTrackColor);
     }
 
@@ -151,18 +135,9 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
     m_pCueMenuPopup->setColorPalette(colorPalette);
 
-    for (const auto& pMark: m_marks) {
-        if (pMark->isValid()) {
-            pMark->connectSamplePositionChanged(this,
-                    &WOverview::onMarkChanged);
-            pMark->connectSampleEndPositionChanged(this,
-                    &WOverview::onMarkChanged);
-        }
-        if (pMark->hasVisible()) {
-            pMark->connectVisibleChanged(this,
-                    &WOverview::onMarkChanged);
-        }
-    }
+    m_marks.connectSamplePositionChanged(this, &WOverview::onMarkChanged);
+    m_marks.connectSampleEndPositionChanged(this, &WOverview::onMarkChanged);
+    m_marks.connectVisibleChanged(this, &WOverview::onMarkChanged);
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
@@ -220,8 +195,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     m_bShowCueTimes = context.selectBool(node, "ShowCueTimes", true);
 
-    //qDebug() << "WOverview : m_marks" << m_marks.size();
-    //qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
+    // qDebug() << "WOverview : std::as_const(m_marks)" << m_marks.size();
+    // qDebug() << "WOverview : m_markRanges" << m_markRanges.size();
     if (!m_connections.isEmpty()) {
         ControlParameterWidgetConnection* defaultConnection = m_connections.at(0);
         if (defaultConnection) {
@@ -414,7 +389,6 @@ void WOverview::onPassthroughChange(double v) {
 }
 
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
-    m_marksToRender.clear();
     for (const CuePointer& currentCue : loadedCues) {
         const WaveformMarkPointer pMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
@@ -441,18 +415,10 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
                     pMark->m_text = newLabel;
                 }
             }
-
-            m_marksToRender.append(pMark);
         }
     }
 
-    // The loop above only adds WaveformMarks for hotcues to m_marksToRender.
-    for (const auto& pMark : m_marks) {
-        if (!m_marksToRender.contains(pMark) && pMark->isValid() && pMark->getSamplePosition() != Cue::kNoPosition && pMark->isVisible()) {
-            m_marksToRender.append(pMark);
-        }
-    }
-    std::sort(m_marksToRender.begin(), m_marksToRender.end());
+    m_marks.update();
 }
 
 // connecting the tracks cuesUpdated and onMarkChanged is not possible
@@ -465,13 +431,13 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
     if (m_bLeftClickDragging) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -489,21 +455,7 @@ void WOverview::mouseMoveEvent(QMouseEvent* e) {
         return;
     }
 
-    m_pHoveredMark.clear();
-
-    // Non-hotcue marks (intro/outro cues, main cue, loop in/out) are sorted
-    // before hotcues in m_marksToRender so if there is a hotcue in the same
-    // location, the hotcue gets rendered on top. When right clicking, the
-    // the hotcue rendered on top must be assigned to m_pHoveredMark to show
-    // the CueMenuPopup. To accomplish this, m_marksToRender is iterated in
-    // reverse and the loop breaks as soon as m_pHoveredMark is set.
-    for (int i = m_marksToRender.size() - 1; i >= 0; --i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
-        if (pMark->contains(e->pos(), m_orientation)) {
-            m_pHoveredMark = pMark;
-            break;
-        }
-    }
+    m_pHoveredMark = m_marks.findHoveredMark(e->pos(), m_orientation);
 
     //qDebug() << "WOverview::mouseMoveEvent" << e->pos() << m_iPos;
     update();
@@ -546,13 +498,13 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
     if (e->button() == Qt::LeftButton) {
         if (m_orientation == Qt::Horizontal) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().x(), 0, width() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().x()), 0, width() - 1);
 #else
             m_iPickupPos = math_clamp(e->x(), 0, width() - 1);
 #endif
         } else {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-            m_iPickupPos = math_clamp(e->position().y(), 0, height() - 1);
+            m_iPickupPos = math_clamp(static_cast<int>(e->position().y()), 0, height() - 1);
 #else
             m_iPickupPos = math_clamp(e->y(), 0, height() - 1);
 #endif
@@ -625,7 +577,7 @@ void WOverview::leaveEvent(QEvent* pEvent) {
 
 void WOverview::paintEvent(QPaintEvent* pEvent) {
     Q_UNUSED(pEvent);
-    ScopedTimer t("WOverview::paintEvent");
+    ScopedTimer t(u"WOverview::paintEvent");
 
     QPainter painter(this);
     painter.fillRect(rect(), m_backgroundColor);
@@ -868,11 +820,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
     // the view of labels is not obscured by the playhead.
 
     bool markHovered = false;
-    for (int i = 0; i < m_marksToRender.size(); ++i) {
-        WaveformMarkPointer pMark = m_marksToRender.at(i);
-        PainterScope painterScope(pPainter);
 
-        double samplePosition = m_marksToRender.at(i)->getSamplePosition();
+    for (auto it = m_marks.cbegin(); it != m_marks.cend(); ++it) {
+        PainterScope painterScope(pPainter);
+        const WaveformMarkPointer& pMark = *it;
+        double samplePosition = pMark->getSamplePosition();
         const float markPosition = math_clamp(
                 offset + static_cast<float>(samplePosition) * gain,
                 0.0f,
@@ -890,7 +842,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
         }
 
         QRectF rect;
-        double sampleEndPosition = m_marksToRender.at(i)->getSampleEndPosition();
+        double sampleEndPosition = pMark->getSampleEndPosition();
         if (sampleEndPosition > 0) {
             const float markEndPosition = math_clamp(
                     offset + static_cast<float>(sampleEndPosition) * gain,
@@ -912,7 +864,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
 
         if (rect.isValid()) {
             QColor loopColor = pMark->fillColor();
-            loopColor.setAlphaF(0.5);
+            loopColor.setAlphaF(0.5f);
             pPainter->fillRect(rect, loopColor);
         }
 
@@ -926,10 +878,11 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             // hovering over it. Elide it if it would render over the next
             // label, but do not elide it if the next mark's label is not at the
             // same vertical position.
-            if (pMark != m_pHoveredMark && i < m_marksToRender.size() - 1) {
+
+            if (pMark != m_pHoveredMark) {
                 float nextMarkPosition = -1.0f;
-                for (int m = i + 1; m < m_marksToRender.size() - 1; ++m) {
-                    WaveformMarkPointer otherMark = m_marksToRender.at(m);
+                for (auto m = std::next(it); m != m_marks.cend(); ++m) {
+                    const WaveformMarkPointer& otherMark = *m;
                     bool otherAtSameHeight = valign == (otherMark->m_align & Qt::AlignVertical_Mask);
                     // Hotcues always show at least their number.
                     bool otherHasLabel = !otherMark->m_text.isEmpty() || otherMark->getHotCue() != Cue::kNoHotCue;
@@ -1100,7 +1053,11 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
     QFontMetricsF fontMetrics(markerFont);
 
     QFont shadowFont = pPainter->font();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     shadowFont.setWeight(99);
+#else
+    shadowFont.setWeight(QFont::Black);
+#endif
     shadowFont.setPixelSize(static_cast<int>(m_iLabelFontSize * m_scaleFactor));
     QPen shadowPen(Qt::black, 2.5 * m_scaleFactor);
 
@@ -1180,7 +1137,7 @@ void WOverview::drawMarkLabels(QPainter* pPainter, const float offset, const flo
     QFontMetricsF fontMetrics(markerFont);
 
     // Draw WaveformMark labels
-    for (const auto& pMark : qAsConst(m_marksToRender)) {
+    for (const auto& pMark : std::as_const(m_marks)) {
         if (m_pHoveredMark != nullptr && pMark != m_pHoveredMark) {
             if (pMark->m_label.intersects(m_pHoveredMark->m_label)) {
                 continue;
@@ -1256,7 +1213,7 @@ void WOverview::drawPassthroughOverlay(QPainter* pPainter) {
 
 void WOverview::paintText(const QString& text, QPainter* pPainter) {
     PainterScope painterScope(pPainter);
-    m_lowColor.setAlphaF(0.5);
+    m_lowColor.setAlphaF(0.5f);
     QPen lowColorPen(
             QBrush(m_lowColor), 1.25 * m_scaleFactor, Qt::SolidLine, Qt::RoundCap);
     pPainter->setPen(lowColorPen);

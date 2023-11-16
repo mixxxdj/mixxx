@@ -1,9 +1,8 @@
 #include "metronomeeffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "metronomeclick.h"
-#include "util/experiment.h"
 #include "util/math.h"
 #include "util/sample.h"
 

@@ -3,7 +3,7 @@
 #include <QMenu>
 #include <QObject>
 
-#include "preferences/usersettings.h"
+class ConfigKey;
 
 class ControlPickerMenu : public QMenu {
     Q_OBJECT
@@ -103,7 +103,7 @@ class ControlPickerMenu : public QMenu {
 
     int addAvailableControl(const ConfigKey& key, const QString& title, const QString& description);
 
-    QString m_effectMasterOutputStr;
+    QString m_effectMainOutputStr;
     QString m_effectHeadphoneOutputStr;
     QString m_deckStr;
     QString m_previewdeckStr;

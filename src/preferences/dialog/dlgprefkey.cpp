@@ -1,13 +1,10 @@
 #include "preferences/dialog/dlgprefkey.h"
 
-#include <QLineEdit>
-#include <QMessageBox>
-
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "library/library_prefs.h"
 #include "moc_dlgprefkey.cpp"
-#include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -44,7 +41,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
-    for (const auto& info : qAsConst(m_availablePlugins)) {
+    for (const auto& info : std::as_const(m_availablePlugins)) {
         plugincombo->addItem(info.name(), info.id());
     }
 
@@ -55,6 +52,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     // Connections
     connect(plugincombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefKey::pluginSelected);
+    setScrollSafeGuard(plugincombo);
+
     connect(banalyzerenabled, &QCheckBox::stateChanged,
             this, &DlgPrefKey::analyzerEnabled);
     connect(bfastAnalysisEnabled, &QCheckBox::stateChanged,

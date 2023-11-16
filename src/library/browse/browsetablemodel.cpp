@@ -1,14 +1,9 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
-#include <QMetaType>
 #include <QStringList>
-#include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
-#include <QtSql>
 
-#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
@@ -17,6 +12,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_browsetablemodel.cpp"
+#include "recording/recordingmanager.h"
 #include "track/track.h"
 #include "widget/wlibrarytableview.h"
 
@@ -204,10 +200,12 @@ const QList<int>& BrowseTableModel::searchColumns() const {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (path.info().hasLocation() && path.info().isDir()) {
-        m_currentDirectory = path.info().location();
-    } else {
-        m_currentDirectory = QString();
+    if (m_pBrowseThread) {
+        if (path.info().hasLocation() && path.info().isDir()) {
+            m_currentDirectory = path.info().location();
+        } else {
+            m_currentDirectory = QString();
+        }
     }
     m_pBrowseThread->executePopulation(std::move(path), this);
 }
@@ -529,3 +527,10 @@ bool BrowseTableModel::updateTrackMood(
     return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
 }
 #endif // __EXTRA_METADATA__
+
+void BrowseTableModel::releaseBrowseThread() {
+    // The shared browse thread is stopped in the destructor
+    // if this is the last reference. All references must be reset before
+    // the library is destructed.
+    m_pBrowseThread.reset();
+}

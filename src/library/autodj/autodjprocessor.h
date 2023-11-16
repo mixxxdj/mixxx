@@ -1,13 +1,11 @@
 #pragma once
 
-#include <QModelIndexList>
 #include <QObject>
 #include <QString>
 
+#include "audio/frame.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/controls/cuecontrol.h"
-#include "library/playlisttablemodel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/class.h"
@@ -16,6 +14,8 @@ class ControlPushButton;
 class TrackCollectionManager;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
+class PlaylistTableModel;
+typedef QList<QModelIndex> QModelIndexList;
 
 class DeckAttributes : public QObject {
     Q_OBJECT

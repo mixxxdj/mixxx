@@ -1,13 +1,11 @@
 #include "library/library.h"
 
+#include <QApplication>
 #include <QDir>
-#include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QPointer>
-#include <QTranslator>
 
+#include "control/controlobject.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
@@ -20,7 +18,6 @@
 #include "library/library_prefs.h"
 #include "library/librarycontrol.h"
 #include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
@@ -36,9 +33,7 @@
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
 #include "moc_library.cpp"
-#include "recording/recordingmanager.h"
 #include "util/assert.h"
-#include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 #include "util/sandbox.h"
 #include "widget/wlibrary.h"
@@ -50,7 +45,7 @@ namespace {
 
 const mixxx::Logger kLogger("Library");
 
-} // anonymous namespace
+} // namespace
 
 using namespace mixxx::library::prefs;
 
@@ -123,21 +118,21 @@ Library::Library(
             Qt::DirectConnection);
 #endif
 
-    BrowseFeature* browseFeature = new BrowseFeature(
+    m_pBrowseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
-    connect(browseFeature,
+    connect(m_pBrowseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
             &TrackCollectionManager::startLibraryScan);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanStarted,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanStarted);
     connect(m_pTrackCollectionManager,
             &TrackCollectionManager::libraryScanFinished,
-            browseFeature,
+            m_pBrowseFeature,
             &BrowseFeature::slotLibraryScanFinished);
-    addFeature(browseFeature);
+    addFeature(m_pBrowseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
 
@@ -300,8 +295,8 @@ TrackAnalysisScheduler::Pointer Library::createTrackAnalysisScheduler(
 void Library::stopPendingTasks() {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->stopAnalysis();
-        m_pAnalysisFeature = nullptr;
     }
+    m_pBrowseFeature->releaseBrowseThread();
 }
 
 void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
@@ -376,7 +371,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
@@ -449,7 +444,7 @@ void Library::bindLibraryWidget(
             m_pLibraryControl,
             &LibraryControl::slotUpdateTrackMenuControl);
 
-    for (const auto& feature : qAsConst(m_features)) {
+    for (const auto& feature : std::as_const(m_features)) {
         feature->bindLibraryWidget(m_pLibraryWidget, pKeyboard);
     }
 

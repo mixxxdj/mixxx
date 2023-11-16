@@ -1,7 +1,6 @@
 #include "glslwaveformwidget.h"
 
 #include <QPainter>
-#include <QtDebug>
 
 #include "moc_glslwaveformwidget.cpp"
 #include "util/performancetimer.h"
@@ -12,8 +11,6 @@
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
@@ -38,12 +35,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
+
+    makeCurrentIfNeeded();
 
     addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -51,11 +44,11 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (type == GlslType::Filtered) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        addRenderer<GLSLWaveformRendererFilteredSignal>();
     } else if (type == GlslType::RGB) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+        addRenderer<GLSLWaveformRendererRGBSignal>();
     } else if (type == GlslType::RGBStacked) {
-        m_pGlRenderer = addRenderer<GLSLWaveformRendererStackedSignal>();
+        addRenderer<GLSLWaveformRendererStackedSignal>();
     }
 #else
     Q_UNUSED(type);
@@ -63,10 +56,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
 
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
+    doneCurrent();
 
     m_initSuccess = init();
 }
@@ -86,7 +76,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
-    QPainter painter(this);
+    QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();
@@ -97,17 +87,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
 void GLSLWaveformWidget::resize(int width, int height) {
     // NOTE: (vrince) this is needed since we allocation buffer on resize
     // and the Gl Context should be properly set
-    makeCurrent();
+    makeCurrentIfNeeded();
     WaveformWidgetAbstract::resize(width, height);
-}
-
-void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
-    if (event->button() == Qt::RightButton) {
-        makeCurrent();
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-        if (m_signalRenderer) {
-            m_signalRenderer->debugClick();
-        }
-#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    }
+    doneCurrent();
 }

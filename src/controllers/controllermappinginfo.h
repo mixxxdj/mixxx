@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QDomElement>
-#include <QFileInfo>
 #include <QList>
 #include <QMap>
 #include <QString>

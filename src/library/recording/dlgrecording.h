@@ -1,18 +1,16 @@
 #pragma once
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/browse/browsetablemodel.h"
-#include "library/library.h"
 #include "library/libraryview.h"
 #include "library/proxytrackmodel.h"
 #include "library/recording/ui_dlgrecording.h"
-#include "library/trackcollection.h"
 #include "preferences/usersettings.h"
-#include "recording/recordingmanager.h"
 #include "track/track_decl.h"
 
 class WLibrary;
 class WTrackTableView;
+class Library;
+class KeyboardEventFilter;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT

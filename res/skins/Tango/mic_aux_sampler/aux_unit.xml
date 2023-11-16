@@ -35,10 +35,10 @@ Variables:
           </Label>
 
           <Template src="skin:../Tango/controls/button_2state.xml">
-            <SetVariable name="TooltipId">master_enable</SetVariable>
+            <SetVariable name="TooltipId">main_enable</SetVariable>
             <SetVariable name="ObjectName">AuxEnable</SetVariable>
             <SetVariable name="Size">20f,29f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,master</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,main_mix</SetVariable>
           </Template>
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -145,7 +145,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -1,11 +1,11 @@
 #include "library/searchquery.h"
 
 #include <QRegularExpression>
-#include <QtDebug>
 
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/crateschema.h"
+#include "library/trackset/crate/cratestorage.h" // for CrateTrackSelectResult
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "util/db/dbconnection.h"
@@ -122,14 +122,6 @@ QString AndNode::toSql() const {
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
-    // An empty OR node would always evaluate to false
-    // which is inconsistent with the generated SQL query!
-    VERIFY_OR_DEBUG_ASSERT(!m_nodes.empty()) {
-        // Evaluate to true even if the correct choice would
-        // be false to keep the evaluation consistent with
-        // the generated SQL query.
-        return true;
-    }
     for (const auto& pNode : m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
@@ -139,6 +131,9 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 }
 
 QString OrNode::toSql() const {
+    if (m_nodes.empty()) {
+        return "FALSE";
+    }
     QStringList queryFragments;
     queryFragments.reserve(static_cast<int>(m_nodes.size()));
     for (const auto& pNode : m_nodes) {
@@ -168,10 +163,12 @@ QString NotNode::toSql() const {
 
 TextFilterNode::TextFilterNode(const QSqlDatabase& database,
         const QStringList& sqlColumns,
-        const QString& argument)
+        const QString& argument,
+        const StringMatch matchMode)
         : m_database(database),
           m_sqlColumns(sqlColumns),
-          m_argument(argument) {
+          m_argument(argument),
+          m_matchMode(matchMode) {
     mixxx::DbConnection::makeStringLatinLow(&m_argument);
 }
 
@@ -184,8 +181,14 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 
         QString strValue = value.toString();
         mixxx::DbConnection::makeStringLatinLow(&strValue);
-        if (strValue.contains(m_argument)) {
-            return true;
+        if (m_matchMode == StringMatch::Equals) {
+            if (strValue == m_argument) {
+                return true;
+            }
+        } else {
+            if (strValue.contains(m_argument)) {
+                return true;
+            }
         }
     }
     return false;
@@ -201,8 +204,17 @@ QString TextFilterNode::toSql() const {
             argument.append('_');
         }
     }
-    QString escapedArgument = escaper.escapeString(
-            kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
+    QString escapedArgument;
+    // Using a switch-case without default case to get a compile-time -Wswitch warning
+    switch (m_matchMode) {
+    case StringMatch::Contains:
+        escapedArgument = escaper.escapeString(
+                kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
+        break;
+    case StringMatch::Equals:
+        escapedArgument = escaper.escapeString(argument);
+        break;
+    }
     QStringList searchClauses;
     for (const auto& sqlColumn : m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
@@ -497,7 +509,6 @@ QString YearFilterNode::toSql() const {
     }
 
     if (m_bRangeQuery) {
-        QStringList rangeClauses;
         return QString(
                 QStringLiteral("CAST(substr(year,1,4) AS INTEGER) BETWEEN %1 AND %2"))
                 .arg(QString::number(m_dRangeLow),

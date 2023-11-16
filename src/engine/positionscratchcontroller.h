@@ -4,8 +4,8 @@
 #include <QString>
 
 #include "audio/frame.h"
-#include "control/controlobject.h"
 
+class ControlObject;
 class VelocityController;
 class RateIIFilter;
 
@@ -25,7 +25,7 @@ class PositionScratchController : public QObject {
     const QString m_group;
     ControlObject* m_pScratchEnable;
     ControlObject* m_pScratchPosition;
-    ControlObject* m_pMasterSampleRate;
+    ControlObject* m_pMainSampleRate;
     VelocityController* m_pVelocityController;
     RateIIFilter* m_pRateIIFilter;
     bool m_bScratching;

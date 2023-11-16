@@ -113,10 +113,12 @@
 * Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
 * Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
 * Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [#10488](https://github.com/mixxxdj/mixxx/issues/10488)
+* Sidebar: Improve UX (right-click and selection after add, rename, delete, duplicate etc.) [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
 * Sidebar: Map Left Arrow Key to jump to parent node and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
 * Library sidebar: add F2 and Del/Backspace shortcuts for renaming & deleting playlists and crates
   [#11172](https://github.com/mixxxdj/mixxx/pull/11172)
   [#11235](https://github.com/mixxxdj/mixxx/pull/11235)
+* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
 * Fix assertion when navigating history playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [#10529](https://github.com/mixxxdj/mixxx/issues/10529)
 * Track table: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
 * Track table: Home/End keys jump to first/last row [#4850](https://github.com/mixxxdj/mixxx/pull/4850)
@@ -124,7 +126,6 @@
   [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
   [#10184](https://github.com/mixxxdj/mixxx/issues/10184)
   [#10523](https://github.com/mixxxdj/mixxx/issues/10523)
-* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
 * Allow to remove tracks from the library by pressing the Delete key
   [#4330](https://github.com/mixxxdj/mixxx/pull/4330)
   [#7176](https://github.com/mixxxdj/mixxx/issues/7176)
@@ -143,7 +144,13 @@
 * Track Menu: Add menu for Analyze and Reanalyze [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
 * Track Menu: Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
 * Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
-* Track Menu: Add Remove from disk and fix undeleted message and progress dialog  [#4560](https://github.com/mixxxdj/mixxx/pull/4560) [#4831](https://github.com/mixxxdj/mixxx/pull/4831) [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
+* Track Menu: Add Remove from disk and fix undeleted message and progress dialog
+  [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
+  [#4831](https://github.com/mixxxdj/mixxx/pull/4831)
+  [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
+  [#11580](https://github.com/mixxxdj/mixxx/pull/11580)
+  [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
+  [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
 * Track Menu: Allow to clear the comment field [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
 * Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
 * Track Menu: Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
@@ -164,6 +171,7 @@
   [#11444](https://github.com/mixxxdj/mixxx/pull/11444)
   [#11503](https://github.com/mixxxdj/mixxx/pull/11503)
   [#11500](https://github.com/mixxxdj/mixxx/pull/11500)
+  [#11509](https://github.com/mixxxdj/mixxx/pull/11509)
 * Refactoring of library code
   [#2756](https://github.com/mixxxdj/mixxx/pull/2756)
   [#2717](https://github.com/mixxxdj/mixxx/pull/2717)
@@ -267,6 +275,7 @@
 * Verify the "first sound" of as an analysis sanity check [#4773](https://github.com/mixxxdj/mixxx/pull/4773)
 * Fix a possible crash when ejecting a track [#11334](https://github.com/mixxxdj/mixxx/pull/11334) [#11257](https://github.com/mixxxdj/mixxx/issues/11257)
 * Add a range limits for beatjump_size of 512 [#11248](https://github.com/mixxxdj/mixxx/pull/11248) [#11203](https://github.com/mixxxdj/mixxx/issues/11203)
+* Slip Mode: Preserve active (regular) loop when leaving Slip Mode [#11435](https://github.com/mixxxdj/mixxx/pull/11435) [#6993](https://github.com/mixxxdj/mixxx/issues/6993)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -367,11 +376,12 @@
 ### Controller Backend
 
 * Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
-* Add generic USB HID "Set Reports (Feature)" functionality [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
-* Add support for reading the status of an HID controller (like MIDI SYSEX) [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
+* Add support to access HID FeatureReports [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
+* Add function to request HID InputReports, to determine controller state at startup [#3317](https://github.com/mixxxdj/mixxx/pull/3317)
 * Exclude HID device: ELAN touch screen [#11324](https://github.com/mixxxdj/mixxx/pull/11324) [#11323](https://github.com/mixxxdj/mixxx/issues/11323)
 * Show otherwise hidden HID devices in developer mode  [#11317](https://github.com/mixxxdj/mixxx/pull/11317)
 * Use hidapi's hidraw backend instead of libusb on Linux [#4054](https://github.com/mixxxdj/mixxx/pull/4054)
+* Fix broken HID controller mappings Traktor Kontrol S2 MK3 and others [#11470](https://github.com/mixxxdj/mixxx/pull/11470) [#11461](https://github.com/mixxxdj/mixxx/issues/11461)
 * Consistently use "mapping" instead of "preset" to refer to controller mappings [#3472](https://github.com/mixxxdj/mixxx/pull/3472)
 * Library: Add control object `[Library],show_track_menu` to open/close the track menu [#4465](https://github.com/mixxxdj/mixxx/pull/4465)
 * Library: Add control object `[Library],sort_focused_column` [#4749](https://github.com/mixxxdj/mixxx/pull/4749) [#4763](https://github.com/mixxxdj/mixxx/pull/4763) [#10719](https://github.com/mixxxdj/mixxx/issues/10719)
@@ -394,6 +404,7 @@
   [#10540](https://github.com/mixxxdj/mixxx/issues/10540)
   [#10539](https://github.com/mixxxdj/mixxx/issues/10539)
 * Controller preferences: add search bars to mapping tables [#11165](https://github.com/mixxxdj/mixxx/pull/11165)
+* Added TypeScript declarations for engine and controller scripting API to improve IDE code completion during mapping developent [#4759](https://github.com/mixxxdj/mixxx/pull/4759)
 * Retire Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Prepare code for upcoming ES6 based controller mapping system with module support
   [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
@@ -510,6 +521,13 @@
 * LateNight: Remove blinking play indicator from mini samplers [#4807](https://github.com/mixxxdj/mixxx/pull/4807)
 * LateNight: add buffer underflow indicator [#4906](https://github.com/mixxxdj/mixxx/pull/4906) [#10978](https://github.com/mixxxdj/mixxx/pull/10978)
 * Fix outdated tooltips [#11387](https://github.com/mixxxdj/mixxx/pull/11387) [#11384](https://github.com/mixxxdj/mixxx/issues/11384)
+* Waveform overhaul based on QOpenGlWindow and introduce full GLSL shader based waveforms, vumeters and spinnies. This fixes a couple of performance issues mainly on macOS.
+  [#10989](https://github.com/mixxxdj/mixxx/pull/10989)
+  [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
+  [#11460](https://github.com/mixxxdj/mixxx/issues/11460)
+  [#11556](https://github.com/mixxxdj/mixxx/issues/11556)
+  [#11450](https://github.com/mixxxdj/mixxx/issues/11450)
+  [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
 
 ### Effects
 
@@ -574,6 +592,36 @@
   [#10834](https://github.com/mixxxdj/mixxx/issues/10834)
   [#11424](https://github.com/mixxxdj/mixxx/pull/11424) [#11376](https://github.com/mixxxdj/mixxx/pull/11376)
   [#11456](https://github.com/mixxxdj/mixxx/pull/11456) [#11454](https://github.com/mixxxdj/mixxx/issues/11454)
+
+### Target Support
+
+* Added support for macOS ARM builds on M1/M2 Apple silicon [#11398](https://github.com/mixxxdj/mixxx/pull/11398)
+* Require C++20 but keep Ubuntu Focal support
+  [#4889](https://github.com/mixxxdj/mixxx/pull/4889)
+  [#4895](https://github.com/mixxxdj/mixxx/pull/4895)
+  [#11204](https://github.com/mixxxdj/mixxx/pull/11204)
+  [#4832](https://github.com/mixxxdj/mixxx/pull/4832)
+  [#4803](https://github.com/mixxxdj/mixxx/pull/4803)
+  [#11551](https://github.com/mixxxdj/mixxx/issues/11551)
+  [#11573](https://github.com/mixxxdj/mixxx/pull/11573)
+* Drop Ubuntu Bionic support, require Qt 5.12
+  [#3687](https://github.com/mixxxdj/mixxx/pull/3687)
+  [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
+  [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
+  [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
+* Drop Ubuntu Groovy and Impish support because of EOL
+  [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
+* Support Ubuntu Kinetic and Jammy [#4780](https://github.com/mixxxdj/mixxx/pull/4780) [#4857](https://github.com/mixxxdj/mixxx/pull/4857)
+* Add NixOS support
+  [#2820](https://github.com/mixxxdj/mixxx/pull/2820)
+  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
+  [#2836](https://github.com/mixxxdj/mixxx/pull/2836)
+  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
+  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
+  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
+  [#3113](https://github.com/mixxxdj/mixxx/pull/3113)
+  [#3089](https://github.com/mixxxdj/mixxx/pull/3089)
+  [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
 
 ### Other
 
@@ -660,29 +708,6 @@
   [#4277](https://github.com/mixxxdj/mixxx/pull/4277)
   [#4285](https://github.com/mixxxdj/mixxx/pull/4285)
   [#4425](https://github.com/mixxxdj/mixxx/pull/4425)
-* Drop Ubuntu Bionic support, require Qt 5.12
-  [#3687](https://github.com/mixxxdj/mixxx/pull/3687)
-  [#3735](https://github.com/mixxxdj/mixxx/pull/3735)
-  [#3736](https://github.com/mixxxdj/mixxx/pull/3736)
-  [#3985](https://github.com/mixxxdj/mixxx/pull/3985)
-* Require C++20 but keep Ubuntu Focal support
-  [#4889](https://github.com/mixxxdj/mixxx/pull/4889)
-  [#4895](https://github.com/mixxxdj/mixxx/pull/4895)
-  [#11204](https://github.com/mixxxdj/mixxx/pull/11204)
-* Drop Ubuntu Groovy and Impish support because of EOL
-  [#4283](https://github.com/mixxxdj/mixxx/pull/4283) [#4849](https://github.com/mixxxdj/mixxx/pull/4849)
-* Support Ubuntu Kinetic Kudo [#4780](https://github.com/mixxxdj/mixxx/pull/4780)
-* Provide Ubuntu Jammy CI builds [#4857](https://github.com/mixxxdj/mixxx/pull/4857)
-* Add NixOS support
-  [#2820](https://github.com/mixxxdj/mixxx/pull/2820)
-  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
-  [#2836](https://github.com/mixxxdj/mixxx/pull/2836)
-  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
-  [#2827](https://github.com/mixxxdj/mixxx/pull/2827)
-  [#2828](https://github.com/mixxxdj/mixxx/pull/2828)
-  [#3113](https://github.com/mixxxdj/mixxx/pull/3113)
-  [#3089](https://github.com/mixxxdj/mixxx/pull/3089)
-  [#3545](https://github.com/mixxxdj/mixxx/pull/3545)
 * Update vcpkg build environment for Windows and macOS
   [#4163](https://github.com/mixxxdj/mixxx/pull/4163)
   [#4225](https://github.com/mixxxdj/mixxx/pull/4225)
@@ -695,6 +720,8 @@
   [#11074](https://github.com/mixxxdj/mixxx/pull/11074)
   [#11238](https://github.com/mixxxdj/mixxx/pull/11238)
   [#11457](https://github.com/mixxxdj/mixxx/pull/11457)
+  [#11562](https://github.com/mixxxdj/mixxx/pull/11562)
+* Windows: Fix extraction of build environment archive when using 7-Zip [#11510](https://github.com/mixxxdj/mixxx/pull/11510)
 * Devendor libraries from the mixxx lib directory
   [#4201](https://github.com/mixxxdj/mixxx/pull/4201)
   [#4202](https://github.com/mixxxdj/mixxx/pull/4202)
@@ -837,6 +864,7 @@
 * Use rounded Mixxx Icon for MacOS to follow Apples style guide [#4545](https://github.com/mixxxdj/mixxx/pull/4545)
 * Show native path separators in command line argument --help [#4657](https://github.com/mixxxdj/mixxx/pull/4657)
 * Add 13 new translation languages [#4785](https://github.com/mixxxdj/mixxx/pull/4785) [#9702](https://github.com/mixxxdj/mixxx/issues/9702)
+* Fix translation related warnings [#11539](https://github.com/mixxxdj/mixxx/pull/11539)
 * Improve Vinyl control quality indicator [#3279](https://github.com/mixxxdj/mixxx/pull/3279)
 * Track info dialog: Apply pending changes also when saving via hotkey [#4562](https://github.com/mixxxdj/mixxx/pull/4562) [#10612](https://github.com/mixxxdj/mixxx/issues/10612)
 * Track info dialog: Fix crash when trying to scale 0.0 BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [1955853](https://github.com/mixxxdj/mixxx/issues/10625)
@@ -844,13 +872,13 @@
 * Tweak remove/hide track confirm message to match confirm exit message [#4577](https://github.com/mixxxdj/mixxx/pull/4577) [1947992](https://github.com/mixxxdj/mixxx/issues/10577)
 * Implement Un-eject by pressing eject again [#4668](https://github.com/mixxxdj/mixxx/pull/4668)
 * Preferences > Effects: Fix Tab key navigation / UX [#4702](https://github.com/mixxxdj/mixxx/pull/4702) [#10579](https://github.com/mixxxdj/mixxx/issues/10579)
-* Switch to C++20 [#4832](https://github.com/mixxxdj/mixxx/pull/4832) [#4803](https://github.com/mixxxdj/mixxx/pull/4803)
 * Windows builds: Sign binary and installer with timestamp and sha256 [#4824](https://github.com/mixxxdj/mixxx/pull/4824) [#4825](https://github.com/mixxxdj/mixxx/pull/4825)
 * Preferences: Added option to keep deck playing on track load [#10944](https://github.com/mixxxdj/mixxx/pull/10944) [#10548](https://github.com/mixxxdj/mixxx/issues/10548)
 * Preferences: always enable Alt shortcut keys [#11145](https://github.com/mixxxdj/mixxx/pull/11145) [#10413](https://github.com/mixxxdj/mixxx/issues/10413)
 * macOS: Add better rasterization of program icon [#10958](https://github.com/mixxxdj/mixxx/pull/10958)
 * Allow building Mixxx on OpenBSD [#11083](https://github.com/mixxxdj/mixxx/pull/11083)
 * Fix autogenerated metainfo [#11383](https://github.com/mixxxdj/mixxx/pull/11383)
+* Fix setting the wrong default cue color [#11554](https://github.com/mixxxdj/mixxx/pull/11554) [#11260](https://github.com/mixxxdj/mixxx/issues/11260)
 * Replace Launchpad bugs by GitHub issues
   [#10850](https://github.com/mixxxdj/mixxx/pull/10850)
   [#10865](https://github.com/mixxxdj/mixxx/pull/10865)
@@ -1000,9 +1028,67 @@
   [#11434](https://github.com/mixxxdj/mixxx/pull/11434)
   [#11301](https://github.com/mixxxdj/mixxx/pull/11301)
 
-## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (unreleased)
+## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)
 
-* TODO
+* Fixed possible crash when closing Mixxx while browsing the file system
+  [#11593](https://github.com/mixxxdj/mixxx/pull/11593)
+  [#11589](https://github.com/mixxxdj/mixxx/issues/11589)
+* No longer stop a track with an active loop at the very end
+  [#11558](https://github.com/mixxxdj/mixxx/pull/11558)
+  [#11557](https://github.com/mixxxdj/mixxx/issues/11557)
+* Fixed resyncing when moving an active loop
+  [#11152](https://github.com/mixxxdj/mixxx/pull/11152)
+  [#11381](https://github.com/mixxxdj/mixxx/issues/11381)
+* Allow true gapless playback when repeating full tracks
+  [#11532](https://github.com/mixxxdj/mixxx/pull/11532)
+  [#9842](https://github.com/mixxxdj/mixxx/issues/9842)
+  [#11704](https://github.com/mixxxdj/mixxx/pull/11704)
+* Rhythmbox: Fixed bulk track imports from playlists
+  [#11661](https://github.com/mixxxdj/mixxx/pull/11661)
+* Console log spam reduced
+  [#11690](https://github.com/mixxxdj/mixxx/pull/11690)
+  [#11691](https://github.com/mixxxdj/mixxx/issues/11691)
+* Numark DJ2GO2 Touch: Add missing loop_out mapping for the right deck
+  [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
+  [#11659](https://github.com/mixxxdj/mixxx/pull/11659)
+* Shade: Fixed VU-Meter and other minor issues
+  [#11598](https://github.com/mixxxdj/mixxx/pull/11598)
+* Fixed a rare crash when disabling quantize form a controller
+  [#11744](https://github.com/mixxxdj/mixxx/pull/11744)
+  [#11709](https://github.com/mixxxdj/mixxx/issues/11709)
+* Controller Preferences: Avoid scrollbars in I/O tabs if Info tab exceeds page height
+  [#11756](https://github.com/mixxxdj/mixxx/pull/11756)
+* Broadcast: Improved error message in case of timeout
+  [#11775](https://github.com/mixxxdj/mixxx/pull/11775)
+* Handle setting `loop_in` and `loop_out` to the same position
+  [#11771](https://github.com/mixxxdj/mixxx/pull/11771)
+  [#10600](https://github.com/mixxxdj/mixxx/issues/10600)
+* Fix build issues with Protobuf v23.4 and with clang 32
+  [#11751](https://github.com/mixxxdj/mixxx/pull/11751)
+  [#11765](https://github.com/mixxxdj/mixxx/pull/11765)
+  [#11762](https://github.com/mixxxdj/mixxx/issues/11762)
+* Disable GL VU-Meters on Windows by default. They can be re-enabled via the command line option `--enableVuMeterGL`.
+  [#11787](https://github.com/mixxxdj/mixxx/pull/11787)
+  [#11785](https://github.com/mixxxdj/mixxx/issues/11785)
+  [#11789](https://github.com/mixxxdj/mixxx/issues/11789)
+* Library preferences: Uncheck Serato metadata export when file metadata export is unchecked
+  [#11782](https://github.com/mixxxdj/mixxx/pull/11782)
+  [#11226](https://github.com/mixxxdj/mixxx/issues/11226)
+* Denon MC6000MK2: Delete mapping for main gain
+  [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
+* Improve output in case of some failed file system operations
+  [#11783](https://github.com/mixxxdj/mixxx/pull/11783)
+* Fix overlapping buffers when decoding M4A files using FFmpeg before 4.4
+  [#11760](https://github.com/mixxxdj/mixxx/pull/11760)
+  [#11545](https://github.com/mixxxdj/mixxx/issues/11545)
+* Don't reject key values from file metadata with non-minor/-major scales.
+  [#11001](https://github.com/mixxxdj/mixxx/pull/11001)
+  [#10995](https://github.com/mixxxdj/mixxx/issues/10995)
+* Allow playing tracks with durations of more than 6 hours
+  [#11511](https://github.com/mixxxdj/mixxx/pull/11511)
+  [#11504](https://github.com/mixxxdj/mixxx/issues/11504)
+* Update latency compensation for Soundtouch version 2.1.1 to 2.3
+  [#11154](https://github.com/mixxxdj/mixxx/pull/11154)
 
 ## [2.3.5](https://github.com/mixxxdj/mixxx/milestone/39) (2023-05-10)
 
@@ -1075,6 +1161,7 @@
 * Fix sorting via column header in external library features
   [#11491](https://github.com/mixxxdj/mixxx/issues/11491)
   [#11499](https://github.com/mixxxdj/mixxx/pull/11499)
+  [#11498](https://github.com/mixxxdj/mixxx/pull/11498)
 * Fix wrong waveform background color on recent Linux distributions like Fedora 37
   [#11164](https://github.com/mixxxdj/mixxx/issues/11164)
   [#11523](https://github.com/mixxxdj/mixxx/pull/11523)
@@ -1381,6 +1468,7 @@
 * Add controller mapping for Native Instrument Traktor Kontrol S3 [#3031](https://github.com/mixxxdj/mixxx/pull/3031)
 * Add controller mapping for Behringer BCR2000 [#3342](https://github.com/mixxxdj/mixxx/pull/3342) [#3943](https://github.com/mixxxdj/mixxx/pull/3943)
 * Add controller mapping for Behringer DDM4000 [#3542](https://github.com/mixxxdj/mixxx/pull/3542)
+* Add controller mapping for Native Instruments Traktor Kontrol S4MK3 [#11284](https://github.com/mixxxdj/mixxx/pull/11284)
 * Update controller mapping for Allen & Heath Xone K2 to add intro/outro cues [#2236](https://github.com/mixxxdj/mixxx/pull/2236)
 * Update controller mapping for Hercules P32 for more accurate headmix control [#3537](https://github.com/mixxxdj/mixxx/pull/3537)
 * Update controller mapping for Native Instruments Traktor Kontrol S4MK2 to add auto-slip mode and pitch fader range [#3331](https://github.com/mixxxdj/mixxx/pull/3331)

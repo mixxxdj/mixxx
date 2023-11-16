@@ -222,6 +222,12 @@ WLibrarySidebar {
   selection-background-color: #006596;
 }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+WTrackTableView::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
+
 /* Selected rows in Tree and Tracks table */
 WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
@@ -231,7 +237,6 @@ WLibrarySidebar::item:selected,
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;
@@ -263,15 +268,13 @@ WLibraryTextBrowser {
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 WBeatSpinBox,
-#LibraryBPMSpinBox {
-  selection-color: #000;
-  selection-background-color: #ccc;
-}
-WLibrary QLineEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
+  selection-color: #000;
+  selection-background-color: #ccc;
   border: 1px solid #006596;
 }
 
@@ -847,6 +850,7 @@ WTrackTableViewHeader::section,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -1031,7 +1035,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 4;
 }
 
-#MasterControls, #HeadphoneControls {
+#MainControls, #HeadphoneControls {
     qproperty-layoutSpacing: 10;
     margin-bottom: 1px;
     margin-top: 1px;
@@ -1335,7 +1339,7 @@ WBeatSpinBox,
   border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
-#MasterControls {
+#MainControls {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1443,7 +1447,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#master_VuMeter_Group {
+#main_VuMeter_Group {
   qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 5px;
@@ -1451,7 +1455,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#MasterVu {
+#MainVu {
   qproperty-layoutAlignment: 'AlignCenter';
   /* background-color: #582831; */
 }
@@ -1626,6 +1630,17 @@ WPushButton[value="2"],
     color: #FDFDFD;
     background-color: #006596;
     border: 1px solid #006596;
+}
+WPushButton#SyncLeader[value="1"] {
+    background-color: #4B4B4B;
+    border: 1px solid #0092d9;
+}
+WPushButton#SyncLeader[value="0"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_off.svg) no-repeat center center;
+}
+WPushButton#SyncLeader[value="1"],
+WPushButton#SyncLeader[value="2"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_on.svg) no-repeat center center;
 }
 
 WPushButton[value="1"]:hover,
@@ -1961,6 +1976,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -1983,6 +2000,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2012,6 +2030,7 @@ WSearchLineEdit QAbstractScrollArea,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
   QLineEdit QMenu::item:selected,
+  QPlainTextEdit QMenu::item:selected,
   WCoverArtMenu::item:selected,
   WEffectSelector::item:selected,
   WEffectSelector::indicator:unchecked:selected,
@@ -2196,7 +2215,8 @@ WTrackTableViewHeader QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
 WLibraryTextBrowser QMenu::separator,
-QLineEdit QMenu::separator {
+QLineEdit QMenu::separator,
+QPlainTextEdit QMenu::separator {
   border-top: 1px solid #999;
 }
 
@@ -2211,6 +2231,7 @@ WTrackMenu QMenu QCheckBox::indicator {
 }
 
 QLineEdit QMenu::icon:selected,
+QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
 WTrackTableViewHeader QMenu::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
@@ -2223,7 +2244,8 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #555;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled {

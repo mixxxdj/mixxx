@@ -1,10 +1,10 @@
-#include <QtSql>
-#include <QString>
-#include <QtDebug>
-#include <QVariant>
-#include <QThread>
-
 #include "libraryhashdao.h"
+
+#include <QString>
+#include <QThread>
+#include <QVariant>
+#include <QtDebug>
+
 #include "library/queryutil.h"
 
 namespace {

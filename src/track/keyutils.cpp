@@ -6,158 +6,219 @@
 #include <QtDebug>
 
 #include "util/compatibility/qmutex.h"
-#include "util/math.h"
-
-#define MUSIC_FLAT_UTF8  "\xe299ad"
-#define MUSIC_SHARP_UTF8 "\xe299af"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
+
+namespace {
 
 // All of these regular expressions need exact matching.
 // QRegularExpression::anchoredPattern cannot be used because Mixxx supports Qt < 5.15, so
 // instead do what QRegularExpression::anchoredPattern by wrapping each regex in \\A(?: ... )\\z
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-static const QRegularExpression s_openKeyRegex(QStringLiteral(
-                                                       "\\A(?:^\\s*(1[0-2]|[1-9])([dm])\\s*$)\\z"),
-        QRegularExpression::CaseInsensitiveOption);
+const QRegularExpression s_openKeyRegex(QStringLiteral(
+        "\\A(?:^\\s*(1[0-2]|[1-9])([dm])\\s*$)\\z"));
 
-// Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-static const QRegularExpression s_lancelotKeyRegex(
-        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ab])\\s*$)\\z"),
-        QRegularExpression::CaseInsensitiveOption);
+// Lancelot notation, the numbers 1-12 followed by A (minor) or B(I) (major).
+// or "I", "L", "M", "D", "P", "C" for the advanced modes
+const QRegularExpression s_lancelotKeyRegex(
+        QStringLiteral("\\A(?:^\\s*0*(1[0-2]|[1-9])([ABILMDPC])\\s*$)\\z"));
+constexpr std::string_view s_lancelotMajorModes = "BILM";
 
 // a-g followed by any number of sharps or flats, optionally followed by
-// a scale spec (m = minor, min, maj)
-// anchor the pattern so we don't get accidental sub-string matches
-// (?:or)? allows unabbreviated major|minor without capturing
-static const QRegularExpression s_keyRegex(QString::fromUtf8(
-                                                   "\\A(?:^\\s*([a-g])([#♯b♭]*)"
-                                                   "(min(?:or)?|maj(?:or)?|m)?\\s*$)\\z"),
+// a scale mode spec (m = minor, min, maj ..)
+// Note: ## = x exists: https://jadebultitude.com/double-sharp-sign-in-music
+const QRegularExpression s_keyRegex(
+        QString::fromUtf8(
+                "\\A(?:^\\s*([a-g])([#♯b♭]*) *([a-z]{3}.*|m)?\\s*$)\\z"),
         QRegularExpression::CaseInsensitiveOption);
 
-static const QString s_sharpSymbol = QString::fromUtf8("♯");
+const QString s_sharpSymbol = QString::fromUtf8("♯");
 //static const QString s_flatSymbol = QString::fromUtf8("♭");
 
-static const QString s_traditionalKeyNames[] = {
-    QString::fromUtf8("INVALID"),
-    QString::fromUtf8("C"),
-    QString::fromUtf8("D♭"),
-    QString::fromUtf8("D"),
-    QString::fromUtf8("E♭"),
-    QString::fromUtf8("E"),
-    QString::fromUtf8("F"),
-    QString::fromUtf8("F♯/G♭"),
-    QString::fromUtf8("G"),
-    QString::fromUtf8("A♭"),
-    QString::fromUtf8("A"),
-    QString::fromUtf8("B♭"),
-    QString::fromUtf8("B"),
-    QString::fromUtf8("Cm"),
-    QString::fromUtf8("C♯m"),
-    QString::fromUtf8("Dm"),
-    QString::fromUtf8("D♯m/E♭m"),
-    QString::fromUtf8("Em"),
-    QString::fromUtf8("Fm"),
-    QString::fromUtf8("F♯m"),
-    QString::fromUtf8("Gm"),
-    QString::fromUtf8("G♯m"),
-    QString::fromUtf8("Am"),
-    QString::fromUtf8("B♭m"),
-    QString::fromUtf8("Bm")
-};
+const QString s_traditionalKeyNames[] = {
+        QString::fromUtf8("INVALID"),
+        QString::fromUtf8("C"),
+        QString::fromUtf8("D♭"),
+        QString::fromUtf8("D"),
+        QString::fromUtf8("E♭"),
+        QString::fromUtf8("E"),
+        QString::fromUtf8("F"),
+        QString::fromUtf8("F♯/G♭"),
+        QString::fromUtf8("G"),
+        QString::fromUtf8("A♭"),
+        QString::fromUtf8("A"),
+        QString::fromUtf8("B♭"),
+        QString::fromUtf8("B"),
+        QString::fromUtf8("Cm"),
+        QString::fromUtf8("C♯m"),
+        QString::fromUtf8("Dm"),
+        QString::fromUtf8("D♯m/E♭m"),
+        QString::fromUtf8("Em"),
+        QString::fromUtf8("Fm"),
+        QString::fromUtf8("F♯m"),
+        QString::fromUtf8("Gm"),
+        QString::fromUtf8("G♯m"),
+        QString::fromUtf8("Am"),
+        QString::fromUtf8("B♭m"),
+        QString::fromUtf8("Bm")};
 
 // Maps an OpenKey number to its major and minor key.
-const ChromaticKey s_openKeyToKeys[][2] = {
-    // 0 is not a valid OpenKey number.
-    { mixxx::track::io::key::INVALID,       mixxx::track::io::key::INVALID },
-    { mixxx::track::io::key::C_MAJOR,       mixxx::track::io::key::A_MINOR }, // 1
-    { mixxx::track::io::key::G_MAJOR,       mixxx::track::io::key::E_MINOR }, // 2
-    { mixxx::track::io::key::D_MAJOR,       mixxx::track::io::key::B_MINOR }, // 3
-    { mixxx::track::io::key::A_MAJOR,       mixxx::track::io::key::F_SHARP_MINOR }, // 4
-    { mixxx::track::io::key::E_MAJOR,       mixxx::track::io::key::C_SHARP_MINOR }, // 5
-    { mixxx::track::io::key::B_MAJOR,       mixxx::track::io::key::G_SHARP_MINOR }, // 6
-    { mixxx::track::io::key::F_SHARP_MAJOR, mixxx::track::io::key::E_FLAT_MINOR }, // 7
-    { mixxx::track::io::key::D_FLAT_MAJOR,  mixxx::track::io::key::B_FLAT_MINOR }, // 8
-    { mixxx::track::io::key::A_FLAT_MAJOR,  mixxx::track::io::key::F_MINOR }, // 9
-    { mixxx::track::io::key::E_FLAT_MAJOR,  mixxx::track::io::key::C_MINOR }, // 10
-    { mixxx::track::io::key::B_FLAT_MAJOR,  mixxx::track::io::key::G_MINOR }, // 11
-    { mixxx::track::io::key::F_MAJOR,       mixxx::track::io::key::D_MINOR } // 12
+constexpr ChromaticKey s_openKeyToKeys[][2] = {
+        // 0 is not a valid OpenKey number.
+        {mixxx::track::io::key::INVALID, mixxx::track::io::key::INVALID},
+        {mixxx::track::io::key::C_MAJOR, mixxx::track::io::key::A_MINOR},            // 1
+        {mixxx::track::io::key::G_MAJOR, mixxx::track::io::key::E_MINOR},            // 2
+        {mixxx::track::io::key::D_MAJOR, mixxx::track::io::key::B_MINOR},            // 3
+        {mixxx::track::io::key::A_MAJOR, mixxx::track::io::key::F_SHARP_MINOR},      // 4
+        {mixxx::track::io::key::E_MAJOR, mixxx::track::io::key::C_SHARP_MINOR},      // 5
+        {mixxx::track::io::key::B_MAJOR, mixxx::track::io::key::G_SHARP_MINOR},      // 6
+        {mixxx::track::io::key::F_SHARP_MAJOR, mixxx::track::io::key::E_FLAT_MINOR}, // 7
+        {mixxx::track::io::key::D_FLAT_MAJOR, mixxx::track::io::key::B_FLAT_MINOR},  // 8
+        {mixxx::track::io::key::A_FLAT_MAJOR, mixxx::track::io::key::F_MINOR},       // 9
+        {mixxx::track::io::key::E_FLAT_MAJOR, mixxx::track::io::key::C_MINOR},       // 10
+        {mixxx::track::io::key::B_FLAT_MAJOR, mixxx::track::io::key::G_MINOR},       // 11
+        {mixxx::track::io::key::F_MAJOR, mixxx::track::io::key::D_MINOR}             // 12
 };
 
 // This is a quick hack to convert an ASCII letter into a key. Lookup the key
 // using (letter.toLower() - 'a') as the index. Make sure the letter matches
 // [a-gA-G] first.
-const ChromaticKey s_letterToMajorKey[] = {
-    mixxx::track::io::key::A_MAJOR,
-    mixxx::track::io::key::B_MAJOR,
-    mixxx::track::io::key::C_MAJOR,
-    mixxx::track::io::key::D_MAJOR,
-    mixxx::track::io::key::E_MAJOR,
-    mixxx::track::io::key::F_MAJOR,
-    mixxx::track::io::key::G_MAJOR
+constexpr ChromaticKey s_letterToMajorKey[] = {
+        mixxx::track::io::key::A_MAJOR,
+        mixxx::track::io::key::B_MAJOR,
+        mixxx::track::io::key::C_MAJOR,
+        mixxx::track::io::key::D_MAJOR,
+        mixxx::track::io::key::E_MAJOR,
+        mixxx::track::io::key::F_MAJOR,
+        mixxx::track::io::key::G_MAJOR};
+
+constexpr int s_sortKeysCircleOfFifths[] = {
+        0,  // INVALID
+        1,  // C_MAJOR
+        15, // D_FLAT_MAJOR
+        5,  // D_MAJOR
+        19, // E_FLAT_MAJOR
+        9,  // E_MAJOR
+        23, // F_MAJOR
+        13, // F_SHARP_MAJOR
+        3,  // G_MAJOR
+        17, // A_FLAT_MAJOR
+        7,  // A_MAJOR
+        21, // B_FLAT_MAJOR
+        11, // B_MAJOR
+        20, // C_MINOR
+        10, // C_SHARP_MINOR
+        24, // D_MINOR
+        14, // E_FLAT_MINOR
+        4,  // E_MINOR
+        18, // F_MINOR
+        8,  // F_SHARP_MINOR
+        22, // G_MINOR
+        12, // G_SHARP_MINOR
+        2,  // A_MINOR
+        16, // B_FLAT_MINOR
+        6,  // B_MINOR
 };
 
-static const int s_sortKeysCircleOfFifths[] = {
-    0, // INVALID
-    1, // C_MAJOR
-    15, // D_FLAT_MAJOR
-    5, // D_MAJOR
-    19, // E_FLAT_MAJOR
-    9, // E_MAJOR
-    23, // F_MAJOR
-    13, // F_SHARP_MAJOR
-    3, // G_MAJOR
-    17, // A_FLAT_MAJOR
-    7, // A_MAJOR
-    21, // B_FLAT_MAJOR
-    11, // B_MAJOR
-    20, // C_MINOR
-    10, // C_SHARP_MINOR
-    24, // D_MINOR
-    14, // E_FLAT_MINOR
-    4, // E_MINOR
-    18, // F_MINOR
-    8, // F_SHARP_MINOR
-    22, // G_MINOR
-    12, // G_SHARP_MINOR
-    2, // A_MINOR
-    16, // B_FLAT_MINOR
-    6, // B_MINOR
+constexpr int s_sortKeysCircleOfFifthsLancelot[] = {
+        0,  // INVALID
+        16, // C_MAJOR
+        6,  // D_FLAT_MAJOR
+        20, // D_MAJOR
+        10, // E_FLAT_MAJOR
+        24, // E_MAJOR
+        14, // F_MAJOR
+        4,  // F_SHARP_MAJOR
+        18, // G_MAJOR
+        8,  // A_FLAT_MAJOR
+        22, // A_MAJOR
+        12, // B_FLAT_MAJOR
+        2,  // B_MAJOR
+        9,  // C_MINOR
+        23, // C_SHARP_MINOR
+        13, // D_MINOR
+        3,  // E_FLAT_MINOR
+        17, // E_MINOR
+        7,  // F_MINOR
+        21, // F_SHARP_MINOR
+        11, // G_MINOR
+        1,  // G_SHARP_MINOR
+        15, // A_MINOR
+        5,  // B_FLAT_MINOR
+        19, // B_MINOR
 };
 
-static const int s_sortKeysCircleOfFifthsLancelot[] = {
-    0, // INVALID
-    16, // C_MAJOR
-    6, // D_FLAT_MAJOR
-    20, // D_MAJOR
-    10, // E_FLAT_MAJOR
-    24, // E_MAJOR
-    14, // F_MAJOR
-    4, // F_SHARP_MAJOR
-    18, // G_MAJOR
-    8, // A_FLAT_MAJOR
-    22, // A_MAJOR
-    12, // B_FLAT_MAJOR
-    2, // B_MAJOR
-    9, // C_MINOR
-    23, // C_SHARP_MINOR
-    13, // D_MINOR
-    3, // E_FLAT_MINOR
-    17, // E_MINOR
-    7, // F_MINOR
-    21, // F_SHARP_MINOR
-    11, // G_MINOR
-    1, // G_SHARP_MINOR
-    15, // A_MINOR
-    5, // B_FLAT_MINOR
-    19, // B_MINOR
+struct ScaleModeInfo {
+    KeyUtils::ScaleMode mode;
+    const char* text;
+    const char* textShort;
+    bool isMajor;
+    int transposeSteps;
 };
 
-QMutex KeyUtils::s_notationMutex;
-QMap<ChromaticKey, QString> KeyUtils::s_notation;
-QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
+// Strings used by Rapid Evolution when exporting detailed keys to file tags
+constexpr ScaleModeInfo s_scaleModeInfo[] = {
+        {KeyUtils::ScaleMode::Ionian, // standard major
+                "ionian",
+                "ion",
+                true,
+                0},
+        {KeyUtils::ScaleMode::Aeolian, // natural minor
+                "aeolian",
+                "aeo",
+                false,
+                0},
+        {KeyUtils::ScaleMode::Lydian, // major with raised 4th
+                "lydian",
+                "lyd",
+                true,
+                -5},
+        {KeyUtils::ScaleMode::Mixolydian, // major with lowered 7th
+                "mixolydian",
+                "mix",
+                true,
+                +5},
+        {KeyUtils::ScaleMode::Dorian, // minor with raised 6th
+                "dorian",
+                "dor",
+                false,
+                -5},
+        {KeyUtils::ScaleMode::Phrygian, // minor with lowered 2nd
+                "phrygian",
+                "phr",
+                false,
+                +5},
+        {KeyUtils::ScaleMode::Locrian, //  minor with lowered 2nd and 7th
+                "locrian",
+                "loc",
+                false,
+                -2},
+};
+
+// transposeSteps is used to express the detailed modes
+// as a compatible natural minor or standard major scale
+// The following table shows the relation for C major in the Circle of Fifths
+// "C ionian"     8B    C – D – E – F – G – A – B
+// "Db"
+// "D dorian"     8D    D – E – F – G – A – B – C
+// "Eb"
+// "E phrygian"   8P    E – F – G – A – B – C – D
+// "F lydian" 	  8L    F – G – A – B – C – D – E
+// "Gb"
+// "G mixolydian  8M    G – A – B – C – D – E – F
+// "Ab"
+// "A aeolian"    8A    A – B – C – D – E – F – G
+// "Bb"
+// "B locrian"    8C    B – C – D – E – F – G – A
+
+// We transpose according to isMajor:
+// lydian to ionian
+// mixolydian to ionian
+// dorian to aeolian
+// phrygian to aeolian
+// locrian to aeolian
 
 // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
 inline int openKeyNumberToLancelotNumber(const int okNumber)  {
@@ -176,6 +237,12 @@ inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
     }
     return okNumber;
 }
+
+} // namespace
+
+QMutex KeyUtils::s_notationMutex;
+QMap<ChromaticKey, QString> KeyUtils::s_notation;
+QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
 
 // static
 ChromaticKey KeyUtils::openKeyNumberToKey(int openKeyNumber, bool major) {
@@ -291,7 +358,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         }
 
         bool major = openKeyMatch.captured(2)
-                             .compare("d", Qt::CaseInsensitive) == 0;
+                             .compare("d") == 0;
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
@@ -308,8 +375,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
-        bool major = lancelotMatch.captured(2)
-                             .compare("b", Qt::CaseInsensitive) == 0;
+        const QChar lancelotScaleMode = lancelotMatch.captured(2).at(0);
+        bool major = (s_lancelotMajorModes.find(lancelotScaleMode.toLatin1()) != std::string::npos);
 
         return openKeyNumberToKey(openKeyNumber, major);
     }
@@ -335,19 +402,32 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
         QString scale = keyMatch.captured(3);
         // we override major if a scale definition exists
-        if (! scale.isEmpty()) {
+        if (!scale.isEmpty()) {
             if (scale.compare("m", Qt::CaseInsensitive) == 0) {
+                // Aeolian
                 major = false;
             } else if (scale.startsWith("min", Qt::CaseInsensitive)) {
+                // Aeolian
                 major = false;
             } else if (scale.startsWith("maj", Qt::CaseInsensitive)) {
+                // Ionian
                 major = true;
             } else {
-                qDebug() << "WARNING: scale from regexp has unexpected value."
-                  " should never happen";
+                // Try to find detailed scale mode
+                ScaleMode scaleMode = ScaleMode::Unknown;
+                for (const ScaleModeInfo& modeInfo : s_scaleModeInfo) {
+                    if (scale.startsWith(modeInfo.textShort, Qt::CaseInsensitive)) {
+                        scaleMode = modeInfo.mode;
+                        major = modeInfo.isMajor;
+                        steps += modeInfo.transposeSteps;
+                        break;
+                    }
+                }
+                if (scaleMode == ScaleMode::Unknown) {
+                    return mixxx::track::io::key::INVALID;
+                }
             }
         }
-
         ChromaticKey letterKey = static_cast<ChromaticKey>(
             s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
         return scaleKeySteps(letterKey, steps);
@@ -428,20 +508,19 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
-    const KeyChangeList& key_changes, const int iTotalSamples, int iSampleRate) {
+        const KeyChangeList& key_changes, SINT totalFrames, mixxx::audio::SampleRate sampleRate) {
     if (key_changes.size() == 1) {
         qDebug() << keyDebugName(key_changes[0].first);
         return key_changes[0].first;
     }
-
-    const int iTotalFrames = iTotalSamples / 2;
     QMap<mixxx::track::io::key::ChromaticKey, double> key_histogram;
 
     for (int i = 0; i < key_changes.size(); ++i) {
         mixxx::track::io::key::ChromaticKey key = key_changes[i].first;
         const double start_frame = key_changes[i].second;
-        const double next_frame = (i == key_changes.size() - 1) ?
-                iTotalFrames : key_changes[i+1].second;
+        const double next_frame = (i == key_changes.size() - 1)
+                ? totalFrames
+                : key_changes[i + 1].second;
         key_histogram[key] += (next_frame - start_frame);
     }
 
@@ -451,7 +530,7 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     qDebug() << "Key Histogram";
     for (auto it = key_histogram.constBegin();
          it != key_histogram.constEnd(); ++it) {
-        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / iSampleRate;
+        qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value() / sampleRate;
         if (it.value() > max_delta) {
             max_key = it.key();
             max_delta = it.value();

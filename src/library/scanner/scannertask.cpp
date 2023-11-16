@@ -1,6 +1,5 @@
 #include "library/scanner/scannertask.h"
 
-#include "library/scanner/libraryscanner.h"
 #include "moc_scannertask.cpp"
 
 ScannerTask::ScannerTask(LibraryScanner* pScanner,

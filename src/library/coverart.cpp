@@ -4,7 +4,6 @@
 
 #include "library/coverartutils.h"
 #include "track/track.h"
-#include "util/debug.h"
 #include "util/logger.h"
 
 namespace {
@@ -68,14 +67,15 @@ CoverInfoRelative::CoverInfoRelative()
           m_legacyHash(defaultLegacyHash()) {
 }
 
-void CoverInfoRelative::setImage(
+void CoverInfoRelative::setImageDigest(
         const QImage& image) {
     color = CoverImageUtils::extractBackgroundColor(image);
     m_imageDigest = CoverImageUtils::calculateDigest(image);
     DEBUG_ASSERT(image.isNull() == m_imageDigest.isEmpty());
     m_legacyHash = calculateLegacyHash(image);
     DEBUG_ASSERT(image.isNull() == (m_legacyHash == defaultLegacyHash()));
-    DEBUG_ASSERT(image.isNull() != hasImage());
+    DEBUG_ASSERT(image.isNull() != hasCacheKey());
+    DEBUG_ASSERT(image.isNull() == (type == NONE));
 }
 
 bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
@@ -106,8 +106,7 @@ QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
             << '}';
 }
 
-CoverInfo::LoadedImage CoverInfo::loadImage(
-        const SecurityTokenPointer& pTrackLocationToken) const {
+CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
     LoadedImage loadedImage(LoadedImage::Result::ErrorUnknown);
     if (type == CoverInfo::METADATA) {
         VERIFY_OR_DEBUG_ASSERT(!trackLocation.isEmpty()) {
@@ -115,10 +114,13 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
             return loadedImage;
         }
         loadedImage.location = trackLocation;
-        loadedImage.image = CoverArtUtils::extractEmbeddedCover(
-                mixxx::FileAccess(
-                        mixxx::FileInfo(trackLocation),
-                        pTrackLocationToken));
+        if (pTrack) {
+            DEBUG_ASSERT(trackLocation == pTrack->getLocation());
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(pTrack);
+        } else {
+            loadedImage.image = CoverArtUtils::extractEmbeddedCover(
+                    mixxx::FileAccess(mixxx::FileInfo(trackLocation)));
+        }
         if (loadedImage.image.isNull()) {
             // TODO: extractEmbeddedCover() should indicate if no image
             // is available or if loading the embedded image failed.
@@ -168,32 +170,6 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
         DEBUG_ASSERT(!"unhandled CoverInfo::Type");
     }
     return loadedImage;
-}
-
-bool CoverInfo::refreshImageDigest(
-        const QImage& loadedImage,
-        const SecurityTokenPointer& pTrackLocationToken) {
-    if (!imageDigest().isEmpty()) {
-        // Assume that a non-empty digest has been calculated from
-        // the corresponding image. Otherwise we would refresh all
-        // digests over and over again.
-        // Invalid legacy hash values are ignored. These will only
-        // be refreshed when opened with a previous version.
-        return false;
-    }
-    QImage image = loadedImage;
-    if (image.isNull()) {
-        image = loadImage(pTrackLocationToken).image;
-    }
-    if (image.isNull() && type != CoverInfo::NONE) {
-        kLogger.warning()
-                << "Resetting cover info"
-                << *this;
-        reset();
-        return true;
-    }
-    setImage(image);
-    return true;
 }
 
 bool operator==(const CoverInfo& lhs, const CoverInfo& rhs) {

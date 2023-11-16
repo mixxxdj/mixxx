@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QWidget>
 #include <QObject>
 #include <QStackedWidget>
-#include <QEvent>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wbasewidget.h"
+
+class QEvent;
+class QWidget;
 
 class WidgetStackControlListener : public QObject {
     Q_OBJECT

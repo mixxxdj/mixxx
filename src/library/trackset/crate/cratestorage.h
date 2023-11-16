@@ -1,14 +1,16 @@
 #pragma once
 
 #include <QList>
-#include <QObject>
 #include <QSet>
 
-#include "library/trackset/crate/cratesummary.h"
+#include "library/trackset/crate/crateid.h"
 #include "track/trackid.h"
 #include "util/db/fwdsqlqueryselectresult.h"
 #include "util/db/sqlstorage.h"
 #include "util/db/sqlsubselectmode.h"
+
+class Crate;
+class CrateSummary;
 
 class CrateQueryFields {
   public:

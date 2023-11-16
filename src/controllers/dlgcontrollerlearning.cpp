@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
+#include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_dlgcontrollerlearning.cpp"
 #include "util/versionstore.h"
@@ -25,6 +26,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
 
     setupUi(this);
+    labelDescription->setWordWrap(true);
     labelMappedTo->setText("");
 
     QString helpTitle(tr("Click anywhere in Mixxx or choose a control to learn"));
@@ -487,15 +489,11 @@ void DlgControllerLearning::controlPicked(const ConfigKey& control) {
     loadControl(control, title, description);
 }
 
-void DlgControllerLearning::controlClicked(ControlObject* pControl) {
-    if (!pControl) {
-        return;
-    }
-
-    ConfigKey key = pControl->getKey();
-    if (!m_pControlPickerMenu->controlExists(key)) {
+void DlgControllerLearning::controlClicked(const ConfigKey& controlKey) {
+    if (!m_pControlPickerMenu->controlExists(controlKey)) {
         qWarning() << "Mixxx UI element clicked for which there is no "
-                      "learnable control " << key.group << " " << key.item;
+                      "learnable control "
+                   << controlKey.group << " " << controlKey.item;
         QMessageBox::warning(
                 this,
                 VersionStore::applicationName(),
@@ -506,12 +504,12 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
                    " and can only be mapped to outputs like LEDs via"
                    " scripts.\n"
                    "\nYou tried to learn: %1,%2")
-                        .arg(key.group, key.item),
+                        .arg(controlKey.group, controlKey.item),
                 QMessageBox::Ok,
                 QMessageBox::Ok);
         return;
     }
-    controlPicked(key);
+    controlPicked(controlKey);
 }
 
 void DlgControllerLearning::comboboxIndexChanged(int index) {

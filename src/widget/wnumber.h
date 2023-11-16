@@ -1,9 +1,6 @@
 #pragma once
 
-#include <QLabel>
-
 #include "widget/wlabel.h"
-#include "skin/legacy/skincontext.h"
 
 class WNumber : public WLabel  {
     Q_OBJECT

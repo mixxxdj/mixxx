@@ -1,8 +1,7 @@
 #pragma once
 
 #include "encoder/encodersettings.h"
-#include "encoder/encoder.h"
-#include "preferences/broadcastsettings.h"
+#include "preferences/broadcastprofile.h"
 
 /// Storage of broadcast settings for the encoders.
 class EncoderBroadcastSettings : public EncoderSettings {

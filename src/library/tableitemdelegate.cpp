@@ -73,3 +73,10 @@ void TableItemDelegate::paintItemBackground(
     const auto bgBrush = qvariant_cast<QBrush>(bgValue);
     painter->fillRect(option.rect, bgBrush);
 }
+
+void TableItemDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    QStyledItemDelegate::paint(painter, option, index);
+}

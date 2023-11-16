@@ -1,11 +1,12 @@
 #include "widget/woverviewlmh.h"
 
-#include <QPen>
-#include <QPainter>
 #include <QColor>
+#include <QPainter>
+#include <QPen>
 
-#include "util/timer.h"
+#include "moc_woverviewlmh.cpp"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/waveform.h"
 
 WOverviewLMH::WOverviewLMH(
@@ -17,7 +18,7 @@ WOverviewLMH::WOverviewLMH(
 }
 
 bool WOverviewLMH::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewLMH::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewLMH::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 

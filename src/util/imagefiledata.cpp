@@ -1,10 +1,8 @@
 #include "util/imagefiledata.h"
 
 #include <QBuffer>
-#include <QByteArray>
 #include <QFile>
 #include <QFileInfo>
-#include <QImage>
 #include <QImageReader>
 
 #include "util/assert.h"

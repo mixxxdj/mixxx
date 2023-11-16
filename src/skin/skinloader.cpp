@@ -1,23 +1,18 @@
 #include "skin/skinloader.h"
 
-#include <QApplication>
 #include <QDir>
 #include <QString>
 #include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "controllers/controllermanager.h"
-#include "effects/effectsmanager.h"
-#include "library/library.h"
 #include "mixer/playermanager.h"
-#include "recording/recordingmanager.h"
+#include "moc_skinloader.cpp"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "util/debug.h"
 #include "util/timer.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 namespace mixxx {
 namespace skin {
@@ -137,7 +132,7 @@ QString SkinLoader::getDefaultSkinName() const {
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         QSet<ControlObject*>* pSkinCreatedControls,
         mixxx::CoreServices* pCoreServices) {
-    ScopedTimer timer("SkinLoader::loadConfiguredSkin");
+    ScopedTimer timer(u"SkinLoader::loadConfiguredSkin");
     SkinPointer pSkin = getConfiguredSkin();
 
     // If we don't have a skin then fail. This makes sense here, because the
@@ -293,7 +288,8 @@ void SkinLoader::setupMicDuckingControls() {
     m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowDuckingControls->setReadOnly();
 
-    m_pNumMics = make_parented<ControlProxy>("[Master]", "num_microphones", this);
+    m_pNumMics = make_parented<ControlProxy>(
+            QStringLiteral("[App]"), QStringLiteral("num_microphones"), this);
     m_pNumMics->connectValueChanged(this, &SkinLoader::slotNumMicsChanged);
 
     m_micDuckingControlsCreated = true;
@@ -323,7 +319,7 @@ void SkinLoader::updateDuckingControl() {
         return;
     }
     double atLeastOneMicConfigured = 0.0;
-    for (auto* pMicCon : qAsConst(m_pMicConfiguredControls)) {
+    for (auto* pMicCon : std::as_const(m_pMicConfiguredControls)) {
         if (pMicCon->toBool()) {
             atLeastOneMicConfigured = 1.0;
             break;

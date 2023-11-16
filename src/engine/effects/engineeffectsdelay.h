@@ -3,7 +3,6 @@
 #include "engine/engine.h"
 #include "engine/engineobject.h"
 #include "util/assert.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 namespace {
@@ -29,6 +28,7 @@ static constexpr int kDelayBufferSize =
 /// After delaying the non-delayed signal, both signals (delayed
 /// and non-delayed) can be mixed and used together.
 class EngineEffectsDelay final : public EngineObject {
+    Q_OBJECT
   public:
     EngineEffectsDelay();
 

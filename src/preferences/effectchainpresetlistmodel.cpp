@@ -3,6 +3,7 @@
 #include <QMimeData>
 
 #include "effects/presets/effectchainpresetmanager.h"
+#include "moc_effectchainpresetlistmodel.cpp"
 
 namespace {
 constexpr QChar kMimeTextDelimiter('\n');

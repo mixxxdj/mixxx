@@ -1,12 +1,13 @@
 #pragma once
 
 #include <QItemDelegate>
-#include <QModelIndex>
 #include <QObject>
-#include <QtSql>
 
 #include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
+
+class QModelIndex;
+typedef QList<QModelIndex> QModelIndexList;
 
 class MissingTableModel final : public BaseSqlTableModel {
     Q_OBJECT
@@ -18,7 +19,7 @@ class MissingTableModel final : public BaseSqlTableModel {
 
     bool isColumnInternal(int column) final;
     void purgeTracks(const QModelIndexList& indices) final;
-    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    Qt::ItemFlags flags(const QModelIndex& index) const final;
     Capabilities getCapabilities() const final;
 
     QString modelKey(bool noSearch) const override;

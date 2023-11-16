@@ -3,7 +3,6 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
-#include <QTableView>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"
@@ -97,6 +96,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
 
+    static constexpr int kBpmColumnPrecisionDefault = 1;
+    static constexpr int kBpmColumnPrecisionMinimum = 0;
+    static constexpr int kBpmColumnPrecisionMaximum = 10;
+    static void setBpmColumnPrecision(int precision);
+
   protected:
     static constexpr int defaultColumnWidth() {
         return 50;
@@ -165,7 +169,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// Return the raw data value at the given index.
     ///
     /// Expected types by ColumnCache field (pass-through = not validated):
-    /// COLUMN_LIBRARYTABLE_ID: DbId::value_type (pass-through)
+    /// COLUMN_LIBRARYTABLE_ID: int (pass-through)
     /// COLUMN_LIBRARYTABLE_ARTIST: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_TITLE: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_ALBUM: QString (pass-through)
@@ -271,4 +275,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     int countValidColumnHeaders() const;
 
     TrackId m_previewDeckTrackId;
+
+    static int s_bpmColumnPrecision;
 };

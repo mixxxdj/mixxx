@@ -2,19 +2,14 @@
 
 #include <memory>
 
-#include "control/controlpushbutton.h"
-#include "preferences/configobject.h"
-#include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
-#include "soundio/sounddevicestatus.h"
-#include "util/cmdlineargs.h"
 #include "util/timer.h"
 
 class QApplication;
 class CmdlineArgs;
 class KeyboardEventFilter;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class SoundManager;
 class PlayerManager;
 class RecordingManager;
@@ -25,7 +20,8 @@ class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
 class Library;
-class LV2Backend;
+class SkinControls;
+class ControlPushButton;
 
 namespace mixxx {
 
@@ -81,10 +77,6 @@ class CoreServices : public QObject {
         return m_pVCManager;
     }
 
-    LV2Backend* getLV2Backend() const {
-        return m_pLV2Backend;
-    }
-
     std::shared_ptr<EffectsManager> getEffectsManager() const {
         return m_pEffectsManager;
     }
@@ -109,6 +101,8 @@ class CoreServices : public QObject {
         return m_pScreensaverManager;
     }
 
+    std::shared_ptr<QDialog> makeDlgPreferences() const;
+
   signals:
     void initializationProgressUpdate(int progress, const QString& serviceName);
 
@@ -128,9 +122,7 @@ class CoreServices : public QObject {
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
-    // owned by EffectsManager
-    LV2Backend* m_pLV2Backend;
-    std::shared_ptr<EngineMaster> m_pEngine;
+    std::shared_ptr<EngineMixer> m_pEngine;
     std::shared_ptr<SoundManager> m_pSoundManager;
     std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::shared_ptr<RecordingManager> m_pRecordingManager;
@@ -151,7 +143,7 @@ class CoreServices : public QObject {
 
     std::shared_ptr<mixxx::ScreensaverManager> m_pScreensaverManager;
 
-    std::vector<std::unique_ptr<ControlPushButton>> m_uiControls;
+    std::unique_ptr<SkinControls> m_pSkinControls;
     std::unique_ptr<ControlPushButton> m_pTouchShift;
 
     Timer m_runtime_timer;

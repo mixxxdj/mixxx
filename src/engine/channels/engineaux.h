@@ -2,10 +2,7 @@
 
 #include <QScopedPointer>
 
-#include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
-#include "util/circularbuffer.h"
 #include "soundio/soundmanagerutil.h"
 
 class ControlAudioTaperPot;
@@ -20,7 +17,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
     ActiveState updateActiveState() override;
 
-    /// Called by EngineMaster whenever is requesting a new buffer of audio.
+    /// Called by EngineMixer whenever is requesting a new buffer of audio.
     void process(CSAMPLE* pOutput, const int iBufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
     void postProcess(const int iBufferSize) override {
@@ -31,7 +28,7 @@ class EngineAux : public EngineChannel, public AudioDestination {
     /// configured input to be processed. This is run in the callback thread of
     /// the soundcard this AudioDestination was registered for! Beware, in the
     /// case of multiple soundcards, this method is not re-entrant but it may be
-    /// concurrent with EngineMaster processing.
+    /// concurrent with EngineMixer processing.
     void receiveBuffer(const AudioInput& input,
             const CSAMPLE* pBuffer,
             unsigned int nFrames) override;

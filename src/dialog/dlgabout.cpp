@@ -1,5 +1,6 @@
 #include "dialog/dlgabout.h"
 
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
 #include <QLocale>
@@ -21,6 +22,7 @@ DlgAbout::DlgAbout()
     version_label->setText(VersionStore::applicationName() +
             QStringLiteral(" ") + VersionStore::version());
     git_version_label->setText(VersionStore::gitVersion());
+    qt_version_label->setText(VersionStore::qtVersion());
     platform_label->setText(VersionStore::platform());
     QLocale locale;
     date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
