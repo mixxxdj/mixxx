@@ -33,8 +33,7 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
         qWarning() << "Could not read XML from chain preset file" << filePath;
         return nullptr;
     }
-    EffectChainPresetPointer pEffectChainPreset(
-            new EffectChainPreset(doc.documentElement()));
+    auto pEffectChainPreset = EffectChainPresetPointer::create(doc.documentElement());
     file.close();
     return pEffectChainPreset;
 }
@@ -46,8 +45,7 @@ EffectChainPresetPointer createEmptyChainPreset() {
     pEmptyManifest->setMetaknobDefault(0.5);
     // Required for the QuickEffect selector in DlgPrefEQ
     pEmptyManifest->setShortName(kNoEffectString);
-    auto pEmptyChainPreset =
-            EffectChainPresetPointer(new EffectChainPreset(pEmptyManifest));
+    auto pEmptyChainPreset = EffectChainPresetPointer::create(pEmptyManifest);
     pEmptyChainPreset->setReadOnly();
 
     return pEmptyChainPreset;
@@ -139,8 +137,7 @@ bool EffectChainPresetManager::importPreset() {
         }
         file.close();
 
-        EffectChainPresetPointer pPreset(
-                new EffectChainPreset(doc.documentElement()));
+        auto pPreset = EffectChainPresetPointer::create(doc.documentElement());
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
             // Don't allow '---' because that's the name of the internal empty preset
             if (pPreset->name() == kNoEffectString) {
@@ -578,7 +575,7 @@ void EffectChainPresetManager::generateDefaultQuickEffectPresets() {
     }
     std::sort(manifestList.begin(), manifestList.end(), EffectManifest::sortLexigraphically);
     for (const auto& pManifest : manifestList) {
-        auto pChainPreset = EffectChainPresetPointer(new EffectChainPreset(pManifest));
+        auto pChainPreset = EffectChainPresetPointer::create(pManifest);
         pChainPreset->setName(pManifest->displayName());
         m_effectChainPresets.insert(pChainPreset->name(), pChainPreset);
         m_quickEffectChainPresetsSorted.append(pChainPreset);
@@ -706,8 +703,8 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
         if (chainNode.isElement()) {
             QDomElement chainElement = chainNode.toElement();
-            EffectChainPresetPointer pPreset(
-                    new EffectChainPreset(chainElement));
+            EffectChainPresetPointer pPreset =
+                    EffectChainPresetPointer::create(chainElement);
             standardEffectChainPresets.append(pPreset);
         }
     }
@@ -718,8 +715,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     EffectChainPresetPointer mainEqPreset = nullptr;
     if (mainEqChainNode.isElement()) {
         QDomElement mainEqChainElement = mainEqChainNode.toElement();
-        mainEqPreset = EffectChainPresetPointer(
-                new EffectChainPreset(mainEqChainElement));
+        mainEqPreset = EffectChainPresetPointer::create(mainEqChainElement);
     }
 
     importUserPresets();
