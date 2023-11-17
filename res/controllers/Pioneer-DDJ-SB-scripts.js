@@ -801,19 +801,22 @@ PioneerDDJSB.getRotaryDelta = function(value) {
 
 PioneerDDJSB.rotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSB.getRotaryDelta(value);
-    engine.setValue('[Playlist]', 'SelectTrackKnob', delta);
+    engine.setValue('[Library]', 'MoveVertical', delta);
 
     PioneerDDJSB.rotarySelectorChanged = true;
 };
 
 PioneerDDJSB.shiftedRotarySelector = function(channel, control, value, status) {
-    var delta = PioneerDDJSB.getRotaryDelta(value),
-        f = (delta > 0 ? 'SelectNextPlaylist' : 'SelectPrevPlaylist');
-
-    engine.setValue('[Playlist]', f, Math.abs(delta));
+    // TODO: Update preview playback position?
 };
 
 PioneerDDJSB.rotarySelectorClick = function(channel, control, value, _status) {
+    if (value) {
+        engine.setValue('[Library]', 'GoToItem', true);
+    }
+};
+
+PioneerDDJSB.rotarySelectorShiftedClick = function(channel, control, value, _status) {
     if (PioneerDDJSB.rotarySelectorChanged === true) {
         if (value) {
             engine.setValue('[PreviewDeck1]', 'LoadSelectedTrackAndPlay', true);
@@ -829,12 +832,6 @@ PioneerDDJSB.rotarySelectorClick = function(channel, control, value, _status) {
         } else {
             PioneerDDJSB.rotarySelectorChanged = true;
         }
-    }
-};
-
-PioneerDDJSB.rotarySelectorShiftedClick = function(channel, control, value, _status) {
-    if (value) {
-        engine.setValue('[Playlist]', 'ToggleSelectedSidebarItem', 1);
     }
 };
 
