@@ -847,46 +847,36 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
 
     this.EffectButton = function(buttonNumber) {
         this.buttonNumber = buttonNumber;
-
-        this.group = eu.group;
+        this.group = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + buttonNumber + "]";
         this.midi = [0x93 + unitNumber, 0x46 + buttonNumber];
+        this.type = components.Button.prototype.types.powerWindow;
 
         components.Button.call(this);
     };
     this.EffectButton.prototype = new components.Button({
         input: function(channel, control, value, status) {
-            if (this.isPress(channel, control, value, status)) {
-                this.isLongPressed = false;
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
-                    var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + this.buttonNumber + "]";
-                    script.toggleControl(effectGroup, "enabled");
-                    this.isLongPressed = true;
-                }, true);
-            } else {
-                if (!this.isLongPressed) {
-                    var focusedEffect = engine.getValue(eu.group, "focused_effect");
-                    if (focusedEffect === this.buttonNumber) {
-                        engine.setValue(eu.group, "focused_effect", 0);
-                    } else {
-                        engine.setValue(eu.group, "focused_effect", this.buttonNumber);
-                    }
+            if (value) {
+                // Toggle the targetted effect on or off
+                script.toggleControl(this.group, "enabled");
+
+                // After toggling, update the LED status of each effect to ensure
+                // that what is displayed on the controller matches the current software
+                // state. This is done manually because switching the effect on or off
+                // in the software doesn't send a signal back to the controller.
+                for (var i = 1; i <= 3; i++) {
+                    var button = eu.enableButtons[i];
+                    var isOn = engine.getValue(button.group, "enabled");
+                    console.log("effect", button.group, "isOn", isOn);
+                    button.send(isOn ? button.on : button.off);
                 }
-                this.isLongPressed = false;
-                engine.stopTimer(this.longPressTimer);
             }
         },
-        outKey: "focused_effect",
-        outValueScale: function(value) {
-            return (value === this.buttonNumber) ? this.on : this.off;
-        },
-        sendShifted: true,
-        shiftControl: true,
-        shiftOffset: 28,
+        outKey: "enabled"
     });
 
-    this.button = [];
+    this.enableButtons = new components.ComponentContainer();
     for (var i = 1; i <= 3; i++) {
-        this.button[i] = new this.EffectButton(i);
+        this.enableButtons[i] = new this.EffectButton(i);
 
         var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + i + "]";
         engine.softTakeover(effectGroup, "meta", true);
@@ -896,11 +886,14 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
     this.knob = new components.Pot({
         inSetParameter: function(channel, control, value, _status) {
             this.input = function(channel, control, value, _status) {
-                if (engine.getValue(eu.group, "focused_effect") === 0) {
-                    engine.setParameter(eu.group, "mix", value);
+                value = (this.MSB << 7) + value;
+
+                var focusedEffect = engine.getValue(eu.group, "focused_effect");
+                if (focusedEffect === 0) {
+                    engine.setParameter(eu.group, "mix", value / this.max);
                 } else {
                     var effectGroup = "[EffectRack1_EffectUnit" + unitNumber + "_Effect" + focusedEffect + "]";
-                    engine.setParameter(effectGroup, "meta", value);
+                    engine.setParameter(effectGroup, "meta", value / this.max);
                 }
             };
         },
