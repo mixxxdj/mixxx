@@ -120,69 +120,72 @@ PioneerDDJSB.shutdown = function() {
 ///////////////////////////////////////////////////////////////
 
 
-PioneerDDJSB.bindSamplerControlConnections = function(samplerGroup, isUnbinding) {
-    engine.connectControl(samplerGroup, 'duration', 'PioneerDDJSB.samplerLeds', isUnbinding);
+PioneerDDJSB.bindSamplerControlConnections = function(samplerGroup) {
+    engine.makeConnection(samplerGroup, 'duration', PioneerDDJSB.samplerLeds);
 };
 
-PioneerDDJSB.bindDeckControlConnections = function(channelGroup, isUnbinding) {
+PioneerDDJSB.bindDeckControlConnections = function(channelGroup) {
     var i,
         index,
         controlsToFunctions = {
-            'play': 'PioneerDDJSB.playLeds',
-            'pfl': 'PioneerDDJSB.headphoneCueLed',
-            'keylock': 'PioneerDDJSB.keyLockLed',
-            'slip_enabled': 'PioneerDDJSB.slipLed',
-            'quantize': 'PioneerDDJSB.quantizeLed',
-            'loop_in': 'PioneerDDJSB.loopInLed',
-            'loop_out': 'PioneerDDJSB.loopOutLed',
-            'filterLowKill': 'PioneerDDJSB.lowKillLed',
-            'filterMidKill': 'PioneerDDJSB.midKillLed',
-            'filterHighKill': 'PioneerDDJSB.highKillLed',
-            'mute': 'PioneerDDJSB.muteLed',
-            'loop_enabled': 'PioneerDDJSB.loopExitLed',
-            'loop_double': 'PioneerDDJSB.loopDoubleLed',
-            'loop_halve': 'PioneerDDJSB.loopHalveLed'
+            'play': PioneerDDJSB.playLeds,
+            'pfl': PioneerDDJSB.headphoneCueLed,
+            'keylock': PioneerDDJSB.keyLockLed,
+            'slip_enabled': PioneerDDJSB.slipLed,
+            'quantize': PioneerDDJSB.quantizeLed,
+            'loop_in': PioneerDDJSB.loopInLed,
+            'loop_out': PioneerDDJSB.loopOutLed,
+            'mute': PioneerDDJSB.muteLed,
+            'loop_enabled': PioneerDDJSB.loopExitLed,
+            'loop_double': PioneerDDJSB.loopDoubleLed,
+            'loop_halve': PioneerDDJSB.loopHalveLed
         };
 
     if (PioneerDDJSB.blinkingSync) {
-        controlsToFunctions.beat_active = 'PioneerDDJSB.syncLed';
+        controlsToFunctions.beat_active = PioneerDDJSB.syncLed;
     } else {
-        controlsToFunctions.sync_enabled = 'PioneerDDJSB.syncLed';
+        controlsToFunctions.sync_enabled = PioneerDDJSB.syncLed;
     }
 
     for (i = 1; i <= 8; i++) {
-        controlsToFunctions['hotcue_' + i + '_enabled'] = 'PioneerDDJSB.hotCueLeds';
+        controlsToFunctions['hotcue_' + i + '_status'] = PioneerDDJSB.hotCueLeds;
     }
 
     for (index in PioneerDDJSB.loopIntervals) {
-        controlsToFunctions['beatloop_' + PioneerDDJSB.loopIntervals[index] + '_enabled'] = 'PioneerDDJSB.beatloopLeds';
+        controlsToFunctions['beatloop_' + PioneerDDJSB.loopIntervals[index] + '_enabled'] = PioneerDDJSB.beatloopLeds;
     }
 
     for (index in PioneerDDJSB.looprollIntervals) {
-        controlsToFunctions['beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate'] = 'PioneerDDJSB.beatlooprollLeds';
+        controlsToFunctions['beatlooproll_' + PioneerDDJSB.looprollIntervals[index] + '_activate'] = PioneerDDJSB.beatlooprollLeds;
     }
 
-    script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
+    script.makeConnections(channelGroup, controlsToFunctions);
+    script.makeConnections("[EqualizerRack1_"+channelGroup+"_Effect1]", {
+        'button_parameter1': PioneerDDJSB.lowKillLed,
+        'button_parameter2': PioneerDDJSB.midKillLed,
+        'button_parameter3': PioneerDDJSB.highKillLed,
+    })
 };
 
-PioneerDDJSB.bindNonDeckControlConnections = function(isUnbinding) {
+PioneerDDJSB.bindNonDeckControlConnections = function() {
     var samplerIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
-        PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
+        PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']');
     }
 };
 
-PioneerDDJSB.bindAllControlConnections = function(isUnbinding) {
+PioneerDDJSB.bindFxControlConnections = function(channelIndex) {
+PioneerDDJSB.bindAllControlConnections = function() {
     var samplerIndex,
         channelIndex;
 
     for (samplerIndex = 1; samplerIndex <= 4; samplerIndex++) {
-        PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']', isUnbinding);
+        PioneerDDJSB.bindSamplerControlConnections('[Sampler' + samplerIndex + ']');
     }
 
     for (channelIndex = 1; channelIndex <= 2; channelIndex++) {
-        PioneerDDJSB.bindDeckControlConnections('[Channel' + channelIndex + ']', isUnbinding);
+        PioneerDDJSB.bindDeckControlConnections('[Channel' + channelIndex + ']');
     }
 };
 
@@ -190,9 +193,9 @@ PioneerDDJSB.setDeckSoftTakeover = function(channel, isUnbinding) {
     engine.softTakeover(channel, "volume", !isUnbinding);
     engine.softTakeover(channel, "rate", !isUnbinding);
     engine.softTakeover(channel, "pregain", !isUnbinding);
-    engine.softTakeover(channel, "filterHigh", !isUnbinding);
-    engine.softTakeover(channel, "filterMid", !isUnbinding);
-    engine.softTakeover(channel, "filterLow", !isUnbinding);
+    engine.softTakeover("[EqualizerRack1_"+channel+"_Effect1]", "parameter3", !isUnbinding);
+    engine.softTakeover("[EqualizerRack1_"+channel+"_Effect1]", "parameter2", !isUnbinding);
+    engine.softTakeover("[EqualizerRack1_"+channel+"_Effect1]", "parameter1", !isUnbinding);
     engine.softTakeover("[QuickEffectRack1_" + channel + "]", "super1", !isUnbinding);
 };
 
@@ -284,8 +287,8 @@ PioneerDDJSB.filterHighKnobMSB = function(channel, control, value, status, group
 PioneerDDJSB.filterHighKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterHigh << 7) + value;
     engine.setValue(
-        PioneerDDJSB.deckSwitchTable[group],
-        'filterHigh',
+        "[EqualizerRack1_"+PioneerDDJSB.deckSwitchTable[group]+"_Effect1]",
+        'parameter3',
         script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
     );
 };
@@ -297,8 +300,8 @@ PioneerDDJSB.filterMidKnobMSB = function(channel, control, value, status, group)
 PioneerDDJSB.filterMidKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterMid << 7) + value;
     engine.setValue(
-        PioneerDDJSB.deckSwitchTable[group],
-        'filterMid',
+        "[EqualizerRack1_"+PioneerDDJSB.deckSwitchTable[group]+"_Effect1]",
+        'parameter2',
         script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF))
     ;
 };
@@ -310,8 +313,8 @@ PioneerDDJSB.filterLowKnobMSB = function(channel, control, value, status, group)
 PioneerDDJSB.filterLowKnobLSB = function(channel, control, value, status, group) {
     var fullValue = (PioneerDDJSB.highResMSB[group].filterLow << 7) + value;
     engine.setValue(
-        PioneerDDJSB.deckSwitchTable[group],
-        'filterLow',
+        "[EqualizerRack1_"+PioneerDDJSB.deckSwitchTable[group]+"_Effect1]",
+        'parameter1',
         script.absoluteNonLin(fullValue, 0.0, 1.0, 4.0, 0, 0x3FFF)
     );
 };
@@ -687,7 +690,7 @@ PioneerDDJSB.hotCueLeds = function(value, group, control) {
         hotCueNum;
 
     for (hotCueNum = 1; hotCueNum <= 8; hotCueNum++) {
-        if (control === 'hotcue_' + hotCueNum + '_enabled') {
+        if (control === 'hotcue_' + hotCueNum + '_status') {
             padNum = (hotCueNum - 1) % 4;
             shiftedGroup = (hotCueNum > 4);
             PioneerDDJSB.padLedControl(group, PioneerDDJSB.ledGroups.hotCue, shiftedGroup, padNum, false, value);
