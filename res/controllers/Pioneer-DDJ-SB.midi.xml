@@ -698,6 +698,15 @@
                 </options>
             </control>
             <control>
+                <group>[Channel2]</group>
+                <key>PioneerDDJSB.shiftButton</key>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Playlist]</group>
                 <key>PioneerDDJSB.shiftedRotarySelector</key>
                 <status>0xB6</status>
@@ -1797,7 +1806,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[1].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[1].input</key>
                 <status>0x94</status>
                 <midino>0x47</midino>
                 <options>
@@ -1806,7 +1815,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[1].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[1].input</key>
                 <status>0x94</status>
                 <midino>0x63</midino>
                 <options>
@@ -1815,7 +1824,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[2].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[2].input</key>
                 <status>0x94</status>
                 <midino>0x48</midino>
                 <options>
@@ -1824,7 +1833,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[2].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[2].input</key>
                 <status>0x94</status>
                 <midino>0x64</midino>
                 <options>
@@ -1833,7 +1842,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[3].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[3].input</key>
                 <status>0x94</status>
                 <midino>0x49</midino>
                 <options>
@@ -1842,7 +1851,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>PioneerDDJSB.effectUnit[1].enableButtons[3].input</key>
+                <key>PioneerDDJSB.effectUnits[1].enableButtons[3].input</key>
                 <status>0x94</status>
                 <midino>0x65</midino>
                 <options>
@@ -1851,7 +1860,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.effectUnit[1].knob.inputMSB</key>
+                <key>PioneerDDJSB.effectUnits[1].knob.inputMSB</key>
                 <status>0xB4</status>
                 <midino>0x06</midino>
                 <options>
@@ -1860,7 +1869,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJSB.effectUnit[1].knob.inputLSB</key>
+                <key>PioneerDDJSB.effectUnits[1].knob.inputLSB</key>
                 <status>0xB4</status>
                 <midino>0x26</midino>
                 <options>
@@ -1869,7 +1878,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit]</group>
-                <key>PioneerDDJSB.effectUnit[1].knob.inputMSB</key>
+                <key>PioneerDDJSB.effectUnits[1].knob.inputMSB</key>
                 <status>0xB4</status>
                 <midino>0x00</midino>
                 <options>
@@ -1878,7 +1887,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit]</group>
-                <key>PioneerDDJSB.effectUnit[1].knob.inputLSB</key>
+                <key>PioneerDDJSB.effectUnits[1].knob.inputLSB</key>
                 <status>0xB4</status>
                 <midino>0x20</midino>
                 <options>
@@ -1887,7 +1896,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[1].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[1].input</key>
                 <status>0x95</status>
                 <midino>0x47</midino>
                 <options>
@@ -1896,7 +1905,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[1].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[1].input</key>
                 <status>0x95</status>
                 <midino>0x63</midino>
                 <options>
@@ -1905,7 +1914,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[2].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[2].input</key>
                 <status>0x95</status>
                 <midino>0x48</midino>
                 <options>
@@ -1914,7 +1923,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[2].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[2].input</key>
                 <status>0x95</status>
                 <midino>0x64</midino>
                 <options>
@@ -1923,7 +1932,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[3].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[3].input</key>
                 <status>0x95</status>
                 <midino>0x49</midino>
                 <options>
@@ -1932,7 +1941,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>PioneerDDJSB.effectUnit[2].enableButtons[3].input</key>
+                <key>PioneerDDJSB.effectUnits[2].enableButtons[3].input</key>
                 <status>0x95</status>
                 <midino>0x65</midino>
                 <options>
@@ -1941,7 +1950,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.effectUnit[2].knob.inputMSB</key>
+                <key>PioneerDDJSB.effectUnits[2].knob.inputMSB</key>
                 <status>0xB5</status>
                 <midino>0x06</midino>
                 <options>
@@ -1950,7 +1959,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.effectUnit[2].knob.inputLSB</key>
+                <key>PioneerDDJSB.effectUnits[2].knob.inputLSB</key>
                 <status>0xB5</status>
                 <midino>0x26</midino>
                 <options>
@@ -1959,7 +1968,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
-                <key>PioneerDDJSB.effectUnit[2].knob.inputMSB</key>
+                <key>PioneerDDJSB.effectUnits[2].knob.inputMSB</key>
                 <status>0xB5</status>
                 <midino>0x00</midino>
                 <options>
@@ -1968,7 +1977,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>PioneerDDJSB.effectUnit[2].knob.inputLSB</key>
+                <key>PioneerDDJSB.effectUnits[2].knob.inputLSB</key>
                 <status>0xB5</status>
                 <midino>0x20</midino>
                 <options>

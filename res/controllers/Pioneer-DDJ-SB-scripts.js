@@ -42,9 +42,9 @@ PioneerDDJSB.previewPositionScrollingSensivity = 0.01;
 
 PioneerDDJSB.init = function(id) {
 
-    PioneerDDJSB.effectUnit = [];
-    PioneerDDJSB.effectUnit[1] = new PioneerDDJSB.EffectUnit(1);
-    PioneerDDJSB.effectUnit[2] = new PioneerDDJSB.EffectUnit(2);
+    PioneerDDJSB.effectUnits = new components.ComponentContainer();
+    PioneerDDJSB.effectUnits[1] = new PioneerDDJSB.EffectUnit(1);
+    PioneerDDJSB.effectUnits[2] = new PioneerDDJSB.EffectUnit(2);
 
     PioneerDDJSB.scratchSettings = {
         'alpha': 1.0 / 8,
@@ -177,8 +177,7 @@ PioneerDDJSB.bindNonDeckControlConnections = function() {
     }
 };
 
-PioneerDDJSB.bindFxControlConnections = function(channelIndex) {
-PioneerDDJSB.bindAllControlConnections = function() {
+PioneerDDJSB.bindAllControlConnections = function(channelIndex) {
     var samplerIndex,
         channelIndex;
 
@@ -375,6 +374,13 @@ PioneerDDJSB.shiftButton = function(channel, control, value, status, group) {
     PioneerDDJSB.shiftPressed = (value == 0x7F);
     for (index in PioneerDDJSB.chFaderStart) {
         PioneerDDJSB.chFaderStart[index] = null;
+    }
+
+    // Transfer shift / unshift messages to the effect units
+    if (PioneerDDJSB.shiftPressed) {
+        PioneerDDJSB.effectUnits.shift();
+    } else {
+        PioneerDDJSB.effectUnits.unshift();
     }
 };
 
@@ -861,27 +867,77 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
         components.Button.call(this);
     };
     this.EffectButton.prototype = new components.Button({
-        input: function(channel, control, value, status) {
-            if (value) {
-                // Toggle the targetted effect on or off
-                script.toggleControl(this.group, "enabled");
-
-                // After toggling, update the LED status of each effect to ensure
-                // that what is displayed on the controller matches the current software
-                // state. This is done manually because switching the effect on or off
-                // in the software doesn't send a signal back to the controller.
-                for (var i = 1; i <= 3; i++) {
-                    var button = eu.enableButtons[i];
-                    var isOn = engine.getValue(button.group, "enabled");
-                    console.log("effect", button.group, "isOn", isOn);
-                    button.send(isOn ? button.on : button.off);
+        unshift: function() {
+            this.key = "enabled";
+            this.input = function(channel, control, value, status) {
+                if (value) {
+                    // Toggle the targetted effect on or off
+                    script.toggleControl(this.group, "enabled");
+    
+                    // After toggling, update the LED status of each effect to ensure
+                    // that what is displayed on the controller matches the current software
+                    // state. This is done manually because switching the effect on or off
+                    // in the software doesn't send a signal back to the controller.
+                    eu.enableButtons.updateLeds();
                 }
-            }
+            };
         },
-        outKey: "enabled"
+        shift: function() {
+            this.key = "focused_effect";
+            this.input = function(channel, control, value, status) {
+                if (value) {
+                    var focussedEffect = engine.getValue(eu.group, "focused_effect");
+                    
+                    // Switch currently focused effect
+                    if (focussedEffect === this.buttonNumber) {
+                        engine.setValue(eu.group, "focused_effect", 0);
+                    } else {
+                        engine.setValue(eu.group, "focused_effect", this.buttonNumber);
+                    }
+                    
+                    // After toggling, update the LED status of each effect to ensure
+                    // that what is displayed on the controller matches the current software
+                    // state. This is done manually because switching focused effect
+                    // in the software doesn't send a signal back to the controller.
+                    eu.enableButtons.updateLeds();
+                }
+            };
+        },
+        shiftOffset: 28,
+        sendShifted: true,
+        shiftControl: true,
     });
 
-    this.enableButtons = new components.ComponentContainer();
+    this.enableButtons = new components.ComponentContainer({
+        unshift: function() {
+            components.ComponentContainer.prototype.unshift.call(this); // call super.unshift()
+    
+            this.updateLeds = function() {
+                // Update the LED state of each button when toggling shift off
+                // to reflect the current state of enabled effects
+                this.forEachComponent(function(button) {
+                    var isOn = engine.getValue(button.group, "enabled");
+                    button.send(isOn);
+                });
+            };
+            this.updateLeds();
+        },
+        shift: function() {
+            components.ComponentContainer.prototype.shift.call(this); // call super.shift();
+            
+            this.updateLeds = function() {
+                // Update the LED state of each button when toggling shift on
+                // to reflect the current state of enabled effects
+                var focusedEffect = engine.getValue(eu.group, "focused_effect");
+                
+                this.forEachComponent(function(button) {
+                    var isOn = button.buttonNumber == focusedEffect;
+                    button.send(isOn);
+                });
+            };
+            this.updateLeds();
+        },
+    });
     for (var i = 1; i <= 3; i++) {
         this.enableButtons[i] = new this.EffectButton(i);
 
@@ -914,4 +970,7 @@ PioneerDDJSB.EffectUnit = function(unitNumber) {
             engine.softTakeoverIgnoreNextValue(effectGroup, "meta");
         }
     }.bind(this));
+
+    components.ComponentContainer.call(this);
 };
+PioneerDDJSB.EffectUnit.prototype = new components.ComponentContainer();
