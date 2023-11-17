@@ -182,7 +182,7 @@ void DlgPrefMixer::slotNumDecksChanged(double numDecks) {
         int deckNo = m_deckEqEffectSelectors.size() + 1;
         // 0-based for engine
         QString deckGroup = PlayerManager::groupForDeck(deckNo - 1);
-        QLabel* pLabel = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
+        auto pLabel = make_parented<QLabel>(QObject::tr("Deck %1").arg(deckNo), this);
 
         // Create the EQ selector //////////////////////////////////////////////
         auto pEqComboBox = make_parented<QComboBox>(this);
