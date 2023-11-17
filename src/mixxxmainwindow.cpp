@@ -218,6 +218,15 @@ void MixxxMainWindow::initialize() {
                     m_pVisualsManager->addDeckIfNotExist(group);
                 }
             });
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfSamplersChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForSampler(i);
+                    m_pVisualsManager->addDeckIfNotExist(group);
+                }
+            });
 
 #ifndef MIXXX_USE_QOPENGL
     // Before creating the first skin we need to create a QGLWidget so that all

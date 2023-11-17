@@ -6,6 +6,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
+#include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefdeck.cpp"
@@ -259,9 +260,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
 
-    //
     // Key lock mode
-    //
     connect(buttonGroupKeyLockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -274,9 +273,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
-    //
     // Key unlock mode
-    //
     connect(buttonGroupKeyUnlockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -289,21 +286,23 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
-    //
     // Cue Mode
-    //
-
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+    labelCueMode->setText(labelCueMode->text() + QChar(' ') +
             coloredLinkString(
                     m_pLinkColor,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_CUE_MODES_URL));
 
-    //
-    // Speed / Pitch reset configuration
-    //
+    // Sync Mode
+    // Add "(?)" with a manual link to the label
+    labelSyncMode->setText(labelSyncMode->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SYNC_MODES_URL));
 
+    // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
     int configSPAutoReset = m_pConfig->getValue<int>(
@@ -457,6 +456,16 @@ void DlgPrefDeck::slotUpdate() {
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
+    const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
+            static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
+                    ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                    EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
+    if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER) {
+        radioButtonSoftLeader->setChecked(true);
+    } else {
+        radioButtonLockBpm->setChecked(true);
+    }
+
     KeylockMode keylockMode =
             static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
     if (keylockMode == KeylockMode::LockCurrentKey) {
@@ -541,6 +550,8 @@ void DlgPrefDeck::slotResetToDefaults() {
 
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
+
+    radioButtonSoftLeader->setChecked(true);
 
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
@@ -720,6 +731,14 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
+
+    if (radioButtonSoftLeader->isChecked()) {
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
+    } else {
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_LOCK_BPM));
+    }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
                         static_cast<int>(m_keylockMode));

@@ -13,7 +13,7 @@ DeckVisuals::DeckVisuals(const QString& group)
           engineKey(ConfigKey(group, "key")) {
     m_pTimeElapsed = std::make_unique<ControlObject>(ConfigKey(m_group, "time_elapsed"));
     m_pTimeRemaining = std::make_unique<ControlObject>(ConfigKey(m_group, "time_remaining"));
-    m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(group, "end_of_track"));
+    m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(m_group, "end_of_track"));
     m_pVisualBpm = std::make_unique<ControlObject>(ConfigKey(m_group, "visual_bpm"));
     m_pVisualKey = std::make_unique<ControlObject>(ConfigKey(m_group, "visual_key"));
 
