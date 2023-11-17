@@ -32,6 +32,8 @@ PioneerDDJSB.jogwheelShiftMultiplier = 20;
 PioneerDDJSB.jumpPreviewEnabled = true;
 // Position in the track to jump to. 0 is the beginning of the track and 1 is the end.
 PioneerDDJSB.jumpPreviewPosition = 0.3;
+// Sensivity of preview deck playback position scrolling using shift + rotary encoder.
+PioneerDDJSB.previewPositionScrollingSensivity = 0.01;
 
 ///////////////////////////////////////////////////////////////
 //                      INIT & SHUTDOWN                      //
@@ -807,7 +809,12 @@ PioneerDDJSB.rotarySelector = function(channel, control, value, status) {
 };
 
 PioneerDDJSB.shiftedRotarySelector = function(channel, control, value, status) {
-    // TODO: Update preview playback position?
+    var playPosition = engine.getValue('[PreviewDeck1]', 'playposition');
+    var delta = PioneerDDJSB.getRotaryDelta(value);
+
+    if (playPosition) {
+        engine.setValue('[PreviewDeck1]', 'playposition', playPosition + PioneerDDJSB.previewPositionScrollingSensivity * delta);
+    }
 };
 
 PioneerDDJSB.rotarySelectorClick = function(channel, control, value, _status) {
