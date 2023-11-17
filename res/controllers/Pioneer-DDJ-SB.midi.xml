@@ -239,12 +239,21 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Library]</group>
+                <key>PioneerDDJSB.backButtonClick</key>
                 <status>0x96</status>
                 <midino>0x65</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Skin]</group>
+                <key>PioneerDDJSB.backButtonShiftedClick</key>
+                <status>0x96</status>
+                <midino>0x66</midino>
+                <options>
+                    <script-binding/>
                 </options>
             </control>
             <control>

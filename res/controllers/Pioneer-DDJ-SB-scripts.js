@@ -791,7 +791,7 @@ PioneerDDJSB.pitchBendFromJog = function(channel, movement) {
 
 
 ///////////////////////////////////////////////////////////////
-//                        ROTARY SELECTOR                    //
+//                           BROWSER                         //
 ///////////////////////////////////////////////////////////////
 // Handles the rotary selector for choosing tracks, library items, crates, etc.
 
@@ -845,6 +845,18 @@ PioneerDDJSB.rotarySelectorShiftedClick = function(channel, control, value, _sta
         } else {
             PioneerDDJSB.rotarySelectorChanged = true;
         }
+    }
+};
+
+PioneerDDJSB.backButtonClick = function(channel, control, value, status) {
+    if (value) {
+        engine.setValue('[Library]', 'MoveFocusBackward', true);
+    }
+};
+
+PioneerDDJSB.backButtonShiftedClick = function(channel, control, value, status) {
+    if (value) {
+        script.toggleControl('[Skin]', 'show_maximized_library');
     }
 };
 
