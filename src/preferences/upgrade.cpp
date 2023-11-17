@@ -14,6 +14,7 @@
 #include "library/trackcollection.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "util/cmdlineargs.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
