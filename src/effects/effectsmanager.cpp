@@ -318,10 +318,12 @@ void EffectsManager::saveEffectsXml() {
         standardEffectChainPresets.append(pPreset);
     }
 
-    auto outputChainPreset = m_outputEffectChain.data() != nullptr
-            ? EffectChainPresetPointer::create(m_outputEffectChain.data())
-            // required for tests
-            : EffectChainPresetPointer(new EffectChainPreset());
+    const auto outputChainPreset = m_outputEffectChain.isNull()
+            // required for tests when no output effect chain exists
+            ? EffectChainPresetPointer::create()
+            // no ownership concerns apply because we're just calling
+            // EffectChainPreset::EffectChainPreset(const EffectChain* chain)
+            : EffectChainPresetPointer::create(m_outputEffectChain.data());
 
     m_pChainPresetManager->saveEffectsXml(&doc,
             EffectsXmlData{

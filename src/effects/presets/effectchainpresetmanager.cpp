@@ -715,7 +715,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     QDomElement mainEqElement = XmlParse::selectElement(root, EffectXml::kMainEq);
     QDomNodeList mainEqs = mainEqElement.elementsByTagName(EffectXml::kChain);
     QDomNode mainEqChainNode = mainEqs.at(0);
-    EffectChainPresetPointer mainEqPreset;
+    EffectChainPresetPointer mainEqPreset = nullptr;
     if (mainEqChainNode.isElement()) {
         QDomElement mainEqChainElement = mainEqChainNode.toElement();
         mainEqPreset = EffectChainPresetPointer(
