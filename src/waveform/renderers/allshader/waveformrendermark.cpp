@@ -1,20 +1,13 @@
 #include "waveform/renderers/allshader/waveformrendermark.h"
 
-#include <QDomNode>
 #include <QOpenGLTexture>
 #include <QPainterPath>
 
-#include "track/track.h"
-#include "util/color/color.h"
-#include "util/colorcomponents.h"
 #include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/renderers/allshader/moc_waveformrendermark.cpp"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
-#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "widget/wimagestore.h"
 
 // On the use of QPainter:
 //
@@ -37,25 +30,30 @@ class TextureGraphics : public WaveformMark::Graphics {
     }
 };
 
-allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget),
-          m_bCuesUpdates(false) {
-}
+// Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
+// from WaveformRenderMarkBase. The base-class takes care of updating the marks
+// when needed and flagging them when their image needs to be updated (resizing,
+// cue changes, position changes)
+//
+// While in the case of ::WaveformRenderMark those images can be updated immediately,
+// in the case of allshader::WaveformRenderMark we need to do that when we have an
+// openGL context, as we create new textures.
+//
+// The boolean argument for the WaveformRenderMarkBase constructor indicates
+// that updateMarkImages should not be called immediately.
 
-void allshader::WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
-    m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
+        : ::WaveformRenderMarkBase(waveformWidget, false) {
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
-    WaveformRenderer::initializeGL();
+    allshader::WaveformRendererAbstract::initializeGL();
     m_rgbaShader.init();
     m_textureShader.init();
 
-    for (const auto& pMark : std::as_const(m_marks)) {
-        generateMarkImage(pMark);
-    }
-    generatePlayPosMarkTexture();
+    // Will create textures so requires OpenGL context
+    updateMarkImages();
+    updatePlayPosMarkTexture();
 }
 
 void allshader::WaveformRenderMark::drawTexture(float x, float y, QOpenGLTexture* texture) {
@@ -157,16 +155,13 @@ void allshader::WaveformRenderMark::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
-    checkCuesUpdated();
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    for (const auto& pMark : std::as_const(m_marks)) {
-        if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
-            generateMarkImage(pMark);
-        }
+    // Will create textures so requires OpenGL context
+    updateMarkImages();
 
+    for (const auto& pMark : std::as_const(m_marks)) {
         QOpenGLTexture* pTexture =
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
@@ -238,7 +233,7 @@ void allshader::WaveformRenderMark::paintGL() {
 // Generate the texture used to draw the play position marker.
 // Note that in the legacy waveform widgets this is drawn directly
 // in the WaveformWidgetRenderer itself. Doing it here is cleaner.
-void allshader::WaveformRenderMark::generatePlayPosMarkTexture() {
+void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     float imgwidth;
     float imgheight;
 
@@ -317,71 +312,12 @@ void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
 }
 
 void allshader::WaveformRenderMark::resizeGL(int, int) {
-    for (const auto& pMark : std::as_const(m_marks)) {
-        generateMarkImage(pMark);
-    }
-    generatePlayPosMarkTexture();
+    // Will create textures so requires OpenGL context
+    updateMarkImages();
+    updatePlayPosMarkTexture();
 }
 
-void allshader::WaveformRenderMark::onSetTrack() {
-    slotCuesUpdated();
-
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
-        return;
-    }
-    connect(trackInfo.get(),
-            &Track::cuesUpdated,
-            this,
-            &allshader::WaveformRenderMark::slotCuesUpdated);
-}
-
-void allshader::WaveformRenderMark::slotCuesUpdated() {
-    m_bCuesUpdates = true;
-}
-
-void allshader::WaveformRenderMark::checkCuesUpdated() {
-    if (!m_bCuesUpdates) {
-        return;
-    }
-    m_bCuesUpdates = false;
-
-    TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-    if (!trackInfo) {
-        return;
-    }
-
-    QList<CuePointer> loadedCues = trackInfo->getCuePoints();
-    for (const CuePointer& pCue : loadedCues) {
-        const int hotCue = pCue->getHotCue();
-        if (hotCue == Cue::kNoHotCue) {
-            continue;
-        }
-
-        // Here we assume no two cues can have the same hotcue assigned,
-        // because WaveformMarkSet stores one mark for each hotcue.
-        WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
-        if (pMark.isNull()) {
-            continue;
-        }
-
-        QString newLabel = pCue->getLabel();
-        QColor newColor = mixxx::RgbColor::toQColor(pCue->getColor());
-        if (pMark->m_text.isNull() || newLabel != pMark->m_text ||
-                !pMark->fillColor().isValid() ||
-                newColor != pMark->fillColor()) {
-            pMark->m_text = newLabel;
-            const int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
-            pMark->setBaseColor(newColor, dimBrightThreshold);
-            generateMarkImage(pMark);
-        }
-    }
-
-    m_marks.update();
-}
-
-void allshader::WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
+void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     pMark->m_pGraphics = std::make_unique<TextureGraphics>(
-            createTexture(pMark->generateImage(m_waveformRenderer->getBreadth(),
-                    m_waveformRenderer->getDevicePixelRatio())));
+            createTexture(pMark->generateImage(m_waveformRenderer->getDevicePixelRatio())));
 }

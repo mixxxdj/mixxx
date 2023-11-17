@@ -52,14 +52,27 @@ WWaveformViewer::~WWaveformViewer() {
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
+        m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
-    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
     if (m_waveformWidget) {
+        // Note m_waveformWidget is a WaveformWidgetAbstract,
+        // so this calls the method of WaveformWidgetAbstract,
+        // note of the derived waveform widgets which are also
+        // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
+    }
+}
+
+void WWaveformViewer::showEvent(QShowEvent* event) {
+    if (m_waveformWidget) {
+        // We leave it up to Qt to set the size of the derived
+        // waveform widget, but we still need to set the size
+        // of the renderer.
+        m_waveformWidget->resizeRenderer(width(), height(), devicePixelRatioF());
     }
 }
 

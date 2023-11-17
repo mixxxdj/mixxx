@@ -1405,6 +1405,7 @@ else()
     src/waveform/renderers/waveformrendererrgb.cpp
     src/waveform/renderers/waveformrenderersignalbase.cpp
     src/waveform/renderers/waveformrendermark.cpp
+    src/waveform/renderers/waveformrendermarkbase.cpp
     src/waveform/renderers/waveformrendermarkrange.cpp
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp

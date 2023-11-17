@@ -350,7 +350,7 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     }
 }
 
-void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {
+void WaveformWidgetRenderer::resizeRenderer(int width, int height, float devicePixelRatio) {
     m_width = width;
     m_height = height;
     m_devicePixelRatio = devicePixelRatio;

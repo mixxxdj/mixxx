@@ -56,9 +56,10 @@ Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment def
 WaveformMark::WaveformMark(const QString& group,
         const QDomNode& node,
         const SkinContext& context,
+        int priority,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_linePosition{}, m_breadth{}, m_iHotCue{hotCue} {
+        : m_linePosition{}, m_breadth{}, m_level{}, m_iPriority(priority), m_iHotCue(hotCue) {
     QString positionControl;
     QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
@@ -121,23 +122,26 @@ WaveformMark::WaveformMark(const QString& group,
 WaveformMark::~WaveformMark() = default;
 
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
-    if (m_pGraphics) {
-        m_pGraphics->m_obsolete = true;
+    if (m_fillColor == baseColor) {
+        return;
     }
+
     m_fillColor = baseColor;
     m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
     m_labelColor = Color::chooseColorByBrightness(baseColor,
             QColor(255, 255, 255, 255),
             QColor(0, 0, 0, 255),
             dimBrightThreshold);
-};
+
+    setNeedsImageUpdate();
+}
 
 bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 5.0;
     if (orientation == Qt::Vertical) {
-        point = QPoint(point.y(), m_breadth - point.x());
+        point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
     }
     bool lineHovered = m_linePosition >= point.x() - lineHoverPadding &&
             m_linePosition <= point.x() + lineHoverPadding;
@@ -148,13 +152,17 @@ bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
 // Helper struct to calculate the geometry and fontsize needed by generateImage
 // to draw the label and text
 struct MarkerGeometry {
-    bool m_isSymbol; // it the label normal text or a single symbol (e.g. open circle arrow)
+    bool m_isSymbol; // is the label normal text or a single symbol (e.g. open circle arrow)
     QFont m_font;
     QRectF m_contentRect;
     QRectF m_labelRect;
     QSizeF m_imageSize;
 
-    MarkerGeometry(const QString& label, bool useIcon, Qt::Alignment align, float breadth) {
+    MarkerGeometry(const QString& label,
+            bool useIcon,
+            Qt::Alignment align,
+            float breadth,
+            int level) {
         // If the label is 1 character long, and this character isn't a letter or a number,
         // we can assume it's a special symbol
         m_isSymbol = !useIcon && label.length() == 1 && !label[0].isLetterOrNumber();
@@ -240,9 +248,10 @@ struct MarkerGeometry {
         if (alignV == Qt::AlignVCenter) {
             m_labelRect.moveTop((m_imageSize.height() - m_labelRect.height()) / 2.f);
         } else if (alignV == Qt::AlignBottom) {
-            m_labelRect.moveBottom(m_imageSize.height() - 0.5f);
+            m_labelRect.moveBottom(m_imageSize.height() - 0.5f -
+                    level * (m_labelRect.height() + 2.f));
         } else {
-            m_labelRect.moveTop(0.5f);
+            m_labelRect.moveTop(0.5f + level * (m_labelRect.height() + 2.f));
         }
     }
     QSize getImageSize(float devicePixelRatio) const {
@@ -251,11 +260,11 @@ struct MarkerGeometry {
     }
 };
 
-QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
+QImage WaveformMark::generateImage(float devicePixelRatio) {
+    assert(needsImageUpdate());
+
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
-
-    m_breadth = static_cast<int>(breadth);
 
     if (!m_pixmapPath.isEmpty()) {
         QString path = m_pixmapPath;
@@ -292,7 +301,7 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
     const bool useIcon = m_iconPath != "";
 
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry(label, useIcon, m_align, breadth);
+    const MarkerGeometry markerGeometry(label, useIcon, m_align, m_breadth, m_level);
 
     m_label.setAreaRect(markerGeometry.m_labelRect);
 
