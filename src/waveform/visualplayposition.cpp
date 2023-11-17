@@ -91,6 +91,11 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
             if ((data.m_playRate < 0.0) &&
                     (interpolatedPlayPos < data.m_loopStartPos) &&
                     (data.m_playPos >= data.m_loopStartPos)) {
+                // 1. Deck playing reverse
+                // 2. Interpolated playposition at the time of next VSync would
+                // be outsite of the active loop
+                // 3. Playposition is currently inside the active loop
+                //    (not scratching left of an activated loop)
                 interpolatedPlayPos = data.m_loopEndPos -
                         std::remainder(
                                 data.m_loopStartPos - interpolatedPlayPos,
@@ -99,6 +104,11 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
             if ((data.m_playRate > 0.0) &&
                     (interpolatedPlayPos > data.m_loopEndPos) &&
                     (data.m_playPos <= data.m_loopEndPos)) {
+                // 1. Deck playing forward
+                // 2. Interpolated playposition at the time of next VSync would
+                // be outsite of the active loop
+                // 3. Playposition is currently inside the active loop
+                //    (not scratching right of an activated loop)
                 interpolatedPlayPos = data.m_loopStartPos +
                         std::remainder(
                                 interpolatedPlayPos - data.m_loopEndPos,
