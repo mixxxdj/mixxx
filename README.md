@@ -74,7 +74,7 @@ Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
 - Chat with us on [Zulip][zulip].
-- Follow us on [Twitter] and [Facebook].
+- Follow us on [Mastodon], [Twitter] and [Facebook].
 - Subscribe to the [Mixxx Blog][blog].
 - Post on the [Mixxx forums][discourse].
 
@@ -88,6 +88,7 @@ license.
 [download-testing]: https://mixxx.org/download/#testing
 [issues]: https://github.com/mixxxdj/mixxx/issues
 [fileabug]: https://github.com/mixxxdj/mixxx/issues/new/choose
+[mastodon]: https://floss.social/@mixxx
 [twitter]: https://twitter.com/mixxxdj
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxx.org/news/
