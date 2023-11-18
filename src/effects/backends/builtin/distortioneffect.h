@@ -11,6 +11,7 @@
 class DistortionGroupState : public EffectState {
   public:
     DistortionGroupState(const mixxx::EngineParameters& engineParameters);
+    ~DistortionGroupState() override = default;
 
     CSAMPLE_GAIN m_driveGain;
     CSAMPLE m_crossfadeParameter;
@@ -23,6 +24,7 @@ class DistortionGroupState : public EffectState {
 class DistortionEffect : public EffectProcessorImpl<DistortionGroupState> {
   public:
     DistortionEffect() = default;
+    ~DistortionEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

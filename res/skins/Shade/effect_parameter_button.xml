@@ -23,10 +23,15 @@
           line-height: 8px;
           background-color: transparent;
           color: #191F24;
-          padding-left: 1px;
+          padding-left: 3px;
+          padding-right: 3px;
+         }
+        QLabel {
+          qproperty-alignment: AlignCenter;
         }
-        QLabel { qproperty-alignment: AlignCenter; }
       </Style>
+      <Elide>right</Elide>
+      <Alignment>center</Alignment>
       <ObjectName>ButtonLabel</ObjectName>
       <EffectRack>1</EffectRack>
       <EffectUnit><Variable name="effectunitnum"/></EffectUnit>

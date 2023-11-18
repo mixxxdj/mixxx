@@ -237,6 +237,16 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
+void WOverview::initWithTrack(TrackPointer pTrack) {
+    Init();
+    if (pTrack) {
+        // if a track already loaded (after skin change)
+        slotLoadingTrack(pTrack, TrackPointer());
+        slotTrackLoaded(pTrack);
+        slotWaveformSummaryUpdated();
+    }
+}
+
 void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // this is connected via skin to "playposition"
     Q_UNUSED(dValue);
@@ -262,7 +272,7 @@ void WOverview::onConnectedControlChanged(double dParameter, double dValue) {
     // least once per second, regardless of m_iPos which depends on the length
     // of the widget.
     int oldPositionSeconds = m_iPosSeconds;
-    m_iPosSeconds = static_cast<int>(dParameter * m_trackSamplesControl->get());
+    m_iPosSeconds = static_cast<int>(dParameter * getTrackSamples());
     if ((m_bTimeRulerActive || m_pHoveredMark != nullptr) && oldPositionSeconds != m_iPosSeconds) {
         redraw = true;
     }
@@ -332,6 +342,10 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 &Track::waveformSummaryUpdated,
                 this,
                 &WOverview::slotWaveformSummaryUpdated);
+        disconnect(m_pCurrentTrack.get(),
+                &Track::cuesUpdated,
+                this,
+                &WOverview::receiveCuesUpdated);
     }
 
     m_waveformSourceImage = QImage();
@@ -339,6 +353,9 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
+    // Note: Here we already have the new track, but the engine and it's
+    // Control Objects may still have the old one until the slotTrackLoaded()
+    // signal has been received.
     m_trackLoaded = false;
     m_endOfTrack = false;
 
@@ -522,7 +539,8 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         m_bLeftClickDragging = false;
         return;
     }
-    if (m_pCurrentTrack == nullptr) {
+    double trackSamples = getTrackSamples();
+    if (m_pCurrentTrack == nullptr || trackSamples <= 0) {
         return;
     }
     if (e->button() == Qt::LeftButton) {
@@ -541,7 +559,7 @@ void WOverview::mousePressEvent(QMouseEvent* e) {
         }
 
         if (m_pHoveredMark != nullptr) {
-            double dValue = m_pHoveredMark->getSamplePosition() / m_trackSamplesControl->get();
+            double dValue = m_pHoveredMark->getSamplePosition() / trackSamples;
             m_iPickupPos = valueToPosition(dValue);
             m_iPlayPos = m_iPickupPos;
             setControlParameterUp(dValue);
@@ -627,11 +645,11 @@ void WOverview::paintEvent(QPaintEvent* pEvent) {
         drawEndOfTrackFrame(&painter);
         drawAnalyzerProgress(&painter);
 
-        double trackSamples = m_trackSamplesControl->get();
-        if (m_trackLoaded && trackSamples > 0) {
+        double trackSamples = getTrackSamples();
+        if (trackSamples > 0) {
             const float offset = 1.0f;
             const auto gain = static_cast<CSAMPLE_GAIN>(length() - 2) /
-                    static_cast<CSAMPLE_GAIN>(m_trackSamplesControl->get());
+                    static_cast<CSAMPLE_GAIN>(trackSamples);
 
             drawRangeMarks(&painter, offset, gain);
             drawMarks(&painter, offset, gain);
@@ -1004,7 +1022,7 @@ void WOverview::drawMarks(QPainter* pPainter, const float offset, const float ga
             }
 
             double markSamples = pMark->getSamplePosition();
-            double trackSamples = m_trackSamplesControl->get();
+            double trackSamples = getTrackSamples();
             double currentPositionSamples = m_playpositionControl->get() * trackSamples;
             double markTime = samplePositionToSeconds(markSamples);
             double markTimeRemaining = samplePositionToSeconds(trackSamples - markSamples);
@@ -1115,7 +1133,7 @@ void WOverview::drawTimeRuler(QPainter* pPainter) {
             textPointDistance.setX(0);
             widgetPositionFraction = m_timeRulerPos.y() / height();
         }
-        qreal trackSamples = m_trackSamplesControl->get();
+        qreal trackSamples = getTrackSamples();
         qreal timePosition = samplePositionToSeconds(
                 widgetPositionFraction * trackSamples);
         qreal timePositionTillEnd = samplePositionToSeconds(

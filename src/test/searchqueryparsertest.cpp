@@ -873,7 +873,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
 
 TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // User's search term
-    QString searchTermA = "testA'1"; // Also a test if "'" is escaped lp1789728
+    QString searchTermA = "testA'1"; // Also a test if "'" is escaped #9419
     QString searchTermAEsc = "testA''1";
     QString searchTermB = "testB";
 

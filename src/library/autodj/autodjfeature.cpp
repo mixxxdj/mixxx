@@ -63,7 +63,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
             m_iAutoDJPlaylistId);
 
     // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
-    // previous load attempt have been called (lp1941743)
+    // previous load attempt have been called #10504.
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
@@ -285,7 +285,7 @@ void AutoDJFeature::slotAddRandomTrack() {
                 if (!pRandomTrack->getFileInfo().checkFileExists()) {
                     qWarning() << "Track does not exist:"
                                << pRandomTrack->getInfo()
-                               << pRandomTrack->getFileInfo();
+                               << pRandomTrack->getLocation();
                     pRandomTrack.reset();
                 }
             }

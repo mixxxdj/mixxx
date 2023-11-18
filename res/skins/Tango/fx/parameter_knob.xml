@@ -51,26 +51,17 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Name of parameter -->
+          <EffectParameterName>
+            <ObjectName>FxParameterKnobName</ObjectName>
             <MinimumSize>42,12</MinimumSize>
             <MaximumSize>51,12</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <!-- To keep text centered it's in an container with spacers on the left/right -->
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-              <EffectParameterName>
-                <ObjectName>FxParameterKnobName</ObjectName>
-                <Size>-1min,12f</Size>
-                <EffectRack><Variable name="FxRack"/></EffectRack>
-                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                <Effect><Variable name="FxNum"/></Effect>
-                <EffectParameter><Variable name="FxParameter"/></EffectParameter>
-                <Alignment>left</Alignment>
-              </EffectParameterName>
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-            </Children>
-          </WidgetGroup>
+            <EffectRack><Variable name="FxRack"/></EffectRack>
+            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+            <Effect><Variable name="FxNum"/></Effect>
+            <EffectParameter><Variable name="FxParameter"/></EffectParameter>
+            <Elide>right</Elide>
+          </EffectParameterName>
         </Children>
       </WidgetGroup><!-- Parameter knob + parameter name -->
 

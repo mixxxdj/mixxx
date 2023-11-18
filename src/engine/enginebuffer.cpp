@@ -583,7 +583,7 @@ void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
 }
 
 void EngineBuffer::ejectTrack() {
-    // clear track values in any case, may fix https://bugs.launchpad.net/mixxx/+bug/1450424
+    // clear track values in any case, may fix https://github.com/mixxxdj/mixxx/issues/8000
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineBuffer::ejectTrack()";
     }
@@ -846,10 +846,10 @@ void EngineBuffer::processTrackLocked(
     bool is_scratching = false;
     bool is_reverse = false;
 
-    // Update the slipped position and seek if it was disabled.
+    // Update the slipped position and seek to it if slip mode was disabled.
     processSlip(iBufferSize);
 
-    // Note: This may effects the m_playPosition, play, scaler and crossfade buffer
+    // Note: This may affect the m_playPosition, play, scaler and crossfade buffer
     processSeek(paused);
 
     // speed is the ratio between track-time and real-time
@@ -1140,8 +1140,8 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     m_pScaleST->setSampleRate(m_sampleRate);
     m_pScaleRB->setSampleRate(m_sampleRate);
 
-    bool bTrackLoading = m_iTrackLoading.loadAcquire() != 0;
-    if (!bTrackLoading && m_pause.tryLock()) {
+    bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
+    if (hasStableTrack && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, m_sampleRate);
         // release the pauselock
         m_pause.unlock();
@@ -1207,7 +1207,18 @@ void EngineBuffer::processSlip(int iBufferSize) {
         // back and forth calculations.
         const int bufferFrameCount = iBufferSize / mixxx::kEngineChannelCount;
         DEBUG_ASSERT(bufferFrameCount * mixxx::kEngineChannelCount == iBufferSize);
-        m_slipPosition += static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        const mixxx::audio::FrameDiff_t slipDelta =
+                static_cast<mixxx::audio::FrameDiff_t>(bufferFrameCount) * m_dSlipRate;
+        // Simulate looping if a regular loop is active
+        if (m_pLoopingControl->isLoopingEnabled() &&
+                !m_pLoopingControl->isLoopRollActive()) {
+            const mixxx::audio::FramePos newPos = m_slipPosition + slipDelta;
+            m_slipPosition = m_pLoopingControl->adjustedPositionForCurrentLoop(
+                    newPos,
+                    m_dSlipRate < 0);
+        } else {
+            m_slipPosition += slipDelta;
+        }
     }
 }
 

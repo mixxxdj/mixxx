@@ -44,6 +44,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
             bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
     Q_INVOKABLE void trigger(const QString& group, const QString& name);
+    // DEPRECATED: Use console.log instead.
     Q_INVOKABLE void log(const QString& message);
     Q_INVOKABLE int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
     Q_INVOKABLE void stopTimer(int timerId);

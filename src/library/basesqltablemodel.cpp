@@ -236,7 +236,7 @@ void BaseSqlTableModel::select() {
     }
 
     // Remove all the rows from the table after(!) the query has been
-    // executed successfully. See Bug #1090888.
+    // executed successfully. See issue #6782.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     clearRows();
 
@@ -363,7 +363,7 @@ void BaseSqlTableModel::setTable(QString tableName,
         // It's important that this not be a direct connection, or else the UI
         // might try to update while a cache operation is in progress, and that
         // will hit the cache again and cause dangerous reentry cycles
-        // See https://bugs.launchpad.net/mixxx/+bug/1365708
+        // See https://github.com/mixxxdj/mixxx/issues/7569
         // TODO: A better fix is to have cache and trackpointers defer saving
         // and deleting, so those operations only take place at the top of
         // the call stack.
@@ -430,7 +430,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     int trackSourceColumnCount = m_trackSource ? m_trackSource->columnCount() : 0;
 
     if (column < 0 ||
-            column >= trackSourceColumnCount + m_sortColumns.size() - 1) {
+            column >= trackSourceColumnCount + m_tableColumns.size() - 1) {
         // -1 because id column is in both tables
         qWarning() << "BaseSqlTableModel::setSort invalid column:" << column;
         return;
@@ -737,7 +737,8 @@ bool BaseSqlTableModel::setTrackValueForColumn(
         StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
-        pTrack->setKeyText(value.toString(),
+        pTrack->setKeyText(
+                value.toString(),
                 mixxx::track::io::key::USER);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLocked(value.toBool());

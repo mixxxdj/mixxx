@@ -105,10 +105,10 @@ class WTrackMenu : public QMenu {
     void slotClearPlayCount();
     void slotClearRating();
     void slotClearComment();
-    void slotClearMainCue();
+    void slotResetMainCue();
     void slotClearHotCues();
-    void slotClearIntroCue();
-    void slotClearOutroCue();
+    void slotResetIntroCue();
+    void slotResetOutroCue();
     void slotClearLoops();
     void slotClearKey();
     void slotClearReplayGain();

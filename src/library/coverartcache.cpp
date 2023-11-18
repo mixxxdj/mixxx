@@ -236,7 +236,7 @@ void CoverArtCache::coverLoaded() {
                     << "for track"
                     << res.coverArt.trackLocation;
             // Substitute missing cover art with a placeholder image to avoid high CPU load
-            // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
+            // See also: https://github.com/mixxxdj/mixxx/issues/9974
             const int imageSize = math_max(1, res.coverArt.resizedToWidth);
             QImage placeholderImage(imageSize, imageSize, QImage::Format_RGB32);
             placeholderImage.fill(

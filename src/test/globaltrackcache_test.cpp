@@ -33,7 +33,7 @@ class TrackTitleThread: public QThread {
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
-                // lp1744550: Accessing the track from multiple threads is
+                // #9097: Accessing the track from multiple threads is
                 // required to cause a SIGSEGV
                 if (track->getTitle().isEmpty()) {
                     track->setTitle(
@@ -147,7 +147,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
 
     const auto testFile = mixxx::FileInfo(getTestDir().filePath(kTestFile));
 
-    // lp1744550: A decent number of iterations is needed to reliably
+    // #9097: A decent number of iterations is needed to reliably
     // reveal potential race conditions while evicting tracks from
     // the cache!
     // NOTE(2019-12-14, uklotzde): On Travis and macOS executing 10_000
@@ -174,7 +174,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
         track = GlobalTrackCacheLocker().lookupTrackById(trackId);
         EXPECT_TRUE(static_cast<bool>(track));
 
-        // lp1744550: Accessing the track from multiple threads is
+        // #9097: Accessing the track from multiple threads is
         // required to cause a SIGSEGV
         track->setArtist(QString("Artist %1").arg(QString::number(i)));
 
