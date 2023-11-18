@@ -68,11 +68,13 @@ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
 }
 
 void WWaveformViewer::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
     if (m_waveformWidget) {
         // We leave it up to Qt to set the size of the derived
         // waveform widget, but we still need to set the size
         // of the renderer.
-        m_waveformWidget->resizeRenderer(width(), height(), devicePixelRatioF());
+        m_waveformWidget->resizeRenderer(
+                width(), height(), static_cast<float>(devicePixelRatioF()));
     }
 }
 
