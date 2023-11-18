@@ -15,6 +15,7 @@ std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
        << ".title = \"" << track.title.toStdString() << "\", "
        << ".album = \"" << track.album.toStdString() << "\", "
        << ".albumArtist = \"" << track.albumArtist.toStdString() << "\", "
+       << ".composer = \"" << track.composer.toStdString() << "\", "
        << ".genre = \"" << track.genre.toStdString() << "\", "
        << ".grouping = \"" << track.grouping.toStdString() << "\", "
        << ".year = " << track.year << ", "
@@ -24,7 +25,10 @@ std::ostream& operator<<(std::ostream& os, const ITunesTrack& track) {
        << ".comment = \"" << track.comment.toStdString() << "\", "
        << ".trackNumber = " << track.trackNumber << ", "
        << ".bpm = " << track.bpm << ", "
-       << ".bitrate = " << track.bitrate << " }";
+       << ".bitrate = " << track.bitrate << ", "
+       << ".playCount = " << track.playCount << ", "
+       << ".lastPlayedAt = " << track.lastPlayedAt.toString().toStdString() << ", "
+       << ".dateAdded = " << track.dateAdded.toString().toStdString() << " }";
     return os;
 }
 
@@ -107,7 +111,7 @@ bool ITunesDAO::importPlaylist(const ITunesPlaylist& playlist) {
         }
     }
 
-    m_playlistNameById[playlist.id] = uniqueName;
+    m_playlistNameById[playlist.id] = playlist.name;
 
     return true;
 }
@@ -158,7 +162,7 @@ void ITunesDAO::appendPlaylistTree(gsl::not_null<TreeItem*> item, int playlistId
             [this, &item](auto childEntry) {
                 int childId = childEntry.second;
                 QString childName = m_playlistNameById[childId];
-                TreeItem* child = item->appendChild(childName);
+                TreeItem* child = item->appendChild(childName, childId);
                 appendPlaylistTree(child, childId);
             });
 }

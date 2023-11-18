@@ -34,6 +34,16 @@ case "$1" in
             sudo apt-get install libjack-jackd2-dev;
         fi
 
+        # Install a faster linker. Prefer mold, fall back to lld
+        if apt-cache show mold 2>%1 >/dev/null;
+        then
+            sudo apt-get install -y --no-install-recommends mold
+        else
+            if apt-cache show lld 2>%1 >/dev/null;
+            then
+                sudo apt-get install -y --no-install-recommends lld
+            fi
+        fi
 
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
@@ -48,12 +58,15 @@ case "$1" in
             fonts-ubuntu \
             g++ \
             lcov \
+            libbenchmark-dev \
             libchromaprint-dev \
             libdistro-info-perl \
             libebur128-dev \
             libfaad-dev \
             libfftw3-dev \
             libflac-dev \
+            libgmock-dev \
+            libgtest-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \

@@ -15,6 +15,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "effects/effectsmanager.h"
+#include "library/basetracktablemodel.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "mixer/basetrackplayer.h"
@@ -24,6 +25,7 @@
 #include "skin/legacy/colorschemeparser.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/skincontext.h"
+#include "track/track.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"
@@ -75,6 +77,7 @@
 #include "widget/wslidercomposed.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
+#include "widget/wspinnyglsl.h"
 #endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
@@ -83,9 +86,10 @@
 #include "widget/wtrackproperty.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
-#include "widget/wvumeter.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include "widget/wvumetergl.h"
+#include "widget/wvumeter.h"
+#include "widget/wvumeterglsl.h"
+#include "widget/wvumeterlegacy.h"
 #endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
@@ -442,8 +446,6 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
     return pLaunchImage;
 }
 
-
-
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
     if (pWidget != nullptr) {
@@ -718,8 +720,12 @@ void LegacySkinParser::parseChildren(
 
 QWidget* LegacySkinParser::parseWidgetGroup(const QDomElement& node) {
     WWidgetGroup* pGroup = new WWidgetGroup(m_pParent);
-    commonWidgetSetup(node, pGroup);
+    setupBaseWidget(node, pGroup);
+    setupWidget(node, pGroup->toQWidget());
     pGroup->setup(node, *m_pContext);
+    // Note: if we call setupConnections earlier and it sets the visible property
+    // to true, the style is not applied correctly
+    setupConnections(node, pGroup);
     pGroup->Init();
     parseChildren(node, pGroup);
     return pGroup;
@@ -894,7 +900,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
     QColor c(0,0,0);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1163,14 +1169,18 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
 
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pStarRating, &WStarRating::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::playerEmpty, pStarRating, [pStarRating]() {
-        pStarRating->slotTrackLoaded(TrackPointer());
-    });
+    connect(pPlayer,
+            &BaseTrackPlayer::trackRatingChanged,
+            pStarRating,
+            &WStarRating::slotSetRating);
+    connect(pStarRating,
+            &WStarRating::ratingChanged,
+            pPlayer,
+            &BaseTrackPlayer::slotSetTrackRating);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
-        pStarRating->slotTrackLoaded(pTrack);
+        pStarRating->slotSetRating(pTrack->getRating());
     }
 
     return pStarRating;
@@ -1194,7 +1204,7 @@ QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
     QColor c(255,255,255);
     QString cStr;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &cStr)) {
-        c.setNamedColor(cStr);
+        c = QColor(cStr);
     }
 
     QPalette palette;
@@ -1297,25 +1307,36 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
-    WSpinny* pSpinny;
-    if (qApp->platformName() == QLatin1String("xcb")) {
-        pSpinny = new WSpinny(nullptr, group, m_pConfig, m_pVCManager, pPlayer);
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
+    WSpinnyBase* pSpinny;
+#ifdef MIXXX_USE_QOPENGL
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable() &&
+            !CmdlineArgs::Instance().getUseLegacySpinny()) {
+        pSpinny = new WSpinnyGLSL(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    } else
+#endif
+    {
+        pSpinny = new WSpinny(pParent, group, m_pConfig, m_pVCManager, pPlayer);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pSpinny->setParent(m_pParent);
-    } else {
-        pSpinny = new WSpinny(m_pParent, group, m_pConfig, m_pVCManager, pPlayer);
     }
     commonWidgetSetup(node, pSpinny);
 
     connect(pWaveformWidgetFactory,
             &WaveformWidgetFactory::renderSpinnies,
             pSpinny,
-            &WSpinny::render);
-    connect(pWaveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, pSpinny, &WSpinny::swap);
+            &WSpinnyBase::render);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::swapSpinnies,
+            pSpinny,
+            &WSpinnyBase::swap);
     connect(pSpinny,
-            &WSpinny::trackDropped,
+            &WSpinnyBase::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadLocationToPlayerMaybePlay);
-    connect(pSpinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(pSpinny, &WSpinnyBase::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     ControlObject* showCoverControl = controlFromConfigNode(node.toElement(), "ShowCoverControl");
     ConfigKey configKey;
@@ -1337,16 +1358,16 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     return nullptr;
 #else
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
-    if (!CmdlineArgs::Instance().getUseVuMeterGL() ||
+    if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
                     !pWaveformWidgetFactory->isOpenGlesAvailable())) {
-        // Standard WVuMeter
-        WVuMeter* pVuMeterWidget = parseStandardWidget<WVuMeter>(node);
+        // Legacy WVuMeter
+        WVuMeterLegacy* pVuMeterWidget = parseStandardWidget<WVuMeterLegacy>(node);
         pWaveformWidgetFactory->addVuMeter(pVuMeterWidget);
         return pVuMeterWidget;
     }
 
-    // QGLWidget derived WVuMeterGL
+    // WGLWidget derived WVuMeter
 
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
@@ -1368,12 +1389,19 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     // with platform windows q_createNativeChildrenAndSetParent() while another window is already
     // under construction. The ID for the first window is not cleared and leads to a segfault
     // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
-    WVuMeterGL* pVuMeterWidget;
-    if (qApp->platformName() == QLatin1String("xcb")) {
-        pVuMeterWidget = new WVuMeterGL();
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
+    WVuMeterBase* pVuMeterWidget;
+#ifdef MIXXX_USE_QOPENGL
+    if (pWaveformWidgetFactory->isOpenGlShaderAvailable()) {
+        pVuMeterWidget = new WVuMeterGLSL(pParent);
+    } else
+#endif
+    {
+        pVuMeterWidget = new WVuMeter(pParent);
+    }
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
         pVuMeterWidget->setParent(m_pParent);
-    } else {
-        pVuMeterWidget = new WVuMeterGL(m_pParent);
     }
     commonWidgetSetup(node, pVuMeterWidget);
 
@@ -1500,6 +1528,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pLibraryWidget->setup(node, *m_pContext);
 
+    const auto bpmColumnPrecision =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
+                    BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
+
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,
             &Library::search,
@@ -1599,7 +1633,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString styleHack = "";
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {
-        color.setNamedColor(fgColor);
+        color = QColor(fgColor);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { color: %1; }\n ").arg(color.name()));
@@ -1613,7 +1647,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColor;
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
-        color.setNamedColor(bgColor);
+        color = QColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
         styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
@@ -1625,7 +1659,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowEven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowEven", &bgColorRowEven)) {
-        color.setNamedColor(bgColorRowEven);
+        color = QColor(bgColorRowEven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { background: %1; }\n ").arg(color.name()));
@@ -1633,7 +1667,7 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
 
     QString bgColorRowUneven;
     if (m_pContext->hasNodeSelectString(node, "BgColorRowUneven", &bgColorRowUneven)) {
-        color.setNamedColor(bgColorRowUneven);
+        color = QColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
         styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
@@ -1754,8 +1788,23 @@ QWidget* LegacySkinParser::parseHotcueButton(const QDomElement& element) {
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);
-    pWidget->installEventFilter(
-            m_pControllerManager->getControllerLearningEventFilter());
+    auto* pCLEFilter = m_pControllerManager->getControllerLearningEventFilter();
+    pWidget->installEventFilter(pCLEFilter);
+    // For HotcueButton, widget connections are created in its own setup(), not
+    // via <Connection> nodes. In order to make Hotcue controls learnable for
+    // ControllerLearningEventFilter we need to add the clickInfo manually.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::LeftButton,
+            controlFromConfigKey(pWidget->getLeftClickConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+    // Shift + right click = clear hotcue
+    // ControllerLearningEventFilter doesn't (yet) care about keyboard events or
+    // modifiers, so let's use just right-click to make this learnable as well.
+    pCLEFilter->addWidgetClickInfo(pWidget->toQWidget(),
+            Qt::RightButton,
+            controlFromConfigKey(pWidget->getClearConfigKey(), false),
+            ControlParameterWidgetConnection::EmitOption::EMIT_ON_PRESS_AND_RELEASE);
+
     pWidget->Init();
     return pWidget;
 }

@@ -35,24 +35,24 @@ Iterator first_sound(Iterator begin, Iterator end) {
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_iFramesProcessed(0),
-          m_iSignalStart(-1),
-          m_iSignalEnd(-1) {
+          m_framesProcessed(0),
+          m_signalStart(-1),
+          m_signalEnd(-1) {
 }
 
 bool AnalyzerSilence::initialize(const AnalyzerTrack& track,
         mixxx::audio::SampleRate sampleRate,
-        SINT totalSamples) {
+        SINT frameLength) {
     Q_UNUSED(sampleRate);
-    Q_UNUSED(totalSamples);
+    Q_UNUSED(frameLength);
 
     if (!shouldAnalyze(track.getTrack())) {
         return false;
     }
 
-    m_iFramesProcessed = 0;
-    m_iSignalStart = -1;
-    m_iSignalEnd = -1;
+    m_framesProcessed = 0;
+    m_signalStart = -1;
+    m_signalEnd = -1;
 
     return true;
 }
@@ -78,27 +78,28 @@ bool AnalyzerSilence::verifyFirstSound(
         mixxx::audio::FramePos firstSoundFrame) {
     const SINT firstSoundSample = findFirstSoundInChunk(samples);
     if (firstSoundSample < static_cast<SINT>(samples.size())) {
-        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample) == firstSoundFrame;
+        return mixxx::audio::FramePos::fromEngineSamplePos(firstSoundSample)
+                       .toLowerFrameBoundary() == firstSoundFrame.toLowerFrameBoundary();
     }
     return false;
 }
 
-bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT iLen) {
-    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, iLen);
-    if (m_iSignalStart < 0) {
+bool AnalyzerSilence::processSamples(const CSAMPLE* pIn, SINT count) {
+    std::span<const CSAMPLE> samples = mixxx::spanutil::spanFromPtrLen(pIn, count);
+    if (m_signalStart < 0) {
         const SINT firstSoundSample = findFirstSoundInChunk(samples);
-        if (firstSoundSample < iLen) {
-            m_iSignalStart = m_iFramesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
+        if (firstSoundSample < count) {
+            m_signalStart = m_framesProcessed + firstSoundSample / mixxx::kAnalysisChannels;
         }
     }
-    if (m_iSignalStart >= 0) {
+    if (m_signalStart >= 0) {
         const SINT lastSoundSample = findLastSoundInChunk(samples);
-        if (lastSoundSample < iLen - 1) { // not only sound or silence
-            m_iSignalEnd = m_iFramesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
+        if (lastSoundSample < count - 1) { // not only sound or silence
+            m_signalEnd = m_framesProcessed + lastSoundSample / mixxx::kAnalysisChannels + 1;
         }
     }
 
-    m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
+    m_framesProcessed += count / mixxx::kAnalysisChannels;
     return true;
 }
 
@@ -106,15 +107,15 @@ void AnalyzerSilence::cleanup() {
 }
 
 void AnalyzerSilence::storeResults(TrackPointer pTrack) {
-    if (m_iSignalStart < 0) {
-        m_iSignalStart = 0;
+    if (m_signalStart < 0) {
+        m_signalStart = 0;
     }
-    if (m_iSignalEnd < 0) {
-        m_iSignalEnd = m_iFramesProcessed;
+    if (m_signalEnd < 0) {
+        m_signalEnd = m_framesProcessed;
     }
 
-    const auto firstSoundPosition = mixxx::audio::FramePos(m_iSignalStart);
-    const auto lastSoundPosition = mixxx::audio::FramePos(m_iSignalEnd);
+    const auto firstSoundPosition = mixxx::audio::FramePos(m_signalStart);
+    const auto lastSoundPosition = mixxx::audio::FramePos(m_signalEnd);
 
     CuePointer pN60dBSound = pTrack->findCueByType(mixxx::CueType::N60dBSound);
     if (pN60dBSound == nullptr) {

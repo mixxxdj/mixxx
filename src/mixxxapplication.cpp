@@ -127,7 +127,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     // events.
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 touchIsRightButton()) {
@@ -154,7 +155,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         break;
     }
     case QEvent::MouseButtonRelease: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 m_rightPressedButtons > 0) {

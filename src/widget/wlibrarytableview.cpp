@@ -155,12 +155,12 @@ bool WLibraryTableView::restoreTrackModelState(
     verticalScrollBar()->setValue(state->verticalScrollPosition);
     horizontalScrollBar()->setValue(state->horizontalScrollPosition);
 
-    auto selection = selectionModel();
-    selection->clearSelection();
+    auto* pSelection = selectionModel();
+    pSelection->clearSelection();
     QModelIndexList selectedRows = state->selectedRows;
     if (!selectedRows.isEmpty()) {
-        for (auto index : qAsConst(selectedRows)) {
-            selection->select(index,
+        for (auto index : std::as_const(selectedRows)) {
+            pSelection->select(index,
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
     }
@@ -267,13 +267,14 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
     QTableView::focusInEvent(event);
 
     if (event->reason() == Qt::TabFocusReason ||
-            event->reason() == Qt::BacktabFocusReason) {
+            event->reason() == Qt::BacktabFocusReason ||
+            event->reason() == Qt::OtherFocusReason) {
         // On FocusIn caused by a tab action with no focused item, select the
         // current or first track which can then instantly be loaded to a deck.
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
         // [Library],MoveVertical controls. See #9548
-        if (model()->rowCount() > 0) {
+        if (model() && model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
                 if (!currentIndex().isValid() ||

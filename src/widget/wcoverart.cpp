@@ -65,7 +65,7 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     QColor bgc(255,255,255);
     QString bgColorStr;
     if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
-        bgc.setNamedColor(bgColorStr);
+        bgc = QColor(bgColorStr);
         setAutoFillBackground(true);
     }
     QPalette pal = palette();
@@ -75,7 +75,7 @@ void WCoverArt::setup(const QDomNode& node, const SkinContext& context) {
     QColor m_fgc(0,0,0);
     QString fgColorStr;
     if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
-        m_fgc.setNamedColor(fgColorStr);
+        m_fgc = QColor(fgColorStr);
     }
     bgc = WSkinColor::getCorrectColor(bgc);
     m_fgc = QColor(255 - bgc.red(), 255 - bgc.green(), 255 - bgc.blue());
@@ -149,18 +149,14 @@ void WCoverArt::slotTrackCoverArtUpdated() {
 }
 
 void WCoverArt::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated); // CoverArtCache has taken care, updating the Track.
+        const QPixmap& pixmap) {
     if (!m_bEnable) {
         return;
     }
 
-    if (pRequestor == this &&
+    if (pRequester == this &&
             m_loadedTrack &&
             m_loadedTrack->getLocation() == coverInfo.trackLocation) {
         m_lastRequestedCover = coverInfo;

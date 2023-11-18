@@ -1,13 +1,25 @@
 #include "mixxxmainwindow.h"
 
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFileDialog>
-#include <QGLFormat>
+#include <QOpenGLContext>
 #include <QUrl>
+
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QGLFormat>
+#endif
+
 #ifdef __LINUX__
 #include <QtDBus>
 #endif
-#include <QtDebug>
+
+#include "widget/wglwidget.h"
+
+#ifdef MIXXX_USE_QOPENGL
+#include "widget/tooltipqopengl.h"
+#include "widget/winitialglwidget.h"
+#endif
 
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
@@ -84,8 +96,8 @@ namespace {
 inline bool supportsGlobalMenu() {
 #ifndef QT_NO_DBUS
     QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto iface = conn.interface()) {
-        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    if (const auto* pIface = conn.interface()) {
+        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
     }
 #endif
     return false;
@@ -138,6 +150,38 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
     m_pVisualsManager = new VisualsManager();
 }
 
+#ifdef MIXXX_USE_QOPENGL
+void MixxxMainWindow::initializeQOpenGL() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt 6 will nno longer crash if no GL is available and
+    // QGLFormat::hasOpenGL() has been removed.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+#else
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+#endif
+        QOpenGLContext context;
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
+        if (context.create()) {
+            // This widget and its QOpenGLWindow will be used to query QOpenGL
+            // information (version, driver, etc) in WaveformWidgetFactory.
+            // The "SharedGLContext" terminology here doesn't really apply,
+            // but allows us to take advantage of the existing classes.
+            WInitialGLWidget* widget = new WInitialGLWidget(this);
+            widget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(widget);
+            // When the widget's QOpenGLWindow has been initialized, we continue
+            // with the actual initialization
+            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            widget->show();
+            return;
+        }
+        qDebug() << "QOpenGLContext::create() failed";
+    }
+    qInfo() << "Initializing without OpenGL";
+    initialize();
+}
+#endif
+
 void MixxxMainWindow::initialize() {
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
@@ -147,6 +191,9 @@ void MixxxMainWindow::initialize() {
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
             pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -194,6 +241,7 @@ void MixxxMainWindow::initialize() {
                 }
             });
 
+#ifndef MIXXX_USE_QOPENGL
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
@@ -218,11 +266,12 @@ void MixxxMainWindow::initialize() {
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QGLWidget* pContextWidget = new QGLWidget(this);
+        WGLWidget* pContextWidget = new WGLWidget(this);
         pContextWidget->setGeometry(QRect(0, 0, 3, 3));
         pContextWidget->hide();
         SharedGLContext::setWidget(pContextWidget);
     }
+#endif
 
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(m_pCoreServices->getSettings());
@@ -1015,6 +1064,9 @@ void MixxxMainWindow::slotShowKeywheel(bool toggle) {
 
 void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
     m_toolTipsCfg = tt;
+#ifdef MIXXX_USE_QOPENGL
+    ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
+#endif
 }
 
 void MixxxMainWindow::rebootMixxxView() {

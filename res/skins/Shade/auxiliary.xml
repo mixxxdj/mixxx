@@ -10,12 +10,12 @@
       **********************************************
       -->
       <StatusLight>
-        <TooltipId>auxiliary_PeakIndicator</TooltipId>
+        <TooltipId>auxiliary_peak_indicator</TooltipId>
         <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>99,6</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
 
@@ -38,7 +38,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],vu_meter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>
@@ -64,8 +64,8 @@
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
-          <Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
+          <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
+          <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
         </State>
         <State>
           <Number>2</Number>

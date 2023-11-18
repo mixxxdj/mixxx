@@ -11,6 +11,7 @@
 #include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/playermanager.h"
+#include "moc_skinloader.cpp"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
@@ -293,7 +294,8 @@ void SkinLoader::setupMicDuckingControls() {
     m_pShowDuckingControls->setButtonMode(ControlPushButton::TOGGLE);
     m_pShowDuckingControls->setReadOnly();
 
-    m_pNumMics = make_parented<ControlProxy>("[Master]", "num_microphones", this);
+    m_pNumMics = make_parented<ControlProxy>(
+            QStringLiteral("[App]"), QStringLiteral("num_microphones"), this);
     m_pNumMics->connectValueChanged(this, &SkinLoader::slotNumMicsChanged);
 
     m_micDuckingControlsCreated = true;
@@ -323,7 +325,7 @@ void SkinLoader::updateDuckingControl() {
         return;
     }
     double atLeastOneMicConfigured = 0.0;
-    for (auto* pMicCon : qAsConst(m_pMicConfiguredControls)) {
+    for (auto* pMicCon : std::as_const(m_pMicConfiguredControls)) {
         if (pMicCon->toBool()) {
             atLeastOneMicConfigured = 1.0;
             break;

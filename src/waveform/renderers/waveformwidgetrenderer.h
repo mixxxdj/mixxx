@@ -26,6 +26,11 @@ class WaveformWidgetRenderer {
     static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
 
+    struct WaveformMarkOnScreen {
+        WaveformMarkPointer m_pMark;
+        int m_offsetOnScreen;
+    };
+
   public:
     explicit WaveformWidgetRenderer(const QString& group);
     virtual ~WaveformWidgetRenderer();
@@ -80,6 +85,13 @@ class WaveformWidgetRenderer {
     // stable and deterministic
     // Transform sample index to pixel in track.
     inline double transformSamplePositionInRendererWorld(double samplePosition) const {
+        if (std::abs(samplePosition - m_truePosSample) < 1.f) {
+            // When asked for the sample position that corresponds with the play
+            // marker, return the play market pixel position. This avoids a rare
+            // rounding issue where a marker at that sample position would be
+            // 1 pixel off.
+            return m_playMarkerPosition * getLength();
+        }
         const double relativePosition = samplePosition / m_trackSamples;
         return transformPositionInRendererWorld(relativePosition);
     }
@@ -100,7 +112,7 @@ class WaveformWidgetRenderer {
     double getGain() const {
         return m_gain;
     }
-    int getTrackSamples() const {
+    double getTrackSamples() const {
         return m_trackSamples;
     }
 
@@ -142,7 +154,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
+    void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
     }
 
@@ -158,6 +170,10 @@ class WaveformWidgetRenderer {
     }
 
     void setPassThroughEnabled(bool enabled);
+
+    bool shouldOnlyDrawBackground() const {
+        return m_trackSamples <= 0.0 || m_playPos == -1;
+    }
 
   protected:
     const QString m_group;
@@ -190,7 +206,7 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
-    int m_trackSamples;
+    double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 
@@ -206,7 +222,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markPositions;
+    QList<WaveformMarkOnScreen> m_markPositions;
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,
@@ -218,4 +234,5 @@ private:
 
     bool m_passthroughEnabled;
     double m_playPos;
+    double m_truePosSample;
 };

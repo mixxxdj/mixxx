@@ -210,8 +210,8 @@ bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
 }
 
 // Add a crate to the auto-DJ queue.
-void AutoDJFeature::slotAddCrateToAutoDj(int iCrateId) {
-    m_pTrackCollection->updateAutoDjCrate(CrateId(iCrateId), true);
+void AutoDJFeature::slotAddCrateToAutoDj(CrateId crateId) {
+    m_pTrackCollection->updateAutoDjCrate(crateId, true);
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj() {
@@ -324,9 +324,10 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         Crate crate;
         while (nonAutoDjCrates.populateNext(&crate)) {
             auto pAction = std::make_unique<QAction>(crate.getName(), &crateMenu);
-            int iCrateId = crate.getId().value();
-            connect(pAction.get(), &QAction::triggered,
-                    this, [this, iCrateId] { slotAddCrateToAutoDj(iCrateId); });
+            auto crateId = crate.getId();
+            connect(pAction.get(), &QAction::triggered, this, [this, crateId] {
+                slotAddCrateToAutoDj(crateId);
+            });
             crateMenu.addAction(pAction.get());
             pAction.release();
         }

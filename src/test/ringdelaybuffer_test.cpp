@@ -6,7 +6,6 @@
 #include <gtest/gtest.h>
 
 #include <QTest>
-#include <span>
 
 #include "test/mixxxtest.h"
 #include "util/samplebuffer.h"

@@ -19,20 +19,20 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
     BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~BansheeFeature();
+    ~BansheeFeature() override;
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
 
-    virtual QVariant title();
+    QVariant title() override;
 
-    virtual TreeItemModel* sidebarModel() const;
+    TreeItemModel* sidebarModel() const override;
 
   public slots:
-    virtual void activate();
-    virtual void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   private:
-    virtual void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist);
+    void appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) override;
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     parented_ptr<TreeItemModel> m_pSidebarModel;

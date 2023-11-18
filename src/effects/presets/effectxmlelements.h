@@ -1,3 +1,5 @@
+#pragma once
+
 namespace EffectXml {
 const QString kFileHeader(QStringLiteral("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"));
 // Version history:

@@ -62,12 +62,15 @@ find_library(SndFile_LIBRARY
 )
 mark_as_advanced(SndFile_LIBRARY)
 
+if(DEFINED PC_SndFile_VERSION AND NOT PC_SndFile_VERSION STREQUAL "")
+  set(SndFile_VERSION "${PC_SndFile_VERSION}")
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
   SndFile
-  DEFAULT_MSG
-  SndFile_LIBRARY
-  SndFile_INCLUDE_DIR
+  REQUIRED_VARS SndFile_LIBRARY SndFile_INCLUDE_DIR
+  VERSION_VAR SndFile_VERSION
 )
 
 file(STRINGS "${SndFile_INCLUDE_DIR}/sndfile.h" SndFile_SUPPORTS_SET_COMPRESSION_LEVEL REGEX ".*SFC_SET_COMPRESSION_LEVEL.*")

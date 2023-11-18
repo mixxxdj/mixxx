@@ -4,6 +4,7 @@
 
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/effectsbackendmanager.h"
+#include "moc_effectmanifesttablemodel.cpp"
 
 namespace {
 const int kColumnType = 0;

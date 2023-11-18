@@ -76,7 +76,7 @@ void BaseTrackCache::slotTracksRemoved(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
-    for (const auto& trackId : qAsConst(trackIds)) {
+    for (const auto& trackId : std::as_const(trackIds)) {
         m_trackInfo.remove(trackId);
         m_dirtyTracks.remove(trackId);
     }
@@ -532,7 +532,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
         return;
     }
 
-    for (TrackId trackId: qAsConst(dirtyTracks)) {
+    for (TrackId trackId : std::as_const(dirtyTracks)) {
         // Only get the track if it is in the cache. Tracks that
         // are not cached in memory cannot be dirty.
         TrackPointer pTrack = getRecentTrack(trackId);

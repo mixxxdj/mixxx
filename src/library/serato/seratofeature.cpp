@@ -637,7 +637,8 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     if (crateDir.cd(kCrateDirectory)) {
         QStringList filters;
         filters << kCrateFilter;
-        foreach (const QString& entry, crateDir.entryList(filters)) {
+        const auto entryList = crateDir.entryList(filters);
+        for (const QString& entry : entryList) {
             QString crateFilePath = crateDir.filePath(entry);
             QString crateName = parseCrate(
                     database,
@@ -645,10 +646,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
                     crateFilePath,
                     trackIdMap);
             if (!crateName.isEmpty()) {
-                QList<QVariant> data;
-                data << QVariant(crateFilePath)
-                     << QVariant(true);
-                TreeItem* crateItem = databaseItem->appendChild(crateName, data);
+                TreeItem* crateItem = databaseItem->appendChild(crateName,
+                        QList<QVariant>{
+                                QVariant(crateFilePath), QVariant(true)});
                 crateItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
             }
         }
@@ -717,7 +717,7 @@ QList<TreeItem*> findSeratoDatabases() {
 #endif
 
     QList<TreeItem*> foundDatabases;
-    foreach (QFileInfo databaseLocation, databaseLocations) {
+    for (const QFileInfo& databaseLocation : std::as_const(databaseLocations)) {
         QDir databaseDir = QDir(databaseLocation.filePath());
         if (!databaseDir.cd(kDatabaseDirectory)) {
             continue;
@@ -732,14 +732,10 @@ QList<TreeItem*> findSeratoDatabases() {
             displayPath.chop(1);
         }
 
-
-        QList<QVariant> data;
-        data << QVariant(databaseDir.filePath(kDatabaseFilename))
-             << QVariant(false);
-
-        TreeItem* foundDatabase = new TreeItem(
-                std::move(displayPath),
-                QVariant(data));
+        TreeItem* foundDatabase = new TreeItem(std::move(displayPath),
+                QVariant(QList<QVariant>{
+                        QVariant(databaseDir.filePath(kDatabaseFilename)),
+                        QVariant(false)}));
 
         foundDatabases << foundDatabase;
     }
@@ -981,7 +977,7 @@ QString SeratoFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : qAsConst(items)) {
+    for (const auto& item : std::as_const(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));

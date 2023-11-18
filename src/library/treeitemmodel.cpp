@@ -183,7 +183,7 @@ void TreeItemModel::insertTreeItemRows(
     TreeItem* pParentItem = getItem(parent);
     DEBUG_ASSERT(pParentItem != nullptr);
 
-    beginInsertRows(parent, position, position + rows.size() - 1);
+    beginInsertRows(parent, position, position + static_cast<int>(rows.size()) - 1);
     pParentItem->insertChildren(position, std::move(rows));
     endInsertRows();
 }

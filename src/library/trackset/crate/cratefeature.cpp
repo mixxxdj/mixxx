@@ -251,7 +251,7 @@ bool CrateFeature::dropAcceptChild(
     // tracks already in the DB
     QList<TrackId> trackIds =
             m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls, !pSource);
-    if (!trackIds.size()) {
+    if (trackIds.isEmpty()) {
         return false;
     }
 
@@ -877,7 +877,9 @@ void CrateFeature::slotCrateTableChanged(CrateId crateId) {
         if (!activateCrate(m_crateTableModel.selectedCrate())) {
             // probably last clicked crate was deleted, try to
             // select the stored sibling
-            activateCrate(m_prevSiblingCrate);
+            if (m_prevSiblingCrate.isValid()) {
+                activateCrate(m_prevSiblingCrate);
+            }
         }
     } else {
         // No valid selection to restore

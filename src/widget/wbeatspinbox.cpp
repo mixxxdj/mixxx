@@ -11,7 +11,7 @@
 
 namespace {
 const QRegularExpression kBlockListRegex(QStringLiteral("[^0-9.,/ ]"));
-}
+} // namespace
 
 WBeatSpinBox::WBeatSpinBox(QWidget* parent,
         const ConfigKey& configKey,
@@ -286,18 +286,16 @@ bool WBeatSpinBox::event(QEvent* pEvent) {
 }
 
 void WBeatSpinBox::keyPressEvent(QKeyEvent* pEvent) {
-    // By default, Return & Enter keys apply current value.
-    // Here, Return, Enter and Escape apply and move focus to tracks table.
-    // TODO(ronso0) switch to previously focused (library?) widget instead
+    // By default, Return & Enter keys apply the current value.
+    // Additionally, move focus back to the previously focused library widget.
     if (pEvent->key() == Qt::Key_Return ||
             pEvent->key() == Qt::Key_Enter ||
             pEvent->key() == Qt::Key_Escape) {
         QDoubleSpinBox::keyPressEvent(pEvent);
-        ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-                static_cast<double>(FocusWidget::TracksTable));
+        ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
         return;
     }
-    return QDoubleSpinBox::keyPressEvent(pEvent);
+    QDoubleSpinBox::keyPressEvent(pEvent);
 }
 
 bool WBeatLineEdit::event(QEvent* pEvent) {

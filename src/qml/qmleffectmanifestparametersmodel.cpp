@@ -3,6 +3,7 @@
 #include <QModelIndex>
 
 #include "effects/backends/effectmanifest.h"
+#include "moc_qmleffectmanifestparametersmodel.cpp"
 
 namespace mixxx {
 namespace qml {

@@ -6,6 +6,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_controllerscriptenginebase.cpp"
+#include "util/cmdlineargs.h"
 
 ControllerScriptEngineBase::ControllerScriptEngineBase(
         Controller* controller, const RuntimeLoggingCategory& logger)
@@ -13,6 +14,7 @@ ControllerScriptEngineBase::ControllerScriptEngineBase(
           m_pJSEngine(nullptr),
           m_pController(controller),
           m_logger(logger),
+          m_bAbortOnWarning(false),
           m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
@@ -22,6 +24,8 @@ bool ControllerScriptEngineBase::initialize() {
     VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine) {
         return false;
     }
+
+    m_bAbortOnWarning = CmdlineArgs::Instance().getControllerAbortOnWarning();
 
     // Create the Script Engine
     m_pJSEngine = std::make_shared<QJSEngine>(this);
@@ -73,16 +77,12 @@ bool ControllerScriptEngineBase::executeFunction(
         return false;
     }
 
-    if (functionObject.isError()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toString();
-        return false;
-    }
-
-    // If it's not a function, we're done.
-    if (!functionObject.isCallable()) {
-        qDebug() << "ControllerScriptHandlerBase::executeFunction:"
-                 << functionObject.toVariant() << "Not a function";
+    const bool isError = functionObject.isError();
+    const bool isCallable = functionObject.isCallable();
+    if (isError || !isCallable) {
+        logOrThrowError((isError ? QStringLiteral("\"%1\" resulted in an error")
+                                 : QStringLiteral("\"%1\" is not callable"))
+                                .arg(functionObject.toString()));
         return false;
     }
 
@@ -122,6 +122,14 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
 
     if (!m_bDisplayingExceptionDialog) {
         scriptErrorDialog(errorText, key, bFatalError);
+    }
+}
+
+void ControllerScriptEngineBase::logOrThrowError(const QString& errorMessage) {
+    if (m_bAbortOnWarning) {
+        throwJSError(errorMessage);
+    } else {
+        qCWarning(m_logger) << errorMessage;
     }
 }
 

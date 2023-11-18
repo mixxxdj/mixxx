@@ -357,7 +357,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration start = mixxx::Time::elapsed();
-    for (Controller* pDevice : qAsConst(m_controllers)) {
+    for (Controller* pDevice : std::as_const(m_controllers)) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }

@@ -20,25 +20,25 @@ def help():
     print("optional args: ")
     print("          --4decks     ", end="")
     print("to generate a layout for 4 deck-enabled versions of mixxx")
-    print("          --mastersync ", end="")
-    print("to generate alternative layout for master_sync testing")
+    print("          --sync-lock ", end="")
+    print("to generate alternative layout for sync_lock testing")
 
 
 if len(sys.argv) < 2:
     help()
     sys.exit(1)
 
-MASTER_SYNC_LAYOUT = False
+SYNC_LOCK_LAYOUT = False
 MAX_DECKS = 2
 fname = ""
 DECK_ORDER = range(0, 2)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "", ["mastersync", "4decks"])
+    opts, args = getopt.getopt(sys.argv[1:], "", ["sync-lock", "4decks"])
     for o, a in opts:
-        if o == "--mastersync":
-            # This is an alternative layout for my work on master sync
-            MASTER_SYNC_LAYOUT = True
+        if o == "--sync-lock":
+            # This is an alternative layout for my work on sync lock
+            SYNC_LOCK_LAYOUT = True
         elif o == "--4decks":
             MAX_DECKS = 4
             DECK_ORDER = (2, 0, 1, 3)
@@ -200,7 +200,7 @@ button_mapping = {
     },
 }
 
-if MASTER_SYNC_LAYOUT:
+if SYNC_LOCK_LAYOUT:
     button_mapping = {
         "spinknob": ["XoneK2.encoderButton", "<Script-Binding/>"],
         "knoblight1": ["keylock", "<button/>"],
@@ -255,7 +255,7 @@ light_mapping = {  # 'spinknob':'jog',
     },
 }
 
-if MASTER_SYNC_LAYOUT:
+if SYNC_LOCK_LAYOUT:
     light_mapping = {  # 'spinknob':'jog',
         "knoblight1": "keylock",
         "knoblight2": "quantize",
@@ -284,7 +284,7 @@ if MASTER_SYNC_LAYOUT:
 
 
 # these aren't worth automating
-master_knobs = """            <control>
+main_knobs = """            <control>
                 <group>[Playlist]</group>
                 <key>XoneK2.rightBottomKnob</key>
                 <status>0xBF</status>
@@ -330,8 +330,8 @@ master_knobs = """            <control>
                 </options>
             </control>"""
 
-if MASTER_SYNC_LAYOUT:
-    master_knobs = """            <control>
+if SYNC_LOCK_LAYOUT:
+    main_knobs = """            <control>
                 <group>[Playlist]</group>
                 <key>XoneK2.rightBottomKnob</key>
                 <status>0xBF</status>
@@ -587,7 +587,7 @@ for j, channel in enumerate(DECK_ORDER):
 
 xml.append("<!-- Special Case Knobs / buttons -->")
 # a couple custom entries:
-xml.append(master_knobs)
+xml.append(main_knobs)
 
 
 # done with controls

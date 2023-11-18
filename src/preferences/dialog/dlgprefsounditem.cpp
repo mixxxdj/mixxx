@@ -32,14 +32,6 @@ DlgPrefSoundItem::DlgPrefSoundItem(
     deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
             QVariant::fromValue(SoundDeviceId()));
 
-    // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
-    // connect them to the custom event filter below so they don't accept focus
-    // when we scroll the preferences page.
-    deviceComboBox->setFocusPolicy(Qt::StrongFocus);
-    deviceComboBox->installEventFilter(this);
-    channelComboBox->setFocusPolicy(Qt::StrongFocus);
-    channelComboBox->installEventFilter(this);
-
     connect(deviceComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
@@ -55,20 +47,6 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
 
 }
 
-// Catch scroll events over comboboxes and pass them to the scroll area instead.
-bool DlgPrefSoundItem::eventFilter(QObject* obj, QEvent* e) {
-    if (e->type() == QEvent::Wheel) {
-        // Reject scrolling only if widget is unfocused.
-        // Object to widget cast is needed to check the focus state.
-        QComboBox* combo = qobject_cast<QComboBox*>(obj);
-        if (combo && !combo->hasFocus()) {
-            QApplication::sendEvent(this->parentWidget(), e);
-            return true;
-        }
-    }
-    return QObject::eventFilter(obj, e);
-}
-
 /**
  * Slot called when the parent preferences pane updates its list of sound
  * devices, to update the item widget's list of devices to display.
@@ -82,7 +60,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     while (deviceComboBox->count() > 1) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         if (!hasSufficientChannels(*pDevice)) {
             continue;
         }
@@ -105,7 +83,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     if (selection == SoundDeviceId()) {
         goto emitAndReturn;
     } else {
-        for (const auto& pDevice: qAsConst(m_devices)) {
+        for (const auto& pDevice : std::as_const(m_devices)) {
             if (pDevice->getDeviceId() == selection) {
                 if (m_isInput) {
                     numChannels = pDevice->getNumInputChannels();
@@ -252,7 +230,7 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     if (selection == SoundDeviceId()) {
         return SoundDevicePointer();
     }
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         if (selection == pDevice->getDeviceId()) {
             //qDebug() << "DlgPrefSoundItem::getDevice" << pDevice->getDeviceId();
             return pDevice;

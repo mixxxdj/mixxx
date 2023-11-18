@@ -201,32 +201,30 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId == kInvalidPlaylistId) {
-        // This happens if user clicks on group nodes.
-        // Doesn't apply to YEAR nodes in the history feature, they are linked to
-        // a dummy playlist.
+        // may happen during initialization
         return;
     }
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
 }
 
 void BasePlaylistFeature::activatePlaylist(int playlistId) {
+    // qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(playlistId != kInvalidPlaylistId) {
         return;
     }
     QModelIndex index = indexFromPlaylistId(playlistId);
-    //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId << index;
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
     m_lastClickedIndex = index;
     m_lastRightClickedIndex = QModelIndex();
     emit saveModelState();
-    m_pPlaylistTableModel->setTableModel(playlistId);
+    m_pPlaylistTableModel->selectPlaylist(playlistId);
     emit showTrackModel(m_pPlaylistTableModel);
     emit enableCoverArtDisplay(true);
     // Update selection
@@ -470,13 +468,13 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlistFile,
 
     // Create a temporary PlaylistTableModel for the Playlist the entries shall be imported to.
     // This is used as a proxy object to write to the database.
-    // We cannot use  m_pPlaylistTableModel since it might have another playlist selected which
+    // We cannot use m_pPlaylistTableModel since it might have another playlist selected which
     // is not the playlist that received the right-click.
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -508,20 +506,12 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         const QFileInfo fileInfo(playlistFile);
         // Get a valid name
         const QString baseName = fileInfo.baseName();
-        QString name;
-
-        bool validNameGiven = false;
-        int i = 0;
-        while (!validNameGiven) {
-            name = baseName;
-            if (i != 0) {
-                name += QString::number(i);
-            }
-
-            // Check name
-            int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-            validNameGiven = (existingId == kInvalidPlaylistId);
+        QString name = baseName;
+        // Check if there already is a playlist by that name. If yes, add
+        // increasing suffix (1++) until we find an unused name.
+        int i = 1;
+        while (m_playlistDao.getPlaylistIdFromName(name) != kInvalidPlaylistId) {
+            name = baseName + QChar(' ') + QString::number(i);
             ++i;
         }
 
@@ -585,7 +575,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(
             pPlaylistTableModel->fieldIndex(
                     ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -631,7 +621,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
                     "mixxx.db.model.playlist_export"));
 
     emit saveModelState();
-    pPlaylistTableModel->setTableModel(playlistId);
+    pPlaylistTableModel->selectPlaylist(playlistId);
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
@@ -720,7 +710,8 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
-    // qDebug() << "BasePlaylistFeature::updateChildModel";
+    // qDebug() << "BasePlaylistFeature::updateChildModel() for"
+    //          << playlistIds.count() << "playlist(s)";
     if (playlistIds.isEmpty()) {
         return;
     }

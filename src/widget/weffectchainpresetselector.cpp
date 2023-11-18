@@ -9,6 +9,7 @@
 #include "effects/chains/quickeffectchain.h"
 #include "effects/effectsmanager.h"
 #include "library/library_decl.h"
+#include "moc_weffectchainpresetselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(
@@ -35,16 +36,19 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
         return;
     }
 
-    auto chainPresetListUpdateSignal = &EffectChainPresetManager::effectChainPresetListUpdated;
-    auto pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
+    auto* pQuickEffectChain = qobject_cast<QuickEffectChain*>(m_pChain.data());
     if (pQuickEffectChain) {
-        chainPresetListUpdateSignal = &EffectChainPresetManager::quickEffectChainPresetListUpdated;
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::quickEffectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
         m_bQuickEffectChain = true;
+    } else {
+        connect(m_pChainPresetManager.data(),
+                &EffectChainPresetManager::effectChainPresetListUpdated,
+                this,
+                &WEffectChainPresetSelector::populate);
     }
-    connect(m_pChainPresetManager.data(),
-            chainPresetListUpdateSignal,
-            this,
-            &WEffectChainPresetSelector::populate);
     connect(m_pChain.data(),
             &EffectChain::chainPresetChanged,
             this,
@@ -70,13 +74,27 @@ void WEffectChainPresetSelector::populate() {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
 
+    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
+    QStringList effectNames;
     for (int i = 0; i < presetList.size(); i++) {
         auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 view()->width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
-        setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
+        QString tooltip =
+                QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
+        for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
+            if (!pEffectPreset->isEmpty()) {
+                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+            }
+        }
+        if (effectNames.size() > 1) {
+            tooltip.append("<br/>");
+            tooltip.append(effectNames.join("<br/>"));
+        }
+        effectNames.clear();
+        setItemData(i, tooltip, Qt::ToolTipRole);
     }
 
     slotChainPresetChanged(m_pChain->presetName());
@@ -84,13 +102,12 @@ void WEffectChainPresetSelector::populate() {
 }
 
 void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
+    Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
-    // After selecting an effect move focus to the tracks table in order
-    // to immediately allow keyboard shortcuts again.
-    // TODO(ronso0) switch to previously focused (library?) widget instead
-    ControlObject::set(ConfigKey("[Library]", "focused_widget"),
-            static_cast<double>(FocusWidget::TracksTable));
+    // Clicking a chain item moves keyboard focus to the list view.
+    // Move focus back to the previously focused library widget.
+    ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
 }
 
 void WEffectChainPresetSelector::slotChainPresetChanged(const QString& name) {

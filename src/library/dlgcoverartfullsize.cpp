@@ -158,14 +158,10 @@ void DlgCoverArtFullSize::slotTrackCoverArtUpdated() {
 }
 
 void DlgCoverArtFullSize::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
-    if (pRequestor != this || !m_pLoadedTrack ||
+        const QPixmap& pixmap) {
+    if (pRequester != this || !m_pLoadedTrack ||
             m_pLoadedTrack->getLocation() != coverInfo.trackLocation) {
         return;
     }
@@ -229,8 +225,7 @@ void DlgCoverArtFullSize::slotReloadCoverArt() {
         return;
     }
     slotCoverInfoSelected(
-            CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+            CoverInfoGuesser().guessCoverInfoForTrack(m_pLoadedTrack));
 }
 
 void DlgCoverArtFullSize::slotCoverInfoSelected(

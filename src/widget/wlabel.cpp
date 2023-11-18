@@ -24,12 +24,12 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
 
     QDomElement bgColor = context.selectElement(node, "BgColor");
     if (!bgColor.isNull()) {
-        m_qBgColor.setNamedColor(context.nodeToString(bgColor));
+        m_qBgColor = QColor(context.nodeToString(bgColor));
         pal.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         setAutoFillBackground(true);
     }
 
-    m_qFgColor.setNamedColor(context.selectString(node, "FgColor"));
+    m_qFgColor = QColor(context.selectString(node, "FgColor"));
     pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     setPalette(pal);
 

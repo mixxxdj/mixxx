@@ -33,6 +33,10 @@ class EffectsManager {
             const QString& deckGroupName) const {
         return m_equalizerEffectChains.value(deckGroupName);
     }
+    QuickEffectChainPointer getQuickEffectChain(
+            const QString& deckGroupName) const {
+        return m_quickEffectChains.value(deckGroupName);
+    }
     EffectChainPointer getStandardEffectChain(int unitNumber) const;
     EffectChainPointer getOutputEffectChain() const;
 
@@ -42,7 +46,7 @@ class EffectsManager {
         return m_pEngineEffectsManager.get();
     }
 
-    const ChannelHandle getMasterHandle() const {
+    const ChannelHandle getMainHandle() const {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 

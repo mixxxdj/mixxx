@@ -1,6 +1,5 @@
 #include "vsyncthread.h"
 
-#include <QGLFormat>
 #include <QThread>
 #include <QTime>
 #include <QtDebug>

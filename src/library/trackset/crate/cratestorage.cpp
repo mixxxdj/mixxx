@@ -65,10 +65,10 @@ class CrateQueryBinder final {
         m_query.bindValue(placeholder, crate.getName());
     }
     void bindLocked(const QString& placeholder, const Crate& crate) const {
-        m_query.bindValue(placeholder, crate.isLocked());
+        m_query.bindValue(placeholder, QVariant(crate.isLocked()));
     }
     void bindAutoDjSource(const QString& placeholder, const Crate& crate) const {
-        m_query.bindValue(placeholder, crate.isAutoDjSource());
+        m_query.bindValue(placeholder, QVariant(crate.isAutoDjSource()));
     }
 
   protected:
@@ -351,7 +351,7 @@ CrateSelectResult CrateStorage::selectAutoDjCrates(bool autoDjSource) const {
                             .arg(CRATE_TABLE,
                                     CRATETABLE_AUTODJ_SOURCE,
                                     CRATETABLE_NAME)));
-    query.bindValue(":autoDjSource", autoDjSource);
+    query.bindValue(":autoDjSource", QVariant(autoDjSource));
     if (query.execPrepared()) {
         return CrateSelectResult(std::move(query));
     } else {

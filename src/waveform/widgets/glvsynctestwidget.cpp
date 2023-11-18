@@ -17,10 +17,6 @@
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-
     addRenderer<GLWaveformRenderBackground>(); // 172 µs
     //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
     //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
@@ -33,13 +29,7 @@ GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
     // addRenderer<WaveformRenderMark>(); // 711 µs
     // addRenderer<WaveformRenderBeat>(); // 1183 µs
 
-    setAttribute(Qt::WA_NoSystemBackground);
-    setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
-
     m_initSuccess = init();
-    qDebug() << "GLVSyncTestWidget.isSharing() =" << isSharing();
 }
 
 GLVSyncTestWidget::~GLVSyncTestWidget() {
@@ -60,7 +50,7 @@ mixxx::Duration GLVSyncTestWidget::render() {
     timer.start();
     // QPainter makes QGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
-    QPainter painter(this);
+    QPainter painter(paintDevice());
     t1 = timer.restart();
     draw(&painter, nullptr);
     //t2 = timer.restart();

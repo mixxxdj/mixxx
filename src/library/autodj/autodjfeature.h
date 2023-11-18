@@ -90,7 +90,7 @@ class AutoDJFeature : public LibraryFeature {
 
   private slots:
     // Add a crate to the auto-DJ queue.
-    void slotAddCrateToAutoDj(int iCrateId);
+    void slotAddCrateToAutoDj(CrateId crateId);
 
     // Implements the context-menu item.
     void slotRemoveCrateFromAutoDj();

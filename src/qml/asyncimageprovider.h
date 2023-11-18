@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QImage>
 #include <QQuickAsyncImageProvider>
 #include <QRunnable>

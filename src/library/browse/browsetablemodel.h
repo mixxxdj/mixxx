@@ -29,6 +29,7 @@ constexpr int COLUMN_GROUPING = 17;
 constexpr int COLUMN_FILE_MODIFIED_TIME = 18;
 constexpr int COLUMN_FILE_CREATION_TIME = 19;
 constexpr int COLUMN_REPLAYGAIN = 20;
+constexpr int NUM_COLUMNS = 21;
 
 class TrackCollectionManager;
 
@@ -89,6 +90,8 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
             Track* pTrack,
             const QString& mood) const override;
 #endif // __EXTRA_METADATA__
+
+    void releaseBrowseThread();
 
   signals:
     void restoreModelState();

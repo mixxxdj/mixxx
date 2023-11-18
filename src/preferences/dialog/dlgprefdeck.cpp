@@ -31,20 +31,20 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
+const QString kAppGroup = QStringLiteral("[App]");
 } // namespace
 
-DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        UserSettingsPointer pConfig)
+DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
           m_pControlTrackTimeFormat(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "TimeFormat"))),
-          m_pNumDecks(
-                  make_parented<ControlProxy>("[Master]", "num_decks", this)),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
           m_pNumSamplers(make_parented<ControlProxy>(
-                  "[Master]", "num_samplers", this)),
+                  kAppGroup, QStringLiteral("num_samplers"), this)),
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
@@ -73,7 +73,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
+    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
@@ -278,7 +278,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     m_keylockMode = static_cast<KeylockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keylockMode"),
                             static_cast<int>(KeylockMode::LockOriginalKey)));
-    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
@@ -293,7 +293,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     m_keyunlockMode = static_cast<KeyunlockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keyunlockMode"),
         static_cast<int>(KeyunlockMode::ResetLockedKey)));
-    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
@@ -563,7 +563,7 @@ void DlgPrefDeck::slotRateRangeComboBox(int index) {
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
-    for (ControlProxy* pControl : qAsConst(m_rateRangeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_rateRangeControls)) {
         pControl->set(rangePercent / 100.0);
     }
 }
@@ -578,14 +578,14 @@ void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
-    for (ControlProxy* pControl : qAsConst(m_rateDirectionControls)) {
+    for (ControlProxy* pControl : std::as_const(m_rateDirectionControls)) {
         pControl->set(rateDirectionMultiplier);
     }
 
     // If the rate slider direction setting has changed,
     // multiply the rate by -1 so the current sound does not change.
     if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
-        for (ControlProxy* pControl : qAsConst(m_rateControls)) {
+        for (ControlProxy* pControl : std::as_const(m_rateControls)) {
             pControl->set(-1 * pControl->get());
         }
     }
@@ -696,7 +696,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
+    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
@@ -732,14 +732,14 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
                         static_cast<int>(m_keylockMode));
     // Set key lock behavior for every group
-    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
                         static_cast<int>(m_keyunlockMode));
     // Set key un-lock behavior for every group
-    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 

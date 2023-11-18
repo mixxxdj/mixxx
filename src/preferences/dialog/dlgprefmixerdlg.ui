@@ -38,6 +38,9 @@
         <property name="text">
          <string>Slow fade/Fast cut (additive)</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupCrossfaderModes</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -45,6 +48,9 @@
         <property name="text">
          <string>Constant power</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">buttonGroupCrossfaderModes</string>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -149,27 +155,15 @@
         <item>
          <widget class="QGraphicsView" name="graphicsViewXfader">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="minimumSize">
+          <property name="fixedSize">
            <size>
-            <width>125</width>
-            <height>80</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>125</width>
-            <height>80</height>
-           </size>
-          </property>
-          <property name="baseSize">
-           <size>
-            <width>300</width>
-            <height>0</height>
+            <width>123</width>
+            <height>83</height>
            </size>
           </property>
           <property name="verticalScrollBarPolicy">
@@ -354,25 +348,22 @@
          <item>
           <widget class="QSlider" name="SliderHiEQ">
            <property name="minimum">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="maximum">
-            <number>480</number>
+            <number>100000</number>
            </property>
            <property name="singleStep">
-            <number>1</number>
+            <number>30</number>
            </property>
            <property name="pageStep">
-            <number>1</number>
+            <number>300</number>
            </property>
            <property name="value">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval">
-            <number>5</number>
            </property>
           </widget>
          </item>
@@ -469,25 +460,22 @@
          <item>
           <widget class="QSlider" name="SliderLoEQ">
            <property name="minimum">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="maximum">
-            <number>480</number>
+            <number>100000</number>
            </property>
            <property name="singleStep">
-            <number>1</number>
+            <number>30</number>
            </property>
            <property name="pageStep">
-            <number>1</number>
+            <number>300</number>
            </property>
            <property name="value">
-            <number>80</number>
+            <number>100</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval">
-            <number>5</number>
            </property>
           </widget>
          </item>
@@ -570,6 +558,7 @@
       <string>Main EQ</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
+
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -647,16 +636,19 @@
   <tabstop>CheckBoxSingleEqEffect</tabstop>
   <!-- TODO(ronso0)
       Dynamically add Eq / Quick Effect comboboxes -->
-  <tabstop>SliderHiEQ</tabstop>
-  <tabstop>SliderLoEQ</tabstop>
+  <tabstop>CheckBoxBypass</tabstop>
   <tabstop>CheckBoxEqAutoReset</tabstop>
   <tabstop>CheckBoxGainAutoReset</tabstop>
-  <tabstop>CheckBoxBypass</tabstop>
+  <tabstop>SliderHiEQ</tabstop>
+  <tabstop>SliderLoEQ</tabstop>
   <tabstop>comboBoxMainEq</tabstop>
   <tabstop>pbResetMainEq</tabstop>
   <!-- TODO(ronso0)
       Dynamically add Main EQ sliders -->
  </tabstops>
  <resources/>
+ <buttongroups>
+  <buttongroup name="buttonGroupCrossfaderModes"/>
+ </buttongroups>
  <connections/>
 </ui>

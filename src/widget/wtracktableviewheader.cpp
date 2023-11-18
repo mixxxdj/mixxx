@@ -103,6 +103,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
+    event->accept();
     m_menu.popup(event->globalPos());
 }
 
@@ -279,7 +280,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
-    for (const auto& pAction : qAsConst(m_columnActions)) {
+    for (const auto& pAction : std::as_const(m_columnActions)) {
         if (!pAction->isChecked()) {
             count += 1;
         }

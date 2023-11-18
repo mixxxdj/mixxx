@@ -58,12 +58,39 @@ class LoopingControl : public EngineControl {
     void setLoop(mixxx::audio::FramePos startPosition,
             mixxx::audio::FramePos endPosition,
             bool enabled);
+
+    enum class LoopSeekMode {
+        Changed, // force the playposition to be inside the loop after adjusting it.
+        MovedOut,
+        None,
+    };
+
+    struct LoopInfo {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
+        LoopSeekMode seekMode;
+    };
+
+    LoopInfo getLoopInfo() {
+        return m_loopInfo.getValue();
+    }
+
     void setRateControl(RateControl* rateControl);
-    bool isLoopingEnabled();
-    bool isLoopRollActive();
+
+    bool isLoopingEnabled() {
+        return m_bLoopingEnabled;
+    }
+    bool isLoopRollActive() {
+        return m_bLoopRollActive;
+    }
+    bool loopWasEnabledBeforeSlipEnable() {
+        return m_bLoopWasEnabledBeforeSlipEnable;
+    }
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+
+    double getTrackSamples() const;
 
   signals:
     void loopReset();
@@ -112,18 +139,6 @@ class LoopingControl : public EngineControl {
     void slotLoopEnabledValueChangeRequest(double enabled);
 
   private:
-    enum class LoopSeekMode {
-        Changed, // force the playposition to be inside the loop after adjusting it.
-        MovedOut,
-        None,
-    };
-
-    struct LoopInfo {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        LoopSeekMode seekMode;
-    };
-
     void setLoopingEnabled(bool enabled);
     void setLoopInToCurrentPosition();
     void setLoopOutToCurrentPosition();
@@ -169,9 +184,11 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pSlipEnabled;
     RateControl* m_pRateControl;
     ControlObject* m_pPlayButton;
+    ControlObject* m_pRepeatButton;
 
     bool m_bLoopingEnabled;
     bool m_bLoopRollActive;
+    bool m_bLoopWasEnabledBeforeSlipEnable;
     bool m_bAdjustingLoopIn;
     bool m_bAdjustingLoopOut;
     bool m_bAdjustingLoopInOld;
@@ -182,10 +199,6 @@ class LoopingControl : public EngineControl {
     LoopInfo m_oldLoopInfo;
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
-    ControlObject* m_pNextBeat;
-    ControlObject* m_pPreviousBeat;
-    ControlObject* m_pClosestBeat;
-    ControlObject* m_pTrackSamples;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;
 
     // Base BeatLoop Control Object.

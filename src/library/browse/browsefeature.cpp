@@ -95,7 +95,6 @@ BrowseFeature::BrowseFeature(
         if (display_path.endsWith("/")) {
             display_path.chop(1);
         }
-        TreeItem* driveLetter =
         devices_link->appendChild(
                 display_path, // Displays C:
                 drive.filePath()); // Displays C:/
@@ -530,4 +529,8 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
     qDebug() << "Default quick links:" << result;
     return result;
+}
+
+void BrowseFeature::releaseBrowseThread() {
+    m_browseModel.releaseBrowseThread();
 }

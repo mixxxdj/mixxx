@@ -8,7 +8,7 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
@@ -17,7 +17,7 @@
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
-RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
+RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMixer* pEngine)
         : m_pConfig(pConfig),
           m_recordingDir(""),
           m_recording_base_file(""),
@@ -179,7 +179,10 @@ void RecordingManager::setRecordingDir() {
         if (recordDir.mkpath(recordDir.absolutePath())) {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            // Using qt_error_string() since QDir has not yet a wrapper for error strings.
+            // https://bugreports.qt.io/browse/QTBUG-1483
+            qDebug() << "Failed to create folder" << recordDir.absolutePath()
+                     << "for recordings:" << qt_error_string();
         }
     }
     m_recordingDir = recordDir.absolutePath();

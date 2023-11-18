@@ -103,7 +103,7 @@ bool PlaylistFeature::dropAcceptChild(
     // tracks already in the DB
     QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
                                       ->resolveTrackIdsFromUrls(urls, !pSource);
-    if (!trackIds.size()) {
+    if (trackIds.isEmpty()) {
         return false;
     }
 
@@ -200,7 +200,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     clearChildModel();
     QModelIndex newIndex = constructChildModel(selectedPlaylistId);
-    if (newIndex.isValid()) {
+    if (selectedPlaylistId != kInvalidPlaylistId && newIndex.isValid()) {
         // If a child index was selected and we got a new valid index select that.
         // Else (root item was selected or for some reason no index could be created)
         // there's nothing to do: either no child was selected earlier, or the root
@@ -213,7 +213,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
     // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
     QSet<int> idsToBeUpdated;
-    for (const auto playlistId : qAsConst(playlistIds)) {
+    for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
             idsToBeUpdated.insert(playlistId);
         }

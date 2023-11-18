@@ -16,7 +16,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
-    for (const auto& info : qAsConst(m_availablePlugins)) {
+    for (const auto& info : std::as_const(m_availablePlugins)) {
         comboBoxBeatPlugin->addItem(info.name(), info.id());
     }
 
@@ -47,6 +47,8 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
             &QCheckBox::stateChanged,
             this,
             &DlgPrefBeats::slotReanalyzeImportedChanged);
+
+    setScrollSafeGuard(comboBoxBeatPlugin);
 }
 
 DlgPrefBeats::~DlgPrefBeats() {

@@ -23,7 +23,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <ConfigKey>[Skin],show_maximized_library</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

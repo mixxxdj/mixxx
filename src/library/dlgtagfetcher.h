@@ -47,18 +47,17 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
     // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
-    void apply();
+    void applyTagsAndCover();
+    void applyCover();
     void retry();
     void quit();
     void reject() override;
     void slotNext();
     void slotPrev();
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotStartFetchCoverArt(const QList<QString>& allUrls);
     void slotLoadBytesToLabel(const QByteArray& data);
     void slotCoverArtLinkNotFound();

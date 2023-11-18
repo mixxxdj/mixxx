@@ -52,7 +52,7 @@ void WEffectPushButton::onConnectedControlChanged(double dParameter, double dVal
 
 void WEffectPushButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
-    if (rightClick && m_pButtonMenu->actions().size()) {
+    if (rightClick && !m_pButtonMenu->actions().isEmpty()) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         m_pButtonMenu->exec(e->globalPosition().toPoint());
 #else
@@ -127,7 +127,7 @@ void WEffectPushButton::parameterUpdated() {
 
     auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
-    for (const auto& option : qAsConst(options)) {
+    for (const auto& option : std::as_const(options)) {
         // action is added automatically to actionGroup
         auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;

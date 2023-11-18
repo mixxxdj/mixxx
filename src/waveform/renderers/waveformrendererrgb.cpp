@@ -43,7 +43,7 @@ void WaveformRendererRGB::draw(
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -147,16 +147,19 @@ void WaveformRendererRGB::draw(
             maxAllNext = math_max(maxAllNext, allNext);
         }
 
-        qreal maxLowF = maxLow * lowGain;
-        qreal maxMidF = maxMid * midGain;
-        qreal maxHighF = maxHigh * highGain;
+        float maxLowF = maxLow * lowGain;
+        float maxMidF = maxMid * midGain;
+        float maxHighF = maxHigh * highGain;
 
-        qreal red   = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r + maxHighF * m_rgbHighColor_r;
-        qreal green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g + maxHighF * m_rgbHighColor_g;
-        qreal blue  = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b + maxHighF * m_rgbHighColor_b;
+        float red = maxLowF * m_rgbLowColor_r + maxMidF * m_rgbMidColor_r +
+                maxHighF * m_rgbHighColor_r;
+        float green = maxLowF * m_rgbLowColor_g + maxMidF * m_rgbMidColor_g +
+                maxHighF * m_rgbHighColor_g;
+        float blue = maxLowF * m_rgbLowColor_b + maxMidF * m_rgbMidColor_b +
+                maxHighF * m_rgbHighColor_b;
 
         // Compute maximum (needed for value normalization)
-        qreal max = math_max3(red, green, blue);
+        float max = math_max3(red, green, blue);
 
         // Prevent division by zero
         if (max > 0.0f) {
