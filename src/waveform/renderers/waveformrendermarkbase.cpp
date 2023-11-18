@@ -1,4 +1,5 @@
 #include "waveform/renderers/waveformrendermarkbase.h"
+
 #include "moc_waveformrendermarkbase.cpp"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
