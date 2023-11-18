@@ -114,7 +114,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 
     int playlistId = playlistDao.createUniquePlaylist(&playlist);
 
-    if (playlistId != -1) {
+    if (playlistId != kInvalidPlaylistId) {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in

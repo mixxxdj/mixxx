@@ -513,7 +513,7 @@ void TraktorFeature::parsePlaylistEntries(
     }
 
     //playlist_id = id_query.lastInsertId().toInt();
-    int playlist_id = -1;
+    int playlist_id = kInvalidPlaylistId;
     const int idColumn = id_query.record().indexOf("id");
     while (id_query.next()) {
         playlist_id = id_query.value(idColumn).toInt();

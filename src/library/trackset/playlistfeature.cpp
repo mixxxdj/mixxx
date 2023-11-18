@@ -180,36 +180,53 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+    if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
+            type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
+        return;
+    }
+
+    // Store current selection
+    int selectedPlaylistId = kInvalidPlaylistId;
+    if (isChildIndexSelectedInSidebar(m_lastClickedIndex)) {
+        if (playlistId == playlistIdFromIndex(m_lastClickedIndex) &&
+                type == PlaylistDAO::PLHT_UNKNOWN) {
+            // if the selected playlist was deleted, find a sibling to select
+            selectedPlaylistId = getSiblingPlaylistIdOf(m_lastClickedIndex);
+        } else {
+            // just restore the current selection
+            selectedPlaylistId = playlistIdFromIndex(m_lastClickedIndex);
+        }
+    }
+
+    clearChildModel();
+    QModelIndex newIndex = constructChildModel(selectedPlaylistId);
+    if (newIndex.isValid()) {
+        // If a child index was selected and we got a new valid index select that.
+        // Else (root item was selected or for some reason no index could be created)
+        // there's nothing to do: either no child was selected earlier, or the root
+        // was selected and will remain selected after the child model was rebuilt.
+        activateChild(newIndex);
+        emit featureSelect(this, newIndex);
     }
 }
 
-void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
+void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
+    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    QSet<int> idsToBeUpdated;
     for (const auto playlistId : qAsConst(playlistIds)) {
-        enum PlaylistDAO::HiddenType type =
-                m_playlistDao.getHiddenType(playlistId);
-        if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-            updateChildModel(playlistId);
+        if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+            idsToBeUpdated.insert(playlistId);
         }
     }
+    updateChildModel(idsToBeUpdated);
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
         int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
-            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
-        if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            activatePlaylist(playlistId);
-        }
+    // qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+        slotPlaylistTableChanged(playlistId);
     }
 }
 

@@ -2650,6 +2650,14 @@ WLibrarySidebar::item:!selected {
   background-color: #0f0f0f;
   color: #999;
   }
+WLibrarySidebar::item:selected:focus {
+  outline: none;
+  border: 0px;
+}
+WLibrarySidebar::item:!selected:focus {
+  outline: none;
+  border: 1px solid white;
+}
 
 WTrackTableViewHeader {
   /* Don't set a font size to pick up the system font size. */
