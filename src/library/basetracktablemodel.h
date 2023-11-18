@@ -244,6 +244,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    void slotCoverFound(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
+
   private:
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
@@ -275,6 +280,8 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     int countValidColumnHeaders() const;
 
     TrackId m_previewDeckTrackId;
+
+    mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
 };

@@ -133,6 +133,13 @@ BaseTrackTableModel::BaseTrackTableModel(
             &PlayerInfo::trackChanged,
             this,
             &BaseTrackTableModel::slotTrackChanged);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &BaseTrackTableModel::slotCoverFound);
+    }
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -550,6 +557,7 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     if (!coverInfo.hasImage()) {
         return QPixmap();
     }
+    m_toolTipIndex = index;
     QPixmap pixmap = CoverArtCache::getCachedCover(
             coverInfo,
             absoluteHeightOfCoverartToolTip);
@@ -557,10 +565,11 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
         // Cache miss -> Don't show a tooltip, refresh cache
         // Height used for the width, in assumption that covers are squares
         CoverArtCache::requestUncachedCover(
-                nullptr,
+                this,
                 coverInfo,
                 absoluteHeightOfCoverartToolTip);
-        return QVariant();
+        //: Tooltip text on the cover art column shown when the cover is read from disk
+        return tr("Fetching image ...");
     }
     QByteArray data;
     QBuffer buffer(&data);
@@ -1109,3 +1118,15 @@ bool BaseTrackTableModel::updateTrackMood(
     return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
 }
 #endif // __EXTRA_METADATA__
+
+void BaseTrackTableModel::slotCoverFound(
+        const QObject* pRequester,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap) {
+    Q_UNUSED(pixmap);
+    if (pRequester != this ||
+            getTrackLocation(m_toolTipIndex) != coverInfo.trackLocation) {
+        return;
+    }
+    emit dataChanged(m_toolTipIndex, m_toolTipIndex, {Qt::ToolTipRole});
+}
