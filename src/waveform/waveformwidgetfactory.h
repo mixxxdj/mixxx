@@ -9,7 +9,6 @@
 #include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
-#include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
 class WVuMeterLegacy;

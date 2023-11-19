@@ -1,18 +1,16 @@
 #pragma once
 
-#include <QDateTime>
-#include <QList>
 #include <QObject>
 #include <QString>
+#include <memory>
 
 #include "control/controlobject.h"
-#include "encoder/encoder.h"
 #include "preferences/usersettings.h"
-#include "recording/defs_recording.h"
 
 class EngineMixer;
 class ControlPushButton;
 class ControlProxy;
+class QDateTime;
 
 /// The RecordingManager is a central class and manages
 /// the recording feature of Mixxx.

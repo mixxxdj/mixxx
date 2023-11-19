@@ -12,9 +12,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/db/dbid.h"
 
-class CueDAO;
-class Track;
-
 class Cue : public QObject {
     Q_OBJECT
 

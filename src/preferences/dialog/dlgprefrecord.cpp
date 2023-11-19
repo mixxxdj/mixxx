@@ -1,10 +1,9 @@
 #include "preferences/dialog/dlgprefrecord.h"
 
 #include <QFileDialog>
+#include <QRadioButton>
 #include <QStandardPaths>
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
 #include "moc_dlgprefrecord.cpp"

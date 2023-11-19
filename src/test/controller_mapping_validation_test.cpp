@@ -3,6 +3,7 @@
 #include <QUrl>
 
 #include "controllers/defs_controllers.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller_mapping_validation_test.cpp"
 
 FakeMidiControllerJSProxy::FakeMidiControllerJSProxy()

@@ -4,7 +4,6 @@
 
 #include "moc_emptywaveformwidget.cpp"
 #include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 
 EmptyWaveformWidget::EmptyWaveformWidget(const QString& group, QWidget* parent)
         : NonGLWaveformWidgetAbstract(group, parent) {

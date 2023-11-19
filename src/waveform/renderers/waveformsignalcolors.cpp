@@ -1,10 +1,9 @@
 #include "waveformsignalcolors.h"
 
-#include <QDomNode>
-
 #include "util/colorcomponents.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QDomNode;
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;

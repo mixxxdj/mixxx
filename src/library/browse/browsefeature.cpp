@@ -5,15 +5,13 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QStringList>
-#include <QTreeView>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/browse/foldertreemodel.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_browsefeature.cpp"
-#include "track/track.h"
 #include "util/memory.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"

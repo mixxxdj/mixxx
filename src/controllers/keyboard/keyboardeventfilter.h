@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QObject>
-#include <QEvent>
-#include <QKeyEvent>
 #include <QMultiHash>
 
 #include "preferences/configobject.h"
 
 class ControlObject;
+class QEvent;
+class QKeyEvent;
 
 // This class provides handling of keyboard events.
 class KeyboardEventFilter : public QObject {

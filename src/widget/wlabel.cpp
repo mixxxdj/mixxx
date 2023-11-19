@@ -1,8 +1,10 @@
 #include "widget/wlabel.h"
 
+#include <QEvent>
 #include <QFont>
 
 #include "moc_wlabel.cpp"
+#include "skin/legacy/skincontext.h"
 #include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget* pParent)

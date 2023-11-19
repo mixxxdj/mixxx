@@ -2,14 +2,9 @@
 
 #include <QScopedPointer>
 
-#include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/enginevumeter.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
 
-class EngineEffectsManager;
 class ControlAudioTaperPot;
 
 // EngineMicrophone is an EngineChannel that implements a mixing source whose

@@ -2,7 +2,6 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QDir>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
@@ -20,6 +19,7 @@
 
 // forward declaration(s)
 class BaseTrackCache;
+class QDir;
 
 // Manages the internal database.
 class TrackCollection : public QObject,

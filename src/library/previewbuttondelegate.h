@@ -2,6 +2,7 @@
 
 #include <QPushButton>
 #include <QStyleOptionButton>
+#include <QTableView>
 
 #include "library/tableitemdelegate.h"
 #include "track/track_decl.h"

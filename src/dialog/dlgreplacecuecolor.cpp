@@ -5,7 +5,7 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
-#include <QtConcurrent>
+#include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
@@ -13,6 +13,7 @@
 #include "moc_dlgreplacecuecolor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
+#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {

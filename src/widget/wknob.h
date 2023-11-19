@@ -1,11 +1,5 @@
 #pragma once
 
-#include <QPixmap>
-#include <QString>
-#include <QPaintEvent>
-#include <QMouseEvent>
-#include <QWheelEvent>
-
 #include "widget/wdisplay.h"
 #include "widget/knobeventhandler.h"
 

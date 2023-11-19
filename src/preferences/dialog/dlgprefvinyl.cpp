@@ -8,9 +8,10 @@
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefvinyl.cpp"
-#include "util/platform.h"
+#include "util/defs.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#include "vinylcontrol/vinylcontrolsignalwidget.h"
 
 DlgPrefVinyl::DlgPrefVinyl(
         QWidget* parent,

@@ -2,22 +2,23 @@
 
 #include <QAtomicInteger>
 #include <QList>
-#include <QQueue>
 #include <QSet>
 #include <QSharedPointer>
 #include <QThread>
-#include <QWaitCondition>
 #include <memory>
 
-#include "library/export/engineprimeexportrequest.h"
-#include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/crateid.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "track/trackid.h"
 #include "track/trackref.h"
 
+class TrackCollectionManager;
+class Waveform;
+
 namespace mixxx {
+
+struct EnginePrimeExportRequest;
 
 /// The Engine Prime export job performs the work of exporting the Mixxx
 /// library to an external Engine Prime (also known as "Engine Library")

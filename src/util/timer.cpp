@@ -3,7 +3,6 @@
 #include "moc_timer.cpp"
 #include "util/experiment.h"
 #include "util/time.h"
-#include "waveform/guitick.h"
 
 Timer::Timer(const QString& key, Stat::ComputeFlags compute)
         : m_key(key),

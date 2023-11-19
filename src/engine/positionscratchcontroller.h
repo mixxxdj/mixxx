@@ -4,8 +4,8 @@
 #include <QString>
 
 #include "audio/frame.h"
-#include "control/controlobject.h"
 
+class ControlObject;
 class VelocityController;
 class RateIIFilter;
 

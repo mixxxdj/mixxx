@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
 #include "analyzer/analyzerbeats.h"
-#include "control/controlobject.h"
 #include "defs_urls.h"
 #include "moc_dlgprefbeats.cpp"
 

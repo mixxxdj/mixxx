@@ -2,7 +2,6 @@
 
 #include <QDebug>
 #include <QFileInfo>
-#include <QMessageBox>
 
 #include "moc_coverartcopyworker.cpp"
 #include "util/fileaccess.h"

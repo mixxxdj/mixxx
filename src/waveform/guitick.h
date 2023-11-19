@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QObject>
-
 #include "control/controlobject.h"
 #include "util/duration.h"
 #include "util/memory.h"

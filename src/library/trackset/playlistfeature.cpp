@@ -1,10 +1,8 @@
 #include "library/trackset/playlistfeature.h"
 
-#include <QFile>
 #include <QMenu>
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/playlisttablemodel.h"
@@ -13,11 +11,8 @@
 #include "library/treeitem.h"
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "util/duration.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 

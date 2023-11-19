@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/parametriceqeffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 
 namespace {
 constexpr int kBandCount = 2;

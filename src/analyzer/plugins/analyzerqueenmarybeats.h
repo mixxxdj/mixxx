@@ -7,7 +7,6 @@
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
 #include "util/memory.h"
-#include "util/samplebuffer.h"
 
 class DetectionFunction;
 

@@ -1,11 +1,8 @@
 #include "util/versionstore.h"
 
-#include <soundtouch/SoundTouch.h>
-
 #include <QCoreApplication>
+#include <QDebug>
 #include <QStandardPaths>
-#include <QStringList>
-#include <QtDebug>
 #include <QtGlobal>
 
 // shout.h checks for WIN32 to see if we are on Windows.
@@ -25,6 +22,7 @@
 #include <portaudio.h>
 #include <rubberband/RubberBandStretcher.h>
 #include <sndfile.h>
+#include <soundtouch/SoundTouch.h>
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 

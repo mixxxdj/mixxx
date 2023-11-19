@@ -2,17 +2,21 @@
 
 #include <QDebug>
 
-#include "audio/types.h"
 #include "control/controlencoder.h"
-#include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
+#include "effects/effectbuttonparameterslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectknobparameterslot.h"
+#include "effects/effectparameter.h"
+#include "effects/effectsmanager.h"
 #include "effects/effectsmessenger.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "engine/effects/engineeffect.h"
 #include "moc_effectslot.cpp"
-#include "util/defs.h"
 #include "util/math.h"
 
 // The maximum number of effect parameters we're going to support.

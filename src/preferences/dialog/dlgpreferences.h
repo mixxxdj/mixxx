@@ -15,42 +15,17 @@
 #include "preferences/usersettings.h"
 
 class SoundManager;
-class DlgPrefSound;
-class DlgPrefLibrary;
-class DlgPrefController;
-class DlgPrefControllers;
-#ifdef __VINYLCONTROL__
-class DlgPrefVinyl;
-#endif // __VINYLCONTROL__
-class DlgPrefInterface;
-class DlgPrefWaveform;
-class DlgPrefDeck;
-class DlgPrefColors;
-class DlgPrefEffects;
-class DlgPrefMixer;
-class DlgPrefAutoDJ;
-#ifdef __BROADCAST__
-class DlgPrefBroadcast;
-#endif // __BROADCAST__
-class DlgPrefRecord;
-class DlgPrefBeats;
-class DlgPrefKey;
-class DlgPrefReplayGain;
-class LV2Backend;
 class ControllerManager;
 class EffectsManager;
-class PlayerManager;
 class Library;
 class VinylControlManager;
-#ifdef __MODPLUG__
-class DlgPrefModplug;
-#endif // __MODPLUG__
+class DlgPrefControllers;
 
 namespace mixxx {
 class ScreensaverManager;
 namespace skin {
 class SkinLoader;
-}
+} // namespace skin
 } // namespace mixxx
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {

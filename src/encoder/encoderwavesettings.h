@@ -1,8 +1,9 @@
 #pragma once
 
-#include "encoder/encoderrecordingsettings.h"
-#include "encoder/encoder.h"
 #include <QList>
+
+#include "encoder/encoderrecordingsettings.h"
+#include "preferences/usersettings.h"
 
 /// Storage of settings for WAVE/AIFF encoder
 class EncoderWaveSettings : public EncoderRecordingSettings {

@@ -2,7 +2,6 @@
 
 #include <QVarLengthArray>
 
-#include "effects/engineeffectsmanager.h"
 #include "engine/enginemixer.h"
 #include "util/types.h"
 

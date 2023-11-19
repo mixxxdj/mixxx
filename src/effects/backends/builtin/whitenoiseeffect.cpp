@@ -1,5 +1,7 @@
 #include "effects/backends/builtin/whitenoiseeffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/rampingvalue.h"
 
 namespace {

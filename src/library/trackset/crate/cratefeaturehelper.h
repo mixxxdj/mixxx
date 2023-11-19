@@ -2,11 +2,11 @@
 
 #include <QObject>
 
-#include "library/trackset/crate/crate.h"
+#include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 
-// forward declaration(s)
 class TrackCollection;
+class Crate;
 
 class CrateFeatureHelper : public QObject {
     Q_OBJECT

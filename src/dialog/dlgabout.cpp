@@ -1,5 +1,6 @@
 #include "dialog/dlgabout.h"
 
+#include <QDebug>
 #include <QDesktopServices>
 #include <QFile>
 #include <QLocale>

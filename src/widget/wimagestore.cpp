@@ -5,7 +5,6 @@
 #include <QPainter>
 
 #include "skin/legacy/imgloader.h"
-#include "util/assert.h"
 
 
 // static

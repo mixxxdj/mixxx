@@ -2,7 +2,7 @@
 
 #include <QStyledItemDelegate>
 
-#include "controllers/controlpickermenu.h"
+class ControlPickerMenu;
 
 class ControlDelegate : public QStyledItemDelegate {
     Q_OBJECT

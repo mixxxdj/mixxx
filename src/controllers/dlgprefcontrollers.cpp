@@ -2,12 +2,14 @@
 
 #include <QDesktopServices>
 
+#include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "util/string.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,

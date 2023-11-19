@@ -1,7 +1,8 @@
 #include "widget/wspinnyglsl.h"
 
+#include <QOpenGLTexture>
+
 #include "moc_wspinnyglsl.cpp"
-#include "util/assert.h"
 #include "util/texture.h"
 
 WSpinnyGLSL::WSpinnyGLSL(

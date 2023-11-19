@@ -1,12 +1,9 @@
 #pragma once
 
-#include <QThread>
-
 #include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidiothread.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
-#include "util/duration.h"
 
 /// HID controller backend
 class HidController final : public Controller {

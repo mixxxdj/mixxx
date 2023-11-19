@@ -1,9 +1,5 @@
 #include "waveform/visualplayposition.h"
 
-#include <QtDebug>
-
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)

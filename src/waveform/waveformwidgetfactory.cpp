@@ -8,16 +8,12 @@
 #include <QGLShaderProgram>
 #endif
 
-#include <QGuiApplication>
 #include <QOpenGLFunctions>
 #include <QRegularExpression>
 #include <QStringList>
-#include <QTime>
 #include <QWidget>
 #include <QWindow>
-#include <QtDebug>
 
-#include "control/controlpotmeter.h"
 #include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
@@ -47,11 +43,10 @@
 #include "waveform/widgets/glvsynctestwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
-#include "waveform/widgets/nonglwaveformwidgetabstract.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wvumeter.h"
+#include "widget/wvumeterbase.h"
 #include "widget/wvumeterlegacy.h"
 #include "widget/wwaveformviewer.h"
 

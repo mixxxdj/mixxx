@@ -1,8 +1,11 @@
 #include "widget/weffectpushbutton.h"
 
 #include <QActionGroup>
-#include <QtDebug>
+#include <QMenu>
+#include <QMouseEvent>
 
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
 #include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <QMenu>
-
 class Track;
+class QMenu;
 
 namespace mixxx {
 

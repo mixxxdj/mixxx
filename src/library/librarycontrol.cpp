@@ -1,23 +1,21 @@
 #include "library/librarycontrol.h"
 
 #include <QApplication>
-#include <QItemSelectionModel>
+#include <QKeyEvent>
 #include <QModelIndex>
-#include <QModelIndexList>
 #include <QWindow>
 #include <QtDebug>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "mixer/playermanager.h"
 #include "moc_librarycontrol.cpp"
-#include "util/cmdlineargs.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-#include "widget/wtracktableview.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");

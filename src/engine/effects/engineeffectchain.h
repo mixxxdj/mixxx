@@ -5,10 +5,8 @@
 
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectsdelay.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "util/class.h"
-#include "util/memory.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 

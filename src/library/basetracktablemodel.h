@@ -3,7 +3,6 @@
 #include <QAbstractTableModel>
 #include <QList>
 #include <QPointer>
-#include <QTableView>
 
 #include "library/columncache.h"
 #include "library/trackmodel.h"

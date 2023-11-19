@@ -1,9 +1,9 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 
-#include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "util/xml.h"
 
 namespace {
 

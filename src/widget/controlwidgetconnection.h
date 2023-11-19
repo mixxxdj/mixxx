@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QByteArray>
 #include <QMetaProperty>
 #include <QObject>
 #include <QScopedPointer>
@@ -10,7 +9,6 @@
 #include "util/valuetransformer.h"
 
 class WBaseWidget;
-class ValueTransformer;
 
 class ControlWidgetConnection : public QObject {
     Q_OBJECT

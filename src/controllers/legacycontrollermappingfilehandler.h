@@ -1,7 +1,12 @@
 #pragma once
 
-#include "controllers/legacycontrollermapping.h"
-#include "util/xml.h"
+#include <QDomElement>
+#include <QString>
+#include <memory>
+
+class QFileInfo;
+class QDir;
+class LegacyControllerMapping;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
 /// LegacyControllerMapping objects to/from XML files and is also responsible

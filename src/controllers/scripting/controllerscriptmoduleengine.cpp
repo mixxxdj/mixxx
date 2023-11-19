@@ -1,5 +1,7 @@
 #include "controllers/scripting/controllerscriptmoduleengine.h"
 
+#include <QJSEngine>
+
 #include "moc_controllerscriptmoduleengine.cpp"
 
 ControllerScriptModuleEngine::ControllerScriptModuleEngine(

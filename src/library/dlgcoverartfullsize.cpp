@@ -7,9 +7,11 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "mixer/basetrackplayer.h"
 #include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
 #include "util/widgethelper.h"
+#include "widget/wcoverartmenu.h"
 
 DlgCoverArtFullSize::DlgCoverArtFullSize(
         QWidget* parent,

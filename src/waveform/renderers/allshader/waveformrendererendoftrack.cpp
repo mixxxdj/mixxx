@@ -3,13 +3,10 @@
 #include <QDomNode>
 #include <memory>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "util/timer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 

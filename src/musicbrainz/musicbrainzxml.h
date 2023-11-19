@@ -2,13 +2,14 @@
 
 #include <QList>
 #include <QPair>
-#include <QXmlStreamReader>
 
-#include "musicbrainz/musicbrainz.h"
+class QXmlStreamReader;
 
 namespace mixxx {
 
 namespace musicbrainz {
+
+struct TrackRelease;
 
 struct Error final {
     Error();

@@ -5,14 +5,13 @@
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/controls/bpmcontrol.h"
-#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
+#include "engine/sync/enginesync.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"
-#include "util/math.h"
 
 const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;

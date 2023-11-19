@@ -1,11 +1,9 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)

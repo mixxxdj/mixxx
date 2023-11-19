@@ -1,9 +1,5 @@
 #pragma once
 
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QMouseEvent>
-
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"

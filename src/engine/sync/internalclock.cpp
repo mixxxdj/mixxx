@@ -5,9 +5,7 @@
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/sync/enginesync.h"
 #include "moc_internalclock.cpp"
-#include "preferences/usersettings.h"
 #include "util/logger.h"
 #include "util/math.h"
 

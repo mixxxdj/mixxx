@@ -1,11 +1,8 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QModelIndex>
-#include <QStyleOptionViewItem>
-
 #include "library/tableitemdelegate.h"
 
+class QCheckBox;
 
 class BPMDelegate : public TableItemDelegate {
     Q_OBJECT

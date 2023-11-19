@@ -1,8 +1,8 @@
 #pragma once
 
 #include "engine/engineobject.h"
-#include "preferences/usersettings.h"
 
+class ConfigKey;
 class ControlPotmeter;
 class ControlProxy;
 

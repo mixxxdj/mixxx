@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 
-#include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
@@ -21,13 +20,11 @@
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginemixer.h"
-#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
@@ -36,9 +33,6 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include "waveform/waveformwidgetfactory.h"
-#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"

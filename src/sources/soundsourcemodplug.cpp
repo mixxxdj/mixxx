@@ -8,8 +8,6 @@
 
 #include <QFile>
 
-#include <stdlib.h>
-
 namespace mixxx {
 
 namespace {
