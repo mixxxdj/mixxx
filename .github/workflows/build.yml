@@ -238,20 +238,6 @@ jobs:
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-      - name: "[Windows] Set up Windows code signing"
-        env:
-          WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
-          WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
-          WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
-          WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
-        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
-        run: |
-          iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/fc44f5c5f2fb184fe738814f373c16cb69c30929/install.ps1'))
-          appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
-          Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
-
       - name: "Set up build environment"
         id: buildenv
         if: matrix.buildenv_script != null
@@ -345,6 +331,25 @@ jobs:
           # Render analyzer waveform tests to an offscreen buffer
           QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
+      - name: "[Windows] Sign binaries"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/azure-code-signing-action@v0.2.22
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          code-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files-folder: build
+          files-folder-filter: dll,exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
+
       - name: "Package"
         if: matrix.cpack_generator != null
         run: cpack -G ${{ matrix.cpack_generator }} -V
@@ -381,10 +386,24 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: JBLRSP95FC
 
-      - name: "[Windows] Sign Package"
-        if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
-        run: signtool sign /tr http://timestamp.sectigo.com /td sha256 /fd sha256 /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
-        working-directory: build
+      - name: "[Windows] Sign installer"
+        env:
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        if: runner.os == 'Windows' && env.AZURE_TENANT_ID
+        uses: azure/azure-code-signing-action@v0.2.22
+        with:
+          azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          endpoint: https://weu.codesigning.azure.net/
+          code-signing-account-name: mixxx
+          certificate-profile-name: mixxx
+          files-folder: build
+          files-folder-filter: msi
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+          timeout: 600
 
       - name: "Prepare for deployment"
         # Copy the desired directory structure to the deploy/ directory. This
