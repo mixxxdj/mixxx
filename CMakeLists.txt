@@ -1728,61 +1728,6 @@ if(WIN32)
   include(InstallRequiredSystemLibraries)
 endif()
 
-if(WIN32)
-  option(WINDOWS_CODESIGN "Sign Windows executables and libraries with digital certificate" OFF)
-  mark_as_advanced(WINDOWS_CODESIGN)
-  if(WINDOWS_CODESIGN)
-    set(WINDOWS_CODESIGN_CERTIFICATE_PATH "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PATH}" CACHE STRING "Path to signtool certificate")
-    set(WINDOWS_CODESIGN_CERTIFICATE_PASSWORD "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" CACHE STRING "Password of signtool certificate")
-    if("${WINDOWS_CODESIGN_CERTIFICATE_PATH}" STREQUAL "" AND "${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" STREQUAL "")
-        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /a CACHE STRING "parameters for signtool (list)")
-    else()
-        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
-    endif()
-    find_program(SIGNTOOL_EXECUTABLE signtool)
-    if(NOT SIGNTOOL_EXECUTABLE)
-      message(FATAL_ERROR "signtool is not found. Signing executables not possible")
-    endif()
-    message(STATUS "Found signtool: ${SIGNTOOL_EXECUTABLE}")
-
-    # Check if we're able to sign an executable
-    if(NOT DEFINED WINDOWS_CODESIGN_OK)
-      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/testsign.c "int main(){return 0;}")
-      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testsign)
-      try_compile(
-        RESULT ${CMAKE_CURRENT_BINARY_DIR}/testsign ${CMAKE_CURRENT_BINARY_DIR}/testsign.c
-        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
-      )
-      execute_process(
-        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
-        RESULT_VARIABLE ERR OUTPUT_QUIET
-      )
-      if(ERR EQUAL 0)
-        message(STATUS "Windows codesigning via signtool is working")
-        set(WINDOWS_CODESIGN_OK 1 CACHE INTERNAL "Can sign executables")
-      else()
-        message(FATAL_ERROR "Could NOT codesign test sample (signtool failed)")
-        set(WINDOWS_CODESIGN_OK 0 CACHE INTERNAL "Invalid or missing certificate")
-      endif()
-    endif()
-    mark_as_advanced(SIGNTOOL_EXECUTABLE SIGNTOOL_ARGS)
-  endif()
-
-  macro(windows_codesign_target CODESIGN_TARGET)
-    add_custom_command(
-        TARGET "${CODESIGN_TARGET}" POST_BUILD
-        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} $<TARGET_FILE:${CODESIGN_TARGET}>
-        COMMENT "Signining target ${CODESIGN_TARGET}"
-        VERBATIM
-    )
-  endmacro()
-
-  if(WINDOWS_CODESIGN)
-    windows_codesign_target(mixxx)
-  endif()
-endif()
-
-
 install(
   TARGETS
     mixxx
