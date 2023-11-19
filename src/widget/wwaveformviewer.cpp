@@ -50,8 +50,8 @@ WWaveformViewer::~WWaveformViewer() {
 void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
     if (m_waveformWidget) {
         m_waveformWidget->setup(node, context);
+        m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
-    m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
@@ -246,7 +246,9 @@ void WWaveformViewer::setZoom(double zoom) {
 }
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
-    m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    if (m_waveformWidget) {
+        m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+    }
 }
 
 void WWaveformViewer::setPlayMarkerPosition(double position) {
