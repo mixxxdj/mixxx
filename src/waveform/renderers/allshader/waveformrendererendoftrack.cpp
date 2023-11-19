@@ -3,13 +3,10 @@
 #include <QDomNode>
 #include <memory>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "util/timer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 
@@ -44,7 +41,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
     m_color = QColor(200, 25, 20);
     const QString endOfTrackColorName = context.selectString(node, "EndOfTrackColor");
     if (!endOfTrackColorName.isNull()) {
-        m_color.setNamedColor(endOfTrackColorName);
+        m_color = QColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
 }
@@ -55,9 +52,9 @@ void WaveformRendererEndOfTrack::initializeGL() {
 }
 
 void WaveformRendererEndOfTrack::fillWithGradient(QColor color) {
-    const int colorLocation = m_shader.uniformLocation("color");
-    const int positionLocation = m_shader.attributeLocation("position");
-    const int gradientLocation = m_shader.attributeLocation("gradient");
+    const int colorLocation = m_shader.colorLocation();
+    const int positionLocation = m_shader.positionLocation();
+    const int gradientLocation = m_shader.gradientLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);

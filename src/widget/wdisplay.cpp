@@ -1,12 +1,11 @@
 #include "widget/wdisplay.h"
 
-#include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QtDebug>
 
 #include "moc_wdisplay.cpp"
+#include "skin/legacy/skincontext.h"
 #include "widget/wpixmapstore.h"
 
 WDisplay::WDisplay(QWidget * parent)

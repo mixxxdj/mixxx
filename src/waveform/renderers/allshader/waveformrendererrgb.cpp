@@ -3,11 +3,8 @@
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace allshader {
 
@@ -204,9 +201,9 @@ void WaveformRendererRGB::paintGL() {
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
-    const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int positionLocation = m_shader.attributeLocation("position");
-    const int colorLocation = m_shader.attributeLocation("color");
+    const int matrixLocation = m_shader.matrixLocation();
+    const int positionLocation = m_shader.positionLocation();
+    const int colorLocation = m_shader.colorLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);

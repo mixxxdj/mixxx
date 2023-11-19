@@ -1,10 +1,7 @@
 #include "track/taglib/trackmetadata_common.h"
 
-#include <taglib/tmap.h>
-
 #include "track/tracknumbers.h"
 #include "util/assert.h"
-#include "util/duration.h"
 #include "util/logger.h"
 
 namespace mixxx {

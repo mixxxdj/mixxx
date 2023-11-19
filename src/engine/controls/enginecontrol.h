@@ -2,21 +2,19 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QList>
 #include <QObject>
 #include <gsl/pointers>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
 
 class EngineMixer;
 class EngineBuffer;
+struct GroupFeatureState;
 
 constexpr int kNoTrigger = -1;
 static_assert(

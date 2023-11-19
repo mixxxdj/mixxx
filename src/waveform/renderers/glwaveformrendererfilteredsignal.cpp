@@ -3,10 +3,8 @@
 
 #include <QDomNode>
 
-#include "track/track.h"
 #include "waveform/waveform.h"
 #include "waveformwidgetrenderer.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "util/math.h"
 
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(

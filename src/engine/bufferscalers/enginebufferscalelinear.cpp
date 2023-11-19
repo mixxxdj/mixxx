@@ -2,8 +2,8 @@
 
 #include <QtDebug>
 
+#include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalelinear.cpp"
-#include "track/keyutils.h"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/sample.h"

@@ -1,12 +1,9 @@
 #include "preferences/dialog/dlgprefinterface.h"
 
 #include <QDir>
-#include <QDoubleSpinBox>
 #include <QList>
 #include <QLocale>
 #include <QScreen>
-#include <QToolTip>
-#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -80,7 +77,7 @@ DlgPrefInterface::DlgPrefInterface(
     DEBUG_ASSERT(!fileNames.contains(QStringLiteral("mixxx_en_US.qm")));
     fileNames.push_back(QStringLiteral("mixxx_en_US.qm"));
 
-    for (const auto& fileName : qAsConst(fileNames)) {
+    for (const auto& fileName : std::as_const(fileNames)) {
         // Extract locale name from file name
         QString localeName = fileName;
         // Strip prefix
@@ -89,7 +86,7 @@ DlgPrefInterface::DlgPrefInterface(
         // Strip file extension
         localeName.truncate(localeName.lastIndexOf('.'));
         // Convert to QLocale name format. Unfortunately the translation files
-        // use inconsistent language/country separators, i.e. both '-' and '_'.
+        // use inconsistent language/territory separators, i.e. both '-' and '_'.
         auto localeNameFixed = localeName;
         localeNameFixed.replace('-', '_');
         const auto locale = QLocale(localeNameFixed);
@@ -100,18 +97,22 @@ DlgPrefInterface::DlgPrefInterface(
             qWarning() << "Preferences: skipping unsupported locale" << localeNameFixed;
             continue;
         }
-        QString countryName;
-        // Ugly hack to detect locales with an explicitly specified country.
+        QString territoryName;
+        // Ugly hack to detect locales with an explicitly specified country/territory.
         // https://doc.qt.io/qt-5/qlocale.html#QLocale-1
         // "If country is not present, or is not a valid ISO 3166 code, the most
         // appropriate country is chosen for the specified language."
         if (localeNameFixed.contains('_')) {
-            countryName = QLocale::countryToString(locale.country());
-            DEBUG_ASSERT(!countryName.isEmpty());
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            territoryName = QLocale::countryToString(locale.country());
+#else
+            territoryName = QLocale::territoryToString(locale.territory());
+#endif
+            DEBUG_ASSERT(!territoryName.isEmpty());
         }
         QString displayName = languageName;
-        if (!countryName.isEmpty()) {
-            displayName += QStringLiteral(" (") + countryName + ')';
+        if (!territoryName.isEmpty()) {
+            displayName += QStringLiteral(" (") + territoryName + ')';
         }
         // The locale name is stored in the config
         ComboBoxLocale->addItem(displayName, localeName);
@@ -252,6 +253,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         // m_colorScheme to avoid an empty skin preview.
         if (!foundConfigScheme) {
             m_colorScheme = schlist[0];
+            m_colorSchemeOnUpdate = schlist[0];
         }
     }
 }

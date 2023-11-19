@@ -3,14 +3,12 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "track/track.h"
 #include "util/math.h"
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/visualplayposition.h"
 #include "waveform/waveform.h"
-#include "widget/wwidget.h"
 
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
 const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
@@ -413,13 +411,21 @@ ConstWaveformPointer WaveformWidgetRenderer::getWaveform() const {
 }
 
 WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) const {
-    for (auto it = m_markPositions.constBegin(); it != m_markPositions.constEnd(); ++it) {
-        WaveformMarkPointer pMark = it.key();
+    // The m_markPositions list follows the order of drawing, so we search the
+    // list in reverse order to find the hovered mark.
+    //
+    // TODO It would be preferable to use WaveformMarkSet::findHoveredMark here,
+    // as done by WOverview, but that requires a) making WaveformMarkSet m_marks
+    // a member of this class and b) decoupling the calculation of the
+    // drawoffset from the drawing and c) storing it in WaveformMark.
+
+    for (auto it = m_markPositions.crbegin(); it != m_markPositions.crend(); ++it) {
+        const WaveformMarkPointer& pMark = it->m_pMark;
         VERIFY_OR_DEBUG_ASSERT(pMark) {
             continue;
         }
 
-        int markImagePositionInWidgetSpace = it.value();
+        int markImagePositionInWidgetSpace = it->m_offsetOnScreen;
         QPoint pointInImageSpace;
         if (getOrientation() == Qt::Horizontal) {
             pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());

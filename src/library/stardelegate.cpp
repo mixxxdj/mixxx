@@ -1,7 +1,6 @@
 #include "library/stardelegate.h"
 
-#include <QPainter>
-#include <QtDebug>
+#include <QTableView>
 
 #include "library/stareditor.h"
 #include "library/starrating.h"

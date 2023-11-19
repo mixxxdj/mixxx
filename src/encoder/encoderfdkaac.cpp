@@ -8,6 +8,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
@@ -85,7 +86,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
              << QStringLiteral("libfdk-aac.so.2");
 
     QStringList errorMessages;
-    for (const auto& libname : qAsConst(libnames)) {
+    for (const auto& libname : std::as_const(libnames)) {
         m_pLibrary = std::make_unique<QLibrary>(libname, 2);
         if (m_pLibrary->load()) {
             kLogger.debug() << "Successfully loaded encoder library" << m_pLibrary->fileName();
@@ -104,7 +105,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     }
 
     if (!m_pLibrary || !m_pLibrary->isLoaded()) {
-        for (const auto& errorMessage : qAsConst(errorMessages)) {
+        for (const auto& errorMessage : std::as_const(errorMessages)) {
             kLogger.warning() << "Failed to load AAC encoder library:" << errorMessage;
         }
         return;
@@ -179,7 +180,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
     // Try to find a butt installation in one of the
     // potential paths above
-    for (const auto& topPath : qAsConst(searchPaths)) {
+    for (const auto& topPath : std::as_const(searchPaths)) {
         QDir folder(topPath);
         if (!folder.exists()) {
             continue;

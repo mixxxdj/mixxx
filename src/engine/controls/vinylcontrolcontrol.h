@@ -1,11 +1,12 @@
 #pragma once
 
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+
+class ControlObject;
+class ControlPushButton;
+class ControlProxy;
 
 class VinylControlControl : public EngineControl {
     Q_OBJECT

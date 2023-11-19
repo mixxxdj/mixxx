@@ -4,7 +4,6 @@
 
 #include "sources/audiosourcestereoproxy.h"
 #include "engine/engine.h"
-#include "util/math.h"
 #include "util/sample.h"
 #include "util/logger.h"
 

@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 /**
 Documentation:
 OSX: https://developer.apple.com/reference/iokit/1557134-iopmassertioncreatewithname
@@ -18,7 +16,8 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 **/
 
 #include "util/screensaver.h"
-#include "util/assert.h"
+
+#include <QDebug>
 
 #if defined(Q_OS_MAC)
 #  include "util/mac.h"

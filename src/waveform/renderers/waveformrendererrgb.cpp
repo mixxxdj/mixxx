@@ -2,10 +2,6 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
-#include "track/track.h"
-#include "widget/wwidget.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 

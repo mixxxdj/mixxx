@@ -1,24 +1,17 @@
 #include "preferences/dialog/dlgprefdeck.h"
 
-#include <QDir>
 #include <QDoubleSpinBox>
-#include <QList>
-#include <QLocale>
-#include <QToolTip>
-#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/enginebuffer.h"
+#include "engine/sync/enginesync.h"
 #include "mixer/basetrackplayer.h"
-#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
-#include "widget/wnumberpos.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
@@ -73,7 +66,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
+    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
@@ -267,9 +260,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
 
-    //
     // Key lock mode
-    //
     connect(buttonGroupKeyLockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -278,13 +269,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keylockMode = static_cast<KeylockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keylockMode"),
                             static_cast<int>(KeylockMode::LockOriginalKey)));
-    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
-    //
     // Key unlock mode
-    //
     connect(buttonGroupKeyUnlockMode,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
             this,
@@ -293,25 +282,27 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     m_keyunlockMode = static_cast<KeyunlockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keyunlockMode"),
         static_cast<int>(KeyunlockMode::ResetLockedKey)));
-    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
-    //
     // Cue Mode
-    //
-
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+    labelCueMode->setText(labelCueMode->text() + QChar(' ') +
             coloredLinkString(
                     m_pLinkColor,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_CUE_MODES_URL));
 
-    //
-    // Speed / Pitch reset configuration
-    //
+    // Sync Mode
+    // Add "(?)" with a manual link to the label
+    labelSyncMode->setText(labelSyncMode->text() + QChar(' ') +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_SYNC_MODES_URL));
 
+    // Speed / Pitch reset configuration
     // Update "reset speed" and "reset pitch" check boxes
     // TODO: All defaults should only be set in slotResetToDefaults.
     int configSPAutoReset = m_pConfig->getValue<int>(
@@ -465,6 +456,16 @@ void DlgPrefDeck::slotUpdate() {
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
+    const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
+            static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
+                    ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                    EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
+    if (syncLockAlgorithm == EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER) {
+        radioButtonSoftLeader->setChecked(true);
+    } else {
+        radioButtonLockBpm->setChecked(true);
+    }
+
     KeylockMode keylockMode =
             static_cast<KeylockMode>(static_cast<int>(m_keylockModeControls[0]->get()));
     if (keylockMode == KeylockMode::LockCurrentKey) {
@@ -550,6 +551,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     checkBoxResetSpeed->setChecked(false);
     checkBoxResetPitch->setChecked(true);
 
+    radioButtonSoftLeader->setChecked(true);
+
     radioButtonOriginalKey->setChecked(true);
     radioButtonResetUnlockedKey->setChecked(true);
 }
@@ -563,7 +566,7 @@ void DlgPrefDeck::slotRateRangeComboBox(int index) {
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
-    for (ControlProxy* pControl : qAsConst(m_rateRangeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_rateRangeControls)) {
         pControl->set(rangePercent / 100.0);
     }
 }
@@ -578,14 +581,14 @@ void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
-    for (ControlProxy* pControl : qAsConst(m_rateDirectionControls)) {
+    for (ControlProxy* pControl : std::as_const(m_rateDirectionControls)) {
         pControl->set(rateDirectionMultiplier);
     }
 
     // If the rate slider direction setting has changed,
     // multiply the rate by -1 so the current sound does not change.
     if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
-        for (ControlProxy* pControl : qAsConst(m_rateControls)) {
+        for (ControlProxy* pControl : std::as_const(m_rateControls)) {
             pControl->set(-1 * pControl->get());
         }
     }
@@ -696,7 +699,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
+    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
@@ -729,17 +732,25 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(configSPAutoReset));
 
+    if (radioButtonSoftLeader->isChecked()) {
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_SOFT_LEADER));
+    } else {
+        m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
+                static_cast<int>(EngineSync::SyncLockAlgorithm::PREFER_LOCK_BPM));
+    }
+
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
                         static_cast<int>(m_keylockMode));
     // Set key lock behavior for every group
-    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
                         static_cast<int>(m_keyunlockMode));
     // Set key un-lock behavior for every group
-    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
+    for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 

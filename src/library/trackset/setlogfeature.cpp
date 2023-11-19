@@ -2,9 +2,7 @@
 
 #include <QDateTime>
 #include <QMenu>
-#include <QtDebug>
 
-#include "control/controlobject.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/playlisttablemodel.h"
@@ -13,7 +11,6 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
-#include "mixer/playermanager.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
 #include "widget/wlibrary.h"
@@ -692,7 +689,7 @@ void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistId
     // qDebug() << "slotPlaylistContentOrLockChanged() for"
     //          << playlistIds.count() << "playlist(s)";
     QSet<int> idsToBeUpdated;
-    for (const auto playlistId : qAsConst(playlistIds)) {
+    for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
             idsToBeUpdated.insert(playlistId);
         }

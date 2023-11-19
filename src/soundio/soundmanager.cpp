@@ -4,15 +4,11 @@
 
 #include <QLibrary>
 #include <QThread>
-#include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
-#include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "engine/sidechain/enginenetworkstream.h"
-#include "engine/sidechain/enginesidechain.h"
 #include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
@@ -148,7 +144,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
     //qDebug() << "SoundManager::closeDevices()";
 
     bool closed = false;
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         if (pDevice->isOpen()) {
             // NOTE(rryan): As of 2009 (?) it has been safe to close() a SoundDevice
             // while callbacks are active.
@@ -168,7 +164,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
     // TODO(rryan): Should we do this before SoundDevice::close()? No! Because
     // then the callback may be running when we call
     // onInputDisconnected/onOutputDisconnected.
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         for (const auto& in: pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
@@ -361,7 +357,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
     QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
-    for (const auto& pDevice: qAsConst(m_devices)) {
+    for (const auto& pDevice : std::as_const(m_devices)) {
         DeviceMode mode = {pDevice, false, false};
         pDevice->clearInputs();
         pDevice->clearOutputs();
@@ -401,7 +397,7 @@ SoundDeviceStatus SoundManager::setupDevices() {
             }
         }
 
-        for (const auto& out: qAsConst(outputs)) {
+        for (const auto& out : std::as_const(outputs)) {
             mode.isOutput = true;
             if (pDevice->getDeviceId().name != kNetworkDeviceInternalName) {
                 haveOutput = true;

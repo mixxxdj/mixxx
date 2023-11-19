@@ -4,7 +4,6 @@
 #include <QPixmap>
 #include <QPushButton>
 #include <QScopedPointer>
-#include <QTranslator>
 #include <QVersionNumber>
 
 #include "config.h"

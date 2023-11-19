@@ -1,6 +1,8 @@
 #include "effects/backends/builtin/graphiceqeffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 
 #define Q 1.2247449
 

@@ -5,7 +5,8 @@
 #include <QByteArray>
 
 #include "library/parser.h"
-#include "library/basesqltablemodel.h"
+
+class BaseSqlTableModel;
 
 class ParserCsv : public Parser {
   public:

@@ -1,6 +1,5 @@
 #include "engine/sidechain/enginerecord.h"
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "mixer/playerinfo.h"

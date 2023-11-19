@@ -53,6 +53,8 @@
     MIXXX_MANUAL_URL "/chapters/preferences.html#library"
 #define MIXXX_MANUAL_CUE_MODES_URL \
     MIXXX_MANUAL_URL "/chapters/user_interface.html#using-cue-modes"
+#define MIXXX_MANUAL_SYNC_MODES_URL \
+    MIXXX_MANUAL_URL "/chapters/djing_with_mixxx#sync-lock-with-dynamic-tempo"
 #define MIXXX_MANUAL_BEATS_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#beat-detection"
 #define MIXXX_MANUAL_KEY_URL \

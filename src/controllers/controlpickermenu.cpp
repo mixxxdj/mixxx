@@ -1,9 +1,11 @@
 #include "controllers/controlpickermenu.h"
 
+#include "control/controlobject.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/standardeffectchain.h"
 #include "effects/defs.h"
-#include "effects/effectslot.h"
+#include "effects/effectbuttonparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
@@ -1314,6 +1316,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
+    addDeckControl("waveform_zoom_set_default",
+            tr("Waveform Zoom Reset To Default"),
+            tr("Reset the waveform zoom level to the default value selected in "
+               "Preferences -> Waveforms"),
+            guiMenu);
 
     guiMenu->addSeparator();
 

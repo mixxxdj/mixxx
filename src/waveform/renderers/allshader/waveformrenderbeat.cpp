@@ -2,13 +2,11 @@
 
 #include <QDomNode>
 
-#include "control/controlobject.h"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace allshader {
 
@@ -22,7 +20,7 @@ void WaveformRenderBeat::initializeGL() {
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
-    m_color.setNamedColor(context.selectString(node, "BeatColor"));
+    m_color = QColor(context.selectString(node, "BeatColor"));
     m_color = WSkinColor::getCorrectColor(m_color).toRgb();
 }
 
@@ -105,24 +103,24 @@ void WaveformRenderBeat::paintGL() {
 
     DEBUG_ASSERT(reserved == m_vertices.size());
 
-    const int vertexLocation = m_shader.attributeLocation("position");
-    const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int colorLocation = m_shader.uniformLocation("color");
+    const int positionLocation = m_shader.positionLocation();
+    const int matrixLocation = m_shader.matrixLocation();
+    const int colorLocation = m_shader.colorLocation();
 
     m_shader.bind();
-    m_shader.enableAttributeArray(vertexLocation);
+    m_shader.enableAttributeArray(positionLocation);
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
     m_shader.setAttributeArray(
-            vertexLocation, GL_FLOAT, m_vertices.constData(), 2);
+            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
 
     m_shader.setUniformValue(matrixLocation, matrix);
     m_shader.setUniformValue(colorLocation, m_color);
 
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
-    m_shader.disableAttributeArray(vertexLocation);
+    m_shader.disableAttributeArray(positionLocation);
     m_shader.release();
 }
 

@@ -5,8 +5,11 @@
 #include <memory>
 #include <vector>
 
+#include "audio/types.h"
 #include "encoder/encoder.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 class EncoderFdkAac : public Encoder {
   public:

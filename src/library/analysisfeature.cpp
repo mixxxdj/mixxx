@@ -1,19 +1,15 @@
 #include "library/analysisfeature.h"
 
-#include <qlist.h>
-
+#include <QList>
 #include <QtDebug>
 
 #include "analyzer/analyzerscheduledtrack.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/dlganalysis.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/debug.h"
-#include "util/dnd.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 

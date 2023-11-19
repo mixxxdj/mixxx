@@ -1,8 +1,7 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QSignalBlocker>
-#include <QStringBuilder>
-#include <QTreeWidget>
+#include <QStyleFactory>
 #include <QtDebug>
 
 #include "defs_urls.h"
@@ -15,10 +14,8 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
-#include "track/keyfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
-#include "util/color/colorpalette.h"
+#include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
@@ -514,11 +511,7 @@ void DlgTrackInfo::focusField(const QString& property) {
 void DlgTrackInfo::slotCoverFound(
         const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
+        const QPixmap& pixmap) {
     if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {

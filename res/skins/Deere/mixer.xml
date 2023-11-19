@@ -176,7 +176,7 @@
                     <Size>1me,40f</Size>
                     <MaximumSize>200,</MaximumSize>
                     <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
+                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
                     <Horizontal>true</Horizontal>
                     <Connection>
                       <ConfigKey>[Master],crossfader</ConfigKey>

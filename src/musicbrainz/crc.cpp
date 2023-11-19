@@ -14,7 +14,7 @@
  *    Algorithm    = table-driven
  *****************************************************************************/
 #include "musicbrainz/crc.h"
-#include <stdint.h>
+
 #include <stdlib.h>
 
 /**

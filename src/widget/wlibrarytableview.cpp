@@ -1,16 +1,17 @@
 #include "widget/wlibrarytableview.h"
 
+#include <QApplication>
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
-#include <QPalette>
+#include <QHelpEvent>
 #include <QScrollBar>
+#include <QToolTip>
 
-#include "library/trackmodel.h"
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+class QFocusEvent;
 
 namespace {
 // number of entries in the model cache
@@ -159,7 +160,7 @@ bool WLibraryTableView::restoreTrackModelState(
     pSelection->clearSelection();
     QModelIndexList selectedRows = state->selectedRows;
     if (!selectedRows.isEmpty()) {
-        for (auto index : qAsConst(selectedRows)) {
+        for (auto index : std::as_const(selectedRows)) {
             pSelection->select(index,
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
         }
@@ -274,7 +275,7 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
         // This is especially helpful if the table has only one track, which can
         // not be selected with up/down buttons, either physical or emulated via
         // [Library],MoveVertical controls. See #9548
-        if (model()->rowCount() > 0) {
+        if (model() && model()->rowCount() > 0) {
             if (selectionModel()->hasSelection()) {
                 DEBUG_ASSERT(!selectionModel()->selectedIndexes().isEmpty());
                 if (!currentIndex().isValid() ||
@@ -391,3 +392,28 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
 
     return QTableView::moveCursor(cursorAction, modifiers);
 }
+
+void WLibraryTableView::dataChanged(
+        const QModelIndex& topLeft,
+        const QModelIndex& bottomRight,
+        const QVector<int>& roles) {
+    for (const auto& role : roles) {
+        // Note: At this point the tooltip is already showing
+        // "Fetching image ..." or still in an effect progress.
+        // QToolTip::isVisible() is false for the later.
+        if (role == Qt::ToolTipRole) {
+            QPoint globalPos = QCursor::pos();
+            QWidget* pViewPort = QApplication::widgetAt(globalPos);
+            if (pViewPort) {
+                QPoint viewPortPos = pViewPort->mapFromGlobal(globalPos);
+                if (indexAt(viewPortPos) == topLeft) {
+                    QHelpEvent toolTipEvent(QEvent::ToolTip,
+                            pViewPort->mapFromGlobal(globalPos),
+                            globalPos);
+                    viewportEvent(&toolTipEvent);
+                }
+            }
+        }
+    }
+    QAbstractItemView::dataChanged(topLeft, bottomRight, roles);
+};

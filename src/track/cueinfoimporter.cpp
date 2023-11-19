@@ -7,7 +7,7 @@ CueInfoImporter::CueInfoImporter(QList<CueInfo> cueInfos)
 }
 
 bool CueInfoImporter::hasCueOfType(CueType cueType) const {
-    for (const CueInfo& cueInfo : qAsConst(m_cueInfos)) {
+    for (const CueInfo& cueInfo : std::as_const(m_cueInfos)) {
         if (cueInfo.getType() == cueType) {
             return true;
         }

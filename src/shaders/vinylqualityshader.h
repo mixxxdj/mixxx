@@ -15,12 +15,6 @@ class mixxx::VinylQualityShader final : public mixxx::Shader {
     int matrixLocation() const {
         return m_matrixLocation;
     }
-    int samplerLocation() const {
-        return m_samplerLocation;
-    }
-    int colorLocation() const {
-        return m_colorLocation;
-    }
     int positionLocation() const {
         return m_positionLocation;
     }
@@ -28,12 +22,19 @@ class mixxx::VinylQualityShader final : public mixxx::Shader {
         return m_texcoordLocation;
     }
 
+    int textureLocation() const {
+        return m_textureLocation;
+    }
+    int colorLocation() const {
+        return m_colorLocation;
+    }
+
   private:
     int m_matrixLocation;
-    int m_samplerLocation;
-    int m_colorLocation;
     int m_positionLocation;
     int m_texcoordLocation;
+    int m_textureLocation;
+    int m_colorLocation;
 
     DISALLOW_COPY_AND_ASSIGN(VinylQualityShader)
 };

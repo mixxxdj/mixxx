@@ -3,6 +3,10 @@
 #include <QCheckBox>
 #include <QWidgetAction>
 
+#include "effects/effectparameter.h"
+#include "effects/effectparameterslotbase.h"
+#include "effects/presets/effectchainpreset.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "moc_weffectchainpresetbutton.cpp"
 #include "util/parented_ptr.h"
@@ -91,6 +95,11 @@ void WEffectChainPresetButton::populateMenu() {
     if (!presetIsReadOnly) {
         m_pMenu->addAction(tr("Update Preset"), this, [this]() {
             m_pChainPresetManager->updatePreset(m_pChain);
+        });
+    }
+    if (!presetIsReadOnly && !m_pChain->presetName().isEmpty()) {
+        m_pMenu->addAction(tr("Rename Preset"), this, [this]() {
+            m_pChainPresetManager->renamePreset(m_pChain->presetName());
         });
     }
     m_pMenu->addAction(tr("Save As New Preset..."), this, [this]() {

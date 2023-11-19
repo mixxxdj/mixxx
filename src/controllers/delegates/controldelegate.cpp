@@ -3,8 +3,8 @@
 #include <QLineEdit>
 #include <QRegExp>
 #include <QStringList>
-#include <QtDebug>
 
+#include "controllers/controlpickermenu.h"
 #include "controllers/midi/midimessage.h"
 #include "moc_controldelegate.cpp"
 

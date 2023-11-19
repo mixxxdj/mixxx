@@ -9,6 +9,7 @@
 #include "control/controlpushbutton.h"
 #include "engine/channelhandle.h"
 #include "engine/channels/enginechannel.h"
+#include "engine/effects/groupfeaturestate.h"
 #include "engine/engineobject.h"
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
@@ -16,18 +17,12 @@
 #include "soundio/soundmanagerutil.h"
 
 class EngineWorkerScheduler;
-class EngineBuffer;
-class EngineChannel;
-class EngineDeck;
-class EngineFlanger;
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
 class EngineSideChain;
 class EffectsManager;
 class EngineEffectsManager;
-class SyncWorker;
-class GuiTick;
 class EngineSync;
 class EngineTalkoverDucking;
 class EngineDelay;

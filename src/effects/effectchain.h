@@ -1,24 +1,18 @@
 #pragma once
 
-#include <QDomDocument>
 #include <QList>
-#include <QMap>
 #include <QObject>
-#include <QSignalMapper>
 
-#include "control/controlobject.h"
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
-#include "effects/presets/effectchainpreset.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
 #include "util/memory.h"
 
+class ControlObject;
 class ControlPushButton;
 class ControlEncoder;
-class EffectChain;
 class EffectsManager;
-class EffectProcessor;
 class EngineEffectChain;
 
 /// EffectChain is the main thread representation of an effect chain.

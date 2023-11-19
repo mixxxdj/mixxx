@@ -1,9 +1,20 @@
 #pragma once
 
-#include "controllers/controller.h"
-#include "controllers/hid/hiddevice.h"
+#include <QtGlobal>
+
 #include "rigtorp/SPSCQueue.h"
-#include "util/duration.h"
+
+struct RuntimeLoggingCategory;
+class QMutex;
+class QByteArray;
+
+typedef struct hid_device_ hid_device;
+
+namespace mixxx {
+namespace hid {
+class DeviceInfo;
+} // namespace hid
+} // namespace mixxx
 
 /// Stores and sends OutputReports (independent of the ReportID) in First In /
 /// First Out (FIFO) order

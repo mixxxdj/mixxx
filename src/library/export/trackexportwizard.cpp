@@ -1,12 +1,9 @@
 #include "library/export/trackexportwizard.h"
 
 #include <QFileDialog>
-#include <QFileInfo>
-#include <QMessageBox>
 #include <QStandardPaths>
 
 #include "moc_trackexportwizard.cpp"
-#include "util/assert.h"
 
 void TrackExportWizard::exportTracks() {
     if (!selectDestinationDirectory()) {

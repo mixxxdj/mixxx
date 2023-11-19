@@ -4,8 +4,8 @@ using namespace mixxx;
 
 void UnicolorShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute highp vec4 position;
+uniform highp mat4 matrix;
+attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
 void main()
 {
     gl_Position = matrix * position;
@@ -21,4 +21,8 @@ void main()
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
+
+    m_matrixLocation = uniformLocation("matrix");
+    m_positionLocation = attributeLocation("position");
+    m_colorLocation = uniformLocation("color");
 }

@@ -337,8 +337,8 @@ void BaseSqlTableModel::select() {
     // Both rowInfo and trackIdToRows (might) have been moved and
     // must not be used afterwards!
 
-    qDebug() << this << "select() took" << time.elapsed().debugMillisWithUnit()
-             << m_rowInfo.size();
+    qDebug() << this << "select() returned" << m_rowInfo.size()
+             << "results in" << time.elapsed().debugMillisWithUnit();
 }
 
 void BaseSqlTableModel::setTable(QString tableName,
@@ -528,7 +528,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
         bool first = true;
-        for (const SortColumn& sc : qAsConst(m_sortColumns)) {
+        for (const SortColumn& sc : std::as_const(m_sortColumns)) {
             QString sort_field;
             if (sc.m_column < m_tableColumns.size()) {
                 if (sc.m_column == kIdColumn) {
@@ -804,7 +804,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
                          fieldIndex(ColumnCache::
                                          COLUMN_LIBRARYTABLE_COVERART_COLOR))
                     .data());
-    if (coverInfo.hasImage()) {
+    if (coverInfo.hasCacheKey()) {
         coverInfo.type = static_cast<CoverInfo::Type>(
                 index.sibling(index.row(),
                              fieldIndex(ColumnCache::

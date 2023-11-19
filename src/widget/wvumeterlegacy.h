@@ -1,9 +1,11 @@
 #pragma once
 
-#include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WVuMeterLegacy : public WWidget {
     Q_OBJECT

@@ -1,16 +1,16 @@
 #pragma once
 
-#include <QEvent>
 #include <QMap>
 #include <QStackedWidget>
 #include <QString>
 
-#include "library/libraryview.h"
-#include "skin/legacy/skincontext.h"
 #include "util/compatibility/qmutex.h"
 #include "widget/wbasewidget.h"
 
-class KeyboardEventFilter;
+class LibraryView;
+class TrackId;
+class QDomNode;
+class SkinContext;
 
 class WLibrary : public QStackedWidget, public WBaseWidget {
     Q_OBJECT

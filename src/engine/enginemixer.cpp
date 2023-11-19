@@ -1,16 +1,11 @@
 #include "engine/enginemixer.h"
 
-#include <QList>
-#include <QPair>
-#include <QtDebug>
-
 #include "control/controlaudiotaperpot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
 #include "engine/channelmixer.h"
 #include "engine/channels/enginechannel.h"
-#include "engine/channels/enginedeck.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginedelay.h"
@@ -25,8 +20,6 @@
 #include "preferences/usersettings.h"
 #include "util/defs.h"
 #include "util/sample.h"
-#include "util/timer.h"
-#include "util/trace.h"
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");

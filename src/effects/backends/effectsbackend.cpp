@@ -1,5 +1,7 @@
 #include "effects/backends/effectsbackend.h"
 
+#include <QObject>
+
 namespace {
 const QString backendTypeNameLV2 = QStringLiteral("LV2");
 // QString::tr requires const char[] rather than QString

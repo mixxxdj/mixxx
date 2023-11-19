@@ -1,22 +1,16 @@
 #pragma once
 
-#include <QDateTime>
-#include <QDragEnterEvent>
-#include <QDropEvent>
-#include <QEvent>
-#include <QList>
-
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmark.h"
 #include "widget/trackdroptarget.h"
-#include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
 
 class ControlProxy;
 class WaveformWidgetAbstract;
-class ControlPotmeter;
+class WCueMenuPopup;
+class QDomNode;
+class SkinContext;
 
 class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT

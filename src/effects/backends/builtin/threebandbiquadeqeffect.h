@@ -1,14 +1,9 @@
 #pragma once
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
-#include "util/class.h"
-#include "util/defs.h"
 #include "util/memory.h"
-#include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
@@ -77,6 +72,6 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    std::unique_ptr<ControlProxy> m_pLoFreqCorner;
-    std::unique_ptr<ControlProxy> m_pHiFreqCorner;
+    PollingControlProxy m_pLoFreqCorner;
+    PollingControlProxy m_pHiFreqCorner;
 };

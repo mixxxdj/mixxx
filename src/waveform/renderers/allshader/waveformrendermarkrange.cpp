@@ -1,16 +1,8 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 
-#include <QColor>
-#include <QDomNode>
-#include <QObject>
-#include <QVector>
-
-#include "preferences/usersettings.h"
-#include "track/track.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 allshader::WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget) {
@@ -30,8 +22,8 @@ void allshader::WaveformRenderMarkRange::fillRect(
 
     const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
 
-    int colorLocation = m_shader.uniformLocation("color");
-    int positionLocation = m_shader.attributeLocation("position");
+    const int colorLocation = m_shader.colorLocation();
+    const int positionLocation = m_shader.positionLocation();
 
     m_shader.setUniformValue(colorLocation, color);
 
@@ -65,12 +57,12 @@ void allshader::WaveformRenderMarkRange::paintGL() {
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    int positionLocation = m_shader.attributeLocation("position");
+    const int positionLocation = m_shader.positionLocation();
+    const int matrixLocation = m_shader.matrixLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);
 
-    int matrixLocation = m_shader.uniformLocation("matrix");
     m_shader.setUniformValue(matrixLocation, matrix);
 
     for (auto&& markRange : m_markRanges) {

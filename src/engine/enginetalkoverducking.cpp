@@ -1,5 +1,6 @@
 #include "engine/enginetalkoverducking.h"
 
+#include "control/controllinpotmeter.h"
 #include "control/controlproxy.h"
 #include "moc_enginetalkoverducking.cpp"
 

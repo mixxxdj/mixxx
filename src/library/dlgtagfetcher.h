@@ -2,16 +2,18 @@
 
 #include <QDialog>
 #include <QList>
-#include <QTreeWidget>
+#include <future>
 
-#include "library/trackmodel.h"
+#include "library/export/coverartcopyworker.h"
 #include "library/ui_dlgtagfetcher.h"
 #include "musicbrainz/tagfetcher.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "widget/wcoverartlabel.h"
-#include "widget/wcoverartmenu.h"
+
+class QTreeWidget;
+class TrackModel;
 
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or
@@ -57,9 +59,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotCoverFound(
             const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotStartFetchCoverArt(const QList<QString>& allUrls);
     void slotLoadBytesToLabel(const QByteArray& data);
     void slotCoverArtLinkNotFound();

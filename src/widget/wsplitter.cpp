@@ -1,8 +1,10 @@
 #include "widget/wsplitter.h"
 
+#include <QEvent>
 #include <QList>
 
 #include "moc_wsplitter.cpp"
+#include "skin/legacy/skincontext.h"
 
 WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),

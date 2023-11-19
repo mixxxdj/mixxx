@@ -13,7 +13,6 @@
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
         ColorType colorType,

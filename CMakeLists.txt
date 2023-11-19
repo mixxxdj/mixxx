@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+message(STATUS "CMAKE_VERSION: ${CMAKE_VERSION}")
+
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
@@ -128,6 +130,15 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
 endif()
 
 option(QT6 "Build with Qt6" OFF)
+if(QT6)
+  if (DEFINED ENV{GITHUB_ACTIONS})
+    message("Running experimental Qt6 build for GitHub Actions")
+  else()
+    message(FATAL_ERROR
+        "Mixxx 2.4 does not fully support Qt6, use 2.5/main instead. "
+        "Qt6 support is available for CI checks only and requires the environment variable GITHUB_ACTIONS to be set.")
+  endif()
+endif()
 
 option(QOPENGL "Use QOpenGLWindow based widget instead of QGLWidget" ON)
 if(QOPENGL)
@@ -1072,7 +1083,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
   src/util/db/dbconnectionpooler.cpp
-  src/util/db/dbid.cpp
   src/util/db/fwdsqlquery.cpp
   src/util/db/fwdsqlqueryselectresult.cpp
   src/util/db/sqlite.cpp
@@ -1428,6 +1438,7 @@ else()
   if(QOPENGL)
     target_sources(mixxx-lib PRIVATE
       src/shaders/endoftrackshader.cpp
+      src/shaders/patternshader.cpp
       src/shaders/rgbashader.cpp
       src/shaders/rgbshader.cpp
       src/shaders/shader.cpp
@@ -2149,11 +2160,15 @@ if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.
     STATUS MANUAL_PDF_DOWNLOAD
     TLS_VERIFY ON
   )
-  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
-    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
-      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
-      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
-      "manual.")
+  list(GET MANUAL_PDF_DOWNLOAD 0 MANUAL_PDF_DOWNLOAD_ERROR)
+  if(NOT MANUAL_PDF_DOWNLOAD_ERROR EQUAL 0)
+    list(GET MANUAL_PDF_DOWNLOAD 1 MANUAL_PDF_DOWNLOAD_MESSGAE)
+    message(FATAL_ERROR "Manual PDF download failed with: "
+        "${MANUAL_PDF_DOWNLOAD_MESSGAE} Code: ${MANUAL_PDF_DOWNLOAD_ERROR}. "
+        "Either download it yourself and move it to "
+        "'${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+        "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+        "manual.")
   endif()
   file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
 endif()
@@ -2275,7 +2290,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.20.0)
+  set(LIBDJINTEROP_VERSION 0.20.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2311,7 +2326,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=0cf85b30629b59277437e2be7e8073c22797e8749920ba2dd5e72c21e14d68db
+      URL_HASH SHA256=69bdbd0e68f12858b79795a76a6023962f93f819ca36ea56a9d4680901865d13
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
@@ -2325,7 +2340,7 @@ if(ENGINEPRIME)
         -DCMAKE_INSTALL_LIBDIR:PATH=lib
         -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
         -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
         -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
@@ -2422,7 +2437,7 @@ if(KEYFINDER)
         -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR=${CMAKE_INSTALL_LIBDIR}
         -$<IF:$<BOOL:${CMAKE_TOOLCHAIN_FILE}>,D,U>CMAKE_TOOLCHAIN_FILE:PATH=${CMAKE_TOOLCHAIN_FILE}
-        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT}
+        -$<IF:$<BOOL:${CMAKE_OSX_DEPLOYMENT_TARGET}>,D,U>CMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMEN_TARGET}
         -$<IF:$<BOOL:${CMAKE_OSX_ARCHITECTURES}>,D,U>CMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
         -DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}
         -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
@@ -2978,7 +2993,7 @@ if(COREAUDIO)
     src/sources/v1/legacyaudiosourceadapter.cpp
     lib/apple/CAStreamBasicDescription.cpp
   )
-  target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
+  target_compile_definitions(mixxx-lib PUBLIC __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
 
@@ -2999,7 +3014,7 @@ if(FAAD)
   )
   target_compile_definitions(mixxx-lib PUBLIC __FAAD__)
   if(MP4v2_FOUND)
-    target_compile_definitions(mixxx-lib PRIVATE __MP4V2__)
+    target_compile_definitions(mixxx-lib PUBLIC __MP4V2__)
     target_link_libraries(mixxx-lib PRIVATE MP4v2::MP4v2)
   else()
     target_link_libraries(mixxx-lib PRIVATE MP4::MP4)
@@ -3366,14 +3381,6 @@ if(WAVPACK)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
 
-if (APPLOCAL_COMPONENT_DEFINED)
-    set(CPACK_COMPONENT_applocal_HIDDEN TRUE)
-    # In order to run Mixx from the build directory install applocal components
-    add_custom_command(
-        TARGET mixxx POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
-endif()
-
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/src/config.h" @ONLY)
@@ -3447,6 +3454,17 @@ if(WIN32)
 endif()
 
 include(CPack)
+
+if (APPLOCAL_COMPONENT_DEFINED)
+    cpack_add_component(applocal
+        HIDDEN
+        REQUIRED)
+
+    # In order to run Mixx from the build directory install applocal components
+    add_custom_command(
+        TARGET mixxx POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
+endif()
 
 if(APPLE AND MACOS_BUNDLE)
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")

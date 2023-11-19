@@ -4,7 +4,6 @@
 
 #include "library/coverartutils.h"
 #include "track/track.h"
-#include "util/debug.h"
 #include "util/logger.h"
 
 namespace {
@@ -68,14 +67,15 @@ CoverInfoRelative::CoverInfoRelative()
           m_legacyHash(defaultLegacyHash()) {
 }
 
-void CoverInfoRelative::setImage(
+void CoverInfoRelative::setImageDigest(
         const QImage& image) {
     color = CoverImageUtils::extractBackgroundColor(image);
     m_imageDigest = CoverImageUtils::calculateDigest(image);
     DEBUG_ASSERT(image.isNull() == m_imageDigest.isEmpty());
     m_legacyHash = calculateLegacyHash(image);
     DEBUG_ASSERT(image.isNull() == (m_legacyHash == defaultLegacyHash()));
-    DEBUG_ASSERT(image.isNull() != hasImage());
+    DEBUG_ASSERT(image.isNull() != hasCacheKey());
+    DEBUG_ASSERT(image.isNull() == (type == NONE));
 }
 
 bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
@@ -170,31 +170,6 @@ CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
         DEBUG_ASSERT(!"unhandled CoverInfo::Type");
     }
     return loadedImage;
-}
-
-bool CoverInfo::refreshImageDigest(
-        const QImage& loadedImage) {
-    if (!imageDigest().isEmpty()) {
-        // Assume that a non-empty digest has been calculated from
-        // the corresponding image. Otherwise we would refresh all
-        // digests over and over again.
-        // Invalid legacy hash values are ignored. These will only
-        // be refreshed when opened with a previous version.
-        return false;
-    }
-    QImage image = loadedImage;
-    if (image.isNull()) {
-        image = loadImage(TrackPointer()).image;
-    }
-    if (image.isNull() && type != CoverInfo::NONE) {
-        kLogger.warning()
-                << "Resetting cover info"
-                << *this;
-        reset();
-        return true;
-    }
-    setImage(image);
-    return true;
 }
 
 bool operator==(const CoverInfo& lhs, const CoverInfo& rhs) {

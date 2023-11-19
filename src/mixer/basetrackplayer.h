@@ -1,11 +1,6 @@
 #pragma once
 
-#include <QObject>
-#include <QScopedPointer>
-#include <QString>
-
 #include "engine/channels/enginechannel.h"
-#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
@@ -14,12 +9,14 @@
 #include "util/color/rgbcolor.h"
 #include "util/memory.h"
 #include "util/parented_ptr.h"
+#include "util/performancetimer.h"
 
 class EngineMixer;
 class ControlObject;
-class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class QString;
+class EngineDeck;
 
 constexpr int kUnreplaceDelay = 500;
 

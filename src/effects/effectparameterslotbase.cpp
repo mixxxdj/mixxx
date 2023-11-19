@@ -1,10 +1,6 @@
 #include "effects/effectparameterslotbase.h"
 
-#include <QtDebug>
-
-#include "control/controleffectknob.h"
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "effects/effectparameter.h"
 #include "moc_effectparameterslotbase.cpp"
 

@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 
-#include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlpotmeter.h"
 #include "control/controlproxy.h"
@@ -21,13 +20,11 @@
 #include "engine/controls/quantizecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginemixer.h"
-#include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
@@ -36,9 +33,6 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-#include "waveform/waveformwidgetfactory.h"
-#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"
@@ -385,7 +379,7 @@ void EngineBuffer::setLoop(mixxx::audio::FramePos startPosition,
 }
 
 void EngineBuffer::setEngineMixer(EngineMixer* pEngineMixer) {
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->setEngineMixer(pEngineMixer);
     }
 }
@@ -489,7 +483,7 @@ void EngineBuffer::setNewPlaypos(mixxx::audio::FramePos position) {
     m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->notifySeek(m_playPos);
     }
 
@@ -638,7 +632,7 @@ void EngineBuffer::notifyTrackLoaded(
     // Note: we are still in a worker thread.
     const auto trackEndPosition = getTrackEndPosition();
     const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
-    for (const auto& pControl : qAsConst(m_engineControls)) {
+    for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
         pControl->setFrameInfo(m_playPos, trackEndPosition, sampleRate);
     }
@@ -1097,7 +1091,7 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->setFrameInfo(m_playPos, trackEndPosition, m_trackSampleRateOld);
         pControl->process(rate, m_playPos, iBufferSize);
     }
@@ -1480,7 +1474,7 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    for (const auto& pControl: qAsConst(m_engineControls)) {
+    for (const auto& pControl : std::as_const(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
@@ -1555,7 +1549,7 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 void EngineBuffer::slotUpdatedTrackBeats() {
     TrackPointer pTrack = m_pCurrentTrack;
     if (pTrack) {
-        for (const auto& pControl : qAsConst(m_engineControls)) {
+        for (const auto& pControl : std::as_const(m_engineControls)) {
             pControl->trackBeatsUpdated(pTrack->getBeats());
         }
     }

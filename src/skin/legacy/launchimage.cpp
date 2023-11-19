@@ -1,7 +1,5 @@
 #include "skin/legacy/launchimage.h"
 
-#include <util/assert.h>
-
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPainter>

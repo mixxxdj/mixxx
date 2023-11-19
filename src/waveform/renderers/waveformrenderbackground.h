@@ -2,13 +2,13 @@
 
 #include <QColor>
 #include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
 
 #include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveformrendererabstract.h"
 
+class QPaintEvent;
+class QPainter;
 class WaveformWidgetRenderer;
 
 class WaveformRenderBackground : public WaveformRendererAbstract {

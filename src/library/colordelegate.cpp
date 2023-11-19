@@ -1,11 +1,9 @@
 #include "library/colordelegate.h"
 
-#include <QColor>
 #include <QPainter>
 #include <QStyle>
 #include <QTableView>
 
-#include "library/trackmodel.h"
 #include "moc_colordelegate.cpp"
 #include "util/color/rgbcolor.h"
 

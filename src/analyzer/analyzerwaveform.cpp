@@ -1,10 +1,7 @@
 #include "analyzer/analyzerwaveform.h"
 
 #include "analyzer/analyzertrack.h"
-#include "analyzer/constants.h"
-#include "engine/engineobject.h"
 #include "engine/filters/enginefilterbessel4.h"
-#include "engine/filters/enginefilterbutterworth8.h"
 #include "track/track.h"
 #include "util/logger.h"
 #include "waveform/waveformfactory.h"

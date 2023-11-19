@@ -1,11 +1,12 @@
 #pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>
-#include <engine/sidechain/networkinputstreamworker.h>
+
 #include <QVector>
 
 #include "util/types.h"
-#include "util/fifo.h"
+
+class NetworkInputStreamWorker;
 
 class EngineNetworkStream {
   public:

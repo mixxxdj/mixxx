@@ -5,7 +5,7 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QResizeEvent>
-#include <QtConcurrent>
+#include <QStyleFactory>
 
 #include "engine/controls/cuecontrol.h"
 #include "library/dao/cuedao.h"
@@ -13,6 +13,7 @@
 #include "moc_dlgreplacecuecolor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
+#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
@@ -342,7 +343,7 @@ void DlgReplaceCueColor::slotApply() {
             continue;
         }
         CueDatabaseRow row = {DbId(selectQuery.value(idColumn)),
-                TrackId(selectQuery.value(trackIdColumn).toInt()),
+                TrackId(selectQuery.value(trackIdColumn)),
                 *color};
         rows << row;
         trackIds << row.trackId;
@@ -386,14 +387,14 @@ void DlgReplaceCueColor::slotApply() {
     bool canceled = false;
 
     QMultiMap<TrackPointer, DbId> cues;
-    for (const auto& row : qAsConst(rows)) {
+    for (const auto& row : std::as_const(rows)) {
         QCoreApplication::processEvents();
         if (progress.wasCanceled()) {
             canceled = true;
             break;
         }
         query.bindValue(":id", row.id.toVariant());
-        query.bindValue(":track_id", row.trackId.value());
+        query.bindValue(":track_id", row.trackId.toVariant());
         query.bindValue(":current_color", mixxx::RgbColor::toQVariant(row.color));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);

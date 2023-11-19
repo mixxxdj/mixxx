@@ -2,11 +2,11 @@
 
 #include <QObject>
 
-#include "control/controlencoder.h"
 #include "control/controlproxy.h"
 #include "library/library_decl.h"
 #include "util/memory.h"
 
+class ControlEncoder;
 class ControlObject;
 class ControlPushButton;
 class Library;

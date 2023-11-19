@@ -1,12 +1,13 @@
 #include "widget/wstarrating.h"
 
-#include <QApplication>
-#include <QSize>
+#include <QMouseEvent>
 #include <QStyleOption>
 #include <QStylePainter>
 
 #include "moc_wstarrating.cpp"
-#include "track/track.h"
+
+class QEvent;
+class QWidgets;
 
 WStarRating::WStarRating(const QString& group, QWidget* pParent)
         : WWidget(pParent),

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <QEvent>
 #include <QSize>
 #include <QStackedLayout>
 #include <QWidget>
 
 #include "widget/wbasewidget.h"
+
+class QEvent;
 
 class SizeAwareLayout : public QStackedLayout {
     Q_OBJECT

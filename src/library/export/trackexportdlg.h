@@ -1,14 +1,14 @@
 #pragma once
 
 #include <QDialog>
-#include <QScopedPointer>
-#include <QString>
 #include <future>
 
 #include "library/export/trackexportworker.h"
 #include "library/export/ui_dlgtrackexport.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+
+class QString;
 
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.

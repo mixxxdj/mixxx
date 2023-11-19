@@ -1,7 +1,9 @@
 #include "widget/wvumeterglsl.h"
 
+#include <QOpenGLTexture>
+
 #include "moc_wvumeterglsl.cpp"
-#include "util/assert.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/texture.h"
 
@@ -24,8 +26,8 @@ void WVuMeterGLSL::draw() {
 void WVuMeterGLSL::initializeGL() {
     initializeOpenGLFunctions();
 
-    m_pTextureBack.reset(createTexture(m_pPixmapBack));
-    m_pTextureVu.reset(createTexture(m_pPixmapVu));
+    m_pTextureBack = createTexture(m_pPixmapBack);
+    m_pTextureVu = createTexture(m_pPixmapVu);
     m_textureShader.init();
 }
 
@@ -46,7 +48,7 @@ void WVuMeterGLSL::paintGL() {
     m_textureShader.bind();
 
     int matrixLocation = m_textureShader.matrixLocation();
-    int samplerLocation = m_textureShader.samplerLocation();
+    int textureLocation = m_textureShader.textureLocation();
     int positionLocation = m_textureShader.positionLocation();
     int texcoordLocation = m_textureShader.texcoordLocation();
 
@@ -57,7 +59,7 @@ void WVuMeterGLSL::paintGL() {
     m_textureShader.enableAttributeArray(positionLocation);
     m_textureShader.enableAttributeArray(texcoordLocation);
 
-    m_textureShader.setUniformValue(samplerLocation, 0);
+    m_textureShader.setUniformValue(textureLocation, 0);
 
     if (m_pTextureBack) {
         QRectF sourceRect(0, 0, m_pPixmapBack->width(), m_pPixmapBack->height());
@@ -163,16 +165,16 @@ void WVuMeterGLSL::drawTexture(QOpenGLTexture* texture,
     const float posx2 = static_cast<float>(targetRect.x() + targetRect.width());
     const float posy2 = static_cast<float>(targetRect.y() + targetRect.height());
 
-    const float posarray[] = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
-    const float texarray[] = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
+    const std::array<float, 8> posarray = {posx1, posy1, posx2, posy1, posx1, posy2, posx2, posy2};
+    const std::array<float, 8> texarray = {texx1, texy1, texx2, texy1, texx1, texy2, texx2, texy2};
 
     int positionLocation = m_textureShader.positionLocation();
     int texcoordLocation = m_textureShader.texcoordLocation();
 
     m_textureShader.setAttributeArray(
-            positionLocation, GL_FLOAT, posarray, 2);
+            positionLocation, GL_FLOAT, posarray.data(), 2);
     m_textureShader.setAttributeArray(
-            texcoordLocation, GL_FLOAT, texarray, 2);
+            texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
     texture->bind();
 

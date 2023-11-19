@@ -2,15 +2,13 @@
 
 #include <QMap>
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/filters/enginefilterlinkwitzriley8.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
+
+class EngineFilterLinkwitzRiley8High;
+class EngineFilterLinkwitzRiley8Low;
 
 class LinkwitzRiley8EQEffectGroupState : public EffectState {
   public:
@@ -69,8 +67,8 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    ControlProxy* m_pLoFreqCorner;
-    ControlProxy* m_pHiFreqCorner;
+    PollingControlProxy m_pLoFreqCorner;
+    PollingControlProxy m_pHiFreqCorner;
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };

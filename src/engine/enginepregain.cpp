@@ -1,13 +1,10 @@
 #include "engine/enginepregain.h"
 
-#include <QtDebug>
-
 #include "control/controlaudiotaperpot.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "control/controlpushbutton.h"
+#include "engine/effects/groupfeaturestate.h"
 #include "moc_enginepregain.cpp"
-#include "preferences/usersettings.h"
 #include "util/math.h"
 #include "util/sample.h"
 

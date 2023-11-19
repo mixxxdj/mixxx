@@ -3,7 +3,9 @@
 #include <QSharedPointer>
 
 #include "util/types.h"
-#include "util/fifo.h"
+
+template<class DataType>
+class FIFO;
 
 /*
  * States:

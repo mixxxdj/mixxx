@@ -2,8 +2,8 @@
 
 #include <QList>
 
-#include "encoder/encoder.h"
-#include "encoder/encodersettings.h"
+#include "encoder/encoderrecordingsettings.h"
+#include "preferences/usersettings.h"
 
 class EncoderFdkAacSettings : public EncoderRecordingSettings {
   public:

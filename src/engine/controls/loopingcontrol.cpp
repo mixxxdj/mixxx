@@ -6,13 +6,13 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
@@ -133,7 +133,7 @@ LoopingControl::LoopingControl(const QString& group,
             m_pCOBeatLoop,
             &ControlObject::valueChanged,
             this,
-            [=, this](double value) { slotBeatLoop(value); },
+            [this](double value) { slotBeatLoop(value); },
             Qt::DirectConnection);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
@@ -1107,8 +1107,8 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
 
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
-    if (!loopInfo.startPosition.isValid() ||
-            (position.isValid() && position <= loopInfo.startPosition)) {
+    if (position.isValid() &&
+            (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition)) {
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         return;
     }
@@ -1314,7 +1314,7 @@ void LoopingControl::updateBeatLoopingControls() {
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
     double dBeatloopSize = m_pCOBeatLoopSize->get();
-    for (BeatLoopingControl* pBeatLoopControl: qAsConst(m_beatLoops)) {
+    for (BeatLoopingControl* pBeatLoopControl : std::as_const(m_beatLoops)) {
         if (pBeatLoopControl->getSize() == dBeatloopSize) {
             if (m_bLoopingEnabled) {
                 pBeatLoopControl->activate();

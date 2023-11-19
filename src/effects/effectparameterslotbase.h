@@ -2,10 +2,8 @@
 
 #include <QObject>
 #include <QString>
-#include <QVariant>
 
-#include "control/controlobject.h"
-#include "effects/backends/effectmanifest.h"
+#include "effects/backends/effectmanifestparameter.h"
 #include "util/class.h"
 
 class ControlObject;

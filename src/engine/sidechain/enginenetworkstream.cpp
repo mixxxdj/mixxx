@@ -5,7 +5,6 @@
 #include "util/performancetimer.h"
 #else
 #include <sys/time.h>
-#include <unistd.h>
 #endif
 
 #ifdef __WINDOWS__
@@ -15,6 +14,8 @@ static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
 #include "broadcast/defs_broadcast.h"
+#include "engine/sidechain/networkinputstreamworker.h"
+#include "util/fifo.h"
 #include "util/logger.h"
 #include "util/sample.h"
 
@@ -78,7 +79,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
     m_inputStreamStartTimeUs = getNetworkTimeUs();
     m_inputStreamFramesWritten = 0;
 
-    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
+    for (NetworkOutputStreamWorkerPtr worker : std::as_const(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }
@@ -90,7 +91,7 @@ void EngineNetworkStream::startStream(double sampleRate) {
 void EngineNetworkStream::stopStream() {
     m_inputStreamStartTimeUs = -1;
 
-    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
+    for (NetworkOutputStreamWorkerPtr worker : std::as_const(m_outputWorkers)) {
         if (worker.isNull()) {
             continue;
         }

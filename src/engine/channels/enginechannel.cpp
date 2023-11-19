@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectsmanager.h"
 #include "moc_enginechannel.cpp"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
@@ -23,10 +24,11 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
     m_pMainMix = new ControlPushButton(ConfigKey(getGroup(), "main_mix"));
     m_pMainMix->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pMainMix->addAlias(ConfigKey(getGroup(), QStringLiteral("master")));
-    m_pOrientation = new ControlPushButton(ConfigKey(getGroup(), "orientation"));
+    // crossfader assignment is persistent
+    m_pOrientation = new ControlPushButton(
+            ConfigKey(getGroup(), "orientation"), true, defaultOrientation);
     m_pOrientation->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation->setStates(3);
-    m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
     connect(m_pOrientationLeft, &ControlObject::valueChanged,
             this, &EngineChannel::slotOrientationLeft, Qt::DirectConnection);

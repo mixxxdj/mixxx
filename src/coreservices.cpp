@@ -2,7 +2,6 @@
 
 #include <QApplication>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QStandardPaths>
 
 #ifdef __BROADCAST__
@@ -26,12 +25,12 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
-#include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
@@ -60,6 +59,7 @@ namespace {
 const mixxx::Logger kLogger("CoreServices");
 constexpr int kMicrophoneCount = 4;
 constexpr int kAuxiliaryCount = 4;
+constexpr int kSamplerCount = 4;
 
 #define CLEAR_AND_CHECK_DELETED(x) clearHelper(x, #x);
 
@@ -304,10 +304,11 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_pPlayerManager->addConfiguredDecks();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
+
+    for (int i = 0; i < kSamplerCount; ++i) {
+        m_pPlayerManager->addSampler();
+    }
+
     m_pPlayerManager->addPreviewDeck();
 
     m_pEffectsManager->setup();

@@ -2,7 +2,7 @@
 
 #include "library/library_prefs.h"
 #include "moc_wkey.cpp"
-#include "track/keys.h"
+#include "skin/legacy/skincontext.h"
 #include "track/keyutils.h"
 
 WKey::WKey(const QString& group, QWidget* pParent)

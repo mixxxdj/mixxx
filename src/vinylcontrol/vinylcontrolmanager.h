@@ -1,20 +1,14 @@
 #pragma once
 
 #include <QObject>
-#include <QString>
-#include <QTimerEvent>
 
 #include "preferences/usersettings.h"
-#include "soundio/soundmanagerutil.h"
-#include "util/defs.h"
-#include "vinylcontrol/vinylsignalquality.h"
 
 class ControlProxy;
-class ControlPushButton;
 class SoundManager;
-class VinylControl;
 class VinylControlProcessor;
-
+class QTimerEvent;
+class VinylSignalQualityListener;
 
 // VinylControlManager is the main-thread interface that other parts of Mixxx
 // use to interact with the vinyl control subsystem (other than controls exposed

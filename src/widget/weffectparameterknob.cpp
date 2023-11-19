@@ -1,5 +1,6 @@
 #include "widget/weffectparameterknob.h"
 
+#include "effects/effectparameterslotbase.h"
 #include "moc_weffectparameterknob.cpp"
 #include "widget/effectwidgetutils.h"
 

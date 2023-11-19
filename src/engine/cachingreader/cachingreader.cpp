@@ -1,16 +1,12 @@
 #include "engine/cachingreader/cachingreader.h"
 
-#include <QFileInfo>
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "moc_cachingreader.cpp"
-#include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility/qatomic.h"
 #include "util/counter.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/sample.h"
 
 namespace {
@@ -119,7 +115,7 @@ void CachingReader::freeChunk(CachingReaderChunkForOwner* pChunk) {
 }
 
 void CachingReader::freeAllChunks() {
-    for (const auto& pChunk: qAsConst(m_chunks)) {
+    for (const auto& pChunk : std::as_const(m_chunks)) {
         // We will receive CHUNK_READ_INVALID for all pending chunk reads
         // which should free the chunks individually.
         if (pChunk->getState() == CachingReaderChunkForOwner::READ_PENDING) {

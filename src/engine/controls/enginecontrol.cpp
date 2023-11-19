@@ -3,7 +3,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
 #include "engine/sync/enginesync.h"
-#include "mixer/playermanager.h"
 #include "moc_enginecontrol.cpp"
 
 EngineControl::EngineControl(const QString& group,

@@ -2,13 +2,10 @@
 
 #include <QRandomGenerator>
 #include <QtDebug>
-#include <QtSql>
 
 #include "library/autodj/autodjprocessor.h"
 #include "library/queryutil.h"
-#include "library/trackcollection.h"
 #include "moc_playlistdao.cpp"
-#include "track/track.h"
 #include "util/db/dbconnection.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/math.h"
@@ -626,7 +623,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& pos
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(sortedPositons)) {
+    for (const auto position : std::as_const(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

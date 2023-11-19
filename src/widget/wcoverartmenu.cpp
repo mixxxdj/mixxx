@@ -115,9 +115,7 @@ void WCoverArtMenu::slotChange() {
 
 void WCoverArtMenu::slotUnset() {
     CoverInfo coverInfo;
-    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
-    coverInfo.setImage();
     qDebug() << "WCoverArtMenu::slotUnset emit" << coverInfo;
     emit coverInfoSelected(coverInfo);
 }
