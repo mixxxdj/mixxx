@@ -258,12 +258,19 @@ void WWaveformViewer::setPlayMarkerPosition(double position) {
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        disconnect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        disconnect(pWidget);
     }
     m_waveformWidget = waveformWidget;
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();
-        connect(pWidget, &QWidget::destroyed, this, &WWaveformViewer::slotWidgetDead);
+        DEBUG_ASSERT(pWidget);
+        connect(pWidget,
+                &QWidget::destroyed,
+                this,
+                [this]() {
+                    // The pointer must be considered as dangling!
+                    m_waveformWidget = nullptr;
+                });
         m_waveformWidget->getWidget()->setMouseTracking(true);
 #ifdef MIXXX_USE_QOPENGL
         if (m_waveformWidget->getGLWidget()) {

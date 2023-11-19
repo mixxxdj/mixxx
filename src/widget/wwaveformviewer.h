@@ -51,9 +51,6 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
   private slots:
     void onZoomChange(double zoom);
-    void slotWidgetDead() {
-        m_waveformWidget = nullptr;
-    }
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
