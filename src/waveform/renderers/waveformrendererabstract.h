@@ -1,6 +1,6 @@
 #pragma once
 
-#include <qglobal.h>
+#include <QtGlobal>
 
 QT_FORWARD_DECLARE_CLASS(QDomNode)
 QT_FORWARD_DECLARE_CLASS(QPaintEvent)
