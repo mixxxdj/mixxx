@@ -1,0 +1,185 @@
+name: mixxx
+base: core22
+adopt-info: mixxx
+grade: stable
+confinement: strict
+
+environment:
+  HOME: $SNAP_USER_COMMON
+  QT_PLUGIN_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/qt5/plugins:$SNAP/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP_DESKTOP_RUNTIME/usr/lib/$CRAFT_ARCH_TRIPLET/qt5/plugins:$SNAP_DESKTOP_RUNTIME/usr/lib/$CRAFT_ARCH_TRIPLET${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}
+  QML2_IMPORT_PATH: $SNAP/usr/lib/$CRAFT_ARCH_TRIPLET/qt5/qml:$SNAP/lib/$CRAFT_ARCH_TRIPLET:$SNAP_DESKTOP_RUNTIME/usr/lib/$CRAFT_ARCH_TRIPLET/qt5/qml:$SNAP_DESKTOP_RUNTIME/lib/$CRAFT_ARCH_TRIPLET${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}
+  ALSA_CONFIG_PATH: $SNAP/usr/share/alsa/alsa.conf
+  DISABLE_WAYLAND: 1
+
+compression: lzo
+architectures:
+  - build-on: amd64
+
+package-repositories:
+ - type: apt
+   ppa: mixxx/mixxx
+
+parts:
+  mixxx:
+    plugin: nil
+    parse-info: [usr/share/metainfo/org.mixxx.Mixxx.metainfo.xml]
+    override-build: |
+      craftctl default
+      # Set the snap version from the .deb package version
+      craftctl set version=$(dpkg-parsechangelog -l $CRAFT_PART_INSTALL/usr/share/doc/mixxx/changelog.Debian.gz -S Version | sed -e s/2://g | cut -d- -f1)
+      # Copy over the icon
+      mkdir -p $CRAFT_PART_INSTALL/meta/gui
+      cp $CRAFT_PART_INSTALL/usr/share/icons/hicolor/scalable/apps/mixxx.svg $CRAFT_PART_INSTALL/meta/gui/icon.svg
+      # Install the desktop file, with the icon field munged
+      sed -i 's|Icon=mixxx|Icon=${SNAP}/meta/gui/icon.svg|g' $CRAFT_PART_INSTALL/usr/share/applications/org.mixxx.Mixxx.desktop
+    stage-packages:
+      - mixxx
+  libs:
+    plugin: nil
+    stage-packages:
+      - libopusfile0
+      - libflac8
+      - libgl1
+      - libglx0
+      - libglvnd0
+      - libopencl-clang13
+      - libqt5core5a
+      - libqt5dbus5
+      - libqt5gui5
+      - libqt5network5
+      - libqt5opengl5
+      - libqt5qml5
+      - libqt5sql5
+      - libqt5sql5-sqlite
+      - libqt5svg5
+      - libqt5widgets5
+      - libqt5x11extras5
+      - libqt5xml5
+      - libsoundtouch1
+      - libx11-6
+      - libxau6
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxrender1
+      - libaom3
+      - libasound2
+      - libavcodec58
+      - libavformat58
+      - libavutil56
+      - libbluray2
+      - libcairo-gobject2
+      - libcairo2
+      - libchromaprint1
+      - libcodec2-1.0
+      - libdatrie1
+      - libdav1d5
+      - libdouble-conversion3
+      - libebur128-1
+      - libfftw3-3
+      - libfontconfig1
+      - libfribidi0
+      - libgdk-pixbuf-2.0-0
+      - libgme0
+      - libgomp1
+      - libgraphite2-3
+      - libgsm1
+      - libharfbuzz0b
+      - libhidapi-hidraw0
+      - libicu70
+      - libid3tag0
+      - libjpeg8
+      - liblilv-0-0
+      - libmad0
+      - libmd4c0
+      - libmfx1
+      - libmodplug1
+      - libmp3lame0
+      - libmpg123-0
+      - libnorm1
+      - libnuma1
+      - libogg0
+      - libopenjp2-7
+      - libopenmpt0
+      - libopus0
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
+      - libpcre2-16-0
+      - libpgm-5.3-0
+      - libpixman-1-0
+      - libportaudio2
+      - libportmidi0
+      - libprotobuf-lite23
+      - libqt5keychain1
+      - librabbitmq4
+      - librsvg2-2
+      - librubberband2
+      - libsamplerate0
+      - libserd-0-0
+      - libshine3
+      - libsnappy1v5
+      - libsndfile1
+      - libsodium23
+      - libsord-0-0
+      - libsoxr0
+      - libspeex1
+      - libsratom-0-0
+      - libsrt1.4-gnutls
+      - libssh-gcrypt-4
+      - libswresample3
+      - libtag1v5
+      - libthai0
+      - libtheora0
+      - libtwolame0
+      - libudfread0
+      - libupower-glib3
+      - libusb-1.0-0
+      - libva-drm2
+      - libva-x11-2
+      - libvdpau1
+      - libvorbis0a
+      - libvorbisenc2
+      - libvorbisfile3
+      - libvpx7
+      - libwavpack1
+      - libwebp7
+      - libwebpmux3
+      - libx264-163
+      - libx265-199
+      - libxcb-render0
+      - libxcb-shm0
+      - libxcb1
+      - libxml2
+      - libxvidcore4
+      - libzmq5
+      - libzvbi0
+  cleanup:
+    after: [mixxx]
+    plugin: nil
+    build-snaps: [core22, gtk-common-themes, gnome-42-2204]
+    override-prime: |
+      set -eux
+      for snap in "core22" "gtk-common-themes" "gnome-42-2204"; do
+        cd "/snap/$snap/current" && find . -type f,l -name *.so.* -exec rm -f "$CRAFT_PRIME/{}" \;
+      done
+      
+layout:
+  /usr/share/alsa:
+    bind: $SNAP/usr/share/alsa
+  /etc/alsa/conf.d:
+    bind: $SNAP/etc/alsa/conf.d
+    
+apps:
+  mixxx:
+    command: usr/bin/mixxx
+    common-id: org.mixxx.Mixxx
+    extensions: [gnome]
+    plugs:
+      - home
+      - audio-playback
+      - audio-record
+      - screen-inhibit-control
+      - removable-media
+      - alsa
+      - upower-observe
