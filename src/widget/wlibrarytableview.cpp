@@ -21,8 +21,8 @@ constexpr int kModelCacheSize = 1000;
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
-          m_prevRow(0),
-          m_prevColumn(0),
+          m_prevRow(-1),
+          m_prevColumn(-1),
           m_pConfig(pConfig),
           m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
@@ -212,8 +212,8 @@ void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
         pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
         scrollTo(idx);
     }
-    m_prevRow = 0;
-    m_prevColumn = 0;
+    m_prevRow = -1;
+    m_prevColumn = -1;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
