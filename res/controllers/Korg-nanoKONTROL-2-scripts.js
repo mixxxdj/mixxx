@@ -1,7 +1,7 @@
 function NK2() {}
 NK2.debug=0;//set debug level
 NK2.LEDflasheson=true;//false disables led flash timers for debugging purposes
-NK2.numDecks=8;//set to 8 for all [Channels], to 4 for 4 [Channels] and 4 [Samplers], and to 2 for 2 [Channels] and 6 [Samplers]
+NK2.numDecks=4;//set to 4 for 4 [Channels] and 4 [Samplers], and to 2 for 2 [Channels] and 6 [Samplers]
 //############################################################################
 //defaults
 //############################################################################
@@ -36,9 +36,7 @@ NK2.leftButton={"trdown":0x3A,"trup":0x3B,"cycle":0x2E,"mset":0x3C,"mdown":0x3D,
 NK2.faders={0x00:1,0x01:2,0x02:3,0x03:4,0x04:5,0x05:6,0x06:7,0x07:8};
 
 //initialize decks
-if (NK2.numDecks==8){
-    NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Channel3]",4:"[Channel4]",5:"[Channel5]",6:"[Channel6]",7:"[Channel7]",8:"[Channel8]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (8 decks, 0 samplers)
-}else if (NK2.numDecks==4){
+if (NK2.numDecks==4){
     NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Channel3]",4:"[Channel4]",5:"[Sampler1]",6:"[Sampler2]",7:"[Sampler3]",8:"[Sampler4]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (4 decks, 4 samplers)
 }else if (NK2.numDecks==2){
     NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Sampler1]",4:"[Sampler2]",5:"[Sampler3]",6:"[Sampler4]",7:"[Sampler5]",8:"[Sampler6]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (2 decks, 6 samplers)
