@@ -1,9 +1,9 @@
 #include "rangelist.h"
 
-#include <util/assert.h>
-
 #include <QRegularExpression>
 #include <algorithm>
+
+#include "util/assert.h"
 
 namespace {
 
