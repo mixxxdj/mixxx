@@ -1,7 +1,5 @@
 #pragma once
 
-#include <encoder/encoderffmpegresample.h>
-
 extern "C" {
 #include <libavutil/opt.h>
 #include <libavcodec/avcodec.h>
@@ -24,6 +22,7 @@ extern "C" {
 #include <QLibrary>
 
 #include "encoder/encoder.h"
+#include "encoder/encoderffmpegresample.h"
 #include "track/track_decl.h"
 #include "util/types.h"
 
