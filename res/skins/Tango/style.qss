@@ -2377,7 +2377,17 @@ WSearchLineEdit::item:selected,
   color: #fff;
   /* remove OS focus indicator */
   outline: none;
-}
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #fff;
+    selection-background-color: #555;
+    border: 0px;
+    outline: none;
+  }
 
 /* disabled menu items and checkboxes */
 #MainMenu::item:disabled,

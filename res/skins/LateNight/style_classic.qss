@@ -2504,9 +2504,20 @@ WSearchLineEdit::item:selected,
 #SkinSettingsMixerToggle[hover="true"],
 #SkinSettingsLabelButton[hover="true"] {
   background-color: #5E4507;
-  color: white;
+  color: #fff;
   /* remove OS focus indicator */
   outline: none;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #fff;
+    selection-background-color: #5E4507;
+    border-radius: 1px;
+    border: 0px;
+    outline: none;
   }
   /* checked item */
   WEffectSelector::item:checked,

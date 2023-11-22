@@ -1327,6 +1327,7 @@ WEffectChainPresetSelector:!editable:on,
 #RateText, #RateRangePrefix, #RateRangeText,
 #MixerMainHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
+WSearchLineEdit QAbstractScrollArea,
 WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
@@ -2997,6 +2998,15 @@ WSearchLineEdit::item:selected,
   color: #fff;
   /* remove OS focus indicator */
   outline: none;
+  }
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #fff;
+    selection-background-color: #2c454f;
+    border-radius: 1px;
+    border: 0px;
+    outline: none;
   }
   /* checked item */
   WEffectSelector::item:checked,

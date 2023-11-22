@@ -173,6 +173,16 @@ WEffectSelector::indicator:unchecked:selected,
   /* remove OS focus indicator */
   outline: none;
   }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #000;
+    selection-background-color: lightgray;
+    border: 0px;
+    outline: none;
+  }
   /* Remove 3D border from unchecked effects checkmark space */
   WEffectSelector::item:selected,
   WSearchLineEdit::item:selected,

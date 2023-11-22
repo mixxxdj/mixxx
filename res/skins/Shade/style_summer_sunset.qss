@@ -81,6 +81,13 @@ WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::indicator:unchecked:selected {
   background-color: #d9c663;
   }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-background-color: #d9c663;
+  }
   WEffectSelector::indicator:unchecked:selected,
   #fadeModeCombobox::indicator:unchecked:selected {
     border-color: #d9c663;
