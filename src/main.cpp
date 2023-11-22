@@ -21,6 +21,7 @@
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
+#include "util/sandbox.h"
 #include "util/versionstore.h"
 
 namespace {

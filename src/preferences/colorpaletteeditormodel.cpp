@@ -7,8 +7,6 @@
 
 #include "engine/controls/cuecontrol.h"
 #include "moc_colorpaletteeditormodel.cpp"
-#include "util/assert.h"
-#include "util/make_const_iterator.h"
 #include "util/rangelist.h"
 
 namespace {

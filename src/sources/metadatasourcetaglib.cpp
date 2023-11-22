@@ -91,14 +91,17 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Nothing to import"
                 << "from file" << m_fileName
-                << "with type" << m_fileType;
+                << "of type" << m_fileType;
         return afterImport(ImportResult::Unavailable);
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "Importing"
-                        << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
+                        << ((pTrackMetadata && pCoverImage)
+                                           ? "track metadata and cover art"
+                                           : (pTrackMetadata ? "track metadata"
+                                                             : "cover art"))
                         << "from file" << m_fileName
-                        << "with type" << m_fileType;
+                        << "of type" << m_fileType;
     }
 
     // Rationale: If a file contains different types of tags only

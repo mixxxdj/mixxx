@@ -46,9 +46,6 @@ SamplerBank::SamplerBank(UserSettingsPointer pConfig,
             this);
 }
 
-SamplerBank::~SamplerBank() {
-}
-
 void SamplerBank::slotSaveSamplerBank(double v) {
     if (v <= 0.0) {
         return;

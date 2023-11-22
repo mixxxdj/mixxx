@@ -511,13 +511,18 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* pParent) const 
 
 void DlgTagFetcher::tagSelected() {
     if (!tags->currentItem()) {
+        btnApply->setDisabled(true);
         return;
     }
 
     if (tags->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
         tags->currentItem()->setFlags(Qt::ItemIsEnabled);
+        btnApply->setDisabled(true);
         return;
     }
+    // Allow applying the tags, regardless the cover art
+    btnApply->setEnabled(true);
+
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "controllers/midi/midienumerator.h"
+#include "preferences/usersettings.h"
 
 // Handles discovery and enumeration of DJ controllers that appear under the
 // HSS1394 cross-platform API.

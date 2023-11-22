@@ -2264,7 +2264,7 @@ option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # libdjinterop does not currently have a stable ABI, so we fetch sources for a specific tag, build here, and link
   # statically.  This situation should be reviewed once libdjinterop hits version 1.x.
-  set(LIBDJINTEROP_VERSION 0.20.0)
+  set(LIBDJINTEROP_VERSION 0.20.1)
   # Look whether an existing installation of libdjinterop matches the required version.
   find_package(DjInterop  ${LIBDJINTEROP_VERSION} EXACT CONFIG)
   if(NOT DjInterop_FOUND)
@@ -2300,7 +2300,7 @@ if(ENGINEPRIME)
       URL
         "https://github.com/xsco/libdjinterop/archive/refs/tags/${LIBDJINTEROP_VERSION}.tar.gz"
         "https://launchpad.net/~xsco/+archive/ubuntu/djinterop/+sourcefiles/libdjinterop/${LIBDJINTEROP_VERSION}-0ubuntu1/libdjinterop_${LIBDJINTEROP_VERSION}.orig.tar.gz"
-      URL_HASH SHA256=0cf85b30629b59277437e2be7e8073c22797e8749920ba2dd5e72c21e14d68db
+      URL_HASH SHA256=69bdbd0e68f12858b79795a76a6023962f93f819ca36ea56a9d4680901865d13
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libdjinterop-${LIBDJINTEROP_VERSION}.tar.gz"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}

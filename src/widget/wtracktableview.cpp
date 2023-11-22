@@ -215,7 +215,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // tableview is focused -- and would not restore the previous style when
     // it's unfocused. This can not be overwritten with qss, so it can screw up
     // the skin design. Also, due to selectionModel()->selectedRows() it is not
-    // even useful to highlight the focused column because all colmsn are highlighted.
+    // even useful to indicate the focused column because all columns are highlighted.
     header->setHighlightSections(false);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);

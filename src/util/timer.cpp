@@ -1,6 +1,7 @@
 #include "util/timer.h"
 
 #include "util/experiment.h"
+#include "util/time.h"
 
 Timer::Timer(QString key, Stat::ComputeFlags compute)
         : m_key(std::move(key)),

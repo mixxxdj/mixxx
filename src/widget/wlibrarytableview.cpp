@@ -1,9 +1,12 @@
 #include "widget/wlibrarytableview.h"
 
+#include <QApplication>
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
+#include <QHelpEvent>
 #include <QScrollBar>
+#include <QToolTip>
 
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
@@ -18,8 +21,8 @@ constexpr int kModelCacheSize = 1000;
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig)
         : QTableView(parent),
-          m_prevRow(0),
-          m_prevColumn(0),
+          m_prevRow(-1),
+          m_prevColumn(-1),
           m_pConfig(pConfig),
           m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
@@ -209,8 +212,8 @@ void WLibraryTableView::restoreCurrentIndex(const QModelIndex& index) {
         pSelectionModel->setCurrentIndex(idx, QItemSelectionModel::NoUpdate);
         scrollTo(idx);
     }
-    m_prevRow = 0;
-    m_prevColumn = 0;
+    m_prevRow = -1;
+    m_prevColumn = -1;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -389,3 +392,28 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
 
     return QTableView::moveCursor(cursorAction, modifiers);
 }
+
+void WLibraryTableView::dataChanged(
+        const QModelIndex& topLeft,
+        const QModelIndex& bottomRight,
+        const QVector<int>& roles) {
+    for (const auto& role : roles) {
+        // Note: At this point the tooltip is already showing
+        // "Fetching image ..." or still in an effect progress.
+        // QToolTip::isVisible() is false for the later.
+        if (role == Qt::ToolTipRole) {
+            QPoint globalPos = QCursor::pos();
+            QWidget* pViewPort = QApplication::widgetAt(globalPos);
+            if (pViewPort) {
+                QPoint viewPortPos = pViewPort->mapFromGlobal(globalPos);
+                if (indexAt(viewPortPos) == topLeft) {
+                    QHelpEvent toolTipEvent(QEvent::ToolTip,
+                            pViewPort->mapFromGlobal(globalPos),
+                            globalPos);
+                    viewportEvent(&toolTipEvent);
+                }
+            }
+        }
+    }
+    QAbstractItemView::dataChanged(topLeft, bottomRight, roles);
+};
