@@ -1,5 +1,6 @@
 #include "engine/controls/bpmcontrol.h"
 
+#include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -87,6 +88,12 @@ BpmControl::BpmControl(const QString& group,
     connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
+    m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
+    connect(m_pTranslateBeatsMove,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsMove,
+            Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -138,6 +145,7 @@ BpmControl::~BpmControl() {
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
+    delete m_pTranslateBeatsMove;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
 }
@@ -187,23 +195,19 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
         return;
     }
-    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        return;
-    }
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats) {
-        const double sampleOffset = frameInfo().sampleRate * -0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
-        if (translatedBeats) {
-            pTrack->trySetBeats(*translatedBeats);
-        }
-    }
+    slotTranslateBeatsMove(-1);
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
+        return;
+    }
+    slotTranslateBeatsMove(1);
+}
+
+void BpmControl::slotTranslateBeatsMove(double v) {
+    v = std::round(v);
+    if (v == 0) {
         return;
     }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
@@ -213,7 +217,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
-        const double sampleOffset = frameInfo().sampleRate * 0.01;
+        const double sampleOffset = frameInfo().sampleRate * v * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
