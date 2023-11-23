@@ -800,13 +800,8 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
 }
 
 void BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest(double v) {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if (v <= WaveformWidgetRenderer::s_waveformMaxZoom
             && v >= WaveformWidgetRenderer::s_waveformMinZoom) {
-#else
-    // TODO: Re-enable zoom range check or decouple zoom from engine code
-    {
-#endif
         m_pWaveformZoom->setAndConfirm(v);
     }
 }
@@ -833,12 +828,7 @@ void BaseTrackPlayerImpl::slotWaveformZoomSetDefault(double pressed) {
     }
 
     double defaultZoom = m_pConfig->getValue(ConfigKey("[Waveform]", "DefaultZoom"),
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             WaveformWidgetRenderer::s_waveformDefaultZoom);
-#else
-            // TODO: This should not be hardcoded.
-            3.0);
-#endif
     m_pWaveformZoom->set(defaultZoom);
 }
 
