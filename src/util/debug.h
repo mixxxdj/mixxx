@@ -6,9 +6,8 @@
 #include "errordialoghandler.h"
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define DBG(value)                                                       \
-    (qDebug().nospace() << __FILE__ << ":" << __LINE__ << ": " << #value \
-                        << " = " << value)
+#define DBG(value) \
+    (qDebug().nospace() << #value << " = " << value << " [" << __FILE__ << ":" << __LINE__ << "]")
 #else
 // We have to stop clang-format from breaking up the string literal since that
 // breaks the pragma (at least when using Clang).
