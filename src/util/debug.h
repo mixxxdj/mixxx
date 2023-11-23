@@ -5,6 +5,19 @@
 
 #include "errordialoghandler.h"
 
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#define DBG(value)                                                       \
+    (qDebug().nospace() << __FILE__ << ":" << __LINE__ << ": " << #value \
+                        << " = " << value)
+#else
+// We have to stop clang-format from breaking up the string literal since that
+// breaks the pragma (at least when using Clang).
+// clang-format off
+#define DBG(value)                                                            \
+    _Pragma("message \"DBG(...) should not be used in a build without debug assertions, please remove it! This will be a no-op.\"")
+// clang-format on
+#endif
+
 template <typename T>
 QString toDebugString(const T& object) {
     QString output;
