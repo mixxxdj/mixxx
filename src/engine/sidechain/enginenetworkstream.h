@@ -1,9 +1,8 @@
 #pragma once
 
-#include <engine/sidechain/networkoutputstreamworker.h>
-
 #include <QVector>
 
+#include "engine/sidechain/networkoutputstreamworker.h"
 #include "util/types.h"
 
 class NetworkInputStreamWorker;
