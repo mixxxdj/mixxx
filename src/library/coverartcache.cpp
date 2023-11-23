@@ -161,11 +161,14 @@ void CoverArtCache::tryLoadCover(
         return;
     }
 
-    const auto requestedCacheKey = coverInfo.cacheKey();
-    // keep a list of trackIds for which a future is currently running
-    // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequester, requestedCacheKey);
-    if (m_runningRequests.contains(requestId)) {
+    const mixxx::cache_key_t requestedCacheKey = coverInfo.cacheKey();
+    // keep a list of cache keys for which a future is currently running
+    // to avoid loading the same picture again while we are loading it.
+    // This fixes also https://github.com/mixxxdj/mixxx/issues/11131 on
+    // Windows where simultaneous open the same file from two threads fails.
+    bool requestPending = m_runningRequests.contains(requestedCacheKey);
+    m_runningRequests.insert(requestedCacheKey, {pRequester, desiredWidth});
+    if (requestPending) {
         return;
     }
 
@@ -174,12 +177,11 @@ void CoverArtCache::tryLoadCover(
                 << "requestCover starting future for"
                 << coverInfo;
     }
-    m_runningRequests.insert(requestId);
+
     // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
             &CoverArtCache::loadCover,
-            pRequester,
             pTrack,
             coverInfo,
             desiredWidth);
@@ -193,7 +195,6 @@ void CoverArtCache::tryLoadCover(
 
 //static
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const QObject* pRequester,
         TrackPointer pTrack,
         CoverInfo coverInfo,
         int desiredWidth) {
@@ -207,7 +208,6 @@ CoverArtCache::FutureResult CoverArtCache::loadCover(
             pTrack->getLocation() == coverInfo.trackLocation);
 
     auto res = FutureResult(
-            pRequester,
             coverInfo.cacheKey());
 
     CoverInfo::LoadedImage loadedImage = coverInfo.loadImage(pTrack);
@@ -258,6 +258,8 @@ void CoverArtCache::coverLoaded() {
         kLogger.trace() << "coverLoaded" << res.coverArt;
     }
 
+    QString cacheKey = pixmapCacheKey(
+            res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
     QPixmap pixmap;
     if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
         if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
@@ -293,18 +295,29 @@ void CoverArtCache::coverLoaded() {
             // It is very unlikely that res.coverArt.hash generates the
             // same hash for different images. Otherwise the wrong image would
             // be displayed when loaded from the cache.
-            QString cacheKey = pixmapCacheKey(
-                    res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
             QPixmapCache::insert(cacheKey, pixmap);
         }
     }
 
-    m_runningRequests.remove(qMakePair(res.pRequester, res.requestedCacheKey));
+    auto runningRequests = m_runningRequests;
+    // First remove all requests for this cover that way we can
+    // re-add cover with different sizes via tryLoadCover() as usual
+    m_runningRequests.remove(res.coverArt.cacheKey());
 
-    if (res.pRequester) {
-        emit coverFound(
-                res.pRequester,
-                std::move(res.coverArt),
-                pixmap);
+    auto i = runningRequests.find(res.coverArt.cacheKey());
+    while (i != runningRequests.end() && i.key() == res.coverArt.cacheKey()) {
+        if (i.value().desiredWidth == res.coverArt.resizedToWidth) {
+            emit coverFound(
+                    i.value().pRequester,
+                    res.coverArt,
+                    pixmap);
+        } else {
+            tryLoadCover(
+                    i.value().pRequester,
+                    nullptr,
+                    res.coverArt,
+                    i.value().desiredWidth);
+        }
+        ++i;
     }
 }
