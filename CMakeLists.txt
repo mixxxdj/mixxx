@@ -2193,12 +2193,15 @@ if(GIT_COMMIT_DATE AND NOT GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*
 endif()
 
 add_custom_target(mixxx-gitinfo
+  # Note: We don't quote the paths in the command since CMake already inserts
+  # escapes (which, if quoted, lead to paths wrongly containing backslashes).
+  # See https://stackoverflow.com/questions/8925396/why-does-cmake-prefixes-spaces-with-backslashes-when-executing-a-command
   COMMAND ${CMAKE_COMMAND}
-    -DGIT_DESCRIBE="${GIT_DESCRIBE}"
-    -DGIT_COMMIT_DATE="${GIT_COMMIT_DATE}"
-    -DINPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in"
-    -DOUTPUT_FILE="${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake"
+    -DGIT_DESCRIBE=${GIT_DESCRIBE}
+    -DGIT_COMMIT_DATE=${GIT_COMMIT_DATE}
+    -DINPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in
+    -DOUTPUT_FILE=${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake
   COMMENT "Update git version information in gitinfo.h"
   BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
