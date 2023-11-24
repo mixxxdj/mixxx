@@ -173,7 +173,7 @@ KontrolZ1.fxHandler = function(field) {
     // Control playback when modifier is active
     if (KontrolZ1.modePressed) {
         // Match play indicator (red led) brightness to fx indicator (blue led)
-        current = (engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled")) ? 0x7F : 0xA;
+        current = engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled") ? 0x7F : 0xA;
         KontrolZ1.controller.setOutput(field.group, "play_indicator", current, true);
         script.toggleControl(field.group, "play");
     } else {
@@ -185,7 +185,7 @@ KontrolZ1.vuMeterHandler = function(value, group, _key) {
     const vuKeys = Object.keys(KontrolZ1.vuMeterThresholds);
     for (let i = 0; i < vuKeys.length; ++i) {
         // Avoid spamming HID by only sending last LED update
-        const last = (i === (vuKeys.length - 1));
+        const last = i === (vuKeys.length - 1);
         if (KontrolZ1.vuMeterThresholds[vuKeys[i]] > value) {
             KontrolZ1.controller.setOutput(group, vuKeys[i], 0x00, last);
         } else {
@@ -220,14 +220,14 @@ KontrolZ1.lightDeck = function(switchOff) {
 
     KontrolZ1.controller.setOutput("[Controls]", "mode", softLight, true);
 
-    current = (engine.getValue("[QuickEffectRack1_[Channel1]]", "enabled")) ? fullLight : softLight;
+    current = engine.getValue("[QuickEffectRack1_[Channel1]]", "enabled") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[QuickEffectRack1_[Channel1]]", "enabled", current, true);
-    current = (engine.getValue("[QuickEffectRack1_[Channel2]]", "enabled")) ? fullLight : softLight;
+    current = engine.getValue("[QuickEffectRack1_[Channel2]]", "enabled") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[QuickEffectRack1_[Channel2]]", "enabled", current, true);
 
-    current = (engine.getValue("[Channel1]", "pfl")) ? fullLight : softLight;
+    current = engine.getValue("[Channel1]", "pfl") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[Channel1]", "pfl", current, true);
-    current = (engine.getValue("[Channel2]", "pfl")) ? fullLight : softLight;
+    current = engine.getValue("[Channel2]", "pfl") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[Channel2]", "pfl", current, true);
 }
 
