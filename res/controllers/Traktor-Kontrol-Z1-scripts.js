@@ -2,11 +2,6 @@
 // Native Instruments Traktor Kontrol Z1 HID controller script for Mixxx 2.4
 // Based on Traktor Kontrol S2 MK3 script by Michael Schmidt
 // Author: djantti
-// Last modified: 20231123
-//
-// Extra functionality:
-// Mode + FX -> Playback start / stop
-// Mode + Headphone -> Go to cue and stop
 //
 
 var KontrolZ1 = new function() {
