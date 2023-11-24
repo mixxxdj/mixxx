@@ -9,12 +9,10 @@
 #define DBG(value) \
     (qDebug().nospace() << #value << " = " << (value) << " [" << __FILE__ << ":" << __LINE__ << "]")
 #else
-// We have to stop clang-format from breaking up the string literal since that
-// breaks the pragma (at least when using Clang).
-// clang-format off
-#define DBG(value)                                                            \
-    _Pragma("message \"DBG(...) should not be used in a build without debug assertions, please remove it! This will be a no-op.\"")
-// clang-format on
+#define DBG(value)                                                             \
+    static_assert(false,                                                       \
+            "DBG() is not allowed in builds without debug assertions, please " \
+            "remove it!")
 #endif
 
 template <typename T>
