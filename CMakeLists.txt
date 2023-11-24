@@ -1595,14 +1595,6 @@ if(WARNINGS_FATAL)
   endif()
 endif()
 
-option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
-if(DEBUG_ASSERTIONS_FATAL)
-  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
-  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
-  endif()
-endif()
-
 target_compile_definitions(mixxx-lib PUBLIC
   "${CMAKE_SYSTEM_PROCESSOR}"
   $<$<CONFIG:Debug>:MIXXX_BUILD_DEBUG>
@@ -2653,6 +2645,17 @@ if(QT_EXTRA_COMPONENTS)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+endif()
+
+option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
+if(DEBUG_ASSERTIONS_FATAL)
+  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
+  endif()
+  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
+  endif()
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
