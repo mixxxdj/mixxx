@@ -5,6 +5,16 @@
 
 #include "errordialoghandler.h"
 
+#ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
+#define DBG(value) \
+    (qDebug().nospace() << #value << " = " << (value) << " [" << __FILE__ << ":" << __LINE__ << "]")
+#else
+#define DBG(value)                                                             \
+    static_assert(false,                                                       \
+            "DBG() is not allowed in builds without debug assertions, please " \
+            "remove it!")
+#endif
+
 template <typename T>
 QString toDebugString(const T& object) {
     QString output;
