@@ -72,7 +72,7 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
         m_it = m_beats->m_markers.cend();
         m_beatOffset = maxBeatOffset;
         updateValue();
-        DEBUG_ASSERT(m_value > origValue);
+        DEBUG_ASSERT(m_value >= origValue);
         return *this;
     }
 
@@ -120,7 +120,7 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
         m_it = m_beats->m_markers.cbegin();
         m_beatOffset = minBeatOffset;
         updateValue();
-        DEBUG_ASSERT(m_value < origValue);
+        DEBUG_ASSERT(m_value <= origValue);
         return *this;
     }
 
