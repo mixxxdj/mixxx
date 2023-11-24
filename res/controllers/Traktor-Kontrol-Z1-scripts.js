@@ -6,7 +6,7 @@
 //
 // Extra functionality:
 // Mode + FX -> Playback start / stop
-// Mode + Headphone -> Stop and rewind track
+// Mode + Headphone -> Go to cue and stop
 //
 
 var KontrolZ1 = new function() {
@@ -156,9 +156,9 @@ KontrolZ1.headphoneHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    // Seek to start and stop when modifier is active
+    // Go to cue and stop when modifier is active
     if (KontrolZ1.modePressed) {
-        engine.setValue(field.group, "start_stop", field.value);
+        engine.setValue(field.group, "cue_gotoandstop", field.value);
     } else {
         script.toggleControl(field.group, "pfl");
     }
