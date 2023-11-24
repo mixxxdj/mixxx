@@ -160,23 +160,25 @@ void WaveformRendererLRRGB::paintGL() {
             float maxHigh = static_cast<float>(u8maxHigh);
             float maxAll = static_cast<float>(u8maxAll);
 
-            // Calculate the magnitude of the maxLow, maxMid and maxHigh values
-            const float magnitude = std::sqrt(
-                    math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh));
+            // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
+            // We take the square root to get the magnitude below.
+            const float sum = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
 
             // Apply the gains
             maxLow *= lowGain;
             maxMid *= midGain;
             maxHigh *= highGain;
 
-            // Calculate the magnitude of the gained maxLow, maxMid and maxHigh values
-            const float magnitudeGained = std::sqrt(
-                    math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh));
+            // Calculate the squared magnitude of the gained maxLow, maxMid and maxHigh values
+            // We take the square root to get the magnitude below.
+            const float sumGained = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
 
             // The maxAll value will be used to draw the amplitude. We scale them according to
             // magnitude of the gained maxLow, maxMid and maxHigh values
-            if (magnitude != 0.f) {
-                const float factor = magnitudeGained / magnitude;
+            if (sum != 0.f) {
+                // magnitude = sqrt(sum) and magnitudeGained = sqrt(sumGained), and
+                // factor = magnitudeGained / magnitude, but we can do with a single sqrt:
+                const float factor = std::sqrt(sumGained / sum);
                 maxAll *= factor;
             }
 
