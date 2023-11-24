@@ -99,6 +99,7 @@ case "$1" in
             protobuf-compiler \
             qt5keychain-dev \
             qtdeclarative5-dev \
+            qtscript5-dev \
             qml-module-qtquick-controls \
             qml-module-qtquick-controls2 \
             qml-module-qt-labs-qmlmodels \
