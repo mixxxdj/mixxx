@@ -4,6 +4,7 @@
         <name>Native Instruments Traktor Kontrol Z1</name>
         <author>djantti</author>
         <description>HID mapping for Native Instruments Traktor Kontrol Z1</description>
+        <forums>https://mixxx.discourse.group/t/new-mapping-for-native-instruments-traktor-kontrol-z1/28436</forums>
         <manual>native_instruments_traktor_kontrol_z1</manual>
         <devices>
             <product protocol="hid" vendor_id="0x17cc" product_id="0x1210" />
