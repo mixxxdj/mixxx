@@ -1586,6 +1586,13 @@ if (INFO_VECTORIZE)
     endif()
 endif()
 
+option(RELATIVE_MACRO_PATHS "Relativize __FILE__ paths" ON)
+if(RELATIVE_MACRO_PATHS)
+  if(NOT MSVC)
+    target_compile_options(mixxx-lib PUBLIC "-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.")
+  endif()
+endif()
+
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
 if(WARNINGS_FATAL)
   if(MSVC)
