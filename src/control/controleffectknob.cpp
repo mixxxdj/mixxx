@@ -8,7 +8,7 @@ ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, dou
         : ControlPotmeter(key, dMinValue, dMaxValue) {
 }
 
-void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
+void ControlEffectKnob::setBehavior(EffectManifestParameter::ValueScaler type,
         double dMinValue,
         double dMaxValue) {
     if (m_pControl == nullptr) {

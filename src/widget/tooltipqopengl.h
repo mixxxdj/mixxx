@@ -6,7 +6,7 @@
 class WGLWidget;
 
 // Tooltips don't work for the qopengl-based WGLWidget. This
-// singleton mimics the standard tooltip behaviour for them.
+// singleton mimics the standard tooltip behavior for them.
 class ToolTipQOpenGL : public QObject {
     Q_OBJECT
   public:

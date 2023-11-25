@@ -1101,7 +1101,7 @@ void EngineBuffer::processTrackLocked(
     // If we're repeating and crossed the track boundary, ReadAheadManager already
     // wrapped around the playposition.
     // To ensure quantize is respected we request a phase sync.
-    // TODO(ronso) This just restores previous repeat+quantize behaviour. I'm not
+    // TODO(ronso) This just restores previous repeat+quantize behavior. I'm not
     // sure whether that was actually desired or just a side effect of seeking.
     // Ife it's really desired, should this be moved to looping control in order
     // to set the sync'ed playposition right away and fill the wrap-around buffer

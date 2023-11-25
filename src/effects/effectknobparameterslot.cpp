@@ -71,7 +71,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
         m_pManifestParameter = m_pEffectParameter->manifest();
 
         EffectManifestParameter::ValueScaler type = m_pManifestParameter->valueScaler();
-        m_pControlValue->setBehaviour(type,
+        m_pControlValue->setBehavior(type,
                 m_pManifestParameter->getMinimum(),
                 m_pManifestParameter->getMaximum());
         m_pControlValue->setDefaultValue(m_pManifestParameter->getDefault());

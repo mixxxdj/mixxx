@@ -227,7 +227,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         // cues. If a cue is not set, that entry is present but empty.
         // If a cue is set in "Serato Markers2" but not in "Serato Markers_",
         // Serato DJ Pro considers it as "not set" and ignores it.
-        // To mirror the behaviour of Serato, we need to remove from the output of
+        // To mirror the behavior of Serato, we need to remove from the output of
         // this function.
         QSet<int> unsetCuesInMarkersTag;
         unsetCuesInMarkersTag.reserve(kNumCuesInMarkersTag);

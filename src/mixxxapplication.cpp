@@ -45,7 +45,7 @@ Q_IMPORT_PLUGIN(QGifPlugin)
 namespace {
 
 /// This class allows to change the button of a mouse event on the fly.
-/// This is required because we want to change the behaviour of Qts mouse
+/// This is required because we want to change the behavior of Qts mouse
 /// buttony synthesizer without duplicate all the code.
 class QMouseEventEditable : public QMouseEvent {
   public:

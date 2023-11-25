@@ -8,7 +8,7 @@ class ControlEffectKnob : public ControlPotmeter {
   public:
     ControlEffectKnob(const ConfigKey& key, double dMinValue = 0.0, double dMaxValue = 1.0);
 
-    void setBehaviour(EffectManifestParameter::ValueScaler type,
+    void setBehavior(EffectManifestParameter::ValueScaler type,
             double dMinValue,
             double dMaxValue);
 };

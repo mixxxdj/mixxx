@@ -666,7 +666,7 @@ void LoopingControl::setLoop(mixxx::audio::FramePos startPosition,
     // Seek back to loop in position if we're already behind the loop end.
     //
     // TODO(Holzhaus): This needs to be reverted as soon as GUI controls for
-    // controlling saved loop behaviour are in place, because this change makes
+    // controlling saved loop behavior are in place, because this change makes
     // saved loops very risky to use and might potentially mess up your mix.
     // See https://github.com/mixxxdj/mixxx/pull/2194#issuecomment-721847833
     // for details.

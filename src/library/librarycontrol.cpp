@@ -679,7 +679,7 @@ void LibraryControl::slotMoveVertical(double v) {
     }
     case FocusWidget::Searchbar:
         // There's also m_pSearchbox->slotMoveSelectedHistory but that wraps around
-        // at top/bottom. Doesn't match Up/Down key behaviour and may not be desired.
+        // at top/bottom. Doesn't match Up/Down key behavior and may not be desired.
         // Proceed and let emitkeyEvent deal with it.
         break;
     case FocusWidget::None:

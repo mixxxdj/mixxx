@@ -18,7 +18,7 @@ QByteArray base64encode(const QByteArray& data, bool chopPadding) {
     QByteArray dataBase64;
 
     // Serato inserts a newline char after every 72 bytes of base64-encoded
-    // content.  To mirror that behaviour, we can split the data into blocks of
+    // content. To mirror that behavior, we can split the data into blocks of
     // 72 bytes * 3/4 = 54 bytes and base64-encode them one at a time.
     int offset = 0;
     while (offset < data.size()) {
