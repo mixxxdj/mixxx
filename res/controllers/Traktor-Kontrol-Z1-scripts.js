@@ -1,6 +1,7 @@
 //
 // Native Instruments Traktor Kontrol Z1 HID controller script for Mixxx 2.4
-// Based on Traktor Kontrol S2 MK3 script by Michael Schmidt
+// -------------------------------------------------------------------------
+// Based on: Kontrol S2 MK3 script by mi01 and Kontrol Z1 script by xeruf
 // Author: djantti
 //
 
