@@ -1,8 +1,13 @@
 #include "sources/soundsourceffmpeg.h"
 
+extern "C" {
+
+#include <libavutil/avutil.h>
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
 #include <libavutil/channel_layout.h>
 #endif
+
+} // extern "C"
 
 #include "util/logger.h"
 #include "util/sample.h"
