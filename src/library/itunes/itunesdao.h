@@ -6,6 +6,7 @@
 #include <QString>
 #include <gsl/pointers>
 #include <map>
+#include <ostream>
 
 #include "library/dao/dao.h"
 
