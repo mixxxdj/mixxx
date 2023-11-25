@@ -8,8 +8,8 @@
 #include <QProcess>
 
 #ifdef Q_OS_LINUX
-#include <QtDBus/QtDBus>
 #include <QFileInfo>
+#include <QtDBus>
 #endif
 
 namespace {
