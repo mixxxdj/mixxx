@@ -144,15 +144,7 @@ void CompressorEffect::processChannel(
 
     // Auto make up
     if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
-        CSAMPLE makeUpState = pState->previousMakeUpGain;
-        CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
-        if (maxSample > CSAMPLE_ZERO) {
-            CSAMPLE minGainReduction = (1 / maxSample) * makeUpCoeff;
-            makeUpState = makeUpAttackCoeff * minGainReduction + (1 - makeUpAttackCoeff) * makeUpState;
-            pState->previousMakeUpGain = makeUpState;
-
-            SampleUtil::applyGain(pOutput, makeUpState, numSamples);
-        }
+        applyAutoMakeUp(pState, pOutput, numSamples);
     }
 
     // Output gain
@@ -162,6 +154,24 @@ void CompressorEffect::processChannel(
     // Clipping
     if (m_pClipping->toInt() == ClippingOn) {
         SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
+    }
+}
+
+void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pOutput, const SINT& numSamples) {
+    CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
+    CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
+    if (maxSample > 0) {
+        CSAMPLE maxSampleDB = ratio2db(maxSample);
+        CSAMPLE minGainReductionDB = -maxSampleDB + makeUpTarget;
+        makeUpStateDB = makeUpAttackCoeff * minGainReductionDB + (1 - makeUpAttackCoeff) * makeUpStateDB;
+        CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
+        // logarithmic smoothing
+        if (levelDB > -1.0) {
+            makeUpStateDB = log10(levelDB + 2) - 1 - maxSampleDB;
+        }
+
+        pState->previousMakeUpGain = makeUpStateDB;
+        SampleUtil::applyGain(pOutput, db2ratio(makeUpStateDB), numSamples);
     }
 }
 

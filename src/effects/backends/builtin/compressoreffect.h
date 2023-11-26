@@ -9,8 +9,8 @@
 #include "util/types.h"
 
 namespace {
-constexpr double makeUpAttackCoeff = 0.03;
-const double makeUpCoeff = 1 / pow(10, 0.15);
+    constexpr double makeUpAttackCoeff = 0.03;
+    constexpr double makeUpTarget = -3.0;
 } // anonymous namespace
 
 class CompressorGroupState : public EffectState {
@@ -68,4 +68,6 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
     DISALLOW_COPY_AND_ASSIGN(CompressorEffect);
 
     void applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput);
+
+    void applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pOutput, const SINT& numSamples);
 };
