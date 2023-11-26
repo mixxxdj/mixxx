@@ -3,6 +3,7 @@
 #include <QOpenGLTexture>
 #include <QPainterPath>
 
+#include "util/colorcomponents.h"
 #include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
