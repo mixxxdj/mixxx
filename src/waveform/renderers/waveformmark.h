@@ -134,6 +134,8 @@ class WaveformMark {
         }
     }
 
+    // Check if a point (in image coordinates) lies on the line
+    bool lineHovered(QPoint point, Qt::Orientation orientation) const;
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 

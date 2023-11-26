@@ -136,17 +136,22 @@ void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
     setNeedsImageUpdate();
 }
 
-bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
+bool WaveformMark::lineHovered(QPoint point, Qt::Orientation orientation) const {
     // Without some padding, the user would only have a single pixel width that
     // would count as hovering over the WaveformMark.
     float lineHoverPadding = 5.0;
     if (orientation == Qt::Vertical) {
         point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
     }
-    bool lineHovered = m_linePosition >= point.x() - lineHoverPadding &&
+    return m_linePosition >= point.x() - lineHoverPadding &&
             m_linePosition <= point.x() + lineHoverPadding;
+}
 
-    return m_label.area().contains(point) || lineHovered;
+bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
+    if (orientation == Qt::Vertical) {
+        point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
+    }
+    return m_label.area().contains(point);
 }
 
 // Helper struct to calculate the geometry and fontsize needed by generateImage

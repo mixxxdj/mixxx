@@ -125,5 +125,11 @@ WaveformMarkPointer WaveformMarkSet::findHoveredMark(
             return pMark;
         }
     }
+    for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
+        const WaveformMarkPointer& pMark = *it;
+        if (pMark->lineHovered(pos, orientation)) {
+            return pMark;
+        }
+    }
     return nullptr;
 }
