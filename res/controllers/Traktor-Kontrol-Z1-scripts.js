@@ -28,7 +28,7 @@ KontrolZ1.registerInputPackets = function() {
     const message = new HIDPacket("message", 0x1, this.messageCallback);
 
     // Mode button
-    this.registerInputButton(message, "[Controls]", "!mode", 0x1D, 0x2, this.modeHandler);
+    this.registerInputButton(message, "[ControlX]", "!mode", 0x1D, 0x2, this.modeHandler);
 
     // Headphone buttons
     this.registerInputButton(message, "[Channel1]", "!pfl", 0x1D, 0x10, this.headphoneHandler);
@@ -102,7 +102,7 @@ KontrolZ1.registerInputScaler = function(message, group, name, offset, bitmask, 
 KontrolZ1.registerOutputPackets = function() {
     const output = new HIDPacket("output", 0x80);
 
-    output.addOutput("[Controls]", "mode", 0x13, "B");
+    output.addOutput("[ControlX]", "mode", 0x13, "B");
 
     output.addOutput("[Channel1]", "pfl", 0xF, "B");
     output.addOutput("[Channel2]", "pfl", 0x10, "B");
@@ -214,7 +214,7 @@ KontrolZ1.lightDeck = function(switchOff) {
         fullLight = 0x00;
     }
 
-    KontrolZ1.controller.setOutput("[Controls]", "mode", softLight, true);
+    KontrolZ1.controller.setOutput("[ControlX]", "mode", softLight, true);
 
     current = engine.getValue("[QuickEffectRack1_[Channel1]]", "enabled") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[QuickEffectRack1_[Channel1]]", "enabled", current, true);
