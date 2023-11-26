@@ -160,7 +160,7 @@ if(APPLE)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min1015")
     endif()
   else()
     if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
