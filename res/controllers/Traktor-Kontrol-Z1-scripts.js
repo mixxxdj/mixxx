@@ -141,7 +141,7 @@ KontrolZ1.registerOutputPackets = function() {
     this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
 
     KontrolZ1.lightDeck(false);
-}
+};
 
 KontrolZ1.modeHandler = function(field) {
     KontrolZ1.modePressed = field.value;
@@ -192,7 +192,7 @@ KontrolZ1.vuMeterHandler = function(value, group, _key) {
 
 KontrolZ1.parameterHandler = function(field) {
     engine.setParameter(field.group, field.name, field.value / 4095);
-}
+};
 
 KontrolZ1.outputHandler = function(value, group, key) {
     if (value === 0 || value === false) {
@@ -225,7 +225,7 @@ KontrolZ1.lightDeck = function(switchOff) {
     KontrolZ1.controller.setOutput("[Channel1]", "pfl", current, true);
     current = engine.getValue("[Channel2]", "pfl") ? fullLight : softLight;
     KontrolZ1.controller.setOutput("[Channel2]", "pfl", current, true);
-}
+};
 
 KontrolZ1.messageCallback = function(packet, data) {
     for (const name in data) {
@@ -233,7 +233,7 @@ KontrolZ1.messageCallback = function(packet, data) {
             KontrolZ1.controller.processButton(data[name]);
         }
     }
-}
+};
 
 KontrolZ1.shutdown = function() {
     // Deactivate all LEDs
