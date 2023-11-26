@@ -4410,7 +4410,8 @@ var NLMK1 = (function () {
 	    waveform_zoom: {
 	      group: `[${type}${i}]`,
 	      name: 'waveform_zoom',
-	      type: '1.0 - 6.0'
+             // get range from src/waveform/renderers/waveformwidgetrenderer.cpp
+	      type: '1.0 - 10.0'
 	    },
 	    waveform_zoom_up: {
 	      group: `[${type}${i}]`,

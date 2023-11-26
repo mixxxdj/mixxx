@@ -337,7 +337,8 @@ function ZoomKey(dir) {
     that.onPushOrig = that.onPush;
     that.onPush = function()
     {
-        if ( ZoomKey.zoom < 6 && this.dir == "+" ) {
+        // get range from src/waveform/renderers/waveformwidgetrenderer.cpp
+        if ( ZoomKey.zoom < 10 && this.dir == "+" ) {
             ZoomKey.zoom++;
         }
         if ( ZoomKey.zoom > 1 && this.dir == "-") {

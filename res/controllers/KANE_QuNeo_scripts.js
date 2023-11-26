@@ -888,9 +888,8 @@ KANE_QuNeo.closeSliderMode = function () {
 KANE_QuNeo.deckZoom = function (deck, value) {
     var channel = deck - 1; // track channels start at 0 to properly reference arrays
     var channelName = KANE_QuNeo.getChannelName(deck)
-    var normalized = Math.ceil(6 * ((127 - value) / 127))
     // adjust zoom
-    engine.setValue(channelName, "waveform_zoom", normalized)
+    script.waveformZoom(group, value, true);
 }
 
 KANE_QuNeo.deckCursor = function (deck, value) {
@@ -2347,8 +2346,10 @@ KANE_QuNeo.masterVuMeter = function (value) {
 // Sliders
 KANE_QuNeo.deckZoomLEDs = function (deck, value) {
     var LEDGroup = KANE_QuNeo.getLEDGroup(deck);
+    // TODO Add script.zoomToMidiValue() ?
     // normalize zoom LED value to be 0-127
-    var zoom = ((value - 1) / 5) * 127
+    // get range from src/waveform/renderers/waveformwidgetrenderer.cpp
+    var zoom = ((value - 1) / 9) * 127
     // determine which control we are manipulating
     var control = KANE_QuNeo.getSliderControl(deck, 0)
     // emit message

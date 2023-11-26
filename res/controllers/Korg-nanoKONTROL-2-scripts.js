@@ -506,13 +506,9 @@ NK2.toggleBinaryControlAll = function toggleBinaryControlAll(control){
 NK2.wavezoomAll = function wavezoomAll(value){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
-    var range=6-1;
-    var newValue=Math.round(1+((value/127)*range));
-    if (newValue>6)newValue=6;
-    if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
-        for (var i=1; i<9; i++){
-            engine.setValue(NK2.Deck[i], "waveform_zoom", newValue);
+        for (var i=1; i<=NK2.numDecks; i++){
+            script.waveformZoom(NK2.Deck[i], value, true);
         };
     }
     NK2.lastwavevalue=value;
@@ -522,12 +518,8 @@ NK2.wavezoomDeck = function wavezoomDeck(value, group){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
 
-    var range=6-1;
-    var newValue=Math.round(1+((value/127)*range));
-    if (newValue>6)newValue=6;
-    if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
-        engine.setValue(group, "waveform_zoom", newValue);
+        script.waveformZoom(group, value, true);
     }
     NK2.lastwavevalue=value;
     }
