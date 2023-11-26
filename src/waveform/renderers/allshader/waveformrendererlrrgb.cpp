@@ -103,7 +103,7 @@ void WaveformRendererLRRGB::paintGL() {
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b));
 
-    double maxSamplingRange = visualIncrementPerPixel / 2.0;
+    const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int pos = 0; pos < length; ++pos) {
         const int visualFrameStart = int(xVisualFrame - maxSamplingRange + 0.5);

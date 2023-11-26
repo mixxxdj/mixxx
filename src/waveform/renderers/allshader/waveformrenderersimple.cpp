@@ -46,17 +46,15 @@ void WaveformRendererSimple::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
-    // Not multiplying with devicePixelRatio will also work. In that case, on
-    // High-DPI-Display the lines will be devicePixelRatio pixels wide (which is
-    // also what is used for the beat grid and the markers), or in other words
-    // each block of samples is represented by devicePixelRatio pixels (width).
+    const int visualFramesSize = dataSize / 2;
+    const double firstVisualFrame =
+            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+    const double lastVisualFrame =
+            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-
-    // Represents the # of waveform data points per horizontal pixel.
+    // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
 
     // Per-band gain from the EQ knobs.
     float allGain{1.0};
@@ -68,8 +66,8 @@ void WaveformRendererSimple::paintGL() {
 
     const float heightFactor = allGain * halfBreadth / 255.f;
 
-    // Effective visual index of x
-    double xVisualSampleIndex = firstVisualIndex;
+    // Effective visual frame for x
+    double xVisualFrame = firstVisualFrame;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
@@ -90,40 +88,25 @@ void WaveformRendererSimple::paintGL() {
             static_cast<float>(length),
             halfBreadth + 0.5f * devicePixelRatio);
 
+    const double maxSamplingRange = visualIncrementPerPixel / 2.0;
+
     for (int pos = 0; pos < length; ++pos) {
-        // Our current pixel (x) corresponds to a number of visual samples
-        // (visualSamplerPerPixel) in our waveform object. We take the max of
-        // all the data points on either side of xVisualSampleIndex within a
-        // window of 'maxSamplingRange' visual samples to measure the maximum
-        // data point contained by this pixel.
-        double maxSamplingRange = visualIncrementPerPixel / 2.0;
+        const int visualFrameStart = int(xVisualFrame - maxSamplingRange + 0.5);
+        const int visualFrameStop = int(xVisualFrame + maxSamplingRange + 0.5);
 
-        // Since xVisualSampleIndex is in visual-samples (e.g. R,L,R,L) we want
-        // to check +/- maxSamplingRange frames, not samples. To do this, divide
-        // xVisualSampleIndex by 2. Since frames indices are integers, we round
-        // to the nearest integer by adding 0.5 before casting to int.
-        int visualFrameStart = int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
-        int visualFrameStop = int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
-        const int lastVisualFrame = dataSize / 2 - 1;
-
-        // We now know that some subset of [visualFrameStart, visualFrameStop]
-        // lies within the valid range of visual frames. Clamp
-        // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
-        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
-
-        int visualIndexStart = visualFrameStart * 2;
-        int visualIndexStop = visualFrameStop * 2;
-
-        visualIndexStart = std::max(visualIndexStart, 0);
-        visualIndexStop = std::min(visualIndexStop, dataSize);
+        const int visualIndexStart = math_clamp(visualFrameStart * 2, 0, dataSize - 1);
+        const int visualIndexStop =
+                math_clamp(std::max(visualFrameStart + 1, visualFrameStop) * 2,
+                        0,
+                        dataSize - 1);
 
         // 2 channels
         float max[2]{};
 
-        for (int i = visualIndexStart; i < visualIndexStop; i += 2) {
-            for (int chn = 0; chn < 2; chn++) {
-                const WaveformData& waveformData = data[i + chn];
+        for (int chn = 0; chn < 2; chn++) {
+            // data is interleaved left / right
+            for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
+                const WaveformData& waveformData = data[i];
                 const float filteredAll = static_cast<float>(waveformData.filtered.all);
 
                 max[chn] = math_max(max[chn], filteredAll);
@@ -139,7 +122,7 @@ void WaveformRendererSimple::paintGL() {
                 fpos + 0.5f,
                 halfBreadth + heightFactor * max[1]);
 
-        xVisualSampleIndex += visualIncrementPerPixel;
+        xVisualFrame += visualIncrementPerPixel;
     }
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
