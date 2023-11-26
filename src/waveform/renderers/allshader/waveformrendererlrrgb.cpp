@@ -52,6 +52,7 @@ void WaveformRendererLRRGB::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
+    // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
             m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
@@ -69,7 +70,7 @@ void WaveformRendererLRRGB::paintGL() {
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactorAbs = allGain * halfBreadth / 255.f;
+    const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
@@ -106,13 +107,12 @@ void WaveformRendererLRRGB::paintGL() {
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int pos = 0; pos < length; ++pos) {
-        const int visualFrameStart = int(xVisualFrame - maxSamplingRange + 0.5);
-        const int visualFrameStop = int(xVisualFrame + maxSamplingRange + 0.5);
+        const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
+        const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
-        const int visualIndexStart = math_clamp(visualFrameStart * 2, 0, dataSize - 1);
+        const int visualIndexStart = std::max(visualFrameStart * 2, 0);
         const int visualIndexStop =
-                math_clamp(std::max(visualFrameStart + 1, visualFrameStop) * 2,
-                        0,
+                std::min(std::max(visualFrameStop * 2, visualIndexStart + 1),
                         dataSize - 1);
 
         const float fpos = static_cast<float>(pos);

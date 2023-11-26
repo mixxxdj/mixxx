@@ -46,13 +46,19 @@ void WaveformRendererSimple::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
+    // Note that waveform refers to the visual waveform, not to audio samples.
+    //
+    // WaveformData* data contains the L and R waveform values interleaved. In the calculations
+    // below, 'frame' refers to the index of such an L-R pair.
     const int visualFramesSize = dataSize / 2;
+
+    // Calculate the first and last frame to draw, from the normalized display position
     const double firstVisualFrame =
             m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
     const double lastVisualFrame =
             m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
-    // Represents the # of visual frames per horizontal pixel.
+    // Calculate the number of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
 
@@ -64,9 +70,9 @@ void WaveformRendererSimple::paintGL() {
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactor = allGain * halfBreadth / 255.f;
+    const float heightFactor = allGain * halfBreadth / m_maxValue;
 
-    // Effective visual frame for x
+    // Effective visual frame for x, which we will increment for each pixel advanced
     double xVisualFrame = firstVisualFrame;
 
     const int numVerticesPerLine = 6; // 2 triangles
@@ -88,16 +94,23 @@ void WaveformRendererSimple::paintGL() {
             static_cast<float>(length),
             halfBreadth + 0.5f * devicePixelRatio);
 
+    // We will iterate over a range of waveform data, centered around xVisualFrame
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
     for (int pos = 0; pos < length; ++pos) {
-        const int visualFrameStart = int(xVisualFrame - maxSamplingRange + 0.5);
-        const int visualFrameStop = int(xVisualFrame + maxSamplingRange + 0.5);
+        // Calculate the start and end of the range of waveform data, centered around xVisualFrame
+        const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
+        const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
-        const int visualIndexStart = math_clamp(visualFrameStart * 2, 0, dataSize - 1);
+        // Calculate the actual (deinterleaved) indices.
+        //
+        // Make sure we stay inside data at the lower boundary
+        const int visualIndexStart = std::max(visualFrameStart * 2, 0);
+        // and at the upper boundary.
+        // Note: * dataSize - 1, because below we add chn = 1
+        //       * visualIndexStart + 1, because we want to have at least 1 value
         const int visualIndexStop =
-                math_clamp(std::max(visualFrameStart + 1, visualFrameStop) * 2,
-                        0,
+                std::min(std::max(visualFrameStop * 2, visualIndexStart + 1),
                         dataSize - 1);
 
         // 2 channels
