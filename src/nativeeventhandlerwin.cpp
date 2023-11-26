@@ -1,5 +1,5 @@
 #include "nativeeventhandlerwin.h"
-
+#if defined(__WINDOWS__)
 #include <commctrl.h>
 #include <windows.h>
 #include <winuser.h>
@@ -33,3 +33,4 @@ bool WindowsEventHandler::nativeEventFilter(
 
     return false;
 }
+#endif

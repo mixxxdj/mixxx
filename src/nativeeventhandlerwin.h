@@ -1,5 +1,6 @@
 #include <QAbstractNativeEventFilter>
 
+#if defined(__WINDOWS__)
 #include "mixxxapplication.h"
 
 class WindowsEventHandler : public QAbstractNativeEventFilter {
@@ -11,3 +12,4 @@ class WindowsEventHandler : public QAbstractNativeEventFilter {
   private:
     MixxxApplication* m_pApp;
 };
+#endif

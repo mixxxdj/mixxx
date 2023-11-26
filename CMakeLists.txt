@@ -617,16 +617,8 @@ endif()
 
 set(CLANG_TIDY "" CACHE STRING "CMAKE_CXX_CLANG_TIDY equivalent that only applies to mixxx sources, not bundled dependencies")
 
-if(WIN32)
-  set(NATIVE_SOURCE_FILES src/nativeeventhandlerwin.cpp)
-else()
-  set(NATIVE_SOURCE_FILES "")
-endif()
-
-
 # Mixxx itself
 add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
-  ${NATIVE_SOURCE_FILES}
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
   src/analyzer/analyzergain.cpp
@@ -966,6 +958,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/coverartarchiveimagetask.cpp
   src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/nativeeventhandlerwin.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
