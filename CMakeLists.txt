@@ -1672,7 +1672,7 @@ if(WIN32)
     target_compile_definitions(mixxx-lib PUBLIC WIN64)
   endif()
 
-  target_link_libraries(mixxx-lib PRIVATE shell32)
+  target_link_libraries(mixxx-lib PRIVATE comctl32 shell32)
 
   if(MSVC)
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -2739,9 +2739,6 @@ elseif(UNIX AND NOT APPLE)
     Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
-    target_link_libraries(mixxx-lib PRIVATE
-    Comctl32
-    )
   if(Qt_IS_STATIC)
     target_link_libraries(mixxx-lib PRIVATE
       # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
