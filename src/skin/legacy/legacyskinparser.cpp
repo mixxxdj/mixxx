@@ -2442,6 +2442,19 @@ QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
 }
 
+namespace {
+QString pathTo2xIfExists(const QString& fullPath) {
+    int pos = fullPath.lastIndexOf("/");
+    if (pos != -1) {
+        QString fullPath2x = fullPath.left(pos) + "/2x" + fullPath.mid(pos);
+        if (QFile(fullPath2x).exists()) {
+            return fullPath2x;
+        }
+    }
+    return fullPath;
+}
+} // namespace
+
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // Workaround for https://bugs.kde.org/show_bug.cgi?id=434451 which renders
     // relative SVG icon paths in external stylesheets unusable:
@@ -2449,5 +2462,26 @@ QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
     // <Style> nodes) with absolute file paths.
     // TODO Can be removed/disabled as soon as all target distros have the fixed
     // package in their repo.
-    return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
+    //
+    // Additionally, replace the path with a fill in a folder 2x/ at the same level
+    // if it exists.
+
+    int from = 0;
+    int start;
+    QString str{"url(skin:"};
+    while ((start = style.indexOf(str, from)) != -1) {
+        int startPath = start + str.length();
+        int end = style.indexOf(")", startPath);
+        if (end != -1) {
+            QString fullPath = m_pContext->getSkinBasePath() +
+                    style.mid(startPath, end - startPath);
+            QString replacement = QString("url(") + pathTo2xIfExists(fullPath);
+            style.replace(start, end - start, replacement);
+            from = start + replacement.length();
+        } else {
+            assert(false);
+            break;
+        }
+    }
+    return style;
 }
