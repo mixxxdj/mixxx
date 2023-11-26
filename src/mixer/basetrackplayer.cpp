@@ -140,9 +140,12 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             &BaseTrackPlayerImpl::slotLoadTrackFromSampler);
 
-    // Waveform controls
-    // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
-    // do not work properly with this CO.
+    // Waveform zoom controls
+    // This acts somewhat like a ControlPotmeter, but the normal ControlPotmeter's
+    // _up/_down methods would not work properly with this CO. Instead, _up/_down,
+    // scroll wheel ticks sent to the waveform widget and the default zoom level
+    // combobox in the waveform preferences page set discrete zoom levels
+    // (integer values of "waveform_zoom").
     m_pWaveformZoom =
             std::make_unique<ControlObject>(ConfigKey(getGroup(), "waveform_zoom"));
     m_pWaveformZoom->connectValueChangeRequest(this,

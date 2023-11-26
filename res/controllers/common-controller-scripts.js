@@ -32,7 +32,6 @@ String.prototype.toInt = function() {
 
 /**
  * Prints a message to the terminal and the log file.
- *
  * @param {string} message - The log message.
  * @deprecated Use console.log()/console.warn()/console.debug() instead.
  */
@@ -378,6 +377,27 @@ script.crossfaderCurve = function(value, min, max) {
         engine.setValue("[Mixer Profile]", "xFaderCurve",
             script.absoluteLin(value, 1, 2, min, max));
     }
+};
+
+/* -------- ------------------------------------------------------
+     script.waveformZoom
+   Purpose: Adjusts the wavform zoom level with a pot (0 <= value <= 127)
+            "waveform_zoom" behaves like a ControlPotmeter but is actually
+            a ControlObject (no min, max or default), so we need to calculate
+            the scaled with script.absoluteLin().
+            Range is set in waveform/renderers/waveformwidgetrenderer.cpp
+   Input:   Deck group,
+            current value of the hardware control,
+            round: false (default if missing) for linear/smooth scaling or
+            true for stepped scaling (like _up/_down controls)
+   Output:  none
+   -------- ------------------------------------------------------ */
+script.waveformZoom = function(group, value, round) {
+    let scaledValue = script.absoluteLin(value, 1, 10, 0, 127);
+    if (round) {
+        scaledValue = Math.round(scaledValue);
+    }
+    engine.setValue(group, "waveform_zoom", scaledValue);
 };
 
 /* -------- ------------------------------------------------------

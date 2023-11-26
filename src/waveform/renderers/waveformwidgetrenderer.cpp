@@ -10,6 +10,8 @@
 #include "waveform/visualplayposition.h"
 #include "waveform/waveform.h"
 
+// When changing these zoom values remember to also adjust the range in
+// script.waveformZoom in /res/controllers/common-controller-scripts.js
 const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
 const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
 const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
