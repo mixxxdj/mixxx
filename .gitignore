@@ -15,6 +15,7 @@ __pycache__
 # Clang/cmake
 *_build
 compile_commands.json
+CMakeUserPresets.json
 
 # Doxygen documentation
 /doxygen

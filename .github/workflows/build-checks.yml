@@ -35,23 +35,9 @@ jobs:
         # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
         run: |
           cmake \
-            -DCMAKE_BUILD_TYPE=Debug \
+            --preset=build-checks \
             -DWARNINGS_FATAL=ON \
-            -DOPTIMIZE=off \
-            -DBATTERY=ON \
-            -DBROADCAST=ON \
-            -DBULK=ON \
-            -DHID=ON \
-            -DLILV=ON \
-            -DOPUS=ON \
-            -DQTKEYCHAIN=ON \
-            -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
-            -DKEYFINDER=ON \
-            -DLOCALECOMPARE=ON \
-            -DMAD=ON \
-            -DMODPLUG=ON \
-            -DWAVPACK=ON \
+            -DOPTIMIZE=OFF \
             ..
         working-directory: build
         env:
@@ -62,23 +48,9 @@ jobs:
         if: matrix.name == 'clang-tidy'
         run: |
           cmake \
-            -DCMAKE_BUILD_TYPE=Debug \
+            --preset=build-checks \
             -DCLANG_TIDY=clang-tidy \
             -DWARNINGS_FATAL=ON \
-            -DBATTERY=ON \
-            -DBROADCAST=ON \
-            -DBULK=ON \
-            -DHID=ON \
-            -DLILV=ON \
-            -DOPUS=ON \
-            -DQTKEYCHAIN=ON \
-            -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
-            -DKEYFINDER=ON \
-            -DLOCALECOMPARE=ON \
-            -DMAD=ON \
-            -DMODPLUG=ON \
-            -DWAVPACK=ON \
             ..
         working-directory: build
         env:
@@ -89,25 +61,11 @@ jobs:
         if: matrix.name == 'coverage'
         run: |
           cmake \
-            -DCMAKE_BUILD_TYPE=Debug \
-            -DOPTIMIZE=off \
+            --preset=build-checks \
+            -DOPTIMIZE=OFF \
             -DCOVERAGE=ON \
             -DWARNINGS_FATAL=OFF \
             -DDEBUG_ASSERTIONS_FATAL=OFF \
-            -DBATTERY=ON \
-            -DBROADCAST=ON \
-            -DBULK=ON \
-            -DHID=ON \
-            -DLILV=ON \
-            -DOPUS=ON \
-            -DQTKEYCHAIN=ON \
-            -DVINYLCONTROL=ON \
-            -DFFMPEG=ON \
-            -DKEYFINDER=ON \
-            -DLOCALECOMPARE=ON \
-            -DMAD=ON \
-            -DMODPLUG=ON \
-            -DWAVPACK=ON \
             ..
         working-directory: build
       - name: Set up problem matcher
