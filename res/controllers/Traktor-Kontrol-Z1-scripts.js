@@ -21,7 +21,7 @@ KontrolZ1.init = function(_id) {
     KontrolZ1.id = _id;
     KontrolZ1.registerInputPackets();
     KontrolZ1.registerOutputPackets();
-    print(KontrolZ1.id + " initialized");
+    console.log(KontrolZ1.id + " initialized");
 };
 
 KontrolZ1.registerInputPackets = function() {
@@ -240,7 +240,7 @@ KontrolZ1.messageCallback = function(packet, data) {
 KontrolZ1.shutdown = function() {
     // Deactivate all LEDs
     KontrolZ1.lightDeck(true);
-    print(KontrolZ1.id + " shut down");
+    console.log(KontrolZ1.id + " shut down");
 };
 
 KontrolZ1.incomingData = function(data, length) {
