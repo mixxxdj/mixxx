@@ -169,7 +169,7 @@ KontrolZ1.fxHandler = function(field) {
     // Control playback when modifier is active
     if (KontrolZ1.modePressed) {
         // Match play indicator (red led) brightness to fx indicator (blue led)
-        current = engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled") ? 0x7F : 0xA;
+        const current = engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled") ? 0x7F : 0xA;
         KontrolZ1.controller.setOutput(field.group, "play_indicator", current, true);
         script.toggleControl(field.group, "play");
     } else {
@@ -195,6 +195,7 @@ KontrolZ1.parameterHandler = function(field) {
 };
 
 KontrolZ1.outputHandler = function(value, group, key) {
+    let ledValue;
     if (value === 0 || value === false) {
         // Off value (dimmed)
         ledValue = 0xA;
@@ -208,6 +209,7 @@ KontrolZ1.outputHandler = function(value, group, key) {
 KontrolZ1.lightDeck = function(switchOff) {
     let softLight = 0xA;
     let fullLight = 0x7F;
+    let current;
 
     if (switchOff) {
         softLight = 0x00;
