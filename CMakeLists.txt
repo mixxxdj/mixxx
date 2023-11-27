@@ -163,7 +163,7 @@ if(APPLE)
       set(VCPKG_TARGET_TRIPLET "x64-osx-min1015")
     endif()
   else()
-    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+    if(VCPKG_TARGET_TRIPLET MATCHES "arm64-osx-min1100")
       # Minimum macOS version for arm64 Support
       set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
       set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
