@@ -67,8 +67,8 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
     // Detect integer overflow in `m_beatOffset + n`
     const int maxBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
     if (m_beatOffset > maxBeatOffset - n) {
-        qWarning() << "Beats: Iterator" << m_beatOffset << "+" << n
-                   << "would go out of possible range, capping at latest possible position.";
+        qDebug() << "Beats: Iterator" << m_beatOffset << "+" << n
+                 << "would go out of possible range, capping at latest possible position.";
         m_it = m_beats->m_markers.cend();
         m_beatOffset = maxBeatOffset;
         updateValue();
@@ -115,8 +115,8 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
     // Detect integer overflow
     const int minBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
     if (m_beatOffset < minBeatOffset + n) {
-        qWarning() << "Beats Iterator" << m_beatOffset << "-" << n
-                   << "would go out of possible range, capping at earliest possible position.";
+        qDebug() << "Beats Iterator" << m_beatOffset << "-" << n
+                 << "would go out of possible range, capping at earliest possible position.";
         m_it = m_beats->m_markers.cbegin();
         m_beatOffset = minBeatOffset;
         updateValue();
