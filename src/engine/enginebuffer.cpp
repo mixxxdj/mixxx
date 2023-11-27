@@ -41,13 +41,6 @@
 namespace {
 const mixxx::Logger kLogger("EngineBuffer");
 
-// This value is used to make sure the initial seek after loading a track is
-// not omitted. Therefore this value must be different for 0.0 or any likely
-// value for the main cue
-constexpr auto kInitialPlayPosition =
-        mixxx::audio::FramePos::fromEngineSamplePos(
-                std::numeric_limits<double>::lowest());
-
 constexpr double kLinearScalerElipsis =
         1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
