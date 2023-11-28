@@ -92,7 +92,7 @@ NK2.bankSelect = function bankSelect(deck, bank) {
     }else if (NK2.curNSMR=="R"){
         NK2.LEDBankIndicator=NK2.Rbutton[NK2.curDeck];
     }
-    if (NK2.LEDflasheson===true){engine.stopTimer(NK2.LEDtimer);NK2.LEDtimer=engine.beginTimer(750, "NK2.indicatorLEDs()");}//start timer for LED indicator flasher
+    if (NK2.LEDflasheson===true){engine.stopTimer(NK2.LEDtimer);NK2.LEDtimer=engine.beginTimer(750, NK2.indicatorLEDs);}//start timer for LED indicator flasher
     NK2.updateLEDs();
 };
 
@@ -288,7 +288,7 @@ NK2.indicatorLEDs = function indicatorLEDs(value,group,control){
     NK2.flashon=0;
     NK2.flashcount=0;
 
-    NK2.flashTimer=engine.beginTimer(100, "NK2.flashIndicators()");
+    NK2.flashTimer=engine.beginTimer(100, NK2.flashIndicators);
     return true;
 };
 
@@ -596,7 +596,7 @@ NK2.cueClear = function cueClear(cue, control){//clear hotcue - OR move hotcue t
     if(engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_enabled")!=true){//hotcue not set - prepare to move next hotcue pressed to this button
         NK2.cueMoveToNum=cue;
         engine.stopTimer(NK2.cueMoveIndicator);
-        NK2.cueMoveIndicator=engine.beginTimer(100, "NK2.cueMoveIndicatorLEDs("+control+")");//start timer for LED indicator flasher showing the button we're moving to
+        NK2.cueMoveIndicator=engine.beginTimer(100, () => NK2.cueMoveIndicatorLEDs(control));//start timer for LED indicator flasher showing the button we're moving to
         return true;
     }
 
@@ -705,7 +705,7 @@ NK2.reloopButton = function reloopButton(value) {
         engine.stopTimer(NK2.reloopTimer);
         NK2.loopbuttonDown=true;
         NK2.doreloop=true;
-        NK2.reloopTimer = engine.beginTimer(500, "NK2.disablereloop()", true);
+        NK2.reloopTimer = engine.beginTimer(500, NK2.disablereloop, true);
         } else {//button was released
         NK2.loopbuttonDown=false;
         if (NK2.doreloop===true) {engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 1);engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 0);};
@@ -723,7 +723,7 @@ NK2.loopin = function loopin(value) {
         engine.stopTimer(NK2.loopinTimer);
         NK2.loopinbuttonDown=true;
         NK2.doloopin=true;
-        NK2.loopinTimer = engine.beginTimer(500, "NK2.disableloopin()", true);
+        NK2.loopinTimer = engine.beginTimer(500, NK2.disableloopin, true);
         } else {//button was released
         NK2.loopinbuttonDown=false;
         if (NK2.doloopin===true) {engine.setValue(NK2.Deck[NK2.curDeck], "loop_in", 1);engine.setValue(NK2.Deck[NK2.curDeck], "loop_in", 0);};
@@ -741,7 +741,7 @@ NK2.loopout = function loopout(value) {
         engine.stopTimer(NK2.loopoutTimer);
         NK2.loopoutbuttonDown=true;
         NK2.doloopout=true;
-        NK2.loopoutTimer = engine.beginTimer(500, "NK2.disableloopout()", true);
+        NK2.loopoutTimer = engine.beginTimer(500, NK2.disableloopout, true);
         } else {//button was released
         NK2.loopoutbuttonDown=false;
         if (NK2.doloopout===true) {engine.setValue(NK2.Deck[NK2.curDeck], "loop_out", 1);engine.setValue(NK2.Deck[NK2.curDeck], "loop_out", 0);};
@@ -874,7 +874,7 @@ NK2.testleds=function testleds(){//sends LED on messages to all
     if (NK2.testLED>=127){return false; }
     NK2.testLED++
     midi.sendShortMsg(0xB0, NK2.testLED, 0x7F);
-    NK2.LEDtimer=engine.beginTimer(100, "NK2.testleds()", true);
+    NK2.LEDtimer=engine.beginTimer(100, NK2.testleds, true);
 }
 
 //############################################################################

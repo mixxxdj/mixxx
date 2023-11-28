@@ -352,7 +352,7 @@ PioneerDDJ400.startLoopLightsBlink = function(channel, control, status, group) {
 
     PioneerDDJ400.stopLoopLightsBlink(group, control, status);
 
-    PioneerDDJ400.timers[group][control] = engine.beginTimer(500, function() {
+    PioneerDDJ400.timers[group][control] = engine.beginTimer(500, () => {
         blink = 0x7F - blink;
 
         // When adjusting the loop out position, turn the loop in light off
@@ -606,7 +606,7 @@ PioneerDDJ400.startSamplerBlink = function(channel, control, group) {
     let val = 0x7f;
 
     PioneerDDJ400.stopSamplerBlink(channel, control);
-    PioneerDDJ400.timers[channel][control] = engine.beginTimer(250, function() {
+    PioneerDDJ400.timers[channel][control] = engine.beginTimer(250, () => {
         val = 0x7f - val;
 
         // blink the appropriate pad

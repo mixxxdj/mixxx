@@ -211,7 +211,7 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // https://github.com/mixxxdj/mixxx/issues/8456
                     // Changed timer from 50 to 100 after the pathology of this
                     // bug was explained in the bug report.
-                    engine.beginTimer(100, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
+                    engine.beginTimer(100, () => engine.setValue(group, "slip_enabled", 1), 1);
                 }
             }
         } else {

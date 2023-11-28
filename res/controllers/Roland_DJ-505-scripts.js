@@ -172,7 +172,7 @@ DJ505.init = function() {
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6);
 
     // Send "keep-alive" message to keep controller in Serato mode
-    engine.beginTimer(500, function() {
+    engine.beginTimer(500, () => {
         midi.sendShortMsg(0xBF, 0x64, 0x00);
     });
 
@@ -220,7 +220,7 @@ DJ505.browseEncoder = new components.Encoder({
                 this.isLongPressed = false;
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function() { this.isLongPressed = true; }.bind(this),
+                    () => { this.isLongPressed = true; },
                     true
                 );
 
@@ -621,10 +621,10 @@ DJ505.Deck = function(deckNumbers, offset) {
         },
         input: function(channel, control, value, _status, _group) {
             if (value) {
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                     this.onLongPress();
                     this.longPressTimer = 0;
-                }.bind(this), true);
+                }, true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -693,10 +693,10 @@ DJ505.Deck = function(deckNumbers, offset) {
         group: "[Channel" + deckNumbers + "]",
         input: function(_channel, _control, value, _status, group) {
             if (value) {
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                     this.onLongPress(group);
                     this.longPressTimer = 0;
-                }.bind(this), true);
+                }, true);
             } else if (this.longPressTimer !== 0) {
                 // Button released after short press
                 engine.stopTimer(this.longPressTimer);
@@ -749,7 +749,7 @@ DJ505.DeckToggleButton.prototype.input = function(channel, control, value, statu
         // Button was pressed
         this.longPressTimer = engine.beginTimer(
             this.longPressTimeout,
-            function() { this.isLongPressed = true; }.bind(this),
+            () => { this.isLongPressed = true; },
             true
         );
         this.secondaryDeck = !this.secondaryDeck;
@@ -880,10 +880,10 @@ DJ505.Sampler = function() {
     this.startStopButtonPressed = function(channel, control, value, status, _group) {
         if (status === 0xFA) {
             this.playbackCounter = 1;
-            this.playbackTimer = engine.beginTimer(500, function() {
+            this.playbackTimer = engine.beginTimer(500, () => {
                 midi.sendShortMsg(0xBA, 0x02, this.playbackCounter);
                 this.playbackCounter = (this.playbackCounter % 4) + 1;
-            }.bind(this));
+            });
         } else if (status === 0xFC) {
             if (this.playbackTimer) {
                 engine.stopTimer(this.playbackTimer);
@@ -961,10 +961,10 @@ DJ505.SlipModeButton.prototype.unshift = function() {
 
         this.doubleTapTimer = engine.beginTimer(
             this.doubleTapTimeout,
-            function() {
+            () => {
                 this.doubleTapped = false;
                 this.doubleTapTimer = null;
-            }.bind(this),
+            },
             true
         );
     };
@@ -1618,9 +1618,9 @@ DJ505.SavedLoopMode = function(deck, offset) {
 
                 if (value) {
                     this.longPressTimer = engine.beginTimer(
-                        this.longPressTimeout, function() {
+                        this.longPressTimeout, () => {
                             engine.setValue(this.group, "hotcue_" + this.number + "_clear", 1);
-                        }.bind(this));
+                        });
                 } else {
                     if (this.longPressTimer !== 0) {
                         engine.stopTimer(this.longPressTimer);

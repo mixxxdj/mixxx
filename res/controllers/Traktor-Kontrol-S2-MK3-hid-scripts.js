@@ -285,7 +285,7 @@ TraktorS2MK3.syncHandler = function(field) {
             if (engine.getValue(field.group, "sync_enabled") === 0) {
                 script.triggerControl(field.group, "beatsync");
                 // Start timer to measure how long button is pressed
-                TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(300, function() {
+                TraktorS2MK3.syncPressedTimer[field.group] = engine.beginTimer(300, () => {
                     engine.setValue(field.group, "sync_enabled", 1);
                     // Reset sync button timer state if active
                     if (TraktorS2MK3.syncPressedTimer[field.group] !== 0) {
@@ -578,7 +578,7 @@ TraktorS2MK3.microphoneHandler = function(field) {
     if (field.value) {
         if (TraktorS2MK3.microphonePressedTimer === 0) {
             // Start timer to measure how long button is pressed
-            TraktorS2MK3.microphonePressedTimer = engine.beginTimer(300, function() {
+            TraktorS2MK3.microphonePressedTimer = engine.beginTimer(300, () => {
                 // Reset microphone button timer status if active
                 if (TraktorS2MK3.microphonePressedTimer !== 0) {
                     TraktorS2MK3.microphonePressedTimer = 0;

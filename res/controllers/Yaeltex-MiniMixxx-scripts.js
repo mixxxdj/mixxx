@@ -297,10 +297,10 @@ MiniMixxx.EncoderModeGain = class extends MiniMixxx.Mode {
             engine.stopTimer(this.idleTimer);
         }
         this.showGain = true;
-        this.idleTimer = engine.beginTimer(1000, function() {
+        this.idleTimer = engine.beginTimer(1000, () => {
             this.showGain = false;
             this.vuIndicator(engine.getValue(this.channel, "vu_meter"));
-        }.bind(this), true);
+        }, true);
         midi.sendShortMsg(0xBF, this.idx, this.color);
         midi.sendShortMsg(0xB0, this.idx, script.absoluteNonLinInverse(value, 0, 1.0, 4.0));
     }
@@ -966,13 +966,13 @@ MiniMixxx.ButtonModeSync = class extends MiniMixxx.ButtonMode {
             if (engine.getValue(this.channel, "sync_enabled") === 0) {
                 engine.setValue(this.channel, "sync_enabled", 1);
                 // Start timer to measure how long button is pressed
-                this.syncPressedTimer = engine.beginTimer(300, function() {
+                this.syncPressedTimer = engine.beginTimer(300, () => {
                     engine.setValue(this.channel, "sync_enabled", 1);
                     // Reset sync button timer state if active
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }.bind(this), true);
+                }, true);
             } else {
                 // Deactivate sync lock
                 // LED is turned off by the callback handler for sync_enabled

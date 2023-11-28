@@ -408,7 +408,7 @@ Wiimote.init = function(id) {
             return;
         controller.timers[timer_id] = engine.beginTimer(
             interval,
-            "Wiimote.controller.autorepeatTimer()"
+            () => Wiimote.controller.autorepeatTimer() // FIXME: autorepeatTimer does not exist?
         )
     }
     controller.setOutput("state","rumble",0);
@@ -700,7 +700,7 @@ Wiimote.rumble = function(rumble,milliseconds) {
     if (milliseconds!=undefined && rumble) {
         controller.timers["rumble"] = engine.beginTimer(
             milliseconds,
-            "Wiimote.rumble(false)"
+            () => Wiimote.rumble(false)
         );
     } else if ("rumble" in controller.timers) {
         engine.stopTimer(controller.timers["rumble"]);
