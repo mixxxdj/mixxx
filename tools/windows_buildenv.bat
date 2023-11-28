@@ -22,10 +22,12 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.4-rel
+    set VCPKG_TARGET_TRIPLET=x64-windows-release
     SET BUILDENV_NAME=mixxx-deps-rel-2.4-x64-windows-release-c82358c
     SET BUILDENV_SHA256=bc65f12344f3d5788f7f684f1b2807a7beaf9a9542f0d6224e54530a7c3f558b
 ) ELSE (
     SET BUILDENV_BRANCH=2.4
+    set VCPKG_TARGET_TRIPLET=x64-windows
     SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-250db0f
     SET BUILDENV_SHA256=db79b4f8062e1835213e501b6753819c5c6bf3212c548bd1ef12f2a4825277cc
 )
@@ -96,7 +98,7 @@ EXIT /B 0
 
     SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
     SET "CMAKE_GENERATOR=Ninja"
-    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows"
+    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\!VCPKG_TARGET_TRIPLET!"
 
     ECHO ^Environment Variables:
     ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
@@ -228,6 +230,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"
