@@ -958,6 +958,61 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     markDirtyAndUnlock(&locked);
 }
 
+void Track::shiftCuePositionMillis(const CuePointer& pCue, double milliseconds) {
+    if (milliseconds == 0) {
+        return;
+    }
+
+    auto locked = lockMutex(&m_qMutex);
+
+    VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
+        return;
+    }
+    mixxx::audio::FrameDiff_t frames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    milliseconds);
+    for (const CuePointer& pRecCue : std::as_const(m_cuePoints)) {
+        if (pRecCue == pCue) {
+            pRecCue->shiftPositionFrames(frames);
+        }
+    }
+
+    markDirtyAndUnlock(&locked);
+}
+
+void Track::shiftCuePositionBeats(const CuePointer& pCue, int direction) {
+    if (direction == 0) {
+        return;
+    }
+
+    if (!m_pBeats) {
+        return;
+    }
+
+    auto locked = lockMutex(&m_qMutex);
+    for (const CuePointer& pRecCue : std::as_const(m_cuePoints)) {
+        if (pRecCue == pCue) {
+            auto currPos = pRecCue->getPosition();
+            // This is necessary since we might call findNthBeat(pos, n) with
+            // a beat position which would return that same position, so we may
+            // need to look one beat further.
+            auto newPos = currPos;
+            int offset = 1;
+            while (newPos == currPos) {
+                VERIFY_OR_DEBUG_ASSERT(offset <= 2) {
+                    qWarning() << "Could not shift cue point, couldn't find next/prev beat";
+                    return;
+                }
+                newPos = m_pBeats->findNthBeat(currPos, direction * offset);
+                offset++;
+            }
+            pRecCue->shiftPositionFrames(newPos - currPos);
+        }
+    }
+
+    markDirtyAndUnlock(&locked);
+}
+
 void Track::analysisFinished() {
     emit analyzed();
 }

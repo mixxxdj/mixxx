@@ -20,8 +20,6 @@
 namespace {
 
 constexpr double kNoTrackColor = -1;
-constexpr double kShiftCuesOffsetMillis = 10;
-constexpr double kShiftCuesOffsetSmallMillis = 1;
 const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
 
 inline double trackColorToDouble(mixxx::RgbColor::optional_t color) {
@@ -173,20 +171,24 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     connect(m_pShiftCuesEarlier.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftCuesMillisButton(value, -kShiftCuesOffsetMillis); });
+            [this](double value) {
+                slotShiftCuesMillisButton(value, -Cue::kShiftCuesOffsetMillis);
+            });
     m_pShiftCuesLater = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_later"));
     connect(m_pShiftCuesLater.get(),
             &ControlObject::valueChanged,
             this,
-            [this](double value) { slotShiftCuesMillisButton(value, kShiftCuesOffsetMillis); });
+            [this](double value) {
+                slotShiftCuesMillisButton(value, Cue::kShiftCuesOffsetMillis);
+            });
     m_pShiftCuesEarlierSmall = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_earlier_small"));
     connect(m_pShiftCuesEarlierSmall.get(),
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftCuesMillisButton(value, -kShiftCuesOffsetSmallMillis);
+                slotShiftCuesMillisButton(value, -Cue::kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCuesLaterSmall = std::make_unique<ControlPushButton>(
             ConfigKey(getGroup(), "shift_cues_later_small"));
@@ -194,7 +196,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlObject::valueChanged,
             this,
             [this](double value) {
-                slotShiftCuesMillisButton(value, kShiftCuesOffsetSmallMillis);
+                slotShiftCuesMillisButton(value, Cue::kShiftCuesOffsetSmallMillis);
             });
     m_pShiftCues = std::make_unique<ControlObject>(
             ConfigKey(getGroup(), "shift_cues"));

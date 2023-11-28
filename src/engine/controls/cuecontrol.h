@@ -135,6 +135,8 @@ class HotcueControl : public QObject {
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
+    void slotHotcueShiftEarlier(double v);
+    void slotHotcueShiftLater(double v);
     void slotHotcueEndPositionChanged(double newPosition);
     void slotHotcuePositionChanged(double newPosition);
     void slotHotcueColorChangeRequest(double newColor);
@@ -150,6 +152,7 @@ class HotcueControl : public QObject {
     void hotcueActivate(HotcueControl* pHotcue, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
+    void hotcueShift(HotcueControl* pHotcue, int direction);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pHotcue, double newEndPosition);
     void hotcueColorChanged(HotcueControl* pHotcue, double newColor);
@@ -182,6 +185,8 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueActivateLoop;
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
     std::unique_ptr<ControlPushButton> m_hotcueClear;
+    std::unique_ptr<ControlPushButton> m_hotcueShiftEarlier;
+    std::unique_ptr<ControlPushButton> m_hotcueShiftLater;
 
     ControlValueAtomic<mixxx::CueType> m_previewingType;
     ControlValueAtomic<mixxx::audio::FramePos> m_previewingPosition;
@@ -229,6 +234,7 @@ class CueControl : public EngineControl {
     void hotcueActivatePreview(HotcueControl* pControl, double v);
     void updateCurrentlyPreviewingIndex(int hotcueIndex);
     void hotcueClear(HotcueControl* pControl, double v);
+    void hotcueShift(HotcueControl* pHotcue, int direction);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
 

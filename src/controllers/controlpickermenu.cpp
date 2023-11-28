@@ -426,19 +426,27 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Hotcues
     QMenu* hotcueMainMenu = addSubmenu(tr("Hotcues"));
     QString hotcueActivateTitle = tr("Hotcue %1");
-    QString hotcueClearTitle = tr("Clear Hotcue %1");
-    QString hotcueSetTitle = tr("Set Hotcue %1");
-    QString hotcueGotoTitle = tr("Jump To Hotcue %1");
-    QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
-    QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
-    QString hotcuePreviewTitle = tr("Preview Hotcue %1");
     QString hotcueActivateDescription = tr("Set, preview from or jump to hotcue %1");
+    QString hotcueClearTitle = tr("Clear Hotcue %1");
     QString hotcueClearDescription = tr("Clear hotcue %1");
+    QString hotcueSetTitle = tr("Set Hotcue %1");
     QString hotcueSetDescription = tr("Set hotcue %1");
+    QString hotcueGotoTitle = tr("Jump To Hotcue %1");
     QString hotcueGotoDescription = tr("Jump to hotcue %1");
+    QString hotcueGotoAndStopTitle = tr("Jump To Hotcue %1 And Stop");
     QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
     QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
+    QString hotcueGotoAndPlayTitle = tr("Jump To Hotcue %1 And Play");
+    QString hotcuePreviewTitle = tr("Preview Hotcue %1");
     QString hotcuePreviewDescription = tr("Preview from hotcue %1");
+    QString hotcueShiftEarlierTitle = tr("Shift hotcue %1 earlier");
+    QString hotcueShiftEarlierDescription = tr(
+            "Shift hotcue %1 10 milliseconds earlier, "
+            "or to the previous beat if quatize is enabled");
+    QString hotcueShiftLaterTitle = tr("Shift hotcue %1 later");
+    QString hotcueShiftLaterDescription = tr(
+            "Shift hotcue %1 10 milliseconds later, "
+            "or to the next beat if quatize is enabled");
     addDeckControl("shift_cues_earlier",
             tr("Shift cue points earlier"),
             tr("Shift cue points 10 milliseconds earlier"),
@@ -501,6 +509,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         addDeckAndSamplerControl(QString("hotcue_%1_activate_preview").arg(i),
                 hotcuePreviewTitle.arg(QString::number(i)),
                 hotcuePreviewDescription.arg(QString::number(i)),
+                hotcueSubMenu);
+        addDeckAndSamplerControl(QString("hotcue_%1_shift_earlier").arg(i),
+                hotcueShiftEarlierTitle.arg(QString::number(i)),
+                hotcueShiftEarlierDescription.arg(QString::number(i)),
+                hotcueSubMenu);
+        addDeckAndSamplerControl(QString("hotcue_%1_shift_later").arg(i),
+                hotcueShiftLaterTitle.arg(QString::number(i)),
+                hotcueShiftLaterDescription.arg(QString::number(i)),
                 hotcueSubMenu);
     }
     if (moreHotcues) {

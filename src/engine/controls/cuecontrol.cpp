@@ -394,6 +394,11 @@ void CueControl::connectControls() {
                 this,
                 &CueControl::hotcueClear,
                 Qt::DirectConnection);
+        connect(pControl,
+                &HotcueControl::hotcueShift,
+                this,
+                &CueControl::hotcueShift,
+                Qt::DirectConnection);
     }
 }
 
@@ -1188,6 +1193,28 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
     setHotcueFocusIndex(Cue::kNoHotCue);
+}
+
+void CueControl::hotcueShift(HotcueControl* pControl, int direction) {
+    if (direction == 0) {
+        return;
+    }
+
+    auto lock = lockMutex(&m_trackMutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    if (m_pQuantizeEnabled->toBool()) {
+        m_pLoadedTrack->shiftCuePositionBeats(pCue, direction);
+    } else {
+        m_pLoadedTrack->shiftCuePositionMillis(pCue, Cue::kShiftCuesOffsetMillis * direction);
+    }
 }
 
 void CueControl::hotcuePositionChanged(
@@ -2562,6 +2589,21 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
 
+    m_hotcueShiftEarlier = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("shift_earlier")));
+    connect(m_hotcueShiftEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShiftEarlier,
+            Qt::DirectConnection);
+    m_hotcueShiftLater = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("shift_later")));
+    connect(m_hotcueShiftLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShiftLater,
+            Qt::DirectConnection);
+
     m_previewingType.setValue(mixxx::CueType::Invalid);
     m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
@@ -2618,6 +2660,20 @@ void HotcueControl::slotHotcueActivatePreview(double v) {
 
 void HotcueControl::slotHotcueClear(double v) {
     emit hotcueClear(this, v);
+}
+
+void HotcueControl::slotHotcueShiftEarlier(double v) {
+    if (v <= 0) {
+        return;
+    }
+    emit hotcueShift(this, -1);
+}
+
+void HotcueControl::slotHotcueShiftLater(double v) {
+    if (v <= 0) {
+        return;
+    }
+    emit hotcueShift(this, 1);
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
