@@ -2790,6 +2790,7 @@ void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
         m_hotcueColor->set(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code

@@ -4,6 +4,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 
+#include "control/pollingcontrolproxy.h"
 #include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
@@ -13,7 +14,7 @@
 class WCueMenuPopup : public QWidget {
     Q_OBJECT
   public:
-    WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent = nullptr);
+    WCueMenuPopup(UserSettingsPointer pConfig, const QString& group, QWidget* parent = nullptr);
 
     ~WCueMenuPopup() {
         delete m_pCueNumber;
@@ -52,6 +53,7 @@ class WCueMenuPopup : public QWidget {
   private slots:
     void slotEditLabel();
     void slotDeleteCue();
+    void slotShiftCue(int direction);
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
@@ -64,6 +66,10 @@ class WCueMenuPopup : public QWidget {
     QLineEdit* m_pEditLabel;
     WColorPicker* m_pColorPicker;
     QPushButton* m_pDeleteCue;
+    QPushButton* m_pShiftCueEarlier;
+    QPushButton* m_pShiftCueLater;
+
+    PollingControlProxy m_pQuantize;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
