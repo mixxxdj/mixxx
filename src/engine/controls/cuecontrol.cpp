@@ -1,5 +1,6 @@
 #include "engine/controls/cuecontrol.h"
 
+#include "control/controlencoder.h"
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -2589,6 +2590,13 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
 
+    m_hotcueShift = std::make_unique<ControlEncoder>(
+            keyForControl(QStringLiteral("shift")), false);
+    connect(m_hotcueShift.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShift,
+            Qt::DirectConnection);
     m_hotcueShiftEarlier = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("shift_earlier")));
     connect(m_hotcueShiftEarlier.get(),
@@ -2660,6 +2668,13 @@ void HotcueControl::slotHotcueActivatePreview(double v) {
 
 void HotcueControl::slotHotcueClear(double v) {
     emit hotcueClear(this, v);
+}
+
+void HotcueControl::slotHotcueShift(double v) {
+    if (v == 0) {
+        return;
+    }
+    emit hotcueShift(this, static_cast<int>(v));
 }
 
 void HotcueControl::slotHotcueShiftEarlier(double v) {

@@ -18,6 +18,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class ControlEncoder;
 class ControlIndicator;
 class ControlProxy;
 
@@ -135,6 +136,7 @@ class HotcueControl : public QObject {
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
     void slotHotcueClear(double v);
+    void slotHotcueShift(double v);
     void slotHotcueShiftEarlier(double v);
     void slotHotcueShiftLater(double v);
     void slotHotcueEndPositionChanged(double newPosition);
@@ -185,6 +187,8 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueActivateLoop;
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
     std::unique_ptr<ControlPushButton> m_hotcueClear;
+
+    std::unique_ptr<ControlEncoder> m_hotcueShift;
     std::unique_ptr<ControlPushButton> m_hotcueShiftEarlier;
     std::unique_ptr<ControlPushButton> m_hotcueShiftLater;
 
