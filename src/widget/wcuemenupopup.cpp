@@ -14,6 +14,14 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     setAttribute(Qt::WA_StyledBackground);
     setObjectName("WCueMenuPopup");
 
+    // TODO Improve / polish Tab key navigation:
+    // Order of widget creation apearantly determines the Tab key navigation order.
+    // We may create the Delete and Shift buttons before the color picker so they're
+    // first after the edit label. That way, if we want to delete or shift a cue
+    // via keyboard we don't need to skip through the entire color button grid first.
+    // Proper styles need to be added (per skin), e.g. remove 'outline: none' or
+    // add a custom border to WCueMenuPopup QPushButton:focus.
+
     m_pCueNumber = new QLabel(this);
     m_pCueNumber->setToolTip(tr("Cue number"));
     m_pCueNumber->setObjectName("CueNumberLabel");
