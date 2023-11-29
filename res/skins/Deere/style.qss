@@ -2320,20 +2320,37 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   selection-background-color: #d2d2d2;
 }
 
-#CueDeleteButton {
-/* tall button, about the same height as cue number + label edit box */
-  width: 28px;
-  height: 46px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  qproperty-icon: url(skin:/../Deere/icon/ic_delete.svg);
+WCueMenuPopup #CueDeleteButton,
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
   background-color: #3B3B3B;
   border-radius: 2px;
   outline: none;
 }
-
-#CueDeleteButton:hover {
+WCueMenuPopup #CueDeleteButton:hover,
+WCueMenuPopup #CueShiftEarlier:hover,
+WCueMenuPopup #CueShiftLater:hover {
   background-color: #4B4B4B;
+}
+
+WCueMenuPopup #CueDeleteButton {
+  width: 44px;
+  height: 28px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  qproperty-icon: url(skin:/../Deere/icon/ic_delete.svg);
+}
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
+  width: 22px;
+  height: 22px;
+}
+WCueMenuPopup #CueShiftEarlier {
+  margin-right: 2px; /* is added to width */
+  qproperty-icon: url(skin:/../Deere/icon/ic_hotcues_earlier_48px.svg);
+}
+WCueMenuPopup #CueShiftLater {
+  qproperty-icon: url(skin:/../Deere/icon/ic_hotcues_later_48px.svg);
 }
 
 WRateRange {
