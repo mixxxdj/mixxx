@@ -245,6 +245,8 @@ class CueControl : public EngineControl {
     void hotcueFocusColorNext(double v);
     void hotcueFocusColorPrev(double v);
 
+    void slotShiftFocusedHotcue(double v);
+
     void passthroughChanged(double v);
 
     void cueSet(double v);
@@ -366,6 +368,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlObject> m_pHotcueFocus;
     std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
     std::unique_ptr<ControlObject> m_pHotcueFocusColorPrev;
+
+    std::unique_ptr<ControlEncoder> m_pShiftFocusedHotcue;
 
     parented_ptr<ControlProxy> m_pPassthrough;
 

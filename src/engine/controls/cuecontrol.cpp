@@ -207,6 +207,9 @@ void CueControl::createControls() {
     m_pHotcueFocusColorNext = std::make_unique<ControlObject>(
             ConfigKey(m_group, "hotcue_focus_color_next"));
 
+    m_pShiftFocusedHotcue = std::make_unique<ControlEncoder>(
+            ConfigKey(m_group, "shift_focused_hotcue"), false);
+
     // Create hotcue controls
     for (int i = 0; i < m_iNumHotCues; ++i) {
         HotcueControl* pControl = new HotcueControl(m_group, i);
@@ -340,6 +343,12 @@ void CueControl::connectControls() {
             &CueControl::hotcueFocusColorNext,
             Qt::DirectConnection);
 
+    connect(m_pShiftFocusedHotcue.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::slotShiftFocusedHotcue,
+            Qt::DirectConnection);
+
     // Hotcue controls
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         connect(pControl, &HotcueControl::hotcuePositionChanged,
@@ -431,6 +440,8 @@ void CueControl::disconnectControls() {
 
     disconnect(m_pHotcueFocusColorPrev.get(), nullptr, this, nullptr);
     disconnect(m_pHotcueFocusColorNext.get(), nullptr, this, nullptr);
+
+    disconnect(m_pShiftFocusedHotcue.get(), nullptr, this, nullptr);
 
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         disconnect(pControl, nullptr, this, nullptr);
@@ -1216,6 +1227,30 @@ void CueControl::hotcueShift(HotcueControl* pControl, int direction) {
     } else {
         m_pLoadedTrack->shiftCuePositionMillis(pCue, Cue::kShiftCuesOffsetMillis * direction);
     }
+}
+
+void CueControl::slotShiftFocusedHotcue(double v) {
+    int direction = static_cast<int>(v);
+    if (direction == 0) {
+        return;
+    }
+
+    auto lock = lockMutex(&m_trackMutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    int hotcueIndex = getHotcueFocusIndex();
+    if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueIndex);
+    if (!pControl) {
+        return;
+    }
+
+    hotcueShift(pControl, direction);
 }
 
 void CueControl::hotcuePositionChanged(
