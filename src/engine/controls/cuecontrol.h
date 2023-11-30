@@ -375,9 +375,6 @@ class CueControl : public EngineControl {
 
     QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 
-    // Tells us which controls map to which hotcue
-    QMap<QObject*, int> m_controlMap;
-
     // Must be locked when using the m_pLoadedTrack and it's properties
     QT_RECURSIVE_MUTEX m_trackMutex;
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
