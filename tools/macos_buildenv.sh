@@ -21,22 +21,26 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 
 if [ -n "${BUILDENV_ARM64}" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-arm64-osx-min1100-release-c82358c"
+        BUILDENV_NAME="mixxx-deps-rel-2.4-$VCPKG_TARGET_TRIPLET-c82358c"
         BUILDENV_SHA256="50dceb835f62ecb2013fdcf918a5793affde9334270e027c8a2a2f4b85861b42"
     else
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-250db0f"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-250db0f"
         BUILDENV_SHA256="7741284e77de9758b34bf55fcf105bb225b8df4e04eaf3470adea2d270526882"
     fi
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="x64-osx-min1012-release"
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-x64-osx-min1012-release-c82358c"
+        BUILDENV_NAME="mixxx-deps-rel-2.4-$VCPKG_TARGET_TRIPLET-c82358c"
         BUILDENV_SHA256="040e57362929283dbec161c46e92f6a6ea0a9dccaecab2a168da1057fdefeb9d"
     else
+        VCPKG_TARGET_TRIPLET="x64-osx-min1012"
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-250db0f"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-250db0f"
         BUILDENV_SHA256="ef598265bd8c3a176b7d01e4d734d0c6c3f443a2957a26fe53826220f7bb8550"
     fi
 fi
@@ -86,10 +90,12 @@ case "$1" in
 
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
 
         echo_exported_variables() {
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+            echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
