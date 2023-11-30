@@ -147,6 +147,7 @@ WEffectSelector::indicator:unchecked:selected,
 
 WTrackTableView,
 WLibrarySidebar {
+  selection-color: #000;
   /* background of Color delegate in selected row */
   selection-background-color: #666;
   /*outline: 1px solid yellow;*/
@@ -165,16 +166,11 @@ WSearchLineEdit QToolButton:focus {
   image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
 }
 
-/* Prevent OS-style checkbox from being rendered underneath the custom style. */
-WTrackTableView::item,
-#LibraryBPMButton::item {
-  border: 0px;
-}
-
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
 WLibrarySidebar::branch:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #000;
   selection-color: #000;
   background-color: #666;
@@ -186,7 +182,7 @@ WLibrarySidebar::item:focus {
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #ccc;
 }
@@ -213,7 +209,7 @@ WTrackTableView {
   }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked:selected {
+#LibraryPlayedCheckbox::indicator:unchecked:selected {
   background: none;
   color: #cfcfcf;
   border: 1px solid #000;

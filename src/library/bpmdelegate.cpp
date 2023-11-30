@@ -79,6 +79,17 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     // #LibraryBPMButton::indicator:unchecked {
     //  image: url(:/images/library/ic_library_unlocked.svg);
     // }
+
+    // Actually QAbstractTableModel::data(index, BackgroundRole) provides the
+    // correct custom background color (track color).
+    // Though, since Qt6 the above style rules would not apply for some reason,
+    // (see bug #11630) which can be fixed by also setting
+    // #LibraryBPMButton::item { border: 0px;}
+    // This however enables some default styles and clears the custom background
+    // color (track color), see bug #12355 ¯\_(ツ)_/¯ Qt is fun!
+    // Fix that by setting the bg color explicitly here.
+    paintItemBackground(painter, option, index);
+
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 

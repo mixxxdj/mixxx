@@ -884,6 +884,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
+  src/library/playcountdelegate.cpp
   src/library/playlisttablemodel.cpp
   src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp

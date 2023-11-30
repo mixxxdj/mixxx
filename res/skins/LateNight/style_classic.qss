@@ -1099,10 +1099,10 @@ WSearchLineEdit QAbstractScrollArea,
 #SkinSettingsLabelButton,
 #SkinSettingsNumToggleHeader[displayValue="1"],
 WSearchLineEdit,
+WTrackTableView,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
-WTrackTableView,
-WTrackTableView::indicator,
+#LibraryPlayedCheckbox::item,
 WLibraryTextBrowser,
 WLibrarySidebar,
 #LibraryFeatureControls QLabel,
@@ -2065,15 +2065,11 @@ WLibraryTextBrowser:focus {
   border: 1px solid #d09300;
 }
 
-/* Prevent OS-style checkbox from being rendered underneath the custom style. */
-WTrackTableView::item,
-#LibraryBPMButton::item {
-  border: 0px;
-}
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #5e4507;
 }
@@ -2088,7 +2084,7 @@ WLibrarySidebar::item:!selected:focus {
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
@@ -2143,6 +2139,12 @@ WLibrary QPlainTextEdit,
     #LibraryBPMSpinBox::down-button {
       image: url(skin:../LateNight/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
     }
+#LibraryPlayedCheckbox::indicator:checked {
+  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
+}
+#LibraryPlayedCheckbox::indicator:unchecked {
+  image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox.svg);
+}
 
 WCueMenuPopup QPushButton:focus {
   outline: none;
@@ -2595,15 +2597,6 @@ QPlainTextEdit QMenu::item:disabled {
   WTrackMenu QMenu::right-arrow:selected {
     image: url(skin:../LateNight/classic/style/menu_arrow_white.svg);
   }
-
-/* This is the only way to select the 'Played' checkbox.
-  Note that this also selects the BPM lock. */
-  WTrackTableView::indicator:checked {
-    image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox_checked.svg);
-    }
-  WTrackTableView::indicator:unchecked {
-    image: url(skin:../LateNight/classic/buttons/btn__lib_checkbox.svg);
-    }
 
   #MainMenu QMenu::separator,
   WLibrarySidebar QMenu::separator,
