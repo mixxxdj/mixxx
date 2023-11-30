@@ -948,6 +948,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/coverartarchiveimagetask.cpp
   src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/nativeeventhandlerwin.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
@@ -1564,20 +1565,19 @@ if (INFO_VECTORIZE)
     endif()
 endif()
 
+option(RELATIVE_MACRO_PATHS "Relativize __FILE__ paths" ON)
+if(RELATIVE_MACRO_PATHS)
+  if(NOT MSVC)
+    target_compile_options(mixxx-lib PUBLIC "-fmacro-prefix-map=${CMAKE_SOURCE_DIR}=.")
+  endif()
+endif()
+
 option(WARNINGS_FATAL "Fail if compiler generates a warning" OFF)
 if(WARNINGS_FATAL)
   if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /WX)
   else()
     target_compile_options(mixxx-lib PUBLIC -Werror)
-  endif()
-endif()
-
-option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
-if(DEBUG_ASSERTIONS_FATAL)
-  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
-  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
   endif()
 endif()
 
@@ -1646,7 +1646,7 @@ if(WIN32)
   # shoutidjc/shout.h checks for WIN32 to see if we are on Windows.
   target_compile_definitions(mixxx-lib PUBLIC WIN32)
 
-  target_link_libraries(mixxx-lib PRIVATE shell32)
+  target_link_libraries(mixxx-lib PRIVATE comctl32 shell32)
 
   if(MSVC)
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)
@@ -2168,12 +2168,15 @@ if(GIT_COMMIT_DATE AND NOT GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*
 endif()
 
 add_custom_target(mixxx-gitinfo
+  # Note: We don't quote the paths in the command since CMake already inserts
+  # escapes (which, if quoted, lead to paths wrongly containing backslashes).
+  # See https://stackoverflow.com/questions/8925396/why-does-cmake-prefixes-spaces-with-backslashes-when-executing-a-command
   COMMAND ${CMAKE_COMMAND}
-    -DGIT_DESCRIBE="${GIT_DESCRIBE}"
-    -DGIT_COMMIT_DATE="${GIT_COMMIT_DATE}"
-    -DINPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in"
-    -DOUTPUT_FILE="${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
-    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake"
+    -DGIT_DESCRIBE=${GIT_DESCRIBE}
+    -DGIT_COMMIT_DATE=${GIT_COMMIT_DATE}
+    -DINPUT_FILE=${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in
+    -DOUTPUT_FILE=${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h
+    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake
   COMMENT "Update git version information in gitinfo.h"
   BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
@@ -2648,6 +2651,17 @@ if(QML)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+endif()
+
+option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
+if(DEBUG_ASSERTIONS_FATAL)
+  target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
+  endif()
+  if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "DEBUG_ASSERT statements have been enabled because DEBUG_ASSERTIONS_FATAL is ON.")
+  endif()
 endif()
 
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)

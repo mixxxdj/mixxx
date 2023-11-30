@@ -2045,6 +2045,16 @@ WSearchLineEdit QAbstractScrollArea,
     /* remove OS focus indicator */
     outline: none;
     }
+    /* required on Windows since the QAbstractItemViews don't inherit styles from
+       the respective QComboBoxes */
+    WEffectSelector QAbstractItemView,
+    WEffectChainPresetSelector QAbstractItemView,
+    WSearchLineEdit QAbstractItemView {
+      selection-color: #fff;
+      selection-background-color: #565353;
+      border: 0px;
+      outline: none;
+    }
     /* Remove 3D border from unchecked effects checkmark space */
     WEffectSelector::item:selected,
     WEffectChainPresetSelector::item:selected,

@@ -1,10 +1,12 @@
 #include "console.h"
 
 #ifdef __WINDOWS__
+#include <conio.h>
 #include <io.h> // Debug Console
 #include <string.h>
-#include <conio.h>
 #include <strsafe.h>
+
+#include "util/versionstore.h"
 
 typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
 typedef BOOL(WINAPI* pfSetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);
