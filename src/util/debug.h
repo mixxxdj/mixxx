@@ -6,8 +6,11 @@
 #include "errordialoghandler.h"
 
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
-#define DBG(value) \
-    (qDebug().nospace() << #value << " = " << (value) << " [" << __FILE__ << ":" << __LINE__ << "]")
+#define DBG(value)                                                                         \
+    (([](auto&& val) {                                                                     \
+        qDebug().nospace() << #value " = " << val << " [" __FILE__ ":" << __LINE__ << "]"; \
+        return val;                                                                        \
+    })(value))
 #else
 #define DBG(value)                                                             \
     static_assert(false,                                                       \
@@ -15,7 +18,7 @@
             "remove it!")
 #endif
 
-template <typename T>
+template<typename T>
 QString toDebugString(const T& object) {
     QString output;
 #ifndef QT_NO_DEBUG_OUTPUT
