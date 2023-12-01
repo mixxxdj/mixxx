@@ -13,6 +13,7 @@
 
 class EngineMixer;
 class ControlObject;
+class ControlEncoder;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
@@ -162,6 +163,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Waveform display related controls
     std::unique_ptr<ControlPotmeter> m_pWaveformZoom;
+    std::unique_ptr<ControlEncoder> m_pWaveformZoomSelector;
 
     parented_ptr<ControlProxy> m_pLoopInPoint;
     parented_ptr<ControlProxy> m_pLoopOutPoint;

@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QMetaMethod>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "engine/channels/enginedeck.h"
@@ -159,6 +160,21 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             WaveformWidgetRenderer::s_waveformMinZoom);
     m_pWaveformZoom->setStepCount(stepCount);
     m_pWaveformZoom->setSmallStepCount(stepCount * 10);
+    // A wrapper for waveform_zoom_up/_down
+    m_pWaveformZoomSelector = std::make_unique<ControlEncoder>(
+            ConfigKey(getGroup(), "waveform_zoom_selector"), false);
+    connect(m_pWaveformZoomSelector.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                int steps = static_cast<int>(fabs(std::round(value)));
+                const QString dir = std::round(value) > 0 ? "up" : "down";
+                while (steps > 0) {
+                    ControlObject::set(ConfigKey(getGroup(), "waveform_zoom_" + dir), 1);
+                    ControlObject::set(ConfigKey(getGroup(), "waveform_zoom_" + dir), 0);
+                    steps--;
+                }
+            });
 
     m_pPreGain = make_parented<ControlProxy>(getGroup(), "pregain", this);
 
