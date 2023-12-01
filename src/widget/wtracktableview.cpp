@@ -840,6 +840,20 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
             return;
         }
     } break;
+    case Qt::Key_Space: {
+        // Ctrl + Space toggles the BPM lock and the Played checkbox
+        if ((event->modifiers() & kPropertiesShortcutModifier) &&
+                state() != QTableView::EditingState) {
+            QModelIndex index = currentIndex();
+            auto* pModel = model();
+            if (!index.isValid() || pModel == nullptr) {
+                return;
+            }
+            bool checked = pModel->data(index, Qt::CheckStateRole).toBool();
+            pModel->setData(index, !checked, Qt::CheckStateRole);
+            return;
+        }
+    } break;
     default:
         QTableView::keyPressEvent(event);
     }
