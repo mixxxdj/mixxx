@@ -268,15 +268,6 @@ jobs:
         run: ${{ matrix.compiler_cache }} -M 524288
         if: runner.os != 'windows'
 
-      - name: "Set up compiler cache"
-        uses: actions/cache@v3
-        with:
-          path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
-          restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}
-
       - name: "Create build directory"
         run: mkdir build
 
