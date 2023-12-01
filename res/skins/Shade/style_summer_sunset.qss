@@ -154,6 +154,10 @@ WSearchLineEdit:focus {
   border-color: #78C70B;
 }
 
+#LibraryBPMButton::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_lib_bpm_unlocked_white.svg);
+}
+
 #LibraryFeatureControls QPushButton:enabled {
   background-color: #998A3C;
   border: 1px solid #998A3C;

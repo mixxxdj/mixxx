@@ -1189,10 +1189,9 @@ WEffectChainPresetSelector,
 WSearchLineEdit,
 WTime,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
-#LibraryBPMSpinBox,
-#LibraryBPMButton::item,
 WTrackTableView,
-WTrackTableView::indicator,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item,
 WLibraryTextBrowser,
 WLibrarySidebar,
 #LibraryFeatureControls QLabel,
@@ -2550,15 +2549,11 @@ WLibrarySidebar {
 WLibrarySidebar {
   outline: none;
 }
-/* Prevent OS-style checkbox from being rendered underneath the custom style. */
-WTrackTableView::item,
-#LibraryBPMButton::item {
-  border: 0px;
-}
 /* Selected rows in Tree and Tracks table */
 WLibrarySidebar::item:selected,
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #2c454f;
 }
@@ -2583,7 +2578,7 @@ WLibrarySidebar {
 /* Use the native focus decoration */
 /* This is for all cells including Played and Location */
 WTrackTableView,
-/* This is for the BPM cell */
+/* This is for the BPM and play count cells */
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
@@ -2630,6 +2625,10 @@ WLibrary QPlainTextEdit,
     #LibraryBPMSpinBox::down-button {
       image: url(skin:../LateNight/palemoon/buttons/btn__lib_spinbox_down.svg) no-repeat center center;
       }
+
+#LibraryPlayedCheckbox::indicator:unchecked {
+  image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkbox.svg);
+}
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
@@ -3080,14 +3079,9 @@ QPlainTextEdit QMenu::item:disabled {
       image: url(skin:../LateNight/palemoon/buttons/btn__menu_checkbox.svg);
     }
 
-  /* This is the only way to select the 'Played' checkbox.
-    Note that this also selects the BPM lock, so style that afterwards. */
-  WTrackTableView::indicator:unchecked {
-    image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkbox.svg);
-  }
   WLibrarySidebar QMenu::indicator:checked,
   WTrackTableViewHeader QMenu::indicator:checked,
-  WTrackTableView::indicator:checked,
+  #LibraryPlayedCheckbox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked {
     image: url(skin:../LateNight/palemoon/buttons/btn__lib_checkmark_blue.svg);

@@ -2556,7 +2556,6 @@ WLibraryTextBrowser,
 WLibrarySidebar {
   border: 2px solid #585858;
   /* font-weight: normal; */
-  color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   /* In selected library rows this sets the color of
@@ -2567,16 +2566,24 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #555;
 }
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  color: #9e9e9e;
+}
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
-WTrackTableView::item,
+#LibraryPlayedCheckbox::item,
 #LibraryBPMButton::item {
   border: 0px;
 }
 
 /* selected table row */
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #555;
 }
@@ -3023,10 +3030,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   #LibraryBPMButton::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_bpm_unlocked.svg);
     }
-  /* BPM value */
-  #LibraryBPMButton::item {
-    color: #cfcfcf;
-    }
 
 #LibraryBPMSpinBox {
   padding: 0px;
@@ -3079,10 +3082,10 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     }*/
 
   /* checkbox in library "Played" column */
-  WTrackTableView::indicator:checked {
+  #LibraryPlayedCheckbox::indicator:checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox_checked.svg);
     }
-  WTrackTableView::indicator:unchecked {
+  #LibraryPlayedCheckbox::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 

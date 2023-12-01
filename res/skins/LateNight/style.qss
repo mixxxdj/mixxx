@@ -301,6 +301,11 @@ WTrackTableViewHeader::item {
     padding: 0 0.15em;
   }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
 
 #HotcueButton {
   /* ronso0

@@ -10,6 +10,7 @@
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/multilineeditdelegate.h"
+#include "library/playcountdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/stardelegate.h"
 #include "library/starrating.h"
@@ -399,6 +400,8 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new StarDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+        return new PlayCountDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
