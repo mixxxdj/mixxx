@@ -219,6 +219,7 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 Syncable* EngineSync::pickLeader(Syncable* pEnablingSyncable) {
     if (m_pLeaderSyncable &&
             m_pLeaderSyncable->getSyncMode() == SyncMode::LeaderExplicit &&
+            m_pLeaderSyncable->isPlaying() &&
             m_pLeaderSyncable->getBaseBpm().isValid()) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << "EngineSync::pickLeader(): explicit leader found ";

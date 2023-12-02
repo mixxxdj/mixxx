@@ -49,6 +49,7 @@ BpmControl::BpmControl(const QString& group,
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0) {
     m_dSyncTargetBeatDistance.setValue(0.0);
+    m_bSyncTargetAudible.setValue(false);
     m_dUserOffset.setValue(0.0);
 
     m_pPlayButton = new ControlProxy(group, "play", this);
@@ -346,7 +347,10 @@ double BpmControl::calcSyncedRate(double userTweak) {
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
-    double adjustment = calcSyncAdjustment(userTweak != 0.0);
+    double adjustment = 1.0;
+    if (m_bSyncTargetAudible.getValue()) {
+        adjustment = calcSyncAdjustment(userTweak != 0.0);
+    }
     return (rate + userTweak) * adjustment;
 }
 
@@ -579,6 +583,10 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
 
     double otherBeatFraction;
     if (isFollower(syncMode)) {
+        // Do not sync phase if the target is not audible.
+        if (!m_bSyncTargetAudible.getValue()) {
+            return thisPosition;
+        }
         // If we're a follower, it's easy to get the other beat fraction
         otherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
@@ -1058,6 +1066,13 @@ void BpmControl::setTargetBeatDistance(double beatDistance) {
         qDebug() << getGroup() << "BpmControl::setTargetBeatDistance:" << beatDistance;
     }
     m_dSyncTargetBeatDistance.setValue(beatDistance);
+}
+
+void BpmControl::notifyTargetAudible(bool audible) {
+    if (kLogger.traceEnabled()) {
+        qDebug() << getGroup() << "BpmControl::notifyTargetPlayingAudible:" << audible;
+    }
+    m_bSyncTargetAudible.setValue(audible);
 }
 
 void BpmControl::updateInstantaneousBpm(double instantaneousBpm) {
