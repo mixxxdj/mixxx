@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 #include "track/beats.h"
@@ -117,7 +118,7 @@ class BpmControl : public EngineControl {
 
   private:
     SyncMode getSyncMode() const {
-        return syncModeFromDouble(m_pSyncMode->get());
+        return syncModeFromDouble(m_pSyncMode.get());
     }
     inline bool isSynchronized() const {
         return toSynchronized(getSyncMode());
@@ -128,20 +129,18 @@ class BpmControl : public EngineControl {
     friend class SyncControl;
 
     // ControlObjects that come from EngineBuffer
-    std::unique_ptr<ControlProxy> m_pPlayButton;
-    QAtomicInt m_oldPlayButton;
-    std::unique_ptr<ControlProxy> m_pReverseButton;
+    PollingControlProxy m_pReverseButton;
     std::unique_ptr<ControlProxy> m_pRateRatio;
-    ControlObject* m_pQuantize;
+    PollingControlProxy m_pQuantize;
 
     // ControlObjects that come from QuantizeControl
-    QScopedPointer<ControlProxy> m_pNextBeat;
-    QScopedPointer<ControlProxy> m_pPrevBeat;
+    PollingControlProxy m_pNextBeat;
+    PollingControlProxy m_pPrevBeat;
 
     // ControlObjects that come from LoopingControl
-    std::unique_ptr<ControlProxy> m_pLoopEnabled;
-    std::unique_ptr<ControlProxy> m_pLoopStartPosition;
-    std::unique_ptr<ControlProxy> m_pLoopEndPosition;
+    PollingControlProxy m_pLoopEnabled;
+    PollingControlProxy m_pLoopStartPosition;
+    PollingControlProxy m_pLoopEndPosition;
 
     // The average bpm around the current playposition;
     std::unique_ptr<ControlObject> m_pLocalBpm;
@@ -167,14 +166,14 @@ class BpmControl : public EngineControl {
     // Button that translates beats to match another playing deck
     std::unique_ptr<ControlPushButton> m_pBeatsTranslateMatchAlignment;
 
-    std::unique_ptr<ControlProxy> m_pThisBeatDistance;
+    PollingControlProxy m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
     // The user offset is a beat distance percentage value that the user has tweaked a deck
     // to bring it in sync with the other decks. This value is added to the reported beat
     // distance to get the virtual beat distance used for sync.
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
-    std::unique_ptr<ControlProxy> m_pSyncMode;
+    PollingControlProxy m_pSyncMode;
 
     TapFilter m_bpmTapFilter;   // threadsafe
     TapFilter m_tempoTapFilter; // threadsafe
