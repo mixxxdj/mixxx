@@ -53,7 +53,6 @@ class BpmControl : public EngineControl {
     }
 
     void setTargetBeatDistance(double beatDistance);
-    void notifyTargetAudible(bool audible);
     void updateInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
     mixxx::Bpm updateLocalBpm();
@@ -157,7 +156,6 @@ class BpmControl : public EngineControl {
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
-    QAtomicInt m_bSyncTargetAudible;
     // The user offset is a beat distance percentage value that the user has tweaked a deck
     // to bring it in sync with the other decks. This value is added to the reported beat
     // distance to get the virtual beat distance used for sync.

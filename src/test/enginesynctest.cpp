@@ -3001,38 +3001,6 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));
 }
 
-TEST_F(EngineSyncTest, BpmAdjustFactorStoppedLeader) {
-    // Failing test case from https://github.com/mixxxdj/mixxx/pull/2376
-
-    m_pMixerDeck1->loadFakeTrack(false, 40.0);
-    m_pMixerDeck2->loadFakeTrack(false, 150.0);
-    ProcessBuffer();
-
-    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "quantize"))->set(1.0);
-
-    ControlObject::set(ConfigKey(m_sGroup2, "playposition"), 0.2);
-    ProcessBuffer();
-    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
-    ProcessBuffer();
-
-    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
-    ProcessBuffer();
-
-    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1.0);
-    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
-    // Set deck two to explicit leader.
-    auto pButtonSyncLeader2 =
-            std::make_unique<ControlProxy>(m_sGroup2, "sync_leader");
-    pButtonSyncLeader2->set(1.0);
-
-    ProcessBuffer();
-
-    // Deck 2 is explicit leader but is not playing. We should not apply a sync adjustment.
-    EXPECT_DOUBLE_EQ(1.0, m_pChannel1->getEngineBuffer()->m_pScale->m_dPitchRatio);
-}
-
 TEST_F(EngineSyncTest, ImplicitLeaderToInternalClock) {
     m_pMixerDeck1->loadFakeTrack(false, 100.0);
     m_pMixerDeck2->loadFakeTrack(false, 125.0);
