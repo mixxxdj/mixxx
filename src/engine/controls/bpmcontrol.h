@@ -157,7 +157,7 @@ class BpmControl : public EngineControl {
 
     ControlProxy* m_pThisBeatDistance;
     ControlValueAtomic<double> m_dSyncTargetBeatDistance;
-    ControlValueAtomic<bool> m_bSyncTargetAudible;
+    QAtomicInt m_bSyncTargetAudible;
     // The user offset is a beat distance percentage value that the user has tweaked a deck
     // to bring it in sync with the other decks. This value is added to the reported beat
     // distance to get the virtual beat distance used for sync.
