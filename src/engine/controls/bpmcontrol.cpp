@@ -1007,15 +1007,14 @@ mixxx::audio::FrameDiff_t BpmControl::getPhaseOffset(mixxx::audio::FramePos this
 
 void BpmControl::slotUpdateEngineBpm(double value) {
     // Adjust playback bpm in response to a rate_ratio update
-    double dRate = m_pRateRatio->get();
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << value << m_pLocalBpm->get() << dRate << frameInfo().currentPosition;
+                        << m_pLocalBpm->get() << value;
         // This can be used to detect pitch shift issues with cloned decks
-        // DEBUG_ASSERT(getGroup() != "[Channel1]" || dRate == 1);
+        // DEBUG_ASSERT(getGroup() != "[Channel1]" || m_pRateRatio->get(); == 1);
     }
-    m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
+    m_pEngineBpm->set(m_pLocalBpm->get() * value);
 }
 
 void BpmControl::slotUpdateRateSlider(double value) {
@@ -1140,7 +1139,7 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
             localBpmValue = localBpm.value();
         }
         m_pLocalBpm->set(localBpmValue);
-        slotUpdateEngineBpm();
+        slotUpdateEngineBpm(m_pRateRatio->get());
     }
     return localBpm;
 }
