@@ -69,6 +69,7 @@ class EngineBufferScale : public QObject {
     virtual void onSampleRateChanged() = 0;
 
   protected:
+    FRIEND_TEST(EngineSyncTest, BpmAdjustFactorStoppedLeader);
     double m_dBaseRate;
     bool m_bSpeedAffectsPitch;
     double m_dTempoRatio;

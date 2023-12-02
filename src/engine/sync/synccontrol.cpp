@@ -473,7 +473,6 @@ void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
     }
-    m_pBpmControl->notifyTargetAudible(play > 0.0 && m_audible);
     m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
 
@@ -578,7 +577,6 @@ void SyncControl::updateAudible() {
         bool newAudible = gain > CSAMPLE_GAIN_ZERO;
         if (static_cast<bool>(m_audible) != newAudible) {
             m_audible = newAudible;
-            m_pBpmControl->notifyTargetAudible(m_pPlayButton->toBool() && m_audible);
             m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
         }
     }
