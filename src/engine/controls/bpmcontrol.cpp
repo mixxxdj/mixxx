@@ -2,7 +2,6 @@
 
 #include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -134,7 +133,6 @@ BpmControl::BpmControl(const QString& group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
-    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {

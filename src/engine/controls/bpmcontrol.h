@@ -165,7 +165,6 @@ class BpmControl : public EngineControl {
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
-    ControlProxy* m_pSyncEnabled;
 
     TapFilter m_tapFilter; // threadsafe
 
