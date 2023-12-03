@@ -101,4 +101,6 @@ class ControllerRenderingEngine : public QObject {
 
     QSemaphore m_guiBlockedSema;
     ControllerScriptEngineBase* m_pControllerEngine;
+
+    static QMutex s_glMutex;
 };

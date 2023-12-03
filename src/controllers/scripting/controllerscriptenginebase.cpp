@@ -226,6 +226,7 @@ void ControllerScriptEngineBase::doPause() {
 
     emit paused(m_isPaused);
     while (m_isPaused) {
+        // TODO (ac) timeout pause
         m_isPausedCondition.wait(&m_pauseMutex);
     }
     emit paused(m_isPaused);

@@ -27,6 +27,8 @@
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 
+QMutex ControllerRenderingEngine::s_glMutex = QMutex();
+
 ControllerRenderingEngine::ControllerRenderingEngine(
         const LegacyControllerMapping::ScreenInfo& info,
         ControllerScriptEngineBase* parent)
@@ -126,6 +128,8 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
+    const auto lock = lockMutex(&s_glMutex);
+
     m_context = std::make_unique<QOpenGLContext>();
     m_context->setFormat(format);
     VERIFY_OR_DEBUG_ASSERT(m_context->create()) {
@@ -181,6 +185,8 @@ void ControllerRenderingEngine::finish() {
     m_isValid = false;
     disconnect(this);
 
+    const auto lock = lockMutex(&s_glMutex);
+
     if (m_context && m_context->isValid()) {
         disconnect(m_context.get(),
                 &QOpenGLContext::aboutToBeDestroyed,
@@ -220,6 +226,9 @@ void ControllerRenderingEngine::renderFrame() {
         finish();
         return;
     };
+
+    const auto lock = lockMutex(&s_glMutex);
+
     VERIFY_OR_DEBUG_ASSERT(m_context->makeCurrent(m_offscreenSurface.get())) {
         qWarning() << "Couldn't make the GLContext current to the OffscrenSurface.";
         finish();
