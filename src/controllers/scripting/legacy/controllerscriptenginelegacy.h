@@ -86,7 +86,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QString> m_scriptFunctionPrefixes;
 #ifdef MIXXX_USE_QML
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
-    QHash<QString, bool> m_isScreenSending;
     QHash<QString, std::shared_ptr<QQuickItem>> m_rootItems;
     QHash<QString, TransformScreenFrameFunction> m_transformScreenFrameFunctions;
     QList<LegacyControllerMapping::QMLModuleInfo> m_libraryDirectories;

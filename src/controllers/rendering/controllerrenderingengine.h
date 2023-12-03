@@ -11,6 +11,7 @@
 #include <QQuickItem>
 #include <QQuickRenderControl>
 #include <QQuickWindow>
+#include <QSemaphore>
 #include <QThread>
 #include <QTimer>
 #include <QWaitCondition>
@@ -28,7 +29,8 @@ class Controller;
 class ControllerRenderingEngine : public QObject {
     Q_OBJECT
   public:
-    ControllerRenderingEngine(const LegacyControllerMapping::ScreenInfo& info);
+    ControllerRenderingEngine(const LegacyControllerMapping::ScreenInfo& info,
+            ControllerScriptEngineBase* parent);
     ~ControllerRenderingEngine();
 
     bool event(QEvent* event) override;
@@ -96,4 +98,7 @@ class ControllerRenderingEngine : public QObject {
 
     QWaitCondition m_waitCondition;
     QMutex m_mutex;
+
+    QSemaphore m_guiBlockedSema;
+    ControllerScriptEngineBase* m_pControllerEngine;
 };

@@ -19,7 +19,7 @@ ControllerScreenPreview::ControllerScreenPreview(
     setMaximumWidth(screen.size.width());
     m_pStat->setAlignment(Qt::AlignRight);
     auto pLayout = make_parented<QVBoxLayout>(this);
-    auto pBottomLayout = make_parented<QHBoxLayout>();
+    auto pBottomLayout = new QHBoxLayout();
     pLayout->addWidget(m_pFrame);
     pBottomLayout->addWidget(make_parented<QLabel>(
             QString("\"<i>%0</i>\"")

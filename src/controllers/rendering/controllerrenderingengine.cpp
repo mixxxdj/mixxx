@@ -21,18 +21,21 @@
 #include "controllers/controller.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
+#include "mixxxapplication.h"
 #include "moc_controllerrenderingengine.cpp"
 #include "qml/qmlwaveformoverview.h"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 
 ControllerRenderingEngine::ControllerRenderingEngine(
-        const LegacyControllerMapping::ScreenInfo& info)
+        const LegacyControllerMapping::ScreenInfo& info,
+        ControllerScriptEngineBase* parent)
         : QObject(),
           m_screenInfo(info),
           m_GLDataFormat(GL_RGBA),
           m_GLDataType(GL_UNSIGNED_BYTE),
-          m_isValid(true) {
+          m_isValid(true),
+          m_pControllerEngine(parent) {
     switch (m_screenInfo.pixelFormat) {
     case QImage::Format_RGB16:
         m_GLDataFormat = GL_RGB;
@@ -97,6 +100,7 @@ void ControllerRenderingEngine::start() {
 }
 
 void ControllerRenderingEngine::requestSetup(std::shared_ptr<QQmlEngine> qmlEngine) {
+    m_isValid = false;
     VERIFY_OR_DEBUG_ASSERT(QThread::currentThread() != thread()) {
         qWarning() << "Unable to setup OpenGL rendering context from the same "
                       "thread as the render object";
@@ -107,6 +111,9 @@ void ControllerRenderingEngine::requestSetup(std::shared_ptr<QQmlEngine> qmlEngi
     const auto lock = lockMutex(&m_mutex);
     if (!m_quickWindow) {
         m_waitCondition.wait(&m_mutex);
+    }
+    if (m_isValid) {
+        m_renderControl->prepareThread(m_pThread.get());
     }
 }
 
@@ -123,9 +130,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_context->setFormat(format);
     VERIFY_OR_DEBUG_ASSERT(m_context->create()) {
         qWarning() << "Unable to intiliaze controller screen rendering. Giving up";
-        m_isValid = false;
         m_waitCondition.wakeAll();
-        finish();
         return;
     }
     connect(m_context.get(),
@@ -148,15 +153,32 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_renderControl = std::make_unique<QQuickRenderControl>(this);
     m_quickWindow = std::make_unique<QQuickWindow>(m_renderControl.get());
 
+    if (m_pControllerEngine) {
+        connect(
+                m_pControllerEngine,
+                &ControllerScriptEngineLegacy::paused,
+                this,
+                [this](bool isPaused) {
+                    if (isPaused) {
+                        m_guiBlockedSema.release();
+                    } else {
+                        m_guiBlockedSema.acquire();
+                    }
+                },
+                Qt::DirectConnection);
+    }
+
     if (!qmlEngine->incubationController())
         qmlEngine->setIncubationController(m_quickWindow->incubationController());
 
     m_quickWindow->setGeometry(0, 0, m_screenInfo.size.width(), m_screenInfo.size.height());
 
+    m_isValid = true;
     m_waitCondition.wakeAll();
 }
 
 void ControllerRenderingEngine::finish() {
+    m_isValid = false;
     disconnect(this);
 
     if (m_context && m_context->isValid()) {
@@ -166,7 +188,13 @@ void ControllerRenderingEngine::finish() {
                 &ControllerRenderingEngine::finish);
         m_context->makeCurrent(m_offscreenSurface.get());
         m_renderControl.reset();
-        m_offscreenSurface.reset();
+
+        std::shared_ptr<QOffscreenSurface> pOffscreenSurface = std::move(m_offscreenSurface);
+        QMetaObject::invokeMethod(
+                qApp,
+                [pOffscreenSurface] {
+                    pOffscreenSurface->destroy();
+                });
         m_quickWindow.reset();
 
         // Free the engine and FBO
@@ -179,6 +207,9 @@ void ControllerRenderingEngine::finish() {
 }
 
 void ControllerRenderingEngine::renderFrame() {
+    if (!m_isValid)
+        return;
+
     VERIFY_OR_DEBUG_ASSERT(m_offscreenSurface->isValid()) {
         qWarning() << "OffscrenSurface isn't valid anymore.";
         finish();
@@ -203,6 +234,8 @@ void ControllerRenderingEngine::renderFrame() {
 
         VERIFY_OR_DEBUG_ASSERT(m_renderControl->initialize()) {
             qWarning() << "Failed to initialize redirected Qt Quick rendering";
+            finish();
+            return;
         };
 
         m_quickWindow->setRenderTarget(QQuickRenderTarget::fromOpenGLTexture(m_fbo->texture(),
@@ -212,12 +245,32 @@ void ControllerRenderingEngine::renderFrame() {
     }
 
     m_nextFrameStart = mixxx::Time::elapsed();
-    m_renderControl->polishItems();
 
     m_renderControl->beginFrame();
+
+    if (m_pControllerEngine) {
+        m_pControllerEngine->requestPause();
+        m_guiBlockedSema.acquire();
+    }
+
+    m_renderControl->polishItems();
+
     VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
         qWarning() << "Couldn't sync the render control.";
+        // m_waitCondition.wakeAll();
+        finish();
+        if (m_pControllerEngine) {
+            m_guiBlockedSema.release();
+            m_pControllerEngine->requestResume();
+        }
+
+        return;
     };
+
+    if (m_pControllerEngine) {
+        m_guiBlockedSema.release();
+        m_pControllerEngine->requestResume();
+    }
     QImage fboImage(m_screenInfo.size, m_screenInfo.pixelFormat);
 
     VERIFY_OR_DEBUG_ASSERT(m_fbo->bind()) {

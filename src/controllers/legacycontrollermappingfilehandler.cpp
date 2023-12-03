@@ -1,6 +1,7 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 
 #include <QStringBuilder>
+
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"

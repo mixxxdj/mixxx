@@ -21,13 +21,12 @@
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
-#include "util/string.h"
-#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "defs_urls.h"
 #include "util/cmdlineargs.h"
+#include "util/string.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");
@@ -856,9 +855,9 @@ void DlgPrefController::slotShowPreviewScreens(
         std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine) {
     qDeleteAll(m_ui.groupBoxScreens->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 
-    VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
+    if (!m_pMapping) {
         return;
-    };
+    }
 
     m_ui.groupBoxScreens->setVisible(scriptEngine != nullptr);
     if (!scriptEngine) {

@@ -172,6 +172,64 @@ void ControllerScriptEngineBase::showScriptExceptionDialog(
 }
 
 #ifdef MIXXX_USE_QML
+void ControllerScriptEngineBase::setCanPause(bool canPause) {
+    auto lock = lockMutex(&m_pauseMutex);
+    m_canPause = canPause;
+
+    lock.unlock();
+    QCoreApplication::processEvents();
+    lock.relock();
+
+    if (m_canPause) {
+        connect(this,
+                &ControllerScriptEngineBase::pauseRequested,
+                this,
+                &ControllerScriptEngineBase::doPause,
+                Qt::UniqueConnection);
+    } else {
+        disconnect(this,
+                &ControllerScriptEngineBase::pauseRequested,
+                this,
+                &ControllerScriptEngineBase::doPause);
+    }
+}
+void ControllerScriptEngineBase::requestPause() {
+    const auto lock = lockMutex(&m_pauseMutex);
+
+    if (!m_canPause) {
+        emit paused(true);
+        return;
+    }
+
+    emit pauseRequested();
+}
+void ControllerScriptEngineBase::requestResume() {
+    const auto lock = lockMutex(&m_pauseMutex);
+
+    if (!m_canPause && !m_isPaused) {
+        emit paused(false);
+        return;
+    }
+
+    m_isPaused = false;
+    m_isPausedCondition.wakeAll();
+}
+void ControllerScriptEngineBase::doPause() {
+    const auto lock = lockMutex(&m_pauseMutex);
+
+    if (!m_canPause) {
+        emit paused(true);
+        return;
+    }
+
+    m_isPaused = true;
+
+    emit paused(m_isPaused);
+    while (m_isPaused) {
+        m_isPausedCondition.wait(&m_pauseMutex);
+    }
+    emit paused(m_isPaused);
+}
 void ControllerScriptEngineBase::showQMLExceptionDialog(
         const QQmlError& error, bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(error.isValid()) {

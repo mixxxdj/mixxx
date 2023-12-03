@@ -11,6 +11,7 @@
 #include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/enginemixer.h"
+#include "library/library.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "qml/qmlplayermanagerproxy.h"

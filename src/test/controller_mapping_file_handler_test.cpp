@@ -4,6 +4,7 @@
 #include <QDomDocument>
 #include <QTest>
 
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "helpers/log_test.h"
 #include "test/mixxxtest.h"

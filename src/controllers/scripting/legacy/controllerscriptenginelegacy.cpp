@@ -2,7 +2,6 @@
 
 #ifdef MIXXX_USE_QML
 #include <QDirIterator>
-#include <QMap>
 #include <QtEndian>
 #endif
 
@@ -49,7 +48,7 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
 
 void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
     if (m_fileWatcher.files().contains(path) || m_fileWatcher.directories().contains(path)) {
-        qDebug() << "File" << path << " is already being watch for controller auto-reload";
+        qDebug() << "File" << path << "is already being watch for controller auto-reload";
         return;
     }
 
@@ -262,7 +261,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                 return false;
             }
             availableScreens.insert(screen.identifier,
-                    std::make_shared<ControllerRenderingEngine>(screen));
+                    std::make_shared<ControllerRenderingEngine>(screen, this));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
                 qWarning() << QString(
@@ -280,8 +279,9 @@ bool ControllerScriptEngineLegacy::initialize() {
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
                 qWarning() << QString(
-                        "Unable to setupr the screen render for %1.")
+                        "Unable to setup the screen render for %1.")
                                       .arg(screen.identifier);
+                availableScreens.value(screen.identifier)->stop();
                 return false;
             }
         }
@@ -333,11 +333,13 @@ bool ControllerScriptEngineLegacy::initialize() {
                       "QML files to use it. Ignoring.";
     }
 
+    // If we encounter a failure while loading a scene, we will need to properly
+    // stop the screen threads before shutting down.
+    bool sceneBindingHasFailure = false;
 #endif
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
-        switch (script.type) {
-        case LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT:
+        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT) {
 #endif
             if (!evaluateScriptFile(script.file)) {
                 shutdown();
@@ -347,37 +349,46 @@ bool ControllerScriptEngineLegacy::initialize() {
                 m_scriptFunctionPrefixes.append(script.identifier);
             }
 #ifdef MIXXX_USE_QML
-            break;
-        case LegacyControllerMapping::ScriptFileInfo::Type::QML:
+        } else {
             if (script.identifier.isEmpty()) {
                 while (!availableScreens.isEmpty()) {
                     QString screenIdentifier(availableScreens.firstKey());
                     if (!bindSceneToScreen(script,
                                 screenIdentifier,
                                 availableScreens.take(screenIdentifier))) {
-                        shutdown();
-                        return false;
+                        sceneBindingHasFailure = true;
                     }
                 }
-            } else if (!bindSceneToScreen(script,
-                               script.identifier,
-                               availableScreens.take(script.identifier))) {
-                shutdown();
-                return false;
+            } else {
+                if (!availableScreens.contains(script.identifier)) {
+                    qCritical() << "Not screen" << script.identifier << "found!";
+
+                    sceneBindingHasFailure = true;
+                    break;
+                }
+                if (!bindSceneToScreen(script,
+                            script.identifier,
+                            availableScreens.take(script.identifier))) {
+                    sceneBindingHasFailure = true;
+                }
             }
-            break;
         }
     }
 
     if (!availableScreens.isEmpty()) {
-        qWarning()
-                << "Found screen with no QML scene able to run on it. Ignoring"
-                << availableScreens.size() << "screens";
+        if (!sceneBindingHasFailure)
+            qWarning()
+                    << "Found screen with no QML scene able to run on it. Ignoring"
+                    << availableScreens.size() << "screens";
 
         while (!availableScreens.isEmpty()) {
             auto orphanScreen = availableScreens.take(availableScreens.firstKey());
             std::move(orphanScreen)->deleteLater();
         }
+    }
+    if (sceneBindingHasFailure) {
+        shutdown();
+        return false;
 #endif
     }
 
@@ -405,6 +416,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     };
 
 #ifdef MIXXX_USE_QML
+    setCanPause(true);
     for (const auto& pScreen : qAsConst(m_renderingScreens)) {
         pScreen->start();
     }
@@ -470,6 +482,8 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
 
     auto pScene = loadQMLFile(qmlFile, pScreen);
     if (!pScene) {
+        pScreen->stop();
+        std::move(pScreen)->deleteLater();
         return false;
     }
     const QMetaObject* metaObject = pScene->metaObject();
@@ -615,6 +629,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     }
 
 #ifdef MIXXX_USE_QML
+    setCanPause(false);
     // Wait till the splash off animation has finished rendering
     uint maxSplashOffDuration = 0;
     for (const auto& pScreen : qAsConst(m_renderingScreens)) {
@@ -754,9 +769,11 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
 
     if (qmlComponent->isError()) {
         const QList<QQmlError> errorList = qmlComponent->errors();
-        for (const QQmlError& error : errorList)
+        for (const QQmlError& error : errorList) {
             qWarning() << "Unable to load the QML scene:" << error.url()
                        << "at line" << error.line() << ", error: " << error;
+            showQMLExceptionDialog(error, true);
+        }
         return std::shared_ptr<QQuickItem>(nullptr);
     }
 

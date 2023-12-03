@@ -28,7 +28,7 @@ class ControllerRenderingEngineTest : public MixxxTest {
 class MockRenderingEngine : public ControllerRenderingEngine {
   public:
     MockRenderingEngine(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info){};
+            : ControllerRenderingEngine(info, nullptr){};
 };
 
 TEST_F(ControllerRenderingEngineTest, createValidRendererWithSupportedTypes) {

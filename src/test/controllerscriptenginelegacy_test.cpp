@@ -660,7 +660,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
 class MockScreenRender : public ControllerRenderingEngine {
   public:
     MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
-            : ControllerRenderingEngine(info){};
+            : ControllerRenderingEngine(info, nullptr){};
     MOCK_METHOD(void, requestSend, (Controller * controller, const QByteArray& frame), (override));
 };
 

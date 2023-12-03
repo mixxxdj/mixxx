@@ -65,6 +65,12 @@ class ControllerScriptEngineBase : public QObject {
     inline void setErrorsAreFatal(bool errorsAreFatal) {
         m_bErrorsAreFatal = errorsAreFatal;
     }
+
+    /// Pause the controller engine's thread. Pause is required by rendering
+    /// thread (https://doc.qt.io/qt-6/qquickrendercontrol.html#sync). This
+    /// allows childrend classes to control whether or not they can be requested
+    /// to pause the Controller thread used a "GUI thread" for onboard screens
+    void setCanPause(bool canPause);
 #endif
 
     bool m_bDisplayingExceptionDialog;
@@ -86,6 +92,18 @@ class ControllerScriptEngineBase : public QObject {
 #ifdef MIXXX_USE_QML
   private:
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
+    QWaitCondition m_isPausedCondition;
+    QMutex m_pauseMutex;
+    bool m_isPaused;
+    bool m_canPause;
+
+  public slots:
+    void requestPause();
+    void requestResume();
+
+  signals:
+    void pauseRequested();
+    void paused(bool);
 #endif
 
   protected slots:
@@ -95,6 +113,7 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 #ifdef MIXXX_USE_QML
     void handleQMLErrors(const QList<QQmlError>& qmlErrors);
+    void doPause();
 #endif
 
     friend class ColorMapperJSProxy;
