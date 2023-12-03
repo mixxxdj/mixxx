@@ -76,6 +76,11 @@ bool WaveformDisplayRange::init() {
 }
 
 void WaveformDisplayRange::onPreRender(ISyncTimeProvider* syncTimeProvider) {
+    // FIXME (ac) this seems to sometime be called before init
+    if (!m_trackSamples) {
+        return;
+    }
+
     // For a valid track to render we need
     m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0) {

@@ -21,7 +21,7 @@ Item {
     property color fontColor: Qt.rgba(242/255,242/255,242/255, 1)
     property color smallBoxBorder: Qt.rgba(44/255,44/255,44/255, 1)
 
-    property string group: "[Channel1]"
+    property string group: screenId == "rightdeck" ? "[Channel2]" : "[Channel1]"
 
     property var _items_needing_redraw: new Map()
 
@@ -37,14 +37,12 @@ Item {
 
     function init(controlerName, isDebug) {
         console.log(`Screen ${root.screenId} has started`)
-        loader.sourceComponent = live
-        group = screenId === "rightdeck" ? "[Channel2]" : "[Channel1]"
-        onAir.update()
+        root.state = "Live"
     }
 
     function shutdown() {
         console.log(`Screen ${root.screenId} is stopping`)
-        loader.sourceComponent = splashoff
+        root.state = "Stop"
     }
 
     function redraw(component) {
@@ -55,7 +53,7 @@ Item {
         const areasToDraw = []
         let totalPixelToDraw = 0;
 
-        if (!_items_needing_redraw.size) { // No redraw needed
+        if (!_items_needing_redraw.size && root.state === "Live") { // No redraw needed
             return new ArrayBuffer(0);
         }
 
@@ -67,9 +65,9 @@ Item {
                 }
         })
 
-        if (!item_requesting_redraw.length) { // No redraw needed
+        if (!item_requesting_redraw.length && root.state === "Live") { // No redraw needed
             return new ArrayBuffer(0);
-        } else if (item_requesting_redraw.indexOf(root) !== -1) { // Full redraw needed
+        } else if (root.state === "Stop" || item_requesting_redraw.indexOf(root) !== -1) { // Full redraw needed
             areasToDraw.push([0, 0, 320, 240]);
             totalPixelToDraw += 320 * 240;
         } else { // Partial redraw needed
@@ -662,9 +660,26 @@ Item {
     Loader {
         id: loader
         anchors.fill: parent
-        sourceComponent: live
+        sourceComponent: splashoff
         onLoaded: {
             redraw(root)
         }
     }
+
+    states: [
+        State {
+            name: "Live"
+            PropertyChanges {
+                target: loader
+                sourceComponent: live
+            }
+        },
+        State {
+            name: "Stop"
+            PropertyChanges {
+                target: loader
+                sourceComponent: splashoff
+            }
+        }
+    ]
 }

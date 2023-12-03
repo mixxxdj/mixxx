@@ -21,30 +21,17 @@ Item {
     property string fullText
     property int index
 
-    Connections {
-        function onGroupChanged(group) {
-            timer.stop()
-
-            deckPlayer = Mixxx.PlayerManager.getPlayer(root.group)
-
-            deckPlayer.artistChanged.connect(onAir.update)
-            deckPlayer.titleChanged.connect(onAir.update)
-
-            root.update()
-        }
-    }
-
     Rectangle {
         id: frame
         anchors.top: root.top
         anchors.bottom: root.bottom
-        width: 1000
+        width: parent.width
         x: 6
         color: 'transparent'
 
         Text {
             id: text
-            text: qsTr("No Track Loaded")
+            text: !trackLoadedControl.value || root.deckPlayer.title.trim().length + root.deckPlayer.artist.trim().length == 0 ? qsTr("No Track Loaded") : `${root.deckPlayer.title} - ${root.deckPlayer.artist}`.trim()
             font.pixelSize: 24
             font.family: "Noto Sans"
             font.letterSpacing: -1
@@ -57,65 +44,88 @@ Item {
 
         group: root.group
         key: "track_loaded"
-
-        onValueChanged: (value) => {
-            timer.stop()
-
-            deckPlayer = Mixxx.PlayerManager.getPlayer(root.group)
-
-            deckPlayer.artistChanged.connect(onAir.update)
-            deckPlayer.titleChanged.connect(onAir.update)
-        }
-    }
-
-    function update() {
-        let newTitle = `${root.deckPlayer.title} - ${root.deckPlayer.artist}`.trim()
-        frame.width = newTitle.length * 12
-        if (newTitle.length > 29) {
-            frame.x = 6
-            timer.status = OnAirTrack.TimerStatus.Cooldown
-            timer.backward = false
-            timer.interval = 2000
-            timer.start()
-        } else {
-            timer.stop()
-        }
-        if (newTitle == "-" && !trackLoadedControl.value) {
-            newTitle = qsTr("No Track Loaded")
-        } else if (newTitle == "-") {
-            console.warn(`No track title found for ${root.deckPlayer.title}`)
-        }
-        if (text.text == newTitle) return;
-        text.text = newTitle;
-        root.updated()
     }
 
     Timer {
         id: timer
 
-        property int status: OnAirTrack.TimerStatus.Cooldown
-        property bool backward: false
+        property int modifier: 0
 
-        interval: 2000
+        readonly property int maxOffset: text.width - frame.width + 6
+
         repeat: true
-        running: false
 
         onTriggered: {
-            if (status = OnAirTrack.TimerStatus.Cooldown) {
-                status += backward ? -1 : 1
-                interval = 15
-            }
-            frame.x -= backward ? -1 : 1;
-            root.updated()
-            if (-frame.x >= (text.text.length - 29) * 11) {
-                backward = true
-                status = OnAirTrack.TimerStatus.Cooldown
-                interval = 2000
-            } else if (frame.x >= 6) {
-                backward = false
-                status = OnAirTrack.TimerStatus.Cooldown
-                interval = 2000
+            frame.x += modifier;
+            if (
+                (frame.x >= 6 && root.state == "ScrollingForward")
+                || (frame.x <= -maxOffset && root.state == "ScrollingBackward")) {
+                root.state = "ScrollingCooldown"
+            } else if (root.state == "ScrollingCooldown") {
+                root.state = frame.x >= 6 ? "ScrollingBackward" : "ScrollingForward"
             }
         }
     }
+
+    Connections {
+        function onMaxOffsetChanged() {
+            root.state = timer.maxOffset <= 0 ? "ScrollingIdle" : "ScrollingForward"
+        }
+        target: timer
+    }
+
+    Connections {
+        function onXChanged(value) {
+            root.updated()
+        }
+        target: frame
+    }
+
+    Connections {
+        function onTextChanged(value) {
+            root.updated()
+        }
+        target: text
+    }
+
+    state: "Idle"
+    states: [
+        State {
+            name: "ScrollingIdle"
+            PropertyChanges {
+                target: timer
+                running: false
+            }
+            PropertyChanges {
+                target: frame
+                x: 6
+            }
+        },
+        State {
+            name: "ScrollingForward"
+            PropertyChanges {
+                target: timer
+                running: true
+                modifier: 1
+                interval: 15
+            }
+        },
+        State {
+            name: "ScrollingCooldown"
+            PropertyChanges {
+                target: timer
+                running: true
+                interval: 2000
+            }
+        },
+        State {
+            name: "ScrollingBackward"
+            PropertyChanges {
+                target: timer
+                running: true
+                modifier: -1
+                interval: 15
+            }
+        }
+    ]
 }
