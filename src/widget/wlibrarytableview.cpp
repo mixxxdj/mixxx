@@ -324,6 +324,7 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
         // handler in `QAbstractItemView` uses to either move the cursor, move
         // the selection, or extend the selection depending on which modifier
         // keys are held down.
+        // Note: Shift modifier prevents wrap-around.
         case QAbstractItemView::MoveUp:
         case QAbstractItemView::MoveDown: {
             const QModelIndex current = currentIndex();
@@ -333,13 +334,13 @@ QModelIndex WLibraryTableView::moveCursor(CursorAction cursorAction,
                 if (cursorAction == QAbstractItemView::MoveDown) {
                     if (row + 1 < pModel->rowCount()) {
                         return pModel->index(row + 1, column);
-                    } else {
+                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
                         return pModel->index(0, column);
                     }
                 } else {
                     if (row - 1 >= 0) {
                         return pModel->index(row - 1, column);
-                    } else {
+                    } else if (!modifiers.testFlag(Qt::ShiftModifier)) {
                         return pModel->index(pModel->rowCount() - 1, column);
                     }
                 }
