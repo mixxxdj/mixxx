@@ -668,6 +668,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                 loopmoveBwdSubmenu);
     }
 
+    addDeckControl("loop_remove",
+            tr("Remove Temporary Loop"),
+            tr("Remove the temporary loop"),
+            loopMenu);
+
     addSeparator();
 
     // Library Controls
