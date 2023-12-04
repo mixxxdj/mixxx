@@ -18,98 +18,107 @@ static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(const QString& group,
         UserSettingsPointer pConfig)
-        : EngineControl(group, pConfig) {
+        : EngineControl(group, pConfig),
+          // pitch is the distance to the original pitch in semitones
+          // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
+          m_pPitch(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "pitch"), -6.0, 6.0, true)),
+          // pitch_adjust is the distance to the linear pitch in semitones
+          // set by the speed slider or to the locked key.
+          // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
+          m_pPitchAdjust(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true)),
+          m_pButtonSyncKey(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "sync_key"))),
+          m_pButtonResetKey(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "reset_key"))),
+          m_keylockMode(std::make_unique<ControlPushButton>(ConfigKey(group, "keylockMode"))),
+          m_keyunlockMode(std::make_unique<ControlPushButton>(ConfigKey(group, "keyunlockMode"))),
+          m_pFileKey(std::make_unique<ControlObject>(ConfigKey(group, "file_key"))),
+          m_pEngineKey(std::make_unique<ControlObject>(ConfigKey(group, "key"))),
+          m_pEngineKeyDistance(std::make_unique<ControlPotmeter>(
+                  ConfigKey(group, "visual_key_distance"), -0.5, 0.5)) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
     m_pitchRateInfo.pitchTweakRatio = 1.0;
     m_pitchRateInfo.keylock = false;
 
-    // pitch is the distance to the original pitch in semitones
-    // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
-    m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
     // Coarse adjust by full semitone steps.
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitch->setSmallStepCount(120);
-    connect(m_pPitch, &ControlObject::valueChanged,
-            this, &KeyControl::slotPitchChanged,
-            Qt::DirectConnection);
 
-    // pitch_adjust is the distance to the linear pitch in semitones
-    // set by the speed slider or to the locked key.
-    // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
-    m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
     // Coarse adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
-    connect(m_pPitchAdjust, &ControlObject::valueChanged,
-            this, &KeyControl::slotPitchAdjustChanged,
-            Qt::DirectConnection);
 
-    m_pButtonSyncKey = new ControlPushButton(ConfigKey(group, "sync_key"));
-    connect(m_pButtonSyncKey, &ControlObject::valueChanged,
-            this, &KeyControl::slotSyncKey,
-            Qt::DirectConnection);
-
-    m_pButtonResetKey = new ControlPushButton(ConfigKey(group, "reset_key"));
-    connect(m_pButtonResetKey, &ControlObject::valueChanged,
-            this, &KeyControl::slotResetKey,
-            Qt::DirectConnection);
-
-    m_pFileKey = new ControlObject(ConfigKey(group, "file_key"));
-    connect(m_pFileKey, &ControlObject::valueChanged,
-            this, &KeyControl::slotFileKeyChanged,
-            Qt::DirectConnection);
-
-    m_pEngineKey = new ControlObject(ConfigKey(group, "key"));
-    connect(m_pEngineKey, &ControlObject::valueChanged,
-            this, &KeyControl::slotSetEngineKey,
-            Qt::DirectConnection);
-
-    m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
-                                               -0.5, 0.5);
-    connect(m_pEngineKeyDistance, &ControlObject::valueChanged,
-            this, &KeyControl::slotSetEngineKeyDistance,
-            Qt::DirectConnection);
-
-    m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
     m_keylockMode->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
     m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
+
+    connect(m_pPitch.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotPitchChanged,
+            Qt::DirectConnection);
+
+    connect(m_pPitchAdjust.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotPitchAdjustChanged,
+            Qt::DirectConnection);
+
+    connect(m_pButtonSyncKey.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotSyncKey,
+            Qt::DirectConnection);
+
+    connect(m_pButtonResetKey.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotResetKey,
+            Qt::DirectConnection);
+
+    connect(m_pFileKey.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotFileKeyChanged,
+            Qt::DirectConnection);
+
+    connect(m_pEngineKey.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotSetEngineKey,
+            Qt::DirectConnection);
+
+    connect(m_pEngineKeyDistance.get(),
+            &ControlObject::valueChanged,
+            this,
+            &KeyControl::slotSetEngineKeyDistance,
+            Qt::DirectConnection);
 
     // In case of vinyl control "rate_ratio" is a filtered mean value for display
     m_pRateRatio = make_parented<ControlProxy>(ConfigKey(group, "rate_ratio"), this);
     m_pRateRatio->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
-    m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+    m_pVCEnabled = make_parented<ControlProxy>(group, "vinylcontrol_enabled", this);
     m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
-    m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
+    m_pVCRate = make_parented<ControlProxy>(group, "vinylcontrol_rate", this);
     m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged,
                 Qt::DirectConnection);
 
-    m_pKeylock = new ControlProxy(group, "keylock", this);
+    m_pKeylock = make_parented<ControlProxy>(group, "keylock", this);
     m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
+
     // m_pitchRateInfo members are initialized with default values, only keylock
     // is persistent and needs to be updated from config
     m_pitchRateInfo.keylock = m_pKeylock->toBool();
-}
-
-KeyControl::~KeyControl() {
-    delete m_pPitch;
-    delete m_pPitchAdjust;
-    delete m_pButtonSyncKey;
-    delete m_pButtonResetKey;
-    delete m_pFileKey;
-    delete m_pEngineKey;
-    delete m_pEngineKeyDistance;
-    delete m_keylockMode;
-    delete m_keyunlockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
