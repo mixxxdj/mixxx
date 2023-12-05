@@ -40,9 +40,9 @@ HerculesRMX.Button.prototype.setLed = function(ledState, blink) {
         midi.sendShortMsg(0xB0,this.controlId,LedState.off);
     }
     if(blink) {
-       engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.on + ")", true);
+       engine.beginTimer(20, function() { midi.sendShortMsg(0xB0,(this.controlId + 0x30), LedState.on); }, true);
     } else {
-       engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.off + ")", true);
+       engine.beginTimer(20, function() { midi.sendShortMsg(0xB0,(this.controlId + 0x30), LedState.off); }, true);
     }
 };
 
@@ -158,7 +158,7 @@ HerculesRMX.Deck.prototype.jogMove = function(jogValue) {
             engine.stopTimer(this.scratchTimer);
         }
         engine.scratchTick(this.deckNumber, jogValue);
-        this.scratchTimer = engine.beginTimer(20, "HerculesRMX.GetDeck('" + this.group + "').stopScratching()", true);
+        this.scratchTimer = engine.beginTimer(20, function() { HerculesRMX.GetDeck(this.group).stopScratching(); }, true);
     } else {
         engine.setValue(this.group,"jog", jogValue);
     }
@@ -859,11 +859,11 @@ HerculesRMX.killLeds = function() {
    var button;
    var time = 20;
    for (var key in HerculesRMX.Decks.Left.Buttons) {
-      engine.beginTimer(time, "HerculesRMX.Decks.Left.Buttons['" + key + "'].setLed(LedState.off)", true);
+      engine.beginTimer(time, function() { HerculesRMX.Decks.Left.Buttons[key].setLed(LedState.off); }, true);
       time = time + 5;
    }
    for (var key in HerculesRMX.Decks.Right.Buttons) {
-      engine.beginTimer(time, "HerculesRMX.Decks.Right.Buttons['" + key + "'].setLed(LedState.off)", true);
+      engine.beginTimer(time, function() { HerculesRMX.Decks.Right.Buttons[key].setLed(LedState.off); }, true);
       time = time + 5;
    }
 }
@@ -875,11 +875,11 @@ HerculesRMX.rateChange = function (value, group) {
       HerculesRMX.Decks.Left.Buttons.Sync.setLed(LedState.off);
    }
    if (HerculesRMX.Decks.Right.Buttons.Sync.state != ButtonState.pressed) {
-      engine.beginTimer(25, "HerculesRMX.Decks.Right.Buttons.Sync.setLed(LedState.off)", true);
+      engine.beginTimer(25, function() { HerculesRMX.Decks.Right.Buttons.Sync.setLed(LedState.off); }, true);
    }
    if (value != 0.0) {
       var deck = HerculesRMX.GetDeck(group);
-      engine.beginTimer(30, "HerculesRMX.GetDeck('" + group + "').Buttons.PitchReset.setLed(LedState.off)", true);
+      engine.beginTimer(30, function() { HerculesRMX.GetDeck(group).Buttons.PitchReset.setLed(LedState.off); }, true);
    }
 };
 

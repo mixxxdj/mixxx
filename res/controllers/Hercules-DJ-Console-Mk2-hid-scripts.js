@@ -301,7 +301,7 @@ HerculesMk2Hid.scroll_tracks = function(g, e, v) {
     if (v > 0) {
         engine.setValue("[Playlist]", e == "track_next_a" ? "SelectNextTrack" : "SelectPrevTrack", 1);
         if (!HerculesMk2Hid.scroll_timer) {
-            HerculesMk2Hid.scroll_timer = engine.beginTimer(150, 'HerculesMk2Hid.scroll_tracks("[Playlist]","' + e + '",' + v + ')');
+            HerculesMk2Hid.scroll_timer = engine.beginTimer(150,  function() { HerculesMk2Hid.scroll_tracks("[Playlist]","' + e + '",' + v + '); });
         }
     }
     else {

@@ -130,7 +130,7 @@ NANOPAD2RK.reloopButton = function (channel, control, value, status, group) {
 
     NANOPAD2RK.loopbuttonDown=true;
     NANOPAD2RK.doreloop=true;
-    NANOPAD2RK.reloopTimer = engine.beginTimer(500, "NANOPAD2RK.disablereloop()", true);
+    NANOPAD2RK.reloopTimer = engine.beginTimer(500, NANOPAD2RK.disablereloop, true);
     };
 
 NANOPAD2RK.reloopButtonRelease = function (channel, control, value, status, group) {//button was released

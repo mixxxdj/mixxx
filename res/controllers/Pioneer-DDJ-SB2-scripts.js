@@ -180,7 +180,7 @@ PioneerDDJSB2.init = function(_id) {
     PioneerDDJSB2.initDeck("[Channel4]");
 
     if (PioneerDDJSB2.twinkleVumeterAutodjOn) {
-        PioneerDDJSB2.vuMeterTimer = engine.beginTimer(100, "PioneerDDJSB2.vuMeterTwinkle()");
+        PioneerDDJSB2.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB2.vuMeterTwinkle);
     }
 
     // request the positions of the knobs and faders from the controller
@@ -702,7 +702,7 @@ PioneerDDJSB2.shiftKeyLockButton = function(channel, control, value, status, gro
     var deck = status - 0x90;
     if (value) {
         engine.stopTimer(PioneerDDJSB2.speedRateToNormalTimer[deck]);
-        PioneerDDJSB2.speedRateToNormalTimer[deck] = engine.beginTimer(PioneerDDJSB2.speedRateToNormalTime, "PioneerDDJSB2.speedRateToNormal('" + group + "', " + deck + ")");
+        PioneerDDJSB2.speedRateToNormalTimer[deck] = engine.beginTimer(PioneerDDJSB2.speedRateToNormalTime, function() { PioneerDDJSB2.speedRateToNormal(group, deck); });
     }
 };
 

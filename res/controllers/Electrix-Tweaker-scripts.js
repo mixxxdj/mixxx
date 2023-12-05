@@ -514,8 +514,7 @@ ElectrixTweaker.arrowSide = function(channel, control, value, status, group) {
     group = ElectrixTweaker.deck[group];
     if (value) {
         if (ElectrixTweaker.topShift) {
-            engine.setValue(group, "eject", 1);
-            engine.beginTimer(250, "engine.setValue(\""+group+"\", \"eject\", 0)", true);
+            script.triggerControl(group, "eject", 250);
         } else {
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
@@ -553,8 +552,7 @@ ElectrixTweaker.oneShot = function(channel, control, value, status, group) {
                 engine.setValue(group, "sync_enabled", 0);
                 engine.setValue(group, "repeat", 0);
                 engine.setValue(group, "play", 0);
-                engine.setValue(group, "eject", 1);
-                engine.beginTimer(250, "engine.setValue(\""+group+"\", \"eject\", 0)", true);
+                script.triggerControl(group, "eject", 250); }, true);
             } else {
                 if (ElectrixTweaker.samplerVelocityAsVolume) {
                     engine.setValue(group, "volume", script.absoluteNonLin(value * ElectrixTweaker.samplerSensitivity, 0, .25, 1));
@@ -696,7 +694,7 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
             engine.setValue(group, "beatjump_32_forward", 1);
             midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 127);
         }
-        ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, "midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[\""+group+"\"][\"Mid\"][\"ring\"], 64)", true);
+        ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, function() { midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group][\"Mid\"][\"ring\"], 64); }, true);
     } else {
         switch (ElectrixTweaker.mode[group]) {
         case "eq":
@@ -712,7 +710,7 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
                 engine.setValue(group, "loop_move_" + ElectrixTweaker.loopMoveSize[group] + "_forward", 1);
                 midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 127);
             }
-            ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, "midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[\""+group+"\"][\"Mid\"][\"ring\"], 64)", true);
+            ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, function() { midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group][\"Mid\"][\"ring\"], 64); }, true);
             break;
         }
     }

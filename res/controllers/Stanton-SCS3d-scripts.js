@@ -1199,7 +1199,7 @@ StantonSCS3d.DeckChangeP1 = function (channel, control, value, status) {
                 // If in the middle of flashing lights from a previous change, abort that one
                 if (StantonSCS3d.timer[0] != -1) engine.stopTimer(StantonSCS3d.timer[0]);
                 StantonSCS3d.state["flashes"] = 0;  // initialize number of flashes
-                StantonSCS3d.timer[0] = engine.beginTimer(60,"StantonSCS3d.deckChangeFlash("+channel+","+value+",\"right\")");
+                StantonSCS3d.timer[0] = engine.beginTimer(60, function() { StantonSCS3d.deckChangeFlash(channel, value, \"right\"); });
                 return;
             }
         }
@@ -1209,7 +1209,7 @@ StantonSCS3d.DeckChangeP1 = function (channel, control, value, status) {
             if (!StantonSCS3d.fastDeckChange) {
                 if (StantonSCS3d.timer[0] != -1) engine.stopTimer(StantonSCS3d.timer[0]);
                 StantonSCS3d.state["flashes"] = 0;  // initialize number of flashes
-                StantonSCS3d.timer[0] = engine.beginTimer(60,"StantonSCS3d.deckChangeFlash("+channel+","+value+",\"left\")");
+                StantonSCS3d.timer[0] = engine.beginTimer(60, function() { StantonSCS3d.deckChangeFlash(channel, value, \"left\"); });
                 return;
             }
         }
@@ -1938,7 +1938,7 @@ StantonSCS3d.ActiveLoop = function (value) {
     if (value>0) {
         if (StantonSCS3d.timer[timerName] == -1) {
             // Start timer
-            StantonSCS3d.timer[timerName] = engine.beginTimer(500,"StantonSCS3d.activeLoopLEDs("+StantonSCS3d.deck+",false)");
+            StantonSCS3d.timer[timerName] = engine.beginTimer(500, function() { StantonSCS3d.activeLoopLEDs(StantonSCS3d.deck, false); });
         }
     }
     else {
@@ -2215,7 +2215,7 @@ StantonSCS3d.circleLEDs = function (value) {
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash slowly
             if (StantonSCS3d.timer["30s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS3d.timer["30s-d"+deck] = engine.beginTimer(500,"StantonSCS3d.circleFlash("+deck+")");
+                StantonSCS3d.timer["30s-d"+deck] = engine.beginTimer(500, function() { StantonSCS3d.circleFlash(deck); });
                 if (StantonSCS3d.timer["15s-d"+deck] != -1) {
                     // Stop the 15s timer if it was running
                     engine.stopTimer(StantonSCS3d.timer["15s-d"+deck]);
@@ -2225,7 +2225,7 @@ StantonSCS3d.circleLEDs = function (value) {
         } else if (trackTimeRemaining<=15 && trackTimeRemaining>0) { // If <15s left, flash quickly
             if (StantonSCS3d.timer["15s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS3d.timer["15s-d"+deck] = engine.beginTimer(125,"StantonSCS3d.circleFlash("+deck+")");
+                StantonSCS3d.timer["15s-d"+deck] = engine.beginTimer(125, function() { StantonSCS3d.circleFlash(deck); });
                 if (StantonSCS3d.timer["30s-d"+deck] != -1) {
                     // Stop the 30s timer if it was running
                     engine.stopTimer(StantonSCS3d.timer["30s-d"+deck]);

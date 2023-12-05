@@ -745,7 +745,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
         if (trackTimeRemaining<=30 && trackTimeRemaining>15) {   // If <30s left, flash slowly
             if (StantonSCS1m.timer["30s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1m.timer["30s-d"+deck] = engine.beginTimer(500,"StantonSCS1m.displayFlash("+deck+")");
+                StantonSCS1m.timer["30s-d"+deck] = engine.beginTimer(500, function() { StantonSCS1m.displayFlash(deck); });
                 if (StantonSCS1m.timer["15s-d"+deck] != -1) {
                     // Stop the 15s timer if it was running
                     engine.stopTimer(StantonSCS1m.timer["15s-d"+deck]);
@@ -755,7 +755,7 @@ StantonSCS1m.positionUpdates = function (value,deck) {
         } else if (trackTimeRemaining<=15 && trackTimeRemaining>0) { // If <15s left, flash quickly
             if (StantonSCS1m.timer["15s-d"+deck] == -1) {
                 // Start timer
-                StantonSCS1m.timer["15s-d"+deck] = engine.beginTimer(125,"StantonSCS1m.displayFlash("+deck+")");
+                StantonSCS1m.timer["15s-d"+deck] = engine.beginTimer(125, function() { StantonSCS1m.displayFlash(deck); });
                 if (StantonSCS1m.timer["30s-d"+deck] != -1) {
                     // Stop the 30s timer if it was running
                     engine.stopTimer(StantonSCS1m.timer["30s-d"+deck]);

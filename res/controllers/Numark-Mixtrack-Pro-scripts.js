@@ -441,7 +441,7 @@ NumarkMixTrackPro.repositionHack = function(group, oldPosition){
 	// see if the value has been updated
 	if (engine.getValue(group, "loop_start_position")==oldPosition){
 		if (NumarkMixTrackPro.hackCount[group]++ < 9){
-			engine.beginTimer(20, "NumarkMixTrackPro.repositionHack('" + group + "', " + oldPosition + ")", true);
+			engine.beginTimer(20, function() { NumarkMixTrackPro.repositionHack(group, oldPosition); }, true);
 		} else {
 			var deck = NumarkMixTrackPro.groupToDeck(group);
 			NumarkMixTrackPro.flashLED(NumarkMixTrackPro.leds[deck]["loop_start_position"], 4);
@@ -589,7 +589,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 		if (NumarkMixTrackPro.scratchMode[deck-1] && posNeg == -1 && !NumarkMixTrackPro.touch[deck-1]) {
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
-			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, function() { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 		}
 
     } else { // stop scratching
@@ -597,7 +597,7 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 		if (!NumarkMixTrackPro.touch[deck-1]){
 
 			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
-			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, function() { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 		}
 
 	}
@@ -635,7 +635,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 
-		NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, "NumarkMixTrackPro.jogWheelStopScratch(" + deck + ")", true);
+		NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, function() { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 
 	} else {
 
