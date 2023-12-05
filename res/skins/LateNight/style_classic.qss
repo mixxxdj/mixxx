@@ -804,6 +804,8 @@ WLibrary {
 
 WEffectChainPresetButton::menu-indicator {
   image: url(skin:../LateNight/classic/buttons/btn__fx_settings.svg) no-repeat center center;
+  width: 18px;
+  height: 18px;
 }
 
 #DryWetKnob,
@@ -879,6 +881,8 @@ WEffectSelector,
   /* Arrow size is set in C++ to match the library font size */
   WSearchLineEdit::down-arrow {
     image: url(skin:../LateNight/classic/buttons/btn__fx_selector_down.svg);
+    width: 16px;
+    height: 24px;
     }
     WEffectSelector::down-arrow:hover,
     WEffectChainPresetSelector::down-arrow:hover,
