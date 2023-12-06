@@ -26,44 +26,44 @@ class TraktorZ1Class {
     }
 
     registerInputPackets() {
-        const message = new HIDPacket("message", 0x1, this.messageCallback);
+        const message = new HIDPacket("message", 0x1, this.messageCallback.bind(this));
 
         // Mode button
-        this.registerInputButton(message, "[ControlX]", "!mode", 0x1D, 0x2, this.modeHandler);
+        this.registerInputButton(message, "[ControlX]", "!mode", 0x1D, 0x2, this.modeHandler.bind(this));
 
         // Headphone buttons
-        this.registerInputButton(message, "[Channel1]", "!pfl", 0x1D, 0x10, this.headphoneHandler);
-        this.registerInputButton(message, "[Channel2]", "!pfl", 0x1D, 0x1, this.headphoneHandler);
+        this.registerInputButton(message, "[Channel1]", "!pfl", 0x1D, 0x10, this.headphoneHandler.bind(this));
+        this.registerInputButton(message, "[Channel2]", "!pfl", 0x1D, 0x1, this.headphoneHandler.bind(this));
 
         // FX buttons
-        this.registerInputButton(message, "[Channel1]", "!fx", 0x1D, 0x4, this.fxHandler);
-        this.registerInputButton(message, "[Channel2]", "!fx", 0x1D, 0x8, this.fxHandler);
+        this.registerInputButton(message, "[Channel1]", "!fx", 0x1D, 0x4, this.fxHandler.bind(this));
+        this.registerInputButton(message, "[Channel2]", "!fx", 0x1D, 0x8, this.fxHandler.bind(this));
 
         // EQ knobs
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x3, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x5, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x7, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0xD, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0xF, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x11, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x3, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x5, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x7, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0xD, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0xF, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x11, 0xFFFF, this.parameterHandler.bind(this));
 
         // FX knobs
-        this.registerInputScaler(message, "[QuickEffectRack1_[Channel1]]", "super1", 0x9, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[QuickEffectRack1_[Channel2]]", "super1", 0x13, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[QuickEffectRack1_[Channel1]]", "super1", 0x9, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[QuickEffectRack1_[Channel2]]", "super1", 0x13, 0xFFFF, this.parameterHandler.bind(this));
 
         // Gain knobs
-        this.registerInputScaler(message, "[Channel1]", "pregain", 0x1, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[Channel2]", "pregain", 0xB, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[Channel1]", "pregain", 0x1, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[Channel2]", "pregain", 0xB, 0xFFFF, this.parameterHandler.bind(this));
 
         // Headphone mix
-        this.registerInputScaler(message, "[Master]", "headMix", 0x15, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[Master]", "headMix", 0x15, 0xFFFF, this.parameterHandler.bind(this));
 
         // Volume faders
-        this.registerInputScaler(message, "[Channel1]", "volume", 0x17, 0xFFFF, this.parameterHandler);
-        this.registerInputScaler(message, "[Channel2]", "volume", 0x19, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[Channel1]", "volume", 0x17, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[Channel2]", "volume", 0x19, 0xFFFF, this.parameterHandler.bind(this));
 
         // Crossfader
-        this.registerInputScaler(message, "[Master]", "crossfader", 0x1B, 0xFFFF, this.parameterHandler);
+        this.registerInputScaler(message, "[Master]", "crossfader", 0x1B, 0xFFFF, this.parameterHandler.bind(this));
 
         this.controller.registerInputPacket(message);
 
@@ -132,14 +132,14 @@ class TraktorZ1Class {
 
         this.controller.registerOutputPacket(output);
 
-        engine.makeConnection("[QuickEffectRack1_[Channel1]]", "enabled", this.outputHandler);
-        engine.makeConnection("[QuickEffectRack1_[Channel2]]", "enabled", this.outputHandler);
+        engine.makeConnection("[QuickEffectRack1_[Channel1]]", "enabled", this.outputHandler.bind(this));
+        engine.makeConnection("[QuickEffectRack1_[Channel2]]", "enabled", this.outputHandler.bind(this));
 
-        engine.makeConnection("[Channel1]", "pfl", this.outputHandler);
-        engine.makeConnection("[Channel2]", "pfl", this.outputHandler);
+        engine.makeConnection("[Channel1]", "pfl", this.outputHandler.bind(this));
+        engine.makeConnection("[Channel2]", "pfl", this.outputHandler.bind(this));
 
-        this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler);
-        this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler);
+        this.vuLeftConnection = engine.makeUnbufferedConnection("[Channel1]", "vu_meter", this.vuMeterHandler.bind(this));
+        this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler.bind(this));
 
         this.lightDeck(false);
     }
