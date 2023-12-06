@@ -1,12 +1,11 @@
 #pragma once
 
-#include <QtGlobal>
+#include <QByteArray>
 
 #include "rigtorp/SPSCQueue.h"
 
 struct RuntimeLoggingCategory;
 class QMutex;
-class QByteArray;
 
 typedef struct hid_device_ hid_device;
 
