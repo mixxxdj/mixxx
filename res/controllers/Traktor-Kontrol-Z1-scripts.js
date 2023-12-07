@@ -26,34 +26,34 @@ class TraktorZ1Class {
     }
 
     registerInputPackets() {
-        const message = new HIDPacket("message", 0x1, this.messageCallback.bind(this));
+        const message = new HIDPacket("message", 0x01, this.messageCallback.bind(this));
 
         // Mode button
-        this.registerInputButton(message, "[ControlX]", "!mode", 0x1D, 0x2, this.modeHandler.bind(this));
+        this.registerInputButton(message, "[ControlX]", "!mode", 0x1D, 0x02, this.modeHandler.bind(this));
 
         // Headphone buttons
         this.registerInputButton(message, "[Channel1]", "!pfl", 0x1D, 0x10, this.headphoneHandler.bind(this));
-        this.registerInputButton(message, "[Channel2]", "!pfl", 0x1D, 0x1, this.headphoneHandler.bind(this));
+        this.registerInputButton(message, "[Channel2]", "!pfl", 0x1D, 0x01, this.headphoneHandler.bind(this));
 
         // FX buttons
-        this.registerInputButton(message, "[Channel1]", "!fx", 0x1D, 0x4, this.fxHandler.bind(this));
-        this.registerInputButton(message, "[Channel2]", "!fx", 0x1D, 0x8, this.fxHandler.bind(this));
+        this.registerInputButton(message, "[Channel1]", "!fx", 0x1D, 0x04, this.fxHandler.bind(this));
+        this.registerInputButton(message, "[Channel2]", "!fx", 0x1D, 0x08, this.fxHandler.bind(this));
 
         // EQ knobs
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x3, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x5, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x7, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0xD, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0xF, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter3", 0x03, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter2", 0x05, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel1]_Effect1]", "parameter1", 0x07, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter3", 0x0D, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter2", 0x0F, 0xFFFF, this.parameterHandler.bind(this));
         this.registerInputScaler(message, "[EqualizerRack1_[Channel2]_Effect1]", "parameter1", 0x11, 0xFFFF, this.parameterHandler.bind(this));
 
         // FX knobs
-        this.registerInputScaler(message, "[QuickEffectRack1_[Channel1]]", "super1", 0x9, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[QuickEffectRack1_[Channel1]]", "super1", 0x09, 0xFFFF, this.parameterHandler.bind(this));
         this.registerInputScaler(message, "[QuickEffectRack1_[Channel2]]", "super1", 0x13, 0xFFFF, this.parameterHandler.bind(this));
 
         // Gain knobs
-        this.registerInputScaler(message, "[Channel1]", "pregain", 0x1, 0xFFFF, this.parameterHandler.bind(this));
-        this.registerInputScaler(message, "[Channel2]", "pregain", 0xB, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[Channel1]", "pregain", 0x01, 0xFFFF, this.parameterHandler.bind(this));
+        this.registerInputScaler(message, "[Channel2]", "pregain", 0x0B, 0xFFFF, this.parameterHandler.bind(this));
 
         // Headphone mix
         this.registerInputScaler(message, "[Master]", "headMix", 0x15, 0xFFFF, this.parameterHandler.bind(this));
@@ -105,7 +105,7 @@ class TraktorZ1Class {
 
         output.addOutput("[ControlX]", "mode", 0x13, "B");
 
-        output.addOutput("[Channel1]", "pfl", 0xF, "B");
+        output.addOutput("[Channel1]", "pfl", 0x0F, "B");
         output.addOutput("[Channel2]", "pfl", 0x10, "B");
 
         output.addOutput("[Channel1]", "play_indicator", 0x11, "B");
@@ -114,21 +114,21 @@ class TraktorZ1Class {
         output.addOutput("[QuickEffectRack1_[Channel1]]", "enabled", 0x12, "B");
         output.addOutput("[QuickEffectRack1_[Channel2]]", "enabled", 0x15, "B");
 
-        output.addOutput("[Channel1]", "vu-30", 0x1, "B");
-        output.addOutput("[Channel1]", "vu-15", 0x2, "B");
-        output.addOutput("[Channel1]", "vu-6", 0x3, "B");
-        output.addOutput("[Channel1]", "vu-3", 0x4, "B");
-        output.addOutput("[Channel1]", "vu0", 0x5, "B");
-        output.addOutput("[Channel1]", "vu3", 0x6, "B");
-        output.addOutput("[Channel1]", "vu6", 0x7, "B");
+        output.addOutput("[Channel1]", "vu-30", 0x01, "B");
+        output.addOutput("[Channel1]", "vu-15", 0x02, "B");
+        output.addOutput("[Channel1]", "vu-6", 0x03, "B");
+        output.addOutput("[Channel1]", "vu-3", 0x04, "B");
+        output.addOutput("[Channel1]", "vu0", 0x05, "B");
+        output.addOutput("[Channel1]", "vu3", 0x06, "B");
+        output.addOutput("[Channel1]", "vu6", 0x07, "B");
 
-        output.addOutput("[Channel2]", "vu-30", 0x8, "B");
-        output.addOutput("[Channel2]", "vu-15", 0x9, "B");
-        output.addOutput("[Channel2]", "vu-6", 0xA, "B");
-        output.addOutput("[Channel2]", "vu-3", 0xB, "B");
-        output.addOutput("[Channel2]", "vu0", 0xC, "B");
-        output.addOutput("[Channel2]", "vu3", 0xD, "B");
-        output.addOutput("[Channel2]", "vu6", 0xE, "B");
+        output.addOutput("[Channel2]", "vu-30", 0x08, "B");
+        output.addOutput("[Channel2]", "vu-15", 0x09, "B");
+        output.addOutput("[Channel2]", "vu-6", 0x0A, "B");
+        output.addOutput("[Channel2]", "vu-3", 0x0B, "B");
+        output.addOutput("[Channel2]", "vu0", 0x0C, "B");
+        output.addOutput("[Channel2]", "vu3", 0x0D, "B");
+        output.addOutput("[Channel2]", "vu6", 0x0E, "B");
 
         this.controller.registerOutputPacket(output);
 
@@ -164,13 +164,13 @@ class TraktorZ1Class {
     fxHandler(field) {
         if (field.value === 0) {
             // Always clear play indicator on button release
-            this.controller.setOutput(field.group, "play_indicator", 0x0, true);
+            this.controller.setOutput(field.group, "play_indicator", 0x00, true);
             return;
         }
         // Control playback when modifier is active
         if (this.modePressed) {
             // Match play indicator (red led) brightness to fx indicator (blue led)
-            const current = engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled") ? 0x7F : 0xA;
+            const current = engine.getValue("[QuickEffectRack1_" + field.group + "]", "enabled") ? 0x7F : 0x0A;
             this.controller.setOutput(field.group, "play_indicator", current, true);
             script.toggleControl(field.group, "play");
         } else {
@@ -199,7 +199,7 @@ class TraktorZ1Class {
         let ledValue;
         if (value === 0 || value === false) {
             // Off value (dimmed)
-            ledValue = 0xA;
+            ledValue = 0x0A;
         } else if (value === 1 || value === true) {
             // On value
             ledValue = 0x7F;
@@ -208,7 +208,7 @@ class TraktorZ1Class {
     }
 
     lightDeck(switchOff) {
-        let softLight = 0xA;
+        let softLight = 0x0A;
         let fullLight = 0x7F;
         let current;
 
