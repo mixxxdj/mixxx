@@ -754,7 +754,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
         }
-        // This happens if dThisPosition is the target position of a requested
+        // This happens if thisPosition is the target position of a requested
         // seek command.  Get new prev and next beats for the calculation.
         getBeatContext(
                 m_pBeats,

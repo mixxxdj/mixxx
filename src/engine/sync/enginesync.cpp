@@ -710,6 +710,7 @@ void EngineSync::reinitLeaderParams(Syncable* pSource) {
         }
     }
     const mixxx::Bpm baseBpm = pSource->getBaseBpm();
+    // bpm is the average of four beats, updated in postProcess()
     mixxx::Bpm bpm = pSource->getBpm();
     if (!bpm.isValid()) {
         bpm = baseBpm;

@@ -424,11 +424,11 @@ void EngineBuffer::requestEnableSync(bool enabled) {
 }
 
 void EngineBuffer::requestSyncMode(SyncMode mode) {
-    // If we're not playing, the queued event won't get processed so do it now.
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::requestSyncMode";
     }
     if (m_playButton->get() == 0.0) {
+        // If we're not playing, the queued event won't get processed so do it now.
         m_pEngineSync->requestSyncMode(m_pSyncControl, mode);
     } else {
         m_iSyncModeQueued = static_cast<int>(mode);
@@ -1260,6 +1260,7 @@ void EngineBuffer::processSyncRequests() {
 void EngineBuffer::processSeek(bool paused) {
     m_previousBufferSeek = false;
     // Check if we are cloning another channel before doing any seeking.
+    // This replaces m_queuedSeek
     EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
         seekCloneBuffer(pChannel->getEngineBuffer());
@@ -1504,6 +1505,7 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 }
 
 mixxx::audio::FramePos EngineBuffer::getExactPlayPos() const {
+    // Is updated during postProcess(), after all decks already have been processed
     if (!m_visualPlayPos->isValid()) {
         return mixxx::audio::kStartFramePos;
     }
