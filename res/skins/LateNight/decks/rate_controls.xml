@@ -17,15 +17,16 @@
       <WidgetGroup>
         <ObjectName>RateContainer</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <SizePolicy>max,me</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- BPM + rate + Tap overlay-->
             <ObjectName>BpmRateTapContainer</ObjectName>
-            <Layout>vertical</Layout>
+            <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <MaximumSize>,46</MaximumSize>
             <Children>
+              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
               <WidgetGroup>
                 <ObjectName>BpmTapContainer</ObjectName>
                 <Layout>stacked</Layout>
@@ -74,6 +75,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
+              <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
               <PushButton>
                 <TooltipId>sync_enabled</TooltipId>
                 <ObjectName>SyncDeck</ObjectName>
@@ -109,6 +111,90 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
+
+              <!-- pitch_adjust slider + center indicator -->
+              <WidgetGroup>
+                <ObjectName>RateSliderBox</ObjectName>
+                <Layout>stacked</Layout>
+                <SizePolicy>max,me</SizePolicy>
+                <Children>
+
+                  <WidgetGroup>
+                    <Size>34f,121f</Size>
+                    <Children>
+                      <Label>
+                        <ObjectName>RateCenter</ObjectName>
+                        <Size>5f,5f</Size>
+                        <Pos>2,59</Pos>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,pitch_adjust_set_default</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </Label>
+                      <SliderComposed>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Size>20f,119f</Size>
+                        <Pos>5,2</Pos>
+                        <TooltipId>pitch_adjust</TooltipId>
+                        <Handle scalemode="STRETCH">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
+                        <Horizontal>false</Horizontal>
+                        <BarWidth><Variable name="BarWidth"/></BarWidth>
+                        <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
+                        <BarAxisPos>10.0</BarAxisPos>
+                        <BarUnipolar>false</BarUnipolar>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,pitch_adjust</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup><!-- Rate slider + center indicator -->
+                </Children>
+              </WidgetGroup>
+
+              <!-- pitch slider + center indicator -->
+              <WidgetGroup>
+                <ObjectName>RateSliderBox</ObjectName>
+                <Layout>stacked</Layout>
+                <SizePolicy>max,me</SizePolicy>
+                <Children>
+
+                  <WidgetGroup>
+                    <Size>34f,121f</Size>
+                    <Children>
+                      <Label>
+                        <ObjectName>RateCenter</ObjectName>
+                        <Size>5f,5f</Size>
+                        <Pos>2,59</Pos>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,pitch_set_default</ConfigKey>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </Label>
+                      <SliderComposed>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Size>20f,119f</Size>
+                        <Pos>5,2</Pos>
+                        <TooltipId>pitch_adjust</TooltipId>
+                        <Handle scalemode="STRETCH">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
+                        <Horizontal>false</Horizontal>
+                        <BarWidth><Variable name="BarWidth"/></BarWidth>
+                        <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
+                        <BarAxisPos>10.0</BarAxisPos>
+                        <BarUnipolar>false</BarUnipolar>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,pitch</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup><!-- Rate slider + center indicator -->
+                </Children>
+              </WidgetGroup>
 
               <WidgetGroup><!-- Rate slider + range displays -->
                 <ObjectName>RateSliderBox</ObjectName>

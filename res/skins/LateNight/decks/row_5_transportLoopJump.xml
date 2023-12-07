@@ -222,73 +222,64 @@
             </Connection>
           </WidgetGroup><!-- / Intro + Outro -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-8px wide -->
-          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>80,</MaximumSize></WidgetGroup>
+          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
-          <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
+          <!-- Keylock/unlock controls -->
+          <WidgetGroup>
             <ObjectName>LoopControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>78,52</MinimumSize>
-            <MaximumSize>86,52</MaximumSize>
             <Children>
-              <WidgetGroup><!-- loop enable + beatloop size -->
+              <WidgetGroup><!-- Keylock mode -->
                 <ObjectName>AlignLeftTop</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:../LateNight/controls/button_2state_right_display.xml">
-                    <SetVariable name="TooltipId">beatloop_activate</SetVariable>
-                    <SetVariable name="ObjectName">LoopActivate</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beatloop_activate</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatlooproll_activate</SetVariable>
-                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,loop_enabled</SetVariable>
+                  <Label>
+                    <ObjectName>KeylockLabel</ObjectName>
+                    <Size>21f,18f</Size>
+                  </Label>
+                  <Template src="skin:../LateNight/controls/button_2state_isEqual.xml">
+                    <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                    <SetVariable name="Size">40f,26f</SetVariable>
+                    <SetVariable name="text">Reset</SetVariable>
+                    <SetVariable name="IsEqual">0</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keylockMode</SetVariable>
                   </Template>
-
-                  <BeatSpinBox>
-                    <TooltipId>beatloop_size</TooltipId>
-                    <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <MinimumSize>46,26</MinimumSize>
-                    <MaximumSize>72,26</MaximumSize>
-                    <Value><Variable name="Group"/>,beatloop_size</Value>
-                    <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection> -->
-                  </BeatSpinBox>
+                  <Template src="skin:../LateNight/controls/button_2state_isEqual.xml">
+                    <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                    <SetVariable name="Size">40f,26f</SetVariable>
+                    <SetVariable name="text">Keep</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keylockMode</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup>
+              <WidgetGroup><!-- Keyunlock mode -->
                 <ObjectName>AlignLeftTop</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <Template src="skin:../LateNight/controls/button_2state_right.xml">
-                    <SetVariable name="TooltipId">reloop_toggle</SetVariable>
-                    <SetVariable name="ObjectName">Reloop</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,reloop_toggle</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,reloop_andstop</SetVariable>
+                  <Label>
+                    <ObjectName>KeyunlockLabel</ObjectName>
+                    <Size>21f,18f</Size>
+                  </Label>
+                  <Template src="skin:../LateNight/controls/button_2state_isEqual.xml">
+                    <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+                    <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                    <SetVariable name="Size">40f,26f</SetVariable>
+                    <SetVariable name="text">Reset</SetVariable>
+                    <SetVariable name="IsEqual">0</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keyunlockMode</SetVariable>
                   </Template>
-
-                  <Template src="skin:../LateNight/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">loop_in</SetVariable>
-                    <SetVariable name="ObjectName">LoopIn</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,loop_in</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,loop_in_goto</SetVariable>
-                  </Template>
-
-                  <Template src="skin:../LateNight/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">loop_out</SetVariable>
-                    <SetVariable name="ObjectName">LoopOut</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,loop_out</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,loop_out_goto</SetVariable>
+                  <Template src="skin:../LateNight/controls/button_2state_isEqual.xml">
+                    <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+                    <SetVariable name="ObjectName">PassthroughButton</SetVariable>
+                    <SetVariable name="Size">40f,26f</SetVariable>
+                    <SetVariable name="text">Keep</SetVariable>
+                    <SetVariable name="IsEqual">1</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,keyunlockMode</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup>
@@ -299,70 +290,7 @@
             </Connection>
           </WidgetGroup><!-- /Loop buttons + beatloop size spinbox -->
 
-          <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-80px wide -->
-          <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>80,</MaximumSize></WidgetGroup>
-
-          <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
-            <ObjectName>BeatjumpControls</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>52,52</MinimumSize>
-            <MaximumSize>60,52</MaximumSize>
-            <Children>
-              <WidgetGroup><!-- beatjump size -->
-                <ObjectName>AlignLeftTop</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>0min,26f</SizePolicy>
-                <Children>
-                  <!-- put this spacer here so BeatSpinBox expands with HiDPI scaling
-                  <WidgetGroup><Size>0f,26f</Size></WidgetGroup> -->
-                  <BeatSpinBox>
-                    <TooltipId>beatjump_size</TooltipId>
-                    <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <MinimumSize>46,26</MinimumSize>
-                    <MaximumSize>72,26</MaximumSize>
-                    <Value><Variable name="Group"/>,beatjump_size</Value>
-                    <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection> -->
-                  </BeatSpinBox>
-                </Children>
-              </WidgetGroup>
-              <WidgetGroup>
-                <ObjectName>AlignLeftTop</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,max</SizePolicy>
-                <Children>
-
-                  <Template src="skin:../LateNight/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">beatjump_backward</SetVariable>
-                    <SetVariable name="ObjectName">JumpBack</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beatjump_backward</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatjump_1_backward</SetVariable>
-                  </Template>
-
-                  <Template src="skin:../LateNight/controls/button_1state_right.xml">
-                    <SetVariable name="TooltipId">beatjump_forward</SetVariable>
-                    <SetVariable name="ObjectName">JumpForward</SetVariable>
-                    <SetVariable name="Size">26f,26f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="Group"/>,beatjump_forward</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatjump_1_forward</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],show_beatjump_controls</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Jump buttons + beatjump size spinbox -->
-
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
-          <WidgetGroup><SizePolicy>i,min</SizePolicy></WidgetGroup>
         </Children>
       </WidgetGroup><!-- DeckRow_5_LoopCuesTransport -->
     </Children>
