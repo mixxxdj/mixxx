@@ -60,23 +60,23 @@ Beats::ConstIterator Beats::ConstIterator::operator+=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-    const int beatOffset = m_beatOffset + n;
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     const auto origValue = m_value;
 #endif
 
-    // Detect integer overflow
-    if (beatOffset < m_beatOffset) {
+    // Detect integer overflow in `m_beatOffset + n`
+    const int maxBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
+    if (m_beatOffset > maxBeatOffset - n) {
         qWarning() << "Beats: Iterator would go out of possible range, capping "
                       "at latest possible position.";
         m_it = m_beats->m_markers.cend();
-        m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::max();
+        m_beatOffset = maxBeatOffset;
         updateValue();
-        DEBUG_ASSERT(m_value > origValue);
+        DEBUG_ASSERT(m_value >= origValue);
         return *this;
     }
 
-    m_beatOffset = beatOffset;
+    m_beatOffset += n;
     while (m_it != m_beats->m_markers.cend() && m_beatOffset >= m_it->beatsTillNextMarker()) {
         m_beatOffset -= m_it->beatsTillNextMarker();
         m_it++;
@@ -108,23 +108,23 @@ Beats::ConstIterator Beats::ConstIterator::operator-=(Beats::ConstIterator::diff
     }
 
     DEBUG_ASSERT(n > 0);
-    const int beatOffset = m_beatOffset - n;
 #ifdef MIXXX_DEBUG_ASSERTIONS_ENABLED
     const auto origValue = m_value;
 #endif
 
     // Detect integer overflow
-    if (beatOffset > m_beatOffset) {
+    const int minBeatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
+    if (m_beatOffset < minBeatOffset + n) {
         qWarning() << "Beats: Iterator would go out of possible range, capping "
                       "at earliest possible position.";
         m_it = m_beats->m_markers.cbegin();
-        m_beatOffset = std::numeric_limits<Beats::ConstIterator::difference_type>::lowest();
+        m_beatOffset = minBeatOffset;
         updateValue();
-        DEBUG_ASSERT(m_value < origValue);
+        DEBUG_ASSERT(m_value <= origValue);
         return *this;
     }
 
-    m_beatOffset = beatOffset;
+    m_beatOffset -= n;
     while (m_it != m_beats->m_markers.cbegin() && m_beatOffset < 0) {
         m_it--;
         m_beatOffset += m_it->beatsTillNextMarker();

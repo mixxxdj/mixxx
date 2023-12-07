@@ -660,23 +660,29 @@ void WTrackMenu::setupActions() {
     }
 }
 
-bool WTrackMenu::isAnyTrackBpmLocked() const {
+std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
+    bool anyBpmLocked = false;
+    bool anyBpmNotLocked = false;
     if (m_pTrackModel) {
-        const int column =
-                m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
+        const int column = m_pTrackModel->fieldIndex(LIBRARYTABLE_BPM_LOCK);
         for (const auto& trackIndex : m_trackIndexList) {
-            QModelIndex bpmLockedIndex =
-                    trackIndex.sibling(trackIndex.row(), column);
+            QModelIndex bpmLockedIndex = trackIndex.sibling(trackIndex.row(), column);
             if (bpmLockedIndex.data().toBool()) {
-                return true;
+                anyBpmLocked = true;
+            } else {
+                anyBpmNotLocked = true;
+            }
+            if (anyBpmLocked && anyBpmNotLocked) {
+                break;
             }
         }
     } else {
-        if (m_pTrack && m_pTrack->isBpmLocked()) {
-            return true;
+        if (m_pTrack) {
+            anyBpmLocked = m_pTrack->isBpmLocked();
+            anyBpmNotLocked = !anyBpmLocked;
         }
     }
-    return false;
+    return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
 }
 
 std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
@@ -875,13 +881,15 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::Reset) ||
             featureIsEnabled(Feature::BPM)) {
-        const bool anyBpmLocked = isAnyTrackBpmLocked();
+        bool anyBpmLocked;
+        bool anyBpmNotLocked;
+        std::tie(anyBpmLocked, anyBpmNotLocked) = getTrackBpmLockStates();
         if (featureIsEnabled(Feature::Reset)) {
             m_pClearBeatsAction->setEnabled(!anyBpmLocked);
         }
         if (featureIsEnabled(Feature::BPM)) {
             m_pBpmUnlockAction->setEnabled(anyBpmLocked);
-            m_pBpmLockAction->setEnabled(!anyBpmLocked);
+            m_pBpmLockAction->setEnabled(anyBpmNotLocked);
             m_pBpmDoubleAction->setEnabled(!anyBpmLocked);
             m_pBpmHalveAction->setEnabled(!anyBpmLocked);
             m_pBpmTwoThirdsAction->setEnabled(!anyBpmLocked);

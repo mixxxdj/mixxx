@@ -19,17 +19,17 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 
 #include <QDebug>
 
-#if defined(Q_OS_MAC)
+#if defined(__APPLE__)
 #  include "util/mac.h"
-#elif defined(Q_OS_WIN)
+#elif defined(_WIN32)
 #  include <windows.h>
-#elif defined(Q_OS_LINUX)
+#elif defined(__LINUX__)
 #  include <QtDBus>
 #elif defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND
 #  include <X11/extensions/scrnsaver.h>
-#endif // Q_OS_WIN
+#endif
 
-#if defined(Q_OS_LINUX) || (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
+#if defined(__LINUX__) || (defined(HAVE_XSCREENSAVER_SUSPEND) && HAVE_XSCREENSAVER_SUSPEND)
 #  define None XNone
 #  define Window XWindow
 #  include <X11/Xlib.h>
