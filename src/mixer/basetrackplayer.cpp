@@ -590,9 +590,13 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         } else {
             // perform a clone of the given channel
 
-            // copy rate
-            m_pRateRatio->set(ControlObject::get(ConfigKey(
-                    m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
+            // Don't touch the rate_ratio if it is follower under sync control
+            // During sync this is applied to all synced decks
+            if (ControlObject::get(ConfigKey(getGroup(), "sync_mode")) !=
+                    static_cast<double>(SyncMode::Follower)) {
+                m_pRateRatio->set(ControlObject::get(ConfigKey(
+                        m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
+            }
 
             // copy pitch
             m_pPitchAdjust->set(ControlObject::get(ConfigKey(
