@@ -1,7 +1,6 @@
 #include "widget/wspinnyglsl.h"
 
 #include <QOpenGLTexture>
-#include <array>
 
 #include "moc_wspinnyglsl.cpp"
 #include "util/texture.h"

@@ -3,7 +3,6 @@
 #include <QDomNode>
 #include <QOpenGLTexture>
 #include <QPainterPath>
-#include <array>
 
 #include "skin/legacy/skincontext.h"
 #include "util/texture.h"
