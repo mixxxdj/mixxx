@@ -191,7 +191,6 @@ class TraktorZ1Class {
         }
     }
 
-
     parameterHandler(field) {
         engine.setParameter(field.group, field.name, field.value / 4095);
     }
