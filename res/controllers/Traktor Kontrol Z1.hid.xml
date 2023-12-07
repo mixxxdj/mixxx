@@ -13,7 +13,7 @@
     <controller id="Traktor">
         <scriptfiles>
             <file filename="common-hid-packet-parser.js" functionprefix="" />
-            <file filename="Traktor-Kontrol-Z1-scripts.js" functionprefix="KontrolZ1" />
+            <file filename="Traktor-Kontrol-Z1-scripts.js" functionprefix="TraktorZ1" />
         </scriptfiles>
     </controller>
 </MixxxControllerPreset>
