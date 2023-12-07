@@ -25,6 +25,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     void process(CSAMPLE* pOutput, const int iBufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
+    void postProcessLocalBpm() override;
     void postProcess(const int iBufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.

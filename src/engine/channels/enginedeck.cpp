@@ -89,6 +89,10 @@ void EngineDeck::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     m_pPregain->collectFeatures(pGroupFeatures);
 }
 
+void EngineDeck::postProcessLocalBpm() {
+    m_pBuffer->postProcessLocalBpm();
+}
+
 void EngineDeck::postProcess(const int iBufferSize) {
     m_pBuffer->postProcess(iBufferSize);
 }

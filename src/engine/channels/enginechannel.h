@@ -63,7 +63,12 @@ class EngineChannel : public EngineObject {
         m_channelIndex = channelIndex;
     }
 
-    virtual void postProcess(const int iBuffersize) = 0;
+    virtual void postProcessLocalBpm() {
+    }
+
+    virtual void postProcess(const int iBufferSize) {
+        Q_UNUSED(iBufferSize)
+    }
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer() {

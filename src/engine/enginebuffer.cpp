@@ -1333,6 +1333,13 @@ void EngineBuffer::processSeek(bool paused) {
     m_queuedSeek.setValue(kNoQueuedSeek);
 }
 
+void EngineBuffer::postProcessLocalBpm() {
+    // This needs to be done at once for all channels
+    // that way we can use the localBpm value across channels without dealing
+    // with their indexes
+    m_pBpmControl->updateLocalBpm();
+}
+
 void EngineBuffer::postProcess(const int iBufferSize) {
     // The order of events here is very delicate.  It's necessary to update
     // some values before others, because the later updates may require
@@ -1342,7 +1349,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "EngineBuffer::postProcess";
     }
-    const mixxx::Bpm localBpm = m_pBpmControl->updateLocalBpm();
+    const mixxx::Bpm localBpm = m_pBpmControl->getLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
     const SyncMode mode = m_pSyncControl->getSyncMode();
     if (localBpm.isValid()) {

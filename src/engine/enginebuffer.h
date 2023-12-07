@@ -124,6 +124,7 @@ class EngineBuffer : public EngineObject {
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize) override;
     void processSlip(int iBufferSize);
+    void postProcessLocalBpm();
     void postProcess(const int iBufferSize);
 
     /// Returns the seek position iff a seek is currently queued but not yet
