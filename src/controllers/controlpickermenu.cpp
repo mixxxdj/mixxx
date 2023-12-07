@@ -230,6 +230,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("beats_adjust_slower", tr("Adjust Beatgrid Slower -.01"), tr("Decrease track's average BPM by 0.01"), bpmMenu);
     addDeckAndSamplerControl("beats_translate_earlier", tr("Move Beatgrid Earlier"), tr("Adjust the beatgrid to the left"), bpmMenu);
     addDeckAndSamplerControl("beats_translate_later", tr("Move Beatgrid Later"), tr("Adjust the beatgrid to the right"), bpmMenu);
+    addDeckAndSamplerControl("beats_translate_move",
+            tr("Move Beatgrid"),
+            tr("Adjust the beatgrid to the left or right"),
+            bpmMenu);
     addDeckControl("beats_translate_curpos",
             tr("Adjust Beatgrid"),
             tr("Align beatgrid to current position"),
