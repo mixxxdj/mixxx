@@ -958,6 +958,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/coverartarchiveimagetask.cpp
   src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
+  src/nativeeventhandlerwin.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
@@ -1515,7 +1516,7 @@ if(WIN32)
     target_compile_definitions(mixxx-lib PUBLIC WIN64)
   endif()
 
-  target_link_libraries(mixxx-lib PRIVATE shell32)
+  target_link_libraries(mixxx-lib PRIVATE comctl32 shell32)
 
   if(MSVC)
     target_link_options(mixxx-lib PUBLIC /entry:mainCRTStartup)

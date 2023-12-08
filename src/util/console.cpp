@@ -6,6 +6,8 @@
 #include <string.h>
 #include <strsafe.h>
 
+#include <QDebug>
+
 #include "util/versionstore.h"
 
 typedef BOOL(WINAPI* pfGetCurrentConsoleFontEx)(HANDLE, BOOL, PCONSOLE_FONT_INFOEX);

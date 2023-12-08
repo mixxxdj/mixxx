@@ -18,6 +18,9 @@
 #else
 #include "mixxxmainwindow.h"
 #endif
+#if defined(__WINDOWS__)
+#include "nativeeventhandlerwin.h"
+#endif
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -54,6 +57,11 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         MixxxMainWindow mainWindow(pCoreServices);
         pApp->processEvents();
         pApp->installEventFilter(&mainWindow);
+
+#if defined(__WINDOWS__)
+        WindowsEventHandler winEventHandler;
+        pApp->installNativeEventFilter(&winEventHandler);
+#endif
 
         QObject::connect(pCoreServices.get(),
                 &mixxx::CoreServices::initializationProgressUpdate,
