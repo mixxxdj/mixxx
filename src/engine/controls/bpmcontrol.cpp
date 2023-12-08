@@ -1017,7 +1017,9 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     const mixxx::BeatsPointer pBeats = m_pBeats;
     const FrameInfo info = frameInfo();
     if (pBeats) {
-        localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
+        if (info.currentPosition.isValid() && info.currentPosition != kInitialPlayPosition) {
+            localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
+        }
         if (!localBpm.isValid()) {
             localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
         }
