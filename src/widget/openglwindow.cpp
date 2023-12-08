@@ -4,6 +4,7 @@
 #include <QResizeEvent>
 
 #include "moc_openglwindow.cpp"
+#include "waveform/useframeswapped.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
@@ -44,7 +45,11 @@ void OpenGLWindow::resizeGL(int w, int h) {
         // QGLWidget::resizeGL has devicePixelRatio applied, so we mimic the same behaviour
         m_pWidget->resizeGL(static_cast<int>(static_cast<float>(w) * devicePixelRatio()),
                 static_cast<int>(static_cast<float>(h) * devicePixelRatio()));
-        m_dirty = true;
+
+        if (!USE_FRAME_SWAPPED) {
+            // No need for this when using the frameSwapped/update mechanism
+            m_dirty = true;
+        }
         m_pWidget->doneCurrent();
     }
 }

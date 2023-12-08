@@ -37,6 +37,9 @@ class WGLWidget : public QWidget {
     void setTrackDropTarget(TrackDropTarget* pTarget);
     TrackDropTarget* trackDropTarget() const;
 
+  private slots:
+    void slotFrameSwapped();
+
   protected:
     void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;

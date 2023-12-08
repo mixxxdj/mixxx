@@ -3,6 +3,7 @@
 #include "moc_vsyncthread.cpp"
 #include "util/math.h"
 #include "util/performancetimer.h"
+#include "waveform/useframeswapped.h"
 
 VSyncThread::VSyncThread(QObject* pParent)
         : QThread(pParent),
@@ -25,8 +26,34 @@ VSyncThread::~VSyncThread() {
     //delete m_glw;
 }
 
+void VSyncThread::frameSwapped() {
+    assert(USE_FRAME_SWAPPED);
+
+    // Called for each of the QOpenGLWindows, so elapsed will be small if the
+    // calls are from the same swap.
+    auto elapsed = m_timer.elapsed().toIntegerMicros();
+
+    // If it surpasses a threadhold, we consider it the next vsync.
+    if (elapsed > m_syncIntervalTimeMicros - 2000) {
+        // consider this the actual swap
+        m_sinceLastSwap = m_timer.restart();
+        int lastSwapTime = static_cast<int>(m_sinceLastSwap.toIntegerMicros());
+        // try to stay in right intervals
+        m_waitToSwapMicros = m_syncIntervalTimeMicros +
+                ((m_waitToSwapMicros - lastSwapTime) %
+                        m_syncIntervalTimeMicros);
+        // avoid deviating from m_syncIntervalTimeMicros
+        m_waitToSwapMicros = (m_waitToSwapMicros * 3 + m_syncIntervalTimeMicros) / 4;
+        // renders the new waveform, vumeters and spinnies
+        emit vsyncRender();
+    }
+}
+
 void VSyncThread::run() {
     QThread::currentThread()->setObjectName("VSyncThread");
+
+    // thread should not be started when using the frameSwapped signals
+    assert(!USE_FRAME_SWAPPED);
 
     m_waitToSwapMicros = m_syncIntervalTimeMicros;
     m_timer.start();

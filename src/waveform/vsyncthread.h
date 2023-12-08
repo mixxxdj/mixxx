@@ -25,6 +25,8 @@ class VSyncThread : public QThread {
 
     void run();
 
+    void frameSwapped();
+
     bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
     int toNextSyncMicros();

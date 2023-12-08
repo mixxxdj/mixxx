@@ -36,6 +36,7 @@
 #include "waveform/widgets/qtvsynctestwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
 #endif
+#include "waveform/useframeswapped.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
@@ -439,6 +440,12 @@ void WaveformWidgetFactory::addVuMeter(WVuMeterBase* pVuMeter) {
             &WaveformWidgetFactory::swapVuMeters,
             pVuMeter,
             &WVuMeterBase::swap);
+}
+
+void WaveformWidgetFactory::frameSwapped() {
+    if (m_vsyncThread) {
+        m_vsyncThread->frameSwapped();
+    }
 }
 
 void WaveformWidgetFactory::slotSkinLoaded() {
@@ -1132,7 +1139,11 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
             this,
             &WaveformWidgetFactory::swap);
 
-    m_vsyncThread->start(QThread::NormalPriority);
+    // Don't start the thread when using the frameSwapped signal, in which case
+    // we do the timing based on the frameSwapped signal.
+    if (!USE_FRAME_SWAPPED) {
+        m_vsyncThread->start(QThread::NormalPriority);
+    }
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {

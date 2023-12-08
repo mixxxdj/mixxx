@@ -1,5 +1,7 @@
 #include <QResizeEvent>
 
+#include "waveform/useframeswapped.h"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/openglwindow.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/wglwidget.h"
@@ -43,6 +45,14 @@ void WGLWidget::showEvent(QShowEvent* event) {
         m_pContainerWidget->resize(size());
         m_pContainerWidget->show();
         m_pContainerWidget->setAutoFillBackground(true);
+
+        if (USE_FRAME_SWAPPED) {
+            connect(m_pOpenGLWindow,
+                    &QOpenGLWindow::frameSwapped,
+                    this,
+                    &WGLWidget::slotFrameSwapped,
+                    Qt::DirectConnection);
+        }
     }
     QWidget::showEvent(event);
 }
@@ -85,9 +95,19 @@ void WGLWidget::resizeGL(int w, int h) {
 }
 
 void WGLWidget::swapBuffers() {
+    assert(!USE_FRAME_SWAPPED);
     if (shouldRender()) {
         m_pOpenGLWindow->context()->swapBuffers(m_pOpenGLWindow->context()->surface());
     }
+}
+
+void WGLWidget::slotFrameSwapped() {
+    // This frameSwapped is emitted after the potentially blocking buffer swap has
+    // been done. Applications that wish to continuously repaint synchronized to
+    // the vertical refresh, should issue an update() upon this signal. This allows
+    // for a much smoother experience compared to the traditional usage of timers.
+    m_pOpenGLWindow->update();
+    WaveformWidgetFactory::instance()->frameSwapped();
 }
 
 bool WGLWidget::shouldRender() const {

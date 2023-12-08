@@ -150,6 +150,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   public slots:
     void slotSkinLoaded();
+    void frameSwapped();
 
   protected:
     WaveformWidgetFactory();
