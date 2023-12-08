@@ -1039,7 +1039,7 @@ void EngineBuffer::processTrackLocked(
     // If the buffer is not paused, then scale the audio.
     if (!bCurBufferPaused) {
         // Perform scaling of Reader buffer into buffer.
-        const auto framesRead = m_pScale->scaleBuffer(pOutput, iBufferSize);
+        const double framesRead = m_pScale->scaleBuffer(pOutput, iBufferSize);
 
         // TODO(XXX): The result framesRead might not be an integer value.
         // Converting to samples here does not make sense. All positional
