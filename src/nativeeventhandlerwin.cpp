@@ -1,18 +1,19 @@
-#include "nativeeventhandlerwin.h"
 #if defined(__WINDOWS__)
-#include <commctrl.h>
-#include <windows.h>
-#include <winuser.h>
+
+#include "nativeeventhandlerwin.h"
+
+// clang-format off
+#include <windows.h>  // needs to be included first
+#include <commctrl.h> // for DefSubclassProc
+#include <winuser.h>  // for MSG, RedrawWindow PostMessageW
+// clang-format on
 
 #include "moc_nativeeventhandlerwin.cpp"
 
-WindowsEventHandler::WindowsEventHandler(MixxxApplication* pApp)
-        : m_pApp(pApp) {
-}
-
 bool WindowsEventHandler::nativeEventFilter(
         const QByteArray& eventType, void* message, long* result) {
-    MSG* msg = (MSG*)message;
+    Q_UNUSED(eventType);
+    MSG* msg = reinterpret_cast<MSG*>(message);
     if (msg && msg->message == WM_NCLBUTTONDOWN) {
         // Trigger the modal loop to prevent 500ms wait in Event Loop
         // when Windows setting "Show window contents while dragging" is enabled
@@ -38,4 +39,5 @@ bool WindowsEventHandler::nativeEventFilter(
     // so other recipients will also receive this message subsequently
     return false;
 }
+
 #endif

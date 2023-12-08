@@ -1,15 +1,13 @@
-#include <QAbstractNativeEventFilter>
-
 #if defined(__WINDOWS__)
-#include "mixxxapplication.h"
+
+#include <QAbstractNativeEventFilter>
 
 class WindowsEventHandler : public QAbstractNativeEventFilter {
   public:
-    WindowsEventHandler(MixxxApplication* pApp);
+    WindowsEventHandler() = default;
+    ~WindowsEventHandler() override = default;
 
-    bool nativeEventFilter(const QByteArray& eventType, void* message, long* result);
-
-  private:
-    MixxxApplication* m_pApp;
+    bool nativeEventFilter(const QByteArray& eventType, void* message, long* result) override;
 };
+
 #endif

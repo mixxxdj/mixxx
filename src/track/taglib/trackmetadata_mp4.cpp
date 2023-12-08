@@ -1,3 +1,12 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_mp4.h"
 
 #include "track/taglib/trackmetadata_common.h"
@@ -508,3 +517,7 @@ bool exportTrackMetadataIntoTag(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

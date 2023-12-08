@@ -59,7 +59,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         pApp->installEventFilter(&mainWindow);
 
 #if defined(__WINDOWS__)
-        WindowsEventHandler winEventHandler(pApp);
+        WindowsEventHandler winEventHandler;
         pApp->installNativeEventFilter(&winEventHandler);
 #endif
 
