@@ -7,9 +7,9 @@
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__
-#if defined(Q_OS_WIN)
+#if defined(_WIN32)
 #include "util/battery/batterywindows.h"
-#elif defined(Q_OS_MAC)
+#elif defined(__APPLE__)
 #include "util/battery/batterymac.h"
 #else
 #include "util/battery/batterylinux.h"
