@@ -109,8 +109,7 @@ double EngineBufferScaleLinear::scaleBuffer(
         // force a buffer read:
         m_bufferIntSize = 0;
         // make sure the indexes stay correct for interpolation
-        // TODO() Why we do not swap current and Next?
-        m_dCurrentFrame = 0.0 - m_dCurrentFrame + floor(m_dCurrentFrame);
+        m_dCurrentFrame = 0.0 - (m_dCurrentFrame - floor(m_dCurrentFrame));
         m_dNextFrame = 1.0 - (m_dNextFrame - floor(m_dNextFrame));
 
         // second half: rate goes from zero to new rate
