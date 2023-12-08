@@ -12,7 +12,13 @@
 namespace {
 
 const QList<MidiOption> kMidiOptions = {
-        MidiOption::None,
+        // Don't add 'Normal' to the list because it's useless: it's exclusive,
+        // meaning it's the implicit result of unchecking all other options, but
+        // clicking it does not uncheck all other options. Also, showing it
+        // checked is pointless (and it's not updated if others are checked).
+        // Furthermore, the mapping list is cleaner without it, mappings that
+        // have options set are much easier to spot.
+        // MidiOption::None,
         MidiOption::Invert,
         MidiOption::Rot64,
         MidiOption::Rot64Invert,
@@ -49,13 +55,6 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
     auto* pModel = static_cast<QStandardItemModel*>(pComboBox->model());
     DEBUG_ASSERT(pModel);
     for (const MidiOption opt : kMidiOptions) {
-        // Don't add 'Normal' to the list because it's useless: it's exclusive,
-        // meaning it's the implicit result of unchecking all other options, so
-        // showing it checked is pointless (and it's not updated if others are
-        // checked). Also, clicking it does not uncheck all other options.
-        if (opt == MidiOption::None) {
-            continue;
-        }
         QStandardItem* pItem =
                 new QStandardItem(MidiUtils::midiOptionToTranslatedString(opt));
         pItem->setData(static_cast<uint16_t>(opt));
