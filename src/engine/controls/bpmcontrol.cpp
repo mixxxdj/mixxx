@@ -922,7 +922,9 @@ void BpmControl::slotUpdateEngineBpm(double value) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << value << m_pLocalBpm->get() << dRate;
+                        << value << m_pLocalBpm->get() << dRate << frameInfo().currentPosition;
+        // This can be used to detect pitch shift issues with cloned decks
+        // DEBUG_ASSERT(getGroup() != "[Channel1]" || dRate == 1);
     }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
