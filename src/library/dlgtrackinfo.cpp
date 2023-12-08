@@ -425,6 +425,13 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
                     m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+
+    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    if (samplerate.isValid()) {
+        txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
+    } else {
+        txtSamplerate->clear();
+    }
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
