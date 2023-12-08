@@ -79,6 +79,7 @@ repos:
           - eslint-plugin-jsdoc@^v46.5.1
           - "@typescript-eslint/eslint-plugin"
           - "@typescript-eslint/parser"
+          - eslint-plugin-diff@^2.0.3
   - repo: local
     hooks:
       - id: clang-format

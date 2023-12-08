@@ -201,7 +201,7 @@ class WTrackMenu : public QMenu {
     void loadSelectionToGroup(const QString& group, bool play = false);
     void clearTrackSelection();
 
-    bool isAnyTrackBpmLocked() const;
+    std::pair<bool, bool> getTrackBpmLockStates() const;
 
     /// Get the common track color of all tracks this menu is shown for, or
     /// return `nullopt` if there is no common color. Tracks may have no color
