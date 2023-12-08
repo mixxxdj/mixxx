@@ -10,6 +10,11 @@
 #include "widget/wskincolor.h"
 
 namespace {
+
+// Without some padding, the user would only have a single pixel width that
+// would count as hovering over the WaveformMark.
+constexpr float lineHoverPadding = 5.0;
+
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
                                       .split('|',
@@ -137,10 +142,8 @@ void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
 }
 
 bool WaveformMark::lineHovered(QPoint point, Qt::Orientation orientation) const {
-    // Without some padding, the user would only have a single pixel width that
-    // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 5.0;
     if (orientation == Qt::Vertical) {
+        // Note that for vertical orientation, breadth is set to the width.
         point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
     }
     return m_linePosition >= point.x() - lineHoverPadding &&
@@ -306,7 +309,7 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
     const bool useIcon = m_iconPath != "";
 
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry(label, useIcon, m_align, m_breadth, m_level);
+    const MarkerGeometry markerGeometry{label, useIcon, m_align, m_breadth, m_level};
 
     m_label.setAreaRect(markerGeometry.m_labelRect);
 

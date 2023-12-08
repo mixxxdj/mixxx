@@ -101,6 +101,10 @@ void WaveformMarkSet::update() {
             [](auto const& pair) { return pair.second; });
 
     double prevSamplePosition = Cue::kNoPosition;
+
+    // Avoid overlapping marks by increasing the level per alignment.
+    // We take this into account when drawing the marks aligned at:
+    // left top, right top, left bottom, right bottom.
     std::map<Qt::Alignment, int> levels;
     for (auto& pMark : m_marksToRender) {
         if (pMark->getSamplePosition() != prevSamplePosition) {

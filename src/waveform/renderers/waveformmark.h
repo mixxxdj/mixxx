@@ -19,8 +19,8 @@ class WaveformMark {
   public:
     class Graphics {
       public:
-        Graphics() {
-        }
+        // To indicate that the image for the mark needs to be regenerated,
+        // when the text, color, breadth or level are changed.
         bool m_obsolete{};
     };
 
@@ -149,6 +149,10 @@ class WaveformMark {
 
     float m_linePosition;
     float m_breadth;
+
+    // When there are overlapping marks, level is increased for each overlapping mark,
+    // so that we can draw them at different positions: The marks at the top go lower
+    // when the level increased, the marks at the bottom higher.
     int m_level;
 
     WaveformMarkLabel m_label;

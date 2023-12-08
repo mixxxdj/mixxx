@@ -5,9 +5,9 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 WaveformRenderMarkBase::WaveformRenderMarkBase(
-        WaveformWidgetRenderer* waveformWidgetRenderer,
+        WaveformWidgetRenderer* pWaveformWidgetRenderer,
         bool updateImagesImmediately)
-        : WaveformRendererAbstract(waveformWidgetRenderer),
+        : WaveformRendererAbstract(pWaveformWidgetRenderer),
           m_updateImagesImmediately(updateImagesImmediately) {
 }
 
@@ -88,7 +88,7 @@ void WaveformRenderMarkBase::updateMarks() {
 }
 
 void WaveformRenderMarkBase::updateMarkImages() {
-    for (auto& pMark : m_marks) {
+    for (const auto& pMark : m_marks) {
         if (pMark->needsImageUpdate()) {
             updateMarkImage(pMark);
         }
