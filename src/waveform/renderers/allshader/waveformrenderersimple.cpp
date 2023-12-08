@@ -108,10 +108,9 @@ void WaveformRendererSimple::paintGL() {
         const int visualIndexStart = std::max(visualFrameStart * 2, 0);
         // and at the upper boundary.
         // Note: * dataSize - 1, because below we add chn = 1
-        //       * visualIndexStart + 1, because we want to have at least 1 value
+        //       * visualFrameStart + 1, because we want to have at least 1 value
         const int visualIndexStop =
-                std::min(std::max(visualFrameStop * 2, visualIndexStart + 1),
-                        dataSize - 1);
+                std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
         // 2 channels
         float max[2]{};
