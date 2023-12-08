@@ -2362,13 +2362,17 @@ WSearchLineEdit {
 
 
 /************ Library feature controls / tree view / table view *************/
-WLibrary QRadioButton::indicator:checked {
-  background: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
-}
 
-WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_off.svg) center center;
-}
+/* Additional space */
+#LibraryFeatureControls QRadioButton {
+  margin: 2px 3px 2px 3px;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:checked {
+    image: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:unchecked {
+    image: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_off.svg) center center;
+  }
 
 /* triangle for closed/opened branches in treeview */
 /* closed */

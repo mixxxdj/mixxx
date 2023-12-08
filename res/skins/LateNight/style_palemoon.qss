@@ -2824,21 +2824,16 @@ WSearchLineEdit {
   }
 /************ splitters ***********************/
 
-
-/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
-   Linux with Gnome */
-#LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
-  background: transparent;
-}
-
-#LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
-}
-
-#LibraryFeatureControls QRadioButton::indicator:unchecked {
-  image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
-}
+  /* bottom margin! */
+  margin: 6px 3px 4px 3px;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:checked {
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_on_blue.svg) center center;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:unchecked {
+    image: url(skin:../LateNight/palemoon/buttons/btn__lib_radio_button_off.svg) center center;
+  }
 
 /* Library feature pushbuttons
   Don't use 'WLibrary QPushButton' here, as this would apply padding
@@ -2852,15 +2847,11 @@ WSearchLineEdit {
 /* #fadeModeCombobox set below */
 #spinBoxTransition {
   margin-top: 4px;
-  }
-  #LibraryFeatureControls QRadioButton {
-    /* bottom margin! */
-    margin: 6px 3px 4px 3px;
-  }
-  QLabel#labelProgress, /* Analysis progress */
-  QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
-    margin: 4px 5px 5px 1px;
-  }
+}
+QLabel#labelProgress, /* Analysis progress */
+QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
+  margin: 4px 5px 5px 1px;
+}
 
 WLibrarySidebar {
   show-decoration-selected: 0;
