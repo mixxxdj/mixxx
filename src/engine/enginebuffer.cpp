@@ -435,10 +435,6 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-void EngineBuffer::requestClonePosition(EngineChannel* pChannel) {
-    atomicStoreRelaxed(m_pChannelToCloneFrom, pChannel);
-}
-
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
@@ -448,10 +444,6 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         m_pReadAheadManager->notifySeek(m_playPos);
         m_bCrossfadeReady = true;
      }
-}
-
-void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
-    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -553,6 +545,15 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.unlock();
 
     notifyTrackLoaded(pTrack, pOldTrack);
+
+    // Check if we are cloning another channel before doing any seeking.
+    // This replaces m_queuedSeek populated form CueControl
+    EngineChannel* pChannel = atomicLoadRelaxed(m_pChannelToCloneFrom);
+    if (pChannel) {
+        m_queuedSeek.setValue(kCloneSeek);
+        m_iSeekPhaseQueued = 0;
+    }
+
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -562,6 +563,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
         const QString& reason) {
     m_iTrackLoading = 0;
+    m_pChannelToCloneFrom = nullptr;
+
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
     ejectTrack();
@@ -609,6 +612,7 @@ void EngineBuffer::ejectTrack() {
         notifyTrackLoaded(TrackPointer(), pOldTrack);
     }
     m_iTrackLoading = 0;
+    m_pChannelToCloneFrom = nullptr;
 }
 
 void EngineBuffer::notifyTrackLoaded(
@@ -1259,12 +1263,6 @@ void EngineBuffer::processSyncRequests() {
 
 void EngineBuffer::processSeek(bool paused) {
     m_previousBufferSeek = false;
-    // Check if we are cloning another channel before doing any seeking.
-    // This replaces m_queuedSeek
-    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
-    if (pChannel) {
-        seekCloneBuffer(pChannel->getEngineBuffer());
-    }
 
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
@@ -1294,6 +1292,14 @@ void EngineBuffer::processSeek(bool paused) {
         case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
             // new position was already set above
             break;
+        case SEEK_CLONE: {
+            // Cloning another channels position.
+            EngineChannel* pOtherChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
+            VERIFY_OR_DEBUG_ASSERT(pOtherChannel) {
+                return;
+            }
+            position = pOtherChannel->getEngineBuffer()->getExactPlayPos();
+        } break;
         default:
             DEBUG_ASSERT(!"Unhandled seek request type");
             m_queuedSeek.setValue(kNoQueuedSeek);
@@ -1482,12 +1488,13 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::loadTrack(TrackPointer pTrack, bool play) {
+void EngineBuffer::loadTrack(TrackPointer pTrack, bool play, EngineChannel* pChannelToCloneFrom) {
     if (pTrack) {
         // Signal to the reader to load the track. The reader will respond with
         // trackLoading and then either with trackLoaded or trackLoadFailed signals.
         m_bPlayAfterLoading = play;
         m_pReader->newTrack(pTrack);
+        atomicStoreRelaxed(m_pChannelToCloneFrom, pChannelToCloneFrom);
     } else {
         // Loading a null track means "eject"
         ejectTrack();

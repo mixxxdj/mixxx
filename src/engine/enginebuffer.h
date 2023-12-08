@@ -71,6 +71,8 @@ class EngineBuffer : public EngineObject {
         /// This is an artificial state that happens if a standard seek and a
         /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
+        /// #SEEK_EXACT to the other deck position
+        SEEK_CLONE = 8u,
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -119,7 +121,6 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
-    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize) override;
@@ -189,7 +190,7 @@ class EngineBuffer : public EngineObject {
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void loadTrack(TrackPointer pTrack, bool play);
+    void loadTrack(TrackPointer pTrack, bool play, EngineChannel* pChannelToCloneFrom);
 
     void setChannelIndex(int channelIndex) {
         m_channelIndex = channelIndex;
@@ -250,9 +251,6 @@ class EngineBuffer : public EngineObject {
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
-
-    // Copy the play position from the given buffer
-    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(mixxx::audio::FramePos playpos);
@@ -424,6 +422,8 @@ class EngineBuffer : public EngineObject {
 
     /// Indicates that no seek is queued
     static constexpr QueuedSeek kNoQueuedSeek = {mixxx::audio::kInvalidFramePos, SEEK_NONE};
+    /// indicates a clone seek on a bosition from another deck
+    static constexpr QueuedSeek kCloneSeek = {mixxx::audio::kInvalidFramePos, SEEK_CLONE};
     QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing

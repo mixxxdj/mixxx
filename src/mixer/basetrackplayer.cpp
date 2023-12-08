@@ -477,7 +477,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
-    pEngineBuffer->loadTrack(pNewTrack, bPlay);
+    pEngineBuffer->loadTrack(pNewTrack, bPlay, m_pChannelToCloneFrom);
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& reason) {
@@ -602,13 +602,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             m_pPitchAdjust->set(ControlObject::get(ConfigKey(
                     m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
 
-            // copy play state
-            ControlObject::set(ConfigKey(getGroup(), "play"),
-                    ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play")));
-
-            // copy the play position
-            m_pChannel->getEngineBuffer()->requestClonePosition(m_pChannelToCloneFrom);
-
             // copy the loop state
             if (ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0) {
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
@@ -669,22 +662,18 @@ void BaseTrackPlayerImpl::slotCloneFromSampler(double d) {
 
 void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     // don't clone from ourselves
-    if (pChannel == m_pChannel) {
+    if (!pChannel || pChannel == m_pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
         return;
     }
 
     m_pChannelToCloneFrom = pChannel;
-    if (!m_pChannelToCloneFrom) {
-        return;
-    }
-
-    TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        m_pChannelToCloneFrom = nullptr;
-        return;
-    }
-
-    slotLoadTrack(pTrack, false);
+    bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
+    slotLoadTrack(pTrack, play);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
