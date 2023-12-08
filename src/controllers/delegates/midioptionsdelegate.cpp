@@ -61,6 +61,11 @@ QWidget* MidiOptionsDelegate::createEditor(QWidget* parent,
         pItem->setCheckable(true);
         pModel->appendRow(pItem);
     }
+    // Add a special item to uncheck all. See commitAndCloseEditor()
+    QStandardItem* pItem = new QStandardItem(tr("Unset all"));
+    pItem->setCheckable(false); // doesn't hurt to set this explicitly
+    pModel->appendRow(pItem);
+
     // Unsetting the index clears the display text which is visible when closing
     // the list view by clicking anywhere else. Default text is that of first
     // added item. It can be set to any combination of existing item texts, e.g.
@@ -112,6 +117,9 @@ void MidiOptionsDelegate::setEditorData(QWidget* editor,
     DEBUG_ASSERT(pModel);
     for (int row = 0; row < pModel->rowCount(); row++) {
         auto* pItem = pModel->item(row, 0);
+        if (!pItem->isCheckable()) {
+            continue;
+        }
         auto opt = static_cast<MidiOption>(pItem->data().toInt());
         pItem->setCheckState(options.testFlag(opt) ? Qt::Checked : Qt::Unchecked);
     }
@@ -151,7 +159,18 @@ void MidiOptionsDelegate::commitAndCloseEditor(int index) {
     DEBUG_ASSERT(pModel);
     auto* pItem = pModel->item(index);
     DEBUG_ASSERT(pItem);
-    pItem->setCheckState(pItem->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked);
+    if (pItem->isCheckable()) {
+        pItem->setCheckState(pItem->checkState() == Qt::Checked ? Qt::Unchecked : Qt::Checked);
+    } else {
+        // Clear was selected. Uncheck all other items
+        for (int row = 0; row < pModel->rowCount() - 1; row++) {
+            if (row == index) { // Actually it's the last item, but this is safer.
+                continue;
+            }
+            pItem = pModel->item(row, 0);
+            pItem->setCheckState(Qt::Unchecked);
+        }
+    }
 
     emit commitData(pComboBox);
     emit closeEditor(pComboBox);
