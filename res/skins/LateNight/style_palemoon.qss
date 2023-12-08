@@ -2302,12 +2302,10 @@ WPushButton#PlayDeck[value="0"] {
       image: url(skin:../LateNight/palemoon/buttons/btn__slip_active_34.svg) no-repeat center center;
     }
 
-  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"],
-  #KeyunlockLabel {
+  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
     image: url(skin:../LateNight/palemoon/buttons/btn__keylock.svg) no-repeat center center;
     }
-    #KeylockButton12[displayValue="1"],
-    #KeylockLabel {
+    #KeylockButton12[displayValue="1"] {
       image: url(skin:../LateNight/palemoon/buttons/btn__keylock_active_12.svg) no-repeat center center;
     }
     #KeylockButton34[displayValue="1"] {
