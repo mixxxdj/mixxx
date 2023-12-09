@@ -30,8 +30,10 @@ void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& co
     m_pChain = EffectWidgetUtils::getEffectChainFromNode(
             node, context, m_pEffectsManager);
     VERIFY_OR_DEBUG_ASSERT(m_pChain) {
-        SKIN_WARNING(node, context)
-                << "EffectChainPresetButton node could not attach to effect chain";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectChainPresetButton node could not attach "
+                               "to effect chain"));
         return;
     }
     connect(m_pChain.get(),

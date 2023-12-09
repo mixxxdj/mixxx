@@ -32,8 +32,10 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             node, context, m_pEffectsManager);
 
     VERIFY_OR_DEBUG_ASSERT(m_pChain != nullptr) {
-        SKIN_WARNING(node, context)
-                << "EffectChainPresetSelector node could not attach to EffectChain";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectChainPresetSelector node could not "
+                               "attach to EffectChain"));
         return;
     }
 
