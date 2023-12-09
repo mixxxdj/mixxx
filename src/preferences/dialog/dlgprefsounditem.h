@@ -22,9 +22,20 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
 
     AudioPathType type() const { return m_type; };
     unsigned int index() const { return m_index; };
+    bool isInput() {
+        return m_isInput;
+    }
+    const SoundDeviceId getDeviceId() {
+        return deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
+    }
+    int getChannelIndex() {
+        return channelComboBox->currentIndex();
+    }
+    void selectFirstUnusedChannelIndex(const QList<int>& selectedChannels);
 
   signals:
-    void settingChanged();
+    void selectedDeviceChanged();
+    void selectedChannelsChanged();
 
   public slots:
     void refreshDevices(const QList<SoundDevicePointer>& devices);
@@ -49,5 +60,5 @@ class DlgPrefSoundItem : public QWidget, public Ui::DlgPrefSoundItem {
     // Because QVariant supports QPoint natively we use a QPoint to store the
     // channel info. x is the channel base and y is the channel count.
     QPoint m_savedChannel;
-    bool m_inhibitSettingChanged;
+    bool m_emitSettingChanged;
 };
