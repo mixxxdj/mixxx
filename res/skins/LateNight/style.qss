@@ -841,14 +841,15 @@ WEffectChainPresetButton::menu-indicator {
       min-width: 40px;
     }
 
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
+   Linux with Gnome */
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
   background: transparent;
 }
-
-/* Additional space for QRadionButtons */
-#LibraryFeatureControls QRadioButton {
-  margin: 2px 3px 2px 3px;
+#LibraryFeatureControls QRadioButton::indicator {
+  width: 18px;
+  height: 18px;
   }
   /* Push 'New' radio button away from corner */
   QRadioButton#radioButtonRecentlyAdded {

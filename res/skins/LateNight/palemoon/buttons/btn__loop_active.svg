@@ -1,13 +1,5 @@
-<svg width="24" height="24" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <g display="none" opacity=".360743">
-    <g fill="none" stroke="#000001" stroke-linejoin="round" stroke-width="1.6">
-      <path d="m20 18v-12h-5v-3l-7 3.75 7 3.75-1e-4 -2.9999 3.5001-1e-4v9l-1.5-1e-4v1.5001z" color="#000001"/>
-      <path d="m4 6v12h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-9l1.5 1e-4v-1.5001z" color="#000001"/>
-    </g>
-    <path d="m20 18v-12h-5v-3l-7 3.75 7 3.75-1e-4 -2.9999 3.5001-1e-4v9l-1.5-1e-4v1.5001z" fill="#918273"/>
-    <path d="m4 6v12h5v3l7-3.75-7-3.75 1e-4 2.9999-3.5001 1e-4v-9l1.5 1e-4v-1.5001z" color="#000001" fill="#918273"/>
-  </g>
+<svg width="48" height="48" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
   <g>
-    <path d="m15 3-7 3.75 7 3.75v-2.99023h3.49023v8.98047h-1.49023v1.50977h1.76172c0.707602 0 1.23828-0.615581 1.23828-1.2793v-9.44141c0-0.663716-0.53068-1.2793-1.23828-1.2793h-3.76172v-3zm-9.76172 3c-0.707601 0-1.23828 0.615582-1.23828 1.2793v9.44141c0 0.663715 0.53068 1.2793 1.23828 1.2793h3.76172v3l7-3.75-7-3.75v2.99023h-3.49023v-8.98047h1.49023v-1.50977h-1.76172z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" stop-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-east-asian:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;font-variation-settings:normal;inline-size:0;isolation:auto;mix-blend-mode:normal;shape-margin:0;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m15 3-7 3.75 7 3.75v-2.99023h3.49023v8.98047h-1.49023v1.50977h1.76172c0.707602 0 1.23828-0.615581 1.23828-1.2793v-9.44141c0-0.663716-0.53068-1.2793-1.23828-1.2793h-3.76172v-3zm-9.76172 3c-0.707601 0-1.23828 0.615582-1.23828 1.2793v9.44141c0 0.663715 0.53068 1.2793 1.23828 1.2793h3.76172v3l7-3.75-7-3.75v2.99023h-3.49023v-8.98047h1.49023v-1.50977h-1.76172z" fill="#000000"/>
   </g>
 </svg>
