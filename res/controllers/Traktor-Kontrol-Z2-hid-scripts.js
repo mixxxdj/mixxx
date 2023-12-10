@@ -99,7 +99,7 @@ class DeckClass {
         let action = "";
 
         // Hotcues mode clear when shift button is active pressed
-        if (this.parent.shiftState & 0x01) {
+        if (this.parent.shiftPressed) {
             action = "_clear";
         } else {
             action = "_activate";
@@ -145,13 +145,13 @@ class DeckClass {
             return;
         }
 
-        if ((this.parent.shiftState & 0x01) === 0x01) {
+        if (this.parent.shiftPressed) {
             // Shift button hold down -> Toggle between Internal Playback mode / Vinyl Control
             script.toggleControl(this.activeChannel, "vinylcontrol_enabled");
         } else {
             if (engine.getValue(this.activeChannel, "vinylcontrol_enabled") === 0) {
                 // Internal Playback mode -> Vinyl Control Off -> Orange
-                if ((this.parent.shiftState & 0x02) !== 0x02) {
+                if ((this.parent.shiftLocked === false)) {
                     // Shift mode isn't locked -> Mapped to PLAY button
                     script.toggleControl(this.activeChannel, "play");
                 } else {
@@ -175,17 +175,17 @@ class DeckClass {
             "this.activeChannel:" + this.activeChannel + " field:" + field +
             "key:" + engine.getValue(this.activeChannel, "key"));
 
-        // Shift not hold down
-        if (this.parent.shiftState === 0) {
+        if ((this.parent.shiftLocked === false) && (this.parent.shiftPressed === false)) {
+            // Shift not hold down
             if (field.value === 1) {
                 engine.setValue(this.activeChannel, "sync_enabled", 1);
                 // Start timer to measure how long button is pressed
-                this.syncPressedTimerId = engine.beginTimer(300, () => {
+                this.syncPressedTimerId = engine.beginTimer(300, function() {
                     // Reset sync button timer state if active
                     if (this.syncPressedTimerId !== 0) {
                         this.syncPressedTimerId = 0;
                     }
-                }, true);
+                }.bind(this), true);
             } else {
                 if (this.syncPressedTimerId !== 0) {
                     // Timer still running -> stop it and unlight LED
@@ -196,50 +196,56 @@ class DeckClass {
             return;
         }
 
-        // Shift pressed and hold
-        if (((this.parent.shiftState & 0x01) === 0x01) && (field.value === 1)) {
-            script.toggleControl(this.activeChannel, "keylock");
-            return;
+        if (this.parent.shiftPressed) {
+            // Shift pressed and hold
+            if (field.value === 1) {
+                script.toggleControl(this.activeChannel, "keylock");
+                return;
+            }
         }
 
-        // Shift locked
-        // Depending on long or short press, sync beat or go to key sync mode
-        if (field.value === 1) {
-            // Start timer to measure how long button is pressed
-            this.syncPressedTimerId = engine.beginTimer(300, () => {
-                this.syncPressed = true;
-                // Change display values to key notation
+
+        if (this.parent.shiftLocked) {
+            // Shift locked
+            // Depending on long or short press, sync beat or go to key sync mode
+            if (field.value === 1) {
+                // Start timer to measure how long button is pressed
+                this.syncPressedTimerId = engine.beginTimer(300, function() {
+                    this.syncPressed = true;
+                    // Change display values to key notation
+                    this.parent.displayLoopCount("[Channel1]", false);
+                    this.parent.displayLoopCount("[Channel2]", true);
+
+                    // Reset sync button timer state if active
+                    if (this.syncPressedTimerId !== 0) {
+                        this.syncPressedTimerId = 0;
+                    }
+                }.bind(this), true);
+            } else {
+                this.syncPressed = false;
+                // Change display values to loop/beatjump
                 this.parent.displayLoopCount("[Channel1]", false);
                 this.parent.displayLoopCount("[Channel2]", true);
 
-                // Reset sync button timer state if active
                 if (this.syncPressedTimerId !== 0) {
-                    this.syncPressedTimerId = 0;
+                    // Timer still running -> stop it and unlight LED
+                    engine.stopTimer(this.syncPressedTimerId);
+                    script.triggerControl(this.activeChannel, "sync_key");
                 }
-            }, true);
-        } else {
-            this.syncPressed = false;
-            // Change display values to loop/beatjump
-            this.parent.displayLoopCount("[Channel1]", false);
-            this.parent.displayLoopCount("[Channel2]", true);
-
-            if (this.syncPressedTimerId !== 0) {
-                // Timer still running -> stop it and unlight LED
-                engine.stopTimer(this.syncPressedTimerId);
-                script.triggerControl(this.activeChannel, "sync_key");
             }
         }
     }
 
     loadTrackHandler(field) {
-        // If shift mode is locked or active pressed
-        if (this.parent.shiftState) {
+        if (this.parent.shiftPressed) {
+            // Shift button is pressed -> Duplicate
             if (this.activeChannel === "[Channel1]") {
                 engine.setValue("[Channel1]", "CloneFromDeck", 2);
             } else if (this.activeChannel === "[Channel2]") {
                 engine.setValue("[Channel2]", "CloneFromDeck", 1);
             }
         } else {
+            // Shift button is not pressed -> Load selected track
             engine.setValue(this.activeChannel, "LoadSelectedTrack", field.value);
         }
     }
@@ -354,7 +360,7 @@ class DeckClass {
             } else if (delta === +1) {
                 script.triggerControl(this.activeChannel, "pitch_up");
             }
-        } else if (this.parent.shiftState === 0x00) {
+        } else if ((this.parent.shiftLocked === false) && (this.parent.shiftPressed === false)) {
             // Shift mode not set, and shift button not pressed -> Adjust loop size
             const beatloopSize = engine.getValue(this.activeChannel, "beatloop_size");
             if (delta === -1) {
@@ -362,7 +368,7 @@ class DeckClass {
             } else if (delta === +1) {
                 engine.setValue(this.activeChannel, "beatloop_size", beatloopSize * 2);
             }
-        } else if (this.parent.shiftState === 0x01) {
+        } else if ((this.parent.shiftLocked === false) && this.parent.shiftPressed) {
             // Shift mode not set, but shift button is pressed ->  Move loop
             if (delta === -1) {
                 engine.setValue(
@@ -373,7 +379,7 @@ class DeckClass {
                     this.activeChannel, "loop_move",
                     engine.getValue(this.activeChannel, "beatloop_size"));
             }
-        } else if (this.parent.shiftState === 0x02) {
+        } else if (this.parent.shiftLocked && (this.parent.shiftPressed === false)) {
             // Shift mode is set, but shift button not pressed ->  Adjust beatjump size
             const beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
             if (delta === -1) {
@@ -381,7 +387,7 @@ class DeckClass {
             } else if (delta === +1) {
                 engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize * 2);
             }
-        } else if (this.parent.shiftState === 0x03) {
+        } else if (this.parent.shiftLocked && this.parent.shiftPressed) {
             // Shift mode is set, and shift button is pressed ->  Move beatjump
             if (delta === -1) {
                 engine.setValue(
@@ -403,7 +409,7 @@ class DeckClass {
             if (this.syncPressed) {
                 // Sync hold down -> Sync key
                 script.triggerControl(this.activeChannel, "reset_key");
-            } else if (this.parent.shiftState) {
+            } else if (this.parent.shiftLocked || this.parent.shiftPressed) {
                 engine.setValue(this.activeChannel, "reloop_toggle", field.value);
             } else {
                 if (isLoopActive) {
@@ -420,14 +426,14 @@ class DeckClass {
 
         // Depending on long or short press, sync beat or go to key sync mode
         if (field.value === 1) {  // Start timer to measure how long button is pressed
-            this.snapQuantizePressedTimerId = engine.beginTimer(300, () => {
+            this.snapQuantizePressedTimerId = engine.beginTimer(300, function() {
                 this.snapQuantizePressed = true;
 
                 // Reset sync button timer state if active
                 if (this.snapQuantizePressedTimerId !== 0) {
                     this.snapQuantizePressedTimerId = 0;
                 }
-            }, true);
+            }.bind(this), true);
         } else {
             this.snapQuantizePressed = false;
             // Change display values to loop/beatjump
@@ -436,7 +442,7 @@ class DeckClass {
                 // Timer still running -> stop it
                 engine.stopTimer(this.snapQuantizePressedTimerId);
 
-                if (this.parent.shiftState !== 0) {
+                if (this.parent.shiftLocked || this.parent.shiftPressed) {
                     // Adjust Beatgrid to current trackposition
                     script.triggerControl(this.activeChannel, "beats_translate_curpos");
                 } else {
@@ -453,15 +459,15 @@ class DeckClass {
         }
 
         let group;
-        if (this.parent.shiftState !== 0) {
-            // Shift mode on  -> DeckC / DeckD
+        if (this.parent.shiftPressed) {
+            // Shift button hold down -> DeckC / DeckD
             if (this.activeChannel === "[Channel1]") {
                 group = "[Channel3]";
             } else {
                 group = "[Channel4]";
             }
         } else {
-            // Shift mode off -> DeckA / DeckB
+            // Shift button not hold down -> DeckA / DeckB
             group = this.activeChannel;
         }
 
@@ -474,7 +480,7 @@ class DeckClass {
             "this.activeChannel: " + this.activeChannel + " field.value: " + field.value);
         if (field.value === 1) {
             // Taktor button pressed
-            if (this.parent.shiftState & 0x01) {
+            if (this.parent.shiftPressed) {
                 script.toggleControl(this.activeChannel, "passthrough");
                 this.parent.traktorButtonOutputHandler(this.activeChannel);
             }
@@ -679,6 +685,8 @@ class DeckClass {
         this.defineLED4(this.parent.outputReport81, "!peak_indicator", 0x08, 0x10, 0x18, 0x20);
 
         // Ch3 / Ch4 VuMeter usage depends on context -> ChC / MasterL and ChD / MasterR
+        // Use unbuffered connection for the permanently changenging floats of the vu-meters,
+        // to prevent processing overloads
         engine.makeUnbufferedConnection(
             this.activeChannel, "vu_meter",
             this.parent.displayVuValue.bind(this.parent));
@@ -694,14 +702,7 @@ class TraktorZ2Class {
 
         this.shiftPressedTimer = undefined;
         this.shiftPressed = false;
-
-        /**
-         * - 0x00: shift mode off / and not active pressed
-         *  - 0x01: shift mode off / but active pressed
-         *  - 0x02: shift mode on  / and not active pressed
-         *  - 0x03: shift mode on  / and active pressed
-         */
-        this.shiftState = 0x00;
+        this.shiftLocked = false;
 
         this.microphoneButtonStatus = undefined;
         this.traktorButtonStatus = [];
@@ -714,9 +715,6 @@ class TraktorZ2Class {
          */
         this.browseKnobEncoderState = undefined;
 
-        this.lastsendTimestamp = 0;
-        this.lastBeatTimestamp = [];
-        this.beatLoopFractionCounter = [];
         this.displayBrightness = [];
 
         this.pregainCh3Timer = 0;
@@ -726,8 +724,6 @@ class TraktorZ2Class {
 
         this.chTimer = [];
         for (let chidx = 1; chidx <= 4; chidx++) {
-            this.lastBeatTimestamp["[Channel" + chidx + "]"] = 0;
-            this.beatLoopFractionCounter["[Channel" + chidx + "]"] = 0;
             this.displayBrightness["[Channel" + chidx + "]"] = kLedDimmed;
         }
 
@@ -835,9 +831,9 @@ class TraktorZ2Class {
 
         console.log("TraktorZ2: Init done!");
 
-        engine.beginTimer(50, () => {
+        engine.beginTimer(50, function() {
             this.controller.setOutput("[Main]", "!vu_labelMst", kLedVuMeterBrightness, true);
-        });
+        }.bind(this));
 
         console.log("TraktorZ2: Init done!");
     }
@@ -950,7 +946,7 @@ class TraktorZ2Class {
         if (engine.getValue(group, "vinylcontrol_enabled") === 0) {
             // Internal Playback mode -> Vinyl Control Off -> Orange
             this.controller.setOutput(group, "!vinylcontrol_green", kLedOff);
-            if ((this.shiftState & 0x02) !== 0x02) {
+            if (this.shiftLocked === false) {
                 // Shift mode isn't locked -> Show PLAY indicator
                 if (engine.getValue(group, "play_indicator") === 0) {
                     // Dim only to signal visualize Internal Playback mode by Orange color
@@ -1023,7 +1019,7 @@ class TraktorZ2Class {
                 ch = "[Channel2]";
             }
 
-            if (this.shiftState === 0x02) {
+            if (this.shiftLocked) {
                 // If shift mode is locked scale beatgrid
                 if (delta === -1) {
                     script.triggerControl(ch, "beats_adjust_faster");
@@ -1042,7 +1038,7 @@ class TraktorZ2Class {
         }
 
         // If shift mode is locked
-        if (this.shiftState === 0x02) {
+        if (this.shiftLocked) {
             engine.setValue("[Library]", "MoveHorizontal", delta);
         } else {
             engine.setValue("[Library]", "MoveVertical", delta);
@@ -1053,7 +1049,7 @@ class TraktorZ2Class {
         console.log("TraktorZ2: LibraryFocusHandler");
         if (field.value) {
             // If shift mode is locked
-            if (this.shiftState === 0x02) {
+            if (this.shiftLocked) {
                 engine.setValue("[Library]", "sort_column_toggle", 0);
             } else {
                 engine.setValue("[Library]", "MoveFocusForward", 1);
@@ -1063,6 +1059,7 @@ class TraktorZ2Class {
 
     crossfaderReverseHandler(field) {
         console.log("TraktorZ2: LibraryFocusHandler");
+
         const busSelector = {
             Left: 0,
             Center: 1,
@@ -1132,7 +1129,7 @@ class TraktorZ2Class {
             "field.value: " + field.value);
         if (field.value === 1) {
             // Microphone button pressed
-            if (this.shiftState & 0x01) {
+            if (this.shiftPressed) {
                 if (this.dataF1[1] & 0x40) {
                     this.dataF1[1] &= ~0x40;
                 } else {
@@ -1378,33 +1375,27 @@ class TraktorZ2Class {
     }
 
 
-    registerInputScaler(message, group, name, offset, bitmask, callback) {
+    registerInputScaler(hidInputReport, group, name, offset, bitmask, callback) {
         console.log("TraktorZ2: registerInputScaler");
-        message.addControl(group, name, offset, "H", bitmask);
-        message.setCallback(group, name, callback);
+        hidInputReport.addControl(group, name, offset, "H", bitmask);
+        hidInputReport.setCallback(group, name, callback);
     }
 
-    registerInputButton(message, group, name, offset, bitmask, callback) {
+    registerInputButton(hidInputReport, group, name, offset, bitmask, callback) {
         console.log("TraktorZ2: registerInputButton");
-        message.addControl(group, name, offset, "B", bitmask);
-        message.setCallback(group, name, callback);
+        hidInputReport.addControl(group, name, offset, "B", bitmask);
+        hidInputReport.setCallback(group, name, callback);
     }
 
     shiftHandler(field) {
         console.log("TraktorZ2: shiftHandler");
 
-        // This function sets this.shiftState as follows:
-        // 0x00: shift mode off / and not active pressed
-        // 0x01: shift mode off / but active pressed
-        // 0x02: shift mode on  / and not active pressed
-        // 0x03: shift mode on  / and active pressed
+        if (field.value === 1) {
 
-        if (this.shiftPressed === false && field.value === 1) {
             this.shiftPressed = true;
-            this.shiftState |= 0x01;
             this.controller.setOutput("[Master]", "shift", kLedBright, true);
 
-            this.shiftPressedTimer = engine.beginTimer(200, () => {
+            this.shiftPressedTimer = engine.beginTimer(200, function() {
                 // Reset sync button timer state if active
                 if (this.shiftPressedTimer !== 0) {
                     this.shiftPressedTimer = 0;
@@ -1413,40 +1404,45 @@ class TraktorZ2Class {
                 this.displayLoopCount("[Channel1]", false);
                 this.displayLoopCount("[Channel2]", true);
                 console.log("TraktorZ2: shift unlocked");
-            }, true);
+            }.bind(this), true);
 
             console.log("TraktorZ2: shift pressed");
-        } else if (this.shiftPressed === true && field.value === 0) {
+        } else if (field.value === 0) {
             this.shiftPressed = false;
 
-            console.log("TraktorZ2: shift button released" + this.shiftState);
+            console.log("TraktorZ2: shift button released" + this.shiftLocked);
             if (this.shiftPressedTimer !== 0) {
-                if (this.shiftState & 0x02) {
-                    // Timer still running -> stop it and set LED depending on previous lock state
-                    this.shiftState = 0x00;
+                // Timer still running -> stop it and toggle shift lock state
+                // Set LED brightness depending on new shift lock state
+                if (this.shiftLocked) {
+                    this.shiftLocked = false;
                     this.controller.setOutput("[Master]", "shift", kLedOff, false);
                     this.vinylcontrolOutputHandler(0, "[Channel1]", "Shift");
                     this.vinylcontrolOutputHandler(0, "[Channel2]", "Shift");
                 } else {
-                    this.shiftState = 0x02;
+                    this.shiftLocked = true;
                     this.controller.setOutput("[Master]", "shift", kLedDimmed, true);
                     this.vinylcontrolOutputHandler(1, "[Channel1]", "Shift");
                     this.vinylcontrolOutputHandler(1, "[Channel2]", "Shift");
                 }
                 engine.stopTimer(this.shiftPressedTimer);
+                this.shiftPressedTimer = 0;
+
                 // Change display values beatjumpsize / beatloopsize
                 this.displayLoopCount("[Channel1]", false);
                 this.displayLoopCount("[Channel2]", true);
-                console.log("TraktorZ2: static shift state changed to: " + this.shiftState);
+
+                console.log("TraktorZ2: static shift lock state changed to: " + this.shiftLocked);
             } else {
-                if (this.shiftState & 0x02) {
-                    this.shiftState = 0x02;
+                // Timeout -> Long press and hold -> Don't change shift lock state
+                // Resetting the LED brightness depending on the state of the preserved shift lock state
+                if (this.shiftLocked) {
                     this.controller.setOutput("[Master]", "shift", kLedDimmed, true);
                 } else {
-                    this.shiftState = 0x00;
                     this.controller.setOutput("[Master]", "shift", kLedOff, true);
                 }
-                console.log("TraktorZ2: back to static shift state: " + this.shiftState);
+
+                console.log("TraktorZ2: back to static lock shift state: " + this.shiftLocked);
             }
             // Apply stored EQ and filter settings
             const eqGroups = {
@@ -1545,13 +1541,13 @@ class TraktorZ2Class {
             this.displayVuValue(engine.getValue("[Channel3]", "vu_meter"), "[Channel3]", "vu_meter");
             this.displayPeakIndicator(
                 engine.getValue("[Channel3]", "peak_indicator"), "[Channel3]", "peak_indicator");
-            this.pregainCh3Timer = engine.beginTimer(2500, () => {
+            this.pregainCh3Timer = engine.beginTimer(2500, function() {
                 this.pregainCh3Timer = 0;
                 this.displayVuValue(
                     engine.getValue("[Channel1]", "vu_meter"), "[Channel1]", "vu_meter");
                 this.displayPeakIndicator(
                     engine.getValue("[Channel1]", "peak_indicator"), "[Channel1]", "peak_indicator");
-            }, true);
+            }.bind(this), true);
         }
         if ((field.group === "[Channel2]") && (this.pregainCh4Timer !== 0)) {
             engine.stopTimer(this.pregainCh4Timer);
@@ -1567,13 +1563,13 @@ class TraktorZ2Class {
             this.displayVuValue(engine.getValue("[Channel4]", "vu_meter"), "[Channel4]", "vu_meter");
             this.displayPeakIndicator(
                 engine.getValue("[Channel4]", "peak_indicator"), "[Channel4]", "peak_indicator");
-            this.pregainCh4Timer = engine.beginTimer(2500, () => {
+            this.pregainCh4Timer = engine.beginTimer(2500, function() {
                 this.pregainCh4Timer = 0;
                 this.displayVuValue(
                     engine.getValue("[Channel2]", "vu_meter"), "[Channel2]", "vu_meter");
                 this.displayPeakIndicator(
                     engine.getValue("[Channel2]", "peak_indicator"), "[Channel2]", "peak_indicator");
-            }, true);
+            }.bind(this), true);
         }
     }
 
@@ -1927,7 +1923,7 @@ class TraktorZ2Class {
 
         if (engine.getValue(group, "track_loaded") === 0) {
             displayBrightness = kLedOff;
-        } else if (engine.getValue(group, "loop_enabled") && !(this.shiftState & 0x02)) {
+        } else if ((this.shiftLocked === false) && engine.getValue(group, "loop_enabled")) {
             const playposition =
                 engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
             if ((playposition >= engine.getValue(group, "loop_start_position")) &&
@@ -2070,7 +2066,7 @@ class TraktorZ2Class {
                 this.controller.getOutputField(group + "[Digit1]", "segment_a").packet.send();
             }
             return;
-        } else if (this.shiftState & 0x02) {
+        } else if ((this.shiftLocked)) {
             numberToDisplay = engine.getValue(group, "beatjump_size");
         } else {
             numberToDisplay = engine.getValue(group, "beatloop_size");
@@ -2302,6 +2298,8 @@ class TraktorZ2Class {
         this.outputReport81.addOutput("[Main]", "!usblight", 0x27, "B", 0x7F);
 
         // Ch3 / Ch4 VuMeter usage depends on context ->  ChC / MasterL and ChD / MasterR
+        // Use unbuffered connection for the permanently changenging floats of the vu-meters,
+        // to prevent processing overloads
         engine.makeUnbufferedConnection("[Main]", "vu_meter_left", this.displayVuValue.bind(this));
         engine.makeUnbufferedConnection("[Main]", "vu_meter_right", this.displayVuValue.bind(this));
         engine.makeConnection("[Main]", "peak_indicator_left", this.displayPeakIndicator.bind(this));
