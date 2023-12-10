@@ -815,7 +815,7 @@ class TraktorZ2Class {
 
         this.controller.setOutput("[Main]", "!vu_labelMst", kLedVuMeterBrightness, true);
 
-        this.controller.setOutput("[Master]", "skin_settings", kLedOff, true);
+        this.controller.setOutput("[Master]", "maximize_library", kLedOff, true);
 
         // Initialize VU-Labels A and B
         this.displayPeakIndicator(
@@ -1100,6 +1100,18 @@ class TraktorZ2Class {
         }
     }
 
+    settingsButtonHandler(field) {
+        console.log("TraktorZ2: settingsButtonHandler");
+        if (field.value === 0) {
+            return;  // Button released
+        }
+        if (this.shiftPressed) {
+            script.toggleControl("[Skin]", "show_4decks");
+        } else {
+            script.toggleControl(field.group, field.name);
+        }
+    }
+
     buttonHandler(field) {
         console.log("TraktorZ2: buttonHandler");
         if (field.value === 0) {
@@ -1217,7 +1229,7 @@ class TraktorZ2Class {
 
         this.registerInputButton(
             this.inputReport01, "[Master]", "maximize_library", 0x03, 0x08,
-            this.buttonHandler.bind(this));
+            this.settingsButtonHandler.bind(this));
 
         this.registerInputButton(
             this.inputReport01, "[Main]", "!microphoneButton", 0x05, 0x01,
@@ -2189,9 +2201,10 @@ class TraktorZ2Class {
         engine.makeConnection("[Channel2]", "quantize", this.basicOutputHandler.bind(this));
         engine.trigger("[Channel2]", "quantize");
 
-        this.outputReport80.addOutput("[Master]", "skin_settings", 0x05, "B", 0x7F);
-        // engine.makeConnection("[Master]", "skin_settings", this.basicOutputHandler.bind(this));
-        // engine.trigger("[Master]", "skin_settings");
+        this.outputReport80.addOutput("[Master]", "maximize_library", 0x05, "B", 0x7F);
+        engine.makeConnection("[Master]", "maximize_library", this.basicOutputHandler.bind(this));
+        engine.trigger("[Master]", "maximize_library");
+
         this.outputReport80.addOutput("[Master]", "shift", 0x06, "B", 0x7F);
 
         this.outputReport80.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x7F);
