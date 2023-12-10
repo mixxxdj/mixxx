@@ -630,8 +630,8 @@ void EngineBuffer::notifyTrackLoaded(
     const auto trackEndPosition = getTrackEndPosition();
     const auto sampleRate = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     for (const auto& pControl : std::as_const(m_engineControls)) {
-        pControl->trackLoaded(pNewTrack);
         pControl->setFrameInfo(m_playPos, trackEndPosition, sampleRate);
+        pControl->trackLoaded(pNewTrack);
     }
 
     if (pNewTrack) {
