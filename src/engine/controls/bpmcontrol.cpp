@@ -299,9 +299,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
     double rate = 1.0;
-    // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->toBool()) {
-        rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
+    double localBpm = m_pLocalBpm->get();
+    if (localBpm != 0.0) {
+        rate = m_dSyncInstantaneousBpm / localBpm;
     }
 
     // If we are not quantized, or there are no beats, or we're leader,
@@ -347,6 +347,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we have all we need to calculate the sync adjustment if any.
     double adjustment = calcSyncAdjustment(userTweak != 0.0);
+    // This can be used to detect pitch shift issues with cloned decks
+    // DEBUG_ASSERT(((rate + userTweak) * adjustment) == 1);
     return (rate + userTweak) * adjustment;
 }
 
@@ -1021,16 +1023,16 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     if (pBeats) {
         if (info.currentPosition.isValid() && info.currentPosition != kInitialPlayPosition) {
             localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
-        }
-        if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
+            if (!localBpm.isValid()) {
+                localBpm = pBeats->getBpmInRange(
+                        mixxx::audio::kStartFramePos, info.trackEndPosition);
+            }
         }
     }
     if (localBpm != prevLocalBpm) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << localBpm;
         }
-        // FIXME: Should this really update the engine bpm if it's invalid?
         double localBpmValue = mixxx::Bpm::kValueUndefined;
         if (localBpm.isValid()) {
             localBpmValue = localBpm.value();
