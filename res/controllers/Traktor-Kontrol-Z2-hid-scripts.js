@@ -105,22 +105,24 @@ class DeckClass {
             action = "_activate";
         }
         if (sideOffset[chIdx] === -1) {
-            if (padNumber === 1) {
+            switch (padNumber) {
+            case 1 :
                 engine.setValue(
                     sideChannel[chIdx], "intro_start" + action, field.value);
-            } else
-                if (padNumber === 2) {
-                    engine.setValue(
-                        sideChannel[chIdx], "intro_end" + action, field.value);
-                } else
-                    if (padNumber === 3) {
-                        engine.setValue(
-                            sideChannel[chIdx], "outro_start" + action, field.value);
-                    } else
-                        if (padNumber === 4) {
-                            engine.setValue(
-                                sideChannel[chIdx], "outro_end" + action, field.value);
-                        }
+                break;
+            case 2 :
+                engine.setValue(
+                    sideChannel[chIdx], "intro_end" + action, field.value);
+                break;
+            case 3 :
+                engine.setValue(
+                    sideChannel[chIdx], "outro_start" + action, field.value);
+                break;
+            case 4 :
+                engine.setValue(
+                    sideChannel[chIdx], "outro_end" + action, field.value);
+                break;
+            }
         } else {
             console.log("setting " + "hotcue_" + padNumber + action + " " + field.value);
             engine.setValue(
@@ -1061,34 +1063,42 @@ class TraktorZ2Class {
 
     crossfaderReverseHandler(field) {
         console.log("TraktorZ2: LibraryFocusHandler");
+        const busSelector = {
+            Left: 0,
+            Center: 1,
+            Right: 2
+        };
+
         if (field.value) {
+            // XF REVERSE (Hamster mode)
             this.controller.setOutput("[Main]", "!crossfaderReverse", kLedBright, true);
-            if (engine.getValue("[Channel1]", "orientation") === 0) {
-                engine.setValue("[Channel1]", "orientation", 2);
+            if (engine.getValue("[Channel1]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel1]", "orientation", busSelector.Right);
             }
-            if (engine.getValue("[Channel3]", "orientation") === 0) {
-                engine.setValue("[Channel3]", "orientation", 2);
+            if (engine.getValue("[Channel3]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel3]", "orientation", busSelector.Right);
             }
-            if (engine.getValue("[Channel2]", "orientation") === 2) {
-                engine.setValue("[Channel2]", "orientation", 0);
+            if (engine.getValue("[Channel2]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel2]", "orientation", busSelector.Left);
             }
-            if (engine.getValue("[Channel4]", "orientation") === 2) {
-                engine.setValue("[Channel4]", "orientation", 0);
+            if (engine.getValue("[Channel4]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel4]", "orientation", busSelector.Left);
             }
 
         } else {
+            // Normal mode
             this.controller.setOutput("[Main]", "!crossfaderReverse", kLedOff, true);
-            if (engine.getValue("[Channel1]", "orientation") === 2) {
-                engine.setValue("[Channel1]", "orientation", 0);
+            if (engine.getValue("[Channel1]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel1]", "orientation", busSelector.Left);
             }
-            if (engine.getValue("[Channel3]", "orientation") === 2) {
-                engine.setValue("[Channel3]", "orientation", 0);
+            if (engine.getValue("[Channel3]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel3]", "orientation", busSelector.Left);
             }
-            if (engine.getValue("[Channel2]", "orientation") === 0) {
-                engine.setValue("[Channel2]", "orientation", 2);
+            if (engine.getValue("[Channel2]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel2]", "orientation", busSelector.Right);
             }
-            if (engine.getValue("[Channel4]", "orientation") === 0) {
-                engine.setValue("[Channel4]", "orientation", 2);
+            if (engine.getValue("[Channel4]", "orientation") !== busSelector.Center) {
+                engine.setValue("[Channel4]", "orientation", busSelector.Right);
             }
         }
     }
