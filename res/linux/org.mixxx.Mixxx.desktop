@@ -13,5 +13,4 @@ Terminal=false
 Icon=mixxx
 Type=Application
 StartupNotify=true
-StartupWMClass=org.mixxx.mixxx
 Categories=Qt;AudioVideo;Audio;Midi;Mixer;Player;Recorder;Sequencer;
