@@ -1,7 +1,7 @@
 //
 // Native Instruments Traktor Kontrol Z1 HID controller script for Mixxx 2.4
 // -------------------------------------------------------------------------
-// Based on: Kontrol S2 MK3 script by mi01 and Kontrol Z1 script by xeruf
+// Based on: NI Traktor Kontrol series scripts by leifhelm, mi01 & xeruf
 // Author: djantti
 //
 
@@ -20,8 +20,12 @@ class TraktorZ1Class {
 
     init(_id) {
         this.id = _id;
+
         this.registerInputPackets();
         this.registerOutputPackets();
+        this.readCurrentPosition();
+        this.enableSoftTakeover();
+
         console.log(this.id + " initialized");
     }
 
@@ -66,38 +70,6 @@ class TraktorZ1Class {
         this.registerInputScaler(InputReport0x01, "[Master]", "crossfader", 0x1B, 0xFFFF, this.parameterHandler.bind(this));
 
         this.controller.registerInputPacket(InputReport0x01);
-
-        // Soft takeover for all knobs and faders
-        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
-        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
-        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
-
-        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
-        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
-        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
-
-        engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
-        engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
-
-        engine.softTakeover("[Channel1]", "pregain", true);
-        engine.softTakeover("[Channel2]", "pregain", true);
-
-        engine.softTakeover("[Master]", "headMix", true);
-
-        engine.softTakeover("[Channel1]", "volume", true);
-        engine.softTakeover("[Channel2]", "volume", true);
-
-        engine.softTakeover("[Master]", "crossfader", true);
-    }
-
-    registerInputButton(inputReport, group, name, offset, bitmask, callback) {
-        inputReport.addControl(group, name, offset, "B", bitmask);
-        inputReport.setCallback(group, name, callback);
-    }
-
-    registerInputScaler(inputReport, group, name, offset, bitmask, callback) {
-        inputReport.addControl(group, name, offset, "H", bitmask);
-        inputReport.setCallback(group, name, callback);
     }
 
     registerOutputPackets() {
@@ -142,6 +114,48 @@ class TraktorZ1Class {
         this.vuRightConnection = engine.makeUnbufferedConnection("[Channel2]", "vu_meter", this.vuMeterHandler.bind(this));
 
         this.lightDeck(false);
+    }
+
+    readCurrentPosition() {
+        // Sync on-screen controls with controller knob positions
+        const report0x01 = new Uint8Array(controller.getInputReport(0x01));
+        // The first packet is ignored by HIDController
+        this.controller.parsePacket([0x01, ...Array.from(report0x01.map(x => x ^ 0xFF))]);
+        this.controller.parsePacket([0x01, ...Array.from(report0x01)]);
+    }
+
+    enableSoftTakeover() {
+        // Soft takeover for all knobs and faders
+        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", true);
+        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", true);
+        engine.softTakeover("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", true);
+
+        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", true);
+        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
+        engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
+
+        engine.softTakeover("[QuickEffectRack1_[Channel1]]", "super1", true);
+        engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
+
+        engine.softTakeover("[Channel1]", "pregain", true);
+        engine.softTakeover("[Channel2]", "pregain", true);
+
+        engine.softTakeover("[Master]", "headMix", true);
+
+        engine.softTakeover("[Channel1]", "volume", true);
+        engine.softTakeover("[Channel2]", "volume", true);
+
+        engine.softTakeover("[Master]", "crossfader", true);
+    }
+
+    registerInputButton(inputReport, group, name, offset, bitmask, callback) {
+        inputReport.addControl(group, name, offset, "B", bitmask);
+        inputReport.setCallback(group, name, callback);
+    }
+
+    registerInputScaler(inputReport, group, name, offset, bitmask, callback) {
+        inputReport.addControl(group, name, offset, "H", bitmask);
+        inputReport.setCallback(group, name, callback);
     }
 
     modeHandler(field) {
