@@ -953,6 +953,7 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     const double frames =
             m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
                     milliseconds);
+    qWarning() << "     cue shift by" << frames << "frames";
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
@@ -967,6 +968,7 @@ void Track::shiftBeatsMillis(double milliseconds) {
     const double frames =
             m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
                     milliseconds);
+    qWarning() << "     beat shift by" << frames << "frames";
     const auto translatedBeats = m_pBeats->tryTranslate(frames);
     if (translatedBeats) {
         trySetBeats(*translatedBeats);
