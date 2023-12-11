@@ -1,10 +1,6 @@
 /****************************************************************
-*       Reloop Beatmix script v0.9                              *
+*       Reloop Beatmix script v1.0                              *
 *       Author: Eugene Erokhin, uncle.eugene@gmail.com          *
-*       Tested on Mixxx version 2.4.x                           *
-*                                                               *
-*       Documentation in the Mixxx wiki:                        *
-*       https://mixxx.org/wiki/doku.php/reloop_beatmix          *
 ****************************************************************/
 
 var Beatmix = {};
