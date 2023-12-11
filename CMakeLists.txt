@@ -1172,6 +1172,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/findonwebmenuservices/findonwebmenusoundcloud.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
+  src/widget/rightclickpushbutton.cpp
   src/widget/wanalysislibrarytableview.cpp
   src/widget/wbasewidget.cpp
   src/widget/wbattery.cpp
