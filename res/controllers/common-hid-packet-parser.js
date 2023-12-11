@@ -2077,7 +2077,7 @@ class HIDController {
                                 continue;
                             }
                             const bitControlGroup = this.resolveGroup(bit.mapped_group);
-                            engine.makeConnection(
+                            engine.connectControl(
                                 bitControlGroup, bit.mapped_name, bit.mapped_callback, true);
                             engine.makeConnection(new_group, bit.mapped_name, bit.mapped_callback);
                             const value = engine.getValue(new_group, bit.mapped_name);
@@ -2100,7 +2100,7 @@ class HIDController {
                         continue;
                     }
                     const fieldControlGroup = this.resolveGroup(field.mapped_group);
-                    engine.makeConnection(
+                    engine.connectControl(
                         fieldControlGroup, field.mapped_name, field.mapped_callback, true);
                     engine.makeConnection(new_group, field.mapped_name, field.mapped_callback);
                     const value = engine.getValue(new_group, field.mapped_name);
@@ -2169,7 +2169,7 @@ class HIDController {
             return;
         }
         const controlgroup = this.resolveGroup(field.mapped_group);
-        engine.makeConnection(controlgroup, field.mapped_name, callback, true);
+        engine.connectControl(controlgroup, field.mapped_name, callback, true);
         field.mapped_group = undefined;
         field.mapped_name = undefined;
         field.mapped_callback = undefined;
