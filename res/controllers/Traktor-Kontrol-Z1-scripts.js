@@ -12,7 +12,7 @@ class TraktorZ1Class {
         // Modifier state
         this.modePressed = false;
 
-        // VuMeter
+        // VU meters
         this.vuLeftConnection = {};
         this.vuRightConnection = {};
         this.vuMeterThresholds = {"vu-30": (1 / 7), "vu-15": (2 / 7), "vu-6": (3 / 7), "vu-3": (4 / 7), "vu0": (5 / 7), "vu3": (6 / 7), "vu6": (7 / 7)};
@@ -186,7 +186,7 @@ class TraktorZ1Class {
             if (this.vuMeterThresholds[vuKeys[i]] > value) {
                 this.controller.setOutput(group, vuKeys[i], 0x00, last);
             } else {
-                this.controller.setOutput(group, vuKeys[i], 0x7E, last);
+                this.controller.setOutput(group, vuKeys[i], 0x7F, last);
             }
         }
     }
