@@ -434,6 +434,12 @@ void WTrackMenu::createActions() {
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotClearBeats);
+
+        m_pBpmShiftCuesAndBeatsAction = new QAction(tr("Shift beats and cue points"), m_pBPMMenu);
+        connect(m_pBpmShiftCuesAndBeatsAction,
+                &QAction::triggered,
+                this,
+                &WTrackMenu::slotShiftCuesAndBeats);
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -550,6 +556,7 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmResetAction);
         m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmShiftCuesAndBeatsAction);
 
         addMenu(m_pBPMMenu);
     }
@@ -1640,6 +1647,57 @@ void WTrackMenu::clearBeats() {
 
 void WTrackMenu::slotClearBeats() {
     clearBeats();
+}
+
+namespace {
+
+class ShiftCuesAndBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit ShiftCuesAndBeatsTrackPointerOperation(double millis)
+            : m_millis(millis) {
+    }
+
+  private:
+    void doApply(const TrackPointer& pTrack) const override {
+        pTrack->shiftCuePositionsMillis(m_millis);
+        pTrack->shiftBeatsMillis(m_millis);
+    }
+
+    const double m_millis;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotShiftCuesAndBeats() {
+    // Load and store last used value to allow repetitive bulk-fixing of track
+    // offset occurring after database migration or decoder changes.
+    int millis = m_pConfig->getValue(
+            ConfigKey("[Controls]", "last_used_cue_offset"),
+            5);
+    bool ok = false;
+    millis = QInputDialog::getInt(this,
+            tr("Shift cue points and beatgrid"),
+            tr("Shift cue points and beatgrid by milliseconds"),
+            millis,
+            -1000,
+            1000,
+            1,
+            &ok);
+    if (!ok || millis == 0) {
+        return;
+    }
+    m_pConfig->setValue(
+            ConfigKey("[Controls]", "last_used_cue_offset"),
+            millis);
+    const auto progressLabelText =
+            tr("Shifting beats and cue points of %1 track(s) by %2 milliseconds")
+                    .arg(QString::number(getTrackCount()),
+                            QString::number(millis));
+    const auto trackOperator =
+            ShiftCuesAndBeatsTrackPointerOperation(millis);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
 }
 
 namespace {

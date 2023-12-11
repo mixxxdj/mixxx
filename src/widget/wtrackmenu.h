@@ -126,6 +126,7 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
+    void slotShiftCuesAndBeats();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -287,6 +288,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
+    QAction* m_pBpmShiftCuesAndBeatsAction{};
 
     // Track color
     WColorPickerAction* m_pColorPickerAction{};
