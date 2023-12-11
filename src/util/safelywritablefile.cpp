@@ -7,6 +7,8 @@
 
 #if defined(__WINDOWS__)
 #include <Windows.h>
+
+#include <QThread>
 #endif
 
 namespace mixxx {

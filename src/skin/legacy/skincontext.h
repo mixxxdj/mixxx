@@ -15,7 +15,8 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wsingletoncontainer.h"
 
-#define SKIN_WARNING(node, context) (context).logWarning(__FILE__, __LINE__, (node))
+#define SKIN_WARNING(node, context, message) \
+    (context).logWarning(__FILE__, __LINE__, (node), (message))
 
 // A class for managing the current context/environment when processing a
 // skin. Used hierarchically by LegacySkinParser to create new contexts and
@@ -225,7 +226,10 @@ class SkinContext {
         return defaultDrawMode;
     }
 
-    QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
+    QDebug logWarning(const char* file,
+            const int line,
+            const QDomNode& node,
+            const QString& message) const;
 
     void defineSingleton(const QString& objectName, QWidget* widget) {
         m_pSharedState->singletons.insertSingleton(objectName, widget);

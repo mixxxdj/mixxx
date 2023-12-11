@@ -804,6 +804,8 @@ WLibrary {
 
 WEffectChainPresetButton::menu-indicator {
   image: url(skin:../LateNight/classic/buttons/btn__fx_settings.svg) no-repeat center center;
+  width: 18px;
+  height: 18px;
 }
 
 #DryWetKnob,
@@ -879,6 +881,8 @@ WEffectSelector,
   /* Arrow size is set in C++ to match the library font size */
   WSearchLineEdit::down-arrow {
     image: url(skin:../LateNight/classic/buttons/btn__fx_selector_down.svg);
+    width: 16px;
+    height: 24px;
     }
     WEffectSelector::down-arrow:hover,
     WEffectChainPresetSelector::down-arrow:hover,
@@ -2365,13 +2369,17 @@ WSearchLineEdit {
 
 
 /************ Library feature controls / tree view / table view *************/
-WLibrary QRadioButton::indicator:checked {
-  background: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
-}
 
-WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_off.svg) center center;
-}
+/* Additional space */
+#LibraryFeatureControls QRadioButton {
+  margin: 2px 3px 2px 3px;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:checked {
+    image: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_on_yellow.svg) center center;
+  }
+  #LibraryFeatureControls QRadioButton::indicator:unchecked {
+    image: url(skin:../LateNight/classic/buttons/btn__lib_radio_button_off.svg) center center;
+  }
 
 /* triangle for closed/opened branches in treeview */
 /* closed */

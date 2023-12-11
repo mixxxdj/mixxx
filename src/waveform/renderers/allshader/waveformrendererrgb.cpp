@@ -111,8 +111,7 @@ void WaveformRendererRGB::paintGL() {
 
         const int visualIndexStart = std::max(visualFrameStart * 2, 0);
         const int visualIndexStop =
-                std::min(std::max(visualFrameStop * 2, visualIndexStart + 1),
-                        dataSize - 1);
+                std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
         const float fpos = static_cast<float>(pos);
 

@@ -21,6 +21,13 @@ static_assert(
         mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
         "Invalid engine position value mismatch");
 
+// This value is used to make sure the initial seek after loading a track is
+// not omitted. Therefore this value must be different for 0.0 or any likely
+// value for the main cue
+constexpr auto kInitialPlayPosition =
+        mixxx::audio::FramePos::fromEngineSamplePos(
+                std::numeric_limits<double>::lowest());
+
 /**
  * EngineControl is an abstract base class for objects which implement
  * functionality pertaining to EngineBuffer. An EngineControl is meant to be a

@@ -1525,14 +1525,9 @@ if(GNU_GCC OR LLVM_CLANG)
   )
 elseif(MSVC)
   set_property(
-    SOURCE src/library/rekordbox/kaitaistructs/rekordbox_anlz.cpp
-    APPEND_STRING
-    PROPERTY COMPILE_OPTIONS /w
-  )
-  set_property(
     SOURCE src/library/rekordbox/kaitaistructs/rekordbox_pdb.cpp
     APPEND_STRING
-    PROPERTY COMPILE_OPTIONS /w
+    PROPERTY COMPILE_OPTIONS /wd4244
   )
 endif()
 

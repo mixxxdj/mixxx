@@ -1,4 +1,4 @@
-<svg width="40" height="22" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width="80" height="44" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 22">
 		<g fill="none" stroke="#000001" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6">
 				<path d="m28 7h-7v7h7v-1h-5v-5h5z"/>
 				<path d="m13 7v7h7v-7h-2v6h-3v-6z"/>

@@ -14,15 +14,6 @@ namespace {
 
 mixxx::Logger kLogger("CoverArtCache");
 
-// The initial QPixmapCache limit is 10MB.
-// But it is not used just by the coverArt stuff,
-// it is also used by Qt to handle other things behind the scenes.
-// Consequently coverArt cache will always have less than those
-// 10MB available to store the pixmaps.
-// So, we must increase this size a bit more,
-// in order to allow CoverCache handle more covers (performance gain).
-constexpr int kPixmapCacheLimit = 20480;
-
 QString pixmapCacheKey(mixxx::cache_key_t hash, int width) {
     return QString("CoverArtCache_%1_%2")
             .arg(QString::number(hash), QString::number(width));
@@ -39,7 +30,6 @@ inline QImage resizeImageWidth(const QImage& image, int width) {
 } // anonymous namespace
 
 CoverArtCache::CoverArtCache() {
-    QPixmapCache::setCacheLimit(kPixmapCacheLimit);
 }
 
 //static

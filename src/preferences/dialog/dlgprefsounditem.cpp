@@ -6,15 +6,13 @@
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 
-/**
- * Constructs a new preferences sound item, representing an AudioPath and SoundDevice
- * with a label and two combo boxes.
- * @param type The AudioPathType of the path to be represented
- * @param devices The list of devices for the user to choose from (either a collection
- * of input or output devices).
- * @param isInput true if this is representing an AudioInput, false otherwise
- * @param index the index of the represented AudioPath, if applicable
- */
+/// Constructs a new preferences sound item, representing an AudioPath and SoundDevice
+/// with a label and two combo boxes.
+/// @param type The AudioPathType of the path to be represented
+/// @param devices The list of devices for the user to choose from (either a collection
+/// of input or output devices).
+/// @param isInput true if this is representing an AudioInput, false otherwise
+/// @param index the index of the represented AudioPath, if applicable
 DlgPrefSoundItem::DlgPrefSoundItem(
         QWidget* parent,
         AudioPathType type,
@@ -25,7 +23,7 @@ DlgPrefSoundItem::DlgPrefSoundItem(
           m_type(type),
           m_index(index),
           m_isInput(isInput),
-          m_inhibitSettingChanged(false) {
+          m_emitSettingChanged(true) {
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
@@ -47,10 +45,8 @@ DlgPrefSoundItem::~DlgPrefSoundItem() {
 
 }
 
-/**
- * Slot called when the parent preferences pane updates its list of sound
- * devices, to update the item widget's list of devices to display.
- */
+/// Slot called when the parent preferences pane updates its list of sound
+/// devices, to update the item widget's list of devices to display.
 void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) {
     m_devices = devices;
     SoundDeviceId oldDev = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
@@ -72,10 +68,8 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
     }
 }
 
-/**
- * Slot called when the device combo box selection changes. Updates the channel
- * combo box.
- */
+/// Slot called when the device combo box selection changes. Updates the channel
+/// combo box.
 void DlgPrefSoundItem::deviceChanged(int index) {
     channelComboBox->clear();
     SoundDeviceId selection = deviceComboBox->itemData(index).value<SoundDeviceId>();
@@ -101,6 +95,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
         mixxx::audio::ChannelCount maxChannelsForType =
                 AudioPath::maxChannelsForType(m_type);
 
+        channelComboBox->blockSignals(true);
         // Count down from the max so that stereo channels are first.
         for (int channelsForType = maxChannelsForType;
                  channelsForType >= minChannelsForType; --channelsForType) {
@@ -123,26 +118,42 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                                          QPoint(i - 1, channelsForType));
             }
         }
+        channelComboBox->setCurrentIndex(-1); // clear selection
+        channelComboBox->blockSignals(false);
     }
 emitAndReturn:
-    if (m_inhibitSettingChanged == false) {
-        emit settingChanged();
+    if (m_emitSettingChanged) {
+        emit selectedDeviceChanged();
     }
 }
 
 void DlgPrefSoundItem::channelChanged() {
-    if (m_inhibitSettingChanged == false) {
-        emit settingChanged();
+    if (m_emitSettingChanged) {
+        emit selectedChannelsChanged();
     }
 }
 
-/**
- * Slot called to load the respective AudioPath from a SoundManagerConfig
- * object.
- * @note If there are multiple AudioPaths matching this instance's type
- *       and index (if applicable), then only the first one is used. A more
- *       advanced preferences pane may one day allow multiples.
- */
+void DlgPrefSoundItem::selectFirstUnusedChannelIndex(const QList<int>& selectedChannels) {
+    // Go through the list of occupied channel indices and pick the first unoccupied
+    for (int i = 0; i < channelComboBox->count(); i++) {
+        if (!selectedChannels.contains(i)) {
+            // TODO(xxx) Some ideas to improve auto-select:
+            // * check selected indices and new selection for channel overlap, e.g.
+            //   if the device has 4 channels and ch.1/2 + ch.3/4 are already selected
+            //   don't select next index (ch.1) but fall back to ch.1/2?
+            // * if there are only mono indices selected, try to pick the next mono
+            //   channel index instead of suggesting index 0 (ch.1/)
+            channelComboBox->setCurrentIndex(i);
+            return;
+        }
+    }
+}
+
+/// Slot called to load the respective AudioPath from a SoundManagerConfig
+/// object.
+/// @note If there are multiple AudioPaths matching this instance's type
+///       and index (if applicable), then only the first one is used. A more
+///       advanced preferences pane may one day allow multiples.
 void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     if (m_isInput) {
         const auto inputDeviceMap = config.getInputs();
@@ -168,11 +179,9 @@ void DlgPrefSoundItem::loadPath(const SoundManagerConfig &config) {
     setDevice(SoundDeviceId()); // this will blank the channel combo box
 }
 
-/**
- * Slot called when the underlying DlgPrefSound wants this Item to
- * record its respective path with the SoundManagerConfig instance at
- * config.
- */
+/// Slot called when the underlying DlgPrefSound wants this Item to
+/// record its respective path with the SoundManagerConfig instance at
+/// config.
 void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     SoundDevicePointer pDevice = getDevice();
     if (!pDevice) {
@@ -187,6 +196,9 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     int channelBase = channelData.x();
     const auto channelCount = mixxx::audio::ChannelCount(channelData.y());
 
+    // check config for occupied channels of this device
+    // auto-select next free channel (pair)
+
     if (m_isInput) {
         config->addInput(
                 pDevice->getDeviceId(),
@@ -198,17 +210,13 @@ void DlgPrefSoundItem::writePath(SoundManagerConfig* config) const {
     }
 }
 
-/**
- * Slot called to tell the Item to save its selections for later use.
- */
+/// Slot called to tell the Item to save its selections for later use.
 void DlgPrefSoundItem::save() {
     m_savedDevice = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     m_savedChannel = channelComboBox->itemData(channelComboBox->currentIndex()).toPoint();
 }
 
-/**
- * Slot called to reload Item with previously saved settings.
- */
+/// Slot called to reload Item with previously saved settings.
 void DlgPrefSoundItem::reload() {
     int newDevice = deviceComboBox->findData(QVariant::fromValue(m_savedDevice));
     if (newDevice > -1) {
@@ -220,10 +228,8 @@ void DlgPrefSoundItem::reload() {
     }
 }
 
-/**
- * Gets the currently selected SoundDevice
- * @returns pointer to SoundDevice, or NULL if the "None" option is selected.
- */
+/// Gets the currently selected SoundDevice
+/// @returns pointer to SoundDevice, or NULL if the "None" option is selected.
 SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     SoundDeviceId selection = deviceComboBox->itemData(deviceComboBox->currentIndex()).value<SoundDeviceId>();
     if (selection == SoundDeviceId()) {
@@ -240,46 +246,41 @@ SoundDevicePointer DlgPrefSoundItem::getDevice() const {
     return SoundDevicePointer();
 }
 
-/**
- * Selects a device in the device combo box given a SoundDevice
- * internal name, or selects "None" if the device isn't found.
- */
+/// Selects a device in the device combo box given a SoundDevice
+/// internal name, or selects "None" if the device isn't found.
 void DlgPrefSoundItem::setDevice(const SoundDeviceId& device) {
     int index = deviceComboBox->findData(QVariant::fromValue(device));
     //qDebug() << "DlgPrefSoundItem::setDevice" << device;
-    if (index != -1) {
-        m_inhibitSettingChanged = true;
-        deviceComboBox->setCurrentIndex(index);
-        m_inhibitSettingChanged = false;
-    } else {
+    if (index == -1) {
         deviceComboBox->setCurrentIndex(0); // None
-        emit settingChanged();
+        emit selectedDeviceChanged();
+    } else {
+        m_emitSettingChanged = false;
+        deviceComboBox->setCurrentIndex(index);
+        m_emitSettingChanged = true;
     }
 }
 
-/**
- * Selects a channel in the channel combo box given a channel number,
- * or selects the first channel if the given channel isn't found.
- */
+/// Selects a channel in the channel combo box given a channel number,
+/// or selects the first channel if the given channel isn't found.
 void DlgPrefSoundItem::setChannel(unsigned int channelBase,
                                   unsigned int channels) {
     // Because QComboBox supports QPoint natively (via QVariant) we use a QPoint
     // to store the channel info. x is the channel base and y is the channel
     // count.
     int index = channelComboBox->findData(QPoint(channelBase, channels));
-    if (index != -1) {
-        m_inhibitSettingChanged = true;
-        channelComboBox->setCurrentIndex(index);
-        m_inhibitSettingChanged = false;
-    } else {
+    if (index == -1) {
+        // channel(s) not found
         channelComboBox->setCurrentIndex(0); // 1
-        emit settingChanged();
+        emit selectedChannelsChanged();
+    } else {
+        m_emitSettingChanged = false;
+        channelComboBox->setCurrentIndex(index);
+        m_emitSettingChanged = true;
     }
 }
 
-/**
- * Checks that a given device can act as a source/input for our type.
- */
+/// Checks that a given device can act as a source/input for our type.
 int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice& device) const {
     const auto needed = AudioPath::minChannelsForType(m_type);
 

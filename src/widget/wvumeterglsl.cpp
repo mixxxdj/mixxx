@@ -1,6 +1,7 @@
 #include "widget/wvumeterglsl.h"
 
 #include <QOpenGLTexture>
+#include <array>
 
 #include "moc_wvumeterglsl.cpp"
 #include "util/duration.h"
