@@ -15,7 +15,7 @@ const faderStartThr = 0x20;
 // Midi notes constants
 const CH1 = 0x90;
 const CH2 = 0x91;
-const FULL = 0x7F;
+const ON = 0x7F;
 const OFF = 0x00;
 
 const bNAVKNOB = 0x18;
