@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="2.0.0+" schemaVersion="1">
     <info>
         <name>Reloop Beatmix</name>
-        <author>Eugene Erokhin &lt;uncle.eugene@gmail.com></author>
+        <author>Eugene Erokhin uncle.eugene@gmail.com</author>
         <description>1st gen. Reloop Beatmix</description>
         <manual>reloop_beatmix</manual>
     </info>
