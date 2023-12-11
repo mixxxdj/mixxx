@@ -4,7 +4,7 @@
         <name>Reloop Beatmix</name>
         <author>Eugene Erokhin &lt;uncle.eugene@gmail.com></author>
         <description>1st gen. Reloop Beatmix</description>
-        <forums>https://mixxx.discourse.group/t/reloop-beatmix-1st-gen-mapping-implemented/28536</forums>
+        <manual>reloop_beatmix</manual>
     </info>
     <controller id="Reloop Beatmix">
         <scriptfiles>
