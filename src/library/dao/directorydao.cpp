@@ -55,7 +55,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     if (!newDir.exists() || !newDir.isDir()) {
         kLogger.warning()
                 << "Failed to add"
-                << newDir
+                << newDir.location()
                 << ": Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
@@ -67,9 +67,9 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
             // Abort to prevent inconsistencies in the database
             kLogger.warning()
                     << "Aborting to add"
-                    << newDir
+                    << newDir.location()
                     << ": Loaded directory"
-                    << oldDir
+                    << oldDir.location()
                     << "does not exist or is inaccessible";
             return AddResult::InvalidOrMissingDirectory;
         }
@@ -106,7 +106,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
         if (RemoveResult::Ok != removeDirectory(oldDir)) {
             kLogger.warning()
                     << "Failed to remove obsolete child directory"
-                    << oldDir;
+                    << oldDir.location();
             DEBUG_ASSERT(!"removeDirectory failed");
             continue;
         }
