@@ -49,7 +49,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, const QString& group, 
     m_pDeleteCue->setObjectName("CueDeleteButton");
     connect(m_pDeleteCue, &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
-    m_pShiftCueEarlier = new QPushButton("", this);
+    m_pShiftCueEarlier = new RightClickPushButton("", this);
     m_pShiftCueEarlier->setToolTip(tr(
             "Shift this cue backwards by %1 milliseconds.\n"
             "If quantize is enabled shift this cue to the previous beat.")
@@ -61,7 +61,13 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, const QString& group, 
             [this]() {
                 slotShiftCue(-1);
             });
-    m_pShiftCueLater = new QPushButton("", this);
+    connect(m_pShiftCueEarlier,
+            &RightClickPushButton::rightClicked,
+            this,
+            [this]() {
+                slotShiftCueSmall(-1);
+            });
+    m_pShiftCueLater = new RightClickPushButton("", this);
     m_pShiftCueLater->setToolTip(tr(
             "Shift this cue forwards by %1 milliseconds.\n"
             "If quantize is enabled shift this cue to the next beat.")
@@ -72,6 +78,12 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, const QString& group, 
             this,
             [this]() {
                 slotShiftCue(1);
+            });
+    connect(m_pShiftCueLater,
+            &RightClickPushButton::rightClicked,
+            this,
+            [this]() {
+                slotShiftCueSmall(1);
             });
 
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
@@ -193,6 +205,20 @@ void WCueMenuPopup::slotShiftCue(int direction) {
     } else {
         m_pTrack->shiftCuePositionMillis(m_pCue, Cue::kShiftCuesOffsetMillis * direction);
     }
+}
+
+void WCueMenuPopup::slotShiftCueSmall(int direction) {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (direction == 0) {
+        return;
+    }
+
+    m_pTrack->shiftCuePositionMillis(m_pCue, Cue::kShiftCuesOffsetSmallMillis * direction);
 }
 
 void WCueMenuPopup::closeEvent(QCloseEvent* event) {

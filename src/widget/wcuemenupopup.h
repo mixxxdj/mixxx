@@ -9,6 +9,7 @@
 #include "track/cue.h"
 #include "track/track_decl.h"
 #include "util/widgethelper.h"
+#include "widget/rightclickpushbutton.h"
 #include "widget/wcolorpicker.h"
 
 class WCueMenuPopup : public QWidget {
@@ -54,6 +55,7 @@ class WCueMenuPopup : public QWidget {
     void slotEditLabel();
     void slotDeleteCue();
     void slotShiftCue(int direction);
+    void slotShiftCueSmall(int direction);
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
@@ -66,8 +68,8 @@ class WCueMenuPopup : public QWidget {
     QLineEdit* m_pEditLabel;
     WColorPicker* m_pColorPicker;
     QPushButton* m_pDeleteCue;
-    QPushButton* m_pShiftCueEarlier;
-    QPushButton* m_pShiftCueLater;
+    RightClickPushButton* m_pShiftCueEarlier;
+    RightClickPushButton* m_pShiftCueLater;
 
     PollingControlProxy m_pQuantize;
 
