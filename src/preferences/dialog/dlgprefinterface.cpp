@@ -128,10 +128,7 @@ DlgPrefInterface::DlgPrefInterface(
         warningLabel->setText(kWarningIconHtmlString);
 
         ComboBoxSkinconf->clear();
-        // align left edge of preview image and skin description with comboboxes
-        skinPreviewLabel->setStyleSheet("QLabel { margin-left: 4px; }");
         skinPreviewLabel->setText("");
-        skinDescriptionText->setStyleSheet("QLabel { margin-left: 2px; }");
         skinDescriptionText->setText("");
         skinDescriptionText->hide();
 
@@ -164,12 +161,7 @@ DlgPrefInterface::DlgPrefInterface(
                 this,
                 &DlgPrefInterface::slotSetScheme);
     } else {
-        lableSkin_2->hide();
-        labelColorScheme->hide();
-        ComboBoxSkinconf->hide();
-        ComboBoxSchemeconf->hide();
-        skinDescriptionText->hide();
-        skinPreviewLabel->hide();
+        groupBoxSkinOptions->hide();
     }
 
     // Screensaver mode
