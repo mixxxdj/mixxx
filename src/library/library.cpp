@@ -567,7 +567,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(const QString& dir) {
+bool Library::requestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -601,17 +601,20 @@ void Library::slotRequestAddDir(const QString& dir) {
                 "Aborting the operation to avoid library inconsistencies");
         break;
     default:
-        return;
+        return false;
     }
     if (!error.isEmpty()) {
         QMessageBox::information(nullptr,
                 tr("Can't add Directory to Library"),
                 tr("Could not add <b>%1</b> to your library.\n\n%2")
                         .arg(directory.absolutePath(), error));
+        return false;
     }
+
+    return true;
 }
 
-void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
+bool Library::requestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
     // Remove the directory from the directory list.
     DirectoryDAO::RemoveResult result =
             m_pTrackCollectionManager->removeDirectory(mixxx::FileInfo(dir));
@@ -626,7 +629,7 @@ void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType remova
         default:
             DEBUG_ASSERT(!"unreachable");
         }
-        return;
+        return false;
     }
 
     switch (removalType) {
@@ -644,13 +647,15 @@ void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType remova
     default:
         DEBUG_ASSERT(!"unreachable");
     }
+
+    return true;
 }
 
-void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
+bool Library::requestRelocateDir(const QString& oldDir, const QString& newDir) {
     DirectoryDAO::RelocateResult result =
             m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
     if (result == DirectoryDAO::RelocateResult::Ok) {
-        return;
+        return true;
     }
 
     QString error;
@@ -664,7 +669,7 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
                 "This directory can not be read.");
         break;
     default:
-        return;
+        DEBUG_ASSERT(!"unreachable");
     }
     if (!error.isEmpty()) {
         QMessageBox::information(nullptr,
@@ -672,6 +677,7 @@ void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDi
                 tr("Could not relink <b>%1</b> to <b>%2</b>.\n\n%3")
                         .arg(oldDir, newDir, error));
     }
+    return false;
 }
 
 void Library::setFont(const QFont& font) {

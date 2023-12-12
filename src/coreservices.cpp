@@ -354,7 +354,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
 
-    bool hasChanged_MusicDir = false;
+    bool musicDirAdded = false;
 
     if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
@@ -368,10 +368,9 @@ void CoreServices::initialize(QApplication* pApp) {
                 tr("Choose music library directory"),
                 QStandardPaths::writableLocation(
                         QStandardPaths::MusicLocation));
-        if (!fd.isEmpty()) {
-            // adds Folder to database.
-            m_pLibrary->slotRequestAddDir(fd);
-            hasChanged_MusicDir = true;
+        // request to add directory to database.
+        if (!fd.isEmpty() && m_pLibrary->requestAddDir(fd)) {
+            musicDirAdded = true;
         }
     }
 
@@ -422,7 +421,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see issue #6625
-    if (rescan || hasChanged_MusicDir || m_pSettingsManager->shouldRescanLibrary()) {
+    if (rescan || musicDirAdded || m_pSettingsManager->shouldRescanLibrary()) {
         m_pTrackCollectionManager->startLibraryScan();
     }
 

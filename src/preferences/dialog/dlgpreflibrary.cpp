@@ -34,18 +34,6 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
     setupUi(this);
 
-    connect(this,
-            &DlgPrefLibrary::requestAddDir,
-            m_pLibrary.get(),
-            &Library::slotRequestAddDir);
-    connect(this,
-            &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRemoveDir);
-    connect(this,
-            &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary.get(),
-            &Library::slotRequestRelocateDir);
     connect(PushButtonAddDir,
             &QPushButton::clicked,
             this,
@@ -171,7 +159,7 @@ QUrl DlgPrefLibrary::helpUrl() const {
     return QUrl(MIXXX_MANUAL_LIBRARY_URL);
 }
 
-void DlgPrefLibrary::initializeDirList() {
+void DlgPrefLibrary::updateDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -224,7 +212,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
 }
 
 void DlgPrefLibrary::slotUpdate() {
-    initializeDirList();
+    updateDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
 
@@ -332,9 +320,10 @@ void DlgPrefLibrary::slotAddDir() {
         this, tr("Choose a music directory"),
         QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
-        emit requestAddDir(fd);
-        slotUpdate();
-        m_bAddedDirectory = true;
+        if (m_pLibrary->requestAddDir(fd)) {
+            updateDirList();
+            m_bAddedDirectory = true;
+        }
     }
 }
 
@@ -390,8 +379,9 @@ void DlgPrefLibrary::slotRemoveDir() {
         removalType = LibraryRemovalType::KeepTracks;
     }
 
-    emit requestRemoveDir(fd, removalType);
-    slotUpdate();
+    if (m_pLibrary->requestRemoveDir(fd, removalType)) {
+        updateDirList();
+    }
 }
 
 void DlgPrefLibrary::slotRelocateDir() {
@@ -412,9 +402,8 @@ void DlgPrefLibrary::slotRelocateDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Relink music directory to new location"), startDir);
 
-    if (!fd.isEmpty()) {
-        emit requestRelocateDir(currentFd, fd);
-        slotUpdate();
+    if (!fd.isEmpty() && m_pLibrary->requestRelocateDir(currentFd, fd)) {
+        updateDirList();
     }
 }
 
