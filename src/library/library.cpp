@@ -584,11 +584,6 @@ void Library::slotRequestAddDir(const QString& dir) {
                    "directory is already in your library or you are currently "
                    "rescanning your library."));
     }
-    // set at least one directory in the config file so that it will be possible
-    // to downgrade from 1.12
-    if (m_pConfig->getValueString(kLegacyDirectoryConfigKey).length() < 1) {
-        m_pConfig->set(kLegacyDirectoryConfigKey, dir);
-    }
 }
 
 void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType removalType) {
@@ -612,33 +607,10 @@ void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType remova
     default:
         DEBUG_ASSERT(!"unreachable");
     }
-
-    // Also update the config file if necessary so that downgrading is still
-    // possible.
-    QString confDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
-
-    if (QDir(dir) == QDir(confDir)) {
-        const QList<mixxx::FileInfo> dirList =
-                m_pTrackCollectionManager->internalCollection()->loadRootDirs();
-        if (dirList.isEmpty()) {
-            // Save empty string so that an old version of mixxx knows it has to
-            // ask for a new directory.
-            m_pConfig->set(kLegacyDirectoryConfigKey, QString());
-        } else {
-            m_pConfig->set(kLegacyDirectoryConfigKey, dirList.first().location());
-        }
-    }
 }
 
 void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
     m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
-
-    // also update the config file if necessary so that downgrading is still
-    // possible
-    QString conDir = m_pConfig->getValueString(kLegacyDirectoryConfigKey);
-    if (oldDir == conDir) {
-        m_pConfig->set(kLegacyDirectoryConfigKey, newDir);
-    }
 }
 
 void Library::setFont(const QFont& font) {
