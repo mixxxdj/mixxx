@@ -56,9 +56,25 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         [[fallthrough]];
     }
     case SyncMode::LeaderSoft: {
-        if (pSyncable->getBaseBpm().isValid() &&
-                pSyncable->isPlaying() &&
-                pSyncable->isAudible()) {
+        if (pSyncable->getBaseBpm().isValid()) {
+            if (!pSyncable->isPlaying()) {
+                bool anyPlaying = false;
+                // Only allow a non-playing deck to be leader if no deck is playing
+                for (Syncable* pSyncable : m_syncables) {
+                    if (!pSyncable->isSynchronized()) {
+                        continue;
+                    }
+
+                    if (pSyncable->isPlaying()) {
+                        anyPlaying = true;
+                        break;
+                    }
+                }
+                if (!anyPlaying) {
+                    activateLeader(pSyncable, mode);
+                }
+                break;
+            }
             activateLeader(pSyncable, mode);
             break;
         }

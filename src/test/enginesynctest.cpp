@@ -378,14 +378,14 @@ TEST_F(EngineSyncTest, DisableSyncOnLeader) {
     pButtonSyncLeader2->set(1.0);
     ProcessBuffer();
     EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isExplicitLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     // Set deck 2 to playing, now it becomes explicit leader.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     // The request to become leader is queued, so we have to process a buffer.
     ProcessBuffer();
     EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isExplicitLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     // Unset enabled on channel2, it should work.
     auto pButtonSyncEnabled2 =
@@ -557,7 +557,7 @@ TEST_F(EngineSyncTest, SetExplicitLeaderByLights) {
     ProcessBuffer();
 
     // The sync lock should now be channel 1.
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
 
     // Set channel 2 to be follower.
     pButtonSyncEnabled2->set(1);
@@ -571,31 +571,30 @@ TEST_F(EngineSyncTest, SetExplicitLeaderByLights) {
 
     // Now channel 2 should be leader, and channel 1 should be a follower.
     EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isExplicitLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     // Now back again.
     pButtonSyncLeader1->set(1);
     ProcessBuffer();
 
     // Now channel 1 should be leader, and channel 2 should be a follower.
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     // Now set channel 1 to not-leader.
-    // This will choose automatically a Soft Leader, but prefers the old
-    // explicit leader it is still playing with a valid BPM
+    // This will choose automatically a Soft Leader, so it chooses the other deck.
     pButtonSyncLeader1->set(0);
     ProcessBuffer();
 
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));
-    EXPECT_TRUE(isSoftLeader(m_sGroup1));
-    EXPECT_TRUE(isFollower(m_sGroup2));
+    EXPECT_TRUE(isFollower(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     // Try again without playing
     pButtonSyncLeader1->set(1);
     ProcessBuffer();
 
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
@@ -2399,7 +2398,7 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange) {
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
 
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     ProcessBuffer();
@@ -2419,7 +2418,7 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_leader"))->set(1);
     ProcessBuffer();
     EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isExplicitLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
@@ -2452,7 +2451,7 @@ TEST_F(EngineSyncTest, FollowerUserTweakPreservedInSyncDisable) {
     m_pChannel2->getEngineBuffer()
             ->m_pBpmControl->m_dUserOffset.setValue(0.3);
 
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     ProcessBuffer();
@@ -2483,7 +2482,7 @@ TEST_F(EngineSyncTest, LeaderUserTweakPreservedInLeaderChange) {
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
 
-    EXPECT_TRUE(isExplicitLeader(m_sGroup1));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     ProcessBuffer();
@@ -2507,7 +2506,7 @@ TEST_F(EngineSyncTest, LeaderUserTweakPreservedInLeaderChange) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_leader"))->set(1);
     ProcessBuffer();
     EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isExplicitLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup2));
 
     for (int i = 0; i < 10; ++i) {
         ProcessBuffer();
