@@ -8,7 +8,7 @@
     </info>
     <controller id="Reloop Beatmix">
         <scriptfiles>
-            <file filename="Reloop_Beatmix.js" functionprefix="Beatmix"/>
+            <file filename="Reloop-Beatmix.scripts.js" functionprefix="Beatmix"/>
         </scriptfiles>
         <controls>
             <control>
