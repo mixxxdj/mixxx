@@ -324,16 +324,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     // Ramping Temporary Rate Change configuration
     //
 
-    // Rate Ramp Sensitivity slider & spinbox
-    connect(SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::valueChanged),
-            SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::setValue));
-    connect(SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::setValue));
-
+    // Rate Ramp Sensitivity slider
     m_iRateRampSensitivity =
             m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
                     kDefaultRateRampSensitivity);
@@ -351,10 +342,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(radioButtonRateRampModeLinear,
             &QRadioButton::toggled,
             SliderRateRampSensitivity,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            SpinBoxRateRampSensitivity,
             &QWidget::setEnabled);
     // Enable/disable temporary rate spinboxes when abrupt ramping is selected
     connect(radioButtonRateRampModeStepping,

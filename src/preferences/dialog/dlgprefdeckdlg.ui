@@ -321,52 +321,26 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
          </widget>
         </item>
         <item row="7" column="1" colspan="2">
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QSlider" name="SliderRateRampSensitivity">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimum">
-             <number>100</number>
-            </property>
-            <property name="maximum">
-             <number>2500</number>
-            </property>
-            <property name="singleStep">
-             <number>50</number>
-            </property>
-            <property name="value">
-             <number>250</number>
-            </property>
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="SpinBoxRateRampSensitivity">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="toolTip">
-             <string>Value in milliseconds</string>
-            </property>
-            <property name="minimum">
-             <number>100</number>
-            </property>
-            <property name="maximum">
-             <number>2500</number>
-            </property>
-            <property name="singleStep">
-             <number>1</number>
-            </property>
-            <property name="value">
-             <number>250</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QSlider" name="SliderRateRampSensitivity">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="minimum">
+           <number>100</number>
+          </property>
+          <property name="maximum">
+           <number>2500</number>
+          </property>
+          <property name="singleStep">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>250</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
         </item>
         <item row="10" column="0">
          <widget class="QLabel" name="labelSpeedTemporary">
@@ -707,7 +681,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>radioButtonRateRampModeLinear</tabstop>
   <tabstop>radioButtonRateRampModeStepping</tabstop>
   <tabstop>SliderRateRampSensitivity</tabstop>
-  <tabstop>SpinBoxRateRampSensitivity</tabstop>
   <tabstop>spinBoxTemporaryRateFine</tabstop>
   <tabstop>spinBoxTemporaryRateCoarse</tabstop>
   <tabstop>spinBoxPermanentRateFine</tabstop>
