@@ -78,7 +78,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                     << ": Loaded directory"
                     << oldDir.location()
                     << "does not exist or is inaccessible";
-            return AddResult::InvalidOrMissingDirectory;
+            continue;
         }
         const auto oldCanonicalLocation = oldDir.canonicalLocation();
         DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
