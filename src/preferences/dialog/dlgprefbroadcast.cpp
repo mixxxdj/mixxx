@@ -128,6 +128,13 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      }
 
      // Encoding format combobox
+     connect(comboBoxEncodingFormat,
+             QOverload<int>::of(&QComboBox::currentIndexChanged),
+             this,
+             [this]() {
+                 ogg_dynamicupdate->setEnabled(
+                         comboBoxEncodingFormat->currentData() == ENCODING_OGG);
+             });
      comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
@@ -508,6 +515,7 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setEnabled(profile->getFormat() == ENCODING_OGG);
     ogg_dynamicupdate->setChecked(profile->getOggDynamicUpdate());
 }
 
