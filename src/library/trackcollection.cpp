@@ -145,41 +145,44 @@ QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) 
     return m_directoryDao.loadAllDirectories(skipInvalidOrMissing);
 }
 
-bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
+DirectoryDAO::AddResult TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.addDirectory(rootDir)) {
+    DirectoryDAO::AddResult result = m_directoryDao.addDirectory(rootDir);
+    switch (result) {
     case DirectoryDAO::AddResult::Ok:
         transaction.commit();
-        return true;
+        break;
     case DirectoryDAO::AddResult::AlreadyWatching:
-        return true;
     case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+    case DirectoryDAO::AddResult::UnreadableDirectory:
     case DirectoryDAO::AddResult::SqlError:
-        return false;
+        break;
     default:
         DEBUG_ASSERT("unreachable");
+        return DirectoryDAO::AddResult::SqlError;
     }
-    return false;
+    return result;
 }
 
-bool TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
+DirectoryDAO::RemoveResult TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.removeDirectory(rootDir)) {
+    DirectoryDAO::RemoveResult result = m_directoryDao.removeDirectory(rootDir);
+    switch (result) {
     case DirectoryDAO::RemoveResult::Ok:
         transaction.commit();
-        return true;
+        break;
     case DirectoryDAO::RemoveResult::NotFound:
-        return true;
     case DirectoryDAO::RemoveResult::SqlError:
-        return false;
+        break;
     default:
         DEBUG_ASSERT("unreachable");
+        return DirectoryDAO::RemoveResult::SqlError;
     }
-    return false;
+    return result;
 }
 
 DirectoryDAO::RelocateResult TrackCollection::relocateDirectory(

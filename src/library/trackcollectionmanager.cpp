@@ -339,19 +339,21 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
     return ExportTrackMetadataResult::Skipped;
 }
 
-bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
+DirectoryDAO::AddResult TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const mixxx::FileInfo& oldDir) const {
+DirectoryDAO::RemoveResult TrackCollectionManager::removeDirectory(
+        const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->removeDirectory(oldDir);
 }
 
-void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
+DirectoryDAO::RelocateResult TrackCollectionManager::relocateDirectory(
+        const QString& oldDir, const QString& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -376,6 +378,7 @@ void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QStr
             externalTrackCollection->relocateDirectory(oldDir, newDir);
         }
     }
+    return result;
 }
 
 bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) const {
