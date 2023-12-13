@@ -151,8 +151,29 @@ DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const QString& oldDirectory,
         const QString& newDirectory) const {
+    const mixxx::FileInfo newFileInfo(newDirectory);
     DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
-    DEBUG_ASSERT(newDirectory == mixxx::FileInfo(newDirectory).location());
+    DEBUG_ASSERT(newDirectory == newFileInfo.location());
+    if (!newFileInfo.exists() || !newFileInfo.isDir()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "does not exist or is inaccessible";
+        // TODO Use AddResult for error reporting?
+        return {};
+    }
+    if (!newFileInfo.isReadable()) {
+        kLogger.warning()
+                << "Aborting to relocate"
+                << oldDirectory
+                << ": "
+                << newDirectory
+                << "can not be read";
+        return {};
+    }
+
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldDirectory also has a zombie
     // track location in newDirectory then the replace query will fail because the
