@@ -142,9 +142,9 @@ void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
-        openGlStatusIcon->setText(factory->getOpenGLVersion());
+        openGlStatusData->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
+        openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
     // The combobox holds a list of [handle name, handle index]
