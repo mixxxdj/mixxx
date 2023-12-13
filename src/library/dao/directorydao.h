@@ -17,6 +17,7 @@ class DirectoryDAO : public DAO {
         Ok,
         AlreadyWatching,
         InvalidOrMissingDirectory,
+        UnreadableDirectory,
         SqlError,
     };
     AddResult addDirectory(const mixxx::FileInfo& newDir) const;

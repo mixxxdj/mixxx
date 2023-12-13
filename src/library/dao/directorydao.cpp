@@ -59,6 +59,13 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                 << ": Directory does not exist or is inaccessible";
         return AddResult::InvalidOrMissingDirectory;
     }
+    if (!newDir.isReadable()) {
+        kLogger.warning()
+                << "Aborting to to add"
+                << newDir.location()
+                << ": Directory can not be read";
+        return AddResult::UnreadableDirectory;
+    }
     const auto newCanonicalLocation = newDir.canonicalLocation();
     DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
     QList<mixxx::FileInfo> obsoleteChildDirs;
