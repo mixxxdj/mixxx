@@ -356,8 +356,8 @@ TEST_F(EngineSyncTest, DisableInternalLeaderWhilePlaying) {
     ProcessBuffer();
 
     // This is not allowed, Internal should still be leader.
-    EXPECT_TRUE(isFollower(m_sInternalClockGroup));
-    EXPECT_EQ(0, pButtonLeaderSync->get());
+    EXPECT_TRUE(isSoftLeader(m_sInternalClockGroup));
+    EXPECT_EQ(1, pButtonLeaderSync->get());
 }
 
 TEST_F(EngineSyncTest, DisableSyncOnLeader) {
