@@ -359,20 +359,22 @@ void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QStr
             << oldDir
             << "->"
             << newDir;
-    // TODO(XXX): Add error handling in TrackCollection::relocateDirectory()
-    m_pInternalCollection->relocateDirectory(oldDir, newDir);
-    if (m_externalCollections.isEmpty()) {
-        return;
-    }
-    kLogger.debug()
-            << "Relocating directory in"
-            << m_externalCollections.size()
-            << "external track collection(s):"
-            << oldDir
-            << "->"
-            << newDir;
-    for (const auto& externalTrackCollection : m_externalCollections) {
-        externalTrackCollection->relocateDirectory(oldDir, newDir);
+    DirectoryDAO::RelocateResult result =
+            m_pInternalCollection->relocateDirectory(oldDir, newDir);
+
+    if (result == DirectoryDAO::RelocateResult::Ok &&
+            !m_externalCollections.isEmpty()) {
+        kLogger.debug()
+                << "Relocating directory in"
+                << m_externalCollections.size()
+                << "external track collection(s):"
+                << oldDir
+                << "->"
+                << newDir;
+        // NOTE(ronso0) What are external track collections?
+        for (const auto& externalTrackCollection : m_externalCollections) {
+            externalTrackCollection->relocateDirectory(oldDir, newDir);
+        }
     }
 }
 

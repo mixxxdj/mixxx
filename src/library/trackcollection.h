@@ -161,7 +161,7 @@ class TrackCollection : public QObject,
     bool addDirectory(const mixxx::FileInfo& rootDir);
     bool removeDirectory(const mixxx::FileInfo& rootDir);
 
-    void relocateDirectory(const QString& oldDir, const QString& newDir);
+    DirectoryDAO::RelocateResult relocateDirectory(const QString& oldDir, const QString& newDir);
 
     bool saveTrack(Track* pTrack) const;
 

@@ -182,7 +182,8 @@ bool TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
     return false;
 }
 
-void TrackCollection::relocateDirectory(const QString& oldDir, const QString& newDir) {
+DirectoryDAO::RelocateResult TrackCollection::relocateDirectory(
+        const QString& oldDir, const QString& newDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     // We only call this method if the user has picked a relocated directory via
@@ -194,19 +195,22 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
     Sandbox::createSecurityTokenForDir(QDir(newDir));
 
     SqlTransaction transaction(m_database);
-    QList<RelocatedTrack> relocatedTracks =
-            m_directoryDao.relocateDirectory(oldDir, newDir);
+    DirectoryDAO::RelocateResult result;
+    QList<RelocatedTrack> relocatedTracks;
+    std::tie(result, relocatedTracks) = m_directoryDao.relocateDirectory(oldDir, newDir);
     transaction.commit();
 
-    if (relocatedTracks.isEmpty()) {
-        // No tracks moved
-        return;
+    if (result != DirectoryDAO::RelocateResult::Ok || relocatedTracks.isEmpty()) {
+        // Error or no tracks moved
+        return result;
     }
 
     // Inform the TrackDAO about the changes
     m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
 
     GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
+
+    return result;
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
