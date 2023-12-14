@@ -56,32 +56,16 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         [[fallthrough]];
     }
     case SyncMode::LeaderSoft: {
-        if (pSyncable->getBaseBpm().isValid()) {
-            if (!pSyncable->isPlaying()) {
-                bool anyPlaying = false;
-                // Only allow a non-playing deck to be leader if no deck is playing
-                for (Syncable* pSyncable : std::as_const(m_syncables)) {
-                    if (!pSyncable->isSynchronized()) {
-                        continue;
-                    }
-
-                    if (pSyncable->isPlaying()) {
-                        anyPlaying = true;
-                        break;
-                    }
-                }
-                if (!anyPlaying) {
-                    activateLeader(pSyncable, mode);
-                }
-                break;
-            }
+        if (pSyncable->getBaseBpm().isValid() &&
+                pSyncable->isPlaying() &&
+                pSyncable->isAudible()) {
             activateLeader(pSyncable, mode);
             break;
         }
         [[fallthrough]];
     }
     case SyncMode::Follower: {
-        // This request is also used to verifies and moves a soft leader
+        // This request is also used to verify and move a soft leader
         if (!m_pLeaderSyncable || m_pLeaderSyncable == pSyncable ||
                 m_pLeaderSyncable->getSyncMode() != SyncMode::LeaderExplicit) {
             // Pick a new leader, in case we would have none after becoming follower
@@ -596,7 +580,6 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
 
 void EngineSync::addSyncableDeck(Syncable* pSyncable) {
     if (m_syncables.contains(pSyncable)) {
-        qDebug() << "EngineSync: already has" << pSyncable;
         return;
     }
     m_syncables.append(pSyncable);
@@ -654,7 +637,6 @@ mixxx::Bpm EngineSync::leaderBaseBpm() const {
 }
 
 void EngineSync::updateLeaderBpm(Syncable* pSource, mixxx::Bpm bpm) {
-    //qDebug() << "EngineSync::updateLeaderBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->updateLeaderBpm(bpm);
     }

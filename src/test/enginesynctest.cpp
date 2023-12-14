@@ -372,13 +372,13 @@ TEST_F(EngineSyncTest, DisableSyncOnLeader) {
     mixxx::BeatsPointer pBeats2 = mixxx::Beats::fromConstTempo(
             m_pTrack2->getSampleRate(), mixxx::audio::kStartFramePos, mixxx::Bpm(130));
     m_pTrack2->trySetBeats(pBeats2);
-    // Set deck two to explicit leader.
+    // Set deck two to leader, but this is not allowed because it's stopped.
     auto pButtonSyncLeader2 =
             std::make_unique<ControlProxy>(m_sGroup2, "sync_leader");
     pButtonSyncLeader2->set(1.0);
     ProcessBuffer();
-    EXPECT_TRUE(isFollower(m_sGroup1));
-    EXPECT_TRUE(isSoftLeader(m_sGroup2));
+    EXPECT_TRUE(isSoftLeader(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
 
     // Set deck 2 to playing, now it becomes explicit leader.
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);

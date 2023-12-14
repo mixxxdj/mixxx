@@ -471,7 +471,7 @@ void SyncControl::slotControlBeatSync(double value) {
 
 void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
+        kLogger.trace() << "SyncControl::slotControlPlay" << getGroup() << getSyncMode() << play;
     }
     m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
