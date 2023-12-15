@@ -2357,6 +2357,17 @@ if(ENGINEPRIME)
     # The include folder needs to already exist, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
     file(MAKE_DIRECTORY "${DJINTEROP_INSTALL_DIR}/include")
 
+    if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+      # Required for 'CMakeFiles/mixxx-lib_autogen_timestamp_deps'
+      # This tells 'make" that the libdjinterop is required for the djinterop library
+      # BUILD_BYPRODUCTS work for Ninja only, while this workaround does not work for Ninja on macOS
+      add_custom_command(
+        OUTPUT "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
+        DEPENDS libdjinterop
+        COMMAND echo libdjinterop installed
+      )
+    endif()
+
     # Assemble a library based on the external project.
     add_library(mixxx-libdjinterop STATIC IMPORTED)
     set_target_properties(mixxx-libdjinterop PROPERTIES
