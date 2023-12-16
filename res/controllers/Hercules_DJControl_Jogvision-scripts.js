@@ -208,7 +208,7 @@ var DJCJV = {
         }
 
         if (CFG.user.beatHelper === 1) {
-            DJCJV.other.beatHelpTimer = engine.beginTimer(100, "DJCJV.beatHelp");
+            DJCJV.other.beatHelpTimer = engine.beginTimer(100, DJCJV.beatHelp);
         }
 
         // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.

@@ -58,7 +58,9 @@ DJCRMX2.Deck.prototype.wheelPress = function (value) {
             this.finishWheelPress();
         } else {
             this.scratchTimer = engine.beginTimer(
-                    100, "DJCRMX2.decks[" + this.number + "].finishWheelPress()", true);
+                    // we delay the lookup here since this.number may have changed
+                    // by the time the timer fires
+                    100, () => DJCRMX2.decks[this.number].finishWheelPress(), true);
         }
     }
 }
@@ -79,6 +81,8 @@ DJCRMX2.Deck.prototype.finishWheelPress = function() {
         } else {
             // Check again soon.
             this.scratchTimer = engine.beginTimer(
+                    // we delay the lookup here since this.number may have changed
+                    // by the time the timer fires
                     100, "DJCRMX2.decks[" + this.number + "].finishWheelPress()", true);
         }
     }

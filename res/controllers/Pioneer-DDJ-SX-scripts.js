@@ -396,7 +396,7 @@ PioneerDDJSX.init = function(id) {
 
     // activate vu meter timer for Auto DJ:
     if (PioneerDDJSX.twinkleVumeterAutodjOn) {
-        PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, "PioneerDDJSX.vuMeterTwinkle()");
+        PioneerDDJSX.vuMeterTimer = engine.beginTimer(200, PioneerDDJSX.vuMeterTwinkle);
     }
 
     // initiate control status request:
@@ -483,7 +483,7 @@ PioneerDDJSX.autoDJToggleSyncKey = function(channel, control, value, status, gro
 
 PioneerDDJSX.autoDJTimer = function(value, group, control) {
     if (value) {
-        PioneerDDJSX.autoDJTickTimer = engine.beginTimer(PioneerDDJSX.autoDJTickInterval, "PioneerDDJSX.autoDJControl()");
+        PioneerDDJSX.autoDJTickTimer = engine.beginTimer(PioneerDDJSX.autoDJTickInterval, PioneerDDJSX.autoDJControl);
     } else if (PioneerDDJSX.autoDJTickTimer) {
         engine.stopTimer(PioneerDDJSX.autoDJTickTimer);
         PioneerDDJSX.autoDJTickTimer = 0;

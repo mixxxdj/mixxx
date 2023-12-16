@@ -139,7 +139,7 @@ HerculesMk1Hid.init = function() {
 
             if (v < 30) v = 30;
             if (HerculesMk1Hid.track_timer) engine.stopTimer(HerculesMk1Hid.track_timer);
-            HerculesMk1Hid.track_timer = engine.beginTimer(parseInt(5120 / v), 'HerculesMk1Hid.scroll_tracks_joystick');
+            HerculesMk1Hid.track_timer = engine.beginTimer(parseInt(5120 / v), HerculesMk1Hid.scroll_tracks_joystick);
         }
     });
     */
@@ -318,7 +318,7 @@ HerculesMk1Hid.scroll_tracks = function(g, e, v) {
     if (v > 0) {
         engine.setValue("[Playlist]", e == "track_next_a" ? "SelectNextTrack" : "SelectPrevTrack", 1);
         if (!HerculesMk1Hid.scroll_timer) {
-            HerculesMk1Hid.scroll_timer = engine.beginTimer(150, 'HerculesMk1Hid.scroll_tracks("[Playlist]","' + e + '",' + v + ')');
+            HerculesMk1Hid.scroll_timer = engine.beginTimer(150, () => HerculesMk1Hid.scroll_tracks("[Playlist]",e,v));
         }
     }
     else {

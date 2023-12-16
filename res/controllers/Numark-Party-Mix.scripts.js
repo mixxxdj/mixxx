@@ -152,7 +152,7 @@ NumarkPartyMix.Deck = function(deckNumber) {
             }
 
             if (deck.scratchModeEnabled) {
-                this.touchTimer = engine.beginTimer(50, function() {
+                this.touchTimer = engine.beginTimer(50, () => {
                     engine.scratchDisable(deckNumber);
                 }, true);
 
@@ -354,7 +354,7 @@ NumarkPartyMix.Browse = function() {
             browse.knobpressed = this.isPress(channel, control, value, status);
             if (browse.knobpressed) {
                 this.isLongPressed = false;
-                this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                     this.isLongPressed = true;
                     this.longPressTimer = 0;
                 }, true);

@@ -104,8 +104,8 @@ TerminalMix.init = function (id,debug) {
     engine.connectControl("[Channel2]","beat_active","TerminalMix.tapLEDR");
 
     TerminalMix.timers["fstartflash"] = -1;
-//     TerminalMix.timers["qtrSec"] = engine.beginTimer(250,"TerminalMix.qtrSec");
-    TerminalMix.timers["halfSec"] = engine.beginTimer(500,"TerminalMix.halfSec");
+//     TerminalMix.timers["qtrSec"] = engine.beginTimer(250, TerminalMix.qtrSec);
+    TerminalMix.timers["halfSec"] = engine.beginTimer(500, TerminalMix.halfSec);
 
     if (TerminalMix.traxKnobMode == "tracks") {
         midi.sendShortMsg(0x90,0x37,0x7F);  // light Back button

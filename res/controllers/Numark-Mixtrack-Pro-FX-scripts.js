@@ -536,7 +536,7 @@ MixtrackProFX.PadSection = function(deckNumber) {
     this.blinkLedOn = function(midi1, midi2) {
         this.blinkLedOff();
         this.blinkLedState = true;
-        this.blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, function() {
+        this.blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, () => {
             midi.sendShortMsg(midi1, midi2, this.blinkLedState ? 0x7F : 0x01);
             this.blinkLedState = !this.blinkLedState;
         });

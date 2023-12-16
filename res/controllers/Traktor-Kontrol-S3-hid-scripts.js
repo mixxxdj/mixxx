@@ -974,13 +974,13 @@ TraktorS3.Deck = class {
             if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
                 script.triggerControl(this.activeChannel, "beatsync");
                 // Start timer to measure how long button is pressed
-                this.syncPressedTimer = engine.beginTimer(300, function() {
+                this.syncPressedTimer = engine.beginTimer(300, () => {
                     engine.setValue(this.activeChannel, "sync_enabled", 1);
                     // Reset sync button timer state if active
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }.bind(this), this, true);
+                }, this, true);
 
                 // Light corresponding LED when button is pressed
                 this.colorOutput(1, "sync_enabled");
@@ -1660,7 +1660,7 @@ TraktorS3.Channel = class {
             }
             return;
         }
-        this.endOfTrackTimer = engine.beginTimer(400, function() {
+        this.endOfTrackTimer = engine.beginTimer(400, () => {
             this.endOfTrackBlinkState = !this.endOfTrackBlinkState;
         }, false);
     }
@@ -1956,7 +1956,7 @@ TraktorS3.FXControl = class {
         case this.STATE_EFFECT:
             break;
         case this.STATE_FOCUS:
-            this.focusBlinkTimer = engine.beginTimer(150, function() {
+            this.focusBlinkTimer = engine.beginTimer(150, () => {
                 TraktorS3.kontrol.fxController.focusBlinkState = !TraktorS3.kontrol.fxController.focusBlinkState;
                 TraktorS3.kontrol.fxController.lightFx();
             }, false);

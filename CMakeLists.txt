@@ -2348,22 +2348,35 @@ if(ENGINEPRIME)
       EXCLUDE_FROM_ALL TRUE
     )
 
-    # Assemble a library based on the external project.
-    add_library(mixxx-libdjinterop STATIC IMPORTED)
-    add_dependencies(mixxx-libdjinterop libdjinterop)
-    set(DJINTEROP_INCLUDE_DIR "${DJINTEROP_INSTALL_DIR}/include")
-    set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
-    set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
-    target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
-    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
-
     # Since we have built libdjinterop from sources as a static library, its
     # transitive dependencies are not automatically recognised.  libdjinterop
     # depends on zlib and optionally sqlite3.  If libdjinterop was configured
     # to depend on system SQLite, Mixxx will already have the dependency.
     # But it does not have zlib, so we explicitly add that here.
     find_package(ZLIB 1.2.8 REQUIRED)
-    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
+    # The include folder needs to already exist, otherwise INTERFACE_INCLUDE_DIRECTORIES will not be propagated
+    file(MAKE_DIRECTORY "${DJINTEROP_INSTALL_DIR}/include")
+
+    if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+      # Required for 'CMakeFiles/mixxx-lib_autogen_timestamp_deps'
+      # This tells 'make" that the libdjinterop is required for the djinterop library
+      # BUILD_BYPRODUCTS work for Ninja only, while this workaround does not work for Ninja on macOS
+      add_custom_command(
+        OUTPUT "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
+        DEPENDS libdjinterop
+        COMMAND echo libdjinterop installed
+      )
+    endif()
+
+    # Assemble a library based on the external project.
+    add_library(mixxx-libdjinterop STATIC IMPORTED)
+    set_target_properties(mixxx-libdjinterop PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${DJINTEROP_INSTALL_DIR}/include"
+      INTERFACE_LINK_LIBRARIES ${ZLIB_LIBRARIES}
+      IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
+    )
+    add_dependencies(mixxx-libdjinterop libdjinterop)
+    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
   endif()
 
   # Include conditional sources only required with Engine Prime export support.

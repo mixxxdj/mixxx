@@ -228,8 +228,7 @@ RMX.scroll_tracks = function(g, e, v) {
     engine.setValue("[Playlist]", direction, 1);
 
     if (!RMX.scroll_timer) {
-      var callback = 'RMX.scroll_tracks("[Playlist]","' + e + '",' + v + ')';
-      RMX.scroll_timer = engine.beginTimer(150, callback);
+      RMX.scroll_timer = engine.beginTimer(150, () => RMX.scroll_tracks("Playlist", e, v), true);
     }
   }
   else {
@@ -283,8 +282,7 @@ RMX.jog = function(g, e, v, ctrl) {
     }
     engine.scratchTick(deck, ctrl.relative);
 
-    var callback = 'RMX.stopScratching(\"' + g + '\")';
-    RMX.scratchTimer = engine.beginTimer(20, callback, true);
+    RMX.scratchTimer = engine.beginTimer(20, () => RMX.stopScratching(g), true);
   }
 
   // fine jog mode when playing

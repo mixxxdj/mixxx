@@ -114,7 +114,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 		var beta = (alpha/30); //Adjust to suit.
 		engine.scratchEnable(this.deckNum, intervalsPerRev, rpm, alpha, beta);
 	};
-	this.scratchOff = function() {
+	this.scratchOff = () => {
 		engine.scratchDisable(this.deckNum);
 		this.scratchTimer= 0;
 	};
@@ -130,7 +130,7 @@ NumarkDJ2Go.deck = function(deckNum) {
 		var scrConst = 1;  //Adjust to suit.
 		var scrVal = (forwards)?scrConst:-scrConst;
 		engine.scratchTick(this.deckNum, scrVal);
-		this.scratchTimer = engine.beginTimer(playDelay,"NumarkDJ2Go.decks.D" + this.deckNum + ".scratchOff()", true);
+		this.scratchTimer = engine.beginTimer(playDelay, NumarkDJ2Go.decks["D" + this.deckNum].scratchOff, true);
 	};
 	//Pitchbend attribute. Required for pitchbend to be ramping (i.e speeds up/slows down the more the wheel is moved).
 	this.bendVal= 0;
@@ -150,12 +150,10 @@ NumarkDJ2Go.deck = function(deckNum) {
 		nVal = (nVal > 3.0)?3.0:nVal; //If gone over 3, keep at 3.
 		this.bendVal = (forwards)?nVal:-nVal; //Return to positive or minus number.
 		engine.setValue(this.group, "jog", this.bendVal);
-		this.pitchTimer = engine.beginTimer(20,"NumarkDJ2Go.decks.D" + this.deckNum + ".pitchBendOff()", true);
-	};
-	//Used by function above. Turns pitchbend off.
-	this.pitchBendOff = function() {
-		this.bendVal = 0;
-		this.pitchTimer= 0;
+		this.pitchTimer = engine.beginTimer(20, () => {
+			this.bendVal = 0;
+			this.pitchTimer= 0;
+		}, true);
 	};
 	//Controls for the deck--buttons, sliders, etc--are associated with the deck using this array.
 	this.control = [];
@@ -193,7 +191,6 @@ NumarkDJ2Go.control = function(key, midino, group) {
 //actually illuminate.
 NumarkDJ2Go.light = function(group, midino, deckID, controlID) {
 	this.midino = midino;
-	this.objStr= "NumarkDJ2Go.decks." + deckID + ".control." + controlID + ".light"
 	this.lit = false;
 	this.flashTimer= 0;
 	this.flashOnceTimer= 0;
@@ -201,15 +198,14 @@ NumarkDJ2Go.light = function(group, midino, deckID, controlID) {
 		midi.sendShortMsg(0x90, this.midino, value);
 		this.lit = value;
 	};
-	this.flashOnceOn = function() {
+	this.flashOnceOn = () => {
 		midi.sendShortMsg(0x90, this.midino,1);
-		this.flashOnceTimer = engine.beginTimer(150, this.objStr + ".flashOnceOff()", true);
+		this.flashOnceTimer = engine.beginTimer(150, () => {
+			midi.sendShortMsg(0x80, this.midino,1);
+			this.flashOnceTimer = 0;
+		}, true);
 	};
-	this.flashOnceOff = function() {
-		midi.sendShortMsg(0x80, this.midino,1);
-		this.flashOnceTimer = 0;
-	};
-	this.flashOff = function(relight) {
+	this.flashOff = relight => {
 		if (this.flashTimer !== 0)
 			{
 			engine.stopTimer(this.flashTimer);
@@ -233,10 +229,10 @@ NumarkDJ2Go.light = function(group, midino, deckID, controlID) {
 		var relight = this.lit;
 		this.flashOff();
 		this.flashOnceOn(); //This is because the timer take 600 milisecs before first flash.
-		this.flashTimer = engine.beginTimer(600, this.objStr + ".flashOnceOn()");
+		this.flashTimer = engine.beginTimer(600, this.flashOnceOn);
 		if (flashNo)
 			{
-			engine.beginTimer((flashNo * 600) -50, this.objStr + ".flashOff(" + relight + ")", true);
+			engine.beginTimer((flashNo * 600) -50, () => this.flashOff(relight), true);
 			};
 	};
 };
