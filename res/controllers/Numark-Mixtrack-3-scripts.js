@@ -312,9 +312,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount == 1
 
         // permanent timer
-        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, function() {
-            this.flashOnceOn(false);
-        });
+        this.flashTimer = engine.beginTimer(num_ms_on + num_ms_off, ()=>this.flashOnceOn(false));
     }
 
     if (flashCount > 1) {
@@ -322,9 +320,7 @@ LED.prototype.flashOn = function(num_ms_on, value, num_ms_off, flashCount, relig
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, function() {
-            this.stopflash(relight);
-        }, true);
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, ()=>this.stopflash(relight), true);
     }
 };
 
@@ -371,9 +367,7 @@ LED.prototype.flashOnceOn = function(relight) {
     sendShortMsg(this.control, this.midino, this.valueon);
     pauseScript(scriptpause);
     this.flashOnceDuration = this.num_ms_on;
-    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, function() {
-        this.flashOnceOff(relight);
-    }, true);
+    this.flashOnceTimer = engine.beginTimer(this.num_ms_on - scriptpause, ()=>this.flashOnceOff(relight), true);
 };
 
 // private :call back function (called in flashOnceOn() )

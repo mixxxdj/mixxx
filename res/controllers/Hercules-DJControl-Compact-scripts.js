@@ -67,7 +67,7 @@ HercDJCompact.jog_wheel = function (group, control, value, status) {
         if(engine.getValue(input.group, "scratch2_enable")) {
             //when not moved for 200 msecs, probably we are not touching the wheel anymore
             scratch_timer[input.channel] =
-                engine.beginTimer(200, "HercDJCompact.jog_wheelhelper("+input.channel+")", true);
+                engine.beginTimer(200, () => HercDJCompact.jog_wheelhelper(input.channel), true);
             scratch_timer_on[input.channel] = true;
         }
     } else {

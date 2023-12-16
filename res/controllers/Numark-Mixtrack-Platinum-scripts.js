@@ -396,7 +396,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             }
 
             var button = this;
-            this.flash_timer = engine.beginTimer(time, function() {
+            this.flash_timer = engine.beginTimer(time, () => {
                 if (button.flash_state) {
                     button.send(button.on);
                     button.flash_state = false;
@@ -405,7 +405,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                     button.send(button.off);
                     button.flash_state = true;
                 }
-            }.bind(this));
+            });
         },
         stopFlash: function() {
             engine.stopTimer(this.flash_timer);
@@ -1190,7 +1190,7 @@ MixtrackPlatinum.startScratchTimer = function (deck) {
     if (MixtrackPlatinum.scratch_timer[deck]) return;
 
     MixtrackPlatinum.scratch_tick[deck] = 0;
-    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, function() {
+    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, () => {
         MixtrackPlatinum.scratchTimerCallback(deck);
     });
 };

@@ -320,12 +320,12 @@ NovationDicer.transformer = function(channel, control, value, status, group)
         if(group == "[Channel1]")
         {
             NovationDicer.gainCH1 = engine.getValue(group, "pregain");
-            NovationDicer.timer1 = engine.beginTimer(((60000/engine.getValue(group,"bpm"))/8),"NovationDicer.stutter(\"[Channel1]\")");
+            NovationDicer.timer1 = engine.beginTimer(((60000/engine.getValue(group,"bpm"))/8), () => NovationDicer.stutter("[Channel1]"));
             midi.sendShortMsg(0x9c,0x3f,NovationDicer.orange);
         } else
         {
             NovationDicer.gainCH2 = engine.getValue(group, "pregain");
-            NovationDicer.timer2 = engine.beginTimer(((60000/engine.getValue(group,"bpm"))/8),"NovationDicer.stutter(\"[Channel2]\")");
+            NovationDicer.timer2 = engine.beginTimer(((60000/engine.getValue(group,"bpm"))/8), () => NovationDicer.stutter("[Channel2]"));
             midi.sendShortMsg(0x9f,0x3f,NovationDicer.orange);
         }
     } else

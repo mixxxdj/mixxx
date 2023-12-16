@@ -621,7 +621,7 @@ VestaxVCI400.Deck.prototype.onWheelTouch = function(value) {
             this.finishWheelTouch();
         } else {
             this.wheelTouchInertiaTimer = engine.beginTimer(
-                    inertiaTime, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                    inertiaTime, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         }
     }
 };
@@ -631,7 +631,7 @@ VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
     if (this.vinylActive) {
         // Vinyl button still being pressed, don't disable scratch mode yet.
         this.wheelTouchInertiaTimer = engine.beginTimer(
-                100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                100, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         return;
     }
     var play = engine.getValue(this.group, "play");
@@ -648,7 +648,7 @@ VestaxVCI400.Deck.prototype.finishWheelTouch = function() {
         } else {
             // Check again soon.
             this.wheelTouchInertiaTimer = engine.beginTimer(
-                    100, "VestaxVCI400.Decks." + this.deckIdentifier + ".finishWheelTouch()", true);
+                    100, () => { VestaxVCI400.Decks[this.deckIdentifier].finishWheelTouch(); }, true);
         }
     }
 };

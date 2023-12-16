@@ -4903,7 +4903,7 @@ var NLMMK3 = (function () {
 	  start(interval) {
 	    if (this._state == null) {
 	      const started = Date.now();
-	      const handle = engine.beginTimer(interval, this.task);
+	      const handle = engine.beginTimer(interval, this.task.bind(this));
 	      this._state = {
 	        handle,
 	        started

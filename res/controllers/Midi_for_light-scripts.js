@@ -91,7 +91,7 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     if (midi_channel < 1) midi_channel = 1;
 
     for (var i = 0; i <= 3; i++) {
-        deck_beat_watchdog_timer[i] = engine.beginTimer(beat_watchdog_time, function() { midi_for_light.deckBeatWatchdog(i); });
+        deck_beat_watchdog_timer[i] = engine.beginTimer(beat_watchdog_time, () => { midi_for_light.deckBeatWatchdog(i); });
         engine.connectControl("[Channel" + (i + 1) + "]", "beat_active", "midi_for_light.deckBeatOutputToMidi");
         engine.connectControl("[Channel" + (i + 1) + "]", "volume", "midi_for_light.deckVolumeChange");
         engine.connectControl("[Channel" + (i + 1) + "]", "play", "midi_for_light.deckButtonPlay");
@@ -118,7 +118,7 @@ midi_for_light.deckButtonPlay = function(value, group, control) { // called when
     if (value == 1) { // deck play on
         engine.stopTimer(deck_beat_watchdog_timer[deck]);
         beat_watchdog[deck] = false;
-        deck_beat_watchdog_timer[deck] = engine.beginTimer(beat_watchdog_time, function() { midi_for_light.deckBeatWatchdog(deck); });
+        deck_beat_watchdog_timer[deck] = engine.beginTimer(beat_watchdog_time, () => { midi_for_light.deckBeatWatchdog(deck); });
     } else { // deck play stop
         engine.stopTimer(deck_beat_watchdog_timer[deck]);
         beat_watchdog[deck] = true;
@@ -508,7 +508,7 @@ midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send 
     // reset deck beat watchdog
     engine.stopTimer(deck_beat_watchdog_timer[deck]);
     beat_watchdog[deck] = false;
-    deck_beat_watchdog_timer[deck] = engine.beginTimer(beat_watchdog_time, function() { midi_for_light.deckBeatWatchdog(deck); });
+    deck_beat_watchdog_timer[deck] = engine.beginTimer(beat_watchdog_time, () => { midi_for_light.deckBeatWatchdog(deck); });
 
     // fit deck bpm to midi range 0-127
     if (deck_bpm <= 0) deck_bpm = 0;

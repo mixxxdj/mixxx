@@ -351,7 +351,7 @@ KontrolF1.init = function (id) {
     KontrolF1.testUpdateInterval = 20;
     KontrolF1.testTimer = engine.beginTimer(
         KontrolF1.testUpdateInterval,
-        "KontrolF1.testSegments()"
+        KontrolF1.testSegments
     );
 
     KontrolF1.updateLEDs();

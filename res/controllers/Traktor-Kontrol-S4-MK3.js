@@ -444,7 +444,7 @@ class Deck extends ComponentContainer {
             this.moveMode = this.secondDeckModes.moveMode;
 
             if (this.wheelMode === wheelModes.motor) {
-                engine.beginTimer(MotorWindUpMilliseconds, function() {
+                engine.beginTimer(MotorWindUpMilliseconds, () => {
                     engine.setValue(newGroup, "scratch2_enable", true);
                 }, true);
             }
@@ -537,7 +537,7 @@ class Button extends Component {
     indicator(on) {
         if (on && this.indicatorTimer === 0) {
             this.outDisconnect();
-            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback.bind(this));
+            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback);
         } else if (!on && this.indicatorTimer !== 0) {
             engine.stopTimer(this.indicatorTimer);
             this.indicatorTimer = 0;
@@ -657,7 +657,7 @@ class CueButton extends PushButton {
             engine.setValue(this.group, this.inKey, pressed);
             if (this.deck.wheelMode === wheelModes.motor) {
                 engine.setValue(this.group, "scratch2_enable", false);
-                engine.beginTimer(MotorWindDownMilliseconds, function() {
+                engine.beginTimer(MotorWindDownMilliseconds, () => {
                     engine.setValue(this.group, "scratch2_enable", true);
                 }, true);
             }
@@ -2313,7 +2313,7 @@ class S4Mk3Deck extends Deck {
                     } else {
                         this.deck.wheelMode = wheelModes.motor;
                         const group = this.group;
-                        engine.beginTimer(MotorWindUpMilliseconds, function() {
+                        engine.beginTimer(MotorWindUpMilliseconds, () => {
                             engine.setValue(group, "scratch2_enable", true);
                         }, true);
                     }
@@ -2380,7 +2380,7 @@ class S4Mk3Deck extends Deck {
                 } else if (engine.getValue(this.group, "scratch2") === 0) {
                     engine.setValue(this.group, "scratch2_enable", false);
                 } else {
-                    engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
+                    engine.beginTimer(100, this.stopScratchWhenOver, true);
                 }
             }
         });
@@ -2922,7 +2922,7 @@ class S4MK3 {
             controller.sendOutputReport(129, deckMeters.buffer);
         });
         if (UseMotors) {
-            engine.beginTimer(20, this.motorCallback.bind(this));
+            engine.beginTimer(20, this.motorCallback);
             this.leftVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
             this.rightVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
 
