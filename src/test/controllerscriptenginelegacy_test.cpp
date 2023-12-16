@@ -620,3 +620,277 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimer) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    EXPECT_TRUE(
+            evaluateAndAssert(R"(engine.beginTimer(50, function() {
+                                    let x = engine.getValue('[Test]', 'co');
+                                    x++; 
+                                    engine.setValue('[Test]', 'co', x);
+                                 }, false);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    cEngine->thread()->msleep(70);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+
+    cEngine->thread()->msleep(140);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(2.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimer) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(engine.beginTimer(20, function() {
+                   engine.setValue('[Test]', 'co', 1.0);
+               }, true);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(1.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunction) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
+            -10.0,
+            50.0);
+    coTimerId->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(var globVar = 7;
+            timerId = engine.beginTimer(20, function () {
+                engine.setValue('[Test]', 'co', this.globVar);
+                this.globVar++;
+                engine.setValue('[Test]', 'coTimerId', timerId + 10);
+            }.bind(this), true);            
+            engine.setValue('[Test]', 'coTimerId', timerId);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', this.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunction) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
+            -10.0,
+            50.0);
+    coTimerId->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(var globVar = 7;
+            timerId = engine.beginTimer(20, ()=> {
+                engine.setValue('[Test]', 'co', this.globVar);
+                this.globVar++;
+                engine.setValue('[Test]', 'coTimerId', timerId + 10);
+            }, true);            
+            engine.setValue('[Test]', 'coTimerId', timerId);)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', this.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunctionInClass) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
+            -10.0,
+            50.0);
+    coTimerId->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, function() {
+                     engine.setValue('[Test]', 'co', this.globVar);
+                     this.globVar++;
+                     engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
+                  }.bind(this), true);            
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass;
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', MyMapping.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunctionInClass) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
+            -10.0,
+            50.0);
+    coTimerId->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, ()=> {
+                     engine.setValue('[Test]', 'co', this.globVar);
+                     this.globVar++;
+                     engine.setValue('[Test]', 'coTimerId', this.timerId + 10);
+                  }, true);            
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass;
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(timerId + 10, coTimerId->get());
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', MyMapping.globVar);"));
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(8.0, co->get());
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimerArrowFunctionCallInClass) {
+    auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
+            -10.0,
+            10.0);
+    co->setParameter(0.0);
+    auto coTimerId = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "coTimerId"),
+            -10.0,
+            50.0);
+    coTimerId->setParameter(0.0);
+    EXPECT_TRUE(evaluateAndAssert(
+            "engine.setValue('[Test]', 'co', 0.0);"));
+    EXPECT_DOUBLE_EQ(0.0, co->get());
+
+    // Single shot timer with minimum allowed interval of 20ms
+    EXPECT_TRUE(evaluateAndAssert(
+            R"(
+            class MyClass {
+               constructor() {
+                  this.timerId = undefined;
+                  this.globVar = 7;
+               }
+               stopTimer() {
+                  engine.stopTimer(this.timerId);
+                  this.timerId = 0;
+                  engine.setValue('[Test]', 'coTimerId', this.timerId + 20);
+               }
+               runTimer() {
+                  this.timerId = engine.beginTimer(20, ()=>this.stopTimer(), false);                  
+                  engine.setValue('[Test]', 'co', this.globVar);      
+                  engine.setValue('[Test]', 'coTimerId', this.timerId);
+               }
+            }
+            var MyMapping = new MyClass;
+            MyMapping.runTimer();)"));
+    processEvents();
+    EXPECT_DOUBLE_EQ(7.0, co->get());
+    double timerId = coTimerId->get();
+    EXPECT_TRUE(timerId > 0);
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+
+    cEngine->thread()->msleep(35);
+    processEvents();
+
+    EXPECT_DOUBLE_EQ(20, coTimerId->get());
+}
