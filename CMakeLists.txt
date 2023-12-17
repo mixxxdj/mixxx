@@ -547,6 +547,21 @@ else()
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
     endif()
+    if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+      execute_process(
+          COMMAND "${CCACHE_EXECUTABLE}" "--get-config=sloppiness"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                    OUTPUT_VARIABLE CCACHE_CONFIGURED_SLOPPINESS OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+      if (NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "pch_defines" OR
+          NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "time_macros")
+        message(WARNING
+            "ccache: For use with precompiled headers, the setting \"sloppiness\" needs to "
+            "be set to \"pch_defines,time_macros\". This can be done via the environment variable "
+            "\"CCACHE_SLOPPINESS=pch_defines,time_macros\" or permanent via "
+            "\"ccache --set-config=sloppiness=pch_defines,time_macros\".")
+      endif()
+    endif()
     set( CMAKE_C_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
     set( CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
   endif()
