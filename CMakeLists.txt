@@ -2372,7 +2372,7 @@ if(ENGINEPRIME)
     add_library(mixxx-libdjinterop STATIC IMPORTED)
     set_target_properties(mixxx-libdjinterop PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${DJINTEROP_INSTALL_DIR}/include"
-      INTERFACE_LINK_LIBRARIES ${ZLIB_LIBRARIES}
+      INTERFACE_LINK_LIBRARIES ZLIB::ZLIB
       IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
