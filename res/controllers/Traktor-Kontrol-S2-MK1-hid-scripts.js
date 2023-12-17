@@ -416,8 +416,8 @@ class DeckClass {
             } else {
                 this.wheelTouchInertiaTimer = engine.beginTimer(
                     inertiaTime,
-                    this.finishJogPress.bind(this)
-                    , true);
+                    this.finishJogPress, 
+                    true);
             }
         }
     }
@@ -530,7 +530,7 @@ class DeckClass {
                 engine.scratchDisable(this.number, true);
             } else {
             // Check again soon.
-                this.wheelPressInertiaTimer = engine.beginTimer(20, this.finishJogPress.bind(this), true);
+                this.wheelPressInertiaTimer = engine.beginTimer(20, finishJogPress, true);
             }
         }
     }
@@ -795,10 +795,10 @@ class EffectUnit {
                 engine.setValue(this.group, "loaded_chain_preset", 1);
                 return;
             }
-            this.effectFocusLongPressTimer = engine.beginTimer(longPressTimeoutMilliseconds, function() {
+            this.effectFocusLongPressTimer = engine.beginTimer(longPressTimeoutMilliseconds, () => {
                 this.effectFocusChooseModeActive = true;
                 this.connectEffectButtonLedsFocused();
-            }.bind(this));
+            });
             if (!showParameters) {
                 engine.setValue(this.group, "show_parameters", 1);
                 this.effectFocusButtonPressedWhenParametersHidden = true;
@@ -930,10 +930,10 @@ class EffectParameter {
                 } else {
                     this.toggle();
                     this.longPressTimer = engine.beginTimer(longPressTimeoutMilliseconds,
-                        function() {
+                        () => {
                             this.isLongPressed = true;
                             this.longPressTimer= 0;
-                        }.bind(this),
+                        },
                         true
                     );
                 }

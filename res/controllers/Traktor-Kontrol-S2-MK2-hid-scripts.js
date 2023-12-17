@@ -661,7 +661,7 @@ TraktorS2MK2.jogTouch = function(field) {
             TraktorS2MK2.finishJogTouch(field.group);
         } else {
             TraktorS2MK2.wheelTouchInertiaTimer[field.group] = engine.beginTimer(
-                inertiaTime, function() {
+                inertiaTime, () => {
                     TraktorS2MK2.finishJogTouch(field.group);
                 }, true);
         }
@@ -685,7 +685,8 @@ TraktorS2MK2.finishJogTouch = function(group) {
         } else {
             // Check again soon.
             TraktorS2MK2.wheelTouchInertiaTimer[group] = engine.beginTimer(
-                1, function() {
+                // FIXME: 1ms is too short, what is appropriate?
+                1, () => { 
                     TraktorS2MK2.finishJogTouch(group);
                 }, true);
         }
@@ -1020,9 +1021,9 @@ TraktorS2MK2.effectFocusButton = function(field) {
             engine.setValue(field.group, "loaded_chain_preset", 1);
             return;
         }
-        TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, function() {
+        TraktorS2MK2.effectFocusLongPressTimer[field.group] = engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds, () => {
             TraktorS2MK2.effectFocusChooseModeActive[field.group] = true;
-            TraktorS2MK2.effectButtonLEDconnections[field.group].forEach(function(connection) {
+            TraktorS2MK2.effectButtonLEDconnections[field.group].forEach(connection => {
                 connection.disconnect();
             });
             var makeButtonLEDcallback = function(buttonNumber) {
@@ -1112,7 +1113,7 @@ TraktorS2MK2.effectButton = function(field) {
                 toggle();
                 TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] =
           engine.beginTimer(TraktorS2MK2.longPressTimeoutMilliseconds,
-              function() {
+              () => {
                   TraktorS2MK2.effectButtonIsLongPressed[effectUnitGroup][buttonNumber] = true;
                   TraktorS2MK2.effectButtonLongPressTimer[effectUnitGroup][buttonNumber] = 0;
               },

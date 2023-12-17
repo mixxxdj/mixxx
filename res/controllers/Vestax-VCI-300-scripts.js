@@ -402,11 +402,9 @@ VestaxVCI300.Deck.prototype.disableScratching = function() {
     if ((!this.isPlaying() && (VestaxVCI300.JOG_SCRATCH2_ABS_MIN < Math.abs(scratch2))) ||
         (scratch2 < VestaxVCI300.JOG_SCRATCH2_PLAY_MIN) ||
         (scratch2 > VestaxVCI300.JOG_SCRATCH2_PLAY_MAX)) {
-        var timeoutCallback =
-            "VestaxVCI300.onScratchingTimeoutDeck" + this.number + "()";
         this.scratchTimer = engine.beginTimer(
             VestaxVCI300.JOG_SCRATCH_TIMEOUT,
-            timeoutCallback,
+            VestaxVCI300["onScratchingTimeoutDeck" + this.number],
             true);
     }
     if (0 === this.scratchTimer) {

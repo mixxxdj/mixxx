@@ -493,7 +493,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
     // selected later on, when a different device is selected for any I/O.
     m_selectedOutputChannelIndices.clear();
     m_selectedInputChannelIndices.clear();
-    for (auto* ch : qAsConst(outputTab->children())) {
+    for (auto* ch : std::as_const(outputTab->children())) {
         DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
         if (pItem) {
             auto id = pItem->getDeviceId();
@@ -504,7 +504,7 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig& config) {
                     QPair<SoundDeviceId, int>(id, pItem->getChannelIndex()));
         }
     }
-    for (auto* ch : qAsConst(inputTab->children())) {
+    for (auto* ch : std::as_const(inputTab->children())) {
         DlgPrefSoundItem* pItem = qobject_cast<DlgPrefSoundItem*>(ch);
         if (pItem) {
             auto id = pItem->getDeviceId();

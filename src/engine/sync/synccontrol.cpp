@@ -471,7 +471,7 @@ void SyncControl::slotControlBeatSync(double value) {
 
 void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
+        kLogger.trace() << "SyncControl::slotControlPlay" << getGroup() << getSyncMode() << play;
     }
     m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
@@ -512,7 +512,11 @@ void SyncControl::slotSyncLeaderEnabledChangeRequest(double state) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderExplicit);
+        // NOTE: This branch would normally activate Explicit Leader mode. Due to the large number
+        // of side effects and bugs, this mode is disabled. For now, requesting explicit leader mode
+        // only activates the chosen deck as the soft leader. See:
+        // https://github.com/mixxxdj/mixxx/issues/11788
+        m_pChannel->getEngineBuffer()->requestSyncMode(SyncMode::LeaderSoft);
     } else {
         // Turning off leader goes back to follower mode.
         switch (mode) {

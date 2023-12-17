@@ -228,10 +228,10 @@ NumarkN4.topContainer = function(channel) {
                     midi.sendShortMsg(0xB0+channel, 0x0B+i, (i-this.hotCuePage)?0x00:0x7F);
                 }
             }
-            this.timer = engine.beginTimer(1000, function() {
+            this.timer = engine.beginTimer(1000, () => {
                 theContainer.reconnectComponents();
                 this.timer = 0;
-            }.bind(this), true);
+            }, true);
         },
         shift: function() {
             this.group=theContainer.group;
@@ -492,9 +492,9 @@ NumarkN4.Deck = function(channel) {
                 if (this.inGetParameter()!==value) {
                     this.inSetParameter(value);
                 }
-                engine.beginTimer(100, function() {
+                engine.beginTimer(100, () => {
                     this.flickerSafetyTimeout=true;
-                }.bind(this), true);
+                }, true);
             }
         },
     });
@@ -564,7 +564,7 @@ NumarkN4.Deck = function(channel) {
         },
     });
 
-    this.manageChannelIndicator = function() {
+    this.manageChannelIndicator = () => {
         this.duration=engine.getParameter(theDeck.group, "duration");
         // checks if the playposition is in the warnTimeFrame
         if (engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime)) {
@@ -586,7 +586,7 @@ NumarkN4.Deck = function(channel) {
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {
             //timer is more efficient is this case than a callback because it would be called too often.
-            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator.bind(this));
+            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator);
         }
         this.previouslyLoaded=value;
     }.bind(this));

@@ -140,7 +140,7 @@ PioneerDDJSB3.flasher.functions = [];
 PioneerDDJSB3.flasher.init = function() {
     var flag = true;
 
-    PioneerDDJSB3.flasher.timer = engine.beginTimer(500, function() {
+    PioneerDDJSB3.flasher.timer = engine.beginTimer(500, () => {
         flag = !flag;
 
         for (var i = 0; i < PioneerDDJSB3.flasher.functions.length; i++) {
@@ -277,7 +277,7 @@ PioneerDDJSB3.init = function() {
     PioneerDDJSB3.initDeck("[Channel4]");
 
     if (PioneerDDJSB3.twinkleVumeterAutodjOn) {
-        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle());
+        PioneerDDJSB3.vuMeterTimer = engine.beginTimer(100, PioneerDDJSB3.vuMeterTwinkle);
     }
 
     // request the positions of the knobs and faders from the controller
@@ -1209,7 +1209,7 @@ PioneerDDJSB3.jogTouch = function(channel, control, value, status, group) {
             if (engine.getValue(group, "slipEnabled")) {
                 engine.setValue(group, "slipEnabled", false);
 
-                engine.beginTimer(250, function() {
+                engine.beginTimer(250, () => {
                     engine.setValue(group, "slipEnabled", true);
                 }, true);
             }

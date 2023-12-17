@@ -2079,7 +2079,7 @@ class HIDController {
                             const bitControlGroup = this.resolveGroup(bit.mapped_group);
                             engine.connectControl(
                                 bitControlGroup, bit.mapped_name, bit.mapped_callback, true);
-                            engine.connectControl(new_group, bit.mapped_name, bit.mapped_callback);
+                            engine.makeConnection(new_group, bit.mapped_name, bit.mapped_callback);
                             const value = engine.getValue(new_group, bit.mapped_name);
                             console.log(`Bit ${bit.group}.${bit.name} value ${value}`);
                             if (value) {
@@ -2102,7 +2102,7 @@ class HIDController {
                     const fieldControlGroup = this.resolveGroup(field.mapped_group);
                     engine.connectControl(
                         fieldControlGroup, field.mapped_name, field.mapped_callback, true);
-                    engine.connectControl(new_group, field.mapped_name, field.mapped_callback);
+                    engine.makeConnection(new_group, field.mapped_name, field.mapped_callback);
                     const value = engine.getValue(new_group, field.mapped_name);
                     if (value) {
                         this.setOutput(
@@ -2145,7 +2145,7 @@ class HIDController {
         field.mapped_group = m_group;
         field.mapped_name = m_name;
         field.mapped_callback = callback;
-        engine.connectControl(controlgroup, m_name, callback);
+        engine.makeConnection(controlgroup, m_name, callback);
         if (engine.getValue(controlgroup, m_name)) {
             this.setOutput(m_group, m_name, this.LEDColors.on);
         } else {
