@@ -519,17 +519,13 @@ if(WIN32)
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
-if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
-  if(MSVC)
+if(MSVC)
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
     # With MSVC, PCH is faster than caching
     set(CMAKE_DISABLE_PRECOMPILE_HEADERS OFF)
-  else()
-    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
   endif()
-endif()
-set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
 
-if(MSVC)
   # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
   if(SCCACHE_EXECUTABLE)
@@ -556,6 +552,12 @@ else()
       message(STATUS "Could NOT find ccache (missing executable)")
   endif()
   default_option(CCACHE_SUPPORT "Enable ccache support" "CCACHE_EXECUTABLE")
+
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CCACHE_SUPPORT})
+  endif()
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
