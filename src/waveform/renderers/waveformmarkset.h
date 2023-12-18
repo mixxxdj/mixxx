@@ -65,6 +65,8 @@ class WaveformMarkSet {
 
     void update();
 
+    void setBreadth(float breadth);
+
   private:
     void clear() {
         m_marks.clear();
