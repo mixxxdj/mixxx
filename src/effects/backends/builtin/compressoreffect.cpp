@@ -83,7 +83,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     attack->setDescription(QObject::tr("Attack"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    attack->setRange(0, 30, 250);
+    attack->setRange(0, 10, 100);
 
     EffectManifestParameterPointer release = pManifest->addParameter();
     release->setId("release");
@@ -92,7 +92,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     release->setDescription(QObject::tr("Release"));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    release->setRange(0, 150, 2000);
+    release->setRange(0, 150, 1500);
 
     EffectManifestParameterPointer gain = pManifest->addParameter();
     gain->setId("gain");
@@ -202,7 +202,7 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState, const SINT
         CSAMPLE compressedDB = overDB * (1.0 / ratioParam - 1.0);
 
         // atack/release
-        if (compressedDB > stateDB) {
+        if (compressedDB < stateDB) {
             stateDB = compressedDB + attackCoeff * (stateDB - compressedDB);
         } else {
             stateDB = compressedDB + releaseCoeff * (stateDB - compressedDB);
