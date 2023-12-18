@@ -1101,15 +1101,8 @@ double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
             return firstSoundSecond;
         }
         double introEndSecond = framePositionToSeconds(introEndPosition, pDeck);
-        if (m_transitionTime >= 0 && firstSoundSecond < introEndSecond) {
-            double introStartFromTime = introEndSecond - m_transitionTime;
-            if (introStartFromTime > firstSoundSecond) {
-                // The introStart is automatically placed by AnalyzerSilence at the first sound
-                // Here the user has removed it, but has placed an intro end.
-                // Use the transition time instead of the dismissed first sound position.
-                return introStartFromTime;
-            }
-            return firstSoundSecond;
+        if (m_transitionTime >= 0) {
+            return introEndSecond - m_transitionTime;
         }
         return introEndSecond;
     }
