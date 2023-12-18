@@ -264,7 +264,7 @@
         </options>
       </control>
       <!-- T11_CENTER = ? -->
-      <control>
+      <!-- <control>
         <group>[Channel1]</group>
         <key></key>
         <status>0x90</status>
@@ -272,9 +272,9 @@
         <options>
           <normal />
         </options>
-      </control>
+      </control> -->
       <!-- T11_CENTER_SHIFT = ? -->
-      <control>
+      <!-- <control>
         <group>[Channel1]</group>
         <key></key>
         <status>0x90</status>
@@ -282,7 +282,7 @@
         <options>
           <normal />
         </options>
-      </control>
+      </control> -->
       <!-- T12 = FX On Button -->
       <control>
         <group>[Channel1]</group>
@@ -832,7 +832,7 @@
         </options>
       </control>
       <!-- T11_CENTER = ? -->
-      <control>
+      <!-- <control>
         <group>[Channel2]</group>
         <key></key>
         <status>0x90</status>
@@ -840,9 +840,9 @@
         <options>
           <normal />
         </options>
-      </control>
+      </control> -->
       <!-- T11_CENTER_SHIFT = ? -->
-      <control>
+      <!-- <control>
         <group>[Channel2]</group>
         <key></key>
         <status>0x90</status>
@@ -850,7 +850,7 @@
         <options>
           <normal />
         </options>
-      </control>
+      </control> -->
       <!-- T12 = FX On Button -->
       <control>
         <group>[Channel2]</group>

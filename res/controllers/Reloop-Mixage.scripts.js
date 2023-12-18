@@ -1,6 +1,6 @@
 // Name: Reloop Mixage
 // Author: HorstBaerbel / gqzomer
-// Version: 1.1.2 requires Mixxx 2.4 or higher
+// Version: 1.1.3 requires Mixxx 2.4 or higher
 
 var Mixage = {};
 
@@ -90,6 +90,11 @@ Mixage.blinkTimer = {
     "[Channel2]": {},
 };
 
+Mixage.amountValue = {
+    "[Channel1]": 0,
+    "[Channel2]": 0,
+};
+
 // Maps channels and their controls to a MIDI control number to toggle their LEDs
 Mixage.ledMap = {
     "[Channel1]": {
@@ -162,6 +167,7 @@ Mixage.init = function(_id, _debugging) {
     Mixage.channels.forEach(function(channel) {
         const deck = script.deckFromGroup(channel);
         Mixage.connectControlsToFunctions(channel);
+        const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
 
         // set soft takeovers for effectslot amount
         for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
@@ -184,7 +190,6 @@ Mixage.init = function(_id, _debugging) {
         engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
         // make connections for status LEDs
-        const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
         Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
         Mixage.loopConnection.push(engine.makeConnection(channel, "track_loaded", function() { Mixage.toggleReloopLED(channel); }));
         Mixage.fxSelectConnection.push(engine.makeConnection(effectUnit, "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
@@ -374,12 +379,18 @@ Mixage.blinkLED = function(control, group, time) {
 // Runs every time the focused_effect for a channel is changed either by controller or mixxx
 Mixage.handleFxSelect = function(value, group) {
     const unitNr = script.deckFromGroup(group);
+    const effectUnit = `[EffectRack1_EffectUnit${unitNr}]`;
     if (value === 0) {
         Mixage.toggleLED(OFF, group, "fx_sel");
-        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}]`, "super1");
+        if (engine.getValue(effectUnit, "super1") !== Mixage.amountValue[group]) {
+            engine.softTakeoverIgnoreNextValue(effectUnit, "super1");
+        }
     } else {
         Mixage.toggleLED(ON, group, "fx_sel");
-        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}_Effect${value}]`, "meta");
+        const effectSlot = `[EffectRack1_EffectUnit${unitNr}_Effect${value}]`;
+        if (engine.getValue(effectSlot, "meta") !== Mixage.amountValue[group]) {
+            engine.softTakeoverIgnoreNextValue(effectSlot, "meta");
+        }
     }
 };
 
@@ -552,11 +563,6 @@ Mixage.nextEffect = function(_channel, _control, value, _status, group) {
     const controlString = `[EffectRack1_EffectUnit${unitNr}]`;
     if (value === DOWN) {
         if (engine.getValue(controlString, "focused_effect") === Mixage.numEffectSlots) { // after cycling through all effectslot go back to the start
-            for (let i = 1; i === Mixage.numEffectSlots; i++) {
-                const groupString = `[EffectRack1_EffectUnit${unitNr}_Effect${i}]`;
-                engine.softTakeoverIgnoreNextValue(groupString, "meta");
-            }
-            engine.softTakeoverIgnoreNextValue(controlString, "super1");
             engine.setValue(controlString, "focused_effect", 0);
         } else { // next effect slot
             const currentSelection = engine.getValue(controlString, "focused_effect");
@@ -604,10 +610,13 @@ Mixage.handleFxAmount = function(_channel, _control, value, _status, group) {
     const unitNr = script.deckFromGroup(group);
     const controlString = `[EffectRack1_EffectUnit${unitNr}]`;
     const focussedEffect = engine.getValue(controlString, "focused_effect");
+    const amountValue = value / 127;
+    Mixage.amountValue[group] = amountValue;
+    // Mixage.takeOver[group] = true;
     if (focussedEffect === 0) { // no effect slot is selected
-        engine.setValue(controlString, "super1", value / 127);
+        engine.setValue(controlString, "super1", amountValue);
     } else {
-        engine.setValue(`[EffectRack1_EffectUnit${unitNr}_Effect${focussedEffect}]`, "meta", value / 127);
+        engine.setValue(`[EffectRack1_EffectUnit${unitNr}_Effect${focussedEffect}]`, "meta", amountValue);
     }
 };
 
@@ -635,15 +644,31 @@ Mixage.handleFxPress = function(_channel, _control, value, _status, group) {
 // This function is necessary to allow for soft takeover of the filter amount button
 // see https://github.com/mixxxdj/mixxx/wiki/Midi-Scripting#soft-takeover
 Mixage.handleFilter = function(_channel, _control, value, _status, group) {
+    const amountValue = value / 127;
+    Mixage.amountValue[group] = amountValue;
     engine.setValue(`[QuickEffectRack1_${group}]`, "super1", value / 127);
 };
 
 // Handles setting soft takeovers when pressing shift
 Mixage.handleShift = function(_channel, _control, value, _status, group) {
+    const unitNr = script.deckFromGroup(group);
     if (value === DOWN) {
-        const unitNr = script.deckFromGroup(group);
-        engine.softTakeoverIgnoreNextValue(`[QuickEffectRack1_${group}]`, "super1");
-        engine.softTakeoverIgnoreNextValue(`[EffectRack1_EffectUnit${unitNr}]`, "super1");
+        if (engine.getValue(`[QuickEffectRack1_${group}]`, "super1") !== Mixage.amountValue[group]) {
+            engine.softTakeoverIgnoreNextValue(`[QuickEffectRack1_${group}]`, "super1");
+        }
+    } else {
+        const effectUnit = `[EffectRack1_EffectUnit${unitNr}]`;
+        const focusedEffect = engine.getValue(effectUnit, "focused_effect");
+        if (focusedEffect === 0) {
+            if (engine.getValue(effectUnit, "super1") !== Mixage.amountValue[group]) {
+                engine.softTakeoverIgnoreNextValue(effectUnit, "super1");
+            }
+        } else {
+            const effectSlot = `[EffectRack1_EffectUnit${unitNr}_Effect${focusedEffect}]`;
+            if (engine.getValue(effectSlot, "meta") !== Mixage.amountValue[group]) {
+                engine.softTakeoverIgnoreNextValue(effectSlot, "meta");
+            }
+        }
     }
 };
 
