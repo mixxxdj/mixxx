@@ -1106,7 +1106,7 @@ double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
             if (introStartFromTime > firstSoundSecond) {
                 // The introStart is automatically placed by AnalyzerSilence at the first sound
                 // Here the user has removed it, but has placed an intro end.
-                // Use the transition time instead the dismissed first sound position.
+                // Use the transition time instead of the dismissed first sound position.
                 return introStartFromTime;
             }
             return firstSoundSecond;
@@ -1160,7 +1160,7 @@ double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
             if (outroEndFromTime < lastSoundSecond) {
                 // The outroEnd is automatically placed by AnalyzerSilence at the last sound
                 // Here the user has removed it, but has placed a outro start.
-                // Use the transition time instead the dismissed last sound position.
+                // Use the transition time instead of the dismissed last sound position.
                 return outroEndFromTime;
             }
             return lastSoundSecond;
