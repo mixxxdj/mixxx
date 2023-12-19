@@ -123,8 +123,6 @@ jobs:
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
-            compiler_cache: sccache
-            compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_release_buildenv.bat
             artifacts_name: Windows Installer
@@ -133,7 +131,6 @@ jobs:
             qt_qpa_platform: windows
 
     env:
-      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
@@ -147,21 +144,6 @@ jobs:
       artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
-      - name: "[Windows] Set up Cargo cache"
-        if: runner.os == 'Windows'
-        uses: actions/cache@v3
-        id: sccache-build-cache
-        with:
-          path: C:\Users\runneradmin\.cargo
-          key: sccache-${{ env.SCCACHE_VERSION }}
-
-      # This needs to be done first because something later messes with $PATH in a way that breaks cargo
-      # by causing it to find link.exe from Git for Windows instead of MSVC.
-      - name: "[Windows] Build and install sccache"
-        shell: bash
-        if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-        run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
-
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
@@ -268,7 +250,8 @@ jobs:
         run: ${{ matrix.compiler_cache }} -M 524288
         if: runner.os != 'windows'
 
-      - name: "Set up compiler cache"
+      - name: "[Ubuntu/macOS] Set up compiler cache"
+        if: runner.os != 'windows'
         uses: actions/cache@v3
         with:
           path: ${{ matrix.compiler_cache_path }}
@@ -320,9 +303,9 @@ jobs:
           CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
-          SCCACHE_CACHE_SIZE: 2G
 
-      - name: "Print compiler cache stats"
+      - name: "[Ubuntu/macOS] Print compiler cache stats"
+        if: runner.os != 'windows'
         run: ${{ matrix.compiler_cache }} -s
 
       - name: "Test"
