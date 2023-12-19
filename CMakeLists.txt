@@ -2314,7 +2314,7 @@ if(ENGINEPRIME)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "STATIC link existing system installation of libdjinterop")
-    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
