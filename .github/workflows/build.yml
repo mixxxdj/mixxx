@@ -28,7 +28,8 @@ jobs:
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt5
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
@@ -50,7 +51,8 @@ jobs:
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv_qt6.sh
@@ -74,6 +76,7 @@ jobs:
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: x64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_release_buildenv.sh
             artifacts_name: macOS Intel DMG
@@ -96,6 +99,7 @@ jobs:
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: arm64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
             artifacts_name: macOS ARM DMG
@@ -242,12 +246,11 @@ jobs:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
       - name: "[Ubuntu/macOS] Set compiler cache size limit"
-        # A full build without a cache fills the cache with about 300 MB.
-        # GitHub Actions gives us 5 GB of cache for free.
-        # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
-        # We use a new cache key for every job, so we would run out of
-        # space frequently if the cache was much bigger.
-        run: ${{ matrix.compiler_cache }} -M 524288
+        # GitHub Actions gives us 10 GB of cache.
+        # 4 runs * 2 GB = 8 GB
+        run: |
+          ${{ matrix.compiler_cache }} --zero-stats
+          ${{ matrix.compiler_cache }} --max-size=2G
         if: runner.os != 'windows'
 
       - name: "[Ubuntu/macOS] Set up compiler cache"
@@ -255,10 +258,10 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
 
       - name: "Create build directory"
         run: mkdir build
@@ -306,7 +309,9 @@ jobs:
 
       - name: "[Ubuntu/macOS] Print compiler cache stats"
         if: runner.os != 'windows'
-        run: ${{ matrix.compiler_cache }} -s
+        run: |
+          ${{ matrix.compiler_cache }} --show-stats
+          ${{ matrix.compiler_cache }} --cleanup
 
       - name: "Test"
         if: matrix.crosscompile != true
