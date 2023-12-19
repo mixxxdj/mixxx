@@ -3,8 +3,15 @@
 void LegacyControllerMapping::loadSettings(const QFileInfo& mappingFile,
         UserSettingsPointer pConfig,
         const QString& controllerName) const {
+    QString controllerPath =
+            mappingFile.absoluteFilePath()
+                    .replace(pConfig->getSettingsPath(),
+                            CONTROLLER_SETTINGS_SETTING_PATH_SUBST)
+                    .replace(pConfig->getResourcePath(),
+                            CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST);
+
     QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
-                                    .arg(controllerName, mappingFile.absoluteFilePath());
+                                    .arg(controllerName, controllerPath);
 
     auto availableSettings = getSettings();
     QList<ConfigKey> definedSettings = pConfig->getKeysWithGroup(controllerKey);
@@ -44,8 +51,12 @@ void LegacyControllerMapping::loadSettings(const QFileInfo& mappingFile,
 void LegacyControllerMapping::saveSettings(const QFileInfo& mappingFile,
         UserSettingsPointer pConfig,
         const QString& controllerName) const {
+    QString controllerPath =
+            mappingFile.absoluteFilePath()
+                    .replace(pConfig->getSettingsPath(), CONTROLLER_SETTINGS_SETTING_PATH_SUBST)
+                    .replace(pConfig->getResourcePath(), CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST);
     QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
-                                    .arg(controllerName, mappingFile.absoluteFilePath());
+                                    .arg(controllerName, controllerPath);
     for (auto setting : getSettings()) {
         if (!setting->isDirty()) {
             continue;

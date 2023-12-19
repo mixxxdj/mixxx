@@ -1,6 +1,5 @@
 #include "controllers/legacycontrollersettings.h"
 
-#include "moc_legacycontrollersettings.cpp"
 #include <util/assert.h>
 
 #include <QCheckBox>

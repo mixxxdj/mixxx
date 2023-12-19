@@ -21,8 +21,8 @@
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
 #include "util/desktophelper.h"
-#include "util/string.h"
 #include "util/parented_ptr.h"
+#include "util/string.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");

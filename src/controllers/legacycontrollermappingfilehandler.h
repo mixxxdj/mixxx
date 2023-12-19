@@ -7,6 +7,7 @@
 class QFileInfo;
 class QDir;
 class LegacyControllerMapping;
+class LegacyControllerSettingsLayoutContainer;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
 /// LegacyControllerMapping objects to/from XML files and is also responsible

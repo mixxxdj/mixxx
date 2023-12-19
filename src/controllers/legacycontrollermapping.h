@@ -19,6 +19,8 @@
 #include "preferences/usersettings.h"
 
 #define CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY "[ControllerSettings_%1_%2]"
+#define CONTROLLER_SETTINGS_SETTING_PATH_SUBST "%SETTING_PATH"
+#define CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST "%RESOURCE_PATH"
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
