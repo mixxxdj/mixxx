@@ -115,7 +115,8 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    void resize(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+
     int getHeight() const {
         return m_height;
     }

@@ -1091,8 +1091,18 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
     const mixxx::audio::FramePos introStartPosition = pDeck->introStartPosition();
+    const mixxx::audio::FramePos introEndPosition = pDeck->introEndPosition();
     if (!introStartPosition.isValid() || introStartPosition > trackEndPosition) {
-        return getFirstSoundSecond(pDeck);
+        double firstSoundSecond = getFirstSoundSecond(pDeck);
+        if (!introEndPosition.isValid() || introEndPosition > trackEndPosition) {
+            // No intro start and intro end set, use First Sound.
+            return firstSoundSecond;
+        }
+        double introEndSecond = framePositionToSeconds(introEndPosition, pDeck);
+        if (m_transitionTime >= 0) {
+            return introEndSecond - m_transitionTime;
+        }
+        return introEndSecond;
     }
     return framePositionToSeconds(introStartPosition, pDeck);
 }
@@ -1125,12 +1135,30 @@ double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
 
 double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
+    const mixxx::audio::FramePos outroStartPosition = pDeck->outroStartPosition();
     const mixxx::audio::FramePos outroEndPosition = pDeck->outroEndPosition();
     if (!outroEndPosition.isValid() || outroEndPosition > trackEndPosition) {
-        return getLastSoundSecond(pDeck);
+        double lastSoundSecond = getLastSoundSecond(pDeck);
+        DEBUG_ASSERT(lastSoundSecond <= framePositionToSeconds(trackEndPosition, pDeck));
+        if (!outroStartPosition.isValid() || outroStartPosition > trackEndPosition) {
+            // No outro start and outro end set, use Last Sound.
+            return lastSoundSecond;
+        }
+        // Try to find a better Outro End using Outro Start and transition time
+        double outroStartSecond = framePositionToSeconds(outroStartPosition, pDeck);
+        if (m_transitionTime >= 0 && lastSoundSecond > outroStartSecond) {
+            double outroEndFromTime = outroStartSecond + m_transitionTime;
+            if (outroEndFromTime < lastSoundSecond) {
+                // The outroEnd is automatically placed by AnalyzerSilence at the last sound
+                // Here the user has removed it, but has placed a outro start.
+                // Use the transition time instead of the dismissed last sound position.
+                return outroEndFromTime;
+            }
+            return lastSoundSecond;
+        }
+        return outroStartSecond;
     }
     return framePositionToSeconds(outroEndPosition, pDeck);
-    ;
 }
 
 double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {

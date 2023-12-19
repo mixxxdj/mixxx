@@ -538,6 +538,21 @@ else()
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
     endif()
+    if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+      execute_process(
+          COMMAND "${CCACHE_EXECUTABLE}" "--get-config=sloppiness"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                    OUTPUT_VARIABLE CCACHE_CONFIGURED_SLOPPINESS OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+      if (NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "pch_defines" OR
+          NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "time_macros")
+        message(WARNING
+            "ccache: For use with precompiled headers, the setting \"sloppiness\" needs to "
+            "be set to \"pch_defines,time_macros\". This can be done via the environment variable "
+            "\"CCACHE_SLOPPINESS=pch_defines,time_macros\" or permanent via "
+            "\"ccache --set-config=sloppiness=pch_defines,time_macros\".")
+      endif()
+    endif()
     set( CMAKE_C_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
     set( CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
   endif()
@@ -1143,6 +1158,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/waveformrendererrgb.cpp
   src/waveform/renderers/waveformrenderersignalbase.cpp
   src/waveform/renderers/waveformrendermark.cpp
+  src/waveform/renderers/waveformrendermarkbase.cpp
   src/waveform/renderers/waveformrendermarkrange.cpp
   src/waveform/renderers/waveformsignalcolors.cpp
   src/waveform/renderers/waveformwidgetrenderer.cpp
@@ -2347,7 +2363,7 @@ if(ENGINEPRIME)
     add_library(mixxx-libdjinterop STATIC IMPORTED)
     set_target_properties(mixxx-libdjinterop PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${DJINTEROP_INSTALL_DIR}/include"
-      INTERFACE_LINK_LIBRARIES ${ZLIB_LIBRARIES}
+      INTERFACE_LINK_LIBRARIES ZLIB::ZLIB
       IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
