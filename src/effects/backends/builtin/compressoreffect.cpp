@@ -109,7 +109,6 @@ EffectManifestPointer CompressorEffect::getManifest() {
 CompressorGroupState::CompressorGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
-          samplerate(engineParameters.sampleRate()),
           previousMakeUpGain(0),
           previousStateDB(0) {
 }
@@ -137,10 +136,9 @@ void CompressorEffect::processChannel(
     Q_UNUSED(enableState);
 
     SINT numSamples = engineParameters.samplesPerBuffer();
-    int channelCount = engineParameters.channelCount();
 
     // Compression
-    applyCompression(pState, numSamples, channelCount, pInput, pOutput);
+    applyCompression(pState, engineParameters, pInput, pOutput);
 
     // Auto make up
     if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
@@ -175,15 +173,17 @@ void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pO
     }
 }
 
-void CompressorEffect::applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput) {
+void CompressorEffect::applyCompression(CompressorGroupState* pState, const mixxx::EngineParameters& engineParameters, const CSAMPLE* pInput, CSAMPLE* pOutput) {
     CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
     CSAMPLE kneeHalf = kneeParam / 2.0f;
-    CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * pState->samplerate));
-    CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * pState->samplerate));
+    CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
+    CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
 
     CSAMPLE stateDB = pState->previousStateDB;
+    SINT numSamples = engineParameters.samplesPerBuffer();
+    int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
         CSAMPLE maxSample = std::max(fabs(pInput[i]), fabs(pInput[i + 1]));
         if (maxSample == CSAMPLE_ZERO) {

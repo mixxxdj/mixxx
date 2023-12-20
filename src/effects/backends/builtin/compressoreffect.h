@@ -17,7 +17,6 @@ class CompressorGroupState : public EffectState {
   public:
     CompressorGroupState(const mixxx::EngineParameters& engineParameters);
 
-    double samplerate;
     CSAMPLE previousStateDB;
     CSAMPLE previousMakeUpGain;
 };
@@ -67,7 +66,7 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(CompressorEffect);
 
-    void applyCompression(CompressorGroupState* pState, const SINT& numSamples, int channelCount, const CSAMPLE* pInput, CSAMPLE* pOutput);
+    void applyCompression(CompressorGroupState* pState, const mixxx::EngineParameters& engineParameters, const CSAMPLE* pInput, CSAMPLE* pOutput);
 
     void applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pOutput, const SINT& numSamples);
 };
