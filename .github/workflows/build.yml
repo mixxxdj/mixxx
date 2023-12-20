@@ -29,7 +29,8 @@ jobs:
               -DINSTALL_USER_UDEV_RULES=OFF
             ctest_args: []
             compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
+            compiler_cache_path: /home/runner/.cache/ccache
+            compiler_cache_id: qt6
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/debian_buildenv.sh
@@ -54,6 +55,7 @@ jobs:
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: x64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_release_buildenv.sh
             artifacts_name: macOS Intel DMG
@@ -77,6 +79,7 @@ jobs:
             cpack_generator: DragNDrop
             compiler_cache: ccache
             compiler_cache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache_id: arm64
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_arm64-cross-release_buildenv.sh
             artifacts_name: macOS ARM DMG
@@ -104,8 +107,6 @@ jobs:
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
-            compiler_cache: sccache
-            compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_release_buildenv.bat
             artifacts_name: Windows Installer
@@ -114,7 +115,6 @@ jobs:
             qt_qpa_platform: windows
 
     env:
-      SCCACHE_VERSION: "0.3.0"
       # macOS codesigning
       APPLE_CODESIGN_IDENTITY: EF241CF990A9BE5477438AEE1F308F76F33FD100
       MACOS_CODESIGN_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CODESIGN_CERTIFICATE_P12_BASE64 }}
@@ -128,21 +128,6 @@ jobs:
       artifact-macos-macosarm: ${{ steps.prepare_deploy.outputs.artifact-macos-macosarm }}
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
-      - name: "[Windows] Set up Cargo cache"
-        if: runner.os == 'Windows'
-        uses: actions/cache@v3
-        id: sccache-build-cache
-        with:
-          path: C:\Users\runneradmin\.cargo
-          key: sccache-${{ env.SCCACHE_VERSION }}
-
-      # This needs to be done first because something later messes with $PATH in a way that breaks cargo
-      # by causing it to find link.exe from Git for Windows instead of MSVC.
-      - name: "[Windows] Build and install sccache"
-        shell: bash
-        if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-        run: cargo install --version "${{ env.SCCACHE_VERSION }}" sccache
-
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
@@ -240,23 +225,23 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[Ubuntu/macOS] Set compiler cache size limit"
-        # A full build without a cache fills the cache with about 300 MB.
-        # GitHub Actions gives us 5 GB of cache for free.
-        # 3 operating systems * 2 conditions (Qt5 & Qt6) * 512 MB = 3 GB
-        # We use a new cache key for every job, so we would run out of
-        # space frequently if the cache was much bigger.
-        run: ${{ matrix.compiler_cache }} -M 524288
+      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
-
-      - name: "Set up compiler cache"
         uses: actions/cache@v3
         with:
           path: ${{ matrix.compiler_cache_path }}
-          key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
+          key: ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}-${{ github.run_number }}
           restore-keys: |
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
-            ${{ matrix.os }}-${{ matrix.compiler_cache }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
+            ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+
+      - name: "[Ubuntu/macOS] Set up ccache"
+        # GitHub Actions gives us 10 GB of cache.
+        # 4 runs * 2 GB = 8 GB
+        run: |
+          ${{ matrix.compiler_cache }} --zero-stats
+          ${{ matrix.compiler_cache }} --max-size=2G
+        if: runner.os != 'windows'
 
       - name: "Create build directory"
         run: mkdir build
@@ -302,10 +287,12 @@ jobs:
           CMAKE_BUILD_PARALLEL_LEVEL: 2
           # GitHub Actions automatically zstd compresses caches
           CCACHE_NOCOMPRESS: true
-          SCCACHE_CACHE_SIZE: 2G
 
-      - name: "Print compiler cache stats"
-        run: ${{ matrix.compiler_cache }} -s
+      - name: "[Ubuntu/macOS] Print compiler cache stats"
+        if: runner.os != 'windows'
+        run: |
+          ${{ matrix.compiler_cache }} --show-stats
+          ${{ matrix.compiler_cache }} --cleanup
 
       - name: "Test"
         if: matrix.crosscompile != true
@@ -340,7 +327,7 @@ jobs:
 
       - name: "Package for PPA"
         # No need to do the PPA build for both Ubuntu versions
-        if: matrix.name == 'Ubuntu 22.04 (gcc)'
+        if: matrix.name == 'Ubuntu 22.04'
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
             CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies"

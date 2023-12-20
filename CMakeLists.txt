@@ -511,6 +511,12 @@ if(WIN32)
 endif()
 
 if(MSVC)
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    # With MSVC, PCH is faster than caching
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS OFF)
+  endif()
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+
   # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
   if(SCCACHE_EXECUTABLE)
@@ -518,9 +524,13 @@ if(MSVC)
   else()
     message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE")
+  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS")
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
+    if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+      message(WARNING
+            "sccache: Does not work with precompiled headers. Set CMAKE_DISABLE_PRECOMPILE_HEADERS=ON")
+    endif()
     set( CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
     set( CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
   endif()
@@ -533,6 +543,12 @@ else()
       message(STATUS "Could NOT find ccache (missing executable)")
   endif()
   default_option(CCACHE_SUPPORT "Enable ccache support" "CCACHE_EXECUTABLE")
+
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CCACHE_SUPPORT})
+  endif()
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
@@ -2289,7 +2305,7 @@ if(ENGINEPRIME)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "STATIC link existing system installation of libdjinterop")
-    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
