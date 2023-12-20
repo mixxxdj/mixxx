@@ -25,7 +25,7 @@ The Mixxx team uses [Github Issues][issues] to manage Mixxx development.
 Have a bug or feature request? [File a bug on Github][fileabug].
 
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
-bug list][easybugs] and get started!   
+bug list][easybugs] and get started!
 Read [CONTRIBUTING](CONTRIBUTING.md) for more information.
 
 ## Building Mixxx
