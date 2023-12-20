@@ -14,6 +14,7 @@ class WLibrary;
 class WTrackTableView;
 class Library;
 class KeyboardEventFilter;
+class TrackCollection;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT

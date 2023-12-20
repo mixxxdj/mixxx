@@ -68,6 +68,7 @@ void PlaylistSummaryQueryFields::populateFromQuery(
 }
 
 void PlaylistStorage::repairDatabase(const QSqlDatabase& database) {
+    Q_UNUSED(database);
 }
 
 void PlaylistStorage::connectDatabase(const QSqlDatabase& database) {
@@ -93,7 +94,7 @@ uint PlaylistStorage::countPlaylists(const PlaylistDAO::HiddenType type) const {
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT COUNT(*) FROM %1 WHERE %1.hidden = :hiddenType")
                     .arg(PLAYLIST_TABLE));
-    query.bindValue(":hiddenType", type);
+    query.bindValue(":hiddenType", QVariant(type));
     if (query.execPrepared() && query.next()) {
         uint result = query.fieldValue(0).toUInt();
         DEBUG_ASSERT(!query.next());
@@ -108,7 +109,7 @@ PlaylistSummarySelectResult PlaylistStorage::selectPlaylistSummaries(
     FwdSqlQuery query(m_database,
             QStringLiteral("SELECT * FROM %1 WHERE %1.hidden = :hiddenType ORDER BY %2")
                     .arg(PLAYLIST_SUMMARY_VIEW, PLAYLISTTABLE_SORTNAME));
-    query.bindValue(":hiddenType", type);
+    query.bindValue(":hiddenType", QVariant(type));
     if (query.execPrepared()) {
         return PlaylistSummarySelectResult(std::move(query));
     } else {

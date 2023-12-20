@@ -7,6 +7,8 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/playlisttablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"

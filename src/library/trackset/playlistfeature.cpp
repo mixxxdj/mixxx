@@ -118,7 +118,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     PlaylistSummary playlistSummary;
     if (m_pTrackCollection->playlists().readPlaylistSummaryById(
-                PlaylistId(playlistId), &playlistSummary)) {
+                PlaylistId(QVariant(playlistId)), &playlistSummary)) {
         return formatLabel(playlistSummary);
     }
 
@@ -140,7 +140,7 @@ QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
                     PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
     PlaylistSummary playlistSummary;
     while (playlistSummaries.populateNext(&playlistSummary)) {
-        int playlistId = playlistSummary.getId().value();
+        int playlistId = playlistSummary.getId().toVariant().toInt();
 
         if (selectedId == playlistId) {
             // save index for selection

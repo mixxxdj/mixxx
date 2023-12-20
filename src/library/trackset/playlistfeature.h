@@ -8,6 +8,7 @@
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
+class TrackCollection;
 class TreeItem;
 class QPoint;
 
