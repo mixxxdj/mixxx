@@ -245,15 +245,7 @@ jobs:
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-      - name: "[Ubuntu/macOS] Set compiler cache size limit"
-        # GitHub Actions gives us 10 GB of cache.
-        # 4 runs * 2 GB = 8 GB
-        run: |
-          ${{ matrix.compiler_cache }} --zero-stats
-          ${{ matrix.compiler_cache }} --max-size=2G
-        if: runner.os != 'windows'
-
-      - name: "[Ubuntu/macOS] Set up compiler cache"
+      - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
         uses: actions/cache@v3
         with:
@@ -262,6 +254,14 @@ jobs:
           restore-keys: |
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}-${{ github.head_ref }}
             ${{ matrix.os }}-${{ matrix.compiler_cache_id }}
+
+      - name: "[Ubuntu/macOS] Set up ccache"
+        # GitHub Actions gives us 10 GB of cache.
+        # 4 runs * 2 GB = 8 GB
+        run: |
+          ${{ matrix.compiler_cache }} --zero-stats
+          ${{ matrix.compiler_cache }} --max-size=2G
+        if: runner.os != 'windows'
 
       - name: "Create build directory"
         run: mkdir build
