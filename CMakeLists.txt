@@ -989,7 +989,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/coverartarchiveimagetask.cpp
   src/musicbrainz/web/coverartarchivelinkstask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
-  src/nativeeventhandlerwin.cpp
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
@@ -1239,6 +1238,13 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
 )
+if(WIN32)
+  # Add Windows-only sources
+  target_sources(mixxx-lib PRIVATE
+    src/nativeeventhandlerwin.cpp
+  )
+endif()
+
 target_precompile_headers(mixxx-lib PUBLIC
   src/audio/frame.h
   src/audio/signalinfo.h
