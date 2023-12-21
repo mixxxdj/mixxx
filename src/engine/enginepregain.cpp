@@ -23,8 +23,8 @@ ControlPotmeter* EnginePregain::s_pDefaultBoost = nullptr;
 ControlObject* EnginePregain::s_pEnableReplayGain = nullptr;
 
 EnginePregain::EnginePregain(const QString& group)
-        : m_dSpeed(1.0),
-          m_dOldSpeed(1.0),
+        : m_dSpeed(0.0),
+          m_dOldSpeed(0.0),
           m_dNonScratchSpeed(1.0),
           m_scratching(false),
           m_fPrevGain(1.0),
@@ -97,8 +97,8 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
 
         if (m_bSmoothFade) {
             float seconds = static_cast<float>(m_timer.elapsed().toDoubleSeconds());
-            if (seconds < kFadeSeconds) {
-                // Fade smoothly
+            if (seconds < kFadeSeconds && m_dSpeed != 0.0 && m_dOldSpeed != 0.0) {
+                // Fade smoothly if not stopped, stopping or starting
                 const float fadeFrac = seconds / kFadeSeconds;
                 fReplayGainCorrection = m_fPrevGain * (1.0f - fadeFrac) +
                         fadeFrac * fullReplayGainBoost;
@@ -151,7 +151,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         SampleUtil::applyRampingGain(&pInOut[0], m_fPrevGain, 0, iBufferSize / 2);
         SampleUtil::applyRampingGain(&pInOut[iBufferSize / 2], 0, totalGain, iBufferSize / 2);
     } else if (totalGain != m_fPrevGain) {
-        // Prevent sound wave discontinuities by interpolating from old to new gain.
+        // Prevent sound wave discontinuities by interpolating from old to new gain
+        // if not stopped or starting
+        // This handles also the ramping of play (from speed 0) and pause (to speed 0)
         SampleUtil::applyRampingGain(pInOut, m_fPrevGain, totalGain, iBufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.
