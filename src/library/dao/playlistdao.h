@@ -109,8 +109,13 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int insertTracksIntoPlaylist(const QList<TrackId>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
     void addPlaylistToAutoDJQueue(const int playlistId, AutoDJSendLoc loc);
+    // Get AutoDJ Table Playlist ID
+    int getAutoDJPlaylistID();
     // Add a list of tracks to the Auto-DJ Queue
     void addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc);
+    // Toggle AutoDJ using AutoDJProcessor, for calling it from outside without
+    // connecting the module
+    void toggleAutoDJ(bool enabled);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;

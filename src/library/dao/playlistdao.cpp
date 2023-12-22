@@ -1276,8 +1276,12 @@ void PlaylistDAO::setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor) {
     m_pAutoDJProcessor = pAutoDJProcessor;
 }
 
+int PlaylistDAO::getAutoDJPlaylistID() {
+    return getPlaylistIdFromName(AUTODJ_TABLE);
+}
+
 void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJSendLoc loc) {
-    int iAutoDJPlaylistId = getPlaylistIdFromName(AUTODJ_TABLE);
+    int iAutoDJPlaylistId = getAutoDJPlaylistID();
     if (iAutoDJPlaylistId == kInvalidPlaylistId) {
         return;
     }
@@ -1300,4 +1304,10 @@ void PlaylistDAO::addTracksToAutoDJQueue(const QList<TrackId>& trackIds, AutoDJS
         }
         break;
     }
+}
+
+void PlaylistDAO::toggleAutoDJ(bool enabled) {
+    if (!m_pAutoDJProcessor)
+        return;
+    m_pAutoDJProcessor->toggleAutoDJ(enabled);
 }

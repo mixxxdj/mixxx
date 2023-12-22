@@ -418,9 +418,23 @@ void MixxxMainWindow::initialize() {
 
     // Import playlist if passed in args.qlMusicFiles (command line arguments)
     const QList<QString>& musicFiles = CmdlineArgs::Instance().getMusicFiles();
+    bool autodjEnabledForImportedPlaylists = CmdlineArgs::Instance().getAutodjEnabled();
+    PlaylistDAO::AutoDJSendLoc autodjSendLocation = CmdlineArgs::Instance().getAutodjLocation();
     for (int i = 0; i < musicFiles.count(); ++i) {
+        if (i > 0 && autodjSendLocation == PlaylistDAO::AutoDJSendLoc::REPLACE)
+            autodjSendLocation = PlaylistDAO::AutoDJSendLoc::TOP;
+
         if (Parser::isPlaylistFilenameSupported(musicFiles.at(i)))
-            m_pCoreServices->getLibrary()->importPlaylistFromFile(musicFiles.at(i));
+            m_pCoreServices->getLibrary()->importPlaylistFromFile(
+                    musicFiles.at(i),
+                    true,
+                    autodjEnabledForImportedPlaylists,
+                    autodjSendLocation);
+    }
+
+    if (musicFiles.count() > 0 && autodjEnabledForImportedPlaylists) {
+        m_pCoreServices->getLibrary()->toggleAutoDJ(true);
+        m_pCoreServices->getLibrary()->activateAutoDJPlaylist();
     }
 }
 

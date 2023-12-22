@@ -23,6 +23,9 @@ CmdlineArgs::CmdlineArgs()
           m_controllerAbortOnWarning(false),
           m_developer(false),
           m_safeMode(false),
+          m_autodjReplace(false),
+          m_autodjAddTop(false),
+          m_autodjAddBottom(false),
           m_useLegacyVuMeter(false),
           m_useLegacySpinny(false),
           m_debugAssertBreak(false),
@@ -173,6 +176,24 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     timelinePathDeprecated.setValueName(timelinePath.valueName());
     parser.addOption(timelinePath);
     parser.addOption(timelinePathDeprecated);
+
+    const QCommandLineOption autodjReplace(QStringLiteral("autodj-replace"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "If playlist passed, insert in AutoDJ after importing")
+                            : QString());
+    parser.addOption(autodjReplace);
+
+    const QCommandLineOption autodjAddTop(QStringLiteral("autodj-add-top"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "If playlist passed, add to AutoDJ at top after importing")
+                            : QString());
+    parser.addOption(autodjAddTop);
+
+    const QCommandLineOption autodjAddBottom(QStringLiteral("autodj-add-bottom"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "If playlist passed, add to AutoDJ at bottom after importing")
+                            : QString());
+    parser.addOption(autodjAddBottom);
 
     const QCommandLineOption enableLegacyVuMeter(QStringLiteral("enable-legacy-vumeter"),
             forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
@@ -353,6 +374,9 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_timelinePath = parser.value(timelinePathDeprecated);
     }
 
+    m_autodjReplace = parser.isSet(autodjReplace);
+    m_autodjAddTop = parser.isSet(autodjAddTop);
+    m_autodjAddBottom = parser.isSet(autodjAddBottom);
     m_useLegacyVuMeter = parser.isSet(enableLegacyVuMeter);
     m_useLegacySpinny = parser.isSet(enableLegacySpinny);
     m_controllerDebug = parser.isSet(controllerDebug) || parser.isSet(controllerDebugDeprecated);

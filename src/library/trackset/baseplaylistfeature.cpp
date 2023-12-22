@@ -231,6 +231,14 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     emit featureSelect(this, m_lastClickedIndex);
 }
 
+void BasePlaylistFeature::activateAutoDJPlaylist() {
+    int iAutoDJPlaylistId = m_playlistDao.getAutoDJPlaylistID();
+    if (iAutoDJPlaylistId == kInvalidPlaylistId) {
+        return;
+    }
+    activatePlaylist(iAutoDJPlaylistId);
+}
+
 void BasePlaylistFeature::renameItem(const QModelIndex& index) {
     m_lastRightClickedIndex = index;
     slotRenamePlaylist();
@@ -660,13 +668,22 @@ void BasePlaylistFeature::slotAddToAutoDJReplace() {
     addToAutoDJ(PlaylistDAO::AutoDJSendLoc::REPLACE);
 }
 
+void BasePlaylistFeature::addPlaylistToAutoDJQueue(
+        const int playlistId, PlaylistDAO::AutoDJSendLoc loc) {
+    m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
+}
+
+void BasePlaylistFeature::toggleAutoDJ(bool enabled) {
+    m_playlistDao.toggleAutoDJ(enabled);
+}
+
 void BasePlaylistFeature::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = playlistIdFromIndex(m_lastRightClickedIndex);
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, loc);
+            addPlaylistToAutoDJQueue(playlistId, loc);
         }
     }
 }

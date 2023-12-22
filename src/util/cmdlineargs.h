@@ -6,6 +6,7 @@
 #include <QList>
 #include <QString>
 
+#include "library/dao/playlistdao.h"
 #include "util/logging.h"
 
 /// A structure to store the parsed command-line arguments
@@ -44,6 +45,18 @@ class CmdlineArgs final {
     }
 #endif
     bool getSafeMode() const { return m_safeMode; }
+    bool getAutodjEnabled() const {
+        return m_autodjReplace || m_autodjAddTop || m_autodjAddBottom;
+    }
+    PlaylistDAO::AutoDJSendLoc getAutodjLocation() const {
+        if (m_autodjReplace) {
+            return PlaylistDAO::AutoDJSendLoc::REPLACE;
+        } else if (m_autodjAddTop) {
+            return PlaylistDAO::AutoDJSendLoc::TOP;
+        } else {
+            return PlaylistDAO::AutoDJSendLoc::BOTTOM;
+        }
+    }
     bool useColors() const {
         return m_useColors;
     }
@@ -90,6 +103,9 @@ class CmdlineArgs final {
     bool m_qml;
 #endif
     bool m_safeMode;
+    bool m_autodjReplace;
+    bool m_autodjAddTop;
+    bool m_autodjAddBottom;
     bool m_useLegacyVuMeter;
     bool m_useLegacySpinny;
     bool m_debugAssertBreak;

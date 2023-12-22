@@ -8,6 +8,7 @@
 
 #include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
+#include "library/dao/playlistdao.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
 #include "library/trackset/crate/crateid.h"
@@ -103,7 +104,12 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
 
-    void importPlaylistFromFile(const QString& playlistFile);
+    void importPlaylistFromFile(const QString& playlistFile,
+            bool activatePlaylist = true,
+            bool sendToAutoDJ = false,
+            PlaylistDAO::AutoDJSendLoc loc = PlaylistDAO::AutoDJSendLoc::TOP);
+    void toggleAutoDJ(bool enabled);
+    void activateAutoDJPlaylist();
 
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);

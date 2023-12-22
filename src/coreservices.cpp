@@ -17,6 +17,7 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
+#include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -439,7 +440,8 @@ void CoreServices::initialize(QApplication* pApp) {
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
     for (int i = 0; i < (int)m_pPlayerManager->numDecks() && i < musicFiles.count(); ++i) {
-        if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i))) {
+        if (SoundSourceProxy::isFileNameSupported(musicFiles.at(i)) &&
+                !Parser::isPlaylistFilenameSupported(musicFiles.at(i))) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i + 1);
         }
     }

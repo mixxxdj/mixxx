@@ -40,6 +40,9 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
 
+    void activateAutoDJPlaylist();
+    void addPlaylistToAutoDJQueue(const int playlistId, PlaylistDAO::AutoDJSendLoc loc);
+    void toggleAutoDJ(bool enabled);
     int createImportPlaylist(const QString& playlistFile);
 
   public slots:
