@@ -53,8 +53,14 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
-    static SecurityTokenPointer openSecurityTokenForDir(const QDir& dir, bool create);
+    [[nodiscard(
+            "A new security token should be assigned to a variable, otherwise "
+            "it will be invalidated immediately.")]] static SecurityTokenPointer
+    openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
+    [[nodiscard(
+            "A new security token should be assigned to a variable, otherwise "
+            "it will be invalidated immediately.")]] static SecurityTokenPointer
+    openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
     Sandbox() = delete;
