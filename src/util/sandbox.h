@@ -72,8 +72,8 @@ class Sandbox {
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
     // Must hold s_mutex to call this.
-    static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
-                                                      const QString& bookmarkBase64);
+    [[nodiscard RATIONALE]] static SecurityTokenPointer openTokenFromBookmark(
+            const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
