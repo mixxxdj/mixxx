@@ -56,9 +56,9 @@ class Sandbox {
 #if defined(__GNUC__) && __cplusplus < 201907L
 #define RATIONALE
 #else
-#define RATIONALE                                                           \
-    ("A new security token should be assigned to a variable, otherwise it " \
-     "will be invalidated immediately.")
+#define RATIONALE                                                      \
+    ("A new security token should be used, e.g. by assigning it to a " \
+     "variable, otherwise it will be invalidated immediately.")
 #endif
 
     [[nodiscard RATIONALE]] static SecurityTokenPointer openSecurityToken(
