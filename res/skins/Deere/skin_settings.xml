@@ -125,6 +125,12 @@
             <SetVariable name="skinsetting">[Skin],show_vinylcontrol</SetVariable>
           </Template>
 
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_coverart</SetVariable>
+            <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
+            <SetVariable name="skinsetting">[Skin],timing_shift_buttons</SetVariable>
+          </Template>
+
         </Children>
       </WidgetGroup>
 
