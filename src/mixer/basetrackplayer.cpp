@@ -527,7 +527,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pDuration->set(0);
         m_pFileBPM->set(0);
         m_pKey->set(0);
-        setReplayGain(0);
         slotSetTrackColor(std::nullopt);
         m_pLoopInPoint->set(kNoTrigger);
         m_pLoopOutPoint->set(kNoTrigger);
@@ -547,7 +546,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         m_pDuration->set(m_pLoadedTrack->getDuration());
         m_pFileBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
-        setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
         slotSetTrackColor(m_pLoadedTrack->getColor());
 
         if(m_pConfig->getValue(

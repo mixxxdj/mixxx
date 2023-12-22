@@ -171,6 +171,8 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"), true);
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
 
+    m_pReplayGain = new ControlProxy(m_group, QStringLiteral("replaygain"), this);
+
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
@@ -308,6 +310,7 @@ EngineBuffer::~EngineBuffer() {
     delete m_pScaleRB;
 
     delete m_pKeylock;
+    delete m_pReplayGain;
 
     SampleUtil::free(m_pCrossfadeBuffer);
 
@@ -539,6 +542,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_dSlipRate = 0;
     m_slipModeState = SlipModeState::Disabled;
 
+    m_pReplayGain->set(pTrack->getReplayGain().getRatio());
+
     m_queuedSeek.setValue(kNoQueuedSeek);
 
     // Reset the pitch value for the new track.
@@ -602,6 +607,8 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
+
+    m_pReplayGain->set(0.0);
 
     m_queuedSeek.setValue(kNoQueuedSeek);
 
