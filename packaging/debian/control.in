@@ -8,25 +8,16 @@ Build-Depends: debhelper (>= 11),
                docbook-to-man,
                markdown,
                libglu1-mesa-dev,
-# qt5-default depends on qtbase5-dev, which includes headers for
-# QtConcurrent
-# QtCore
-# QtGui
-# QtNetwork
-# QtPlatformHeaders
-# QtPrintSupport
-# QtSql
-# QtWidgets
-# QtXml
-               qt5keychain-dev,
-# We additionally need headers for QtOpenGL, QtScript, and QtSvg.
-               qtdeclarative5-dev,
-               qtscript5-dev,
-               libqt5opengl5-dev,
-               libqt5svg5-dev,
-# Only needed for running tests that use SQLite.
-               libqt5sql5-sqlite,
-               libqt5x11extras5-dev,
+               qtkeychain-qt6-dev,
+               qt6-declarative-dev,
+               libqt6core5compat6-dev,
+               libqt6opengl6-dev,
+               libqt6sql6-sqlite,
+               libqt6svg6-dev,
+               qml-module-qtquick-controls,
+               qml-module-qtquick-controls2,
+               qml-module-qt-labs-qmlmodels,
+               qml-module-qtquick-shapes,
                cmake (>= 3.13),
                libjack-dev,
                portaudio19-dev,
