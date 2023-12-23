@@ -201,8 +201,9 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     const QString replacement = "UPDATE track_locations SET location=:newloc WHERE id=:id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());
-        query.bindValue("id", loc_ids.at(i).toVariant());
+        query.bindValue(QStringLiteral(":newloc"),
+                relocatedTracks.at(i).updatedTrackRef().getLocation());
+        query.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
         if (!query.exec()) {
             LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
             return {};
