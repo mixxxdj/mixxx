@@ -9,7 +9,7 @@ Description:
   <Layout>stacked</Layout>
   <Children>
     <!-- translucent cover when Library is maximized -->
-    <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
+    <Template src="skins:LateNight/helpers/skin_settings_cover.xml">
       <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
     </Template>
 
@@ -21,7 +21,7 @@ Description:
           <Layout>horizontal</Layout>
           <Size>180min,1min</Size>
           <Children>
-            <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
+            <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
               <SetVariable name="TooltipId">show_samplers</SetVariable>
               <SetVariable name="Text">Samplers </SetVariable>
               <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
@@ -36,7 +36,7 @@ Description:
           <Layout>stacked</Layout>
           <Children>
             <!-- translucent cover when samplers are hidden -->
-            <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+            <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
               <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
             </Template>
 
@@ -45,37 +45,37 @@ Description:
               <Size>0me,1min</Size>
               <Children>
                 <WidgetGroup><Size>25f,0f</Size></WidgetGroup>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">4</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_4samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
                   <SetVariable name="Width">25f</SetVariable>
                 </Template>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">8</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_8samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
                   <SetVariable name="Width">25f</SetVariable>
                 </Template>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">16</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_16samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
                   <SetVariable name="Width">30f</SetVariable>
                 </Template>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">32</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_32samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
                   <SetVariable name="Width">30f</SetVariable>
                 </Template>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">48</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_48samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
                   <SetVariable name="Width">30f</SetVariable>
                 </Template>
-                <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                   <SetVariable name="Text">64</SetVariable>
                   <SetVariable name="Setting">[LateNight],show_64samplers</SetVariable>
                   <SetVariable name="IsEqual">1</SetVariable>
@@ -93,7 +93,7 @@ Description:
           <Layout>stacked</Layout>
           <Children>
             <!-- translucent cover when samplers are hidden -->
-            <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+            <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
               <SetVariable name="Setting">[Skin],show_samplers</SetVariable>
             </Template>
 
@@ -101,7 +101,7 @@ Description:
               <Layout>vertical</Layout>
               <SizePolicy>me,min</SizePolicy>
               <Children>
-                <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                   <SetVariable name="Text">Fx controls</SetVariable>
                   <SetVariable name="Setting">[Skin],show_sampler_fx</SetVariable>
                 </Template>

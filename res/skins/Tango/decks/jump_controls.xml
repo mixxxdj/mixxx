@@ -24,7 +24,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/controls/button_1state_right.xml">
+              <Template src="skins:Tango/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">beatjump_backward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>
@@ -36,7 +36,7 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/controls/button_1state_right.xml">
+              <Template src="skins:Tango/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">beatjump_forward</SetVariable>
                 <SetVariable name="ObjectName">LoopBeatJumpButton</SetVariable>
                 <SetVariable name="Size">22f,22f</SetVariable>

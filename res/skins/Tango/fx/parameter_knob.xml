@@ -36,8 +36,8 @@ Variables:
             <Children>
               <EffectParameterKnobComposed>
                 <Size>26f,22f</Size>
-                <Knob>skin:../Tango/knobs_sliders/knob_fx_yellow.svg</Knob>
-                <BackPath>skin:../Tango/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
+                <Knob>skins:Tango/knobs_sliders/knob_fx_yellow.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>1.500</KnobCenterYOffset>
@@ -79,7 +79,7 @@ Variables:
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <!-- Meta knob link invert button -->
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
                 <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
                 <SetVariable name="Size">10f,5f</SetVariable>
@@ -87,7 +87,7 @@ Variables:
               </Template>
 
               <!-- Meta knob link button -->
-              <Template src="skin:../Tango/controls/button_5state.xml">
+              <Template src="skins:Tango/controls/button_5state.xml">
                 <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
                 <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
                 <SetVariable name="Size">25me,5f</SetVariable>

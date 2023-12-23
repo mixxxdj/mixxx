@@ -3,7 +3,7 @@
   <SingletonDefinition>
     <ObjectName>Samplers_Expander_<Variable name="Count"/>_Singleton</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/sampler_expand_button.xml">
+      <Template src="skins:LateNight/samplers/sampler_expand_button.xml">
       </Template>
     </Children>
   </SingletonDefinition>

@@ -21,22 +21,22 @@ Variables:
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_icon"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_icon"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="state_1_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_1_icon"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_1_icon"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_1_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_1_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <State>
       <Number>2</Number>
       <Text><Variable name="state_2_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_2_icon"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_2_icon"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_2_icon"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_2_icon"/></Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
     </State>
     <Connection>
