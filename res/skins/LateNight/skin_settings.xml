@@ -446,7 +446,9 @@ Description:
           </WidgetGroup>
 
           <!-- Samplers -->
-          <Template src="skin:/helpers/skin_settings_samplers.xml"/>
+          <SingletonContainer>
+            <ObjectName>SamplerSettingsSingleton</ObjectName>
+          </SingletonContainer>
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>

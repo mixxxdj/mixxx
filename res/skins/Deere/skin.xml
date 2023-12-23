@@ -83,7 +83,6 @@
          src-mac="skins:Deere/style-mac.qss"
          src-linux="skins:default-menu-styles-linux.qss"
          src-windows="skins:default-menu-styles-windows.qss"/>
-
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
 
@@ -179,6 +178,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:Deere/skinsettings_sampler_buttons.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <SizePolicy>me,me</SizePolicy>
@@ -213,7 +219,7 @@
                       <Children>
                         <Template src="skins:Deere/main_decks.xml"/>
                         <Template src="skins:Deere/effect_rack.xml"/>
-                        <Template src="skin:sample_decks.xml"/>
+                        <Template src="skins:Deere/sample_decks.xml"/>
                         <Template src="skins:Deere/microphone_rack.xml"/>
                       </Children>
                     </WidgetGroup><!-- /Main section -->
@@ -251,7 +257,7 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
-        <Template src="skin:skin_settings.xml"/>
+        <Template src="skins:Deere/skin_settings.xml"/>
       </Children>
     </WidgetGroup>
   </Children>

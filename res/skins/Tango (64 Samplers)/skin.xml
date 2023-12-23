@@ -366,6 +366,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:Tango (64 Samplers)/skin_settings_sampler_rows_64.xml"/>
+      </Children>
+    </SingletonDefinition>
+
 <!--  ##############################################################
       SkinContainer  ###############################################
       skin incl. invisible size detector for deck Stars ############
@@ -490,7 +497,7 @@
                               </Connection>
                             </WidgetGroup>
 
-                            <Template src="skin:/sampler_rack.xml"/>
+                            <Template src="skins:Tango (64 Samplers)/sampler_rack.xml"/>
 
                             <Template src="skins:Tango/mic_aux_rack.xml"/>
 
@@ -558,7 +565,7 @@
               </Children>
             </WidgetGroup><!-- topbar + skin elements -->
 
-            <Template src="skin:skin_settings.xml"/>
+            <Template src="skins:Tango/skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- visible skin + size settings menu -->

@@ -360,6 +360,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:Tango/skin_settings_sampler_rows_16.xml"/>
+      </Children>
+    </SingletonDefinition>
+
 <!--  ##############################################################
       SkinContainer ################################################
       skin incl. invisible size detector for deck Stars ############

@@ -737,7 +737,9 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <Template src="skins:Tango/skin_settings_sampler_rows_16.xml"/>
+                  <SingletonContainer>
+                    <ObjectName>SamplerSettingsSingleton</ObjectName>
+                  </SingletonContainer>
 
                 </Children>
               </WidgetGroup><!-- /Sampler row buttons -->

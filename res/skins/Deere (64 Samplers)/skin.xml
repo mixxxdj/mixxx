@@ -179,6 +179,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:Deere (64 Samplers)/skinsettings_sampler_buttons.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <SizePolicy>me,me</SizePolicy>
@@ -209,7 +216,7 @@
                   <Children>
                     <Template src="skins:Deere/main_decks.xml"/>
                     <Template src="skins:Deere/effect_rack.xml"/>
-                    <Template src="skin:sample_decks.xml"/>
+                    <Template src="skins:Deere (64 Samplers)/sample_decks.xml"/>
                     <Template src="skins:Deere/microphone_rack.xml"/>
                     <SingletonContainer>
                       <ObjectName>Library</ObjectName>
@@ -237,6 +244,6 @@
 
       </Children>
     </WidgetGroup>
-    <Template src="skin:skin_settings.xml"/>
+    <Template src="skins:Deere/skin_settings.xml"/>
   </Children>
 </skin>

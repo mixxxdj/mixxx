@@ -137,7 +137,7 @@
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
                       VU meter, default cover art etc. -->
-      <Style src="skin:style_palemoon.qss"/>
+      <Style src="skins:LateNight/style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
       <SetVariable name="SliderScheme">palemoon</SetVariable>
@@ -235,7 +235,7 @@
 
     <Scheme>
       <Name>Classic</Name>
-      <Style src="skin:style_classic.qss"/>
+      <Style src="skins:LateNight/style_classic.qss"/>
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>
@@ -389,6 +389,13 @@
       </Children>
     </SingletonDefinition>
 
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/helpers/skin_settings_samplers.xml"/>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>SkinContainer</ObjectName>
       <Layout>vertical</Layout>
@@ -456,7 +463,7 @@
                         </WidgetGroup>
 
                         <Template src="skins:LateNight/fx_rack.xml"/>
-                        <Template src="skin:samplers_rack.xml"/>
+                        <Template src="skins:LateNight/samplers_rack.xml"/>
                         <Template src="skins:LateNight/mic_aux_rack.xml"/>
 
                         <SingletonContainer>
