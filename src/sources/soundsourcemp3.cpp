@@ -121,7 +121,18 @@ bool decodeFrameHeader(
         mad_stream* pMadStream,
         bool skipId3Tag) {
     DEBUG_ASSERT(!hasUnrecoverableError(pMadStream));
-    if (mad_header_decode(pMadHeader, pMadStream)) {
+    int ret = mad_header_decode(pMadHeader, pMadStream);
+    if (pMadHeader->flags & MAD_FLAG_FREEFORMAT) {
+        // perform missing sanity check for Layer I and II
+        // See libmad frame.c free_bitrate()
+        if ((pMadHeader->layer == MAD_LAYER_I && pMadHeader->bitrate > 896000) ||
+                (pMadHeader->layer == MAD_LAYER_II && pMadHeader->bitrate > 768000)) {
+            pMadStream->error = MAD_ERROR_LOSTSYNC;
+            pMadStream->sync = 0;
+            ret = -1;
+        }
+    }
+    if (ret) {
         // Something went wrong when decoding the frame header...
         DEBUG_ASSERT(pMadStream->error != MAD_ERROR_NONE);
         if (MAD_ERROR_BUFLEN == pMadStream->error) {
