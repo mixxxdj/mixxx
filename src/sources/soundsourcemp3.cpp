@@ -130,7 +130,8 @@ bool decodeFrameHeader(
         }
         if (isUnrecoverableError(pMadStream->error)) {
             kLogger.warning() << "Unrecoverable MP3 header decoding error:"
-                              << mad_stream_errorstr(pMadStream);
+                              << mad_stream_errorstr(pMadStream)
+                              << pMadStream->this_frame - pMadStream->buffer;
             return false;
         }
         if ((pMadStream->error == MAD_ERROR_LOSTSYNC) && skipId3Tag) {
@@ -148,7 +149,8 @@ bool decodeFrameHeader(
         // worry users when logged as a warning. The issue will become
         // obsolete once we switched to FFmpeg for MP3 decoding.
         kLogger.info() << "Recoverable MP3 header decoding error:"
-                       << mad_stream_errorstr(pMadStream);
+                       << mad_stream_errorstr(pMadStream)
+                       << pMadStream->this_frame - pMadStream->buffer;
         logFrameHeader(kLogger.info(), *pMadHeader);
         return false;
     }
@@ -731,7 +733,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
                                   << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
-                                  << " - aborting";
+                                  << " - aborting @" << m_madStream.this_frame - m_madStream.buffer;
                 abortReading = true;
             }
 #endif
