@@ -331,7 +331,7 @@ jobs:
           # Render analyzer waveform tests to an offscreen buffer
           QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
-      - name: "[Windows] Sign binaries"
+      - name: "[Windows] Sign executables"
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         if: runner.os == 'Windows' && env.AZURE_TENANT_ID
@@ -344,7 +344,7 @@ jobs:
           code-signing-account-name: mixxx
           certificate-profile-name: mixxx
           files-folder: build
-          files-folder-filter: dll,exe
+          files-folder-filter: exe
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
