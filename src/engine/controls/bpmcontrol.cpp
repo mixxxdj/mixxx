@@ -22,8 +22,6 @@ constexpr double kBpmRangeMax = 200.0;
 constexpr double kBpmRangeStep = 1.0;
 constexpr double kBpmRangeSmallStep = 0.1;
 
-constexpr double kBpmAdjustMin = kBpmRangeMin;
-constexpr double kBpmAdjustStep = 0.01;
 constexpr double kBpmTabRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
@@ -93,6 +91,18 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
+    m_pBeatsSetMarker = new ControlPushButton(ConfigKey(group, "beats_set_marker"), false);
+    connect(m_pBeatsSetMarker,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsSetMarker,
+            Qt::DirectConnection);
+    m_pBeatsRemoveMarker = new ControlPushButton(ConfigKey(group, "beats_remove_marker"), false);
+    connect(m_pBeatsRemoveMarker,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsRemoveMarker,
+            Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
@@ -144,6 +154,8 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
     delete m_pTranslateBeatsMove;
+    delete m_pBeatsSetMarker;
+    delete m_pBeatsRemoveMarker;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
 }
@@ -152,7 +164,11 @@ mixxx::Bpm BpmControl::getBpm() const {
     return mixxx::Bpm(m_pEngineBpm->get());
 }
 
-void BpmControl::adjustBeatsBpm(double deltaBpm) {
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v <= 0) {
+        return;
+    }
+
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
@@ -162,31 +178,32 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
         return;
     }
 
-    const mixxx::Bpm bpm = pBeats->getBpmInRange(
-            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
-    // FIXME: calling bpm.value() without checking bpm.isValid()
-    const auto centerBpm = mixxx::Bpm(math_max(kBpmAdjustMin, bpm.value() + deltaBpm));
-    mixxx::Bpm adjustedBpm = BeatUtils::roundBpmWithinRange(
-            centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
-    const auto newBeats = pBeats->trySetBpm(adjustedBpm);
-    if (!newBeats) {
-        return;
+    const auto adjustedBeats = pBeats->tryAdjustTempo(
+            frameInfo().currentPosition, mixxx::Beats::TempoAdjustment::Faster);
+    if (adjustedBeats) {
+        pTrack->trySetBeats(*adjustedBeats);
     }
-    pTrack->trySetBeats(*newBeats);
-}
-
-void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v <= 0) {
-        return;
-    }
-    adjustBeatsBpm(kBpmAdjustStep);
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpm(-kBpmAdjustStep);
+
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto adjustedBeats = pBeats->tryAdjustTempo(
+            frameInfo().currentPosition, mixxx::Beats::TempoAdjustment::Slower);
+    if (adjustedBeats) {
+        pTrack->trySetBeats(*adjustedBeats);
+    }
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
@@ -221,6 +238,44 @@ void BpmControl::slotTranslateBeatsMove(double v) {
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);
         }
+    }
+}
+
+void BpmControl::slotBeatsSetMarker(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->trySetMarker(frameInfo().currentPosition);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
+    }
+}
+
+void BpmControl::slotBeatsRemoveMarker(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+
+    const auto modifiedBeats = pBeats->tryRemoveMarker(frameInfo().currentPosition);
+    if (modifiedBeats) {
+        pTrack->trySetBeats(*modifiedBeats);
     }
 }
 

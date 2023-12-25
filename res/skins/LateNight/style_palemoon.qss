@@ -2322,11 +2322,17 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:../LateNight/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
   }
 
-  #BeatCurposLarge[displayValue="0"] {
-    image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+  #BeatsSetMarker[displayValue="0"] {
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_set_marker.svg) no-repeat center center;
     }
-    #BeatCurposLarge[pressed="true"] {
-      image: url(skin:../LateNight/palemoon/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
+    #BeatsSetMarker[pressed="true"] {
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_set_marker_active.svg) no-repeat center center;
+    }
+  #BeatsRemoveMarker[displayValue="0"] {
+    image: url(skin:../LateNight/palemoon/buttons/btn__beats_remove_marker.svg) no-repeat center center;
+    }
+    #BeatsRemoveMarker[pressed="true"] {
+      image: url(skin:../LateNight/palemoon/buttons/btn__beats_remove_marker_active.svg) no-repeat center center;
     }
 
   #BeatsEarlier {
