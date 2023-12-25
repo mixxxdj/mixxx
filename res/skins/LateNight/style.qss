@@ -864,6 +864,7 @@ QLabel#labelTransitionAppendix {
   margin-left: 3px;
 }
 QLabel#labelProgress, /* Analysis progress */
+QLabel#labelTotalInfo, /* AutoDJ track total info */
 QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
   margin: 2px 5px 5px 1px;
 }

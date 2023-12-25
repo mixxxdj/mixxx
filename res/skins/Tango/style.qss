@@ -2844,6 +2844,7 @@ Library features and their buttons:
     QPushButton#pushButtonFadeNow
     QSpinBox#spinBoxTransition
     QLabel#labelSelectionInfo
+    QLabel#labelTotalInfo
   DlgAnalysis
     + some small margin to maximize and cover art button
     + make radio buttons blue like active keylock button
@@ -2984,6 +2985,8 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   /* Push labels away from buttons at the right */
   /* AutoDJ selection info */
   QLabel#labelSelectionInfo,
+  /* AutoDJ total info */
+  QLabel#labelTotalInfo,
   /* Analysis progress info */
   QLabel#labelProgress {
     margin: 0px 4px 5px 2px;
