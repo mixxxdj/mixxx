@@ -7,9 +7,7 @@
 
 #include "audio/types.h"
 #include "encoder/encoder.h"
-
-template<class DataType>
-class FIFO;
+#include "util/fifo.h"
 
 class EncoderFdkAac : public Encoder {
   public:
