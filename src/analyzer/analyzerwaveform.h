@@ -26,6 +26,10 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     } else {
         return std::pow(invalue, 2.0f * 0.316f);
     }
+
+    // TODO this function needs an explanation of why this scaling is applied.
+    // Note that in the allshader waveform-renderers, this scaling is undone for
+    // the filtered.all band.
 }
 
 struct WaveformStride {
