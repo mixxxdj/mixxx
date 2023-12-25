@@ -23,6 +23,13 @@ public:
     void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
                   float* highGain);
 
+    // To undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+    static float* unscaleTable();
+    inline float unscale(unsigned char value) {
+        static const float* table = unscaleTable();
+        return table[value];
+    }
+
   protected:
     ControlProxy* m_pEQEnabled;
     ControlProxy* m_pLowFilterControlObject;

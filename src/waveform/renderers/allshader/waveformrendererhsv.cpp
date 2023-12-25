@@ -129,7 +129,8 @@ void WaveformRendererHSV::paintGL() {
             maxLow[chn] = static_cast<float>(u8maxLow);
             maxMid[chn] = static_cast<float>(u8maxMid);
             maxHigh[chn] = static_cast<float>(u8maxHigh);
-            maxAll[chn] = static_cast<float>(u8maxAll);
+            // Undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+            maxAll[chn] = unscale(u8maxAll);
         }
 
         float total{};
