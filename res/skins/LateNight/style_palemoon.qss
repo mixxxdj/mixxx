@@ -1443,7 +1443,7 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
 #fadeModeCombobox:!editable,
 #LibraryFeatureControls QPushButton:enabled,
-#CueDeleteButton {
+WCueMenuPopup QPushButton {
   outline: none;
   border-width: 2px;
   border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -1463,14 +1463,14 @@ WEffectSelector:!editable,
   #BroadcastButton[displayValue="3"],
   #BroadcastButton[displayValue="4"],
   #SkinSettingsToggle[displayValue="1"],
-  #LibraryFeatureControls QPushButton:pressed
+  #LibraryFeatureControls QPushButton:pressed,
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
   QPushButton#pushButtonAnalyze:checked,
   QPushButton#pushButtonRecording:checked,
   WEffectSelector:!editable:on,
   #fadeModeCombobox:!editable:on,
-  #CueDeleteButton[pressed="true"] {
+  WCueMenuPopup QPushButton:pressed {
     border-width: 2px;
     border-image: url(skin:../LateNight/palemoon/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1617,7 +1617,9 @@ WBeatSpinBox::down-button {
   }
   /* bright buttons in dimmed containers
   #BeatgridControls WPushButton[displayValue="0"], */
-  #CueDeleteButton,
+  WCueMenuPopup #CueDeleteButton,
+  WCueMenuPopup #CueShiftEarlier,
+  WCueMenuPopup #CueShiftLater,
   #SplitCue[displayValue="0"],
   #PlayPreview[displayValue="0"],
   /* library controls */
@@ -2475,19 +2477,34 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 
 /* widgets in cue popup menu */
 WCueMenuPopup #CueDeleteButton {
+  /* For QPushButtons, the border is added (here: 2px in each direction).
+     This sets the minimum size, the button may expand depending on the
+     layout and stretch options set in src/widget/wcuemenupopup.cpp */
+  width: 44px;
+  height: 22px;
+}
+WCueMenuPopup #CueDeleteButton {
   qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__delete.svg);
-  width: 24px;
-  height: 42px;
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
 }
 
-WCueMenuPopup #CueDeleteButton:pressed {
-  background-color: #b24c12;
-  outline: none;
-  /* not applied: */
-  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__delete_active.svg);
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
+  /* This gives us a final size of 26x26, exactly like other square
+     buttons (decks, mixer etc.) */
+  width: 22px;
+  height: 22px;
+  qproperty-iconSize: 24px;
 }
+WCueMenuPopup #CueShiftEarlier {
+  /* same as #HotcuesShiftEarlier */
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_earlier.svg);
+}
+WCueMenuPopup #CueShiftLater {
+  qproperty-icon: url(skin:../LateNight/palemoon/buttons/btn__beats_hotcues_later.svg);
+}
+
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/
   border-radius: 0px;

@@ -46,7 +46,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
     m_hoverCueColor = context.selectBool(node, QStringLiteral("Hover"), false);
 
-    m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), this);
+    m_pCueMenuPopup = make_parented<WCueMenuPopup>(context.getConfig(), m_group, this);
     ColorPaletteSettings colorPaletteSettings(context.getConfig());
     auto colorPalette = colorPaletteSettings.getHotcueColorPalette();
     m_pCueMenuPopup->setColorPalette(colorPalette);

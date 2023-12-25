@@ -1,5 +1,6 @@
 #include "engine/controls/cuecontrol.h"
 
+#include "control/controlencoder.h"
 #include "control/controlindicator.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -206,6 +207,9 @@ void CueControl::createControls() {
     m_pHotcueFocusColorNext = std::make_unique<ControlObject>(
             ConfigKey(m_group, "hotcue_focus_color_next"));
 
+    m_pShiftFocusedHotcue = std::make_unique<ControlEncoder>(
+            ConfigKey(m_group, "shift_focused_hotcue"), false);
+
     // Create hotcue controls
     for (int i = 0; i < m_iNumHotCues; ++i) {
         HotcueControl* pControl = new HotcueControl(m_group, i);
@@ -339,6 +343,12 @@ void CueControl::connectControls() {
             &CueControl::hotcueFocusColorNext,
             Qt::DirectConnection);
 
+    connect(m_pShiftFocusedHotcue.get(),
+            &ControlObject::valueChanged,
+            this,
+            &CueControl::slotShiftFocusedHotcue,
+            Qt::DirectConnection);
+
     // Hotcue controls
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         connect(pControl, &HotcueControl::hotcuePositionChanged,
@@ -394,6 +404,11 @@ void CueControl::connectControls() {
                 this,
                 &CueControl::hotcueClear,
                 Qt::DirectConnection);
+        connect(pControl,
+                &HotcueControl::hotcueShift,
+                this,
+                &CueControl::hotcueShift,
+                Qt::DirectConnection);
     }
 }
 
@@ -425,6 +440,8 @@ void CueControl::disconnectControls() {
 
     disconnect(m_pHotcueFocusColorPrev.get(), nullptr, this, nullptr);
     disconnect(m_pHotcueFocusColorNext.get(), nullptr, this, nullptr);
+
+    disconnect(m_pShiftFocusedHotcue.get(), nullptr, this, nullptr);
 
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         disconnect(pControl, nullptr, this, nullptr);
@@ -1188,6 +1205,52 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
     detachCue(pControl);
     m_pLoadedTrack->removeCue(pCue);
     setHotcueFocusIndex(Cue::kNoHotCue);
+}
+
+void CueControl::hotcueShift(HotcueControl* pControl, int direction) {
+    if (direction == 0) {
+        return;
+    }
+
+    auto lock = lockMutex(&m_trackMutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    CuePointer pCue = pControl->getCue();
+    if (!pCue) {
+        return;
+    }
+
+    if (m_pQuantizeEnabled->toBool()) {
+        m_pLoadedTrack->shiftCuePositionBeats(pCue, direction);
+    } else {
+        m_pLoadedTrack->shiftCuePositionMillis(pCue, Cue::kShiftCuesOffsetMillis * direction);
+    }
+}
+
+void CueControl::slotShiftFocusedHotcue(double v) {
+    int direction = static_cast<int>(v);
+    if (direction == 0) {
+        return;
+    }
+
+    auto lock = lockMutex(&m_trackMutex);
+    if (!m_pLoadedTrack) {
+        return;
+    }
+
+    int hotcueIndex = getHotcueFocusIndex();
+    if (hotcueIndex < 0 || hotcueIndex >= m_hotcueControls.size()) {
+        return;
+    }
+
+    HotcueControl* pControl = m_hotcueControls.at(hotcueIndex);
+    if (!pControl) {
+        return;
+    }
+
+    hotcueShift(pControl, direction);
 }
 
 void CueControl::hotcuePositionChanged(
@@ -2562,6 +2625,28 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueClear,
             Qt::DirectConnection);
 
+    m_hotcueShift = std::make_unique<ControlEncoder>(
+            keyForControl(QStringLiteral("shift")), false);
+    connect(m_hotcueShift.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShift,
+            Qt::DirectConnection);
+    m_hotcueShiftEarlier = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("shift_earlier")));
+    connect(m_hotcueShiftEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShiftEarlier,
+            Qt::DirectConnection);
+    m_hotcueShiftLater = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("shift_later")));
+    connect(m_hotcueShiftLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueShiftLater,
+            Qt::DirectConnection);
+
     m_previewingType.setValue(mixxx::CueType::Invalid);
     m_previewingPosition.setValue(mixxx::audio::kInvalidFramePos);
 }
@@ -2618,6 +2703,27 @@ void HotcueControl::slotHotcueActivatePreview(double v) {
 
 void HotcueControl::slotHotcueClear(double v) {
     emit hotcueClear(this, v);
+}
+
+void HotcueControl::slotHotcueShift(double v) {
+    if (v == 0) {
+        return;
+    }
+    emit hotcueShift(this, static_cast<int>(v));
+}
+
+void HotcueControl::slotHotcueShiftEarlier(double v) {
+    if (v <= 0) {
+        return;
+    }
+    emit hotcueShift(this, -1);
+}
+
+void HotcueControl::slotHotcueShiftLater(double v) {
+    if (v <= 0) {
+        return;
+    }
+    emit hotcueShift(this, 1);
 }
 
 void HotcueControl::slotHotcuePositionChanged(double newPosition) {
@@ -2684,6 +2790,7 @@ void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
         m_hotcueColor->set(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code

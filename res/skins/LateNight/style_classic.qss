@@ -1229,7 +1229,8 @@ QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#LibraryFeatureControls QPushButton:pressed {
+#LibraryFeatureControls QPushButton:pressed,
+WCueMenuPopup QPushButton:pressed {
   color: #999;
 }
 
@@ -1298,7 +1299,10 @@ WPushButton#FxAssignButton1[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #LibraryFeatureControls QPushButton,
 WEffectSelector:!editable,
-#fadeModeCombobox:!editable {
+#fadeModeCombobox:!editable,
+WCueMenuPopup #CueDeleteButton,
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
   border-width: 2px;
   border-image: url(skin:../LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
@@ -1320,7 +1324,10 @@ QPushButton#pushButtonRepeatPlaylist:checked,
 QPushButton#pushButtonAnalyze:checked,
 QPushButton#pushButtonRecording:checked,
 WEffectSelector:!editable:on,
-#fadeModeCombobox:!editable:on {
+#fadeModeCombobox:!editable:on,
+WCueMenuPopup #CueDeleteButton:pressed,
+WCueMenuPopup #CueShiftEarlier:pressed,
+WCueMenuPopup #CueShiftLater:pressed {
   border-width: 2px;
   border-image: url(skin:../LateNight/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
@@ -1414,7 +1421,10 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
-WPushButton#SkinSettingsToggle[displayValue="0"] {
+WPushButton#SkinSettingsToggle[displayValue="0"],
+WCueMenuPopup #CueDeleteButton,
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
   background-color: #262626;
 }
 
@@ -1999,20 +2009,33 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {  /*
+WCueMenuPopup #CueDeleteButton {  /*
   padding: 3px 6px; */
   qproperty-icon: url(skin:../LateNight/classic/buttons/btn__delete.svg);
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
-  width: 24px;
-  height: 42px;
-  border-width: 2px;
-  border-image: url(skin:../LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  width: 44px;
+  height: 22px;
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   /* has no effect
   padding: 0px; */
+}
+
+WCueMenuPopup #CueShiftEarlier,
+WCueMenuPopup #CueShiftLater {
+  /* This gives us a final size of 26x26, exactly like other square
+     buttons (decks, mixer etc.) */
+  width: 22px;
+  height: 22px;
+}
+WCueMenuPopup #CueShiftEarlier {
+  /* same as #HotcuesShiftEarlier */
+  qproperty-icon: url(skin:../LateNight/classic/buttons/btn__beats_hotcues_earlier.svg);
+}
+WCueMenuPopup #CueShiftLater {
+  qproperty-icon: url(skin:../LateNight/classic/buttons/btn__beats_hotcues_later.svg);
 }
 
 #CueLabelEdit {

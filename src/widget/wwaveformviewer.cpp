@@ -22,7 +22,7 @@ WWaveformViewer::WWaveformViewer(
           m_zoomZoneWidth(20),
           m_bScratching(false),
           m_bBending(false),
-          m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
+          m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, group, this)),
           m_waveformWidget(nullptr) {
     setMouseTracking(true);
     setAcceptDrops(true);

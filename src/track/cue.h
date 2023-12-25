@@ -22,6 +22,9 @@ class Cue : public QObject {
     /// Invalid hot cue index
     static constexpr int kNoHotCue = -1;
 
+    static constexpr double kShiftCuesOffsetMillis = 10;
+    static constexpr double kShiftCuesOffsetSmallMillis = 1;
+
     static_assert(kNoHotCue != mixxx::kFirstHotCueIndex,
             "Conflicting definitions of invalid and first hot cue index");
 
