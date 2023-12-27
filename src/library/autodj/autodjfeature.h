@@ -81,6 +81,10 @@ class AutoDJFeature : public LibraryFeature {
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 
+    QString m_title;
+
+    void updateTitle();
+
   private slots:
     // Add a crate to the auto-DJ queue.
     void slotAddCrateToAutoDj(CrateId crateId);
@@ -96,4 +100,6 @@ class AutoDJFeature : public LibraryFeature {
     // Adds a random track from the queue upon hitting minimum number
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
+
+    void slotPlaylistsChanged(const QSet<int>& playlistIds);
 };

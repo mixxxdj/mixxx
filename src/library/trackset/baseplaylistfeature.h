@@ -73,11 +73,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotAnalyzePlaylist();
 
   protected:
-    struct IdAndLabel {
-        int id;
-        QString label;
-    };
-
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
     virtual QString fetchPlaylistLabel(int playlistId) = 0;

@@ -219,6 +219,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="labelTotalInfo">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

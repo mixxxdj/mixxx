@@ -6,27 +6,21 @@
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/playlisttablemodel.h"
-#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/db/dbconnection.h"
 #include "util/duration.h"
 #include "widget/wlibrarysidebar.h"
 
 namespace {
 
-QString createPlaylistLabel(
-        const QString& name,
-        int count,
-        int duration) {
+QString formatLabel(const PlaylistSummary& playlistSummary) {
     return QStringLiteral("%1 (%2) %3")
-            .arg(name,
-                    QString::number(count),
-                    mixxx::Duration::formatTime(
-                            duration, mixxx::Duration::Precision::SECONDS));
+            .arg(playlistSummary.getName(),
+                    QString::number(playlistSummary.getTrackCount()),
+                    playlistSummary.getTrackDurationText());
 }
 
 } // anonymous namespace
@@ -38,7 +32,8 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME"),
-                  QStringLiteral("playlist")) {
+                  QStringLiteral("playlist")),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
@@ -120,105 +115,13 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
     return !locked && formatSupported;
 }
 
-QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-    QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
-    QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
-            "AS SELECT "
-            "  Playlists.id AS id, "
-            "  Playlists.name AS name, "
-            "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
-            "FROM Playlists "
-            "LEFT JOIN PlaylistTracks "
-            "  ON PlaylistTracks.playlist_id = Playlists.id "
-            "LEFT JOIN library "
-            "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = 0 "
-            "  GROUP BY Playlists.id");
-    queryString.append(
-            mixxx::DbConnection::collateLexicographically(
-                    " ORDER BY sort_name"));
-    QSqlQuery query(database);
-    if (!query.exec(queryString)) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, idColumn))
-                        .toInt();
-        QString name =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, nameColumn))
-                        .toString();
-        int count =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, countColumn))
-                        .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(row, durationColumn))
-                        .toInt();
-        BasePlaylistFeature::IdAndLabel idAndLabel;
-        idAndLabel.id = id;
-        idAndLabel.label = createPlaylistLabel(name, count, duration);
-        playlistLabels.append(idAndLabel);
-    }
-    return playlistLabels;
-}
-
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
-    // Setup the sidebar playlist model
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    QString filter = "id=" + QString::number(playlistId);
-    playlistTableModel.setFilter(filter);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
+    PlaylistSummary playlistSummary;
+    if (m_pTrackCollection->playlists().readPlaylistSummaryById(
+                PlaylistId(QVariant(playlistId)), &playlistSummary)) {
+        return formatLabel(playlistSummary);
     }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
 
-    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
-    if (playlistTableModel.rowCount() > 0) {
-        QString name =
-                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
-                        .toString();
-        int count = playlistTableModel
-                            .data(playlistTableModel.index(0, countColumn))
-                            .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(0, durationColumn))
-                        .toInt();
-        return createPlaylistLabel(name, count, duration);
-    }
     return QString();
 }
 
@@ -228,27 +131,28 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
-    int selectedRow = -1;
+    childrenToAdd.reserve(m_pTrackCollection->playlists().countPlaylists(
+            PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
 
-    int row = 0;
-    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
-    for (const auto& idAndLabel : playlistLabels) {
-        int playlistId = idAndLabel.id;
-        QString playlistLabel = idAndLabel.label;
+    int selectedRow = -1;
+    PlaylistSummarySelectResult playlistSummaries(
+            m_pTrackCollection->playlists().selectPlaylistSummaries(
+                    PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN));
+    PlaylistSummary playlistSummary;
+    while (playlistSummaries.populateNext(&playlistSummary)) {
+        int playlistId = playlistSummary.getId().toVariant().toInt();
 
         if (selectedId == playlistId) {
             // save index for selection
-            selectedRow = row;
+            selectedRow = static_cast<int>(childrenToAdd.size()) - 1;
         }
 
         // Create the TreeItem whose parent is the invisible root item
-        auto pItem = std::make_unique<TreeItem>(playlistLabel, playlistId);
+        auto pItem = std::make_unique<TreeItem>(formatLabel(playlistSummary), playlistId);
         pItem->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
 
         decorateChild(pItem.get(), playlistId);
         childrenToAdd.push_back(std::move(pItem));
-
-        ++row;
     }
 
     // Append all the newly created TreeItems in a dynamic way to the childmodel

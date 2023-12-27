@@ -7,6 +7,8 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/playlisttablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -34,7 +36,13 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                   parent->getTrackTableBackgroundColorOpacity(),
                   /*no sorting*/ false)),
           m_bShowButtonText(parent->getShowButtonText()),
-          m_pAutoDJTableModel(nullptr) {
+          m_pAutoDJTableModel(nullptr),
+          m_pTrackCollection(nullptr) {
+    TrackCollectionManager* pTrackCollectionManager = pLibrary->trackCollectionManager();
+    DEBUG_ASSERT(pTrackCollectionManager != nullptr);
+    m_pTrackCollection = pTrackCollectionManager->internalCollection();
+    DEBUG_ASSERT(m_pTrackCollection != nullptr);
+
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -55,6 +63,11 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             &WTrackTableView::trackSelected,
             this,
             &DlgAutoDJ::updateSelectionInfo);
+
+    connect(&m_pTrackCollection->getPlaylistDAO(),
+            &PlaylistDAO::tracksChanged,
+            this,
+            &DlgAutoDJ::updateTotalInfo);
 
     connect(pLibrary,
             &Library::setTrackTableFont,
@@ -219,6 +232,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
+    updateTotalInfo();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -374,18 +388,28 @@ void DlgAutoDJ::updateSelectionInfo() {
         }
     }
 
-    QString label;
-
     if (!indices.isEmpty()) {
-        label.append(mixxx::DurationBase::formatTime(duration));
-        label.append(QString(" (%1)").arg(indices.size()));
         labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
-        labelSelectionInfo->setText(label);
+        labelSelectionInfo->setText(
+                QStringLiteral("<%1 (%2) / ")
+                        .arg(mixxx::DurationBase::formatTime(duration),
+                                QString::number(indices.size())));
         labelSelectionInfo->setEnabled(true);
     } else {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
     }
+}
+
+void DlgAutoDJ::updateTotalInfo() {
+    PlaylistSummary summary;
+    if (!m_pTrackCollection->playlists().readAutoDJPlaylistSummary(&summary)) {
+        return;
+    }
+
+    labelTotalInfo->setText(QStringLiteral("<%1 (%2)")
+                                    .arg(summary.getTrackDurationText(),
+                                            QString::number(summary.getTrackCount())));
 }
 
 bool DlgAutoDJ::hasFocus() const {

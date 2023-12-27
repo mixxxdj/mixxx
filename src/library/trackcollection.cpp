@@ -68,6 +68,7 @@ void TrackCollection::repairDatabase(const QSqlDatabase& database) {
 
     kLogger.info() << "Repairing database";
     m_crates.repairDatabase(database);
+    m_playlists.repairDatabase(database);
 }
 
 void TrackCollection::connectDatabase(const QSqlDatabase& database) {
@@ -83,6 +84,7 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_analysisDao.initialize(database);
     m_libraryHashDao.initialize(database);
     m_crates.connectDatabase(database);
+    m_playlists.connectDatabase(database);
 }
 
 void TrackCollection::disconnectDatabase() {
@@ -92,6 +94,7 @@ void TrackCollection::disconnectDatabase() {
     m_database = QSqlDatabase();
     m_trackDao.finish();
     m_crates.disconnectDatabase();
+    m_playlists.disconnectDatabase();
 }
 
 void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
