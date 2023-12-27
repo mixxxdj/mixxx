@@ -57,12 +57,12 @@ Variables:
                 <Size>1me,18f</Size>
                 <ObjectName>PreviewTitle</ObjectName>
                 <Children>
-                  <Text>
+                  <TrackProperty>
                     <TooltipId>text</TooltipId>
                     <Size>1me,17f</Size>
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
-                  </Text>
+                  </TrackProperty>
                 </Children>
               </WidgetGroup>
 
