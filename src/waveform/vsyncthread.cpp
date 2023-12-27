@@ -8,14 +8,17 @@ VSyncThread::VSyncThread(QObject* pParent)
         : QThread(pParent),
           m_bDoRendering(true),
           m_vSyncTypeChanged(false),
-          m_syncIntervalTimeMicros(33333),  // 30 FPS
+          m_syncIntervalTimeMicros(33333), // 30 FPS
           m_waitToSwapMicros(0),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
           m_droppedFrames(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
-          m_vSyncPerRendering(1) {
+          m_vSyncPerRendering(1),
+          m_pllPhaseOut(0.0),
+          m_pllDeltaOut(16666.6) { // 60 FPS
+    m_pllTimer.start();
 }
 
 VSyncThread::~VSyncThread() {
@@ -32,8 +35,8 @@ void VSyncThread::run() {
     m_timer.start();
 
     //qDebug() << "VSyncThread::run()";
-    while (m_bDoRendering) {
-        if (m_vSyncMode == ST_FREE) {
+    if (m_vSyncMode == ST_FREE) {
+        while (m_bDoRendering) {
             // for benchmark only!
 
             // renders the waveform, Possible delayed due to anti tearing
@@ -46,7 +49,61 @@ void VSyncThread::run() {
             m_sinceLastSwap = m_timer.restart();
             m_waitToSwapMicros = 1000;
             usleep(1000);
-        } else { // if (m_vSyncMode == ST_TIMER) {
+        }
+    } else if (m_vSyncMode == ST_PLL) {
+        qint64 offset = 0;
+        qint64 nextSwapMicros = 0;
+        while (m_bDoRendering) {
+            // Use a phase-locked-loop on the QOpenGLWindow::frameSwapped signal
+            // to determine when the vsync occurs
+
+            qint64 pllPhaseOut;
+            qint64 pllDeltaOut;
+            qint64 now;
+
+            {
+                std::scoped_lock lock(m_pllMutex);
+                // last estimated vsync
+                pllPhaseOut = std::llround(m_pllPhaseOut);
+                // estimated frame interval
+                pllDeltaOut = std::llround(m_pllDeltaOut);
+                now = m_pllTimer.elapsed().toIntegerMicros();
+            }
+            if (pllPhaseOut > nextSwapMicros) {
+                nextSwapMicros = pllPhaseOut;
+            }
+            if (nextSwapMicros == pllPhaseOut) {
+                nextSwapMicros += pllDeltaOut;
+            }
+
+            // sleep an integer number of frames extra to approximate the
+            // selected framerate (eg 10,15,20,30)
+            const auto skippedFrames = (m_syncIntervalTimeMicros - pllDeltaOut / 2) / pllDeltaOut;
+            qint64 sleepForSkippedFrames = skippedFrames * pllDeltaOut;
+
+            qint64 sleepUntilSwap = (nextSwapMicros + offset - now) % pllDeltaOut;
+            if (sleepUntilSwap < 0) {
+                sleepUntilSwap += pllDeltaOut;
+            }
+            usleep(sleepUntilSwap + sleepForSkippedFrames);
+
+            m_sinceLastSwap = m_timer.restart();
+            m_waitToSwapMicros = pllDeltaOut + sleepForSkippedFrames;
+
+            // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
+            // and render them for the next swap
+            emit vsyncSwapAndRender();
+            m_semaVsyncSlot.acquire();
+            m_semaVsyncSlot.acquire();
+            if (m_sinceLastSwap.toIntegerMicros() > sleepForSkippedFrames + pllDeltaOut * 3 / 2) {
+                m_droppedFrames++;
+                // Adjusting the offset on each frame drop ends up at
+                // an offset with no frame drops
+                offset = (offset + 2000) % pllDeltaOut;
+            }
+        }
+    } else { // if (m_vSyncMode == ST_TIMER) {
+        while (m_bDoRendering) {
             emit vsyncRender(); // renders the new waveform.
 
             // wait until rendering was scheduled. It might be delayed due a
@@ -54,8 +111,8 @@ void VSyncThread::run() {
             m_semaVsyncSlot.acquire();
 
             // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
-            int remainingForSwap = m_waitToSwapMicros - static_cast<int>(
-                m_timer.elapsed().toIntegerMicros());
+            int remainingForSwap = m_waitToSwapMicros -
+                    static_cast<int>(m_timer.elapsed().toIntegerMicros());
             // waiting for interval by sleep
             if (remainingForSwap > 100) {
                 usleep(remainingForSwap);
@@ -94,22 +151,14 @@ void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
 }
 
 void VSyncThread::setVSyncType(int type) {
+    // qDebug() << "setting vsync type" << type;
+
     if (type >= (int)VSyncThread::ST_COUNT) {
         type = VSyncThread::ST_TIMER;
     }
     m_vSyncMode = (enum VSyncMode)type;
     m_droppedFrames = 0;
     m_vSyncTypeChanged = true;
-}
-
-int VSyncThread::toNextSyncMicros() {
-    int rest = m_waitToSwapMicros - static_cast<int>(m_timer.elapsed().toIntegerMicros());
-    // int math is fine here, because we do not expect times > 4.2 s
-    if (rest < 0) {
-        rest %= m_syncIntervalTimeMicros;
-        rest += m_syncIntervalTimeMicros;
-    }
-    return rest;
 }
 
 int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
@@ -149,6 +198,9 @@ void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
             case VSyncThread::ST_FREE:
                 name = tr("Free + 1 ms (for benchmark only)");
                 break;
+            case VSyncThread::ST_PLL:
+                name = tr("frameSwapped-signal driven phase locked loop");
+                break;
             default:
                 break;
             }
@@ -160,4 +212,34 @@ void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
 
 mixxx::Duration VSyncThread::sinceLastSwap() const {
     return m_sinceLastSwap;
+}
+
+void VSyncThread::updatePLL() {
+    std::scoped_lock lock(m_pllMutex);
+
+    // Phase-lock-looped to estimate the vsync based on the
+    // QOpenGLWindow::frameSwapped signal
+
+    // inspired by https://liquidsdr.org/blog/pll-simple-howto/
+    const double alpha = 0.01;               // the page above uses 0.05, but a more narrow
+                                             // filter seems to work better here
+    const double beta = 0.5 * alpha * alpha; // increment adjustment factor
+
+    const double pllPhaseIn = m_pllTimer.elapsed().toDoubleMicros();
+
+    m_pllPhaseOut += m_pllDeltaOut;
+
+    double pllPhaseError = pllPhaseIn - m_pllPhaseOut;
+
+    if (pllPhaseError > 0) {
+        // when advanced more than a frame, jump to the current frame
+        m_pllPhaseOut += std::floor(pllPhaseError / m_pllDeltaOut) * m_pllDeltaOut;
+        pllPhaseError = pllPhaseIn - m_pllPhaseOut;
+    }
+
+    // apply loop filter and correct output phase and delta
+    m_pllPhaseOut += alpha * pllPhaseError; // adjust phase
+    m_pllDeltaOut += beta * pllPhaseError;  // adjust delta
+
+    // qDebug() << "PLL delta" << m_pllDeltaOut;
 }

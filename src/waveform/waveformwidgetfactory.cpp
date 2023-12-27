@@ -816,6 +816,21 @@ void WaveformWidgetFactory::swap() {
     m_vsyncThread->vsyncSlotFinished();
 }
 
+void WaveformWidgetFactory::swapAndRender() {
+    swap();
+    render();
+}
+
+void WaveformWidgetFactory::slotFrameSwapped() {
+#ifdef MIXXX_USE_QOPENGL
+    WGLWidget* widget = SharedGLContext::getWidget();
+    // continuously trigger redraws
+    widget->getOpenGLWindow()->update();
+    // update the phase-locked-loop
+    m_vsyncThread->updatePLL();
+#endif
+}
+
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     if (isOpenGlShaderAvailable()) {
 #ifndef MIXXX_USE_QOPENGL
@@ -1123,6 +1138,18 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
+#ifdef MIXXX_USE_QOPENGL
+    if (m_vSyncType == VSyncThread::ST_PLL) {
+        WGLWidget* widget = SharedGLContext::getWidget();
+        connect(widget->getOpenGLWindow(),
+                &QOpenGLWindow::frameSwapped,
+                this,
+                &WaveformWidgetFactory::slotFrameSwapped,
+                Qt::DirectConnection);
+        widget->show();
+    }
+#endif
+
     connect(m_vsyncThread,
             &VSyncThread::vsyncRender,
             this,
@@ -1131,6 +1158,10 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
             &VSyncThread::vsyncSwap,
             this,
             &WaveformWidgetFactory::swap);
+    connect(m_vsyncThread,
+            &VSyncThread::vsyncSwapAndRender,
+            this,
+            &WaveformWidgetFactory::swapAndRender);
 
     m_vsyncThread->start(QThread::NormalPriority);
 }

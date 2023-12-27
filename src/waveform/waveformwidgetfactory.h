@@ -160,6 +160,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   private slots:
     void render();
     void swap();
+    void swapAndRender();
+    void slotFrameSwapped();
 
   private:
     void evaluateWidgets();
