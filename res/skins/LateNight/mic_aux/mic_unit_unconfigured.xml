@@ -32,8 +32,8 @@
                 <NumberStates>1</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:../LateNight/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Pressed>
+                  <Unpressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skins:LateNight/<Variable name="BtnScheme"/>/buttons/btn_flat_square.svg</Pressed>
                 </State>
                 <Connection>
                   <ConfigKey><Variable name="Group"/>,talkover</ConfigKey>

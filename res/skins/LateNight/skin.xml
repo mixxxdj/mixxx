@@ -125,7 +125,7 @@
     <Scheme>
       <Name>PaleMoon</Name>
       <!-- Mix any of the existing button, knob, slider or style theme subsets.
-        The button templates for example link to skin:../LateNight/BtnTheme/buttons/btn_...
+        The button templates for example link to skins:LateNight/BtnTheme/buttons/btn_...
 
         BtnScheme     borders / background images for pushbuttons, spinboxes,
                       effect selector, AutoDJ fade mode selector.
@@ -137,7 +137,7 @@
         SliderScheme  ...exactly!
         StyleScheme   icons & backgrounds for library, splitters, spinnies,
                       VU meter, default cover art etc. -->
-      <Style src="skin:style_palemoon.qss"/>
+      <Style src="skins:LateNight/style_palemoon.qss"/>
       <SetVariable name="BtnScheme">palemoon</SetVariable>
       <SetVariable name="KnobScheme">palemoon</SetVariable>
       <SetVariable name="SliderScheme">palemoon</SetVariable>
@@ -183,7 +183,7 @@
            Other buttons that use text (like vinyl controls and Fx assign button) are styled
            in css via
               border-width: 2px;
-              border-image: url(skin:../LateNight/path/to/btn_icon.svg) 2 2 2 2;
+              border-image: url(skins:LateNight/path/to/btn_icon.svg) 2 2 2 2;
         Example themes: (in PaleMoon only the embedded style is used)
         * elevated: domed buttons that stand out, with a 3D border and a drop shadow
         * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
@@ -235,7 +235,7 @@
 
     <Scheme>
       <Name>Classic</Name>
-      <Style src="skin:style_classic.qss"/>
+      <Style src="skins:LateNight/style_classic.qss"/>
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
       <SetVariable name="SliderScheme">classic</SetVariable>
@@ -286,9 +286,9 @@
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:../LateNight/style.qss"
-         src-linux="skin:../default-menu-styles-linux.qss"
-         src-windows="skin:../default-menu-styles-windows.qss"/>
+  <Style src="skins:LateNight/style.qss"
+         src-linux="skins:default-menu-styles-linux.qss"
+         src-windows="skins:default-menu-styles-windows.qss"/>
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
@@ -302,8 +302,8 @@
     QLabel {
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
           because the launch screen appears while the skin is parsed.
-      image: url(skin:../LateNight/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:../LateNight/palemoon/style/mixxx_logo.svg);
+      image: url(skins:LateNight/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
+      image: url(skins:LateNight/palemoon/style/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -313,7 +313,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background: url(skin:../LateNight/palemoon/style/progressbar_bg.svg);
+      background: url(skins:LateNight/palemoon/style/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -321,7 +321,7 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background: url(skin:../LateNight/palemoon/style/progressbar.svg);
+      background: url(skins:LateNight/palemoon/style/progressbar.svg);
     }
   </LaunchImageStyle>
 
@@ -335,7 +335,7 @@
     <SingletonDefinition>
       <ObjectName>Deck1_Src</ObjectName>
       <Children>
-      <Template src="skin:../LateNight/decks/deck.xml">
+      <Template src="skins:LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">1</SetVariable>
         <SetVariable name="DeckGroup">12</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -347,7 +347,7 @@
     <SingletonDefinition>
       <ObjectName>Deck2_Src</ObjectName>
       <Children>
-        <Template src="skin:../LateNight/decks/deck.xml">
+        <Template src="skins:LateNight/decks/deck.xml">
           <SetVariable name="ChanNum">2</SetVariable>
           <SetVariable name="DeckGroup">12</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -359,7 +359,7 @@
     <SingletonDefinition>
       <ObjectName>Deck3_Src</ObjectName>
       <Children>
-      <Template src="skin:../LateNight/decks/deck.xml">
+      <Template src="skins:LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">3</SetVariable>
         <SetVariable name="DeckGroup">34</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -371,7 +371,7 @@
     <SingletonDefinition>
       <ObjectName>Deck4_Src</ObjectName>
       <Children>
-      <Template src="skin:../LateNight/decks/deck.xml">
+      <Template src="skins:LateNight/decks/deck.xml">
         <SetVariable name="ChanNum">4</SetVariable>
         <SetVariable name="DeckGroup">34</SetVariable>
         <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -380,12 +380,19 @@
       </Children>
     </SingletonDefinition>
 
-    <Template src="skin:../LateNight/mixer/singletons.xml"/>
+    <Template src="skins:LateNight/mixer/singletons.xml"/>
 
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
-        <Template src="skin:../LateNight/library.xml"/>
+        <Template src="skins:LateNight/library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:LateNight/helpers/skin_settings_samplers.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -395,7 +402,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Children>
 
-        <Template src="skin:../LateNight/toolbar.xml"/>
+        <Template src="skins:LateNight/toolbar.xml"/>
 
         <!-- regular/maximized library  |  skin settings menu -->
         <WidgetGroup>
@@ -423,7 +430,7 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <Children>
-                        <Template src="skin:../LateNight/waveforms_container.xml"/>
+                        <Template src="skins:LateNight/waveforms_container.xml"/>
                       </Children>
                       <Connection>
                         <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
@@ -449,15 +456,15 @@
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:../LateNight/decks/decks_left.xml"/>
-                            <Template src="skin:../LateNight/mixer.xml"/>
-                            <Template src="skin:../LateNight/decks/decks_right.xml"/>
+                            <Template src="skins:LateNight/decks/decks_left.xml"/>
+                            <Template src="skins:LateNight/mixer.xml"/>
+                            <Template src="skins:LateNight/decks/decks_right.xml"/>
                           </Children>
                         </WidgetGroup>
 
-                        <Template src="skin:../LateNight/fx_rack.xml"/>
-                        <Template src="skin:samplers_rack.xml"/>
-                        <Template src="skin:../LateNight/mic_aux_rack.xml"/>
+                        <Template src="skins:LateNight/fx_rack.xml"/>
+                        <Template src="skins:LateNight/samplers_rack.xml"/>
+                        <Template src="skins:LateNight/mic_aux_rack.xml"/>
 
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>
@@ -479,8 +486,8 @@
                       <Layout>horizontal</Layout>
                       <SizePolicy>me,max</SizePolicy>
                       <Children>
-                        <Template src="skin:../LateNight/decks/decks_left_mini.xml"/>
-                        <Template src="skin:../LateNight/decks/decks_right_mini.xml"/>
+                        <Template src="skins:LateNight/decks/decks_left_mini.xml"/>
+                        <Template src="skins:LateNight/decks/decks_right_mini.xml"/>
                       </Children>
                       <Connection>
                         <ConfigKey persist="true">[LateNight],max_lib_show_decks</ConfigKey>
@@ -496,7 +503,7 @@
 
               </Children>
             </WidgetStack>
-            <Template src="skin:../LateNight/skin_settings.xml"/>
+            <Template src="skins:LateNight/skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- regular/maximized library + skin settings menu -->

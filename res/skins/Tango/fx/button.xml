@@ -23,13 +23,13 @@ Variables:
     <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
     <State>
       <Number>0</Number>
-      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOff"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOff"/>.svg</Unpressed>
     </State>
     <State>
       <Number>1</Number>
-      <Pressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
-      <Unpressed scalemode="STRETCH">skin:../Tango/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
+      <Pressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOn"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH">skins:Tango/buttons/btn_<Variable name="labelOn"/>.svg</Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>

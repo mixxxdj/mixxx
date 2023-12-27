@@ -1268,7 +1268,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtrackproperty.cpp
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
-  src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
   src/widget/wvumeter.cpp
   src/widget/wvumeterbase.cpp

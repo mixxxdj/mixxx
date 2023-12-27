@@ -30,7 +30,7 @@ Variables:
                 <MaximumSize><Variable name="SpaceLeft"/>,-1</MaximumSize>
               </WidgetGroup>
 
-              <Template src="skin:../Tango/decks/loop_controls.xml"/>
+              <Template src="skins:Tango/decks/loop_controls.xml"/>
 
               <WidgetGroup>
                 <SizePolicy>me,me</SizePolicy>
@@ -38,7 +38,7 @@ Variables:
                 <MaximumSize>70,-1</MaximumSize>
               </WidgetGroup>
 
-              <Template src="skin:../Tango/decks/jump_controls.xml"/>
+              <Template src="skins:Tango/decks/jump_controls.xml"/>
 
               <WidgetGroup>
                 <SizePolicy>me,me</SizePolicy>

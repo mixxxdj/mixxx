@@ -77,7 +77,6 @@
 #include "widget/wstatuslight.h"
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
-#include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
 #include "widget/wvumeter.h"
 #include "widget/wvumeterglsl.h"
@@ -391,6 +390,17 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
             }
         }
     }
+
+    // This enables file paths like 'skins:Deere/some_template.xml',
+    // in addition to relative paths like 'skins:Deere/some_template.xml'
+    // Note: Here we assume this path exists. If it doesn't SkinLoader::getSkinSearchPaths()
+    // would have already triggered an error message.
+    // Note: we may also add the user skins path, in case there are custom skins
+    // that use the same template inheritance scheme like official skins, but we
+    // don't because unfortunately there is no reliable way to apply equivalent
+    // path replacement in stylesheetAbsIconPaths().
+    QString systemSkinsPath(m_pConfig->getResourcePath() + "/skins/");
+    QDir::addSearchPath("skins", systemSkinsPath);
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style, m_pContext.get());
 
@@ -1054,32 +1064,13 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group:").arg(group));
-        return nullptr;
+    if (group.isEmpty()) {
+        // use WLabel, try to parse 'Text' node
+        return parseLabelWidget<WLabel>(node);
+    } else {
+        // use WTrackProperty to show a track tag / file name
+        return parseTrackProperty(node);
     }
-
-    WTrackText* pTrackText = new WTrackText(m_pParent,
-            m_pConfig,
-            m_pLibrary,
-            group);
-    setupLabelWidget(node, pTrackText);
-
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pTrackText, &WTrackText::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::loadingTrack, pTrackText, &WTrackText::slotLoadingTrack);
-    connect(pTrackText,
-            &WTrackText::trackDropped,
-            m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
-    connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
-
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        pTrackText->slotTrackLoaded(pTrack);
-    }
-
-    return pTrackText;
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
@@ -2476,11 +2467,13 @@ QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
-    // Workaround for https://bugs.kde.org/show_bug.cgi?id=434451 which renders
-    // relative SVG icon paths in external stylesheets unusable:
+    // Initially, this was a Workaround for https://bugs.kde.org/show_bug.cgi?id=434451
+    // which renders relative SVG icon paths in external stylesheets unusable:
     // Replaces relative icon urls in stylesheets (external qss or inline
     // <Style> nodes) with absolute file paths.
-    // TODO Can be removed/disabled as soon as all target distros have the fixed
-    // package in their repo.
+    // Now this also replaces the 'skins:' alias which allows skin mods in the
+    // user skins directory to use image urls referencing files in the system
+    // skins directory for the launch image style.
+    style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
 }

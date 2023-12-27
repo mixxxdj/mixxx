@@ -12,53 +12,53 @@ Variables passed through from fx_unit:
     <Size>min,min</Size>
     <Children>
 
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">1</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">2</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">3</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">4</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">5</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">6</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">7</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_knob.xml">
+      <Template src="skins:Tango/fx/parameter_knob.xml">
         <SetVariable name="FxParameter">8</SetVariable>
       </Template>
 
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">1</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">2</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">3</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">4</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">5</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">6</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">7</SetVariable>
       </Template>
-      <Template src="skin:../Tango/fx/parameter_button.xml">
+      <Template src="skins:Tango/fx/parameter_button.xml">
         <SetVariable name="FxParameter">8</SetVariable>
       </Template>
     </Children>

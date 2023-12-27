@@ -14,13 +14,13 @@ Variables:
     <SizePolicy>me,f</SizePolicy>
     <Children>
 
-      <Template src="skin:../Tango/decks/deck_left.xml">
+      <Template src="skins:Tango/decks/deck_left.xml">
         <SetVariable name="chanNum">3</SetVariable>
       </Template>
 
-      <Template src="skin:../Tango/helpers/spacer_center.xml"/>
+      <Template src="skins:Tango/helpers/spacer_center.xml"/>
 
-      <Template src="skin:../Tango/decks/deck_right.xml">
+      <Template src="skins:Tango/decks/deck_right.xml">
         <SetVariable name="chanNum">4</SetVariable>
       </Template>
 

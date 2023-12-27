@@ -16,13 +16,13 @@ Variables:
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
-      <Template src="skin:../Tango/decks/deck_left.xml">
+      <Template src="skins:Tango/decks/deck_left.xml">
         <SetVariable name="chanNum">1</SetVariable>
       </Template>
 
-      <Template src="skin:../Tango/mixer/vumeter_main.xml"/>
+      <Template src="skins:Tango/mixer/vumeter_main.xml"/>
 
-      <Template src="skin:../Tango/decks/deck_right.xml">
+      <Template src="skins:Tango/decks/deck_right.xml">
         <SetVariable name="chanNum">2</SetVariable>
       </Template>
     </Children>
