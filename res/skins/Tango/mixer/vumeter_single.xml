@@ -21,8 +21,8 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
         <Children>
           <VuMeter>
             <Size>4f,-1min</Size>
-            <PathVu>skin:../Tango/graphics/vumeter_level_over.png</PathVu>
-            <PathBack>skin:../Tango/graphics/vumeter_level.png</PathBack>
+            <PathVu>skins:Tango/graphics/vumeter_level_over.png</PathVu>
+            <PathBack>skins:Tango/graphics/vumeter_level.png</PathBack>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>4</PeakHoldSize>
             <PeakHoldTime>800</PeakHoldTime>
@@ -34,8 +34,8 @@ Refer to https://github.com/mixxxdj/mixxx/issues/9201
           </VuMeter>
           <VuMeter>
             <Size>4f,-1min</Size>
-            <PathVu>skin:../Tango/graphics/vumeter_level_over.png</PathVu>
-            <PathBack>skin:../Tango/graphics/vumeter_level.png</PathBack>
+            <PathVu>skins:Tango/graphics/vumeter_level_over.png</PathVu>
+            <PathBack>skins:Tango/graphics/vumeter_level.png</PathBack>
             <Horizontal>false</Horizontal>
             <PeakHoldSize>4</PeakHoldSize>
             <PeakHoldTime>800</PeakHoldTime>

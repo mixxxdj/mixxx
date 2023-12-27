@@ -37,7 +37,7 @@ Variables:
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:../Tango/mixer/eq_button.xml">
+              <Template src="skins:Tango/mixer/eq_button.xml">
                 <SetVariable name="ObjectName">EQKillButton</SetVariable>
                 <SetVariable name="Size">12f,26f</SetVariable>
               </Template>
@@ -55,8 +55,8 @@ Variables:
             <Children>
               <EffectParameterKnobComposed>
                 <Size>30f,26f</Size>
-                <Knob>skin:../Tango/knobs_sliders/knob_white.svg</Knob>
-                <BackPath>skin:../Tango/knobs_sliders/knob_bg.svg</BackPath>
+                <Knob>skins:Tango/knobs_sliders/knob_white.svg</Knob>
+                <BackPath>skins:Tango/knobs_sliders/knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
                 <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -68,7 +68,7 @@ Variables:
                 </Connection>
               </EffectParameterKnobComposed>
 
-              <Template src="skin:../Tango/mixer/eq_button.xml">
+              <Template src="skins:Tango/mixer/eq_button.xml">
                 <SetVariable name="ObjectName">EQKilledUnderlay</SetVariable>
                 <SetVariable name="Size">30f,26f</SetVariable>
               </Template>
