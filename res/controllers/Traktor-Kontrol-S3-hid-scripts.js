@@ -527,7 +527,7 @@ TraktorS3.Controller = class {
             this.Channels[idx].linkOutputs();
         }
 
-        engine.makeConnection("[Microphone]", "pfl", this.pflOutput);
+        engine.makeConnection("[Microphone]", "pfl", this.pflOutput.bind(this));
 
         engine.makeConnection("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
