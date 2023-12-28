@@ -119,8 +119,10 @@ void WaveformRendererSimple::paintGL() {
             // data is interleaved left / right
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
-                // Undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-                const float filteredAll = unscale(waveformData.filtered.all);
+                const float filteredAll = static_cast<float>(waveformData.filtered.all);
+                // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done
+                // in analyzerwaveform.h const float filteredAll =
+                // unscale(waveformData.filtered.all);
 
                 max[chn] = math_max(max[chn], filteredAll);
             }

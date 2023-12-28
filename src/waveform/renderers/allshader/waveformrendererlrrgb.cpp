@@ -136,8 +136,9 @@ void WaveformRendererLRRGB::paintGL() {
             float maxLow = static_cast<float>(u8maxLow);
             float maxMid = static_cast<float>(u8maxMid);
             float maxHigh = static_cast<float>(u8maxHigh);
-            // Undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
-            float maxAll = unscale(u8maxAll);
+            float maxAll = static_cast<float>(u8maxAll);
+            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+            // float maxAll = unscale(u8maxAll);
 
             // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
             // We take the square root to get the magnitude below.

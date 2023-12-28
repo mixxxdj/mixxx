@@ -23,9 +23,11 @@ public:
     void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
                   float* highGain);
 
-    // To undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
     static float* unscaleTable();
     inline float unscale(unsigned char value) {
+        // The all and hi components of the waveform data are scaled with pow(value, 2.0f * 0.316f)
+        // (see analyzerwaveform.h). This function can be used to undo that scaling,
+        // but apparently it is intentional.
         static const float* table = unscaleTable();
         return table[value];
     }
