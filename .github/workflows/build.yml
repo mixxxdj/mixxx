@@ -197,7 +197,6 @@ jobs:
 
       - name: "[macOS/Windows] Get build environment name"
         if: runner.os != 'Linux'
-        id: buildenv_name
         run: ${{ matrix.buildenv_script }} name
 
       - name: "[macOS/Windows] Set up build environment cache"
@@ -226,9 +225,16 @@ jobs:
           security set-keychain-settings Mixxx.keychain
           echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-      - name: "Set up build environment"
-        id: buildenv
-        if: matrix.buildenv_script != null
+      - name: "[macOS/Linux] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os != 'Windows'
+        run: ${{ matrix.buildenv_script }} setup
+        env:
+          BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+
+      - name: "[Windows] Set up build environment"
+        if: matrix.buildenv_script != null && runner.os == 'Windows'
+        # With the cmd shell the ERRORLEVEL is checked
+        shell: cmd
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
