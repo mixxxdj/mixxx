@@ -55,10 +55,6 @@ LoopingControl::LoopingControl(const QString& group,
           m_bAdjustingLoopInOld(false),
           m_bAdjustingLoopOutOld(false),
           m_bLoopOutPressedWhileLoopDisabled(false) {
-    m_oldLoopInfo = {mixxx::audio::kInvalidFramePos,
-            mixxx::audio::kInvalidFramePos,
-            LoopSeekMode::MovedOut};
-    m_loopInfo.setValue(m_oldLoopInfo);
     m_currentPosition.setValue(mixxx::audio::kStartFramePos);
     m_pActiveBeatLoop = nullptr;
     m_pRateControl = nullptr;
@@ -772,10 +768,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 // Clear the last active loop while saved loop (cue + info) remains untouched
 void LoopingControl::slotLoopRemove() {
     setLoopingEnabled(false);
-    LoopInfo loopInfo = m_loopInfo.getValue();
-    loopInfo.startPosition = mixxx::audio::kInvalidFramePos;
-    loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
-    loopInfo.seekMode = LoopSeekMode::None;
+    LoopInfo loopInfo;
     m_loopInfo.setValue(loopInfo);
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
