@@ -130,7 +130,7 @@ jobs:
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
             buildenv_basepath: C:\buildenv
-            buildenv_script: tools/windows_release_buildenv.bat
+            buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
             artifacts_slug: windows-win64
@@ -238,6 +238,7 @@ jobs:
         run: ${{ matrix.buildenv_script }} setup
         env:
           BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
+          BUILDENV_RELEASE: TRUE
 
       - name: "[Ubuntu/macOS] Set up GitHub cache for ccache"
         if: runner.os != 'windows'
