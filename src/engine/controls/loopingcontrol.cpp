@@ -1214,9 +1214,11 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
 }
 
 void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
-     if (!m_pTrack) {
-         return;
-     }
+    if (!m_pTrack) {
+        return;
+    }
+
+    storeLoopInfo();
 
     // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
@@ -1255,8 +1257,34 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     }
 
     // Return to the previous beatlooproll if necessary.
+    // Else previous regular beatloop if no rolling loops are active.
     if (!m_activeLoopRolls.empty()) {
         slotBeatLoop(m_activeLoopRolls.top(), m_bLoopRollActive, true);
+    } else {
+        restoreLoopInfo();
+    }
+}
+
+void LoopingControl::storeLoopInfo() {
+    if (m_bLoopRollActive || !m_activeLoopRolls.empty()) {
+        return;
+    }
+
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+        m_prevLoopInfo.setValue(loopInfo);
+    }
+}
+
+void LoopingControl::restoreLoopInfo() {
+    if (m_bLoopRollActive || !m_activeLoopRolls.empty()) {
+        return;
+    }
+
+    LoopInfo prevLoopInfo = m_prevLoopInfo.getValue();
+    if (prevLoopInfo.startPosition.isValid() && prevLoopInfo.endPosition.isValid()) {
+        setLoop(prevLoopInfo.startPosition, prevLoopInfo.endPosition, false);
+        m_prevLoopInfo.setValue(LoopInfo{});
     }
 }
 
@@ -1541,6 +1569,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
                 m_activeLoopRolls.clear();
             }
         } else {
+            storeLoopInfo();
             m_pSlipEnabled->set(1.0);
             slotBeatLoop(m_pCOBeatLoopSize->get());
             m_bLoopRollActive = true;
@@ -1554,6 +1583,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
             m_bLoopRollActive = false;
             m_activeLoopRolls.clear();
         }
+        restoreLoopInfo();
     }
 }
 
