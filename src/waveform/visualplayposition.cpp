@@ -63,10 +63,11 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
-        // The offset is limited to the audio buffer + waveform sync interval
+        // The offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        const int maxOffset = static_cast<int>(data.m_audioBufferMicroS + syncIntervalTimeMicros);
+        const int maxOffset = static_cast<int>(
+                data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
         const int offset = math_clamp(
