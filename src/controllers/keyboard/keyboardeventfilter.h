@@ -24,6 +24,9 @@ class KeyboardEventFilter : public QObject {
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
+    // Returns a valid QString with modifier keys from a QKeyEvent
+    static QKeySequence getKeySeq(QKeyEvent* e);
+
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
@@ -37,8 +40,6 @@ class KeyboardEventFilter : public QObject {
         ControlObject* pControl;
     };
 
-    // Returns a valid QString with modifier keys from a QKeyEvent
-    QKeySequence getKeySeq(QKeyEvent *e);
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
     // Pointer to keyboard config object

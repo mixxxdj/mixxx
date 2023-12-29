@@ -125,6 +125,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 
+// static
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     QString modseq;
     QKeySequence k;
