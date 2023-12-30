@@ -405,8 +405,8 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
     // that use the same template inheritance scheme like official skins, but we
     // don't because unfortunately there is no reliable way to apply equivalent
     // path replacement in stylesheetAbsIconPaths().
-    QString systemSkinsPath(m_pConfig->getResourcePath() + "/skins/");
-    QDir::addSearchPath("skins", systemSkinsPath);
+    QString systemSkinsPath(m_pConfig->getResourcePath() + "skins/");
+    QDir::setSearchPaths("skins", QStringList{systemSkinsPath});
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style, m_pContext.get());
 
