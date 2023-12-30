@@ -509,21 +509,6 @@ void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
     }
 }
 
-void WaveformWidgetFactory::setVSyncType(int type) {
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","VSync"), ConfigValue((int)type));
-    }
-
-    m_vSyncType = type;
-    if (m_vsyncThread) {
-        m_vsyncThread->setVSyncType(type);
-    }
-}
-
-int WaveformWidgetFactory::getVSyncType() {
-    return m_vSyncType;
-}
-
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
     return setWidgetType(type, &m_type);
 }
@@ -1217,7 +1202,11 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
 }
 
 // static
-QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
+QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer config) {
+    // The first call should pass the config to set the vsync mode. Subsequent
+    // calls will use the value as set on the first call.
+    static const auto vsyncMode = config->getValue(ConfigKey("[Waveform]", "VSync"), 0);
+
     QSurfaceFormat format;
     // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0, default is 2.0
     // format.setVersion(2, 1);
@@ -1240,13 +1229,14 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat() {
     // On OS X, syncing to vsync has good performance FPS-wise and
     // eliminates tearing. (This is an comment from pre QOpenGLWindow times)
     format.setSwapInterval(1);
+    (void)vsyncMode;
 #else
     // It seems that on Windows (at least for some AMD drivers), the setting 1 is not
     // not properly handled. We saw frame rates divided by exact integers, like it should
     // be with values >1 (see https://github.com/mixxxdj/mixxx/issues/11617)
     // Reported as https://bugreports.qt.io/browse/QTBUG-114882
     // On Linux, horrible FPS were seen with "VSync off" before switching to QOpenGLWindow too
-    format.setSwapInterval(0);
+    format.setSwapInterval(vsyncMode == VSyncThread::ST_PLL ? 1 : 0);
 #endif
     return format;
 }
