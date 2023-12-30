@@ -68,7 +68,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);

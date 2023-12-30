@@ -20,8 +20,11 @@ public:
   protected:
     void deleteControls();
 
-    void getGains(float* pAllGain, float* pLowGain, float* pMidGain,
-                  float* highGain);
+    void getGains(float* pAllGain,
+            bool applyCompensation,
+            float* pLowGain,
+            float* pMidGain,
+            float* highGain);
 
     static float* unscaleTable();
     inline float unscale(unsigned char value) {

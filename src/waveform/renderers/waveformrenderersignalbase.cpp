@@ -169,11 +169,14 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     onSetup(node);
 }
 
-void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
-                                          float* pMidGain, float* pHighGain) {
+void WaveformRendererSignalBase::getGains(float* pAllGain,
+        bool applyCompensation,
+        float* pLowGain,
+        float* pMidGain,
+        float* pHighGain) {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain()) *
+        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain(applyCompensation)) *
                 static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
         ;
     }
