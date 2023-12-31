@@ -162,6 +162,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void slotFrameSwapped();
 
   private:
+    void renderSelf();
+    void swapSelf();
+
     void evaluateWidgets();
     template<typename WaveformT>
     QString buildWidgetDisplayName() const;

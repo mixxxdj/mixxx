@@ -24,7 +24,7 @@ VSyncThread::VSyncThread(QObject* pParent)
 
 VSyncThread::~VSyncThread() {
     m_bDoRendering = false;
-    m_semaVsyncSlot.release(2); // Two slots
+    m_semaVsyncSlot.release(m_vSyncMode == ST_PLL ? 1 : 2); // Two slots, one for PLL
     wait();
     //delete m_glw;
 }
@@ -94,7 +94,6 @@ void VSyncThread::run() {
             // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
             // and render them for the next swap
             emit vsyncSwapAndRender();
-            m_semaVsyncSlot.acquire();
             m_semaVsyncSlot.acquire();
             if (m_sinceLastSwap.toIntegerMicros() > sleepForSkippedFrames + pllDeltaOut * 3 / 2) {
                 m_droppedFrames++;

@@ -687,7 +687,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     }
 }
 
-void WaveformWidgetFactory::render() {
+void WaveformWidgetFactory::renderSelf() {
     ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -759,10 +759,14 @@ void WaveformWidgetFactory::render() {
     m_pGuiTick->process();
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
+}
+
+void WaveformWidgetFactory::render() {
+    renderSelf();
     m_vsyncThread->vsyncSlotFinished();
 }
 
-void WaveformWidgetFactory::swap() {
+void WaveformWidgetFactory::swapSelf() {
     ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
             static_cast<int>(m_waveformWidgetHolders.size()));
 
@@ -797,13 +801,17 @@ void WaveformWidgetFactory::swap() {
         // If we are using WVuMeter, this does nothing
         emit swapVuMeters();
     }
-    //qDebug() << "swap end" << m_vsyncThread->elapsed();
+}
+
+void WaveformWidgetFactory::swap() {
+    swapSelf();
     m_vsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::swapAndRender() {
-    swap();
-    render();
+    swapSelf();
+    renderSelf();
+    m_vsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::slotFrameSwapped() {
