@@ -86,6 +86,10 @@ class Library: public QObject {
         return m_trackTableFont;
     }
 
+    bool selectedClickEnabled() const {
+        return m_editMetadataSelectedClick;
+    }
+
     //static Library* buildDefaultLibrary();
 
     static const int kDefaultRowHeightPx;

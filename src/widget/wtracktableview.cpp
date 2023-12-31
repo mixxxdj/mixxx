@@ -103,6 +103,19 @@ void WTrackTableView::selectionChanged(
         const QItemSelection& selected, const QItemSelection& deselected) {
     m_selectionChangedSinceLastGuiTick = true;
     enableCachedOnly();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    // Workaround for Qt6 bug https://bugreports.qt.io/browse/QTBUG-108595:
+    // If 'selectedClick' is enabled Ctrl+click opens the editor instead of
+    // toggling the clicked item.
+    // TODO Remove or adjust version guard as soon as the bug is fixed.
+    if (m_pLibrary->selectedClickEnabled()) {
+        if (selectionModel()->selectedRows().size() > 1) {
+            setSelectedClick(false);
+        } else {
+            setSelectedClick(true);
+        }
+    }
+#endif
     QTableView::selectionChanged(selected, deselected);
 }
 
