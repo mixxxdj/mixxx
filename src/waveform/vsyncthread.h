@@ -67,4 +67,5 @@ class VSyncThread : public QThread {
     PerformanceTimer m_pllTimer;
     double m_pllPhaseOut;
     double m_pllDeltaOut;
+    double m_pllLogging;
 };

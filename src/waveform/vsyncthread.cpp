@@ -17,7 +17,8 @@ VSyncThread::VSyncThread(QObject* pParent)
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
           m_pllPhaseOut(0.0),
-          m_pllDeltaOut(16666.6) { // 60 FPS
+          m_pllDeltaOut(16666.6), // 60 FPS initial delta
+          m_pllLogging(0.0) {
     m_pllTimer.start();
 }
 
@@ -241,5 +242,13 @@ void VSyncThread::updatePLL() {
     m_pllPhaseOut += alpha * pllPhaseError; // adjust phase
     m_pllDeltaOut += beta * pllPhaseError;  // adjust delta
 
-    // qDebug() << "PLL delta" << m_pllDeltaOut;
+    if (pllPhaseIn > m_pllLogging) {
+        if (m_pllLogging == 0) {
+            m_pllLogging = pllPhaseIn;
+        } else {
+            qDebug() << "phase-locked-loop:" << m_pllPhaseOut << m_pllDeltaOut;
+        }
+        // log every 10 seconds
+        m_pllLogging += 10000000.0;
+    }
 }
