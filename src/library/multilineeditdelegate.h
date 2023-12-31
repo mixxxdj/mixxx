@@ -27,6 +27,7 @@ class MultiLineEditor : public QPlainTextEdit {
   private:
     QTableView* m_pTableView;
     const QModelIndex m_index;
+    int m_fontHeight;
 };
 
 /// A delegate for text value columns that allows editing content
