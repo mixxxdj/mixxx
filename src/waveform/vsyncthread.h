@@ -13,16 +13,17 @@ class VSyncThread : public QThread {
     Q_OBJECT
   public:
     enum VSyncMode {
-        ST_TIMER = 0,
-        ST_MESA_VBLANK_MODE_1,
-        ST_SGI_VIDEO_SYNC,
-        ST_OML_SYNC_CONTROL,
-        ST_FREE,
-        ST_PLL,
-        ST_COUNT // Dummy Type at last, counting possible types
+        ST_DEFAULT = 0,
+        ST_MESA_VBLANK_MODE_1_DEPRECATED, // 1
+        ST_SGI_VIDEO_SYNC_DEPRECATED,     // 2
+        ST_OML_SYNC_CONTROL_DEPRECATED,   // 3
+        ST_FREE,                          // 4
+        ST_PLL,                           // 5
+        ST_TIMER,                         // 6
+        ST_COUNT                          // Dummy Type at last, counting possible types
     };
 
-    VSyncThread(QObject* pParent);
+    VSyncThread(QObject* pParent, VSyncMode vSyncMode);
     ~VSyncThread();
 
     void run();
@@ -30,7 +31,6 @@ class VSyncThread : public QThread {
     bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
     void setSyncIntervalTimeMicros(int usSyncTimer);
-    void setVSyncType(int mode);
     int droppedFrames();
     void setSwapWait(int sw);
     int fromTimerToNextSyncMicros(const PerformanceTimer& timer);
@@ -44,6 +44,9 @@ class VSyncThread : public QThread {
     }
     void updatePLL();
     bool pllInitializing() const;
+    VSyncMode vsyncMode() const {
+        return m_vSyncMode;
+    }
   signals:
     void vsyncSwapAndRender();
     void vsyncRender();
@@ -54,7 +57,6 @@ class VSyncThread : public QThread {
     void runTimer();
 
     bool m_bDoRendering;
-    bool m_vSyncTypeChanged;
     int m_syncIntervalTimeMicros;
     int m_waitToSwapMicros;
     enum VSyncMode m_vSyncMode;
