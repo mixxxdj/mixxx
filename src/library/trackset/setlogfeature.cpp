@@ -107,13 +107,13 @@ QVariant SetlogFeature::title() {
 }
 
 void SetlogFeature::bindLibraryWidget(
-        WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindLibraryWidget(libraryWidget, keyboard);
+        WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    BasePlaylistFeature::bindLibraryWidget(pLibraryWidget, pKeyboard);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &SetlogFeature::slotPlayingTrackChanged);
-    m_libraryWidget = QPointer(libraryWidget);
+    m_pLibraryWidget = QPointer(pLibraryWidget);
 }
 
 void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
@@ -600,9 +600,9 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         // View needs a refresh
 
         bool hasActiveView = false;
-        if (m_libraryWidget) {
+        if (m_pLibraryWidget) {
             WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                    m_libraryWidget->getActiveView());
+                    m_pLibraryWidget->getActiveView());
             if (view != nullptr) {
                 // We have a active view on the history. The user may have some
                 // important active selection. For example putting track into crates

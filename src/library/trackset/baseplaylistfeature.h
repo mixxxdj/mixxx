@@ -96,6 +96,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
+    QPointer<WLibrary> m_pLibraryWidget;
 
     QAction* m_pCreatePlaylistAction;
     QAction* m_pDeletePlaylistAction;

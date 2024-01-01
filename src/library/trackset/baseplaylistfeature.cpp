@@ -678,17 +678,18 @@ TreeItemModel* BasePlaylistFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
 
-void BasePlaylistFeature::bindLibraryWidget(WLibrary* libraryWidget,
-        KeyboardEventFilter* keyboard) {
-    Q_UNUSED(keyboard);
-    WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
-    edit->setHtml(getRootViewHtml());
-    edit->setOpenLinks(false);
-    connect(edit,
+void BasePlaylistFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
+        KeyboardEventFilter* pKeyboard) {
+    Q_UNUSED(pKeyboard);
+    WLibraryTextBrowser* pEdit = new WLibraryTextBrowser(pLibraryWidget);
+    pEdit->setHtml(getRootViewHtml());
+    pEdit->setOpenLinks(false);
+    connect(pEdit,
             &WLibraryTextBrowser::anchorClicked,
             this,
             &BasePlaylistFeature::htmlLinkClicked);
-    libraryWidget->registerView(m_rootViewName, edit);
+    m_pLibraryWidget = QPointer(pLibraryWidget);
+    m_pLibraryWidget->registerView(m_rootViewName, pEdit);
 }
 
 void BasePlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
