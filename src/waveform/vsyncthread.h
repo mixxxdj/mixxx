@@ -49,6 +49,10 @@ class VSyncThread : public QThread {
     void vsyncSwap();
 
   private:
+    void runFree();
+    void runPLL();
+    void runTimer();
+
     bool m_bDoRendering;
     bool m_vSyncTypeChanged;
     int m_syncIntervalTimeMicros;

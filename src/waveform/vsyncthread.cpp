@@ -36,107 +36,130 @@ void VSyncThread::run() {
     m_timer.start();
 
     //qDebug() << "VSyncThread::run()";
-    if (m_vSyncMode == ST_FREE) {
-        while (m_bDoRendering) {
-            // for benchmark only!
+    switch (m_vSyncMode) {
+    case ST_FREE:
+        runFree();
+        break;
+    case ST_PLL:
+        runPLL();
+        break;
+    case ST_TIMER:
+        runTimer();
+        break;
+    default:
+        assert(false);
+        break;
+    }
+}
 
-            // renders the waveform, Possible delayed due to anti tearing
-            emit vsyncRender();
-            m_semaVsyncSlot.acquire();
+void VSyncThread::runFree() {
+    assert(m_vSyncMode == ST_FREE);
+    while (m_bDoRendering) {
+        // for benchmark only!
 
-            emit vsyncSwap(); // swaps the new waveform to front
-            m_semaVsyncSlot.acquire();
+        // renders the waveform, Possible delayed due to anti tearing
+        emit vsyncRender();
+        m_semaVsyncSlot.acquire();
 
-            m_sinceLastSwap = m_timer.restart();
-            m_waitToSwapMicros = 1000;
-            usleep(1000);
+        emit vsyncSwap(); // swaps the new waveform to front
+        m_semaVsyncSlot.acquire();
+
+        m_sinceLastSwap = m_timer.restart();
+        m_waitToSwapMicros = 1000;
+        usleep(1000);
+    }
+}
+
+void VSyncThread::runPLL() {
+    assert(m_vSyncMode == ST_PLL);
+    qint64 offset = 0;
+    qint64 nextSwapMicros = 0;
+    while (m_bDoRendering) {
+        // Use a phase-locked-loop on the QOpenGLWindow::frameSwapped signal
+        // to determine when the vsync occurs
+
+        qint64 pllPhaseOut;
+        qint64 pllDeltaOut;
+        qint64 now;
+
+        {
+            std::scoped_lock lock(m_pllMutex);
+            // last estimated vsync
+            pllPhaseOut = std::llround(m_pllPhaseOut);
+            // estimated frame interval
+            pllDeltaOut = std::llround(m_pllDeltaOut);
+            now = m_pllTimer.elapsed().toIntegerMicros();
         }
-    } else if (m_vSyncMode == ST_PLL) {
-        qint64 offset = 0;
-        qint64 nextSwapMicros = 0;
-        while (m_bDoRendering) {
-            // Use a phase-locked-loop on the QOpenGLWindow::frameSwapped signal
-            // to determine when the vsync occurs
-
-            qint64 pllPhaseOut;
-            qint64 pllDeltaOut;
-            qint64 now;
-
-            {
-                std::scoped_lock lock(m_pllMutex);
-                // last estimated vsync
-                pllPhaseOut = std::llround(m_pllPhaseOut);
-                // estimated frame interval
-                pllDeltaOut = std::llround(m_pllDeltaOut);
-                now = m_pllTimer.elapsed().toIntegerMicros();
-            }
-            if (pllPhaseOut > nextSwapMicros) {
-                nextSwapMicros = pllPhaseOut;
-            }
-            if (nextSwapMicros == pllPhaseOut) {
-                nextSwapMicros += pllDeltaOut;
-            }
-
-            // sleep an integer number of frames extra to approximate the
-            // selected framerate (eg 10,15,20,30)
-            const auto skippedFrames = (m_syncIntervalTimeMicros - pllDeltaOut / 2) / pllDeltaOut;
-            qint64 sleepForSkippedFrames = skippedFrames * pllDeltaOut;
-
-            qint64 sleepUntilSwap = (nextSwapMicros + offset - now) % pllDeltaOut;
-            if (sleepUntilSwap < 0) {
-                sleepUntilSwap += pllDeltaOut;
-            }
-            usleep(sleepUntilSwap + sleepForSkippedFrames);
-
-            m_sinceLastSwap = m_timer.restart();
-            m_waitToSwapMicros = pllDeltaOut + sleepForSkippedFrames;
-
-            // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
-            // and render them for the next swap
-            emit vsyncSwapAndRender();
-            m_semaVsyncSlot.acquire();
-            if (m_sinceLastSwap.toIntegerMicros() > sleepForSkippedFrames + pllDeltaOut * 3 / 2) {
-                m_droppedFrames++;
-                // Adjusting the offset on each frame drop ends up at
-                // an offset with no frame drops
-                offset = (offset + 2000) % pllDeltaOut;
-            }
+        if (pllPhaseOut > nextSwapMicros) {
+            nextSwapMicros = pllPhaseOut;
         }
-    } else { // if (m_vSyncMode == ST_TIMER) {
-        while (m_bDoRendering) {
-            emit vsyncRender(); // renders the new waveform.
-
-            // wait until rendering was scheduled. It might be delayed due a
-            // pending swap (depends one driver vSync settings)
-            m_semaVsyncSlot.acquire();
-
-            // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
-            int remainingForSwap = m_waitToSwapMicros -
-                    static_cast<int>(m_timer.elapsed().toIntegerMicros());
-            // waiting for interval by sleep
-            if (remainingForSwap > 100) {
-                usleep(remainingForSwap);
-            }
-
-            // swaps the new waveform to front in case of gl-wf
-            emit vsyncSwap();
-
-            // wait until swap occurred. It might be delayed due to driver vSync
-            // settings.
-            m_semaVsyncSlot.acquire();
-
-            // <- Assume we are VSynced here ->
-            m_sinceLastSwap = m_timer.restart();
-            int lastSwapTime = static_cast<int>(m_sinceLastSwap.toIntegerMicros());
-            if (remainingForSwap < 0) {
-                // Our swapping call was already delayed
-                // The real swap might happens on the following VSync, depending on driver settings
-                m_droppedFrames++; // Count as Real Time Error
-            }
-            // try to stay in right intervals
-            m_waitToSwapMicros = m_syncIntervalTimeMicros +
-                    ((m_waitToSwapMicros - lastSwapTime) % m_syncIntervalTimeMicros);
+        if (nextSwapMicros == pllPhaseOut) {
+            nextSwapMicros += pllDeltaOut;
         }
+
+        // sleep an integer number of frames extra to approximate the
+        // selected framerate (eg 10,15,20,30)
+        const auto skippedFrames = (m_syncIntervalTimeMicros - pllDeltaOut / 2) / pllDeltaOut;
+        qint64 sleepForSkippedFrames = skippedFrames * pllDeltaOut;
+
+        qint64 sleepUntilSwap = (nextSwapMicros + offset - now) % pllDeltaOut;
+        if (sleepUntilSwap < 0) {
+            sleepUntilSwap += pllDeltaOut;
+        }
+        usleep(sleepUntilSwap + sleepForSkippedFrames);
+
+        m_sinceLastSwap = m_timer.restart();
+        m_waitToSwapMicros = pllDeltaOut + sleepForSkippedFrames;
+
+        // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
+        // and render them for the next swap
+        emit vsyncSwapAndRender();
+        m_semaVsyncSlot.acquire();
+        if (m_sinceLastSwap.toIntegerMicros() > sleepForSkippedFrames + pllDeltaOut * 3 / 2) {
+            m_droppedFrames++;
+            // Adjusting the offset on each frame drop ends up at
+            // an offset with no frame drops
+            offset = (offset + 2000) % pllDeltaOut;
+        }
+    }
+}
+
+void VSyncThread::runTimer() {
+    assert(m_vSyncMode == ST_TIMER);
+
+    while (m_bDoRendering) {
+        emit vsyncRender(); // renders the new waveform.
+
+        // wait until rendering was scheduled. It might be delayed due a
+        // pending swap (depends one driver vSync settings)
+        m_semaVsyncSlot.acquire();
+
+        // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
+        int remainingForSwap = m_waitToSwapMicros -
+                static_cast<int>(m_timer.elapsed().toIntegerMicros());
+        // waiting for interval by sleep
+        if (remainingForSwap > 100) {
+            usleep(remainingForSwap);
+        }
+
+        // swaps the new waveform to front in case of gl-wf
+        emit vsyncSwap();
+
+        // wait until swap occurred. It might be delayed due to driver vSync
+        // settings.
+        m_semaVsyncSlot.acquire();
+
+        // <- Assume we are VSynced here ->
+        m_sinceLastSwap = m_timer.restart();
+        int lastSwapTime = static_cast<int>(m_sinceLastSwap.toIntegerMicros());
+        if (remainingForSwap < 0) {
+            // Our swapping call was already delayed
+            // The real swap might happens on the following VSync, depending on driver settings
+            m_droppedFrames++; // Count as Real Time Error
+        }
+        // try to stay in right intervals
+        m_waitToSwapMicros = m_syncIntervalTimeMicros +
+                ((m_waitToSwapMicros - lastSwapTime) % m_syncIntervalTimeMicros);
     }
 }
 
