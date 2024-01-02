@@ -13,7 +13,8 @@ double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
-          m_key(key) {
+          m_key(key),
+          m_noTransport(false) {
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -63,14 +64,31 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
-        // The offset is limited to the audio buffer + waveform sync interval
+        // The offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
-        const int maxOffset = static_cast<int>(data.m_audioBufferMicroS + syncIntervalTimeMicros);
+        const int maxOffset = static_cast<int>(
+                data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
-        const int offset = math_clamp(
-                refToVSync - data.m_callbackEntrytoDac, -maxOffset, maxOffset);
+        int offset = refToVSync - data.m_callbackEntrytoDac;
+        if (offset < -maxOffset) {
+            offset = -maxOffset;
+            if (!m_noTransport) {
+                qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
+                           << m_key << "no transport (offset < -maxOffset)";
+                m_noTransport = true;
+            }
+        } else if (offset > maxOffset) {
+            offset = maxOffset;
+            if (!m_noTransport) {
+                qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
+                           << m_key << "no transport (offset > maxOffset)";
+                m_noTransport = true;
+            }
+        } else {
+            m_noTransport = false;
+        }
         // Apply the offset proportional to m_positionStep
         return data.m_positionStep * static_cast<double>(offset) / data.m_audioBufferMicroS;
     }
