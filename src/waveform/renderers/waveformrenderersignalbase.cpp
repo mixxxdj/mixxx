@@ -227,10 +227,10 @@ void WaveformRendererSignalBase::getGains(float* pAllGain,
     }
 }
 
-float* WaveformRendererSignalBase::unscaleTable() {
+std::span<float, 256> WaveformRendererSignalBase::unscaleTable() {
     // Table to undo the scaling std::pow(invalue, 2.0f * 0.316f);
     // done in scaleSignal in analyzerwaveform.h
-    static float result[256];
+    static std::array<float, 256> result;
     for (int i = 0; i < 256; i++) {
         result[i] = 255.f * std::pow(static_cast<float>(i) / 255.f, 1.f / 0.632f);
     }
