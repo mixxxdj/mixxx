@@ -20,6 +20,8 @@ void WaveformRendererFiltered::onSetup(const QDomNode& node) {
 void WaveformRendererFiltered::initializeGL() {
     WaveformRendererSignalBase::initializeGL();
     m_shader.init();
+    m_vertices.create();
+    m_vertices.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 }
 
 void WaveformRendererFiltered::paintGL() {
@@ -72,24 +74,37 @@ void WaveformRendererFiltered::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
+    int startIndex[4];
+    int endIndex[4];
     int reserved[4];
+    int reservedTotal = 0;
     // low, mid, high
     for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-        m_vertices[bandIndex].clear();
+        startIndex[bandIndex] = reservedTotal;
+        endIndex[bandIndex] = reservedTotal;
         reserved[bandIndex] = numVerticesPerLine * length;
-        m_vertices[bandIndex].reserve(reserved[bandIndex]);
+        reservedTotal += reserved[bandIndex];
+        qDebug() << startIndex[bandIndex] << endIndex[bandIndex]
+                 << reserved[bandIndex] << reservedTotal;
     }
 
     // the horizontal line
+    startIndex[3] = reservedTotal;
+    endIndex[3] = reservedTotal;
     reserved[3] = numVerticesPerLine;
-    m_vertices[3].clear();
-    m_vertices[3].reserve(reserved[3]);
+    reservedTotal += reserved[3];
 
-    m_vertices[3].addRectangle(
+    m_vertices.bind();
+    m_vertices.reserve(reservedTotal);
+    m_vertices.mapForWrite();
+
+    m_vertices.setIndex(endIndex[3]);
+    m_vertices.addRectangle(
             0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
             halfBreadth + 0.5f * devicePixelRatio);
+    endIndex[3] += numVerticesPerLine;
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
@@ -124,15 +139,19 @@ void WaveformRendererFiltered::paintGL() {
             max[bandIndex][1] *= bandGain[bandIndex];
 
             // lines are thin rectangles
-            m_vertices[bandIndex].addRectangle(
+            m_vertices.setIndex(endIndex[bandIndex]);
+            m_vertices.addRectangle(
                     fpos - 0.5f,
                     halfBreadth - heightFactor * max[bandIndex][0],
                     fpos + 0.5f,
                     halfBreadth + heightFactor * max[bandIndex][1]);
+            endIndex[bandIndex] += numVerticesPerLine;
         }
 
         xVisualFrame += visualIncrementPerPixel;
     }
+
+    m_vertices.unmap();
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
@@ -160,18 +179,25 @@ void WaveformRendererFiltered::paintGL() {
             static_cast<float>(m_axesColor_b),
             static_cast<float>(m_axesColor_a));
 
+    m_shader.setAttributeBuffer(positionLocation,
+            GL_FLOAT,
+            m_vertices.offset(),
+            m_vertices.tupleSize(),
+            m_vertices.stride());
+
     // 3 bands + 1 extra for the horizontal line
+    for (int bandIndex = 0; bandIndex < 4; bandIndex++) {
+        DEBUG_ASSERT(reserved[bandIndex] == endIndex[bandIndex] - startIndex[bandIndex]);
+        m_shader.setUniformValue(colorLocation, colors[bandIndex]);
 
-    for (int i = 0; i < 4; i++) {
-        DEBUG_ASSERT(reserved[i] == m_vertices[i].size());
-        m_shader.setUniformValue(colorLocation, colors[i]);
-        m_shader.setAttributeArray(
-                positionLocation, GL_FLOAT, m_vertices[i].constData(), 2);
-
-        glDrawArrays(GL_TRIANGLES, 0, m_vertices[i].size());
+        glDrawArrays(GL_TRIANGLES,
+                startIndex[bandIndex],
+                endIndex[bandIndex] - startIndex[bandIndex]);
     }
+    DEBUG_ASSERT(reservedTotal == endIndex[3]);
 
     m_shader.disableAttributeArray(positionLocation);
+    m_vertices.release();
     m_shader.release();
 }
 

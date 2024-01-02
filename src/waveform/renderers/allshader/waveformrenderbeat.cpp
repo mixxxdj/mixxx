@@ -17,6 +17,8 @@ WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
 void WaveformRenderBeat::initializeGL() {
     WaveformRenderer::initializeGL();
     m_shader.init();
+    m_vertices.create();
+    m_vertices.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
@@ -81,8 +83,10 @@ void WaveformRenderBeat::paintGL() {
     }
 
     const int reserved = numBeatsInRange * numVerticesPerLine;
-    m_vertices.clear();
+
+    m_vertices.bind();
     m_vertices.reserve(reserved);
+    m_vertices.mapForWrite();
 
     for (auto it = trackBeats->iteratorFrom(startPosition);
             it != trackBeats->cend() && *it <= endPosition;
@@ -101,6 +105,8 @@ void WaveformRenderBeat::paintGL() {
         m_vertices.addRectangle(x1, 0.f, x2, rendererBreadth);
     }
 
+    m_vertices.unmap();
+
     DEBUG_ASSERT(reserved == m_vertices.size());
 
     const int positionLocation = m_shader.positionLocation();
@@ -112,8 +118,11 @@ void WaveformRenderBeat::paintGL() {
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
 
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
+    m_shader.setAttributeBuffer(positionLocation,
+            GL_FLOAT,
+            m_vertices.offset(),
+            m_vertices.tupleSize(),
+            m_vertices.stride());
 
     m_shader.setUniformValue(matrixLocation, matrix);
     m_shader.setUniformValue(colorLocation, m_color);
@@ -121,6 +130,7 @@ void WaveformRenderBeat::paintGL() {
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
     m_shader.disableAttributeArray(positionLocation);
+    m_vertices.release();
     m_shader.release();
 }
 

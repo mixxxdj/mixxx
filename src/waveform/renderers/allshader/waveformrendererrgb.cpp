@@ -26,6 +26,8 @@ void WaveformRendererRGB::onSetup(const QDomNode& node) {
 void WaveformRendererRGB::initializeGL() {
     WaveformRendererSignalBase::initializeGL();
     m_shader.init();
+    m_vertices.create();
+    m_vertices.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 }
 
 void WaveformRendererRGB::paintGL() {
@@ -90,16 +92,14 @@ void WaveformRendererRGB::paintGL() {
 
     const int reserved = numVerticesPerLine * (length + 1);
 
-    m_vertices.clear();
+    m_vertices.bind();
     m_vertices.reserve(reserved);
-    m_colors.clear();
-    m_colors.reserve(reserved);
+    m_vertices.mapForWrite();
 
     m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
-    m_colors.addForRectangle(
+            halfBreadth + 0.5f * devicePixelRatio,
             static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b));
@@ -189,14 +189,17 @@ void WaveformRendererRGB::paintGL() {
         m_vertices.addRectangle(fpos - 0.5f,
                 halfBreadth - heightFactor * maxAllChn[0],
                 fpos + 0.5f,
-                halfBreadth + heightFactor * maxAllChn[1]);
-        m_colors.addForRectangle(red, green, blue);
+                halfBreadth + heightFactor * maxAllChn[1],
+                red,
+                green,
+                blue);
 
         xVisualFrame += visualIncrementPerPixel;
     }
 
     DEBUG_ASSERT(reserved == m_vertices.size());
-    DEBUG_ASSERT(reserved == m_colors.size());
+
+    m_vertices.unmap();
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
@@ -210,15 +213,24 @@ void WaveformRendererRGB::paintGL() {
 
     m_shader.setUniformValue(matrixLocation, matrix);
 
-    m_shader.setAttributeArray(
-            positionLocation, GL_FLOAT, m_vertices.constData(), 2);
-    m_shader.setAttributeArray(
-            colorLocation, GL_FLOAT, m_colors.constData(), 3);
+    m_shader.setAttributeBuffer(positionLocation,
+            GL_FLOAT,
+            m_vertices.positionOffset(),
+            m_vertices.positionTupleSize(),
+            m_vertices.stride());
+    m_shader.setAttributeBuffer(colorLocation,
+            GL_FLOAT,
+            m_vertices.colorOffset(),
+            m_vertices.colorTupleSize(),
+            m_vertices.stride());
 
     glDrawArrays(GL_TRIANGLES, 0, m_vertices.size());
 
+    m_vertices.release();
+
     m_shader.disableAttributeArray(positionLocation);
     m_shader.disableAttributeArray(colorLocation);
+
     m_shader.release();
 }
 

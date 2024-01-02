@@ -20,6 +20,8 @@ void WaveformRendererSimple::onSetup(const QDomNode& node) {
 void WaveformRendererSimple::initializeGL() {
     WaveformRendererSignalBase::initializeGL();
     m_shader.init();
+    m_vertices.create();
+    m_vertices.setUsagePattern(QOpenGLBuffer::DynamicDraw);
 }
 
 void WaveformRendererSimple::paintGL() {
@@ -77,18 +79,14 @@ void WaveformRendererSimple::paintGL() {
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    int reserved[2];
+    // one horizontal line + the vertical lines
+    int reserved = (1 + length) * numVerticesPerLine;
 
-    reserved[0] = numVerticesPerLine * length;
-    m_vertices[0].clear();
-    m_vertices[0].reserve(reserved[0]);
+    m_vertices.bind();
+    m_vertices.reserve(reserved);
+    m_vertices.mapForWrite();
 
-    // the horizontal line
-    reserved[1] = numVerticesPerLine;
-    m_vertices[1].clear();
-    m_vertices[1].reserve(reserved[1]);
-
-    m_vertices[1].addRectangle(
+    m_vertices.addRectangle(
             0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
@@ -131,7 +129,7 @@ void WaveformRendererSimple::paintGL() {
         const float fpos = static_cast<float>(pos);
 
         // lines are thin rectangles
-        m_vertices[0].addRectangle(
+        m_vertices.addRectangle(
                 fpos - 0.5f,
                 halfBreadth - heightFactor * max[0],
                 fpos + 0.5f,
@@ -139,6 +137,8 @@ void WaveformRendererSimple::paintGL() {
 
         xVisualFrame += visualIncrementPerPixel;
     }
+
+    m_vertices.unmap();
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
@@ -151,23 +151,29 @@ void WaveformRendererSimple::paintGL() {
 
     m_shader.setUniformValue(matrixLocation, matrix);
 
-    QColor colors[2];
-    colors[0].setRgbF(static_cast<float>(m_signalColor_r),
+    DEBUG_ASSERT(reserved == m_vertices.size());
+    m_shader.setAttributeBuffer(positionLocation,
+            GL_FLOAT,
+            m_vertices.offset(),
+            m_vertices.tupleSize(),
+            m_vertices.stride());
+
+    QColor color;
+
+    color.setRgbF(static_cast<float>(m_signalColor_r),
             static_cast<float>(m_signalColor_g),
             static_cast<float>(m_signalColor_b));
-    colors[1].setRgbF(static_cast<float>(m_axesColor_r),
+    m_shader.setUniformValue(colorLocation, color);
+    glDrawArrays(GL_TRIANGLES, numVerticesPerLine, m_vertices.size() - numVerticesPerLine);
+
+    color.setRgbF(static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b),
             static_cast<float>(m_axesColor_a));
+    m_shader.setUniformValue(colorLocation, color);
+    glDrawArrays(GL_TRIANGLES, 0, numVerticesPerLine);
 
-    for (int i = 0; i < 2; i++) {
-        DEBUG_ASSERT(reserved[i] == m_vertices[i].size());
-        m_shader.setUniformValue(colorLocation, colors[i]);
-        m_shader.setAttributeArray(
-                positionLocation, GL_FLOAT, m_vertices[i].constData(), 2);
-
-        glDrawArrays(GL_TRIANGLES, 0, m_vertices[i].size());
-    }
+    m_vertices.release();
 
     m_shader.disableAttributeArray(positionLocation);
     m_shader.release();
