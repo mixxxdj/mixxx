@@ -80,6 +80,7 @@ class LibraryControl : public QObject {
     void slotMoveFocusBackward(double);
     void slotMoveFocus(double);
     void slotGoToItem(double v);
+    void slotTriggerItem(double v);
 
     void slotTrackColorPrev(double v);
     void slotTrackColorNext(double v);
@@ -142,6 +143,10 @@ class LibraryControl : public QObject {
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
+	
+    // Control to choose the currently selected item in focused widget (double click)
+    // but with some context depended auto functionality based on input value
+    std::unique_ptr<ControlObject> m_pTriggerItem;
 
     // Add to Auto-Dj Queue
     std::unique_ptr<ControlObject> m_pAutoDjAddTop;
