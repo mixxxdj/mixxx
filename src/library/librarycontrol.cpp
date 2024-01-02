@@ -1004,7 +1004,7 @@ void LibraryControl::slotTriggerItem(double v) {
         if (!m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus(FocusWidget::Sidebar);
             m_pSidebarWidget->toggleSelectedItem();
-        } else 
+        } else
             slotGoToItem(1);
         return;
     }
