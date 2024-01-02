@@ -253,13 +253,16 @@ struct MarkerGeometry {
             m_labelRect.moveLeft(0.5f);
         }
 
+        const float increment = std::max<float>(0.f,
+                m_labelRect.height() + 2.f - std::max(0.f, 80.f - breadth));
+
         if (alignV == Qt::AlignVCenter) {
             m_labelRect.moveTop((m_imageSize.height() - m_labelRect.height()) / 2.f);
         } else if (alignV == Qt::AlignBottom) {
             m_labelRect.moveBottom(m_imageSize.height() - 0.5f -
-                    level * (m_labelRect.height() + 2.f));
+                    level * increment);
         } else {
-            m_labelRect.moveTop(0.5f + level * (m_labelRect.height() + 2.f));
+            m_labelRect.moveTop(0.5f + level * increment);
         }
     }
     QSize getImageSize(float devicePixelRatio) const {
