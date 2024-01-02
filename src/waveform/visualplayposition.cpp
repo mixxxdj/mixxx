@@ -13,7 +13,8 @@ double VisualPlayPosition::m_dCallbackEntryToDacSecs = 0;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
         : m_valid(false),
-          m_key(key) {
+          m_key(key),
+          m_noTransport(false) {
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -70,8 +71,24 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
-        const int offset = math_clamp(
-                refToVSync - data.m_callbackEntrytoDac, -maxOffset, maxOffset);
+        int offset = refToVSync - data.m_callbackEntrytoDac;
+        if (offset < -maxOffset) {
+            offset = -maxOffset;
+            if (!m_noTransport) {
+                qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
+                           << m_key << "no transport (offset < -maxOffset)";
+                m_noTransport = true;
+            }
+        } else if (offset > maxOffset) {
+            offset = maxOffset;
+            if (!m_noTransport) {
+                qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
+                           << m_key << "no transport (offset > maxOffset)";
+                m_noTransport = true;
+            }
+        } else {
+            m_noTransport = false;
+        }
         // Apply the offset proportional to m_positionStep
         return data.m_positionStep * static_cast<double>(offset) / data.m_audioBufferMicroS;
     }
