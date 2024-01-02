@@ -73,7 +73,7 @@ void WaveformRendererHSV::draw(
             (double)m_waveformRenderer->getLength();
 
     float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
