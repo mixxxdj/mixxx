@@ -520,6 +520,9 @@ int PlaylistDAO::getPlaylistId(const int index) const {
 PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     // qDebug() << "PlaylistDAO::getHiddenType"
     //          << QThread::currentThread() << m_database.connectionName();
+    if (playlistId != kInvalidPlaylistId) { // type is known, save a query
+        return PlaylistDAO::PLHT_UNKNOWN;
+    }
 
     QSqlQuery query(m_database);
     query.prepare(QStringLiteral(
@@ -533,8 +536,8 @@ PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     } else {
         LOG_FAILED_QUERY(query);
     }
-    qDebug() << "PlaylistDAO::getHiddenType returns PLHT_UNKNOWN for playlistId "
-             << playlistId;
+    // qDebug() << "PlaylistDAO::getHiddenType returns PLHT_UNKNOWN for playlist"
+    //          << playlistId << getPlaylistName(playlistId);
     return PLHT_UNKNOWN;
 }
 
@@ -1077,7 +1080,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
     QList<int> newPositions = positions;
     const int searchDistance = math_max(static_cast<int>(trackPositionIds.count()) / 4, 1);
 
-    qDebug() << "Shuffling Tracks";
+    qDebug() << "Shuffling tracks of playlist" << playlistId << getPlaylistName(playlistId);
     qDebug() << "*** Search Distance: " << searchDistance;
     //for (int z = 0; z < positions.count(); z++) {
     //qDebug() << "*** Position: " << positions[z] << " | ID: " << allIds.value(positions[z]);
