@@ -25,7 +25,7 @@ var ShiftFilterFX4 = true;
 var PitchBendOnWheelOff = true;
 
 // use mixxx softtakeover implementation instead of the script implemented method
-// suggestion: true 
+// suggestion: true
 var UseEngineSoftTakeOver = true;
 /**************************
  *  scriptpause
@@ -235,13 +235,12 @@ function parameterSoftTakeOver(group, control, value) {
 // =====================================================================
 
 // Knob state object to keep shift press to trigger engine's softtakeoverignore properly
-var KnobState = function (group, control, state) {
+var KnobState = function(group, control, state) {
     this.group = group;
     this.control = control;
     this.state = state;
 
-    if(UseEngineSoftTakeOver)
-        engine.softTakeover(group, control, UseEngineSoftTakeOver); 
+    if (UseEngineSoftTakeOver) { engine.softTakeover(group, control, UseEngineSoftTakeOver); }
 };
 // LED class object
 var LED = function(control, midino) {
@@ -1853,25 +1852,24 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var focusedEffect = deck.getFocusedEffect();
     var EQp = 4 - control; // convert control number to parameter number in mixxx
     var FXp = control; // control number matches effect param order
-    
+
     switch (EQp) {
-        case 1:
-            var knobStateOBJ = deck.KnobState.EQLow;
-            break;
-        case 2:
-            var knobStateOBJ = deck.KnobState.EQMid;
-            break;
-        case 3:
-            var knobStateOBJ = deck.KnobState.EQHigh;
-            break;
-        }     
+    case 1:
+        var knobStateOBJ = deck.KnobState.EQLow;
+        break;
+    case 2:
+        var knobStateOBJ = deck.KnobState.EQMid;
+        break;
+    case 3:
+        var knobStateOBJ = deck.KnobState.EQHigh;
+        break;
+    }  
 
     // default behavior is to control EQ
     // when shifted, change parameters of focused effect
     if (deck.shiftKey && focusedEffect) {
-        // enable softtakeover since effect parameter changed dynamically 
-        if(UseEngineSoftTakeOver)
-            engine.softTakeover("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, true);
+        // enable softtakeover since effect parameter changed dynamically
+        if (UseEngineSoftTakeOver) { engine.softTakeover("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, true); }
         deck.handleSoftTakeOver(
             "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, value
         );
@@ -1905,7 +1903,7 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
         if (focusedEffect && ShiftFilterFX4) {
             deck.handleSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value);
         } else {
-            // Shift+Filter is mapped to channel gain otherwise               
+            // Shift+Filter is mapped to channel gain otherwise           
             deck.handleSoftTakeOver("[Channel" + decknum + "]", "pregain", value);
             // set takeover ignore if using engine's softtakeover instead of scripted one
             if (UseEngineSoftTakeOver && deck.KnobState.pregain.state == false) {
@@ -1917,17 +1915,16 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
         deck.handleSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
         // set takeover ignore if using engine's softtakeover instead of scripted one
         if (UseEngineSoftTakeOver && deck.KnobState.pregain.state == true) {
-           deck.KnobState.pregain.state = false;
+            deck.KnobState.pregain.state = false;
             engine.softTakeoverIgnoreNextValue(deck.KnobState.pregain.group, deck.KnobState.pregain.control);
         }
     }
 };
 
 // handle softovertake method automatically deciding between mixxx engine's default or implemented via this script
-NumarkMixtrack3.deck.prototype.handleSoftTakeOver = function (group, control, value) {
+NumarkMixtrack3.deck.prototype.handleSoftTakeOver = function(group, control, value) {
     if (UseEngineSoftTakeOver) {
-         engine.setParameter(group, control, value / 127);
-         return;
+        engine.setParameter(group, control, value / 127);
     } else {
         parameterSoftTakeOver(group, control, value);
     }
