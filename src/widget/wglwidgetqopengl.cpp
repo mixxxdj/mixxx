@@ -93,3 +93,7 @@ void WGLWidget::swapBuffers() {
 bool WGLWidget::shouldRender() const {
     return m_pOpenGLWindow && m_pOpenGLWindow->isExposed();
 }
+
+QOpenGLWindow* WGLWidget::getOpenGLWindow() const {
+    return m_pOpenGLWindow;
+}
