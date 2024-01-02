@@ -143,7 +143,7 @@ class LibraryControl : public QObject {
 
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
-	
+
     // Control to choose the currently selected item in focused widget (double click)
     // but with some context depended auto functionality based on input value
     std::unique_ptr<ControlObject> m_pTriggerItem;

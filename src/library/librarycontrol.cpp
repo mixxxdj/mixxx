@@ -196,21 +196,18 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &LibraryControl::slotGoToItem);
 #endif
 
-    // controllable "gotoitem" trigger with basic context dependent functionality
-    // value = -1: using default/original gotoitem implementation
-    // value = 0: prefer and check if any valid toggleable item is selected on the sidebar widget and toggle selected item
-    // value 1,2,3,4,5: target library focus method, convert value to @FocusWidget enum and set library focus before calling gotoitem
-    // 1 = Searchbar
-    // 2 = Sidebar
-    // 3 = TracksTable
-    // 4 = ContextMenu
-    // 5 = Dialog
+    // controllable "gotoitem" trigger with basic context dependent
+    // functionality value = -1: using default/original gotoitem implementation
+    // value = 0: prefer and check if any valid toggleable item is selected on
+    // the sidebar widget and toggle selected item value 1,2,3,4,5: target
+    // library focus method, convert value to @FocusWidget enum and set library
+    // focus before calling gotoitem 1 = Searchbar 2 = Sidebar 3 = TracksTable
     m_pTriggerItem = std::make_unique<ControlObject>(ConfigKey("[Library]", "TriggerItem"), false);
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-	connect(m_pTriggerItem.get(),
-		&ControlObject::valueChanged,
-		this,
-		&LibraryControl::slotTriggerItem);
+    connect(m_pTriggerItem.get(),
+            &ControlObject::valueChanged,
+            this,
+            &LibraryControl::slotTriggerItem);
 #endif
 
     // Auto DJ controls
@@ -997,23 +994,24 @@ void LibraryControl::slotTriggerItem(double v) {
     const int triggerItemMethod = static_cast<int>(v);
 
     // use default gotoitem implementation
-    if(triggerItemMethod == -1) {
+    if (triggerItemMethod == -1) {
         slotGoToItem(1);
         return;
     }
 
     // check and try toggle items selected on sidebar first if possible
-    if(triggerItemMethod == 0) {
+    if (triggerItemMethod == 0) {
         if (!m_pSidebarWidget->isLeafNodeSelected()) {
             setLibraryFocus(FocusWidget::Sidebar);
             m_pSidebarWidget->toggleSelectedItem();
-        }else slotGoToItem(1);
+        } else 
+            slotGoToItem(1);
         return;
     }
 
     // todo: update if focuswidget enum changes
     // enum overrun
-    if(triggerItemMethod > 5)
+    if (triggerItemMethod > 5)
         return;
 
     // value stores a possible focus target, try set that focus and call gotoitem

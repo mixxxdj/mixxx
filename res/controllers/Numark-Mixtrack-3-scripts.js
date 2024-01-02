@@ -1088,7 +1088,7 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
 	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
 	    } else {
 	        // Browse push : maximize/minimize library view
-            if(BrowseButtonToggleLibrary)
+            if (BrowseButtonToggleLibrary)
 	            script.toggleControl("[Skin]", "show_maximized_library");
 	        }
     }
