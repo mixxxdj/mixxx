@@ -254,7 +254,7 @@ struct MarkerGeometry {
         }
 
         const float increment = std::max<float>(0.f,
-                m_labelRect.height() + 2.f - std::max(0.f, 80.f - breadth));
+                static_cast<float>(m_labelRect.height()) + 2.f - std::max(0.f, 80.f - breadth));
 
         if (alignV == Qt::AlignVCenter) {
             m_labelRect.moveTop((m_imageSize.height() - m_labelRect.height()) / 2.f);
