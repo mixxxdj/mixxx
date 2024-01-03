@@ -206,19 +206,18 @@ DJCi300.bendWheel = function(channel, control, value, _status, _group) {
 
 // Toneplay
 DJCi300.tonePlay = function(channel, control, value, status, _group) {
-    const deck = channel - 5;
-    const button = control - 0x40 + 1;
+    var deck = channel - 5;
+    var button = control - 0x40 + 1;
 
     if (value === 0x7F) {
         // Jump to the most recently used hotcue
-        recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
+        var recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
         if ((recentHotcue !== -1) && (engine.getValue("[Channel" + deck + "]",
             "hotcue_" + recentHotcue + "_enabled"))) {
 
             engine.setValue("[Channel" + deck + "]", "hotcue_" + recentHotcue + "_goto", 1);
-        }
-        // If that hotcue doesn't exist or was deleted, jump to cue
-        else {
+        } else {
+            // If that hotcue doesn't exist or was deleted, jump to cue
             engine.setValue("[Channel" + deck + "]",
                 "cue_goto", 1);
         }
@@ -233,7 +232,7 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
         } else {
-            for (i = 8; i >= button; i--) {
+            for (let i = 8; i >= button; i--) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
             }
         }
@@ -242,9 +241,8 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
         midi.sendShortMsg(status, control, 0x7F);
         DJCi300.tonePlayLED[deck - 1] = control;
-    }
-    // After button release, turn off the light after no input for 5 seconds
-    else {
+    } else {
+        // After button release, turn off the light after no input for 5 seconds
         // Reset timer (if it exists)
         if (DJCi300.timer[deck - 1] !== 0) {
             engine.stopTimer(DJCi300.timer[deck - 1]);
