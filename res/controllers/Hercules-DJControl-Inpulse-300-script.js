@@ -80,7 +80,7 @@ DJCi300.init = function() {
     DJCi300.timer = [
         0,
         0
-    ]
+    ];
 
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
@@ -206,17 +206,16 @@ DJCi300.bendWheel = function(channel, control, value, _status, _group) {
 
 // Toneplay
 DJCi300.tonePlay = function(channel, control, value, status, _group) {
-    var deck = channel - 5;
-    var button = control - 0x40 + 1;
+    const deck = channel - 5;
+    const button = control - 0x40 + 1;
 
-    if (value == 0x7F) {
+    if (value === 0x7F) {
         // Jump to the most recently used hotcue
         recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
-        if ((recentHotcue != -1) && (engine.getValue("[Channel" + deck + "]",
+        if ((recentHotcue !== -1) && (engine.getValue("[Channel" + deck + "]",
             "hotcue_" + recentHotcue + "_enabled"))) {
 
-            engine.setValue("[Channel" + deck + "]",
-                "hotcue_" + recentHotcue + "_goto", 1);
+            engine.setValue("[Channel" + deck + "]", "hotcue_" + recentHotcue + "_goto", 1);
         }
         // If that hotcue doesn't exist or was deleted, jump to cue
         else {
@@ -230,11 +229,10 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         // This mimics the orignal Inpulse 300's toneplay
         engine.setValue("[Channel" + deck + "]", "reset_key", 1);
         if (button <= 4) {
-            for (var i = 1; i < button; i++) {
+            for (let i = 1; i < button; i++) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
-        }
-        else {
+        } else {
             for (i = 8; i >= button; i--) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
             }
@@ -248,13 +246,13 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
     // After button release, turn off the light after no input for 5 seconds
     else {
         // Reset timer (if it exists)
-        if (DJCi300.timer[deck - 1] != 0) {
+        if (DJCi300.timer[deck - 1] !== 0) {
             engine.stopTimer(DJCi300.timer[deck - 1]);
             DJCi300.timer[deck - 1] = 0;
         }
         // Start timer
         DJCi300.timer[deck - 1] = engine.beginTimer(5000,
-            function () {
+            function() {
                 DJCi300.timer[deck - 1] = 0;
                 midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
             },
