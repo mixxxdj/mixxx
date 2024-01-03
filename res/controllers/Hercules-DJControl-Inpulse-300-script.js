@@ -206,12 +206,12 @@ DJCi300.bendWheel = function(channel, control, value, _status, _group) {
 
 // Toneplay
 DJCi300.tonePlay = function(channel, control, value, status, _group) {
-    var deck = channel - 5;
-    var button = control - 0x40 + 1;
+    const deck = channel - 5;
+    const button = control - 0x40 + 1;
 
     if (value === 0x7F) {
         // Jump to the most recently used hotcue
-        var recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
+        const recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
         if ((recentHotcue !== -1) && (engine.getValue("[Channel" + deck + "]",
             "hotcue_" + recentHotcue + "_enabled"))) {
 
@@ -228,11 +228,11 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         // This mimics the orignal Inpulse 300's toneplay
         engine.setValue("[Channel" + deck + "]", "reset_key", 1);
         if (button <= 4) {
-            for (let i = 1; i < button; i++) {
+            for (var i = 1; i < button; i++) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
         } else {
-            for (let i = 8; i >= button; i--) {
+            for (var i = 8; i >= button; i--) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
             }
         }
