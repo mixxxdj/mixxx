@@ -232,7 +232,7 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
         } else {
-            for (var i = 8; i >= button; i--) {
+            for (i = 8; i >= button; i--) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
             }
         }
