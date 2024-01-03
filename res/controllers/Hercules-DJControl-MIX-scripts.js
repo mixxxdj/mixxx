@@ -1,5 +1,3 @@
-class DJCMixClass {
-    constructor() {
         ///////////////////////////////////////////////////////////////
         //                       USER OPTIONS                        //
         ///////////////////////////////////////////////////////////////
@@ -13,19 +11,19 @@ class DJCMixClass {
         // How fast bending is.
         this.bendScale = 1.0;
 
-        // DJControl_MIX_scripts.js
+        // Hercules-DJControl-MIX-scripts.js
         //
         // ****************************************************************************
         // * Mixxx mapping script file for the Hercules DJControl MIX.
         // * Author: DJ Phatso and Kerrick Staley
-        // * Version 1 (Jan 2023)
         // * Based on Hercules DJControl Starlight mapping released with Mixxx v2.3.0
         // *  -Remapped LOOP and SAMPLER section according to DJControl MIX layout
         // *  -Added Master Volume and Headphone Volume
         // *  -Removed superfluous LED configuration (not present on DJControl MIX)
         // * Forum: https://mixxx.discourse.group/t/hercules-contrl-mix-mapping/26581/
-        // * Wiki: https://mixxx.org/wiki/doku.php/
 
+class DJCMixClass {
+    constructor() {
 
         this.kScratchActionNone = 0;
         this.kScratchActionScratch = 1;
@@ -56,7 +54,7 @@ class DJCMixClass {
         // Ask the controller to send all current knob/slider values over MIDI, which will update
         // the corresponding GUI controls in MIXXX.
         midi.sendShortMsg(0xB0, 0x7F, 0x7F);
-    };
+    }
 
     // The Vinyl button, used to enable or disable scratching on the jog wheels (The Vinyl button enables both deck).
     vinylButton(_channel, _control, value, _status, _group) {
@@ -216,7 +214,7 @@ class DJCMixClass {
             midi.sendShortMsg(0x92, 0x0C, cueChan2LedValue);
         }
     }
-
+    // All LED Turned off
     shutdown() {
         midi.sendShortMsg(0xB0, 0x7F, 0x00);
     }
