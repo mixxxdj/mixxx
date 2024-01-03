@@ -1100,15 +1100,15 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
         D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
-	        }
-	    }
+        if (shifted) {
+            // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+            engine.setValue("[Library]", "GoToItem", true);
+        } else {
+            // Browse push : maximize/minimize library view
+            if (value === ON) {
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
@@ -1855,13 +1855,13 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var knobStateOBJ = 0;
     switch (EQp) {
     case 1:
-        knobStateOBJ = deck.KnobState.EQMid;
+        knobStateOBJ = deck.KnobState.EQLow;
         break;
     case 2:
         knobStateOBJ = deck.KnobState.EQMid;
         break;
     case 3:
-        knobStateOBJ = deck.KnobState.EQMid;
+        knobStateOBJ = deck.KnobState.EQHigh;
         break;
     }
 
@@ -1997,6 +1997,7 @@ NumarkMixtrack3.volume = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     engine.setValue(deck.group, "volume", value / 127);
 };
+
 
 NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
