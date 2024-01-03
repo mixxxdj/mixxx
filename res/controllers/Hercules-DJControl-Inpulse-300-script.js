@@ -2,7 +2,7 @@
 //
 // ***************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Inpulse 300.
-// * Author: DJ Phatso, contributions by Kerrick Staley
+// * Author: DJ Phatso, contributions by Kerrick Staley and BoredGuy1
 // * Version 1.3 (Jan 2024)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12599
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300
