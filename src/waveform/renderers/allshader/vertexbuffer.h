@@ -8,7 +8,7 @@ class VertexBuffer;
 class Vector2DVertexBuffer;
 class Vector2DRGBVertexBuffer;
 class Vector2DRGBAVertexBuffer;
-}
+} // namespace allshader
 
 class allshader::VertexBuffer : public QOpenGLBuffer {
   public:
