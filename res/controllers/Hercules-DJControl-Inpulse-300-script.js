@@ -9,7 +9,7 @@
 //
 // Changes to v1.3
 // - Added ability to stop samplers (shift + button)
-// - Added tone play
+// - Added toneplay
 //
 // Changes to v1.2
 // - Code cleanup.
@@ -27,8 +27,6 @@
 // * ROLL: Keep SLIP active (if already enabled) when exiting from rolls
 //
 // * SLICER/SLICER LOOP
-//
-// * TONEPLAY
 //
 // * FX:
 //  	- See how to preselect effects for a rack
