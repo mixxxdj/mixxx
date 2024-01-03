@@ -56,6 +56,17 @@ Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment def
 
     return hflags | vflags;
 }
+
+float overlappingMarkerIncrement(const float labelRectHeight, const float breadth) {
+    // gradually "compact" the markers if the waveform height is
+    // reduced, to avoid multiple markers obscuring the waveform.
+    const float threshold = 90.f; // above this, the full increment is used
+    const float fullIncrement = labelRectHeight + 2.f;
+    const float minIncrement = 2.f; // increment when most compacted
+
+    return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
+}
+
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
@@ -253,13 +264,16 @@ struct MarkerGeometry {
             m_labelRect.moveLeft(0.5f);
         }
 
+        const float increment = overlappingMarkerIncrement(
+                static_cast<float>(m_labelRect.height()), breadth);
+
         if (alignV == Qt::AlignVCenter) {
             m_labelRect.moveTop((m_imageSize.height() - m_labelRect.height()) / 2.f);
         } else if (alignV == Qt::AlignBottom) {
             m_labelRect.moveBottom(m_imageSize.height() - 0.5f -
-                    level * (m_labelRect.height() + 2.f));
+                    level * increment);
         } else {
-            m_labelRect.moveTop(0.5f + level * (m_labelRect.height() + 2.f));
+            m_labelRect.moveTop(0.5f + level * increment);
         }
     }
     QSize getImageSize(float devicePixelRatio) const {
