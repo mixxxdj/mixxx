@@ -586,7 +586,7 @@ NumarkN4.Deck = function(channel) {
         // spawned which conflicted with the old (still running) timers.
         if (!this.previouslyLoaded) {
             //timer is more efficient is this case than a callback because it would be called too often.
-            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator);
+            theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval, theDeck.manageChannelIndicator.bind(this), true);
         }
         this.previouslyLoaded=value;
     }.bind(this));

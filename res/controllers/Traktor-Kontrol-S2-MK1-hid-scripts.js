@@ -416,7 +416,7 @@ class DeckClass {
             } else {
                 this.wheelTouchInertiaTimer = engine.beginTimer(
                     inertiaTime,
-                    this.finishJogPress, 
+                    this.finishJogPress.bind(this),
                     true);
             }
         }
@@ -530,7 +530,7 @@ class DeckClass {
                 engine.scratchDisable(this.number, true);
             } else {
             // Check again soon.
-                this.wheelPressInertiaTimer = engine.beginTimer(20, finishJogPress, true);
+                this.wheelPressInertiaTimer = engine.beginTimer(20, this.finishJogPress.bind(this), true);
             }
         }
     }
