@@ -992,10 +992,170 @@
 					<normal />
 				</options>
 			</control>
+			<!--Sampler (SHIFT mode)-->
+			<control>
+				<group>[Sampler1]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x96</status>
+				<midino>0x38</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler2]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x96</status>
+				<midino>0x39</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler3]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x96</status>
+				<midino>0x3A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler4]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x96</status>
+				<midino>0x3B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler5]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x96</status>
+				<midino>0x3C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler6]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x96</status>
+				<midino>0x3D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler7]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x96</status>
+				<midino>0x3E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler8]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x96</status>
+				<midino>0x3F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
 			<!--Slicer  Not assigned: 0x20 to 0x27-->
 
-			<!--Toneplay  Not assigned: 0x40 to 0x47-->
-
+			<!--Toneplay-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x40</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x41</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x42</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x43</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x44</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x45</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x46</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x47</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
 
 			<!--Beatjump-->
@@ -1569,10 +1729,170 @@
 					<normal />
 				</options>
 			</control>
+			<!--Sampler (SHIFT mode)-->
+			<control>
+				<group>[Sampler9]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 1</description>
+				<status>0x97</status>
+				<midino>0x38</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler10]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 2</description>
+				<status>0x97</status>
+				<midino>0x39</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler11]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 3</description>
+				<status>0x97</status>
+				<midino>0x3A</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler12]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 4</description>
+				<status>0x97</status>
+				<midino>0x3B</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler13]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 5</description>
+				<status>0x97</status>
+				<midino>0x3C</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler14]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 6</description>
+				<status>0x97</status>
+				<midino>0x3D</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler15]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 7</description>
+				<status>0x97</status>
+				<midino>0x3E</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
+			<control>
+				<group>[Sampler16]</group>
+				<key>cue_gotoandstop</key>
+				<description>SHIFT + PAD 8</description>
+				<status>0x97</status>
+				<midino>0x3F</midino>
+				<options>
+					<normal />
+				</options>
+			</control>
 			<!--Slicer  Not assigned: 0x20 to 0x27-->
 
-			<!--Toneplay  Not assigned: 0x40 to 0x47-->
-
+			<!--Toneplay-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x40</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x41</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x42</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x43</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x44</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x45</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x46</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.tonePlay</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x47</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
 
 			<!--Beatjump-->

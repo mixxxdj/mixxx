@@ -3,9 +3,13 @@
 // ***************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Inpulse 300.
 // * Author: DJ Phatso, contributions by Kerrick Staley
-// * Version 1.2 (March 2020)
+// * Version 1.3 (Jan 2024)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12599
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300
+//
+// Changes to v1.3
+// - Added ability to stop samplers (shift + button)
+// - Added tone play
 //
 // Changes to v1.2
 // - Code cleanup.
@@ -69,6 +73,16 @@ DJCi300.init = function() {
     1: DJCi300.kScratchActionNone,
     2: DJCi300.kScratchActionNone
     };
+
+    // Tone play LED control (one for each deck)
+    DJCi300.tonePlayLED = [
+        0x40,
+        0x40
+    ];
+    DJCi300.timer = [
+        0,
+        0
+    ]
 
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
@@ -190,6 +204,64 @@ DJCi300.bendWheel = function(channel, control, value, _status, _group) {
     var interval = DJCi300._convertWheelRotation(value);
     engine.setValue(
         "[Channel" + channel + "]", "jog", interval * DJCi300.bendScale);
+};
+
+// Toneplay
+DJCi300.tonePlay = function(channel, control, value, status, _group) {
+    var deck = channel - 5;
+    var button = control - 0x40 + 1;
+
+    if (value == 0x7F) {
+        // Jump to the most recently used hotcue
+        recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
+        if ((recentHotcue != -1) && (engine.getValue("[Channel" + deck + "]",
+            "hotcue_" + recentHotcue + "_enabled"))) {
+
+            engine.setValue("[Channel" + deck + "]",
+                "hotcue_" + recentHotcue + "_goto", 1);
+        }
+        // If that hotcue doesn't exist or was deleted, jump to cue
+        else {
+            engine.setValue("[Channel" + deck + "]",
+                "cue_goto", 1);
+        }
+
+        // Adjust pitch
+        // Buttons 1-4 are +0 to +3 semitones
+        // Buttons 5-8 are -4 to -1 semitones
+        // This mimics the orignal Inpulse 300's toneplay
+        engine.setValue("[Channel" + deck + "]", "reset_key", 1);
+        if (button <= 4) {
+            for (var i = 1; i < button; i++) {
+                engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
+            }
+        }
+        else {
+            for (i = 8; i >= button; i--) {
+                engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
+            }
+        }
+
+        // Turn off the last button's LED and turn on the current button's LED
+        midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
+        midi.sendShortMsg(status, control, 0x7F);
+        DJCi300.tonePlayLED[deck - 1] = control;
+    }
+    // After button release, turn off the light after no input for 5 seconds
+    else {
+        // Reset timer (if it exists)
+        if (DJCi300.timer[deck - 1] != 0) {
+            engine.stopTimer(DJCi300.timer[deck - 1]);
+            DJCi300.timer[deck - 1] = 0;
+        }
+        // Start timer
+        DJCi300.timer[deck - 1] = engine.beginTimer(5000,
+            function () {
+                DJCi300.timer[deck - 1] = 0;
+                midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
+            },
+            true);
+    }
 };
 
 DJCi300.shutdown = function() {
