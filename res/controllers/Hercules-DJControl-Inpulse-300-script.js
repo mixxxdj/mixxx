@@ -225,7 +225,7 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         // Adjust pitch
         // Buttons 1-4 are +0 to +3 semitones
         // Buttons 5-8 are -4 to -1 semitones
-        // This mimics the orignal Inpulse 300's toneplay
+        // This mimics the original Inpulse 300's toneplay
         engine.setValue("[Channel" + deck + "]", "reset_key", 1);
         if (button <= 4) {
             for (var i = 1; i < button; i++) {
