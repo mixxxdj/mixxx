@@ -228,7 +228,7 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         // This mimics the orignal Inpulse 300's toneplay
         engine.setValue("[Channel" + deck + "]", "reset_key", 1);
         if (button <= 4) {
-            for (let i = 1; i < button; i++) {
+            for (var i = 1; i < button; i++) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
         } else {
