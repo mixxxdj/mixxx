@@ -103,8 +103,12 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 endif()
 
-if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
-  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+if(NOT DEFINED VCPKG_TARGET_TRIPLET)
+  if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}")
+  elseif(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+  endif()
 endif()
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
 
@@ -1695,13 +1699,22 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
+  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+  # This is the first package form the environment, if this fails give hints how to install the environment
+  if(NOT Qt6_FOUND)
+     FATAL_ERROR_MISSING_ENV()
+  endif()
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
   # builds with Qt < 3.21
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 else()
+  find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
+  # This is the first package form the environment, if this fails give hints how to install the environment
+  if(NOT Qt5_FOUND)
+     FATAL_ERROR_MISSING_ENV()
+  endif()
   add_executable(mixxx WIN32 src/main.cpp)
 endif()
 
@@ -2196,13 +2209,8 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint)
-# This is the first package form the environment, if this fails give hints how to install the environment
-if(NOT Chromaprint_FOUND)
-  FATAL_ERROR_MISSING_ENV()
-else()
-  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
-endif()
+find_package(Chromaprint REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)

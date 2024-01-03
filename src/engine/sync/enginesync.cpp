@@ -103,8 +103,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     // Second, figure out what Syncable should be used to initialize the leader
     // parameters, if any. Usually this is the new leader. (Note, that pointer might be null!)
     Syncable* pParamsSyncable = m_pLeaderSyncable;
-    // But if we are newly leader, we need to match to some other deck.
-    if (pSyncable == m_pLeaderSyncable && pSyncable != oldLeader) {
+    // But if we asked for follower and are newly leader, we need to match to some other deck.
+    if (mode == SyncMode::Follower && pSyncable == m_pLeaderSyncable && pSyncable != oldLeader) {
         pParamsSyncable = findBpmMatchTarget(pSyncable);
         if (!pParamsSyncable) {
             // We weren't able to find anything to match to, so set ourselves as the

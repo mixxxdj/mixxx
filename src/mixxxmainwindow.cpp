@@ -138,7 +138,7 @@ void MixxxMainWindow::initializeQOpenGL() {
     if (!CmdlineArgs::Instance().getSafeMode()) {
 #endif
         QOpenGLContext context;
-        context.setFormat(WaveformWidgetFactory::getSurfaceFormat());
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
         if (context.create()) {
             // This widget and its QOpenGLWindow will be used to query QOpenGL
             // information (version, driver, etc) in WaveformWidgetFactory.

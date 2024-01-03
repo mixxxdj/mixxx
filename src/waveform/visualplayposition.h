@@ -89,6 +89,7 @@ class VisualPlayPosition : public QObject {
     ControlValueAtomic<VisualPlayPositionData> m_data;
     bool m_valid;
     QString m_key;
+    bool m_noTransport;
 
     static QMap<QString, QWeakPointer<VisualPlayPosition>> m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called

@@ -20,17 +20,20 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 [ -z "$THIS_SCRIPT_NAME" ] && THIS_SCRIPT_NAME=$0
 
 if [ -n "${BUILDENV_ARM64}" ]; then
+    VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
     BUILDENV_BRANCH="2.5-rel"
-    BUILDENV_NAME="mixxx-deps-rel-2.5-arm64-osx-min1100-62ca59f"
+    BUILDENV_NAME="mixxx-deps-rel-2.5-$VCPKG_TARGET_TRIPLET-62ca59f"
     BUILDENV_SHA256="8f8056f81ff434f418e890fdbbff97989b2f910d903a4616a65b22315ded3789"
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="x64-osx-min1015"
         BUILDENV_BRANCH="2.5-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.5-x64-osx-min1015-62ca59f"
+        BUILDENV_NAME="mixxx-deps-rel-2.5-$VCPKG_TARGET_TRIPLET-62ca59f"
         BUILDENV_SHA256="07fec8adc5f37c061c4eb24b64b8271e4ca711cb3a4c17182630237a9cfeeab3"
     else
+        VCPKG_TARGET_TRIPLET="x64-osx-min1015"
         BUILDENV_BRANCH="2.5"
-        BUILDENV_NAME="mixxx-deps-2.5-x64-osx-min1015-46ec071"
+        BUILDENV_NAME="mixxx-deps-2.5-$VCPKG_TARGET_TRIPLET-46ec071"
         BUILDENV_SHA256="968a6bc445ad0cb99c4d310dc7831f20cb1ac641873ae4990b24a369d2971360"
     fi
 fi
@@ -53,7 +56,12 @@ case "$1" in
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
-                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
+                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
+                http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o /dev/null)
+                if [ "$http_code" -ne 200 ]; then
+                    echo "Downloading  failed with HTTP status code: $http_code"
+                    exit 1
+                fi
                 curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
@@ -80,10 +88,12 @@ case "$1" in
 
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
 
         echo_exported_variables() {
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+            echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then
