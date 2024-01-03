@@ -262,10 +262,10 @@ void PlaylistFeature::slotShufflePlaylist() {
     } else {
         // Create a temp model so we don't need to select the playlist
         // in the persistent model in order to shuffle it
-        QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-                new PlaylistTableModel(this,
+        std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+                std::make_unique<PlaylistTableModel>(this,
                         m_pLibrary->trackCollectionManager(),
-                        "mixxx.db.model.playlist_shuffle"));
+                        "mixxx.db.model.playlist_shuffle");
         pPlaylistTableModel->selectPlaylist(playlistId);
         pPlaylistTableModel->setSort(
                 pPlaylistTableModel->fieldIndex(

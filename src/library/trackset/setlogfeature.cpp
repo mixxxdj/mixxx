@@ -390,10 +390,10 @@ void SetlogFeature::slotJoinWithPrevious() {
 
     // Right-clicked playlist may not be loaded. Use a temporary model to
     // keep sidebar selection and table view in sync
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(previousPlaylistId);
 
     if (clickedPlaylistId == m_currentPlaylistId) {
@@ -438,10 +438,10 @@ void SetlogFeature::slotMarkAllTracksPlayed() {
 
     // Right-clicked playlist may not be loaded. Use a temporary model to
     // keep sidebar selection and table view in sync
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
     // mark all the Tracks in the previous Playlist as played
     pPlaylistTableModel->select();
