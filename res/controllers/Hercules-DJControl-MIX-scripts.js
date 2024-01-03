@@ -1,3 +1,16 @@
+// Hercules-DJControl-MIX-scripts.js
+//
+// ****************************************************************************
+// * Mixxx mapping script file for the Hercules DJControl MIX.
+// * Author: DJ Phatso and Kerrick Staley
+// * Based on Hercules DJControl Starlight mapping released with Mixxx v2.3.0
+// *  -Remapped LOOP and SAMPLER section according to DJControl MIX layout
+// *  -Added Master Volume and Headphone Volume
+// *  -Removed superfluous LED configuration (not present on DJControl MIX)
+// * Forum: https://mixxx.discourse.group/t/hercules-contrl-mix-mapping/26581/
+
+class DJCMixClass {
+    constructor() {
         ///////////////////////////////////////////////////////////////
         //                       USER OPTIONS                        //
         ///////////////////////////////////////////////////////////////
@@ -11,19 +24,6 @@
         // How fast bending is.
         this.bendScale = 1.0;
 
-        // Hercules-DJControl-MIX-scripts.js
-        //
-        // ****************************************************************************
-        // * Mixxx mapping script file for the Hercules DJControl MIX.
-        // * Author: DJ Phatso and Kerrick Staley
-        // * Based on Hercules DJControl Starlight mapping released with Mixxx v2.3.0
-        // *  -Remapped LOOP and SAMPLER section according to DJControl MIX layout
-        // *  -Added Master Volume and Headphone Volume
-        // *  -Removed superfluous LED configuration (not present on DJControl MIX)
-        // * Forum: https://mixxx.discourse.group/t/hercules-contrl-mix-mapping/26581/
-
-class DJCMixClass {
-    constructor() {
 
         this.kScratchActionNone = 0;
         this.kScratchActionScratch = 1;
