@@ -1,8 +1,7 @@
 #pragma once
 
-#include <span>
-
 #include "skin/legacy/skincontext.h"
+#include "util/span.h"
 #include "waveformrendererabstract.h"
 
 class ControlProxy;
