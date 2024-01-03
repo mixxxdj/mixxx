@@ -1852,7 +1852,7 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var focusedEffect = deck.getFocusedEffect();
     var EQp = 4 - control; // convert control number to parameter number in mixxx
     var FXp = control; // control number matches effect param order
-    var knobStateOBJ = 0;
+    let knobStateOBJ;
     switch (EQp) {
     case 1:
         knobStateOBJ = deck.KnobState.EQLow;
