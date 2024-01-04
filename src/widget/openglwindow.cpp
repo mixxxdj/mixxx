@@ -10,8 +10,7 @@
 #include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
-        : m_pWidget(pWidget),
-          m_dirty(false) {
+        : m_pWidget(pWidget) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
 }
 
@@ -26,12 +25,6 @@ void OpenGLWindow::initializeGL() {
 
 void OpenGLWindow::paintGL() {
     if (m_pWidget && isExposed()) {
-        if (m_dirty) {
-            // Extra render and swap to avoid flickering when resizing
-            m_pWidget->paintGL();
-            m_pWidget->swapBuffers();
-            m_dirty = false;
-        }
         m_pWidget->paintGL();
     }
 }
@@ -44,7 +37,10 @@ void OpenGLWindow::resizeGL(int w, int h) {
         // QGLWidget::resizeGL has devicePixelRatio applied, so we mimic the same behaviour
         m_pWidget->resizeGL(static_cast<int>(static_cast<float>(w) * devicePixelRatio()),
                 static_cast<int>(static_cast<float>(h) * devicePixelRatio()));
-        m_dirty = true;
+        // additional paint and swap to avoid flickering
+        m_pWidget->paintGL();
+        m_pWidget->swapBuffers();
+
         m_pWidget->doneCurrent();
     }
 }

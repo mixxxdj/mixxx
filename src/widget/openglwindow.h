@@ -22,5 +22,4 @@ class OpenGLWindow : public QOpenGLWindow {
     bool event(QEvent* pEv) override;
 
     WGLWidget* m_pWidget;
-    bool m_dirty;
 };
