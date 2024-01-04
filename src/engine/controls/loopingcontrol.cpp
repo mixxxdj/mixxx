@@ -16,11 +16,6 @@
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
-
-// returns true if a is valid and is fairly close to target (within +/- 1 frame).
-bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
-    return a.isValid() && a > target - 1 && a < target + 1;
-}
 } // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -1281,7 +1276,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) co
     const auto loopEndPosition = pBeats->findNBeatsFromPosition(
             loopInfo.startPosition, m_pCOBeatLoopSize->get());
 
-    return positionNear(loopInfo.endPosition, loopEndPosition);
+    return loopEndPosition.isNear(loopInfo.endPosition);
 }
 
 double LoopingControl::findBeatloopSizeForLoop(
@@ -1483,10 +1478,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
 
     // If the start point has changed, or the loop is not enabled,
     // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
-    if (!keepStartPoint ||
-            !(enable || m_bLoopingEnabled) ||
-            (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
-                    positionNear(newloopInfo.endPosition, loopInfo.endPosition))) {
+    if (!keepStartPoint || !(enable || m_bLoopingEnabled) ||
+            (newloopInfo.startPosition.isNear(loopInfo.startPosition) &&
+                    newloopInfo.endPosition.isNear(loopInfo.endPosition))) {
         newloopInfo.seekMode = LoopSeekMode::MovedOut;
     } else {
         newloopInfo.seekMode = LoopSeekMode::Changed;
