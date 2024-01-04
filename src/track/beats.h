@@ -370,6 +370,26 @@ class Beats : private std::enable_shared_from_this<Beats> {
     /// The returned Bpm value may be invalid.
     mixxx::Bpm getBpmAroundPosition(audio::FramePos position, int n) const;
 
+    // Calculates contextual information about beats: the previous beat, the
+    // next beat, the current beat length, and the beat ratio (how far position
+    // lies within the current beat). Returns false if a previous or next beat
+    // does not exist. NULL arguments are safe and ignored.
+    bool getContext(
+            mixxx::audio::FramePos position,
+            mixxx::audio::FramePos* pPrevBeatPosition,
+            mixxx::audio::FramePos* pNextBeatPosition,
+            mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+            double* pBeatPercentage) const;
+
+    // Alternative version that works if the next and previous beat positions
+    // are already known.
+    static bool getContextNoLookup(
+            mixxx::audio::FramePos position,
+            mixxx::audio::FramePos prevBeatPosition,
+            mixxx::audio::FramePos nextBeatPosition,
+            mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+            double* pBeatPercentage);
+
     audio::SampleRate getSampleRate() const {
         return m_sampleRate;
     }

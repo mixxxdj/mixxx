@@ -4,7 +4,6 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
@@ -1801,7 +1800,7 @@ void LoopingControl::slotLoopMove(double beats) {
     }
 
     FrameInfo info = frameInfo();
-    if (BpmControl::getBeatContext(pBeats,
+    if (pBeats->getContext(
                 info.currentPosition,
                 nullptr,
                 nullptr,

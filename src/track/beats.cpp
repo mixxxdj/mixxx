@@ -615,6 +615,59 @@ mixxx::Bpm Beats::getBpmAroundPosition(audio::FramePos position, int n) const {
     return BeatUtils::calculateAverageBpm(2 * n, m_sampleRate, startPosition, endPosition);
 }
 
+bool Beats::getContext(
+        mixxx::audio::FramePos position,
+        mixxx::audio::FramePos* pPrevBeatPosition,
+        mixxx::audio::FramePos* pNextBeatPosition,
+        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+        double* pBeatPercentage) const {
+    mixxx::audio::FramePos prevBeatPosition;
+    mixxx::audio::FramePos nextBeatPosition;
+    if (!findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false)) {
+        return false;
+    }
+
+    if (pPrevBeatPosition != nullptr) {
+        *pPrevBeatPosition = prevBeatPosition;
+    }
+
+    if (pNextBeatPosition != nullptr) {
+        *pNextBeatPosition = nextBeatPosition;
+    }
+
+    return getContextNoLookup(
+            position,
+            prevBeatPosition,
+            nextBeatPosition,
+            pBeatLengthFrames,
+            pBeatPercentage);
+}
+
+// static
+bool Beats::getContextNoLookup(
+        mixxx::audio::FramePos position,
+        mixxx::audio::FramePos prevBeatPosition,
+        mixxx::audio::FramePos nextBeatPosition,
+        mixxx::audio::FrameDiff_t* pBeatLengthFrames,
+        double* pBeatPercentage) {
+    if (!prevBeatPosition.isValid() || !nextBeatPosition.isValid()) {
+        return false;
+    }
+
+    const mixxx::audio::FrameDiff_t beatLengthFrames = nextBeatPosition - prevBeatPosition;
+    if (pBeatLengthFrames != nullptr) {
+        *pBeatLengthFrames = beatLengthFrames;
+    }
+
+    if (pBeatPercentage != nullptr) {
+        *pBeatPercentage = (beatLengthFrames == 0.0)
+                ? 0.0
+                : (position - prevBeatPosition) / beatLengthFrames;
+    }
+
+    return true;
+}
+
 std::optional<BeatsPointer> Beats::tryTranslate(audio::FrameDiff_t offsetFrames) const {
     std::vector<BeatMarker> markers;
     std::transform(m_markers.cbegin(),
