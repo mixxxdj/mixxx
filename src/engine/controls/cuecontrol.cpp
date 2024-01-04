@@ -2356,10 +2356,13 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     mixxx::CueType type = pCue->getType();
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
 
-    VERIFY_OR_DEBUG_ASSERT(
-            type == mixxx::CueType::Loop &&
-            pos.startPosition.isValid() &&
-            pos.endPosition.isValid()) {
+    VERIFY_OR_DEBUG_ASSERT(type == mixxx::CueType::Loop) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.startPosition.isValid()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(pos.endPosition.isValid()) {
         return;
     }
 
