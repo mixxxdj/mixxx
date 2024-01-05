@@ -61,7 +61,7 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotJoinWithPrevious);
 
-    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played)"), this);
+    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played"), this);
     connect(m_pMarkTracksPlayedAction,
             &QAction::triggered,
             this,
