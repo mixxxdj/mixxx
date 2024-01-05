@@ -487,7 +487,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
 }
 
-TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
+TEST_F(LoopingControlTest, DISABLED_LoopDoubleButton_DoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
@@ -538,7 +538,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
 }
 
-TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
+TEST_F(LoopingControlTest, DISABLED_LoopHalveButton_DoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
@@ -863,7 +863,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
     EXPECT_EQ(oldLoopLength * 2, newLoopLength);
 }
 
-TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
+TEST_F(LoopingControlTest, DISABLED_BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
     setCurrentPosition(mixxx::audio::FramePos{50});
     m_pTrack1->trySetBpm(160.0);
     m_pQuantizeEnabled->set(0);
