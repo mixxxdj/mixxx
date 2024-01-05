@@ -64,16 +64,22 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
-        // The offset is limited to the audio buffer + 2 x waveform sync interval
+        // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
         const int maxOffset = static_cast<int>(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
+
+        // The negative offset is limited to -data.m_callbackEntrytoDac to not
+        // More negative values indicated an outdated request, that is anyway no
+        // longer valid. Probably cause bay a vsync issue.
+        const int minOffset = -data.m_callbackEntrytoDac;
+
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
         int offset = refToVSync - data.m_callbackEntrytoDac;
-        if (offset < -maxOffset) {
-            offset = -maxOffset;
+        if (offset < minOffset) {
+            offset = minOffset;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
                            << m_key << "outdated position request (offset < minOffset)";
