@@ -76,7 +76,10 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             offset = -maxOffset;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
-                           << m_key << "no transport (offset < -maxOffset)";
+                           << m_key << "outdated position request (offset < minOffset)";
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
         } else if (offset > maxOffset) {
@@ -84,9 +87,17 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
                            << m_key << "no transport (offset > maxOffset)";
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
         } else {
+            if (m_noTransport) {
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
+            }
             m_noTransport = false;
         }
         // Apply the offset proportional to m_positionStep
