@@ -16,6 +16,8 @@
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
+
+const double kDefaultBeatloopSize = 4.0;
 } // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
@@ -134,7 +136,10 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOLoopAnchor->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
-                                          true, false, false, 4.0);
+            true,
+            false,
+            false,
+            kDefaultBeatloopSize);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
             &LoopingControl::slotBeatLoopSizeChangeRequest, Qt::DirectConnection);
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
@@ -167,7 +172,10 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOBeatJump, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJump, Qt::DirectConnection);
     m_pCOBeatJumpSize = new ControlObject(ConfigKey(group, "beatjump_size"),
-                                          true, false, false, 4.0);
+            true,
+            false,
+            false,
+            kDefaultBeatloopSize);
     m_pCOBeatJumpSize->connectValueChangeRequest(this,
             &LoopingControl::slotBeatJumpSizeChangeRequest,
             Qt::DirectConnection);
@@ -1261,13 +1269,20 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         m_pBeats = pBeats;
         m_trueTrackBeats = false;
     }
+    double loaded_loop_size = -1;
     LoopInfo loopInfo = m_loopInfo.getValue();
     if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
-        double loaded_loop_size = findBeatloopSizeForLoop(
+        loaded_loop_size = findBeatloopSizeForLoop(
                 loopInfo.startPosition, loopInfo.endPosition);
         if (loaded_loop_size != -1) {
             m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
         }
+    }
+
+    // Reset to default value if track has no loop
+    // TODO Also reset if current loop size is odd or has decimals?
+    if (loaded_loop_size == -1) {
+        m_pCOBeatLoopSize->setAndConfirm(kDefaultBeatloopSize);
     }
 }
 
@@ -1475,7 +1490,7 @@ mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
     // ...|...................^........|...
     //
     // If we press 1/2 beatloop we want loop from 50% to 100%,
-    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
+    // if we press 1/4 beatloop we want loop from 50% to 75% etc
     const mixxx::audio::FrameDiff_t framesSinceLastBeat =
             currentPosition - prevBeatPosition;
     // find the previous beat fraction and check if the current position is closer to this or the next one
