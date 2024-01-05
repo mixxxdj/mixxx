@@ -843,6 +843,11 @@ void LoopingControl::slotLoopIn(double pressed) {
         emit loopReset();
         if (pressed > 0.0) {
             setLoopInToCurrentPosition();
+            // This updates m_pCOBeatLoopSize
+            LoopInfo loopInfo = m_loopInfo.getValue();
+            if (loopInfo.endPosition.isValid()) {
+                setLoop(loopInfo.startPosition, loopInfo.endPosition, m_bLoopingEnabled);
+            }
         }
         m_bAdjustingLoopIn = false;
     }
@@ -981,6 +986,9 @@ void LoopingControl::slotLoopOut(double pressed) {
         if (pressed > 0.0) {
             setLoopOutToCurrentPosition();
             m_bLoopOutPressedWhileLoopDisabled = true;
+            // This updates m_pCOBeatLoopSize
+            LoopInfo loopInfo = m_loopInfo.getValue();
+            setLoop(loopInfo.startPosition, loopInfo.endPosition, m_bLoopingEnabled);
         }
         m_bAdjustingLoopOut = false;
     }
