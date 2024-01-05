@@ -349,6 +349,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
     audio::FramePos snapPosToNearBeat(audio::FramePos position) const;
 
     int numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPosition) const;
+    double numFractionalBeatsInRange(audio::FramePos startPosition,
+            audio::FramePos endPosition) const;
 
     /// Find the frame position N beats away from `position`. The number of beats may be
     /// negative and does not need to be an integer. In this case the returned position will

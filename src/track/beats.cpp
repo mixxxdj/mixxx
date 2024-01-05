@@ -793,6 +793,29 @@ int Beats::numBeatsInRange(audio::FramePos startPosition, audio::FramePos endPos
     return i - 2;
 };
 
+double Beats::numFractionalBeatsInRange(audio::FramePos startPos, audio::FramePos endPos) const {
+    double pBeatPercentage;
+    // get the ratio of first beat / position:
+    // 1 - ((startPos - beat before range) / first beat length)
+    if (!getContext(startPos, nullptr, nullptr, nullptr, &pBeatPercentage)) {
+        return -1;
+    }
+    double numBeats = 1 - pBeatPercentage;
+
+    // get the last beat ratio:
+    // (endPos - last beat in range) / last beat length
+    if (!getContext(endPos, nullptr, nullptr, nullptr, &pBeatPercentage)) {
+        return -1;
+    }
+    numBeats += pBeatPercentage;
+
+    // get the beats inside the range
+    // subtract 1 because we already counted the first beat
+    numBeats += numBeatsInRange(findNextBeat(startPos), endPos) - 1;
+
+    return numBeats;
+}
+
 audio::FramePos Beats::findNextBeat(audio::FramePos position) const {
     return findNthBeat(position, 1);
 }
