@@ -1417,7 +1417,9 @@ double LoopingControl::findBeatloopSizeForLoop(
             }
         }
     }
-    return -1;
+
+    // No hit. Calculate the fractional beat length
+    return pBeats->numFractionalBeatsInRange(startPosition, endPosition);
 }
 
 void LoopingControl::updateBeatLoopingControls() {
