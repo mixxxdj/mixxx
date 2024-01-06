@@ -2453,6 +2453,17 @@ if(KEYFINDER)
     # an error if not.
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
+    if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+      # Required for 'CMakeFiles/mixxx-lib_autogen_timestamp_deps'
+      # This tells 'make" that the libkeyfinder is required for the mixxx-keyfinder library
+      # BUILD_BYPRODUCTS work for Ninja only, while this workaround does not work for Ninja on macOS
+      add_custom_command(
+        OUTPUT "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
+        DEPENDS libkeyfinder
+        COMMAND echo libkeyfinder installed
+      )
+    endif()
+
     add_library(mixxx-keyfinder STATIC IMPORTED)
     add_dependencies(mixxx-keyfinder libkeyfinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
