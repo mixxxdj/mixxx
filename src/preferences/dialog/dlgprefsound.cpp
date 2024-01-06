@@ -707,7 +707,6 @@ void DlgPrefSound::deviceChanged() {
         while (it.hasNext()) {
             it.next();
             if (it.value().first == id) {
-                qWarning() << "     -> match";
                 selectedChannelsForDevice.append(it.value().second);
             }
         }
