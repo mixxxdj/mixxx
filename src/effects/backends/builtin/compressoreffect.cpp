@@ -1,5 +1,4 @@
 #include "effects/backends/builtin/compressoreffect.h"
-#include <Windows.h>
 
 // static
 QString CompressorEffect::getId() {
