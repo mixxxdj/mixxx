@@ -30,26 +30,23 @@ EffectManifestPointer CompressorEffect::getManifest() {
 
     EffectManifestParameterPointer autoMakeUp = pManifest->addParameter();
     autoMakeUp->setId("automakeup");
-    autoMakeUp->setName(QObject::tr("Auto Make Up Gain"));
-    autoMakeUp->setShortName(QObject::tr("Make Up"));
+    autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
+    autoMakeUp->setShortName(QObject::tr("Makeup"));
     autoMakeUp->setDescription(QObject::tr(
-            "Auto make up gain to 0 db level"));
+            "The AutoMakeup button enables automatic makeup gain to 0 db level"));
     autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     autoMakeUp->setRange(0, 1, 1);
     autoMakeUp->appendStep(qMakePair(QObject::tr("Off"), AutoMakeUp::AutoMakeUpOff));
     autoMakeUp->appendStep(qMakePair(QObject::tr("On"), AutoMakeUp::AutoMakeUpOn));
 
 
-    //TODO description
     EffectManifestParameterPointer threshold = pManifest->addParameter();
     threshold->setId("threshold");
     threshold->setName(QObject::tr("Threshold (dB)"));
     threshold->setShortName(QObject::tr("Threshold"));
     threshold->setDescription(QObject::tr(
-            "The amount of amplification "
-            "applied to the audio signal. At higher levels the audio will be more distored."));
+            "The Threshold knob adjusts the level above which the compressor starts attenuating the input signal"));
     threshold->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    //threshold->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     threshold->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     threshold->setNeutralPointOnScale(0);
     threshold->setRange(-50, -20, 0);
@@ -58,20 +55,20 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setId("ratio");
     ratio->setName(QObject::tr("Ratio (:1)"));
     ratio->setShortName(QObject::tr("Ratio"));
-    ratio->setDescription(QObject::tr("The amount of ratio."));
-    ratio->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    //ratio->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    ratio->setDescription(QObject::tr("The Ratio knob determines how much the signal is attenuated above the chosen threshold. "
+            "For a ratio of 4:1, one dB remains for every 4dB of input signal above the threshold. "
+            "At a ratio of 1:1 no compression is happening, as the input is exactly the output"));
+    ratio->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     ratio->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     ratio->setNeutralPointOnScale(0);
-    ratio->setRange(1.0, 4.0, 20);
+    ratio->setRange(1.0, 4.0, 1000);
 
     EffectManifestParameterPointer knee = pManifest->addParameter();
     knee->setId("knee");
     knee->setName(QObject::tr("Knee (dB)"));
     knee->setShortName(QObject::tr("Knee"));
-    knee->setDescription(QObject::tr("The amount of knee."));
+    knee->setDescription(QObject::tr("The Knee knob is used to achieve a rounder compression curve"));
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    //knee->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     knee->setNeutralPointOnScale(0);
     knee->setRange(0.0, 4.0, 24);
@@ -80,16 +77,19 @@ EffectManifestPointer CompressorEffect::getManifest() {
     attack->setId("attack");
     attack->setName(QObject::tr("Attack (ms)"));
     attack->setShortName(QObject::tr("Attack"));
-    attack->setDescription(QObject::tr("Attack"));
-    attack->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
+    attack->setDescription(QObject::tr(
+        "The Attack knob sets the time that determines how fast the compression will set in once the signal exceeds the threshold"));
+    attack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    attack->setRange(0, 10, 100);
+    attack->setRange(0, 10, 250);
 
     EffectManifestParameterPointer release = pManifest->addParameter();
     release->setId("release");
     release->setName(QObject::tr("Release (ms)"));
     release->setShortName(QObject::tr("Release"));
-    release->setDescription(QObject::tr("Release"));
+    release->setDescription(QObject::tr(
+        "The Release knob sets the time that determines how fast the compressor will recover from the gain reduction once the signal falls under the threshold. "
+        "Depending on the input signal, short release times may introduce a 'pumping' effect and/or distortion"));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     release->setRange(0, 150, 1500);
@@ -98,7 +98,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     gain->setId("gain");
     gain->setName(QObject::tr("Output gain"));
     gain->setShortName(QObject::tr("Gain"));
-    gain->setDescription(QObject::tr("Gain"));
+    gain->setDescription(QObject::tr("The Output gain knob adjusts the level of the output signal after the compression was applied"));
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setRange(-25, 0, 25);
