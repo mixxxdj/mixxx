@@ -77,6 +77,7 @@ QmlWaveformDisplay::QmlWaveformDisplay(QQuickItem* parent)
 }
 
 QmlWaveformDisplay::~QmlWaveformDisplay() {
+    disconnect(this);
     delete m_pWaveformDisplayRange;
 }
 
@@ -355,12 +356,12 @@ void QmlWaveformDisplay::setPlayer(QmlPlayerProxy* pPlayer) {
 
     if (m_pPlayer != nullptr) {
         m_pPlayer->internalTrackPlayer()->disconnect(this);
-        setCurrentTrack(pPlayer->internalTrackPlayer()->getLoadedTrack());
     }
 
     m_pPlayer = pPlayer;
 
-    if (pPlayer != nullptr) {
+    if (m_pPlayer != nullptr) {
+        setCurrentTrack(m_pPlayer->internalTrackPlayer()->getLoadedTrack());
         connect(m_pPlayer->internalTrackPlayer(),
                 &BaseTrackPlayer::newTrackLoaded,
                 this,

@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
+#include "util/parented_ptr.h"
 
 #define CONTROLLER_SCREEN_PREVIEW_FRAME_HISTORY_SIZE 5
 

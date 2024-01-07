@@ -2,6 +2,7 @@
 
 #include <hidapi.h>
 
+#include "util/cmdlineargs.h"
 #include "util/compatibility/qbytearray.h"
 #include "util/runtimeloggingcategory.h"
 #include "util/string.h"

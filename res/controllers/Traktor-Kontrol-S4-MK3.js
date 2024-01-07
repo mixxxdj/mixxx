@@ -21,6 +21,30 @@ const LedColors = {
     white: 68,
 };
 
+const LedColorMap = {
+    0xCC0000: LedColors.red,
+    0xCC5E00: LedColors.carrot,
+    0xCC7800: LedColors.orange,
+    0xCC9200: LedColors.honey,
+
+    0xCCCC00: LedColors.yellow,
+    0x81CC00: LedColors.lime,
+    0x00CC00: LedColors.green,
+    0x00CC49: LedColors.aqua,
+
+    0x00CCCC: LedColors.celeste,
+    0x0091CC: LedColors.sky,
+    0x0000CC: LedColors.blue,
+    0xCC00CC: LedColors.purple,
+
+    0xCC0091: LedColors.fuscia,
+    0xCC0079: LedColors.magenta,
+    0xCC477E: LedColors.azalea,
+    0xCC4761: LedColors.salmon,
+
+    0xCCCCCC: LedColors.white,
+};
+
 
 // This define the sequence of color to use for pad button when in keyboard mode. This should make them look like an actual keyboard keyboard octave, except for C, which is green to help spotting it.
 const KeyboardColors = [
@@ -95,7 +119,7 @@ const WheelSpeedSample = 3;
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
-const UseBeatloopRollInsteadOfSampler = false;
+const UseBeatloopRollInsteadOfSampler = true;
 
 // Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
 // last size will be ignored
@@ -210,6 +234,7 @@ const moveModes = {
     bpm: 1,
     grid: 2,
     keyboard: 3,
+    hotcueColor: 4,
 };
 
 // tracks state across input reports
@@ -459,6 +484,7 @@ class Deck extends ComponentContainer {
             this.color = colors[0];
         }
         this.secondDeckModes = null;
+        this.selectedHotcue = null;
     }
     toggleDeck() {
         if (this.decks === undefined) {
@@ -475,6 +501,17 @@ class Deck extends ComponentContainer {
     }
     switchDeck(newDeck) {
         const newGroup = Deck.groupForNumber(newDeck);
+
+        switch (this.moveMode) {
+        case moveModes.beat:
+        case moveModes.bpm:
+        case moveModes.grid:
+        case moveModes.hotcueColor:
+            this.moveMode = null;
+            this.selectedHotcue = null;
+            break;
+        }
+
         const currentModes = {
             wheelMode: this.wheelMode,
             moveMode: this.moveMode,
@@ -588,7 +625,7 @@ class Button extends Component {
     indicator(on) {
         if (on && this.indicatorTimer === 0) {
             this.outDisconnect();
-            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback);
+            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback.bind(this));
         } else if (!on && this.indicatorTimer !== 0) {
             engine.stopTimer(this.indicatorTimer);
             this.indicatorTimer = 0;
@@ -761,8 +798,12 @@ class HotcueButton extends PushButton {
         this.inKey = `hotcue_${this.number}_clear`;
     }
     input(pressed) {
-        engine.setValue(this.group, "scratch2_enable", false);
-        engine.setValue(this.group, this.inKey, pressed);
+        if (this.deck.moveMode === moveModes.hotcueColor) {
+            this.deck.selectedHotcue = pressed ? this.number : null;
+        } else {
+            engine.setValue(this.group, "scratch2_enable", false);
+            engine.setValue(this.group, this.inKey, pressed);
+        }
     }
     output(value) {
         if (value) {
@@ -869,16 +910,24 @@ class BeatLoopRollButton extends TriggerButton {
         if (options.number <= 5  || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
             options.key = "beatlooproll_"+BeatLoopRolls[AddLoopHalveAndDoubleOnBeatloopRollTab ? options.number + 1 : options.number]+"_activate";
             options.onShortPress = function() {
-                if (!this.deck.beatloopSize) {
-                    this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
+                if (!this.deck.beatloop) {
+                    this.deck.beatloop = {
+                        size: engine.getValue(this.group, "beatloop_size"),
+                        start: engine.getValue(this.group, "loop_start_position"),
+                        end: engine.getValue(this.group, "loop_end_position"),
+                        enabled: engine.getValue(this.group, "loop_enabled"),
+                    };
                 }
                 engine.setValue(this.group, this.inKey, true);
             };
             options.onShortRelease = function() {
                 engine.setValue(this.group, this.inKey, false);
-                if (this.deck.beatloopSize) {
-                    engine.setValue(this.group, "beatloop_size", this.deck.beatloopSize);
-                    this.deck.beatloopSize = undefined;
+                if (this.deck.beatloop) {
+                    engine.setValue(this.group, "loop_start_position", this.deck.beatloop.start),
+                    engine.setValue(this.group, "loop_end_position", this.deck.beatloop.end),
+                    engine.setValue(this.group, "beatloop_size", this.deck.beatloop.size),
+                    engine.setValue(this.group, "loop_enabled", this.deck.beatloop.enabled),
+                    this.deck.beatloop = undefined;
                 }
             };
         } else if (options.number === 6) {
@@ -1362,29 +1411,7 @@ Button.prototype.uncoloredOutput = function(value) {
     const color = (value > 0) ? (this.color || LedColors.white) + this.brightnessOn : LedColors.off;
     this.send(color);
 };
-Button.prototype.colorMap = new ColorMapper({
-    0xCC0000: LedColors.red,
-    0xCC5E00: LedColors.carrot,
-    0xCC7800: LedColors.orange,
-    0xCC9200: LedColors.honey,
-
-    0xCCCC00: LedColors.yellow,
-    0x81CC00: LedColors.lime,
-    0x00CC00: LedColors.green,
-    0x00CC49: LedColors.aqua,
-
-    0x00CCCC: LedColors.celeste,
-    0x0091CC: LedColors.sky,
-    0x0000CC: LedColors.blue,
-    0xCC00CC: LedColors.purple,
-
-    0xCC0091: LedColors.fuscia,
-    0xCC0079: LedColors.magenta,
-    0xCC477E: LedColors.azalea,
-    0xCC4761: LedColors.salmon,
-
-    0xCCCCCC: LedColors.white,
-});
+Button.prototype.colorMap = new ColorMapper(LedColorMap);
 
 /*
  * Kontrol S4 Mk3 hardware specific mapping logic
@@ -1893,6 +1920,16 @@ class S4Mk3Deck extends Deck {
                 case moveModes.bpm:
                     script.triggerControl(this.group, right ? "beats_translate_later" : "beats_translate_earlier");
                     break;
+                case moveModes.hotcueColor:{
+                    if (this.deck.selectedHotcue === null) {
+                        return;
+                    }
+                    const color = engine.getValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`);
+                    let currentColorIdx = Object.values(LedColors).indexOf(Button.prototype.colorMap.getValueForNearestColor(color));
+                    currentColorIdx = (currentColorIdx + (right ? 1:-1)) % Object.keys(LedColorMap).length;
+                    engine.setValue(this.deck.group, `hotcue_${this.deck.selectedHotcue}_color`, Object.keys(LedColorMap)[currentColorIdx]);
+                    break;
+                }
                 default:
                     if (!this.shifted) {
                         if (!this.deck.leftEncoderPress.pressed) {
@@ -1952,12 +1989,15 @@ class S4Mk3Deck extends Deck {
             }
         });
         this.rightEncoderPress = new PushButton({
+            samplerButtonPressed: false,
             input: function(pressed) {
                 if (!pressed) {
                     return;
                 }
-                const loopEnabled = engine.getValue(this.group, "loop_enabled");
-                if (!this.shifted) {
+                if (this.samplerButtonPressed) {
+                    engine.setValue(this.group, "loop_end_position", engine.getValue(this.group, "playposition"));
+                    script.triggerControl(this.group, "reloop_toggle");
+                } else if (!this.shifted) {
                     script.triggerControl(this.group, "beatloop_activate");
                 } else {
                     script.triggerControl(this.group, "reloop_toggle");
@@ -2129,16 +2169,16 @@ class S4Mk3Deck extends Deck {
                 cueBaseName: "outro_end",
             }),
             new HotcueButton({
-                number: 1
+                number: 1, deck: this
             }),
             new HotcueButton({
-                number: 2
+                number: 2, deck: this
             }),
             new HotcueButton({
-                number: 3
+                number: 3, deck: this
             }),
             new HotcueButton({
-                number: 4
+                number: 4, deck: this
             })
         ];
         const hotcuePage2 = Array(8).fill({});
@@ -2149,8 +2189,8 @@ class S4Mk3Deck extends Deck {
         /* eslint no-unused-vars: "off" */
         for (const pad of hotcuePage2) {
             // start with hotcue 5; hotcues 1-4 are in defaultPadLayer
-            hotcuePage2[i] = new HotcueButton({number: i + 1});
-            hotcuePage3[i] = new HotcueButton({number: i + 13});
+            hotcuePage2[i] = new HotcueButton({number: i + 1, deck: this});
+            hotcuePage3[i] = new HotcueButton({number: i + 13, deck: this});
             if (UseBeatloopRollInsteadOfSampler) {
                 samplerOrBeatloopRollPage[i] = new BeatLoopRollButton({
                     number: i,
@@ -2222,7 +2262,7 @@ class S4Mk3Deck extends Deck {
 
         this.hotcuePadModeButton = new Button({
             deck: this,
-            onShortPress: function() {
+            onShortRelease: function() {
                 if (!this.shifted) {
                     if (this.deck.currentPadLayer !== this.deck.padLayers.hotcuePage2) {
                         switchPadLayer(this.deck, hotcuePage2);
@@ -2238,6 +2278,15 @@ class S4Mk3Deck extends Deck {
                     this.deck.lightPadMode();
                 }
 
+            },
+            onLongPress: function() {
+                this.previousMoveMode = this.deck.moveMode;
+                this.deck.moveMode = moveModes.hotcueColor;
+
+            },
+            onLongRelease: function() {
+                this.deck.moveMode = this.previousMoveMode;
+                this.previousMoveMode = null;
             },
             // hack to switch the LED color when changing decks
             outTrigger: function() {
@@ -2261,7 +2310,8 @@ class S4Mk3Deck extends Deck {
         });
         this.samplesPadModeButton = new Button({
             deck: this,
-            onShortPress: function() {
+            onShortRelease: function() {
+                this.deck.rightEncoderPress.samplerButtonPressed = false;
                 if (this.deck.currentPadLayer !== this.deck.padLayers.samplerPage) {
                     switchPadLayer(this.deck, samplerOrBeatloopRollPage);
                     engine.setValue("[Samplers]", "show_samplers", true);
@@ -2273,6 +2323,15 @@ class S4Mk3Deck extends Deck {
                 }
                 this.deck.lightPadMode();
             },
+            onShortPress: function() {
+                this.deck.rightEncoderPress.samplerButtonPressed = true;
+            },
+            onLongPress: function() {
+                this.deck.rightEncoderPress.samplerButtonPressed = true;
+            },
+            onLongRelease: function() {
+                this.deck.rightEncoderPress.samplerButtonPressed = false;
+            }
         });
         // The mute button doesn't have a mapping by default, but you can add yours here
         this.mutePadModeButton = new Button({
@@ -2417,7 +2476,7 @@ class S4Mk3Deck extends Deck {
                 } else if (engine.getValue(this.group, "scratch2") === 0) {
                     engine.setValue(this.group, "scratch2_enable", false);
                 } else {
-                    engine.beginTimer(100, this.stopScratchWhenOver, true);
+                    engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
                 }
             }
         });

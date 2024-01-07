@@ -4,6 +4,7 @@
 #include <QVBoxLayout>
 
 #include "moc_controllerscreenpreview.cpp"
+#include "util/time.h"
 
 ControllerScreenPreview::ControllerScreenPreview(
         QWidget* parent, const LegacyControllerMapping::ScreenInfo& screen)

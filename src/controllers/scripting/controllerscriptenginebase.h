@@ -2,6 +2,9 @@
 
 #include <QJSValue>
 #include <QMessageBox>
+#include <QMutex>
+#include <QQmlError>
+#include <QWaitCondition>
 #include <memory>
 
 #include "util/runtimeloggingcategory.h"

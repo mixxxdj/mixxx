@@ -159,6 +159,7 @@ class WaveformDisplayRange {
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
+    ControlProxy* m_pWaveformZoomCO;
     double m_rateRatio;
     ControlProxy* m_pGainControlObject;
     double m_gain;
