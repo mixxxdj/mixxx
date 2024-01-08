@@ -341,6 +341,7 @@
 * Slip Mode: Preserve active (regular) loop when leaving Slip Mode [#11435](https://github.com/mixxxdj/mixxx/pull/11435) [#6993](https://github.com/mixxxdj/mixxx/issues/6993)
 * Auto DJ: Fix sharp cut transition after cueing a track without a defined intro [#11629](https://github.com/mixxxdj/mixxx/pull/11629) [#11621](https://github.com/mixxxdj/mixxx/issues/11621)
 * Auto DJ: Don't use removed Intro end and outro start makers, use transition time instead [#11830](https://github.com/mixxxdj/mixxx/pull/11830)
+* Auto DJ: Fix GUI freeze when updating duration for many selected tracks [#12530](https://github.com/mixxxdj/mixxx/pull/12530) [#12520](https://github.com/mixxxdj/mixxx/issues/12520)
 * Fix: possible cash when ejecting track from a controller [#11884](https://github.com/mixxxdj/mixxx/pull/11884) [#11819](https://github.com/mixxxdj/mixxx/issues/11819)
 * KeyControl: fix keylock/unlock bugs, reset pitch_adjust [4710](https://github.com/mixxxdj/mixxx/pull/4710)
 * Looping: fix asserts for loop move [#11735](https://github.com/mixxxdj/mixxx/pull/11735)
@@ -453,7 +454,9 @@
 * Pioneer DDJ-FLX4: New mapping base on DDJ-400 [#11245](https://github.com/mixxxdj/mixxx/pull/11245)
 * Roland DJ-505: Make blinking lights blink in sync and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
 * Traktor Kontrol S2 MK1: Add calibration and refactor [#11237](https://github.com/mixxxdj/mixxx/pull/11237)
-* Traktor Kontrol S2 Mk2 fix loaded chain preset CO [#11823](https://github.com/mixxxdj/mixxx/pull/11823) [#10667](https://github.com/mixxxdj/mixxx/issues/10667)
+* Traktor Kontrol S2 MK2 fix loaded chain preset CO [#11823](https://github.com/mixxxdj/mixxx/pull/11823) [#10667](https://github.com/mixxxdj/mixxx/issues/10667)
+* Traktor Kontrol S2 MK3: Use FX select buttons to set quick effect presets
+  [#11702](https://github.com/mixxxdj/mixxx/pull/11702)
 * Traktor Kontrol S3: script improvements, vanilla-like FX behavior, control initialization, better scratching, and more
   [#11199](https://github.com/mixxxdj/mixxx/pull/11199)
   [#4646](https://github.com/mixxxdj/mixxx/pull/4646)
@@ -679,6 +682,7 @@
 * Default to 60 Hz waveform refresh rate [#11918](https://github.com/mixxxdj/mixxx/pull/11918)
 * vsyncthread mode for qopenglwindow frameswapped driven phase locked loop [#12469](https://github.com/mixxxdj/mixxx/pull/12469)
 * Fix micro jitter from clamping position offset to vsync interval [#12470](https://github.com/mixxxdj/mixxx/pull/12470)
+* Avoid flickering when resizing [#12487](https://github.com/mixxxdj/mixxx/pull/12487)
 * Use WaveformWidgetType::AllShaderRGBWaveform as autoChooseWidgetType [#11822](https://github.com/mixxxdj/mixxx/pull/11822)
 * Add new "RGB Stacked" waveform [#3153](https://github.com/mixxxdj/mixxx/pull/3153)
 * Invert scroll wheel waveform zoom direction to mach other applications [#4195](https://github.com/mixxxdj/mixxx/pull/4195)
@@ -865,6 +869,7 @@
   [#12197](https://github.com/mixxxdj/mixxx/pull/12197)
   [#11754](https://github.com/mixxxdj/mixxx/pull/11754)
   [#11741](https://github.com/mixxxdj/mixxx/issues/11741)
+  [#12518](https://github.com/mixxxdj/mixxx/pull/12518)
 * Improve GitHub workflow continuous integration
   [#2937](https://github.com/mixxxdj/mixxx/pull/2937)
   [#3041](https://github.com/mixxxdj/mixxx/pull/3041)

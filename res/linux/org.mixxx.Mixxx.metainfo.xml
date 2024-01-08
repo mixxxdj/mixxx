@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-04" timestamp="1704353307">
+    <release version="2.4.0" type="development" date="2024-01-08" timestamp="1704697579">
       <description>
  <p>
   Cover Art
@@ -900,6 +900,11 @@
    #11830
   </li>
   <li>
+   Auto DJ: Fix GUI freeze when updating duration for many selected tracks
+   #12530
+   #12520
+  </li>
+  <li>
    Fix: possible cash when ejecting track from a controller
    #11884
    #11819
@@ -1096,9 +1101,13 @@
    #11237
   </li>
   <li>
-   Traktor Kontrol S2 Mk2 fix loaded chain preset CO
+   Traktor Kontrol S2 MK2 fix loaded chain preset CO
    #11823
    #10667
+  </li>
+  <li>
+   Traktor Kontrol S2 MK3: Use FX select buttons to set quick effect presets
+   #11702
   </li>
   <li>
    Traktor Kontrol S3: script improvements, vanilla-like FX behavior, control initialization, better scratching, and more
@@ -1663,6 +1672,10 @@
    #12470
   </li>
   <li>
+   Avoid flickering when resizing
+   #12487
+  </li>
+  <li>
    Use WaveformWidgetType::AllShaderRGBWaveform as autoChooseWidgetType
    #11822
   </li>
@@ -2031,6 +2044,7 @@
    #12197
    #11754
    #11741
+   #12518
   </li>
   <li>
    Improve GitHub workflow continuous integration

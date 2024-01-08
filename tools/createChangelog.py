@@ -6,7 +6,7 @@ repo_path = "."
 repo = git.Repo(repo_path)
 
 # Starting commit SHA
-start_commit = "869b95bcda92774588f99252b7c8a02b77f16c5f"
+start_commit = "2.4"
 
 # Regular expression pattern to extract PR number
 pr_pattern = re.compile(r"Merge pull request #(\d+)")
