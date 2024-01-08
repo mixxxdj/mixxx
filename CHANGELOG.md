@@ -442,11 +442,11 @@
 * Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385) [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
 * Hercules DJControl MIX: New mapping [#11279](https://github.com/mixxxdj/mixxx/pull/11279)
 * Hercules DJ Console RMX: Replace not defined CO name pitch_reset by pitch_set_default [#12441](https://github.com/mixxxdj/mixxx/pull/12441)
-* Korg Nanokontrol 2: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
-* Korg nanoKontrol2: don't try to configure more than 4 main decks [#12322](https://github.com/mixxxdj/mixxx/pull/12322) [#12317](https://github.com/mixxxdj/mixxx/issues/12317)
-* MAudio Xponent: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+* Korg nanoKONTROL2: Removed Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+* Korg nanoKONTROL2: Don't try to configure more than 4 main decks [#12322](https://github.com/mixxxdj/mixxx/pull/12322) [#12317](https://github.com/mixxxdj/mixxx/issues/12317)
+* MAudio Xponent: Removed along with Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * MIDI4lights: Give beginTimer callbacks the anonymous function expression form [#12048](https://github.com/mixxxdj/mixxx/pull/12048) [#12042](https://github.com/mixxxdj/mixxx/issues/12042)
-* Novation Twitch: Removed along with Mixco Scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
+* Novation Twitch: Removed along with Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Novation Launchpad: Update controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600) [#11914](https://github.com/mixxxdj/mixxx/pull/11914)
 * Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287) [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
 * Numark MixTrack Pro 3: Fix beginTimer callback syntax [#12401](https://github.com/mixxxdj/mixxx/pull/12401) [#12369](https://github.com/mixxxdj/mixxx/issues/12369)
@@ -1332,6 +1332,17 @@
   [#12263](https://github.com/mixxxdj/mixxx/pull/12263)
   [#12212](https://github.com/mixxxdj/mixxx/pull/12212)
   [#12066](https://github.com/mixxxdj/mixxx/pull/12066) [#12065](https://github.com/mixxxdj/mixxx/issues/12065)
+
+### Known issues
+
+* Volume / Loudness spikes on Windows with M4A/AAC files.
+  Last known working version is Windows 10 build 17763.
+  Affected versions are Windows 10 build 19041 and Windows 11 build 22000.
+  A fix is promised in 2024-02 with Windows 11 build 26016.
+  [#12289](https://github.com/mixxxdj/mixxx/issues/12289)
+  [#11094](https://github.com/mixxxdj/mixxx/issues/11094)
+* Different, language depending library sorting on macOS
+  [#12517](https://github.com/mixxxdj/mixxx/issues/12517)
 
 ## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)
 

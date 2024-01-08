@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-04" timestamp="1704354173">
+    <release version="2.4.0" type="development" date="2024-01-04" timestamp="1704353307">
       <description>
  <p>
   Cover Art
@@ -1046,16 +1046,16 @@
    #12441
   </li>
   <li>
-   Korg Nanokontrol 2: Removed along with Mixco Scripts
+   Korg nanoKONTROL2: Removed Mixco scripts
    #2682
   </li>
   <li>
-   Korg nanoKontrol2: don't try to configure more than 4 main decks
+   Korg nanoKONTROL2: Don't try to configure more than 4 main decks
    #12322
    #12317
   </li>
   <li>
-   MAudio Xponent: Removed along with Mixco Scripts
+   MAudio Xponent: Removed along with Mixco scripts
    #2682
   </li>
   <li>
@@ -1064,7 +1064,7 @@
    #12042
   </li>
   <li>
-   Novation Twitch: Removed along with Mixco Scripts
+   Novation Twitch: Removed along with Mixco scripts
    #2682
   </li>
   <li>
@@ -2737,6 +2737,23 @@
    #12212
    #12066
    #12065
+  </li>
+ </ul>
+ <p>
+  Known issues
+ </p>
+ <ul>
+  <li>
+   Volume / Loudness spikes on Windows with M4A/AAC files.
+  Last known working version is Windows 10 build 17763.
+  Affected versions are Windows 10 build 19041 and Windows 11 build 22000.
+  A fix is promised in 2024-02 with Windows 11 build 26016.
+   #12289
+   #11094
+  </li>
+  <li>
+   Different, language depending library sorting on macOS
+   #12517
   </li>
  </ul>
 </description>
