@@ -60,6 +60,55 @@ Item {
         }
 
         Mixxx.ControlProxy {
+            id: introStartPosition
+
+            group: root.group
+            key: "intro_start_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: introEndPosition
+
+            group: root.group
+            key: "intro_end_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: outroStartPosition
+
+            group: root.group
+            key: "outro_start_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: outroEndPosition
+
+            group: root.group
+            key: "outro_end_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: loopStartPosition
+
+            group: root.group
+            key: "loop_start_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: loopEndPosition
+
+            group: root.group
+            key: "loop_end_position"
+        }
+
+        Mixxx.ControlProxy {
+            id: loopEnabled
+
+            group: root.group
+            key: "loop_enabled"
+        }
+
+        Mixxx.ControlProxy {
             id: mainCuePosition
 
             group: root.group
@@ -150,6 +199,38 @@ Item {
                     x: (framePosition * 2 / samplesControl.value) * waveform.width
                     color: Theme.waveformBeatColor
                 }
+            }
+
+            Skin.WaveformIntroOutro {
+                id: intro
+
+                visible: introStartPosition.value != -1 || introEndPosition.value != -1
+
+                height: waveform.height
+                x: ((introStartPosition.value != -1 ? introStartPosition.value : introEndPosition.value) / samplesControl.value) * waveform.width
+                width: introEndPosition.value == -1 ? 0 : ((introEndPosition.value - introStartPosition.value) / samplesControl.value) * waveform.width
+            }
+
+            Skin.WaveformIntroOutro {
+                id: outro
+
+                visible: outroStartPosition.value != -1 || outroEndPosition.value != -1
+                isIntro: false
+
+                height: waveform.height
+                x: ((outroStartPosition.value != -1 ? outroStartPosition.value : outroEndPosition.value) / samplesControl.value) * waveform.width
+                width: outroEndPosition.value == -1 || outroStartPosition.value == -1 ? 0 : ((outroEndPosition.value - outroStartPosition.value) / samplesControl.value) * waveform.width
+            }
+
+            Skin.WaveformLoop {
+                id: loop
+
+                visible: loopStartPosition.value != -1 && loopEndPosition.value != -1
+
+                height: waveform.height
+                x: (loopStartPosition.value / samplesControl.value) * waveform.width
+                width: ((loopEndPosition.value - loopStartPosition.value) / samplesControl.value) * waveform.width
+                enabled: loopEnabled.value
             }
 
             Repeater {
