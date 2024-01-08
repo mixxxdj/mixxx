@@ -2568,12 +2568,11 @@ if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
-else()
-  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
-endif()
-if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
+else()
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2583,8 +2582,7 @@ find_package(Qt${QT_VERSION_MAJOR}
     Network
     OpenGL
     PrintSupport
-    Qml
-    QuickWidgets
+    Qml # for QJSEngine
     Sql
     Svg
     Test
@@ -2602,7 +2600,6 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::OpenGL
   Qt${QT_VERSION_MAJOR}::PrintSupport
   Qt${QT_VERSION_MAJOR}::Qml
-  Qt${QT_VERSION_MAJOR}::QuickWidgets
   Qt${QT_VERSION_MAJOR}::Sql
   Qt${QT_VERSION_MAJOR}::Svg
   Qt${QT_VERSION_MAJOR}::Test
@@ -2612,7 +2609,9 @@ if(QT_EXTRA_COMPONENTS)
   foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
     target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
   endforeach()
+endif()
 
+if(QT6)
   set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
   set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON)
   qt_add_qml_module(mixxx-lib
@@ -2670,7 +2669,7 @@ endif()
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
 if(DEBUG_ASSERTIONS_FATAL)
   target_compile_definitions(mixxx-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
-  if(QML)
+  if(QT6)
     target_compile_definitions(mixxx-qml-lib PUBLIC MIXXX_DEBUG_ASSERTIONS_FATAL MIXXX_DEBUG_ASSERTIONS_ENABLED)
   endif()
   if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -3440,8 +3439,7 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu,\
- qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
