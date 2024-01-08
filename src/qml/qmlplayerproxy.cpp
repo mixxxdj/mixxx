@@ -40,6 +40,9 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent)
             this,
             &QmlPlayerProxy::trackUnloaded);
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
+    if (m_pTrackPlayer && m_pTrackPlayer->getLoadedTrack()) {
+        slotTrackLoaded(pTrackPlayer->getLoadedTrack());
+    }
 }
 
 void QmlPlayerProxy::loadTrackFromLocation(const QString& trackLocation, bool play) {
@@ -115,13 +118,23 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
+    VERIFY_OR_DEBUG_ASSERT(pOldTrack == m_pCurrentTrack) {
+        qWarning() << "QML Player proxy was expected to contain "
+                   << pOldTrack.get() << "as active track but got"
+                   << m_pCurrentTrack.get();
+    }
+
+    if (pNewTrack.get() == m_pCurrentTrack.get()) {
+        emit trackLoading();
+        return;
+    }
+
     const TrackPointer pTrack = m_pCurrentTrack;
     if (pTrack != nullptr) {
         disconnect(pTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
+    m_pCurrentTrack = pNewTrack;
     emit trackChanged();
     emit trackLoading();
 }
