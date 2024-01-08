@@ -70,9 +70,9 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         const int maxOffset = static_cast<int>(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
 
-        // The negative offset is limited to -data.m_callbackEntrytoDac to not
-        // More negative values indicated an outdated request, that is anyway no
-        // longer valid. Probably cause bay a vsync issue.
+        // The minimum offset is limited to -data.m_callbackEntrytoDac to avoid a more
+        // negative value indicating an outdated request that is no longer valid anyway.
+        // This is probably caused by a vsync problem.
         const int minOffset = -data.m_callbackEntrytoDac;
 
         // Calculate the offset in micros for the position of the sample that will be transferred
