@@ -390,15 +390,17 @@ void EngineMixer::processChannels(int iBufferSize) {
     // Syncables will not.
     m_pEngineSync->onCallbackEnd(m_sampleRate, iBufferSize);
 
+    // After all engines have been processed, trigger updates of local bpm values
+    // which may have changed based on track position
     for (int i = activeChannelsStartIndex;
             i < m_activeChannels.size();
             ++i) {
         m_activeChannels[i]->m_pChannel->postProcessLocalBpm();
     }
 
-    // After all the engines have been processed, trigger post-processing
+    // After local bpms are updated, trigger the rest of the post-processing
     // which ensures that all channels are updating certain values at the
-    // same point in time.  This prevents sync from failing depending on
+    // same point in time. This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
     for (int i = activeChannelsStartIndex;
             i < m_activeChannels.size(); ++i) {

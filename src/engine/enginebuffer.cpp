@@ -1340,9 +1340,6 @@ void EngineBuffer::processSeek(bool paused) {
 }
 
 void EngineBuffer::postProcessLocalBpm() {
-    // This needs to be done at once for all channels
-    // that way we can use the localBpm value across channels without dealing
-    // with their indexes
     m_pBpmControl->updateLocalBpm();
 }
 

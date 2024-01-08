@@ -362,7 +362,7 @@ void SyncControl::updateInstantaneousBpm(mixxx::Bpm bpm) {
 
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
-    // Note: The track is loaded not not yet cued.
+    // Note: The track is loaded but not yet cued.
     // in case of dynamic tempo tracks we do not know the bpm for syncing yet.
 
     // This slot is also fired if the user has adjusted the beatgrid.

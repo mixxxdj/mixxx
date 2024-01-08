@@ -25,7 +25,16 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     void process(CSAMPLE* pOutput, const int iBufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
+
+    // postProcessLocalBpm() is called on all decks to update the localBpm after
+    // process() is done. Updated localBpms for all decks are required for the
+    // postProcess() step, to avoid issues with the order they are processed.
+    // It cannot be done during process() because it relies that the localBpm
+    // of all decks are on their old values.
     void postProcessLocalBpm() override;
+
+    // Update beat distances, sync modes, and other values that are only known
+    // after all other processing is done.
     void postProcess(const int iBufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.
