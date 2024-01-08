@@ -58,21 +58,21 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        SEEK_NONE = 0u,
+        SEEK_NONE = 0,
         /// Force an in-phase seek
-        SEEK_PHASE = 1u,
+        SEEK_PHASE = 1 << 0,
         /// Bypass Quantization
-        SEEK_EXACT = 2u,
+        SEEK_EXACT = 1 << 1,
         /// This is an artificial state that happens if an exact seek and a
         /// phase seek are scheduled at the same time.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
         /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
-        SEEK_STANDARD = 4u,
+        SEEK_STANDARD = 1 << 2,
         /// This is an artificial state that happens if a standard seek and a
         /// phase seek are scheduled at the same time.
         SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
         /// #SEEK_EXACT to the other deck position
-        SEEK_CLONE = 8u,
+        SEEK_CLONE = 1 << 3
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
