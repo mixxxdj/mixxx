@@ -527,7 +527,7 @@ TraktorS3.Controller = class {
             this.Channels[idx].linkOutputs();
         }
 
-        engine.makeConnection("[Microphone]", "pfl", this.pflOutput);
+        engine.makeConnection("[Microphone]", "pfl", this.pflOutput.bind(this));
 
         engine.makeConnection("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
@@ -980,7 +980,7 @@ TraktorS3.Deck = class {
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }, this, true);
+                }, true);
 
                 // Light corresponding LED when button is pressed
                 this.colorOutput(1, "sync_enabled");

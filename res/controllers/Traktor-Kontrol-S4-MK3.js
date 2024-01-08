@@ -537,7 +537,7 @@ class Button extends Component {
     indicator(on) {
         if (on && this.indicatorTimer === 0) {
             this.outDisconnect();
-            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback);
+            this.indicatorTimer = engine.beginTimer(this.indicatorIntervalMillis, this.indicatorCallback.bind(this));
         } else if (!on && this.indicatorTimer !== 0) {
             engine.stopTimer(this.indicatorTimer);
             this.indicatorTimer = 0;
@@ -2380,7 +2380,7 @@ class S4Mk3Deck extends Deck {
                 } else if (engine.getValue(this.group, "scratch2") === 0) {
                     engine.setValue(this.group, "scratch2_enable", false);
                 } else {
-                    engine.beginTimer(100, this.stopScratchWhenOver, true);
+                    engine.beginTimer(100, this.stopScratchWhenOver.bind(this), true);
                 }
             }
         });
@@ -2922,7 +2922,7 @@ class S4MK3 {
             controller.sendOutputReport(129, deckMeters.buffer);
         });
         if (UseMotors) {
-            engine.beginTimer(20, this.motorCallback);
+            engine.beginTimer(20, this.motorCallback.bind(this));
             this.leftVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
             this.rightVelocityFactor = wheelAbsoluteMax * baseRevolutionsPerSecond * 2;
 

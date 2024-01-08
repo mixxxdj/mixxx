@@ -580,58 +580,64 @@ else()
 endif()
 
 if(NOT MSVC)
-  find_program(MOLD_EXECUTABLE mold)
-  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  # Try to configure mold as linker via -fuse-ld=mold, support from gcc 12.1, gcc 11.2.0-16 or clang
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=mold -Wl,--version
+    ERROR_QUIET
+    OUTPUT_VARIABLE MOLD_FUSE_VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(MOLD_FUSE_VERSION_STRING)
+      set(MOLD_FUSE_FOUND TRUE)
+  endif()
+  if(NOT MOLD_FUSE_FOUND)
+    # check if the symlink ld is in the mold folder for older compiler
+    find_program(MOLD_SYMLINK "${CMAKE_INSTALL_LIBEXECDIR}/mold/ld")
+    get_filename_component(MOLD_SYMLINK_DIRECTORY ${MOLD_SYMLINK} DIRECTORY)
+  endif()
+  if(MOLD_SYMLINK)
+      set(MOLD_SYMLINK_FOUND TRUE)
+  endif()
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND")
   if(MOLD_SUPPORT)
-    if(MOLD_EXECUTABLE)
+    if(MOLD_FUSE_FOUND)
       message(STATUS "Selecting mold as linker")
-      set(SELECT_MOLD_WITH_FUSE true)
-      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
-      # Earlier versions must use the -B option.
-      if (GNU_GCC)
-        execute_process(
-          COMMAND gcc -dumpfullversion
-          ERROR_QUIET
-          OUTPUT_VARIABLE GCC_VERSION_STRING
-          OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
-          set(SELECT_MOLD_WITH_FUSE false)
-        endif()
-      endif()
-      if (SELECT_MOLD_WITH_FUSE)
-        add_link_options("-fuse-ld=mold")
-      else()
-        add_link_options("-B${MOLD_EXECUTABLE}")
-      endif()
+      add_link_options("-fuse-ld=mold")
+    elseif(MOLD_SYMLINK_FOUND)
+      message(STATUS "Selecting mold as linker via ld symlink in ${MOLD_SYMLINK_DIRECTORY}")
+      add_link_options("-B${MOLD_SYMLINK_DIRECTORY}")
     else()
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
   else()
-    find_program(LLD_EXECUTABLE lld)
-    if(LLD_EXECUTABLE)
-      execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
-        ERROR_QUIET
-        OUTPUT_VARIABLE LLD_VERSION_STRING
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
+    # Try to configure lld as linker
+    execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+      ERROR_QUIET
+      OUTPUT_VARIABLE LLD_VERSION_STRING
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(LLD_VERSION_STRING)
       string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
       if(LLD_VERSION_MATCH)
         set(LLD_VERSION ${CMAKE_MATCH_1})
-        message(STATUS "Found lld with version: ${LLD_VERSION}")
+        message(STATUS "Found ld.lld with version: ${LLD_VERSION}")
       else()
-        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+        message(WARNING "Failed to parse ld.lld version from: ${LLD_VERSION_STRING}")
       endif()
     endif()
     # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
-    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
-      if(LLD_EXECUTABLE)
-        message(STATUS "Selecting lld as linker")
-        add_link_options("-fuse-ld=lld")
+      if(LLD_VERSION_STRING)
+        if(LLD_VERSION VERSION_GREATER 10.0.0)
+          message(STATUS "Selecting lld as linker")
+          add_link_options("-fuse-ld=lld")
+        else()
+          message(FATAL_ERROR "Could NOT find ld.lld > 10.0.0")
+        endif()
       else()
-        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+        message(FATAL_ERROR "Could NOT find ld.lld (missing executable)")
       endif()
     endif()
   endif()
@@ -2427,6 +2433,17 @@ if(KEYFINDER)
     # during configuration and will throw
     # an error if not.
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
+
+    if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+      # Required for 'CMakeFiles/mixxx-lib_autogen_timestamp_deps'
+      # This tells 'make" that the libkeyfinder is required for the mixxx-keyfinder library
+      # BUILD_BYPRODUCTS work for Ninja only, while this workaround does not work for Ninja on macOS
+      add_custom_command(
+        OUTPUT "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
+        DEPENDS libkeyfinder
+        COMMAND echo libkeyfinder installed
+      )
+    endif()
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
     add_dependencies(mixxx-keyfinder libkeyfinder)
