@@ -27,6 +27,8 @@ class PlaylistTableModel final : public TrackSetTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
 
+    double getDurationOfRows(const QModelIndexList& indices);
+
     Capabilities getCapabilities() const final;
 
     QString modelKey(bool noSearch) const override;
