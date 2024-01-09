@@ -297,13 +297,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnApplyCover">
-           <property name="text">
-            <string>Apply Cover</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -410,6 +403,20 @@
       </spacer>
      </item>
      <item>
+      <widget class="QCheckBox" name="checkBoxTags">
+       <property name="text">
+        <string>Tags</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxCover">
+       <property name="text">
+        <string>Cover</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnApply">
        <property name="text">
         <string>&amp;Apply</string>
@@ -435,7 +442,8 @@
   <tabstop>submit_tree</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
-  <tabstop>btnApplyCover</tabstop>
+  <tabstop>checkBoxTags</tabstop>
+  <tabstop>checkBoxCover</tabstop>
   <tabstop>btnApply</tabstop>
   <tabstop>btnQuit</tabstop>
   <tabstop>btnRetry</tabstop>

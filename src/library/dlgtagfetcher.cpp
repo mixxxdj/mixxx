@@ -168,8 +168,7 @@ void DlgTagFetcher::init() {
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::applyTagsAndCover);
-    connect(btnApplyCover, &QPushButton::clicked, this, &DlgTagFetcher::applyCover);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
     connect(tags, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::tagSelected);
@@ -192,7 +191,9 @@ void DlgTagFetcher::init() {
     loadingProgressBar->setMaximum(kMaximumValueOfQProgressBar);
 
     btnRetry->setDisabled(true);
-    btnApplyCover->setDisabled(true);
+
+    checkBoxTags->setChecked(true);
+    checkBoxCover->setChecked(true);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -262,7 +263,6 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
-    btnApplyCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
@@ -290,7 +290,20 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     }
 }
 
-void DlgTagFetcher::applyTagsAndCover() {
+void DlgTagFetcher::apply() {
+    if (checkBoxTags->isChecked()) {
+        applyTags();
+        statusMessage->setText(tr("Metadata applied"));
+    }
+    // If only/also the cover shall be updated (and the worker succeeds) the
+    // delayed slotWorkerCoverArtUpdated() will (over)write the status message,
+    // so let slot take care of updating the status message accordingly.
+    if (checkBoxCover->isChecked()) {
+        applyCover();
+    }
+}
+
+void DlgTagFetcher::applyTags() {
     int tagIndex = m_data.m_selectedTag;
     if (tagIndex < 0) {
         return;
@@ -354,16 +367,12 @@ void DlgTagFetcher::applyTagsAndCover() {
     }
 #endif // __EXTRA_METADATA__
 
-    applyCover();
-
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
             // to the current time.
             QDateTime::currentDateTimeUtc());
-
-    statusMessage->setText(tr("Metadata & Cover Art applied"));
 }
 
 void DlgTagFetcher::applyCover() {
@@ -417,7 +426,6 @@ void DlgTagFetcher::applyCover() {
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
-    btnApplyCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
 }
@@ -468,7 +476,6 @@ void DlgTagFetcher::fetchTagFinished(
         return;
     } else {
         btnApply->setDisabled(true);
-        btnApplyCover->setDisabled(true);
         btnRetry->setDisabled(true);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
@@ -542,7 +549,6 @@ void DlgTagFetcher::tagSelected() {
     m_pWFetchedCoverArtLabel->loadData(QByteArray());
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
-    btnApplyCover->setDisabled(true);
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
@@ -612,8 +618,6 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     m_pWFetchedCoverArtLabel->loadData(
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
-
-    btnApplyCover->setDisabled(data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
@@ -636,7 +640,14 @@ void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo
     qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
     m_pTrack->setCoverInfo(coverInfo);
     loadCurrentTrackCover();
-    statusMessage->setText(tr("Selected cover art applied"));
+    // If 'Tags' was checked those were already applied by now.
+    // Update the status message now accordingly.
+    // Assumes the checkbox wasn't toggled since hitting Apply
+    if (checkBoxTags->isChecked()) {
+        statusMessage->setText(tr("Metadata & Cover Art applied"));
+    } else {
+        statusMessage->setText(tr("Selected cover art applied"));
+    }
 }
 
 void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
