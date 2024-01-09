@@ -367,12 +367,9 @@ void DlgAutoDJ::updateSelectionInfo() {
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
-    for (int i = 0; i < indices.size(); ++i) {
-        TrackPointer pTrack = m_pAutoDJTableModel->getTrack(indices.at(i));
-        if (pTrack) {
-            duration += pTrack->getDuration();
-        }
-    }
+    // Derive total duration from the table model. This is much faster than
+    // getting the duration from individual track objects.
+    duration = m_pAutoDJTableModel->getDurationOfRows(indices);
 
     QString label;
 
