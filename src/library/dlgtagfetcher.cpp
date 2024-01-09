@@ -112,6 +112,18 @@ void addTagRow(
     }
 }
 
+void addDivider(const QString& text, QTreeWidget* pParent) {
+    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent);
+    pItem->setFirstColumnSpanned(true);
+    pItem->setText(0, text);
+    pItem->setFlags(Qt::NoItemFlags);
+    pItem->setForeground(0, pParent->palette().color(QPalette::Disabled, QPalette::Text));
+
+    QFont bold_font(pParent->font());
+    bold_font.setBold(true);
+    pItem->setFont(0, bold_font);
+}
+
 void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
     const mixxx::TrackMetadata trackMetadata = track.getMetadata();
     const QString trackNumberAndTotal = TrackNumbers::joinAsString(
@@ -507,18 +519,6 @@ void DlgTagFetcher::slotNetworkResult(
     btnRetry->setEnabled(true);
     loadingProgressBar->setValue(kMaximumValueOfQProgressBar);
     return;
-}
-
-void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* pParent) const {
-    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent);
-    pItem->setFirstColumnSpanned(true);
-    pItem->setText(0, text);
-    pItem->setFlags(Qt::NoItemFlags);
-    pItem->setForeground(0, palette().color(QPalette::Disabled, QPalette::Text));
-
-    QFont bold_font(font());
-    bold_font.setBold(true);
-    pItem->setFont(0, bold_font);
 }
 
 void DlgTagFetcher::tagSelected() {
