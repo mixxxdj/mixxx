@@ -78,6 +78,12 @@ class LoopingControl : public EngineControl {
     bool isLoopingEnabled() {
         return m_bLoopingEnabled;
     }
+    bool isAdjustLoopInActive() {
+        return m_bAdjustingLoopIn;
+    }
+    bool isAdjustLoopOutActive() {
+        return m_bAdjustingLoopOut;
+    }
     bool isLoopRollActive() {
         return m_bLoopRollActive;
     }

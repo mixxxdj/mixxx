@@ -29,6 +29,8 @@ void VisualPlayPosition::set(
         double slipRate,
         SlipModeState m_slipModeState,
         bool loopEnabled,
+        bool loopInAdjustActive,
+        bool loopOutAdjustActive,
         double loopStartPosition,
         double loopEndPosition,
         double tempoTrackSeconds,
@@ -43,6 +45,8 @@ void VisualPlayPosition::set(
     data.m_slipPos = slipPosition;
     data.m_slipModeState = m_slipModeState;
     data.m_loopEnabled = loopEnabled;
+    data.m_loopInAdjustActive = loopInAdjustActive;
+    data.m_loopOutAdjustActive = loopOutAdjustActive;
     data.m_loopStartPos = loopStartPosition;
     data.m_loopEndPos = loopEndPosition;
     data.m_tempoTrackSeconds = tempoTrackSeconds;
@@ -104,12 +108,14 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
         if (loopSize > 0) {
             if ((data.m_playRate < 0.0) &&
                     (interpolatedPlayPos < data.m_loopStartPos) &&
-                    (data.m_playPos >= data.m_loopStartPos)) {
+                    (data.m_playPos >= data.m_loopStartPos) &&
+                    !data.m_loopInAdjustActive) {
                 // 1. Deck playing reverse
                 // 2. Interpolated playposition at the time of next VSync would
                 // be outsite of the active loop
                 // 3. Playposition is currently inside the active loop
                 //    (not scratching left of an activated loop)
+                // 4. LoopIn is not hold down
                 interpolatedPlayPos = data.m_loopEndPos -
                         std::remainder(
                                 data.m_loopStartPos - interpolatedPlayPos,
@@ -117,12 +123,14 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
             }
             if ((data.m_playRate > 0.0) &&
                     (interpolatedPlayPos > data.m_loopEndPos) &&
-                    (data.m_playPos <= data.m_loopEndPos)) {
+                    (data.m_playPos <= data.m_loopEndPos) &&
+                    !data.m_loopOutAdjustActive) {
                 // 1. Deck playing forward
                 // 2. Interpolated playposition at the time of next VSync would
                 // be outsite of the active loop
                 // 3. Playposition is currently inside the active loop
                 //    (not scratching right of an activated loop)
+                // 4. LoopOut is not hold down
                 interpolatedPlayPos = data.m_loopStartPos +
                         std::remainder(
                                 interpolatedPlayPos - data.m_loopEndPos,
