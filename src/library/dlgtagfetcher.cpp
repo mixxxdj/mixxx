@@ -91,13 +91,25 @@ QStringList trackReleaseColumnValues(
     return columnValues;
 }
 
-void addTrack(
+void addTagRow(
         const QStringList& trackRow,
         int tagIndex,
         QTreeWidget* pParent) {
     QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent, trackRow);
     pItem->setData(0, Qt::UserRole, tagIndex);
     pItem->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
+    if (tagIndex == kOriginalTrackIndex) {
+        // Disable the original tag row so it can't be selected.
+        // Only setDisabled() prevents currentItemChanged() signal, removing the
+        // Qt::ItemIsSelectable is not sufficient.
+        // Store the normal text brush
+        const auto brush = pParent->palette().windowText();
+        pItem->setDisabled(true);
+        // Restore the normal text color to ensure the tags are readable
+        for (int col = 0; col < pItem->columnCount(); col++) {
+            pItem->setForeground(col, brush);
+        }
+    }
 }
 
 void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
@@ -243,7 +255,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     addDivider(tr("Original tags"), tags);
-    addTrack(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
+    addTagRow(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
 
     connect(m_pTrack.get(),
             &Track::changed,
@@ -462,7 +474,7 @@ void DlgTagFetcher::fetchTagFinished(
                 // Add fetched tag into TreeItemWidget, if it is not added before
                 if (!allColumnValues.contains(columnValues)) {
                     allColumnValues.insert(columnValues);
-                    addTrack(columnValues, trackIndex, tags);
+                    addTagRow(columnValues, trackIndex, tags);
                 }
                 ++trackIndex;
             }
