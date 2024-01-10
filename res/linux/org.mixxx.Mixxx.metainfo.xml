@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-08" timestamp="1704697579">
+    <release version="2.4.0" type="development" date="2024-01-09" timestamp="1704756703">
       <description>
  <p>
   Cover Art
@@ -497,7 +497,8 @@
    #12385
   </li>
   <li>
-   Track menu: Add "Delete Track Files" entry with  Qt &gt;= 5.15
+   Track menu: Add "Delete Track Files" entry as move to trash with Qt &gt;= 5.15
+   #3212
    #11842
   </li>
   <li>
@@ -903,6 +904,7 @@
    Auto DJ: Fix GUI freeze when updating duration for many selected tracks
    #12530
    #12520
+   #12537
   </li>
   <li>
    Fix: possible cash when ejecting track from a controller
@@ -932,7 +934,7 @@
    #11844
   </li>
   <li>
-   (fix) Looping: reset loop_end_pos on eject
+   Looping: reset loop_end_pos on eject
    #12224
    #12223
   </li>
@@ -962,7 +964,6 @@
    #4336
    #4409
    #4361
-   #4255
    #4488
    #4411
    #4498
@@ -1038,11 +1039,6 @@
    #4799
   </li>
   <li>
-   Denon MC6000MK2: Improve mapping code
-   #4385
-   #11792
-  </li>
-  <li>
    Hercules DJControl MIX: New mapping
    #11279
   </li>
@@ -1066,7 +1062,6 @@
   <li>
    MIDI4lights: Give beginTimer callbacks the anonymous function expression form
    #12048
-   #12042
   </li>
   <li>
    Novation Twitch: Removed along with Mixco scripts
@@ -1112,7 +1107,6 @@
   <li>
    Traktor Kontrol S3: script improvements, vanilla-like FX behavior, control initialization, better scratching, and more
    #11199
-   #4646
    #10645
    #12409
    #12510
@@ -1147,7 +1141,6 @@
   </li>
   <li>
    Add support to access HID FeatureReports
-   #3051
    #11326
    #10828
    #11664
@@ -1271,12 +1264,6 @@
   <li>
    Added Trace for the mapping connections, to allow JS profiling
    #4766
-  </li>
-  <li>
-   Fix crash when using
-   midi.sendShortMsg
-   and platform vnc
-   #4635
   </li>
   <li>
    Controller preferences: Allow creating a new mapping with 'No Mapping' selected
@@ -1468,7 +1455,7 @@
    #12416
   </li>
   <li>
-   Fix Icon rendering on HiRDPI/retina screens
+   Fix Icon rendering on HiDPI/retina screens
    #12407
    #12361
   </li>

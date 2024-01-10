@@ -176,7 +176,7 @@
 * Track Menu: Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
 * Track Menu: Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
 * Track menu: Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
-* Track menu: Add "Delete Track Files" entry with  Qt >= 5.15 [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
+* Track menu: Add "Delete Track Files" entry as move to trash with Qt >= 5.15 [#3212](https://github.com/mixxxdj/mixxx/pull/3212) [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
 * Tracks table: Fix initial track selection with BackTab [#11130](https://github.com/mixxxdj/mixxx/pull/11130)
 * Tracks table: Try to restore selection position after track removal [#11196](https://github.com/mixxxdj/mixxx/pull/11196)
 * Tracks table: Remove parenthesis from play counter display [#11357](https://github.com/mixxxdj/mixxx/pull/11357)
@@ -341,14 +341,17 @@
 * Slip Mode: Preserve active (regular) loop when leaving Slip Mode [#11435](https://github.com/mixxxdj/mixxx/pull/11435) [#6993](https://github.com/mixxxdj/mixxx/issues/6993)
 * Auto DJ: Fix sharp cut transition after cueing a track without a defined intro [#11629](https://github.com/mixxxdj/mixxx/pull/11629) [#11621](https://github.com/mixxxdj/mixxx/issues/11621)
 * Auto DJ: Don't use removed Intro end and outro start makers, use transition time instead [#11830](https://github.com/mixxxdj/mixxx/pull/11830)
-* Auto DJ: Fix GUI freeze when updating duration for many selected tracks [#12530](https://github.com/mixxxdj/mixxx/pull/12530) [#12520](https://github.com/mixxxdj/mixxx/issues/12520)
+* Auto DJ: Fix GUI freeze when updating duration for many selected tracks
+  [#12530](https://github.com/mixxxdj/mixxx/pull/12530)
+  [#12520](https://github.com/mixxxdj/mixxx/issues/12520)
+  [#12537](https://github.com/mixxxdj/mixxx/pull/12537)
 * Fix: possible cash when ejecting track from a controller [#11884](https://github.com/mixxxdj/mixxx/pull/11884) [#11819](https://github.com/mixxxdj/mixxx/issues/11819)
 * KeyControl: fix keylock/unlock bugs, reset pitch_adjust [4710](https://github.com/mixxxdj/mixxx/pull/4710)
 * Looping: fix asserts for loop move [#11735](https://github.com/mixxxdj/mixxx/pull/11735)
 * ReadAheadManager: fix loop wraparound reader condition [#11717](https://github.com/mixxxdj/mixxx/pull/11717)
 * Fix wrong visual play position when inside loop [#11840](https://github.com/mixxxdj/mixxx/pull/11840) [#11836](https://github.com/mixxxdj/mixxx/issues/11836)
 * Slip mode: consider loop for background position only if it was enabled  before slip [#11848](https://github.com/mixxxdj/mixxx/pull/11848) [#11844](https://github.com/mixxxdj/mixxx/issues/11844)
-* (fix) Looping: reset loop_end_pos on eject [#12224](https://github.com/mixxxdj/mixxx/pull/12224) [#12223](https://github.com/mixxxdj/mixxx/issues/12223)
+* Looping: reset loop_end_pos on eject [#12224](https://github.com/mixxxdj/mixxx/pull/12224) [#12223](https://github.com/mixxxdj/mixxx/issues/12223)
 * Refactoring of beatgrid/beatmap code
   [#4044](https://github.com/mixxxdj/mixxx/pull/4044)
   [#4048](https://github.com/mixxxdj/mixxx/pull/4048)
@@ -374,7 +377,6 @@
   [#4336](https://github.com/mixxxdj/mixxx/pull/4336)
   [#4409](https://github.com/mixxxdj/mixxx/pull/4409)
   [#4361](https://github.com/mixxxdj/mixxx/pull/4361)
-  [#4255](https://github.com/mixxxdj/mixxx/pull/4455)
   [#4488](https://github.com/mixxxdj/mixxx/pull/4488)
   [#4411](https://github.com/mixxxdj/mixxx/pull/4411)
   [#4498](https://github.com/mixxxdj/mixxx/pull/4498)
@@ -440,13 +442,12 @@
 ### Controller Mappings
 
 * Behringer DDM4000 mixer: Update controller mapping [#4262](https://github.com/mixxxdj/mixxx/pull/4262) [#4799](https://github.com/mixxxdj/mixxx/pull/4799)
-* Denon MC6000MK2: Improve mapping code [#4385](https://github.com/mixxxdj/mixxx/pull/4385) [#11792](https://github.com/mixxxdj/mixxx/pull/11792)
 * Hercules DJControl MIX: New mapping [#11279](https://github.com/mixxxdj/mixxx/pull/11279)
 * Hercules DJ Console RMX: Replace not defined CO name pitch_reset by pitch_set_default [#12441](https://github.com/mixxxdj/mixxx/pull/12441)
 * Korg nanoKONTROL2: Removed Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Korg nanoKONTROL2: Don't try to configure more than 4 main decks [#12322](https://github.com/mixxxdj/mixxx/pull/12322) [#12317](https://github.com/mixxxdj/mixxx/issues/12317)
 * MAudio Xponent: Removed along with Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
-* MIDI4lights: Give beginTimer callbacks the anonymous function expression form [#12048](https://github.com/mixxxdj/mixxx/pull/12048) [#12042](https://github.com/mixxxdj/mixxx/issues/12042)
+* MIDI4lights: Give beginTimer callbacks the anonymous function expression form [#12048](https://github.com/mixxxdj/mixxx/pull/12048)
 * Novation Twitch: Removed along with Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Novation Launchpad: Update controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600) [#11914](https://github.com/mixxxdj/mixxx/pull/11914)
 * Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287) [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
@@ -459,7 +460,6 @@
   [#11702](https://github.com/mixxxdj/mixxx/pull/11702)
 * Traktor Kontrol S3: script improvements, vanilla-like FX behavior, control initialization, better scratching, and more
   [#11199](https://github.com/mixxxdj/mixxx/pull/11199)
-  [#4646](https://github.com/mixxxdj/mixxx/pull/4646)
   [#10645](https://github.com/mixxxdj/mixxx/issues/10645)
   [#12409](https://github.com/mixxxdj/mixxx/pull/12409)
   [#12510](https://github.com/mixxxdj/mixxx/pull/12510)
@@ -472,7 +472,6 @@
 
 * Never raise a fatal error if a controller mapping tries access a non-existent control object [#2947](https://github.com/mixxxdj/mixxx/pull/2947)
 * Add support to access HID FeatureReports
-  [#3051](https://github.com/mixxxdj/mixxx/pull/3051)
   [#11326](https://github.com/mixxxdj/mixxx/pull/11326)
   [#10828](https://github.com/mixxxdj/mixxx/issues/10828)
   [#11664](https://github.com/mixxxdj/mixxx/pull/11664)
@@ -500,7 +499,6 @@
 * Components JS: Add script.posMod for euclidean modulo [#11415](https://github.com/mixxxdj/mixxx/pull/11415)
 * Components JS: make JogWheelBasic correctly switch which deck it controls [#11913](https://github.com/mixxxdj/mixxx/pull/11913) [#11867](https://github.com/mixxxdj/mixxx/issues/11867)
 * Added Trace for the mapping connections, to allow JS profiling [#4766](https://github.com/mixxxdj/mixxx/pull/4766)
-* Fix crash when using `midi.sendShortMsg` and platform vnc [#4635](https://github.com/mixxxdj/mixxx/pull/4635)
 * Controller preferences: Allow creating a new mapping with 'No Mapping' selected
   [#4905](https://github.com/mixxxdj/mixxx/pull/4905)
   [#10540](https://github.com/mixxxdj/mixxx/issues/10540)
@@ -624,7 +622,7 @@
   [#11588](https://github.com/mixxxdj/mixxx/pull/11588)
   [#11586](https://github.com/mixxxdj/mixxx/issues/11586)
 * Increased pixmapCache size limit and made it dependent on devicePixelRatio (for HiDPI/Retina displays) [#12416](https://github.com/mixxxdj/mixxx/pull/12416)
-* Fix Icon rendering on HiRDPI/retina screens [#12407](https://github.com/mixxxdj/mixxx/pull/12407) [#12361](https://github.com/mixxxdj/mixxx/issues/12361)
+* Fix Icon rendering on HiDPI/retina screens [#12407](https://github.com/mixxxdj/mixxx/pull/12407) [#12361](https://github.com/mixxxdj/mixxx/issues/12361)
 * Fix crash if no skin is available
   [#3918](https://github.com/mixxxdj/mixxx/pull/3918)
   [#3939](https://github.com/mixxxdj/mixxx/pull/3939)
