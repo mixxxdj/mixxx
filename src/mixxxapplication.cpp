@@ -28,8 +28,6 @@ Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
 #elif defined(Q_OS_MACOS)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)
-#elif defined(Q_OS_LINUX)
-Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #else
 #error "Q_IMPORT_PLUGIN() for the current patform is missing"
 #endif
