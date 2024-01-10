@@ -115,7 +115,7 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
                 // be outsite of the active loop
                 // 3. Playposition is currently inside the active loop
                 //    (not scratching left of an activated loop)
-                // 4. LoopIn is not hold down
+                // 4. LoopIn is not being held down
                 interpolatedPlayPos = data.m_loopEndPos -
                         std::remainder(
                                 data.m_loopStartPos - interpolatedPlayPos,
@@ -130,7 +130,7 @@ double VisualPlayPosition::determinePlayPosInLoopBoundries(
                 // be outsite of the active loop
                 // 3. Playposition is currently inside the active loop
                 //    (not scratching right of an activated loop)
-                // 4. LoopOut is not hold down
+                // 4. LoopOut is not being held down
                 interpolatedPlayPos = data.m_loopStartPos +
                         std::remainder(
                                 interpolatedPlayPos - data.m_loopEndPos,
