@@ -363,18 +363,16 @@ void DlgAutoDJ::slotRepeatPlaylistChanged(int checkState) {
 }
 
 void DlgAutoDJ::updateSelectionInfo() {
-    double duration = 0.0;
-
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
     // Derive total duration from the table model. This is much faster than
     // getting the duration from individual track objects.
-    duration = m_pAutoDJTableModel->getDurationOfRows(indices);
+    mixxx::Duration duration = m_pAutoDJTableModel->getTotalDuration(indices);
 
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(mixxx::DurationBase::formatTime(duration));
+        label.append(mixxx::DurationBase::formatTime(duration.toDoubleSeconds()));
         label.append(QString(" (%1)").arg(indices.size()));
         labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);
