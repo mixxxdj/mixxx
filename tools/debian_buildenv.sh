@@ -80,6 +80,7 @@ case "$1" in
             libportmidi-dev \
             libprotobuf-dev \
             libqt6core5compat6-dev\
+            libqt6shadertools6-dev \
             libqt6opengl6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
