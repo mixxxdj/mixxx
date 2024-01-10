@@ -26,12 +26,14 @@ namespace {
 
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kSchemeKey = QStringLiteral("Scheme");
 const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 
 } // namespace
 
@@ -182,6 +184,31 @@ DlgPrefInterface::DlgPrefInterface(
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
+    // Multi-Sampling
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        mulitSamplingComboBox->clear();
+        mulitSamplingComboBox->addItem(tr("Disabled"), 0);
+        mulitSamplingComboBox->addItem(tr("2x MSAA"), 2);
+        mulitSamplingComboBox->addItem(tr("4x MSAA"), 4);
+        mulitSamplingComboBox->addItem(tr("8x MSAA"), 8);
+        mulitSamplingComboBox->addItem(tr("16x MSAA"), 16);
+
+        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 0);
+        int mulitSamplingIndex = mulitSamplingComboBox->findData(m_multiSampling);
+        if (mulitSamplingIndex != -1) {
+            mulitSamplingComboBox->setCurrentIndex(mulitSamplingIndex);
+        } else {
+            mulitSamplingComboBox->setCurrentIndex(0);
+            m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(0));
+        }
+    } else
+#endif
+    {
+        mulitSamplingLabel->hide();
+        mulitSamplingComboBox->hide();
+    }
+
     // Tooltip configuration
     connect(buttonGroupTooltips,
             QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
@@ -325,7 +352,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(this,
             tr("Information"),
-            tr("Mixxx must be restarted before the new locale or scaling "
+            tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
 }
 
@@ -424,11 +451,18 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor) {
+    int multiSampling = mulitSamplingComboBox->itemData(
+                                                     mulitSamplingComboBox->currentIndex())
+                                .toInt();
+    m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
+
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor ||
+            multiSampling != m_multiSampling) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
         m_dScaleFactor = scaleFactor;
+        m_multiSampling = multiSampling;
     }
 
     // load skin/scheme if necessary
