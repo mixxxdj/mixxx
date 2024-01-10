@@ -168,7 +168,7 @@ void DlgTagFetcher::init() {
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::applyTagsAndCover);
+    connect(btnApplyTags, &QPushButton::clicked, this, &DlgTagFetcher::applyTags);
     connect(btnApplyCover, &QPushButton::clicked, this, &DlgTagFetcher::applyCover);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
@@ -261,7 +261,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
     }
 
     btnRetry->setDisabled(true);
-    btnApply->setDisabled(true);
+    btnApplyTags->setDisabled(true);
     btnApplyCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
@@ -290,7 +290,7 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     }
 }
 
-void DlgTagFetcher::applyTagsAndCover() {
+void DlgTagFetcher::applyTags() {
     int tagIndex = m_data.m_selectedTag;
     if (tagIndex < 0) {
         return;
@@ -354,8 +354,6 @@ void DlgTagFetcher::applyTagsAndCover() {
     }
 #endif // __EXTRA_METADATA__
 
-    applyCover();
-
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
@@ -363,7 +361,7 @@ void DlgTagFetcher::applyTagsAndCover() {
             // to the current time.
             QDateTime::currentDateTimeUtc());
 
-    statusMessage->setText(tr("Metadata & Cover Art applied"));
+    // statusMessage->setText(tr("Metadata & Cover Art applied"));
 }
 
 void DlgTagFetcher::applyCover() {
@@ -416,7 +414,7 @@ void DlgTagFetcher::applyCover() {
 
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
-    btnApply->setDisabled(true);
+    btnApplyTags->setDisabled(true);
     btnApplyCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
@@ -467,7 +465,7 @@ void DlgTagFetcher::fetchTagFinished(
         loadingProgressBar->setFormat(emptyMessage);
         return;
     } else {
-        btnApply->setDisabled(true);
+        btnApplyTags->setDisabled(true);
         btnApplyCover->setDisabled(true);
         btnRetry->setDisabled(true);
         loadingProgressBar->setVisible(false);
@@ -523,17 +521,17 @@ void DlgTagFetcher::slotNetworkResult(
 
 void DlgTagFetcher::tagSelected() {
     if (!tags->currentItem()) {
-        btnApply->setDisabled(true);
+        btnApplyTags->setDisabled(true);
         return;
     }
 
     if (tags->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
         tags->currentItem()->setFlags(Qt::ItemIsEnabled);
-        btnApply->setDisabled(true);
+        btnApplyTags->setDisabled(true);
         return;
     }
     // Allow applying the tags, regardless the cover art
-    btnApply->setEnabled(true);
+    btnApplyTags->setEnabled(true);
 
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;

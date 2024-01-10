@@ -410,7 +410,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btnApply">
+      <widget class="QPushButton" name="btnApplyTags">
        <property name="text">
         <string>&amp;Apply</string>
        </property>
@@ -436,7 +436,7 @@
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnApplyCover</tabstop>
-  <tabstop>btnApply</tabstop>
+  <tabstop>btnApplyTags</tabstop>
   <tabstop>btnQuit</tabstop>
   <tabstop>btnRetry</tabstop>
  </tabstops>
