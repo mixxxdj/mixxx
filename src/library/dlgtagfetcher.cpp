@@ -361,7 +361,7 @@ void DlgTagFetcher::applyTags() {
             // to the current time.
             QDateTime::currentDateTimeUtc());
 
-    // statusMessage->setText(tr("Metadata & Cover Art applied"));
+    statusMessage->setText(tr("Metadata applied"));
 }
 
 void DlgTagFetcher::applyCover() {

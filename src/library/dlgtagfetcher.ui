@@ -412,7 +412,7 @@
      <item>
       <widget class="QPushButton" name="btnApplyTags">
        <property name="text">
-        <string>&amp;Apply</string>
+        <string>&amp;Apply Tags</string>
        </property>
       </widget>
      </item>
