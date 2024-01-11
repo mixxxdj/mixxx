@@ -3511,7 +3511,7 @@ set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu,\
- qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes")
+ qml-module-qtquick-controls, qml-module-qtquick-controls2, qml-module-qt-labs-qmlmodels, qml-module-qtquick-shapes, qt6-qpa-plugins")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
