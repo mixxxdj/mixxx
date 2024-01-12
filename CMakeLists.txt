@@ -2607,7 +2607,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt${QT_VERSION_MAJOR}::Xml)
 if(QT_EXTRA_COMPONENTS)
   foreach(COMPONENT ${QT_EXTRA_COMPONENTS})
-    target_link_libraries(mixxx-lib PUBLIC Qt6::${COMPONENT})
+    target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::${COMPONENT})
   endforeach()
 endif()
 
