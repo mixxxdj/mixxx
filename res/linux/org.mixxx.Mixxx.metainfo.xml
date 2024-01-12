@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-09" timestamp="1704756703">
+    <release version="2.4.0" type="development" date="2024-01-10" timestamp="1704870285">
       <description>
  <p>
   Cover Art
@@ -477,6 +477,7 @@
    #4802
    #10748
    #12392
+   #12521
   </li>
   <li>
    Track Menu: Show 'Update ReplayGain' only in decks' menus
@@ -1758,6 +1759,11 @@
    #11982
    #11995
    #11994
+  </li>
+  <li>
+   Preferences waveforms: recall correct waveform type when selecting an overview type
+   #12231
+   #12226
   </li>
  </ul>
  <p>

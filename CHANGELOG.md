@@ -171,7 +171,11 @@
   [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
   [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
 * Track Menu: Allow to clear the comment field [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
-* Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object [#4802](https://github.com/mixxxdj/mixxx/pull/4802) [#10748](https://github.com/mixxxdj/mixxx/issues/10748) [#12392](https://github.com/mixxxdj/mixxx/pull/12392)
+* Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object
+  [#4802](https://github.com/mixxxdj/mixxx/pull/4802)
+  [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
+  [#12392](https://github.com/mixxxdj/mixxx/pull/12392)
+  [#12521](https://github.com/mixxxdj/mixxx/pull/12521)
 * Track Menu: Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
 * Track Menu: Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
 * Track Menu: Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
@@ -708,6 +712,7 @@
   [#11982](https://github.com/mixxxdj/mixxx/pull/11982)
   [#11995](https://github.com/mixxxdj/mixxx/pull/11995)
   [#11994](https://github.com/mixxxdj/mixxx/pull/11994)
+* Preferences waveforms: recall correct waveform type when selecting an overview type [#12231](https://github.com/mixxxdj/mixxx/pull/12231) [#12226](https://github.com/mixxxdj/mixxx/issues/12226)
 
 ### Effects
 
