@@ -31,10 +31,10 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skins:LateNight/controls/button_1state.xml">
+              <Template src="skins:LateNight/controls/button_2state.xml">
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
                 <SetVariable name="ObjectName">SlipmodeButton<Variable name="DeckGroup"/></SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="Group"/>,loop_remove</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,slip_enabled</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
