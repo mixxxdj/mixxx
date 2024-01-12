@@ -184,7 +184,7 @@ void EffectsManager::loadDefaultEqsAndQuickEffects() {
         pEqEffectSlot->loadEffectWithDefaults(pDefaultEqEffect);
     }
 
-    auto pDefaultQuickEffectPreset =
+    const auto pDefaultQuickEffectPreset =
             m_pChainPresetManager->getDefaultQuickEffectPreset();
     QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
     while (qeIt.hasNext()) {
@@ -293,10 +293,11 @@ void EffectsManager::saveEffectsXml() {
     doc.appendChild(rootElement);
 
     QHash<QString, EffectManifestPointer> eqEffectManifests;
+    eqEffectManifests.reserve(m_equalizerEffectChains.size());
     QHashIterator<QString, EqualizerEffectChainPointer> eqIt(m_equalizerEffectChains);
     while (eqIt.hasNext()) {
         eqIt.next();
-        const auto pEffectSlot = eqIt.value().data()->getEffectSlot(0);
+        const auto pEffectSlot = eqIt.value()->getEffectSlot(0);
         VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
             return;
         }

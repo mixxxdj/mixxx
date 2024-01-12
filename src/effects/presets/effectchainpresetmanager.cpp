@@ -696,7 +696,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     QDomElement rackElement = XmlParse::selectElement(root, EffectXml::kRack);
     QDomElement chainsElement =
             XmlParse::selectElement(rackElement, EffectXml::kChainsRoot);
-    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::kChain);
+    const QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::kChain);
 
     for (int i = 0; i < chainsList.count(); ++i) {
         QDomNode chainNode = chainsList.at(i);
@@ -723,7 +723,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Reload order of custom chain presets
     QDomElement chainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kChainPresetList);
-    QDomNodeList presetNameList =
+    const QDomNodeList presetNameList =
             chainPresetsElement.elementsByTagName(EffectXml::kChainPresetName);
     for (int i = 0; i < presetNameList.count(); ++i) {
         QDomNode presetNameNode = presetNameList.at(i);
@@ -752,7 +752,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Reload order of QuickEffect chain presets
     QDomElement quickEffectChainPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectList);
-    QDomNodeList quickEffectPresetNameList =
+    const QDomNodeList quickEffectPresetNameList =
             quickEffectChainPresetsElement.elementsByTagName(EffectXml::kChainPresetName);
     for (int i = 0; i < quickEffectPresetNameList.count(); ++i) {
         QDomNode presetNameNode = quickEffectPresetNameList.at(i);
@@ -792,7 +792,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Read ids of effects that were loaded into Equalizer slots on last shutdown
     QDomElement eqEffectsElement =
             XmlParse::selectElement(root, EffectXml::kEqualizerEffects);
-    QDomNodeList eqEffectNodeList =
+    const QDomNodeList eqEffectNodeList =
             eqEffectsElement.elementsByTagName(
                     EffectXml::kEffectId);
     for (int i = 0; i < eqEffectNodeList.count(); ++i) {
@@ -812,7 +812,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Read names of presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
-    QDomNodeList quickEffectNodeList =
+    const QDomNodeList quickEffectNodeList =
             quickEffectPresetsElement.elementsByTagName(
                     EffectXml::kChainPresetName);
     for (int i = 0; i < quickEffectNodeList.count(); ++i) {
@@ -842,7 +842,7 @@ EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
     // Read id of last loaded EQ effect
     QDomElement eqEffectsElement =
             XmlParse::selectElement(root, EffectXml::kEqualizerEffects);
-    QDomNodeList eqEffectNodeList =
+    const QDomNodeList eqEffectNodeList =
             eqEffectsElement.elementsByTagName(
                     EffectXml::kEffectId);
     for (int i = 0; i < eqEffectNodeList.count(); ++i) {
@@ -867,7 +867,7 @@ EffectXmlDataSingleDeck EffectChainPresetManager::readEffectsXmlSingleDeck(
     // Read name of last loaded QuickEffect preset
     QDomElement quickEffectPresetsElement =
             XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
-    QDomNodeList quickEffectNodeList =
+    const QDomNodeList quickEffectNodeList =
             quickEffectPresetsElement.elementsByTagName(
                     EffectXml::kChainPresetName);
     for (int i = 0; i < quickEffectNodeList.count(); ++i) {
