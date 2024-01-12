@@ -298,6 +298,7 @@ void EffectsManager::saveEffectsXml() {
     }
 
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
+    quickEffectChainPresets.reserve(m_quickEffectChains.size());
     QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
     while (qeIt.hasNext()) {
         qeIt.next();
@@ -306,6 +307,7 @@ void EffectsManager::saveEffectsXml() {
     }
 
     QList<EffectChainPresetPointer> standardEffectChainPresets;
+    standardEffectChainPresets.reserve(m_quickEffectChains.size());
     for (const auto& pChainSlot : std::as_const(m_standardEffectChains)) {
         auto pPreset = EffectChainPresetPointer::create(pChainSlot.data());
         standardEffectChainPresets.append(pPreset);
