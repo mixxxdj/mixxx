@@ -37,7 +37,8 @@ ControlDoublePrivate::ControlDoublePrivate()
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
           // default CO is read only
-          m_confirmRequired(true) {
+          m_confirmRequired(true),
+          m_kbdRepeatable(false) {
     m_value.setValue(0.0);
 }
 
@@ -56,7 +57,8 @@ ControlDoublePrivate::ControlDoublePrivate(
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                   Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
+          m_confirmRequired(false),
+          m_kbdRepeatable(false) {
     initialize(defaultValue);
 }
 
