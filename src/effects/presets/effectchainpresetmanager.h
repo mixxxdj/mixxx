@@ -7,8 +7,15 @@
 #include "preferences/usersettings.h"
 
 struct EffectsXmlData {
+    QHash<QString, EffectManifestPointer> eqEffectManifests;
     QHash<QString, EffectChainPresetPointer> quickEffectChainPresets;
     QList<EffectChainPresetPointer> standardEffectChainPresets;
+    EffectChainPresetPointer outputChainPreset;
+};
+
+struct EffectXmlDataSingleDeck {
+    EffectManifestPointer eqEffectManifest;
+    EffectChainPresetPointer quickEffectChainPreset;
 };
 
 /// EffectChainPresetManager maintains a list of custom EffectChainPresets in the
@@ -66,10 +73,11 @@ class EffectChainPresetManager : public QObject {
     bool savePreset(EffectChainPresetPointer pPreset);
     void updatePreset(EffectChainPointer pChainSlot);
 
+    EffectManifestPointer getDefaultEqEffect();
     EffectChainPresetPointer getDefaultQuickEffectPreset();
 
     EffectsXmlData readEffectsXml(const QDomDocument& doc, const QStringList& deckStrings);
-    EffectChainPresetPointer readEffectsXmlSingleDeck(
+    EffectXmlDataSingleDeck readEffectsXmlSingleDeck(
             const QDomDocument& doc, const QString& deckString);
     void saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data);
 
