@@ -97,10 +97,13 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
             m_pDlgFullSize->close();
         } else {
             if (m_loadedCover.isNull()) {
+                // Nothing to show
                 return;
             } else if (!m_pLoadedTrack && !m_Data.isNull()) {
+                // This is for the fetched cover in DlgTagFetcher
                 m_pDlgFullSize->initFetchedCoverArt(m_Data);
             } else {
+                // Regular track cover
                 m_pDlgFullSize->init(m_pLoadedTrack);
             }
         }
