@@ -18,6 +18,7 @@
 
 class DlgTagFetcher;
 class DlgTrackInfo;
+class DlgTrackInfoMulti;
 //class DlgDeleteFilesConfirmation;
 class ExternalTrackCollection;
 class Library;
@@ -335,6 +336,7 @@ class WTrackMenu : public QMenu {
     PollingControlProxy m_pNumPreviewDecks;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
+    std::unique_ptr<DlgTrackInfoMulti> m_pDlgTrackInfoMulti;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;
 
     struct UpdateExternalTrackCollection {
