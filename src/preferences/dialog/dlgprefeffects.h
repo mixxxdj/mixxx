@@ -34,7 +34,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     void setupChainListView(QListView* pListView);
 
     void clearEffectInfo();
-    void clearChainInfoDisableButtons();
+    void clearChainInfo();
+    void updateButtons(int selectedIndices);
     void loadChainPresetLists();
     void saveChainPresetLists();
 
