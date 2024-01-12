@@ -318,6 +318,22 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
+mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
+    if (indices.isEmpty()) {
+        return mixxx::Duration::empty();
+    }
+
+    double durationTotal = 0.0;
+    const int durationColumnIndex = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
+    for (const auto& index : indices) {
+        durationTotal += index.sibling(index.row(), durationColumnIndex)
+                                 .data(Qt::EditRole)
+                                 .toDouble();
+    }
+
+    return mixxx::Duration::fromSeconds(durationTotal);
+}
+
 bool PlaylistTableModel::isColumnInternal(int column) {
     return column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             TrackSetTableModel::isColumnInternal(column);

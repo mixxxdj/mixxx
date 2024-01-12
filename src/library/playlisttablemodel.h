@@ -1,6 +1,7 @@
 #pragma once
 
 #include "library/trackset/tracksettablemodel.h"
+#include "util/duration.h"
 
 class PlaylistTableModel final : public TrackSetTableModel {
     Q_OBJECT
@@ -26,6 +27,9 @@ class PlaylistTableModel final : public TrackSetTableModel {
     /// Returns the number of successful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
+
+    /// Get the total duration of all tracks referenced by the given model indices
+    mixxx::Duration getTotalDuration(const QModelIndexList& indices);
 
     Capabilities getCapabilities() const final;
 

@@ -786,6 +786,21 @@ void LoopingControl::slotLoopRemove() {
     m_loopInfo.setValue(loopInfo);
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
+    // if the loop is valid, else it is removed.
+    // We remove it here right away so the loop is not restored
+    // when the track is loaded to another player in the meantime.
+    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pLoadedTrack) {
+        return;
+    }
+    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cuePoints) {
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            pLoadedTrack->removeCue(pCue);
+            return;
+        }
+    }
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
