@@ -174,9 +174,7 @@ void EffectsManager::addQuickEffectChain(const ChannelHandleAndGroup& deckHandle
 
 void EffectsManager::loadDefaultEqsAndQuickEffects() {
     auto pDefaultEqEffect = m_pChainPresetManager->getDefaultEqEffect();
-    QHashIterator<QString, EqualizerEffectChainPointer> eqIt(m_equalizerEffectChains);
-    while (eqIt.hasNext()) {
-        auto pEqChainSlot = eqIt.next().value();
+    for (const auto& pEqChainSlot : std::as_const(m_equalizerEffectChains)) {
         const auto pEqEffectSlot = pEqChainSlot->getEffectSlot(0);
         VERIFY_OR_DEBUG_ASSERT(pEqEffectSlot) {
             return;
@@ -186,9 +184,7 @@ void EffectsManager::loadDefaultEqsAndQuickEffects() {
 
     const auto pDefaultQuickEffectPreset =
             m_pChainPresetManager->getDefaultQuickEffectPreset();
-    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
-    while (qeIt.hasNext()) {
-        auto pChainSlot = qeIt.next().value();
+    for (const auto& pChainSlot : std::as_const(m_quickEffectChains)) {
         pChainSlot->loadChainPreset(pDefaultQuickEffectPreset);
     }
 }
@@ -214,11 +210,7 @@ void EffectsManager::readEffectsXml() {
 
     // Note: QuickEffect and EQ chains are created only for existing main decks,
     // thus only for those the configured presets are requested
-    QStringList deckStrings;
-    QHashIterator<QString, QuickEffectChainPointer> qeIt(m_quickEffectChains);
-    while (qeIt.hasNext()) {
-        deckStrings << qeIt.next().key();
-    }
+    const QStringList deckStrings = m_quickEffectChains.keys();
     EffectsXmlData data = m_pChainPresetManager->readEffectsXml(doc, deckStrings);
 
     for (int i = 0; i < data.standardEffectChainPresets.size(); i++) {
