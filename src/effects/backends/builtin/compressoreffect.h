@@ -9,8 +9,8 @@
 #include "util/types.h"
 
 namespace {
-constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03;
-constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0;
+constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
+constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0f;
 } // anonymous namespace
 
 class CompressorGroupState : public EffectState {
