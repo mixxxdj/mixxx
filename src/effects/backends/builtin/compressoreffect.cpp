@@ -24,8 +24,8 @@ EffectManifestPointer CompressorEffect::getManifest() {
     clipping->setDescription(QObject::tr("Hard limiter to full scale"));
     clipping->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     clipping->setRange(0, 1, 1);
-    clipping->appendStep(qMakePair(QObject::tr("Off"), Clipping::ClippingOff));
-    clipping->appendStep(qMakePair(QObject::tr("On"), Clipping::ClippingOn));
+    clipping->appendStep(qMakePair(QObject::tr("Off"), static_cast<int>(Clipping::ClippingOff)));
+    clipping->appendStep(qMakePair(QObject::tr("On"), static_cast<int>(Clipping::ClippingOn)));
 
     EffectManifestParameterPointer autoMakeUp = pManifest->addParameter();
     autoMakeUp->setId("automakeup");
@@ -35,8 +35,8 @@ EffectManifestPointer CompressorEffect::getManifest() {
             "The AutoMakeup button enables automatic makeup gain to 0 db level"));
     autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     autoMakeUp->setRange(0, 1, 1);
-    autoMakeUp->appendStep(qMakePair(QObject::tr("Off"), AutoMakeUp::AutoMakeUpOff));
-    autoMakeUp->appendStep(qMakePair(QObject::tr("On"), AutoMakeUp::AutoMakeUpOn));
+    autoMakeUp->appendStep(qMakePair(QObject::tr("Off"), static_cast<int>(AutoMakeUp::AutoMakeUpOff)));
+    autoMakeUp->appendStep(qMakePair(QObject::tr("On"), static_cast<int>(AutoMakeUp::AutoMakeUpOn)));
 
 
     EffectManifestParameterPointer threshold = pManifest->addParameter();
@@ -140,7 +140,7 @@ void CompressorEffect::processChannel(
     applyCompression(pState, engineParameters, pInput, pOutput);
 
     // Auto make up
-    if (m_pAutoMakeUp->toInt() == AutoMakeUpOn) { 
+    if (m_pAutoMakeUp->toInt() == static_cast<int>(AutoMakeUp::AutoMakeUpOn)) {
         applyAutoMakeUp(pState, pOutput, numSamples);
     }
 
@@ -149,7 +149,7 @@ void CompressorEffect::processChannel(
     SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
 
     // Clipping
-    if (m_pClipping->toInt() == ClippingOn) {
+    if (m_pClipping->toInt() == static_cast<int>(Clipping::ClippingOn)) {
         SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
     }
 }
@@ -159,8 +159,8 @@ void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pO
     CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
     if (maxSample > 0) {
         CSAMPLE maxSampleDB = ratio2db(maxSample);
-        CSAMPLE minGainReductionDB = -maxSampleDB + makeUpTarget;
-        makeUpStateDB = makeUpAttackCoeff * minGainReductionDB + (1 - makeUpAttackCoeff) * makeUpStateDB;
+        CSAMPLE minGainReductionDB = -maxSampleDB + kMakeUpTarget;
+        makeUpStateDB = kMakeUpAttackCoeff * minGainReductionDB + (1 - kMakeUpAttackCoeff) * makeUpStateDB;
         CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
         // logarithmic smoothing
         if (levelDB > -1.0) {
