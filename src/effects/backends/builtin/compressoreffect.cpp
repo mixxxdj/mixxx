@@ -21,7 +21,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     clipping->setId("clipping");
     clipping->setName(QObject::tr("Clipping"));
     clipping->setShortName(QObject::tr("Clipping"));
-    clipping->setDescription(QObject::tr("Hard limiter to 0 db"));
+    clipping->setDescription(QObject::tr("Hard limiter to full scale"));
     clipping->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     clipping->setRange(0, 1, 1);
     clipping->appendStep(qMakePair(QObject::tr("Off"), Clipping::ClippingOff));
