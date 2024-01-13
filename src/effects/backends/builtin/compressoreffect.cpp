@@ -7,7 +7,7 @@ QString CompressorEffect::getId() {
 
 //static
 EffectManifestPointer CompressorEffect::getManifest() {
-    EffectManifestPointer pManifest(new EffectManifest);
+    auto pManifest = EffectManifestPointer::create();
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Compressor"));
     pManifest->setShortName(QObject::tr("Compressor"));
