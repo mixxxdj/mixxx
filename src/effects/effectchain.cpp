@@ -337,8 +337,7 @@ void EffectChain::slotControlChainPresetSelector(double value) {
 }
 
 void EffectChain::slotControlLoadedChainPresetRequest(double value) {
-    // subtract 1 to make the ControlObject 1-indexed like other ControlObjects
-    int index = static_cast<int>(value) - 1;
+    int index = static_cast<int>(value);
     if (index < 0 || index >= numPresets()) {
         return;
     }
@@ -346,9 +345,8 @@ void EffectChain::slotControlLoadedChainPresetRequest(double value) {
     loadChainPreset(presetAtIndex(index));
 }
 
-void EffectChain::setControlLoadedPresetIndex(uint index) {
-    // add 1 to make the ControlObject 1-indexed like other ControlObjects
-    m_pControlLoadedChainPreset->setAndConfirm(index + 1);
+void EffectChain::setControlLoadedPresetIndex(int index) {
+    m_pControlLoadedChainPreset->setAndConfirm(index);
 }
 
 void EffectChain::slotControlNextChainPreset(double value) {

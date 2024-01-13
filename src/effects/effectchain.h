@@ -135,7 +135,7 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlPushButton> m_pControlNextChainPreset;
     std::unique_ptr<ControlPushButton> m_pControlPrevChainPreset;
 
-    void setControlLoadedPresetIndex(uint index);
+    void setControlLoadedPresetIndex(int index);
 
     // These COs do not affect how the effects are processed;
     // they are defined here for skins and controller mappings to communicate
