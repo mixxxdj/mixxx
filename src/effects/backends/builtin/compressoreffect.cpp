@@ -108,8 +108,8 @@ EffectManifestPointer CompressorEffect::getManifest() {
 CompressorGroupState::CompressorGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
-          previousMakeUpGain(0),
-          previousStateDB(0) {
+          previousStateDB(0),
+          previousMakeUpGain(0) {
 }
 
 void CompressorEffect::loadEngineEffectParameters(
