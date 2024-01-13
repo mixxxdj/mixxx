@@ -9,8 +9,8 @@
 #include "util/types.h"
 
 namespace {
-    constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03;
-    constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0;
+constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03;
+constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0;
 } // anonymous namespace
 
 class CompressorGroupState : public EffectState {
@@ -39,8 +39,7 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
- private:
-
+  private:
     enum class AutoMakeUp {
         AutoMakeUpOff = 0,
         AutoMakeUpOn = 1,

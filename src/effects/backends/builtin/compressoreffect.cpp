@@ -5,7 +5,7 @@ QString CompressorEffect::getId() {
     return "org.mixxx.effects.compressor";
 }
 
-//static
+// static
 EffectManifestPointer CompressorEffect::getManifest() {
     auto pManifest = EffectManifestPointer::create();
     pManifest->setId(getId());
@@ -35,9 +35,10 @@ EffectManifestPointer CompressorEffect::getManifest() {
             "The AutoMakeup button enables automatic makeup gain to 0 db level"));
     autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     autoMakeUp->setRange(0, 1, 1);
-    autoMakeUp->appendStep(qMakePair(QObject::tr("Off"), static_cast<int>(AutoMakeUp::AutoMakeUpOff)));
-    autoMakeUp->appendStep(qMakePair(QObject::tr("On"), static_cast<int>(AutoMakeUp::AutoMakeUpOn)));
-
+    autoMakeUp->appendStep(qMakePair(
+            QObject::tr("Off"), static_cast<int>(AutoMakeUp::AutoMakeUpOff)));
+    autoMakeUp->appendStep(qMakePair(
+            QObject::tr("On"), static_cast<int>(AutoMakeUp::AutoMakeUpOn)));
 
     EffectManifestParameterPointer threshold = pManifest->addParameter();
     threshold->setId("threshold");
@@ -54,9 +55,13 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setId("ratio");
     ratio->setName(QObject::tr("Ratio (:1)"));
     ratio->setShortName(QObject::tr("Ratio"));
-    ratio->setDescription(QObject::tr("The Ratio knob determines how much the signal is attenuated above the chosen threshold. "
-            "For a ratio of 4:1, one dB remains for every 4dB of input signal above the threshold. "
-            "At a ratio of 1:1 no compression is happening, as the input is exactly the output"));
+    ratio->setDescription(
+            QObject::tr("The Ratio knob determines how much the signal is "
+                        "attenuated above the chosen threshold. "
+                        "For a ratio of 4:1, one dB remains for every 4dB of "
+                        "input signal above the threshold. "
+                        "At a ratio of 1:1 no compression is happening, as the "
+                        "input is exactly the output"));
     ratio->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     ratio->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     ratio->setNeutralPointOnScale(0);
@@ -66,7 +71,8 @@ EffectManifestPointer CompressorEffect::getManifest() {
     knee->setId("knee");
     knee->setName(QObject::tr("Knee (dBFS)"));
     knee->setShortName(QObject::tr("Knee"));
-    knee->setDescription(QObject::tr("The Knee knob is used to achieve a rounder compression curve"));
+    knee->setDescription(QObject::tr(
+            "The Knee knob is used to achieve a rounder compression curve"));
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     knee->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     knee->setNeutralPointOnScale(0);
@@ -77,7 +83,8 @@ EffectManifestPointer CompressorEffect::getManifest() {
     attack->setName(QObject::tr("Attack (ms)"));
     attack->setShortName(QObject::tr("Attack"));
     attack->setDescription(QObject::tr(
-        "The Attack knob sets the time that determines how fast the compression will set in once the signal exceeds the threshold"));
+            "The Attack knob sets the time that determines how fast the "
+            "compression will set in once the signal exceeds the threshold"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     attack->setRange(0, 10, 250);
@@ -86,9 +93,12 @@ EffectManifestPointer CompressorEffect::getManifest() {
     release->setId("release");
     release->setName(QObject::tr("Release (ms)"));
     release->setShortName(QObject::tr("Release"));
-    release->setDescription(QObject::tr(
-        "The Release knob sets the time that determines how fast the compressor will recover from the gain reduction once the signal falls under the threshold. "
-        "Depending on the input signal, short release times may introduce a 'pumping' effect and/or distortion"));
+    release->setDescription(
+            QObject::tr("The Release knob sets the time that determines how "
+                        "fast the compressor will recover from the gain "
+                        "reduction once the signal falls under the threshold. "
+                        "Depending on the input signal, short release times "
+                        "may introduce a 'pumping' effect and/or distortion"));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     release->setRange(0, 150, 1500);
@@ -97,7 +107,9 @@ EffectManifestPointer CompressorEffect::getManifest() {
     gain->setId("gain");
     gain->setName(QObject::tr("Output gain"));
     gain->setShortName(QObject::tr("Gain"));
-    gain->setDescription(QObject::tr("The Output gain knob adjusts the level of the output signal after the compression was applied"));
+    gain->setDescription(
+            QObject::tr("The Output gain knob adjusts the level of the output "
+                        "signal after the compression was applied"));
     gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     gain->setRange(-25, 0, 25);
@@ -154,13 +166,16 @@ void CompressorEffect::processChannel(
     }
 }
 
-void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pOutput, const SINT& numSamples) {
+void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
+        CSAMPLE* pOutput,
+        const SINT& numSamples) {
     CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
     CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
     if (maxSample > 0) {
         CSAMPLE maxSampleDB = ratio2db(maxSample);
         CSAMPLE minGainReductionDB = -maxSampleDB + kMakeUpTarget;
-        makeUpStateDB = kMakeUpAttackCoeff * minGainReductionDB + (1 - kMakeUpAttackCoeff) * makeUpStateDB;
+        makeUpStateDB = kMakeUpAttackCoeff * minGainReductionDB +
+                (1 - kMakeUpAttackCoeff) * makeUpStateDB;
         CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
         // logarithmic smoothing
         if (levelDB > -1.0) {
@@ -172,7 +187,10 @@ void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pO
     }
 }
 
-void CompressorEffect::applyCompression(CompressorGroupState* pState, const mixxx::EngineParameters& engineParameters, const CSAMPLE* pInput, CSAMPLE* pOutput) {
+void CompressorEffect::applyCompression(CompressorGroupState* pState,
+        const mixxx::EngineParameters& engineParameters,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput) {
     CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
