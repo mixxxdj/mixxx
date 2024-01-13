@@ -41,12 +41,12 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
 
  private:
 
-    enum AutoMakeUp {
+    enum class AutoMakeUp {
         AutoMakeUpOff = 0,
         AutoMakeUpOn = 1,
     };
 
-    enum Clipping {
+    enum class Clipping {
         ClippingOff = 0,
         ClippingOn = 1,
     };
