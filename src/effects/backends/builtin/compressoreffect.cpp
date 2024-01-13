@@ -64,7 +64,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
 
     EffectManifestParameterPointer knee = pManifest->addParameter();
     knee->setId("knee");
-    knee->setName(QObject::tr("Knee (dB)"));
+    knee->setName(QObject::tr("Knee (dBFS)"));
     knee->setShortName(QObject::tr("Knee"));
     knee->setDescription(QObject::tr("The Knee knob is used to achieve a rounder compression curve"));
     knee->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
@@ -150,7 +150,7 @@ void CompressorEffect::processChannel(
 
     // Clipping
     if (m_pClipping->toInt() == static_cast<int>(Clipping::ClippingOn)) {
-        SampleUtil::copyClampBuffer(pOutput, pOutput, numSamples);
+        SampleUtil::applyClamp(pOutput, numSamples);
     }
 }
 
