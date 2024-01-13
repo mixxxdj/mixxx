@@ -167,6 +167,12 @@ void DlgPrefEffects::clearChainInfoDisableButtons() {
 void DlgPrefEffects::loadChainPresetLists() {
     QStringList chainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
+        // Don't show the empty '---' preset.
+        // After pushing the changed preferences list back to the preset manager
+        // it is re-added to the base list.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         chainPresetNames << pChainPreset->name();
     }
     auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
@@ -174,9 +180,7 @@ void DlgPrefEffects::loadChainPresetLists() {
 
     QStringList quickEffectChainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getQuickEffectPresetsSorted()) {
-        // Don't show the empty '---' preset.
-        // After pushing the changed preferences list back to the preset manager
-        // it is re-added to the root list.
+        // Same here, don't show the empty '---' preset.
         if (pChainPreset->name() == kNoEffectString) {
             continue;
         }
