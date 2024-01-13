@@ -200,7 +200,7 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState, const mixx
         }
         CSAMPLE compressedDB = overDB * (1.0 / ratioParam - 1.0);
 
-        // atack/release
+        // attack/release
         if (compressedDB < stateDB) {
             stateDB = compressedDB + attackCoeff * (stateDB - compressedDB);
         } else {
