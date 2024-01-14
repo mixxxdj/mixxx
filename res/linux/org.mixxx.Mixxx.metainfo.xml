@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-12" timestamp="1705042968">
+    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705248537">
       <description>
  <p>
   Cover Art
@@ -1374,6 +1374,10 @@
    ControlObject alias improvements
    #11973
   </li>
+  <li>
+   Repeat certain control actions if keyboard key is held
+   #12474
+  </li>
  </ul>
  <p>
   Skins
@@ -1914,6 +1918,7 @@
    #11376
    #11456
    #11454
+   #11695
   </li>
  </ul>
  <p>

@@ -559,6 +559,7 @@
 * Fix use of deprecated COs in Skins [#12030](https://github.com/mixxxdj/mixxx/pull/12030)
 * Log warning if deprecated control is used [#11972](https://github.com/mixxxdj/mixxx/pull/11972)
 * ControlObject alias improvements [#11973](https://github.com/mixxxdj/mixxx/pull/11973)
+* Repeat certain control actions if keyboard key is held [#12474](https://github.com/mixxxdj/mixxx/pull/12474)
 
 ### Skins
 
@@ -712,7 +713,9 @@
   [#11982](https://github.com/mixxxdj/mixxx/pull/11982)
   [#11995](https://github.com/mixxxdj/mixxx/pull/11995)
   [#11994](https://github.com/mixxxdj/mixxx/pull/11994)
-* Preferences waveforms: recall correct waveform type when selecting an overview type [#12231](https://github.com/mixxxdj/mixxx/pull/12231) [#12226](https://github.com/mixxxdj/mixxx/issues/12226)
+* Preferences waveforms: recall correct waveform type when selecting an overview type
+  [#12231](https://github.com/mixxxdj/mixxx/pull/12231)
+  [#12226](https://github.com/mixxxdj/mixxx/issues/12226)
 
 ### Effects
 
@@ -786,6 +789,7 @@
   [#10834](https://github.com/mixxxdj/mixxx/issues/10834)
   [#11424](https://github.com/mixxxdj/mixxx/pull/11424) [#11376](https://github.com/mixxxdj/mixxx/pull/11376)
   [#11456](https://github.com/mixxxdj/mixxx/pull/11456) [#11454](https://github.com/mixxxdj/mixxx/issues/11454)
+  [#11695](https://github.com/mixxxdj/mixxx/pull/11695)
 
 ### Target Support
 
