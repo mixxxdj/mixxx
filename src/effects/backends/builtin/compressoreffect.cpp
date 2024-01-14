@@ -180,7 +180,7 @@ void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
         CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
         // logarithmic smoothing
         if (levelDB > -1.0) {
-            makeUpStateDB = log10(levelDB + 2) - 1 - maxSampleDB;
+            makeUpStateDB = log10(levelDB + 2.0f) - 1.0f - maxSampleDB;
         }
 
         pState->previousMakeUpGain = makeUpStateDB;
@@ -196,8 +196,10 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
     CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
     CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
     CSAMPLE kneeHalf = kneeParam / 2.0f;
-    CSAMPLE attackCoeff = exp(-1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
-    CSAMPLE releaseCoeff = exp(-1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
+    CSAMPLE attackCoeff = (float)exp(
+            -1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
+    CSAMPLE releaseCoeff = (float)exp(
+            -1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
 
     CSAMPLE stateDB = pState->previousStateDB;
     SINT numSamples = engineParameters.samplesPerBuffer();
@@ -217,7 +219,7 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
         } else if (overDB > -kneeHalf && overDB <= kneeHalf) {
             overDB = 0.5f * (overDB + kneeHalf) * (overDB + kneeHalf) / kneeParam;
         }
-        CSAMPLE compressedDB = overDB * (1.0 / ratioParam - 1.0);
+        CSAMPLE compressedDB = overDB * (1.0f / ratioParam - 1.0f);
 
         // attack/release
         if (compressedDB < stateDB) {
