@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-10" timestamp="1704870285">
+    <release version="2.4.0" type="development" date="2024-01-12" timestamp="1705042968">
       <description>
  <p>
   Cover Art
@@ -1822,39 +1822,39 @@
    #11061
   </li>
   <li>
-   Effects: Allow clearing chains with empty '---' preset
+   Allow clearing chains with empty '---' preset
    #10859
    #10777
   </li>
   <li>
-   Effectchain tooltip
+   Show Effectchain tooltip
    #11902
    #10605
   </li>
   <li>
-   Effects: Center Super knob when loading empty (QuickEffect) chain preset
+   Center Super knob when loading empty (QuickEffect) chain preset
    #12320
   </li>
   <li>
-   Effects: Read effect data for decks added after initial setup
+   Read effect data for decks added after initial setup
    #12282
    #12277
   </li>
   <li>
-   Effects: Fix deletion of effect chain presets created in current session
+   Fix deletion of effect chain presets created in current session
    #11886
   </li>
   <li>
-   Effects: Don't reset "super" and "mix" knob on startup
+   Don't reset "super" and "mix" knob on startup
    #11781
    #11773
   </li>
   <li>
-   Effects: Re-add empty chain preset when resetting to defaults
+   Re-add empty chain preset when resetting to defaults
    #11705
   </li>
   <li>
-   Effects: Add a missing early return
+   Add a missing early return
    #11809
    #111808
   </li>
@@ -1966,7 +1966,7 @@
    #3545
   </li>
   <li>
-   Windows packaging: Use Azure for signing for exe, msi and all dlls with timestamp and sha256
+   Windows packaging: Use Azure for signing exe, msi and all dlls with timestamp and sha256
    #12465
    #4824
    #4825
