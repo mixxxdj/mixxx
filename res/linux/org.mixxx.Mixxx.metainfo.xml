@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705248537">
+    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705254424">
       <description>
  <p>
   Cover Art
@@ -299,20 +299,6 @@
    #3811
   </li>
   <li>
-   Code improvements and minor bug fixes when importing track metadata
-   #3851
-   #3858
-   #3860
-   #3866
-   #3871
-   #3870
-   #3924
-   #4368
-   #3906
-   #3998
-   #11031
-  </li>
-  <li>
    Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
    #3978
    #4012
@@ -391,6 +377,18 @@
    Tracks table: avoid wrong pre-selection with no tracks selected previously
    #12321
    #12064
+  </li>
+  <li>
+   Tracks table: Fix initial track selection with BackTab
+   #11130
+  </li>
+  <li>
+   Tracks table: Try to restore selection position after track removal
+   #11196
+  </li>
+  <li>
+   Tracks table: Remove parenthesis from play counter display
+   #11357
   </li>
   <li>
    Re-enable shortcuts after editing controls
@@ -503,18 +501,6 @@
    #11842
   </li>
   <li>
-   Tracks table: Fix initial track selection with BackTab
-   #11130
-  </li>
-  <li>
-   Tracks table: Try to restore selection position after track removal
-   #11196
-  </li>
-  <li>
-   Tracks table: Remove parenthesis from play counter display
-   #11357
-  </li>
-  <li>
    Remove/hide tracks dialog: Add 'Don't ask again' checkbox
    #11239
   </li>
@@ -623,48 +609,14 @@
    #11948
   </li>
   <li>
-   Track Properties: Don't clear unsaved properties when updating star rating
-   #11565
-   #11540
+   Fix setting the wrong default cue color
+   #11554
+   #11260
   </li>
   <li>
-   Track Properties: Focus Double-clicked property field for edit
-   #11764
-   #11804
-   #11802
-  </li>
-  <li>
-   Track Properties: Display the samplerate
-   #12418
-  </li>
-  <li>
-   Refactoring of library code
-   #2756
-   #2717
-   #2715
-   #2810
-   #2900
-   #2906
-   #2925
-   #3017
-   #3475
-   #4164
-   #4152
-   #4162
-   #4101
-   #4214
-   #4280
-   #4429
-   #4477
-   #4475
-   #4480
-   #4633
-   #4837
-   #4864
-   #4893
-   #10861
-   #10871
-   #12082
+   Tweak remove/hide track confirm message to match confirm exit message
+   #4577
+   #1947992
   </li>
  </ul>
  <p>
@@ -810,6 +762,12 @@
    #11760
    #11545
   </li>
+  <li>
+   Fix possible crash with opus files with embedded cover arts and require TagLib 1.11 or newer
+   #4251
+   #4252
+   #10500
+  </li>
  </ul>
  <p>
   Audio Engine
@@ -940,94 +898,9 @@
    #12223
   </li>
   <li>
-   Refactoring of beatgrid/beatmap code
-   #4044
-   #4048
-   #4045
-   #4049
-   #4092
-   #4094
-   #4104
-   #4103
-   #4127
-   #4099
-   #4071
-   #4184
-   #4234
-   #4233
-   #4258
-   #4259
-   #4263
-   #4272
-   #4268
-   #4270
-   #4342
-   #4336
-   #4409
-   #4361
-   #4488
-   #4411
-   #4498
-   #4500
-   #4499
-   #4510
-   #4607
-   #11263
-   #12368
-   #12349
-   #12071
-   #12016
-  </li>
-  <li>
-   Refactoring of audio engine code
-   #2762
-   #2801
-   #2885
-   #2997
-   #3266
-   #4064
-   #4065
-   #4066
-   #4069
-   #4074
-   #4075
-   #4076
-   #4078
-   #4082
-   #4077
-   #4080
-   #4086
-   #4089
-   #4090
-   #4079
-   #4091
-   #4083
-   #4095
-   #4081
-   #4061
-   #4105
-   #4183
-   #4186
-   #4189
-   #4216
-   #4221
-   #4219
-   #4191
-   #4232
-   #4231
-   #4229
-   #4257
-   #4266
-   #4217
-   #1966
-   #4535
-   #4770
-   #4771
-   #4589
-   #1717
-   #4852
-   #10835
-   #10843
+   make decks' xfader assignment persistent
+   #12074
+   #10122
   </li>
  </ul>
  <p>
@@ -1273,10 +1146,6 @@
    #10539
   </li>
   <li>
-   Controller preferences: add search bars to mapping tables
-   #11165
-  </li>
-  <li>
    Added TypeScript declarations for engine and controller scripting API to improve IDE code completion during mapping developent
    #4759
   </li>
@@ -1290,42 +1159,6 @@
    methods.
    #11474
    #11473
-  </li>
-  <li>
-   Prepare code for upcoming ES6 based controller mapping system with module support
-   #2682
-   #2868
-   #2875
-   #2936
-   #2946
-   #11953
-  </li>
-  <li>
-   Other refactorings of controller code
-   #2904
-   #3308
-   #3463
-   #3634
-   #3635
-   #3636
-   #3676
-   #3880
-   #4085
-   #4524
-   #4533
-   #4521
-   #4585
-   #4692
-   #4566
-   #4599
-   #4624
-   #4627
-   #4738
-   #11160
-   #11662
-   #11622
-   #12400
-   #12468
   </li>
   <li>
    feat(control): Do not show CO aliases in developer tools window
@@ -1378,67 +1211,18 @@
    Repeat certain control actions if keyboard key is held
    #12474
   </li>
+  <li>
+   Logging: Add support for
+   QT_MESSAGE_PATTERN
+   environment variable
+   #3204
+   #3518
+  </li>
  </ul>
  <p>
   Skins
  </p>
  <ul>
-  <li>
-   Add experimental QML user interface
-   #3345
-   #3446
-   #3854
-   #3891
-   #2874
-   #3915
-   #3894
-   #3920
-   #3907
-   #3925
-   #3928
-   #3932
-   #3911
-   #3937
-   #3940
-   #3913
-   #3950
-   #3919
-   #3955
-   #3957
-   #3961
-   #3952
-   #3963
-   #3971
-   #3959
-   #3972
-   #3992
-   #4003
-   #4004
-   #3999
-   #4000
-   #4067
-   #4068
-   #4060
-   #4037
-   #4414
-   #3934
-   #4117
-   #4327
-   #4339
-   #4568
-   #4576
-   #4591
-   #4616
-   #4567
-   #4629
-   #4643
-   #4650
-   #4654
-   #4673
-   #4680
-   #4681
-   #4736
-  </li>
   <li>
    Add harmonic keywheel window
    #1695
@@ -1478,6 +1262,10 @@
    Shade: Remove initial setting of now accessible effect controls
    #4398
    #10557
+  </li>
+  <li>
+   Shade: Audio Latency meter fix
+   #11601
   </li>
   <li>
    Fix switching from Shade to other skins
@@ -1591,10 +1379,6 @@
    #11957
   </li>
   <li>
-   Shade: Audio Latency meter fix
-   #11601
-  </li>
-  <li>
    Fix 500ms blocking of the whole event loop, when holding mouse down on title bar on Windows
    #12359
    #12358
@@ -1634,6 +1418,11 @@
    or
    Label
    #12004
+  </li>
+  <li>
+   Implement Un-eject by pressing eject again
+   #4668
+   #11246
   </li>
  </ul>
  <p>
@@ -1984,500 +1773,78 @@
    #12095
   </li>
   <li>
-   macOS packaging: Enable app sandbox in unsigned 2.4 builds too
+   macOS packaging: Enable app sandbox and fix related issues
    #12138
-  </li>
-  <li>
-   macOS packaging: Fix regression that caused
-   Sandbox::canAccess
-   to fail
    #12457
    #12137
    #11552
-  </li>
-  <li>
-   macOS packaging: Fix running macOS bundle from development build directory
-   #12099
-  </li>
-  <li>
-   Hide applocal group from Windows installer
-   #12118
-   #11992
-  </li>
- </ul>
- <p>
-  Other
- </p>
- <ul>
-  <li>
-   Improve and fix the CMake build system
-   #2943
-   #3046
-   #3114
-   #3471
-   #3765
-   #3849
-   #3876
-   #4098
-   #4113
-   #4166
-   #4185
-   #4187
-   #4351
-   #4423
-   #4422
-   #4497
-   #4514
-   #3550
-   #4861
-   #10855
-   #10896
-   #10926
-   #11368
-   #11144
-   #4866
-   #12442
-   #12351
-   #12288
-   #12197
-   #11754
-   #11741
-   #12518
-  </li>
-  <li>
-   Improve GitHub workflow continuous integration
-   #2937
-   #3041
-   #3300
-   #4007
-   #4084
-   #4250
-   #4274
-   #4313
-   #4226
-   #4452
-   #4742
-   #4741
-   #4795
-   #4798
-   #4792
-   #4829
-   #4822
-   #4820
-   #4821
-   #4818
-   #4819
-   #4817
-   #4815
-   #10938
-   #11038
-   #11066
-   #11089
-   #11156
-   #11193
-   #11396
-   #11386
-   #11414
-   #12502
-   #12434
-   #11962
-   #11945
-  </li>
-  <li>
-   Improve pre-commit hook
-   #2796
-   #3923
-   #3948
-   #3929
-   #4192
-   #4282
-   #4278
-   #4314
-   #4321
-   #4374
-   #4494
-   #4512
-   #4558
-   #4580
-   #4743
-   #10950
-   #10980
-   #11078
-   #10929
-   #11369
-   #11388
-   #11889
-  </li>
-  <li>
-   Improve Lauchpad PPA builds
-   #4277
-   #4285
-   #4425
-   #12347
-   #11729
-  </li>
-  <li>
-   Update vcpkg build environment for Windows and macOS
-   #4163
-   #4225
-   #4338
-   #4709
-   #4717
-   #10872
-   #10966
-   #11050
-   #11074
-   #11238
-   #11457
-   #11562
-   #12370
-   #11733
-  </li>
-  <li>
-   Windows: Fix extraction of build environment archive when using 7-Zip
-   #11510
-  </li>
-  <li>
-   Fix Windows warnings and enable "Treat all compiler warnings as errors"
-   #11607
-   #12417
-  </li>
-  <li>
-   Devendor libraries from the mixxx lib directory
-   #4201
-   #4202
-   #11839
-   #11742
-   #11841
-  </li>
-  <li>
-   #4540
-  </li>
-  <li>
-   Update hidapi to 0.11.2
-   #4783
-  </li>
-  <li>
-   Update xwax to Version 1.8
-   #4597
-   #10627
-  </li>
-  <li>
-   Update rigtorp/SPSCQueue
-   #4678
-  </li>
-  <li>
-   macOS: Fail early if the Xcode command line tools are not installed.
-   #11699
-  </li>
-  <li>
-   macOS buildenv: Improve error messages for CI-only wrappers
-   #12382
-  </li>
-  <li>
-   Improve cmake first time error reporting
-   #11635
-   #11596
-   #11597
-  </li>
-  <li>
-   Manual include #include "moc_*.cpp" to speed up build
-   #11567
-  </li>
-  <li>
-   Fix building Mixxx with SDK 11
-   #11766
-  </li>
-  <li>
-   chore: Fix spelling and formatting issues
-   #11890
-  </li>
-  <li>
-   Prefer mold or lld as linker to speed up linking
-   #11790
-   #11796
-  </li>
-  <li>
-   feat: allow sanitizers on GCC as well
-   #12002
-  </li>
-  <li>
-   Update manifest even if one job fails
-   #12091
-  </li>
-  <li>
-   Mixxx 2.4: Fail Qt6 build not on GitHub Actions
-   #12293
-  </li>
-  <li>
-   CMakeLists: Relativize
-   __FILE__
-   paths by default
-   #12350
-  </li>
-  <li>
-   Debug: Add Rust-inspired
-   DBG
-   macro for quick print-debugging
-   #12344
-   #12383
-  </li>
-  <li>
-   Migration to Qt6 (work in progress)
-   #4052
-   #4295
-   #4293
-   #4294
-   #4291
-   #4290
-   #4300
-   #4302
-   #4289
-   #4292
-   #4299
-   #4051
-   #4303
-   #4305
-   #4304
-   #4306
-   #4308
-   #4309
-   #4322
-   #4373
-   #4371
-   #4375
-   #4378
-   #4381
-   #4380
-   #4376
-   #4379
-   #4372
-   #4377
-   #4387
-   #4391
-   #4392
-   #4395
-   #4397
-   #4396
-   #4402
-   #4405
-   #4394
-   #4404
-   #4401
-   #4400
-   #4403
-   #4407
-   #4399
-   #4406
-   #4420
-   #4415
-   #4417
-   #4419
-   #4416
-   #4418
-   #4547
-   #4433
-   #4434
-   #4441
-   #4445
-   #4446
-   #4444
-   #4436
-   #4437
-   #4440
-   #4430
-   #4435
-   #4443
-   #4439
-   #4442
-   #4438
-   #4449
-   #4451
-   #4453
-   #4478
-   #4479
-   #4506
-   #4556
-   #4554
-   #4555
-   #4552
-   #4549
-   #4788
-   #4620
-   #4641
-   #4649
-   #4679
-   #10928
-   #10927
-   #11063
-   #11153
-   #11180
-   #11167
-   #11181
-   #11266
-   #11312
-   #11389
-   #4393
-   #12268
-   #12240
-   #12056
-   #12430
-   #12029
-  </li>
-  <li>
-   Allow to compile with precompiled headers, enabled on Windows by default
-   #12381
-   #12080
-   #12410
-   #12360
-   #12352
-   #12346
-   #12338
-   #12327
-   #12308
-   #12303
-   #12302
-   #12298
-   #12229
-   #12079
-   #12058
-   #12037
-   #12024
-   #12025
-  </li>
-  <li>
-   Made use of inclusive language
-   #2894
-   #3868
-   #11017
-   #11968
-   #11959
-   #11942
-  </li>
-  <li>
-   Improve the unit tests
-   #2938
-   #2980
-   #3006
-   #4345
-  </li>
-  <li>
-   Logging: Add support for
-   QT_MESSAGE_PATTERN
-   environment variable
-   #3204
-   #3518
-  </li>
-  <li>
-   Colored logging console output
-   #3197
-  </li>
-  <li>
-   Improve command line argument parser
-   #3640
-   #3962
-   #4022
-   #4036
-   #4170
-   #4057
-  </li>
-  <li>
-   Improve message when dealing with macOS sandbox
    #4018
    #10373
   </li>
   <li>
-   Moved contribution guidelines into our git repository
-   #2699
-  </li>
-  <li>
-   Make windows_buildenv.bat work with spaces in path
-   #4896
-  </li>
-  <li>
-   Automate deployment of CHANGELOG to the manual
-   #4180
-   #4256
-   #4208
-   #4228
-   #4222
-  </li>
-  <li>
-   Always show tooltips in preferences
-   #4198
-   #9716
-  </li>
-  <li>
-   Allow to build Mixxx on Linux without ALSA, working around a Pipewire bug
-   #4242
-  </li>
-  <li>
-   Fix possible crash with opus files with embedded cover arts and require TagLib 1.11 or newer
-   #4251
-   #4252
-   #10500
-  </li>
-  <li>
-   DlgTrackInfo: Fixed a SIGSEGV after a debug assertion
-   #4316
-  </li>
-  <li>
-   Library Preferences: Added link to settings files info in the manual
-   #4367
-  </li>
-  <li>
-   Use rounded Mixxx Icon for MacOS to follow Apples style guide
+   macOS: Use rounded Mixxx Icon to follow Apples style guide
    #4545
+   #10958
   </li>
   <li>
-   Show native path separators in command line argument --help
-   #4657
+   OpenBSD: Allow building Mixxx
+   #11083
   </li>
   <li>
-   Add 13 new translation languages
-   #4785
-   #9702
+   Improve Linux launcher
+   #11826
+   #11820
+   #11805
+   #12424
+  </li>
+ </ul>
+ <p>
+  Track properties
+ </p>
+ <ul>
+  <li>
+   Fixed a SIGSEGV after a debug assertion [#4316](
+   https://github.com/mixxxdj/mixxx/pull/4316
   </li>
   <li>
-   Fix translation related warnings
-   #11539
-  </li>
-  <li>
-   Remove redundant
-   cmn
-   translation in favor of
-   zh
-   #11793
-   #11791
-  </li>
-  <li>
-   Improve Vinyl control quality indicator
-   #3279
-  </li>
-  <li>
-   Track info dialog: Apply pending changes also when saving via hotkey
+   Apply pending changes also when saving via hotkey
    #4562
    #10612
   </li>
   <li>
-   Track info dialog: Fix crash when trying to scale 0.0 BPM
+   Fix crash when trying to scale 0.0 BPM
    #4587
    #1955853
   </li>
   <li>
-   Track info dialog: Add track color selector
+   Add track color selector
    #11436
    #10324
   </li>
   <li>
-   Tweak remove/hide track confirm message to match confirm exit message
-   #4577
-   #1947992
+   Don't clear unsaved properties when updating star rating
+   #11565
+   #11540
   </li>
   <li>
-   Implement Un-eject by pressing eject again
-   #4668
-   #11246
+   Focus Double-clicked property field for edit
+   #11764
+   #11804
+   #11802
+  </li>
+  <li>
+   Display the samplerate
+   #12418
+  </li>
+ </ul>
+ <p>
+  Preferences
+ </p>
+ <ul>
+  <li>
+   Always show tooltips in preferences
+   #4198
+   #9716
   </li>
   <li>
    Preferences &gt; Effects: Fix Tab key navigation / UX
@@ -2524,6 +1891,10 @@
    #11647
   </li>
   <li>
+   Preferences Vinyl control Improve quality indicator
+   #3279
+  </li>
+  <li>
    Preferences &gt; Mixer: apply &amp; save settings only in slotApply(), fix bugs, improve UX
    #11527
   </li>
@@ -2541,214 +1912,17 @@
    #11926
   </li>
   <li>
-   macOS: Add better rasterization of program icon
-   #10958
+   Library Preferences: Added link to settings files info in the manual
+   #4367
   </li>
   <li>
-   make decks' xfader assignment persistent
-   #12074
-   #10122
+   Controller preferences: add search bars to mapping tables
+   #11165
   </li>
   <li>
-   Allow building Mixxx on OpenBSD
-   #11083
-  </li>
-  <li>
-   Fix autogenerated metainfo
-   #11383
-  </li>
-  <li>
-   Fix setting the wrong default cue color
-   #11554
-   #11260
-  </li>
-  <li>
-   (fix) linux launcher: add missing quote to command line
-   #11826
-   #11820
-  </li>
-  <li>
-   Delete obsolete -platform xcb args
-   #11805
-  </li>
-  <li>
-   A small fix to .desktop file that improves Gnome dock integration on
-   #12424
-  </li>
-  <li>
-   Replace Launchpad bugs by GitHub issues
-   #10850
-   #10865
-   #4877
-   #11270
-   #11377
-   #11379
-  </li>
-  <li>
-   Misc. refactorings
-   #3154
-   #2870
-   #2872
-   #2978
-   #2969
-   #3016
-   #3320
-   #3356
-   #3453
-   #3487
-   #3558
-   #3685
-   #3741
-   #3744
-   #3753
-   #3761
-   #3834
-   #3842
-   #3853
-   #3874
-   #3883
-   #3922
-   #3947
-   #3974
-   #4024
-   #4026
-   #4034
-   #4038
-   #4039
-   #4043
-   #4053
-   #4072
-   #4097
-   #4096
-   #4118
-   #4130
-   #4129
-   #4109
-   #4106
-   #4131
-   #4140
-   #3032
-   #4110
-   #4173
-   #4178
-   #4194
-   #4197
-   #4190
-   #4212
-   #4223
-   #4238
-   #4236
-   #4320
-   #4325
-   #4203
-   #3861
-   #3514
-   #3274
-   #3182
-   #4343
-   #4358
-   #4388
-   #4427
-   #4341
-   #4473
-   #4464
-   #4481
-   #4527
-   #4534
-   #4537
-   #4539
-   #4541
-   #4543
-   #4546
-   #4542
-   #4559
-   #4574
-   #4581
-   #4582
-   #4598
-   #4596
-   #4592
-   #4784
-   #4604
-   #4603
-   #4611
-   #4605
-   #4583
-   #4636
-   #4644
-   #4653
-   #4655
-   #4609
-   #4647
-   #4660
-   #4663
-   #4661
-   #4670
-   #4672
-   #4674
-   #4618
-   #4690
-   #4724
-   #4730
-   #4731
-   #4732
-   #4728
-   #4737
-   #4739
-   #4745
-   #4765
-   #4767
-   #4797
-   #4782
-   #4800
-   #4791
-   #4848
-   #4856
-   #4860
-   #4867
-   #4888
-   #4908
-   #4903
-   #8818
-   #4907
-   #10897
-   #10964
-   #10963
-   #11048
-   #11149
-   #11169
-   #11318
-   #11331
-   #11338
-   #4651
-   #11336
-   #11282
-   #11421
-   #11431
-   #11434
-   #11301
-   #11688
-   #11685
-   #12000
-   #12003
-   #11684
-   #12031
-   #12008
-   #12054
-   #11768
-   #11893
-   #11636
-   #12026
-   #12230
-   #12375
-   #11619
-   #11917
-   #11936
-   #12033
-   #12263
-   #12212
-   #12066
-   #12065
+   Add 13 new translation languages
+   #4785
+   #9702
   </li>
  </ul>
  <p>
