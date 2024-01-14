@@ -2748,6 +2748,26 @@ else()
       DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
       COMPONENT applocal)
 
+    if(QML)
+      # install qml6-module-qtquick-controls
+      install(
+        DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQuick"
+        COMPONENT applocal)
+
+      # install qml6-module-qtquick-shapes
+      install(
+        DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Shapes"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQuick"
+        COMPONENT applocal)
+
+      # install qml6-module-qt-labs-qmlmodels
+      install(
+        DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/qmlmodels"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/Qt/labs"
+        COMPONENT applocal)
+    endif()
+
     if(WIN32)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
