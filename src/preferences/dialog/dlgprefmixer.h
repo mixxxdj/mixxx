@@ -68,7 +68,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     void setUpMainEQ();
     void updateMainEQ();
-    void storeMainEQ();
 
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
     const QList<EffectManifestPointer> getDeckEqManifests() const;
@@ -115,6 +114,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqBypass;
 
     bool m_initializing;
+    bool m_updatingMainEQ;
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;

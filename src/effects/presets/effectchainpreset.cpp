@@ -40,7 +40,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
         QDomNode effectNode = effectList.at(i);
         if (effectNode.isElement()) {
             QDomElement effectElement = effectNode.toElement();
-            EffectPresetPointer pPreset(new EffectPreset(effectElement));
+            auto pPreset = EffectPresetPointer::create(effectElement);
             m_effectPresets.append(pPreset);
         }
     }
@@ -55,7 +55,7 @@ EffectChainPreset::EffectChainPreset(const EffectChain* chain)
           m_dSuper(chain->getSuperParameter()),
           m_readOnly(false) {
     for (const auto& pEffectSlot : chain->getEffectSlots()) {
-        m_effectPresets.append(EffectPresetPointer(new EffectPreset(pEffectSlot)));
+        m_effectPresets.append(EffectPresetPointer::create(pEffectSlot));
     }
 }
 
@@ -64,7 +64,7 @@ EffectChainPreset::EffectChainPreset(EffectManifestPointer pManifest)
           m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dSuper(pManifest->metaknobDefault()),
           m_readOnly(false) {
-    m_effectPresets.append(EffectPresetPointer(new EffectPreset(pManifest)));
+    m_effectPresets.append(EffectPresetPointer::create(pManifest));
 }
 
 EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset)
