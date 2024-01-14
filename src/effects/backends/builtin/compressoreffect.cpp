@@ -44,8 +44,9 @@ EffectManifestPointer CompressorEffect::getManifest() {
     threshold->setId("threshold");
     threshold->setName(QObject::tr("Threshold (dBFS)"));
     threshold->setShortName(QObject::tr("Threshold"));
-    threshold->setDescription(QObject::tr(
-            "The Threshold knob adjusts the level above which the compressor starts attenuating the input signal"));
+    threshold->setDescription(
+            QObject::tr("The Threshold knob adjusts the level above which the "
+                        "compressor starts attenuating the input signal"));
     threshold->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     threshold->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     threshold->setNeutralPointOnScale(0);
