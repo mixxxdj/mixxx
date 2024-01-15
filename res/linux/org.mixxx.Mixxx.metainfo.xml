@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705259689">
+    <release version="2.4.0" type="development" date="2024-01-15" timestamp="1705300657">
       <description>
  <p>
   Cover Art
@@ -127,6 +127,8 @@
    #11086
    #12041
    #12300
+   #12543
+   #12532
   </li>
   <li>
    CoverArtCache refactoring + Fix scrolling lag after updating Mixxx
@@ -1803,8 +1805,8 @@
  </p>
  <ul>
   <li>
-   Fixed a SIGSEGV after a debug assertion [#4316](
-   https://github.com/mixxxdj/mixxx/pull/4316
+   Fixed a SIGSEGV after a debug assertion
+   #4316
   </li>
   <li>
    Apply pending changes also when saving via hotkey

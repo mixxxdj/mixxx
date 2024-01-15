@@ -14,7 +14,12 @@
   [#10796](https://github.com/mixxxdj/mixxx/issues/10796)
   [#10902](https://github.com/mixxxdj/mixxx/pull/10902)
   [#4851](https://github.com/mixxxdj/mixxx/pull/4851)
-  [#11938](https://github.com/mixxxdj/mixxx/pull/11938) [#11086](https://github.com/mixxxdj/mixxx/issues/11086) [#12041](https://github.com/mixxxdj/mixxx/pull/12041) [#12300](https://github.com/mixxxdj/mixxx/pull/12300)
+  [#11938](https://github.com/mixxxdj/mixxx/pull/11938)
+  [#11086](https://github.com/mixxxdj/mixxx/issues/11086)
+  [#12041](https://github.com/mixxxdj/mixxx/pull/12041)
+  [#12300](https://github.com/mixxxdj/mixxx/pull/12300)
+  [#12543](https://github.com/mixxxdj/mixxx/pull/12543)
+  [#12532](https://github.com/mixxxdj/mixxx/issues/12532)
 * CoverArtCache refactoring + Fix scrolling lag after updating Mixxx  [#12009](https://github.com/mixxxdj/mixxx/pull/12009)
 
 ### Music Library
@@ -646,7 +651,7 @@
 
 ### Track properties
 
-* Fixed a SIGSEGV after a debug assertion [#4316](<https://github.com/mixxxdj/mixxx/pull/4316>
+* Fixed a SIGSEGV after a debug assertion [#4316](https://github.com/mixxxdj/mixxx/pull/4316)
 * Apply pending changes also when saving via hotkey [#4562](https://github.com/mixxxdj/mixxx/pull/4562) [#10612](https://github.com/mixxxdj/mixxx/issues/10612)
 * Fix crash when trying to scale 0.0 BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [#1955853](https://github.com/mixxxdj/mixxx/issues/10625)
 * Add track color selector [#11436](https://github.com/mixxxdj/mixxx/pull/11436) [#10324](https://github.com/mixxxdj/mixxx/issues/10324)
