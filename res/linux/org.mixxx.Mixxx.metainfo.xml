@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-15" timestamp="1705300657">
+    <release version="2.4.0" type="development" date="2024-01-15" timestamp="1705357739">
       <description>
  <p>
   Cover Art
@@ -701,7 +701,7 @@
    #11888
   </li>
   <li>
-   AAC encoder: Fixed a memory leak
+   AAC encoder: Fix a memory leak
    #4386
    #4408
   </li>
@@ -805,7 +805,7 @@
    #10497
   </li>
   <li>
-   Fixed an assertion when loop is before track start
+   Fix an assertion when loop is before track start
    #4383
    #10556
   </li>
@@ -1426,6 +1426,10 @@
    #4668
    #11246
   </li>
+  <li>
+   Implement Un-replace by double-clicking eject
+   #11246
+  </li>
  </ul>
  <p>
   Waveforms and GL Widgets
@@ -1805,7 +1809,7 @@
  </p>
  <ul>
   <li>
-   Fixed a SIGSEGV after a debug assertion
+   Fix a SIGSEGV after a debug assertion
    #4316
   </li>
   <li>

@@ -251,7 +251,7 @@
 * MP3: Log recoverable errors as info instead of warning [#4365](https://github.com/mixxxdj/mixxx/pull/4365)
 * MP3: Garbage detection fix [#12464](https://github.com/mixxxdj/mixxx/pull/12464)
 * MP3: Improve decoding precision on Windows [#11911](https://github.com/mixxxdj/mixxx/pull/11911) [#11888](https://github.com/mixxxdj/mixxx/issues/11888)
-* AAC encoder: Fixed a memory leak [#4386](https://github.com/mixxxdj/mixxx/pull/4386) [#4408](https://github.com/mixxxdj/mixxx/pull/4408)
+* AAC encoder: Fix a memory leak [#4386](https://github.com/mixxxdj/mixxx/pull/4386) [#4408](https://github.com/mixxxdj/mixxx/pull/4408)
 * Improve robustness of file type detection by considering the actual MIME type of the content. [#7970](https://github.com/mixxxdj/mixxx/issues/7970) [#4356](https://github.com/mixxxdj/mixxx/pull/4356) [#4357](https://github.com/mixxxdj/mixxx/pull/4357)
 * Fix file type detection when file has wrong file extension by determining the MIME type from content
   [#4602](https://github.com/mixxxdj/mixxx/pull/4602)
@@ -295,7 +295,7 @@
   [#4153](https://github.com/mixxxdj/mixxx/pull/4153)
 * Add halve/double controls for beatjump size [#4269](https://github.com/mixxxdj/mixxx/pull/4269)
 * Fix possible segfault when ejecting track [#4362](https://github.com/mixxxdj/mixxx/pull/4362) [#10497](https://github.com/mixxxdj/mixxx/issues/10497)
-* Fixed an assertion when loop is before track start [#4383](https://github.com/mixxxdj/mixxx/pull/4383) [#10556](https://github.com/mixxxdj/mixxx/issues/10556)
+* Fix an assertion when loop is before track start [#4383](https://github.com/mixxxdj/mixxx/pull/4383) [#10556](https://github.com/mixxxdj/mixxx/issues/10556)
 * Fix and improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [#10541](https://github.com/mixxxdj/mixxx/issues/10541)
 * Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [#9950](https://github.com/mixxxdj/mixxx/issues/9950)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
@@ -653,7 +653,7 @@
 
 ### Track properties
 
-* Fixed a SIGSEGV after a debug assertion [#4316](https://github.com/mixxxdj/mixxx/pull/4316)
+* Fix a SIGSEGV after a debug assertion [#4316](https://github.com/mixxxdj/mixxx/pull/4316)
 * Apply pending changes also when saving via hotkey [#4562](https://github.com/mixxxdj/mixxx/pull/4562) [#10612](https://github.com/mixxxdj/mixxx/issues/10612)
 * Fix crash when trying to scale 0.0 BPM [#4587](https://github.com/mixxxdj/mixxx/pull/4587) [#1955853](https://github.com/mixxxdj/mixxx/issues/10625)
 * Add track color selector [#11436](https://github.com/mixxxdj/mixxx/pull/11436) [#10324](https://github.com/mixxxdj/mixxx/issues/10324)
