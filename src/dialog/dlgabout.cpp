@@ -53,7 +53,11 @@ DlgAbout::DlgAbout()
             << "S&eacute;bastien Blaisot"
             << "ronso0"
             << "Jan Holthuis"
-            << "Nikolaus Einhauser";
+            << "Nikolaus Einhauser"
+            << "Ferran Pujol Camins"
+            << "J&ouml;rg Wartenberg"
+            << "Fredrik Wieczerkowski"
+            << "Maarten de Boer";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -63,7 +67,6 @@ DlgAbout::DlgAbout()
             << "Tuukka Pasanen"
             << "Uwe Klotz"
             << "Nino MP"
-            << "Ferran Pujol Camins"
             << "Josep Maria Antol&iacute;n Segura"
             << "Daniel Poelzleithner"
             << "St&eacute;phane Lepin"
@@ -95,7 +98,6 @@ DlgAbout::DlgAbout()
             << "Matthieu Bouron"
             << "Nathan Korth"
             << "Kristiyan Katsarov"
-            << "J&ouml;rg Wartenberg"
             << "Sanskar Bajpai"
             << "Edward Millen"
             << "Frank Breitling"
@@ -116,7 +118,6 @@ DlgAbout::DlgAbout()
             << "h67ma"
             << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
-            << "Fredrik Wieczerkowski"
             << "Viktor Gal"
             << "Maty&aacute;&scaron; Bobek"
             << "Mr. Rincewind"
@@ -130,7 +131,6 @@ DlgAbout::DlgAbout()
             << "Matteo Gheza"
             << "Michael Bacarella"
             << "Somesh Metri"
-            << "Maarten de Boer"
             << "Doteya"
             << "olafklingt"
             << "Bilal Ahmed Karbelkar"
