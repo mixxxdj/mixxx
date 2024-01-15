@@ -51,7 +51,6 @@ DlgAbout::DlgAbout()
             << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
             << "S. Brandt"
-            << "Uwe Klotz"
             << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
@@ -64,6 +63,7 @@ DlgAbout::DlgAbout()
     QStringList recentContributors;
     recentContributors
             << "Tuukka Pasanen"
+            << "Uwe Klotz"
             << "Nino MP"
             << "Ferran Pujol Camins"
             << "Josep Maria Antol&iacute;n Segura"
@@ -190,7 +190,8 @@ DlgAbout::DlgAbout()
             << "Ilkka Tuohela"
             << "Max Linke"
             << "Marcos Cardinot"
-            << "Nicu Badescu";
+            << "Nicu Badescu"
+            << "Uwe Klotz";
 
     QStringList pastContributors;
     pastContributors
