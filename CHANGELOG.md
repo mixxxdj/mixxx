@@ -687,7 +687,7 @@
   A fix is promised in 2024-02 with Windows 11 build 26016.
   [#12289](https://github.com/mixxxdj/mixxx/issues/12289)
   [#11094](https://github.com/mixxxdj/mixxx/issues/11094)
-* Different, language depending library sorting on macOS
+* macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
   [#12517](https://github.com/mixxxdj/mixxx/issues/12517)
 
 ## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)

@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705254424">
+    <release version="2.4.0" type="development" date="2024-01-14" timestamp="1705259689">
       <description>
  <p>
   Cover Art
@@ -1938,7 +1938,7 @@
    #11094
   </li>
   <li>
-   Different, language depending library sorting on macOS
+   macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
    #12517
   </li>
  </ul>
