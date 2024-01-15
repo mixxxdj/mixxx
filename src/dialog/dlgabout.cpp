@@ -48,9 +48,7 @@ DlgAbout::DlgAbout()
     thisReleaseDevelopers
             << "RJ Skerry-Ryan"
             << "Owen Williams"
-            << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
-            << "S. Brandt"
             << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
@@ -191,7 +189,9 @@ DlgAbout::DlgAbout()
             << "Max Linke"
             << "Marcos Cardinot"
             << "Nicu Badescu"
-            << "Uwe Klotz";
+            << "Uwe Klotz"
+            << "Sean Pappalardo"
+            << "S. Brandt";
 
     QStringList pastContributors;
     pastContributors
