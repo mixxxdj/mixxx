@@ -469,6 +469,8 @@
 * Implement Un-eject by pressing eject again
   [#4668](https://github.com/mixxxdj/mixxx/pull/4668)
   [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
+* Implement Un-replace by double-clicking eject
+  [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
 
 ### Waveforms and GL Widgets
 
