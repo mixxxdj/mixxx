@@ -192,8 +192,10 @@ void DlgTagFetcher::init() {
 
     btnRetry->setDisabled(true);
 
-    checkBoxTags->setChecked(true);
-    checkBoxCover->setChecked(true);
+    int iApplyTags = m_pConfig->getValue(mixxx::library::prefs::kTagFetcherApplyTagsConfigKey, 1);
+    int iApplyCover = m_pConfig->getValue(mixxx::library::prefs::kTagFetcherApplyCoverConfigKey, 1);
+    checkBoxTags->setChecked(iApplyTags == 1);
+    checkBoxCover->setChecked(iApplyCover == 1);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -432,12 +434,21 @@ void DlgTagFetcher::retry() {
 
 void DlgTagFetcher::quit() {
     m_tagFetcher.cancel();
+    saveCheckBoxState();
     accept();
 }
 
 void DlgTagFetcher::reject() {
     m_tagFetcher.cancel();
+    saveCheckBoxState();
     accept();
+}
+
+void DlgTagFetcher::saveCheckBoxState() {
+    m_pConfig->set(mixxx::library::prefs::kTagFetcherApplyTagsConfigKey,
+            ConfigValue(checkBoxTags->isChecked()));
+    m_pConfig->set(mixxx::library::prefs::kTagFetcherApplyCoverConfigKey,
+            ConfigValue(checkBoxCover->isChecked()));
 }
 
 void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {

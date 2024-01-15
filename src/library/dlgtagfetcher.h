@@ -77,6 +77,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void getCoverArt(const QString& url);
     void loadCurrentTrackCover();
 
+    void saveCheckBoxState();
+
     UserSettingsPointer m_pConfig;
 
     const TrackModel* const m_pTrackModel;

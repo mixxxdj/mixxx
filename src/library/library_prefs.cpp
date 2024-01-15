@@ -89,3 +89,13 @@ const ConfigKey mixxx::library::prefs::kCoverArtFetcherQualityConfigKey =
         ConfigKey{
                 mixxx::library::prefs::kConfigGroup,
                 QStringLiteral("CoverArtFetcherQuality")};
+
+const ConfigKey mixxx::library::prefs::kTagFetcherApplyTagsConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("TagFetcherApplyTags")};
+
+const ConfigKey mixxx::library::prefs::kTagFetcherApplyCoverConfigKey =
+        ConfigKey{
+                mixxx::library::prefs::kConfigGroup,
+                QStringLiteral("TagFetcherApplyCover")};
