@@ -265,6 +265,8 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    checkBoxTags->setDisabled(true);
+    checkBoxCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
@@ -428,6 +430,8 @@ void DlgTagFetcher::applyCover() {
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
+    checkBoxTags->setDisabled(true);
+    checkBoxCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
 }
@@ -488,6 +492,8 @@ void DlgTagFetcher::fetchTagFinished(
     } else {
         btnApply->setDisabled(true);
         btnRetry->setDisabled(true);
+        checkBoxTags->setDisabled(true);
+        checkBoxCover->setDisabled(true);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
 
@@ -542,16 +548,20 @@ void DlgTagFetcher::slotNetworkResult(
 void DlgTagFetcher::tagSelected() {
     if (!tags->currentItem()) {
         btnApply->setDisabled(true);
+        checkBoxTags->setDisabled(true);
+        checkBoxCover->setDisabled(true);
         return;
     }
 
     if (tags->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
         tags->currentItem()->setFlags(Qt::ItemIsEnabled);
         btnApply->setDisabled(true);
+        checkBoxTags->setDisabled(true);
         return;
     }
     // Allow applying the tags, regardless the cover art
     btnApply->setEnabled(true);
+    checkBoxTags->setEnabled(true);
 
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;
@@ -629,6 +639,8 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
     m_pWFetchedCoverArtLabel->loadData(
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
+
+    checkBoxCover->setEnabled(!data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
@@ -641,6 +653,7 @@ void DlgTagFetcher::slotCoverArtLinkNotFound() {
     loadingProgressBar->setVisible(false);
     statusMessage->setText(tr("Cover Art is not available for selected metadata"));
     statusMessage->setVisible(true);
+    checkBoxCover->setDisabled(true);
 }
 
 void DlgTagFetcher::slotWorkerStarted() {
