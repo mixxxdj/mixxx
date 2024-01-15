@@ -38,7 +38,7 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
     return pEffectChainPreset;
 }
 
-EffectChainPresetPointer createEmptyChainPreset() {
+EffectChainPresetPointer createEmptyReadOnlyChainPreset() {
     EffectManifestPointer pEmptyManifest(new EffectManifest());
     pEmptyManifest->setName(kNoEffectString);
     // Center the Super knob, eliminates the colored (bipolar) knob ring
@@ -628,7 +628,7 @@ void EffectChainPresetManager::resetToDefaults() {
     prependRemainingPresetsToLists();
 
     // Re-add the empty chain preset
-    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyReadOnlyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
     m_effectChainPresetsSorted.prepend(pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
@@ -807,7 +807,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // It will not be visible in the effects preferences.
     // Note: we also need to take care of this preset in resetToDefaults() and
     // setQuickEffectPresetOrder(), both called from DlgPrefEffects
-    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyReadOnlyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
     m_effectChainPresetsSorted.prepend(pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
