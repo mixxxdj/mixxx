@@ -72,6 +72,12 @@ class EffectChain : public QObject {
 
     virtual void loadChainPreset(EffectChainPresetPointer pPreset);
 
+    bool isEmpty();
+
+    bool isEmptyPlaceholderPresetLoaded();
+
+    void loadEmptyNamelessPreset();
+
   public slots:
     void slotControlClear(double value);
 

@@ -282,6 +282,14 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         return;
     }
 
+    // Don't load an effect into the '---' preset. The preset would remain
+    // selected in WEffectChainPresetSelector and WEffectChainPresetButton and
+    // therefore couldn't be used to clear the chain.
+    // Instead, load an empty, nameless preset, then load the desired effect.
+    if (m_pChain->isEmptyPlaceholderPresetLoaded()) {
+        m_pChain->loadEmptyNamelessPreset();
+    }
+
     m_pManifest = pManifest;
     addToEngine();
 

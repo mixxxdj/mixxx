@@ -677,6 +677,13 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     return success;
 }
 
+// static
+EffectChainPresetPointer EffectChainPresetManager::createEmptyNamelessChainPreset() {
+    auto pPreset = EffectChainPresetPointer::create(EffectChainPreset());
+    pPreset->setName("");
+    return pPreset;
+}
+
 EffectManifestPointer EffectChainPresetManager::getDefaultEqEffect() {
     EffectManifestPointer pDefaultEqEffect = m_pBackendManager->getManifest(
             BiquadFullKillEQEffect::getId(), EffectBackendType::BuiltIn);
@@ -722,12 +729,8 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             QDomElement chainElement = chainNode.toElement();
             EffectChainPresetPointer pPreset =
                     EffectChainPresetPointer::create(chainElement);
-            // Don't restore the name '---', or this preset will be selected
-            // in WEffectChainPreselector and WEffectChainPresetButton (and
-            // represented by `loaded_chain_preset` CO).
-            // Then, this item can't be used to clear a chain, via the GUI or
-            // by setting `loaded_chain_preset` to 0.
-            if (pPreset->name() == kNoEffectString) {
+            // Shouldn't happen, see EffectSlot::loadEffectInner
+            VERIFY_OR_DEBUG_ASSERT(pPreset->name() != kNoEffectString) {
                 pPreset->setName("");
             }
             standardEffectChainPresets.append(pPreset);

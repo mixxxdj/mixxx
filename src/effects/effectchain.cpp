@@ -219,6 +219,23 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pChainPreset) {
     setControlLoadedPresetIndex(presetIndex());
 }
 
+bool EffectChain::isEmpty() {
+    for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
+        if (pEffectSlot->isLoaded()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool EffectChain::isEmptyPlaceholderPresetLoaded() {
+    return isEmpty() && presetName() == kNoEffectString;
+}
+
+void EffectChain::loadEmptyNamelessPreset() {
+    loadChainPreset(m_pChainPresetManager->createEmptyNamelessChainPreset());
+}
+
 void EffectChain::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
@@ -309,7 +326,7 @@ EffectSlotPointer EffectChain::getEffectSlot(unsigned int slotNumber) {
 }
 
 void EffectChain::slotControlClear(double v) {
-    for (EffectSlotPointer pEffectSlot : std::as_const(m_effectSlots)) {
+    for (const auto& pEffectSlot : std::as_const(m_effectSlots)) {
         pEffectSlot->slotClear(v);
     }
 }
