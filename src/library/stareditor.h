@@ -12,9 +12,11 @@ class QTableView;
 class StarEditor : public QWidget {
     Q_OBJECT
   public:
-    StarEditor(QWidget* parent, QTableView* pTableView,
-               const QModelIndex& index,
-               const QStyleOptionViewItem& option);
+    StarEditor(QWidget* parent,
+            QTableView* pTableView,
+            const QModelIndex& index,
+            const QStyleOptionViewItem& option,
+            const QColor& focusBorderColor);
 
     QSize sizeHint() const override;
     void setStarRating(const StarRating& starRating) {
@@ -42,9 +44,10 @@ class StarEditor : public QWidget {
         update();
     }
 
-QTableView* m_pTableView;
+    QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;
+    QColor m_pFocusBorderColor;
     StarRating m_starRating;
     int m_starCount;
 };

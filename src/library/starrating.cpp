@@ -4,6 +4,7 @@
 #include <QRect>
 
 #include "util/math.h"
+#include "util/painterscope.h"
 
 // Magic number? Explain what this factor affects and how
 constexpr int PaintingScaleFactor = 15;
@@ -34,6 +35,7 @@ QSize StarRating::sizeHint() const {
 }
 
 void StarRating::paint(QPainter* painter, const QRect& rect) const {
+    PainterScope painterScope(painter);
     // Assume the painter is configured with the right brush.
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);

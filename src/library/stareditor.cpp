@@ -2,11 +2,12 @@
 
 #include <QItemSelectionModel>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QTableView>
 
 #include "library/starrating.h"
+#include "library/tableitemdelegate.h"
 #include "moc_stareditor.cpp"
-#include "util/painterscope.h"
 
 // We enable mouse tracking on the widget so we can follow the cursor even
 // when the user doesn't hold down any mouse button. We also turn on
@@ -21,11 +22,13 @@
 StarEditor::StarEditor(QWidget* parent,
         QTableView* pTableView,
         const QModelIndex& index,
-        const QStyleOptionViewItem& option)
+        const QStyleOptionViewItem& option,
+        const QColor& focusBorderColor)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
           m_styleOption(option),
+          m_pFocusBorderColor(focusBorderColor),
           m_starCount(StarRating::kMinStarCount) {
     DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
@@ -50,7 +53,6 @@ void StarEditor::paintEvent(QPaintEvent*) {
     }
 
     QPainter painter(this);
-    PainterScope painterScope(&painter);
 
     painter.setClipRect(m_styleOption.rect);
 
@@ -58,6 +60,12 @@ void StarEditor::paintEvent(QPaintEvent*) {
     QStyle* style = m_pTableView->style();
     if (style) {
         style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
+    }
+
+    // Draw a border if the color cell has focus
+    if (m_styleOption.state & QStyle::State_Selected) {
+        // QPainterScope in drawBorder() and shift down?
+        TableItemDelegate::drawBorder(&painter, m_pFocusBorderColor, m_styleOption.rect);
     }
 
     // Starrating scales the painter so do this after painting the border.
