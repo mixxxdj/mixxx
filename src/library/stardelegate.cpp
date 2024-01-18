@@ -76,6 +76,7 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // StarRating.
     if (index.data().canConvert<StarRating>()) {
         if (m_isOneCellInEditMode) {
+            // Don't close other editors when hovering the stars cell!
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }
         m_pTableView->openPersistentEditor(index);

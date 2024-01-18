@@ -8,6 +8,12 @@
 #include "moc_stareditor.cpp"
 #include "util/painterscope.h"
 
+namespace {
+
+constexpr int kInvalidStarCount = StarRating::kMinStarCount - 1;
+
+}
+
 // We enable mouse tracking on the widget so we can follow the cursor even
 // when the user doesn't hold down any mouse button. We also turn on
 // QWidget's auto-fill background feature to obtain an opaque background.
@@ -18,13 +24,15 @@
 ///
 /// The class has been adapted from the official "Star Delegate Example",
 /// see http://doc.trolltech.com/4.5/itemviews-stardelegate.html
-StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
-                       const QModelIndex& index,
-                       const QStyleOptionViewItem& option)
+StarEditor::StarEditor(QWidget* parent,
+        QTableView* pTableView,
+        const QModelIndex& index,
+        const QStyleOptionViewItem& option)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
-          m_styleOption(option) {
+          m_styleOption(option),
+          m_starCount(StarRating::kMinStarCount) {
     setMouseTracking(true);
 }
 
@@ -91,15 +99,18 @@ void StarEditor::mouseMoveEvent(QMouseEvent *event) {
 #endif
     int star = starAtPosition(eventPosition);
 
-    if (star != m_starRating.starCount() && star != -1) {
+    if (star <= kInvalidStarCount) {
+        resetRating();
+    } else if (star != m_starRating.starCount()) {
+        // Apply star rating if it changed
         m_starRating.setStarCount(star);
         update();
     }
 }
 
 void StarEditor::leaveEvent(QEvent*) {
-    m_starRating.setStarCount(0);
-    update();
+    // Leaving editor, reset to last confirmed value
+    resetRating();
 }
 
 void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
@@ -107,11 +118,16 @@ void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
 }
 
 int StarEditor::starAtPosition(int x) {
-    // If the mouse is very close to the left edge, set 0 stars.
-    if (x < m_starRating.sizeHint().width() * 0.05) {
+    int starsWidth = m_starRating.sizeHint().width();
+    // Return invalid if the pointer left the star rectangle at either side.
+    if (x < 0 || x >= starsWidth) {
+        return kInvalidStarCount;
+    } else if (x < starsWidth * 0.05) {
+        // If the pointer is very close to the left edge, set 0 stars.
         return 0;
     }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
+
+    int star = (x / (starsWidth / m_starRating.maxStarCount())) + 1;
 
     if (star <= 0 || star > m_starRating.maxStarCount()) {
         return 0;

@@ -19,6 +19,12 @@ class StarEditor : public QWidget {
     QSize sizeHint() const override;
     void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
+        int stars = m_starRating.starCount();
+        VERIFY_OR_DEBUG_ASSERT(stars >= m_starRating.kMinStarCount &&
+                stars <= m_starRating.maxStarCount()) {
+            return;
+        }
+        m_starCount = stars;
     }
     StarRating starRating() { return m_starRating; }
 
@@ -33,14 +39,18 @@ class StarEditor : public QWidget {
     void paintEvent(QPaintEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
-    //if the mouse leaves the editing index set starCount to 0
     void leaveEvent(QEvent*) override;
 
   private:
     int starAtPosition(int x);
+    void resetRating() {
+        m_starRating.setStarCount(m_starCount);
+        update();
+    }
 
     QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;
     StarRating m_starRating;
+    int m_starCount;
 };
