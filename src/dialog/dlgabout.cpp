@@ -94,6 +94,7 @@ DlgAbout::DlgAbout()
             << "Stefan N&uuml;rnberger"
             << "motific"
             << "Fatih Emre YILDIZ"
+            << "Neil Naveen"
             << "Javier Vilalta"
             << "David Chocholat&yacute;"
             << "Fabian Wolter"
