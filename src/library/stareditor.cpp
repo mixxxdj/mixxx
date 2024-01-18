@@ -28,6 +28,7 @@ StarEditor::StarEditor(QWidget* parent,
           m_styleOption(option),
           m_starCount(StarRating::kMinStarCount) {
     setMouseTracking(true);
+    installEventFilter(this);
 }
 
 QSize StarEditor::sizeHint() const {
@@ -85,28 +86,45 @@ void StarEditor::paintEvent(QPaintEvent*) {
     renderHelper(&painter, m_pTableView, m_styleOption, &m_starRating);
 }
 
-void StarEditor::mouseMoveEvent(QMouseEvent *event) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    const int eventPosition = static_cast<int>(event->position().x());
-#else
-    const int eventPosition = event->x();
-#endif
-    int star = m_starRating.starAtPosition(eventPosition, m_styleOption.rect);
-
-    if (star == StarRating::kInvalidStarCount) {
+bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
+    switch (event->type()) {
+    case QEvent::Leave:
+    case QEvent::ContextMenu: {
+        // Note: it seems with Qt5 we do not reliably get a Leave event when
+        // invoking the track menu via right click, so reset the rating now.
+        // The event is forwarded to parent QTableView.
         resetRating();
-    } else if (star != m_starRating.starCount()) {
-        // Apply star rating if it changed
-        m_starRating.setStarCount(star);
-        update();
+        break;
     }
-}
+    case QEvent::MouseButtonRelease: {
+        emit editingFinished();
+        break;
+    }
+    case QEvent::MouseMove: {
+        // Change rating only if no button is pressed.
+        // This allows dragging the row also by grabbing the star cell
+        QMouseEvent* me = static_cast<QMouseEvent*>(event);
+        if (me->buttons().testFlag(Qt::NoButton)) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            const int eventPosition = static_cast<int>(me->position().x());
+#else
+            const int eventPosition = me->x();
+#endif
+            int star = m_starRating.starAtPosition(eventPosition, m_styleOption.rect);
 
-void StarEditor::leaveEvent(QEvent*) {
-    // Leaving editor, reset to last confirmed value
-    resetRating();
-}
+            if (star <= StarRating::kInvalidStarCount) {
+                resetRating();
+            } else if (star != m_starRating.starCount()) {
+                // Apply star rating if it changed
+                m_starRating.setStarCount(star);
+                update();
+            }
+        }
+        break;
+    }
+    default:
+        break;
+    }
 
-void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
-    emit editingFinished();
+    return QWidget::eventFilter(obj, event);
 }

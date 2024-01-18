@@ -37,9 +37,8 @@ class StarEditor : public QWidget {
 
   protected:
     void paintEvent(QPaintEvent* event) override;
-    void mouseMoveEvent(QMouseEvent* event) override;
-    void mouseReleaseEvent(QMouseEvent* event) override;
-    void leaveEvent(QEvent*) override;
+
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
   private:
     void resetRating() {
