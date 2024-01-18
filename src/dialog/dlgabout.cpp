@@ -82,6 +82,7 @@ DlgAbout::DlgAbout()
             << "Christian"
             << "Geraldo Nascimento"
             << "Javier Vilarroig"
+            << "Allen Wittenauer"
             << "tcoyvwac"
             << "Tobias Oszlanyi (OsZ)"
             << "Viktor Gal"
