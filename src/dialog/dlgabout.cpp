@@ -86,6 +86,7 @@ DlgAbout::DlgAbout()
             << "Raphael Bigal"
             << "Filok"
             << "tcoyvwac"
+            << "Gary Tunstall"
             << "Tobias Oszlanyi (OsZ)"
             << "Viktor Gal"
             << "Maty&aacute;&scaron; Bobek"
