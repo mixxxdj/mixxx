@@ -1,7 +1,6 @@
 #include "library/tableitemdelegate.h"
 
 #include <QPainter>
-#include <QTableView>
 
 #include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"

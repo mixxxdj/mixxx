@@ -15,7 +15,6 @@ class BPMDelegate : public TableItemDelegate {
             const QModelIndex& index) const override;
 
   private:
-    QTableView* m_pTableView;
     QCheckBox* m_pCheckBox;
     QItemEditorFactory* m_pFactory;
 };

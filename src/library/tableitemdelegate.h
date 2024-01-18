@@ -27,6 +27,8 @@ class TableItemDelegate : public QStyledItemDelegate {
             const QStyleOptionViewItem& option,
             const QModelIndex& index);
 
+    // Only used by LocationDelegate's text elide.
+    // Having this here avoids including QTableView there.
     int columnWidth(const QModelIndex &index) const;
 
     QColor m_pFocusBorderColor;

@@ -338,7 +338,7 @@ void WTrackTableView::initTrackMenu() {
     connect(m_pTrackMenu.get(),
             &WTrackMenu::loadTrackToPlayer,
             this,
-            &WTrackTableView::loadTrackToPlayer);
+            &WLibraryTableView::loadTrackToPlayer);
 
     connect(m_pTrackMenu,
             &WTrackMenu::trackMenuVisible,
