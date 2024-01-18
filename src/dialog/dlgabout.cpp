@@ -105,6 +105,7 @@ DlgAbout::DlgAbout()
             << "Jakob Leifhelm"
             << "Florian Goth"
             << "Chase Durand"
+            << "Antoine Colombier"
             << "John Last"
             << "Robbert van der Helm";
 
