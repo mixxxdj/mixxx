@@ -42,13 +42,12 @@ class StarEditor : public QWidget {
     void leaveEvent(QEvent*) override;
 
   private:
-    int starAtPosition(int x);
     void resetRating() {
         m_starRating.setStarCount(m_starCount);
         update();
     }
 
-    QTableView* m_pTableView;
+QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;
     StarRating m_starRating;
