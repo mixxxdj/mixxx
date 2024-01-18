@@ -49,7 +49,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotNetworkResult(int httpStatus, const QString& app, const QString& message, int code);
     // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
-    void applyTagsAndCover();
+    void apply();
+    void applyTags();
     void applyCover();
     void retry();
     void quit();
@@ -73,9 +74,10 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private:
     // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& pTrack);
-    void addDivider(const QString& text, QTreeWidget* pParent) const;
     void getCoverArt(const QString& url);
     void loadCurrentTrackCover();
+
+    void saveCheckBoxState();
 
     UserSettingsPointer m_pConfig;
 
