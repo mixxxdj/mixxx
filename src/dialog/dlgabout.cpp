@@ -66,6 +66,7 @@ DlgAbout::DlgAbout()
     recentContributors
             << "Uwe Klotz"
             << "Nino MP"
+            << "D&aacute;vid Szak&aacute;llas"
             << "Daniel Poelzleithner"
             << "luzpaz"
             << "Kshitij Gupta"
