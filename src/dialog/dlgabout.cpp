@@ -76,6 +76,7 @@ DlgAbout::DlgAbout()
             << "Evan Dekker"
             << "Harshit Maurya"
             << "Janek Fischer"
+            << "Matthias Beyer"
             << "Kristiyan Katsarov"
             << "Sanskar Bajpai"
             << "Christian"
