@@ -28,10 +28,6 @@ class StarEditor : public QWidget {
     }
     StarRating starRating() { return m_starRating; }
 
-    static void renderHelper(QPainter* painter, QTableView* pTableView,
-                             const QStyleOptionViewItem& option,
-                             StarRating* pStarRating);
-
   signals:
     void editingFinished();
 

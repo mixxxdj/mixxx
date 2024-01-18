@@ -27,6 +27,7 @@ StarEditor::StarEditor(QWidget* parent,
           m_index(index),
           m_styleOption(option),
           m_starCount(StarRating::kMinStarCount) {
+    DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
     installEventFilter(this);
 }
@@ -35,55 +36,48 @@ QSize StarEditor::sizeHint() const {
     return m_starRating.sizeHint();
 }
 
-// static
-void StarEditor::renderHelper(QPainter* painter,
-                              QTableView* pTableView,
-                              const QStyleOptionViewItem& option,
-                              StarRating* pStarRating) {
-    PainterScope painterScope(painter);
-
-    painter->setClipRect(option.rect);
-
-    if (pTableView != nullptr) {
-        QStyle* style = pTableView->style();
-        if (style != nullptr) {
-            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
-                               pTableView);
-        }
-    }
-
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
-            ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active)) {
-        cg = QPalette::Inactive;
-    }
-
-    if (option.state & QStyle::State_Selected) {
-        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
-    } else {
-        painter->setBrush(option.palette.color(cg, QPalette::Text));
-    }
-
-    pStarRating->paint(painter, option.rect);
-}
-
 void StarEditor::paintEvent(QPaintEvent*) {
     // If a StarEditor is open, by definition the mouse is hovering over us.
     m_styleOption.state |= QStyle::State_MouseOver;
     m_styleOption.rect = rect();
 
-    if (m_pTableView) {
-        QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
-        if (selectionModel && selectionModel->isSelected(m_index)) {
-            m_styleOption.state |= QStyle::State_Selected;
-        }
+    // If the editor cell is selected set the respective flag so we can use the
+    // palette's 'HighlightedText' font color for the brush StarRating will use
+    // to fill the star/diamond polygons with.
+    QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
+    if (selectionModel && selectionModel->isSelected(m_index)) {
+        m_styleOption.state |= QStyle::State_Selected;
     }
 
     QPainter painter(this);
-    renderHelper(&painter, m_pTableView, m_styleOption, &m_starRating);
+    PainterScope painterScope(&painter);
+
+    painter.setClipRect(m_styleOption.rect);
+
+    // Draw standard item with the table view's style
+    QStyle* style = m_pTableView->style();
+    if (style) {
+        style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
+    }
+
+    // Starrating scales the painter so do this after painting the border.
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = m_styleOption.state & QStyle::State_Enabled
+            ? QPalette::Normal
+            : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(m_styleOption.state & QStyle::State_Active)) {
+        cg = QPalette::Inactive;
+    }
+
+    if (m_styleOption.state & QStyle::State_Selected) {
+        painter.setBrush(m_styleOption.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter.setBrush(m_styleOption.palette.color(cg, QPalette::Text));
+    }
+
+    m_starRating.paint(&painter, m_styleOption.rect);
 }
 
 bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
