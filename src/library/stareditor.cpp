@@ -119,8 +119,17 @@ void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
 
 int StarEditor::starAtPosition(int x) {
     int starsWidth = m_starRating.sizeHint().width();
+    // The star rating is drawn centered in the table cell, so we need
+    // to shift the x input as well.
+    int xOffset = std::max((m_styleOption.rect.width() - starsWidth) / 2, 0);
+    // Only shift if the editor is wider than the star rating
+    x -= std::max(xOffset, 0);
+
     // Return invalid if the pointer left the star rectangle at either side.
-    if (x < 0 || x >= starsWidth) {
+    // If the the cell is wider than the star rating, add a half star margin
+    // at the left to simplify setting 0.
+    double leftVoid = xOffset > starsWidth * 0.05 ? starsWidth * -0.05 : 0;
+    if (x < leftVoid || x >= starsWidth) {
         return kInvalidStarCount;
     } else if (x < starsWidth * 0.05) {
         // If the pointer is very close to the left edge, set 0 stars.

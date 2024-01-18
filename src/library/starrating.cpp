@@ -38,8 +38,11 @@ void StarRating::paint(QPainter *painter, const QRect &rect) const {
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
 
+    // Center vertically inside the table cell, and also center horizontally
+    // if the cell is wider than the minimum stars width.
+    int xOffset = std::max((rect.width() - sizeHint().width()) / 2, 0);
     int yOffset = (rect.height() - PaintingScaleFactor) / 2;
-    painter->translate(rect.x(), rect.y() + yOffset);
+    painter->translate(rect.x() + xOffset, rect.y() + yOffset);
     painter->scale(PaintingScaleFactor, PaintingScaleFactor);
 
     //determine number of stars that are possible to paint
