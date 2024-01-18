@@ -40,6 +40,8 @@ class VisualPlayPositionData {
     double m_slipRate;
     SlipModeState m_slipModeState;
     bool m_loopEnabled;
+    bool m_loopInAdjustActive;
+    bool m_loopOutAdjustActive;
     double m_loopStartPos;
     double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
@@ -62,6 +64,8 @@ class VisualPlayPosition : public QObject {
             double slipRate,
             SlipModeState slipModeState,
             bool loopEnabled,
+            bool loopInAdjustActive,
+            bool loopOutAdjustActive,
             double loopStartPos,
             double loopEndPos,
             double tempoTrackSeconds,
