@@ -108,6 +108,7 @@ DlgAbout::DlgAbout()
             << "Chase Durand"
             << "Antoine Colombier"
             << "John Last"
+            << "Jakub Kopa&nacute;ko"
             << "Saksham Hans"
             << "Robbert van der Helm"
             << "Andrew Burns"
