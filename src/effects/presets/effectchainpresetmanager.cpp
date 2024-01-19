@@ -925,9 +925,16 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     QDomElement chainsElement = pDoc->createElement(EffectXml::kChainsRoot);
     rackElement.appendChild(chainsElement);
     for (const auto& pPreset : std::as_const(data.standardEffectChainPresets)) {
-        // Don't store the name '---', see readEffectsXml() for explanation.
+        // Don't store the empty '---' preset.
         if (pPreset->name() == kNoEffectString) {
-            pPreset->setName("");
+            // It must not have any effects loaded. If it has, clear the name.
+            // See readEffectsXml() for explanation.
+            VERIFY_OR_DEBUG_ASSERT(pPreset->isEmpty()) {
+                pPreset->setName("");
+            }
+            else {
+                continue;
+            }
         }
         chainsElement.appendChild(pPreset->toXml(pDoc));
     }
