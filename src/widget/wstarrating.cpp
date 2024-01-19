@@ -32,6 +32,10 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(context);
     setMouseTracking(true);
     setFocusPolicy(Qt::NoFocus);
+    // NOTE Here we may read <StarBreadth> from the widget,
+    // then m_visualStarRating.setStarBreadth().
+    // Must be <= size().height().
+    // For now: YAGNI
 }
 
 QSize WStarRating::sizeHint() const {

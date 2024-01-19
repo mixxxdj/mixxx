@@ -27,6 +27,8 @@ void StarDelegate::paintItem(
     paintItemBackground(painter, option, index);
 
     StarRating starRating = index.data().value<StarRating>();
+    // Scale star size with the library's current font height.
+    starRating.setStarBreadth(StarEditor::starBreadthFromFont(option));
     starRating.paint(painter, option.rect);
 }
 
@@ -34,6 +36,7 @@ QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
                              const QModelIndex& index) const {
     Q_UNUSED(option);
     StarRating starRating = index.data().value<StarRating>();
+    starRating.setStarBreadth(static_cast<int>(option.fontMetrics.height() / 2));
     return starRating.sizeHint();
 }
 
