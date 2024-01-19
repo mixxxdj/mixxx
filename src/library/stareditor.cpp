@@ -47,9 +47,12 @@ void StarEditor::paintEvent(QPaintEvent*) {
     // If the editor cell is selected set the respective flag so we can use the
     // palette's 'HighlightedText' font color for the brush StarRating will use
     // to fill the star/diamond polygons with.
+    // Else, unset it and we use the regular color.
     QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
     if (selectionModel && selectionModel->isSelected(m_index)) {
         m_styleOption.state |= QStyle::State_Selected;
+    } else {
+        m_styleOption.state &= ~QStyle::State_Selected;
     }
 
     QPainter painter(this);
