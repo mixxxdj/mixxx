@@ -37,6 +37,7 @@ void StarRating::paint(QPainter* painter, const QRect& rect) const {
     PainterScope painterScope(painter);
     // Assume the painter is configured with the right brush.
     painter->setRenderHint(QPainter::Antialiasing, true);
+    // Don't draw outlines, only fill the polygons
     painter->setPen(Qt::NoPen);
 
     // Center vertically inside the table cell, and also center horizontally
