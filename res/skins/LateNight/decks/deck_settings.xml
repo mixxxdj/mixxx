@@ -18,7 +18,7 @@
             <Children>
               <StarRating>
                 <TooltipId>starrating</TooltipId>
-                <Size>75f,15f</Size>
+                <Size>105f,15f</Size>
                 <Channel><Variable name="ChanNum"/></Channel>
               </StarRating>
             </Children>
