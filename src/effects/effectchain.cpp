@@ -433,6 +433,9 @@ void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGrou
 }
 
 int EffectChain::presetIndex() const {
+    // 0-indexed, 0 is the empty '---' preset.
+    // This can be -1 if the name is not found in the presets list,
+    // which is default state of standard effect chains.
     return m_pChainPresetManager->presetIndex(m_presetName);
 }
 
