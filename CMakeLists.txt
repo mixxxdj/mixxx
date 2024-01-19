@@ -1977,7 +1977,6 @@ if(WIN32)
     unofficial::angle::libGLESv2
     CONFIGURATIONS RelWithDebInfo Release
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    RUNTIME_DEPENDENCY_SET mixxx
     COMPONENT applocal)
   set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
