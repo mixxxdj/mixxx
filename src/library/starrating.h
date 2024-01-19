@@ -37,9 +37,14 @@ class StarRating {
     /// x is the x-position inside the parent rectangle rect
     int starAtPosition(int x, const QRect& rect) const;
 
+    bool verifyStarCount(int starCount) {
+        return starCount >= kMinStarCount && starCount <= m_maxStarCount;
+    }
+
     void setStarCount(int starCount) {
-        DEBUG_ASSERT(starCount >= kMinStarCount);
-        DEBUG_ASSERT(starCount <= m_maxStarCount);
+        VERIFY_OR_DEBUG_ASSERT(verifyStarCount(starCount)) {
+            return;
+        }
         m_starCount = starCount;
     }
 

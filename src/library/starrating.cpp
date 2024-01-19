@@ -14,8 +14,7 @@ StarRating::StarRating(
         int maxStarCount)
         : m_starCount(starCount),
           m_maxStarCount(maxStarCount) {
-    DEBUG_ASSERT(m_starCount >= kMinStarCount);
-    DEBUG_ASSERT(m_starCount <= m_maxStarCount);
+    DEBUG_ASSERT(verifyStarCount(m_starCount));
     // 1st star cusp at 0° of the unit circle whose center is shifted to adapt the 0,0-based paint area
     m_starPolygon << QPointF(1.0, 0.5);
     for (int i = 1; i < 5; ++i) {

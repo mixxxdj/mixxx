@@ -22,8 +22,7 @@ class StarEditor : public QWidget {
     void setStarRating(const StarRating& starRating) {
         m_starRating = starRating;
         int stars = m_starRating.starCount();
-        VERIFY_OR_DEBUG_ASSERT(stars >= m_starRating.kMinStarCount &&
-                stars <= m_starRating.maxStarCount()) {
+        VERIFY_OR_DEBUG_ASSERT(m_starRating.verifyStarCount(stars)) {
             return;
         }
         m_starCount = stars;

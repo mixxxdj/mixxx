@@ -49,8 +49,7 @@ QSize WStarRating::sizeHint() const {
 }
 
 void WStarRating::slotSetRating(int starCount) {
-    if (starCount == m_starCount) {
-        // Unchanged
+    if (starCount == m_starCount || !m_visualStarRating.verifyStarCount(starCount)) {
         return;
     }
     m_starCount = starCount;
