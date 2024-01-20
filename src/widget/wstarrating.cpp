@@ -35,10 +35,7 @@ void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 QSize WStarRating::sizeHint() const {
-    QStyleOption option;
-    option.initFrom(this);
-
-    // Center rating horizontally
+    // Center rating horizontally and vertically
     m_contentRect.setRect(
             (size().width() - m_visualStarRating.sizeHint().width()) / 2,
             (size().height() - m_visualStarRating.sizeHint().height()) / 2,

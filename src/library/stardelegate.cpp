@@ -18,7 +18,8 @@ void StarDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    // let the editor do the painting if this cell is currently being edited
+    // Let the editor do the painting if this cell is currently being edited.
+    // Note: if required, the focus border will be drawn by the editor.
     if (index == m_currentEditedCellIndex) {
         return;
     }

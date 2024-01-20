@@ -47,9 +47,12 @@ void StarEditor::paintEvent(QPaintEvent*) {
     // If the editor cell is selected set the respective flag so we can use the
     // palette's 'HighlightedText' font color for the brush StarRating will use
     // to fill the star/diamond polygons with.
+    // Else, unset it and we use the regular color.
     QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
     if (selectionModel && selectionModel->isSelected(m_index)) {
         m_styleOption.state |= QStyle::State_Selected;
+    } else {
+        m_styleOption.state &= ~QStyle::State_Selected;
     }
 
     QPainter painter(this);
@@ -62,13 +65,6 @@ void StarEditor::paintEvent(QPaintEvent*) {
         style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
     }
 
-    // Draw a border if the color cell has focus
-    if (m_styleOption.state & QStyle::State_Selected) {
-        // QPainterScope in drawBorder() and shift down?
-        TableItemDelegate::drawBorder(&painter, m_pFocusBorderColor, m_styleOption.rect);
-    }
-
-    // Starrating scales the painter so do this after painting the border.
     // Set the palette appropriately based on whether the row is selected or
     // not. We also have to check if it is inactive or not and use the
     // appropriate ColorGroup.
@@ -86,6 +82,11 @@ void StarEditor::paintEvent(QPaintEvent*) {
     }
 
     m_starRating.paint(&painter, m_styleOption.rect);
+
+    // Draw a border if the color cell is selected
+    if (m_styleOption.state & QStyle::State_Selected) {
+        TableItemDelegate::drawBorder(&painter, m_pFocusBorderColor, m_styleOption.rect);
+    }
 }
 
 bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
