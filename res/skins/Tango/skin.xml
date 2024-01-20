@@ -328,7 +328,7 @@
               <SizePolicy>min,me</SizePolicy>
               <Children>
                 <Template src="skins:Tango/mixer/vumeter_single.xml">
-                  <SetVariable name="group">[Master]</SetVariable>
+                  <SetVariable name="group">[Main]</SetVariable>
                 </Template>
                 <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
                 <WidgetGroup>
