@@ -173,6 +173,11 @@ int main(int argc, char * argv[]) {
             Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 
+#ifdef __LINUX__
+    // Needed by Wayland compositors to set proper app_id and window icon
+    QGuiApplication::setDesktopFileName(QStringLiteral("org.mixxx.Mixxx"));
+#endif
+
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
     // organization name blank.
