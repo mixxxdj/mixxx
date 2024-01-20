@@ -43,11 +43,11 @@ class VSyncThread : public QThread {
         return m_syncIntervalTimeMicros;
     }
     void updatePLL();
+    bool pllInitializing() const;
   signals:
     void vsyncSwapAndRender();
     void vsyncRender();
     void vsyncSwap();
-
   private:
     void runFree();
     void runPLL();
@@ -69,6 +69,10 @@ class VSyncThread : public QThread {
     // phase locked loop
     std::mutex m_pllMutex;
     PerformanceTimer m_pllTimer;
+    int m_pllInitCnt;
+    bool m_pllPendingUpdate;
+    double m_pllInitSum;
+    double m_pllInitAvg;
     double m_pllPhaseOut;
     double m_pllDeltaOut;
     double m_pllLogging;

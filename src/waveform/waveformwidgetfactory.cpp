@@ -807,16 +807,23 @@ void WaveformWidgetFactory::swap() {
 }
 
 void WaveformWidgetFactory::swapAndRender() {
+    // used for PLL
+    WGLWidget* widget = SharedGLContext::getWidget();
+    widget->getOpenGLWindow()->update();
+
     swapSelf();
     renderSelf();
+
     m_vsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::slotFrameSwapped() {
 #ifdef MIXXX_USE_QOPENGL
-    WGLWidget* widget = SharedGLContext::getWidget();
-    // continuously trigger redraws
-    widget->getOpenGLWindow()->update();
+    if (m_vsyncThread->pllInitializing()) {
+        // continuously trigger redraws during PLL init
+        WGLWidget* widget = SharedGLContext::getWidget();
+        widget->getOpenGLWindow()->update();
+    }
     // update the phase-locked-loop
     m_vsyncThread->updatePLL();
 #endif
