@@ -38,6 +38,8 @@ void VSyncThread::run() {
     //qDebug() << "VSyncThread::run()";
     switch (m_vSyncMode) {
     case ST_FREE:
+        m_syncIntervalTimeMicros = 1000;
+        m_waitToSwapMicros = m_syncIntervalTimeMicros;
         runFree();
         break;
     case ST_PLL:
@@ -65,8 +67,7 @@ void VSyncThread::runFree() {
         m_semaVsyncSlot.acquire();
 
         m_sinceLastSwap = m_timer.restart();
-        m_waitToSwapMicros = 1000;
-        usleep(1000);
+        usleep(m_waitToSwapMicros);
     }
 }
 
@@ -168,9 +169,11 @@ int VSyncThread::elapsed() {
 }
 
 void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
-    m_syncIntervalTimeMicros = syncTime;
-    m_vSyncPerRendering = static_cast<int>(
-            round(m_displayFrameRate * m_syncIntervalTimeMicros / 1000));
+    if (m_vSyncMode != ST_FREE) {
+        m_syncIntervalTimeMicros = syncTime;
+        m_vSyncPerRendering = static_cast<int>(
+                round(m_displayFrameRate * m_syncIntervalTimeMicros / 1000));
+    }
 }
 
 void VSyncThread::setVSyncType(int type) {
@@ -187,7 +190,13 @@ void VSyncThread::setVSyncType(int type) {
 int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
     int difference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
-    return difference + m_waitToSwapMicros;
+    int toNextSync = difference + m_waitToSwapMicros;
+    while (toNextSync < 0) {
+        // this function is called during rendering. A negative value indicates
+        // an attempt to render an outdated frame. Render the next frame instead
+        toNextSync += m_syncIntervalTimeMicros;
+    }
+    return toNextSync;
 }
 
 int VSyncThread::droppedFrames() {

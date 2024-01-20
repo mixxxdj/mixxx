@@ -68,19 +68,28 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
         const int refToVSync = pVSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
         const int syncIntervalTimeMicros = pVSyncThread->getSyncIntervalTimeMicros();
 #endif
-        // The offset is limited to the audio buffer + 2 x waveform sync interval
+        // The positive offset is limited to the audio buffer + 2 x waveform sync interval
         // This should be sufficient to compensate jitter, but does not continue
         // in case of underflows.
         const int maxOffset = static_cast<int>(
                 data.m_audioBufferMicroS + 2 * syncIntervalTimeMicros);
+
+        // The minimum offset is limited to -data.m_callbackEntrytoDac to avoid a more
+        // negative value indicating an outdated request that is no longer valid anyway.
+        // This is probably caused by a vsync problem.
+        const int minOffset = -data.m_callbackEntrytoDac;
+
         // Calculate the offset in micros for the position of the sample that will be transferred
         // to the DAC when the next display frame is displayed
         int offset = refToVSync - data.m_callbackEntrytoDac;
-        if (offset < -maxOffset) {
-            offset = -maxOffset;
+        if (offset < minOffset) {
+            offset = minOffset;
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
-                           << m_key << "no transport (offset < -maxOffset)";
+                           << m_key << "outdated position request (offset < minOffset)";
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
         } else if (offset > maxOffset) {
@@ -88,9 +97,17 @@ double VisualPlayPosition::calcOffsetAtNextVSync(
             if (!m_noTransport) {
                 qWarning() << "VisualPlayPosition::calcOffsetAtNextVSync"
                            << m_key << "no transport (offset > maxOffset)";
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
                 m_noTransport = true;
             }
         } else {
+            if (m_noTransport) {
+                qDebug() << m_key << "refToVSync:" << refToVSync
+                         << "data.m_callbackEntrytoDac:"
+                         << data.m_callbackEntrytoDac;
+            }
             m_noTransport = false;
         }
         // Apply the offset proportional to m_positionStep
