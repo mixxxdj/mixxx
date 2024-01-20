@@ -2,11 +2,12 @@
 
 #include <QItemSelectionModel>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QTableView>
 
 #include "library/starrating.h"
+#include "library/tableitemdelegate.h"
 #include "moc_stareditor.cpp"
-#include "util/painterscope.h"
 
 // We enable mouse tracking on the widget so we can follow the cursor even
 // when the user doesn't hold down any mouse button. We also turn on
@@ -18,53 +19,24 @@
 ///
 /// The class has been adapted from the official "Star Delegate Example",
 /// see http://doc.trolltech.com/4.5/itemviews-stardelegate.html
-StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
-                       const QModelIndex& index,
-                       const QStyleOptionViewItem& option)
+StarEditor::StarEditor(QWidget* parent,
+        QTableView* pTableView,
+        const QModelIndex& index,
+        const QStyleOptionViewItem& option,
+        const QColor& focusBorderColor)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
-          m_styleOption(option) {
+          m_styleOption(option),
+          m_pFocusBorderColor(focusBorderColor),
+          m_starCount(StarRating::kMinStarCount) {
+    DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
+    installEventFilter(this);
 }
 
 QSize StarEditor::sizeHint() const {
     return m_starRating.sizeHint();
-}
-
-// static
-void StarEditor::renderHelper(QPainter* painter,
-                              QTableView* pTableView,
-                              const QStyleOptionViewItem& option,
-                              StarRating* pStarRating) {
-    PainterScope painterScope(painter);
-
-    painter->setClipRect(option.rect);
-
-    if (pTableView != nullptr) {
-        QStyle* style = pTableView->style();
-        if (style != nullptr) {
-            style->drawControl(QStyle::CE_ItemViewItem, &option, painter,
-                               pTableView);
-        }
-    }
-
-    // Set the palette appropriately based on whether the row is selected or
-    // not. We also have to check if it is inactive or not and use the
-    // appropriate ColorGroup.
-    QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
-            ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active)) {
-        cg = QPalette::Inactive;
-    }
-
-    if (option.state & QStyle::State_Selected) {
-        painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
-    } else {
-        painter->setBrush(option.palette.color(cg, QPalette::Text));
-    }
-
-    pStarRating->paint(painter, option.rect);
 }
 
 void StarEditor::paintEvent(QPaintEvent*) {
@@ -72,49 +44,89 @@ void StarEditor::paintEvent(QPaintEvent*) {
     m_styleOption.state |= QStyle::State_MouseOver;
     m_styleOption.rect = rect();
 
-    if (m_pTableView) {
-        QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
-        if (selectionModel && selectionModel->isSelected(m_index)) {
-            m_styleOption.state |= QStyle::State_Selected;
-        }
+    // If the editor cell is selected set the respective flag so we can use the
+    // palette's 'HighlightedText' font color for the brush StarRating will use
+    // to fill the star/diamond polygons with.
+    QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
+    if (selectionModel && selectionModel->isSelected(m_index)) {
+        m_styleOption.state |= QStyle::State_Selected;
     }
 
     QPainter painter(this);
-    renderHelper(&painter, m_pTableView, m_styleOption, &m_starRating);
+
+    painter.setClipRect(m_styleOption.rect);
+
+    // Draw standard item with the table view's style
+    QStyle* style = m_pTableView->style();
+    if (style) {
+        style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
+    }
+
+    // Draw a border if the color cell has focus
+    if (m_styleOption.state & QStyle::State_Selected) {
+        // QPainterScope in drawBorder() and shift down?
+        TableItemDelegate::drawBorder(&painter, m_pFocusBorderColor, m_styleOption.rect);
+    }
+
+    // Starrating scales the painter so do this after painting the border.
+    // Set the palette appropriately based on whether the row is selected or
+    // not. We also have to check if it is inactive or not and use the
+    // appropriate ColorGroup.
+    QPalette::ColorGroup cg = m_styleOption.state & QStyle::State_Enabled
+            ? QPalette::Normal
+            : QPalette::Disabled;
+    if (cg == QPalette::Normal && !(m_styleOption.state & QStyle::State_Active)) {
+        cg = QPalette::Inactive;
+    }
+
+    if (m_styleOption.state & QStyle::State_Selected) {
+        painter.setBrush(m_styleOption.palette.color(cg, QPalette::HighlightedText));
+    } else {
+        painter.setBrush(m_styleOption.palette.color(cg, QPalette::Text));
+    }
+
+    m_starRating.paint(&painter, m_styleOption.rect);
 }
 
-void StarEditor::mouseMoveEvent(QMouseEvent *event) {
+bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
+    switch (event->type()) {
+    case QEvent::Leave:
+    case QEvent::ContextMenu: {
+        // Note: it seems with Qt5 we do not reliably get a Leave event when
+        // invoking the track menu via right click, so reset the rating now.
+        // The event is forwarded to parent QTableView.
+        resetRating();
+        break;
+    }
+    case QEvent::MouseButtonRelease: {
+        emit editingFinished();
+        break;
+    }
+    case QEvent::MouseMove: {
+        // Change rating only if no button is pressed.
+        // This allows dragging the row also by grabbing the star cell
+        QMouseEvent* me = static_cast<QMouseEvent*>(event);
+        if (me->buttons().testFlag(Qt::NoButton)) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    const int eventPosition = static_cast<int>(event->position().x());
+            const int eventPosition = static_cast<int>(me->position().x());
 #else
-    const int eventPosition = event->x();
+            const int eventPosition = me->x();
 #endif
-    int star = starAtPosition(eventPosition);
+            int star = m_starRating.starAtPosition(eventPosition, m_styleOption.rect);
 
-    if (star != m_starRating.starCount() && star != -1) {
-        m_starRating.setStarCount(star);
-        update();
+            if (star <= StarRating::kInvalidStarCount) {
+                resetRating();
+            } else if (star != m_starRating.starCount()) {
+                // Apply star rating if it changed
+                m_starRating.setStarCount(star);
+                update();
+            }
+        }
+        break;
     }
-}
-
-void StarEditor::leaveEvent(QEvent*) {
-    m_starRating.setStarCount(0);
-    update();
-}
-
-void StarEditor::mouseReleaseEvent(QMouseEvent* /* event */) {
-    emit editingFinished();
-}
-
-int StarEditor::starAtPosition(int x) {
-    // If the mouse is very close to the left edge, set 0 stars.
-    if (x < m_starRating.sizeHint().width() * 0.05) {
-        return 0;
+    default:
+        break;
     }
-    int star = (x / (m_starRating.sizeHint().width() / m_starRating.maxStarCount())) + 1;
 
-    if (star <= 0 || star > m_starRating.maxStarCount()) {
-        return 0;
-    }
-    return star;
+    return QWidget::eventFilter(obj, event);
 }

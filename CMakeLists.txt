@@ -1951,7 +1951,6 @@ if(WIN32 AND NOT QT6)
     unofficial::angle::libGLESv2
     CONFIGURATIONS RelWithDebInfo Release
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    RUNTIME_DEPENDENCY_SET mixxx
     COMPONENT applocal)
   set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
@@ -2721,7 +2720,6 @@ else()
       # QJpegPlugin dependency
       libjpeg-turbo::jpeg
       DESTINATION "${MIXXX_INSTALL_DATADIR}"
-      RUNTIME_DEPENDENCY_SET mixxx
       COMPONENT applocal)
 
     install(IMPORTED_RUNTIME_ARTIFACTS
@@ -2729,7 +2727,6 @@ else()
       Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
       Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
-      RUNTIME_DEPENDENCY_SET mixxx
       COMPONENT applocal)
 
     install(IMPORTED_RUNTIME_ARTIFACTS
@@ -2738,33 +2735,27 @@ else()
       Qt${QT_VERSION_MAJOR}::QJpegPlugin
       Qt${QT_VERSION_MAJOR}::QSvgPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/imageformats"
-      RUNTIME_DEPENDENCY_SET mixxx
       COMPONENT applocal)
 
     install(IMPORTED_RUNTIME_ARTIFACTS
       Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
       DESTINATION "${MIXXX_INSTALL_DATADIR}/sqldrivers"
-      RUNTIME_DEPENDENCY_SET mixxx
       COMPONENT applocal)
 
     if(WIN32)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
-        RUNTIME_DEPENDENCY_SET mixxx
         COMPONENT applocal)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
-        RUNTIME_DEPENDENCY_SET mixxx
         COMPONENT applocal)
     endif()
     if(APPLE)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/platforms"
-        RUNTIME_DEPENDENCY_SET mixxx
         COMPONENT applocal)
       install(IMPORTED_RUNTIME_ARTIFACTS Qt${QT_VERSION_MAJOR}::QMacStylePlugin
         DESTINATION "${MIXXX_INSTALL_DATADIR}/styles"
-        RUNTIME_DEPENDENCY_SET mixxx
         COMPONENT applocal)
     endif()
 

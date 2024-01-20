@@ -43,7 +43,8 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);
+    StarEditor* editor =
+            new StarEditor(parent, m_pTableView, index, newOption, m_pFocusBorderColor);
     connect(editor,
             &StarEditor::editingFinished,
             this,
@@ -76,6 +77,7 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // StarRating.
     if (index.data().canConvert<StarRating>()) {
         if (m_isOneCellInEditMode) {
+            // Don't close other editors when hovering the stars cell!
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }
         m_pTableView->openPersistentEditor(index);
