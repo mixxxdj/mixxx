@@ -75,13 +75,17 @@ bool Sandbox::canAccess(mixxx::FileInfo* pFileInfo) {
     VERIFY_OR_DEBUG_ASSERT(pFileInfo) {
         return false;
     }
-    openSecurityToken(pFileInfo, true);
+    // NOTE: The token must be assigned to a variable, otherwise it will be
+    // invalidated immediately (causing `isReadable` to fail).
+    auto token = openSecurityToken(pFileInfo, true);
     return pFileInfo->isReadable();
 }
 
 //static
 bool Sandbox::canAccessDir(const QDir& dir) {
-    openSecurityTokenForDir(dir, true);
+    // NOTE: The token must be assigned to a variable, otherwise it will be
+    // invalidated immediately (causing `isReadable` to fail).
+    auto token = openSecurityTokenForDir(dir, true);
     return QFileInfo(dir.canonicalPath()).isReadable();
 }
 

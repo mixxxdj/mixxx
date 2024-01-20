@@ -116,9 +116,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
     double rateRatio = m_pRateRatioCO->get();
 
-    // This gain adjustment compensates for an arbitrary /2 gain chop in
-    // EnginePregain. See the comment there.
-    m_gain = m_pGainControlObject->get() * 2;
+    m_gain = m_pGainControlObject->get();
 
     // Compute visual sample to pixel ratio
     // Allow waveform to spread one visual sample across a hundred pixels
@@ -350,7 +348,7 @@ void WaveformWidgetRenderer::setPassThroughEnabled(bool enabled) {
     }
 }
 
-void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {
+void WaveformWidgetRenderer::resizeRenderer(int width, int height, float devicePixelRatio) {
     m_width = width;
     m_height = height;
     m_devicePixelRatio = devicePixelRatio;
@@ -434,6 +432,24 @@ WaveformMarkPointer WaveformWidgetRenderer::getCueMarkAtPoint(QPoint point) cons
             pointInImageSpace = QPoint(point.x(), point.y() - markImagePositionInWidgetSpace);
         }
         if (pMark->contains(pointInImageSpace, getOrientation())) {
+            return pMark;
+        }
+    }
+    for (auto it = m_markPositions.crbegin(); it != m_markPositions.crend(); ++it) {
+        const WaveformMarkPointer& pMark = it->m_pMark;
+        VERIFY_OR_DEBUG_ASSERT(pMark) {
+            continue;
+        }
+
+        int markImagePositionInWidgetSpace = it->m_offsetOnScreen;
+        QPoint pointInImageSpace;
+        if (getOrientation() == Qt::Horizontal) {
+            pointInImageSpace = QPoint(point.x() - markImagePositionInWidgetSpace, point.y());
+        } else {
+            DEBUG_ASSERT(getOrientation() == Qt::Vertical);
+            pointInImageSpace = QPoint(point.x(), point.y() - markImagePositionInWidgetSpace);
+        }
+        if (pMark->lineHovered(pointInImageSpace, getOrientation())) {
             return pMark;
         }
     }

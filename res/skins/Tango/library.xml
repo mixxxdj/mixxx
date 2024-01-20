@@ -44,7 +44,7 @@ Description:
                 <Size>159min,74me</Size>
                 <Children>
 
-                  <Template src="skin:../Tango/decks/preview_deck.xml"/>
+                  <Template src="skins:Tango/decks/preview_deck.xml"/>
 
                   <WidgetGroup>
                     <Size>1me,5f</Size>
@@ -81,7 +81,7 @@ Description:
                                 <Layout>horizontal</Layout>
                                 <Size>19f,15min</Size>
                                 <Children>
-                                  <Template src="skin:../Tango/controls/button_2state_persist.xml">
+                                  <Template src="skins:Tango/controls/button_2state_persist.xml">
                                     <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                                     <SetVariable name="Size">19f,15f</SetVariable>
                                     <SetVariable name="ConfigKey">[Skin],show_maximized_library</SetVariable>

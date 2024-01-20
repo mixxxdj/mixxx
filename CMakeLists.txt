@@ -103,8 +103,12 @@ if(DEFINED MIXXX_VCPKG_ROOT)
   endif()
 endif()
 
-if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
-  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+if(NOT DEFINED VCPKG_TARGET_TRIPLET)
+  if(DEFINED ENV{VCPKG_TARGET_TRIPLET})
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}")
+  elseif(DEFINED ENV{VCPKG_DEFAULT_TRIPLET})
+    set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}")
+  endif()
 endif()
 set(X_VCPKG_APPLOCAL_DEPS_INSTALL ON CACHE BOOL "Automatically copy dependencies into the install target directory for executables." FORCE)
 
@@ -160,10 +164,10 @@ if(APPLE)
     # Minimum macOS version supported by Qt 6
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15 CACHE STRING "Minimum macOS version the build will be able to run on")
     if(NOT VCPKG_TARGET_TRIPLET)
-      set(VCPKG_TARGET_TRIPLET "x64-osx-min10.15")
+      set(VCPKG_TARGET_TRIPLET "x64-osx-min1015")
     endif()
   else()
-    if(VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx-min1100")
+    if(VCPKG_TARGET_TRIPLET MATCHES "arm64-osx-min1100")
       # Minimum macOS version for arm64 Support
       set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0 CACHE STRING "Minimum macOS version the build will be able to run on")
       set(CMAKE_OSX_ARCHITECTURES arm64 CACHE STRING "The target achritecture")
@@ -520,6 +524,12 @@ if(WIN32)
 endif()
 
 if(MSVC)
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    # With MSVC, PCH is faster than caching
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS OFF)
+  endif()
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+
   # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
   if(SCCACHE_EXECUTABLE)
@@ -527,9 +537,13 @@ if(MSVC)
   else()
     message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE")
+  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE;CMAKE_DISABLE_PRECOMPILE_HEADERS")
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
+    if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+      message(WARNING
+            "sccache: Does not work with precompiled headers. Set CMAKE_DISABLE_PRECOMPILE_HEADERS=ON")
+    endif()
     set( CMAKE_C_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
     set( CMAKE_CXX_COMPILER_LAUNCHER "${SCCACHE_EXECUTABLE}" )
   endif()
@@ -542,10 +556,31 @@ else()
       message(STATUS "Could NOT find ccache (missing executable)")
   endif()
   default_option(CCACHE_SUPPORT "Enable ccache support" "CCACHE_EXECUTABLE")
+
+  if(NOT DEFINED CMAKE_DISABLE_PRECOMPILE_HEADERS)
+    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CCACHE_SUPPORT})
+  endif()
+  set(CMAKE_DISABLE_PRECOMPILE_HEADERS ${CMAKE_DISABLE_PRECOMPILE_HEADERS} CACHE BOOL "Disable precompiled headers")
+
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
       set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -fdiagnostics-color=${BUILD_COLORS}")
+    endif()
+    if(NOT CMAKE_DISABLE_PRECOMPILE_HEADERS)
+      execute_process(
+          COMMAND "${CCACHE_EXECUTABLE}" "--get-config=sloppiness"
+                    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                    OUTPUT_VARIABLE CCACHE_CONFIGURED_SLOPPINESS OUTPUT_STRIP_TRAILING_WHITESPACE
+                    ERROR_QUIET)
+      if (NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "pch_defines" OR
+          NOT CCACHE_CONFIGURED_SLOPPINESS MATCHES "time_macros")
+        message(WARNING
+            "ccache: For use with precompiled headers, the setting \"sloppiness\" needs to "
+            "be set to \"pch_defines,time_macros\". This can be done via the environment variable "
+            "\"CCACHE_SLOPPINESS=pch_defines,time_macros\" or permanent via "
+            "\"ccache --set-config=sloppiness=pch_defines,time_macros\".")
+      endif()
     endif()
     set( CMAKE_C_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
     set( CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_EXECUTABLE}" )
@@ -554,58 +589,64 @@ else()
 endif()
 
 if(NOT MSVC)
-  find_program(MOLD_EXECUTABLE mold)
-  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_EXECUTABLE")
+  # Try to configure mold as linker via -fuse-ld=mold, support from gcc 12.1, gcc 11.2.0-16 or clang
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=mold -Wl,--version
+    ERROR_QUIET
+    OUTPUT_VARIABLE MOLD_FUSE_VERSION_STRING
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(MOLD_FUSE_VERSION_STRING)
+      set(MOLD_FUSE_FOUND TRUE)
+  endif()
+  if(NOT MOLD_FUSE_FOUND)
+    # check if the symlink ld is in the mold folder for older compiler
+    find_program(MOLD_SYMLINK "${CMAKE_INSTALL_LIBEXECDIR}/mold/ld")
+    get_filename_component(MOLD_SYMLINK_DIRECTORY ${MOLD_SYMLINK} DIRECTORY)
+  endif()
+  if(MOLD_SYMLINK)
+      set(MOLD_SYMLINK_FOUND TRUE)
+  endif()
+  default_option(MOLD_SUPPORT "Use 'mold' for linking" "MOLD_FUSE_FOUND OR MOLD_SYMLINK_FOUND")
   if(MOLD_SUPPORT)
-    if(MOLD_EXECUTABLE)
+    if(MOLD_FUSE_FOUND)
       message(STATUS "Selecting mold as linker")
-      set(SELECT_MOLD_WITH_FUSE true)
-      # With GCC, mold is a valid '-fuse' argument only with version 12.1.0 and newer.
-      # Earlier versions must use the -B option.
-      if (GNU_GCC)
-        execute_process(
-          COMMAND gcc -dumpfullversion
-          ERROR_QUIET
-          OUTPUT_VARIABLE GCC_VERSION_STRING
-          OUTPUT_STRIP_TRAILING_WHITESPACE
-        )
-        if (GCC_VERSION_STRING VERSION_LESS 12.1.0)
-          set(SELECT_MOLD_WITH_FUSE false)
-        endif()
-      endif()
-      if (SELECT_MOLD_WITH_FUSE)
-        add_link_options("-fuse-ld=mold")
-      else()
-        add_link_options("-B${MOLD_EXECUTABLE}")
-      endif()
+      add_link_options("-fuse-ld=mold")
+    elseif(MOLD_SYMLINK_FOUND)
+      message(STATUS "Selecting mold as linker via ld symlink in ${MOLD_SYMLINK_DIRECTORY}")
+      add_link_options("-B${MOLD_SYMLINK_DIRECTORY}")
     else()
       message(FATAL_ERROR "Could NOT find mold (missing executable)")
     endif()
   else()
-    find_program(LLD_EXECUTABLE lld)
-    if(LLD_EXECUTABLE)
-      execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
-        ERROR_QUIET
-        OUTPUT_VARIABLE LLD_VERSION_STRING
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-      )
+    # Try to configure lld as linker
+    execute_process(
+      COMMAND ${CMAKE_CXX_COMPILER} -fuse-ld=lld -Wl,--version
+      ERROR_QUIET
+      OUTPUT_VARIABLE LLD_VERSION_STRING
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(LLD_VERSION_STRING)
       string(REGEX MATCH "LLD ([0-9]+\\.[0-9]+\\.[0-9]+)" LLD_VERSION_MATCH "${LLD_VERSION_STRING}")
       if(LLD_VERSION_MATCH)
         set(LLD_VERSION ${CMAKE_MATCH_1})
-        message(STATUS "Found lld with version: ${LLD_VERSION}")
+        message(STATUS "Found ld.lld with version: ${LLD_VERSION}")
       else()
-        message(WARNING "Failed to parse lld version from: ${LLD_VERSION_STRING}")
+        message(WARNING "Failed to parse ld.lld version from: ${LLD_VERSION_STRING}")
       endif()
     endif()
     # LLD 10.0.0 does not work because of https://bugs.llvm.org/show_bug.cgi?id=45769
-    default_option(LLD_SUPPORT "Use 'lld' for linking" "LLD_EXECUTABLE;LLD_VERSION VERSION_GREATER 10.0.0")
+    default_option(LLD_SUPPORT "Use 'ld.lld' for linking" "LLD_VERSION VERSION_GREATER 10.0.0")
     if(LLD_SUPPORT)
-      if(LLD_EXECUTABLE)
-        message(STATUS "Selecting lld as linker")
-        add_link_options("-fuse-ld=lld")
+      if(LLD_VERSION_STRING)
+        if(LLD_VERSION VERSION_GREATER 10.0.0)
+          message(STATUS "Selecting lld as linker")
+          add_link_options("-fuse-ld=lld")
+        else()
+          message(FATAL_ERROR "Could NOT find ld.lld > 10.0.0")
+        endif()
       else()
-        message(FATAL_ERROR "Could NOT find lld (missing executable)")
+        message(FATAL_ERROR "Could NOT find ld.lld (missing executable)")
       endif()
     endif()
   endif()
@@ -1202,7 +1243,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wtrackproperty.cpp
   src/widget/wtracktableview.cpp
   src/widget/wtracktableviewheader.cpp
-  src/widget/wtracktext.cpp
   src/widget/wtrackwidgetgroup.cpp
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
@@ -1406,6 +1446,7 @@ else()
     src/waveform/renderers/waveformrendererrgb.cpp
     src/waveform/renderers/waveformrenderersignalbase.cpp
     src/waveform/renderers/waveformrendermark.cpp
+    src/waveform/renderers/waveformrendermarkbase.cpp
     src/waveform/renderers/waveformrendermarkrange.cpp
     src/waveform/renderers/waveformsignalcolors.cpp
     src/waveform/renderers/waveformwidgetrenderer.cpp
@@ -1688,13 +1729,22 @@ endif()
 
 # The mixxx executable
 if(QT6)
-  find_package(Qt6 REQUIRED COMPONENTS Core) # For Qt Core cmake functions
+  find_package(Qt6 COMPONENTS Core) # For Qt Core cmake functions
+  # This is the first package form the environment, if this fails give hints how to install the environment
+  if(NOT Qt6_FOUND)
+     FATAL_ERROR_MISSING_ENV()
+  endif()
   # qt_add_executable() is the recommended initial call for qt_finalize_target()
   # below that takes care of the correct object order in the resulting binary
   # According to https://doc.qt.io/qt-6/qt-finalize-target.html it is importand for
   # builds with Qt < 3.21
   qt_add_executable(mixxx WIN32 src/main.cpp MANUAL_FINALIZATION)
 else()
+  find_package(Qt5 COMPONENTS Core) # For Qt Core cmake functions
+  # This is the first package form the environment, if this fails give hints how to install the environment
+  if(NOT Qt5_FOUND)
+     FATAL_ERROR_MISSING_ENV()
+  endif()
   add_executable(mixxx WIN32 src/main.cpp)
 endif()
 # ugly hack to get #include "preferences/dialog/ui_dlgpreferencesdlg.h" to work in
@@ -1727,61 +1777,6 @@ if(WIN32)
   endif()
   include(InstallRequiredSystemLibraries)
 endif()
-
-if(WIN32)
-  option(WINDOWS_CODESIGN "Sign Windows executables and libraries with digital certificate" OFF)
-  mark_as_advanced(WINDOWS_CODESIGN)
-  if(WINDOWS_CODESIGN)
-    set(WINDOWS_CODESIGN_CERTIFICATE_PATH "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PATH}" CACHE STRING "Path to signtool certificate")
-    set(WINDOWS_CODESIGN_CERTIFICATE_PASSWORD "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" CACHE STRING "Password of signtool certificate")
-    if("${WINDOWS_CODESIGN_CERTIFICATE_PATH}" STREQUAL "" AND "${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" STREQUAL "")
-        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /a CACHE STRING "parameters for signtool (list)")
-    else()
-        set(WINDOWS_CODESIGN_ARGS /td sha256 /fd sha256 /tr http://timestamp.sectigo.com /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
-    endif()
-    find_program(SIGNTOOL_EXECUTABLE signtool)
-    if(NOT SIGNTOOL_EXECUTABLE)
-      message(FATAL_ERROR "signtool is not found. Signing executables not possible")
-    endif()
-    message(STATUS "Found signtool: ${SIGNTOOL_EXECUTABLE}")
-
-    # Check if we're able to sign an executable
-    if(NOT DEFINED WINDOWS_CODESIGN_OK)
-      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/testsign.c "int main(){return 0;}")
-      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testsign)
-      try_compile(
-        RESULT ${CMAKE_CURRENT_BINARY_DIR}/testsign ${CMAKE_CURRENT_BINARY_DIR}/testsign.c
-        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
-      )
-      execute_process(
-        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
-        RESULT_VARIABLE ERR OUTPUT_QUIET
-      )
-      if(ERR EQUAL 0)
-        message(STATUS "Windows codesigning via signtool is working")
-        set(WINDOWS_CODESIGN_OK 1 CACHE INTERNAL "Can sign executables")
-      else()
-        message(FATAL_ERROR "Could NOT codesign test sample (signtool failed)")
-        set(WINDOWS_CODESIGN_OK 0 CACHE INTERNAL "Invalid or missing certificate")
-      endif()
-    endif()
-    mark_as_advanced(SIGNTOOL_EXECUTABLE SIGNTOOL_ARGS)
-  endif()
-
-  macro(windows_codesign_target CODESIGN_TARGET)
-    add_custom_command(
-        TARGET "${CODESIGN_TARGET}" POST_BUILD
-        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} $<TARGET_FILE:${CODESIGN_TARGET}>
-        COMMENT "Signining target ${CODESIGN_TARGET}"
-        VERBATIM
-    )
-  endmacro()
-
-  if(WINDOWS_CODESIGN)
-    windows_codesign_target(mixxx)
-  endif()
-endif()
-
 
 install(
   TARGETS
@@ -1982,7 +1977,6 @@ if(WIN32)
     unofficial::angle::libGLESv2
     CONFIGURATIONS RelWithDebInfo Release
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    RUNTIME_DEPENDENCY_SET mixxx
     COMPONENT applocal)
   set(APPLOCAL_COMPONENT_DEFINED true)
 endif()
@@ -2245,13 +2239,8 @@ if(WIN32)
 endif()
 
 # Chromaprint
-find_package(Chromaprint)
-# This is the first package form the environment, if this fails give hints how to install the environment
-if(NOT Chromaprint_FOUND)
-  FATAL_ERROR_MISSING_ENV()
-else()
-  target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
-endif()
+find_package(Chromaprint REQUIRED)
+target_link_libraries(mixxx-lib PRIVATE Chromaprint::Chromaprint)
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
@@ -2298,7 +2287,7 @@ if(ENGINEPRIME)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
     message(STATUS "STATIC link existing system installation of libdjinterop")
-    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
+    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
     # On MacOS, Mixxx does not use system SQLite, so we will use libdjinterop's
     # embedded SQLite in such a case.
@@ -2372,7 +2361,7 @@ if(ENGINEPRIME)
     add_library(mixxx-libdjinterop STATIC IMPORTED)
     set_target_properties(mixxx-libdjinterop PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${DJINTEROP_INSTALL_DIR}/include"
-      INTERFACE_LINK_LIBRARIES ${ZLIB_LIBRARIES}
+      INTERFACE_LINK_LIBRARIES ZLIB::ZLIB
       IMPORTED_LOCATION "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}"
     )
     add_dependencies(mixxx-libdjinterop libdjinterop)
@@ -2468,6 +2457,17 @@ if(KEYFINDER)
     # during configuration and will throw
     # an error if not.
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
+
+    if(NOT CMAKE_GENERATOR STREQUAL "Ninja")
+      # Required for 'CMakeFiles/mixxx-lib_autogen_timestamp_deps'
+      # This tells 'make" that the libkeyfinder is required for the mixxx-keyfinder library
+      # BUILD_BYPRODUCTS work for Ninja only, while this workaround does not work for Ninja on macOS
+      add_custom_command(
+        OUTPUT "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}"
+        DEPENDS libkeyfinder
+        COMMAND echo libkeyfinder installed
+      )
+    endif()
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
     add_dependencies(mixxx-keyfinder libkeyfinder)
@@ -3456,7 +3456,7 @@ if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
 
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy kinetic lunar mantic)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal jammy lunar mantic noble)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

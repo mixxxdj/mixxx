@@ -25,7 +25,7 @@ Variables:
             <Size>30f,40f</Size>
             <Children>
 
-              <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+              <Template src="skins:Tango/controls/button_2state_right_display.xml">
                 <SetVariable name="TooltipId">cue_default_cue_gotoandstop</SetVariable>
                 <SetVariable name="ObjectName">CueButton</SetVariable>
                 <SetVariable name="Size">30f,19f</SetVariable>
@@ -43,7 +43,7 @@ Variables:
                 <Size>30f,40f</Size>
                 <Children>
                   <!-- Play -->
-                  <Template src="skin:../Tango/controls/button_2state_right_display.xml">
+                  <Template src="skins:Tango/controls/button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="Size">30f,20f</SetVariable>
@@ -54,13 +54,13 @@ Variables:
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
                   </Template>
                   <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
-                  <Template src="skin:../Tango/controls/button_2state.xml">
+                  <Template src="skins:Tango/controls/button_2state.xml">
                     <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
                     <SetVariable name="Size">30f,20f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                   </Template>
                   <!-- Play indicator, blinks depending on Cue mode -->
-                  <Template src="skin:../Tango/controls/button_2state.xml">
+                  <Template src="skins:Tango/controls/button_2state.xml">
                     <SetVariable name="ObjectName">PlayIndicator</SetVariable>
                     <SetVariable name="Size">30f,20f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play_indicator</SetVariable>
@@ -78,7 +78,7 @@ Variables:
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:../Tango/decks/loop_indicator.xml"/>
+          <Template src="skins:Tango/decks/loop_indicator.xml"/>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -144,7 +144,7 @@ Variables:
                     <MaximumSize>65,20</MaximumSize>
                     <SizePolicy>min,me</SizePolicy>
                     <Children>
-                      <Template src="skin:../Tango/controls/button_2state_right.xml">
+                      <Template src="skins:Tango/controls/button_2state_right.xml">
                         <SetVariable name="TooltipId">sync_enabled</SetVariable>
                         <SetVariable name="ObjectName">SyncButtonOverlayMini</SetVariable>
                         <SetVariable name="Size">50me,20f</SetVariable>
@@ -175,7 +175,7 @@ Variables:
                     <Alignment>center</Alignment>
                     <Children>
                       <!-- KeyMatch, transparent -->
-                      <Template src="skin:../Tango/controls/button_1state_right.xml">
+                      <Template src="skins:Tango/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                         <SetVariable name="ObjectName">KeyMatchMini</SetVariable>
                         <SetVariable name="Size">30me,20f</SetVariable>

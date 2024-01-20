@@ -57,7 +57,22 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event);
     if (m_waveformWidget) {
+        // Note m_waveformWidget is a WaveformWidgetAbstract,
+        // so this calls the method of WaveformWidgetAbstract,
+        // note of the derived waveform widgets which are also
+        // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
+    }
+}
+
+void WWaveformViewer::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
+    if (m_waveformWidget) {
+        // We leave it up to Qt to set the size of the derived
+        // waveform widget, but we still need to set the size
+        // of the renderer.
+        m_waveformWidget->resizeRenderer(
+                width(), height(), static_cast<float>(devicePixelRatioF()));
     }
 }
 

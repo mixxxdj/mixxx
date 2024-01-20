@@ -21,6 +21,11 @@ class TableItemDelegate : public QStyledItemDelegate {
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const;
 
+    static void drawBorder(
+            QPainter* painter,
+            const QColor borderColor,
+            const QRect& rect);
+
   protected:
     static void paintItemBackground(
             QPainter* painter,

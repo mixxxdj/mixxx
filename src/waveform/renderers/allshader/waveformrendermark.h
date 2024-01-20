@@ -1,13 +1,11 @@
 #pragma once
 
 #include <QColor>
-#include <QObject>
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
-#include "util/class.h"
-#include "waveform/renderers/allshader/waveformrenderer.h"
-#include "waveform/renderers/waveformmarkset.h"
+#include "waveform/renderers/allshader/waveformrendererabstract.h"
+#include "waveform/renderers/waveformrendermarkbase.h"
 
 class QDomNode;
 class SkinContext;
@@ -17,32 +15,28 @@ namespace allshader {
 class WaveformRenderMark;
 }
 
-class allshader::WaveformRenderMark final : public QObject, public allshader::WaveformRenderer {
-    Q_OBJECT
+class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
+                                      public allshader::WaveformRendererAbstract {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
 
-    void setup(const QDomNode& node, const SkinContext& context) override;
+    void draw(QPainter* painter, QPaintEvent* event) override {
+        Q_UNUSED(painter);
+        Q_UNUSED(event);
+    }
+
+    allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {
+        return this;
+    }
 
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
 
-    // Called when a new track is loaded.
-    void onSetTrack() override;
-
-  public slots:
-    // Called when the loaded track's cues are added, deleted or modified and
-    // when a new track is loaded.
-    // It updates the marks' names and regenerates their image if needed.
-    // This method is used for hotcues.
-    void slotCuesUpdated();
-
   private:
-    void checkCuesUpdated();
+    void updateMarkImage(WaveformMarkPointer pMark) override;
 
-    void generateMarkImage(WaveformMarkPointer pMark);
-    void generatePlayPosMarkTexture();
+    void updatePlayPosMarkTexture();
 
     void drawTriangle(QPainter* painter,
             const QBrush& fillColor,
@@ -50,11 +44,9 @@ class allshader::WaveformRenderMark final : public QObject, public allshader::Wa
             QPointF p2,
             QPointF p3);
 
-    WaveformMarkSet m_marks;
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
-    bool m_bCuesUpdates;
 
     void drawMark(const QRectF& rect, QColor color);
     void drawTexture(float x, float y, QOpenGLTexture* texture);

@@ -22,12 +22,14 @@ IF NOT DEFINED INSTALL_ROOT (
 
 IF DEFINED BUILDENV_RELEASE (
     SET BUILDENV_BRANCH=2.4-rel
-    SET BUILDENV_NAME=mixxx-deps-rel-2.4-x64-windows-3e909e2
-    SET BUILDENV_SHA256=abc3c656424b4650c7334b0376fe6da93ade21f1037a5e5ac015bc484adb63fa
+    set VCPKG_TARGET_TRIPLET=x64-windows-release
+    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-release-5940548
+    SET BUILDENV_SHA256=cb44696a981f23dfcb3abce810bd3354cec3c25b8d7eea62f3176bc9b64d6bf9
 ) ELSE (
     SET BUILDENV_BRANCH=2.4
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-0309294
-    SET BUILDENV_SHA256=9d9f19a16821211ce1e904b9980a35207aed59f0d0ad05da1f28e978645d6e35
+    set VCPKG_TARGET_TRIPLET=x64-windows
+    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-24ad21f
+    SET BUILDENV_SHA256=27d104d6d5ad56bf52e750643b924f0bf1c40672b370c05569a622f372ccc527
 )
 
 IF "%~1"=="" (
@@ -96,7 +98,7 @@ EXIT /B 0
 
     SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
     SET "CMAKE_GENERATOR=Ninja"
-    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows"
+    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\!VCPKG_TARGET_TRIPLET!"
 
     ECHO ^Environment Variables:
     ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
@@ -228,6 +230,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"

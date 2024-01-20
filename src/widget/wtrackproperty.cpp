@@ -45,12 +45,17 @@ WTrackProperty::~WTrackProperty() {
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
-    m_property = context.selectString(node, "Property");
+    QString property = context.selectString(node, "Property");
+    if (property.isEmpty()) {
+        return;
+    }
 
     // Check if property with that name exists in Track class
-    if (Track::staticMetaObject.indexOfProperty(m_property.toUtf8().constData()) == -1) {
-        qWarning() << "WTrackProperty: Unknown track property:" << m_property;
+    if (Track::staticMetaObject.indexOfProperty(property.toUtf8().constData()) == -1) {
+        qWarning() << "WTrackProperty: Unknown track property:" << property;
+        return;
     }
+    m_property = property;
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
@@ -82,7 +87,11 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
+        if (m_property.isEmpty()) {
+            return;
+        }
+        QVariant property =
+                m_pCurrentTrack->property(m_property.toUtf8().constData());
         if (property.isValid() && property.canConvert<QString>()) {
             setText(property.toString());
             return;
@@ -99,11 +108,12 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
 
 void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
-    if (m_pCurrentTrack) {
-        ensureTrackMenuIsCreated();
-        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-        m_pTrackMenu->showDlgTrackInfo(m_property);
+    if (!m_pCurrentTrack) {
+        return;
     }
+    ensureTrackMenuIsCreated();
+    m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
+    m_pTrackMenu->showDlgTrackInfo(m_property);
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {

@@ -40,6 +40,8 @@ class VisualPlayPositionData {
     double m_slipRate;
     SlipModeState m_slipModeState;
     bool m_loopEnabled;
+    bool m_loopInAdjustActive;
+    bool m_loopOutAdjustActive;
     double m_loopStartPos;
     double m_loopEndPos;
     double m_tempoTrackSeconds; // total track time, taking the current tempo into account
@@ -62,6 +64,8 @@ class VisualPlayPosition : public QObject {
             double slipRate,
             SlipModeState slipModeState,
             bool loopEnabled,
+            bool loopInAdjustActive,
+            bool loopOutAdjustActive,
             double loopStartPos,
             double loopEndPos,
             double tempoTrackSeconds,
@@ -93,6 +97,7 @@ class VisualPlayPosition : public QObject {
     ControlValueAtomic<VisualPlayPositionData> m_data;
     bool m_valid;
     QString m_key;
+    bool m_noTransport;
 
     static QMap<QString, QWeakPointer<VisualPlayPosition>> m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called

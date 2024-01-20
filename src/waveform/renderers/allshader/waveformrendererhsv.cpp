@@ -59,7 +59,7 @@ void WaveformRendererHSV::paintGL() {
             (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
 
     float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;
@@ -130,6 +130,8 @@ void WaveformRendererHSV::paintGL() {
             maxMid[chn] = static_cast<float>(u8maxMid);
             maxHigh[chn] = static_cast<float>(u8maxHigh);
             maxAll[chn] = static_cast<float>(u8maxAll);
+            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+            // maxAll[chn] = unscale(u8maxAll);
         }
 
         float total{};
