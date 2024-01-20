@@ -53,8 +53,18 @@ class Sandbox {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
-    static SecurityTokenPointer openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
-    static SecurityTokenPointer openSecurityTokenForDir(const QDir& dir, bool create);
+#if defined(__GNUC__) && __cplusplus < 201907L
+#define SECURITY_TOKEN_NODISCARD_RATIONALE
+#else
+#define SECURITY_TOKEN_NODISCARD_RATIONALE                             \
+    ("A new security token should be used, e.g. by assigning it to a " \
+     "variable, otherwise it will be invalidated immediately.")
+#endif
+
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
     Sandbox() = delete;
@@ -62,8 +72,9 @@ class Sandbox {
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
     // Must hold s_mutex to call this.
-    static SecurityTokenPointer openTokenFromBookmark(const QString& canonicalPath,
-                                                      const QString& bookmarkBase64);
+    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    openTokenFromBookmark(
+            const QString& canonicalPath, const QString& bookmarkBase64);
 
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);

@@ -19,16 +19,16 @@ class WaveformMark {
   public:
     class Graphics {
       public:
-        Graphics()
-                : m_obsolete{false} {
-        }
-        bool m_obsolete;
+        // To indicate that the image for the mark needs to be regenerated,
+        // when the text, color, breadth or level are changed.
+        bool m_obsolete{};
     };
 
     WaveformMark(
             const QString& group,
             const QDomNode& node,
             const SkinContext& context,
+            int priority,
             const WaveformSignalColors& signalColors,
             int hotCue = Cue::kNoHotCue);
     ~WaveformMark();
@@ -39,6 +39,9 @@ class WaveformMark {
 
     int getHotCue() const {
         return m_iHotCue;
+    };
+    int getPriority() const {
+        return m_iPriority;
     };
 
     // The m_pPositionCO related function
@@ -85,22 +88,58 @@ class WaveformMark {
         m_pVisibleCO->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
 
+    void setText(const QString& text) {
+        if (m_text != text) {
+            m_text = text;
+            setNeedsImageUpdate();
+        }
+    }
+
     // Sets the appropriate mark colors based on the base color
     void setBaseColor(QColor baseColor, int dimBrightThreshold);
+
     QColor fillColor() const {
         return m_fillColor;
     }
+
     QColor borderColor() const {
         return m_borderColor;
     }
+
     QColor labelColor() const {
         return m_labelColor;
     }
 
+    void setNeedsImageUpdate() {
+        if (m_pGraphics) {
+            m_pGraphics->m_obsolete = true;
+        }
+    }
+
+    bool needsImageUpdate() const {
+        return !m_pGraphics || m_pGraphics->m_obsolete;
+    }
+
+    void setBreadth(float breadth) {
+        if (m_breadth != breadth) {
+            m_breadth = breadth;
+            setNeedsImageUpdate();
+        }
+    }
+
+    void setLevel(int level) {
+        if (m_level != level) {
+            m_level = level;
+            setNeedsImageUpdate();
+        }
+    }
+
+    // Check if a point (in image coordinates) lies on the line
+    bool lineHovered(QPoint point, Qt::Orientation orientation) const;
     // Check if a point (in image coordinates) lies on drawn image.
     bool contains(QPoint point, Qt::Orientation orientation) const;
 
-    QImage generateImage(float breath, float devicePixelRatio);
+    QImage generateImage(float devicePixelRatio);
 
     QColor m_textColor;
     QString m_text;
@@ -109,7 +148,12 @@ class WaveformMark {
     QString m_iconPath;
 
     float m_linePosition;
-    int m_breadth;
+    float m_breadth;
+
+    // When there are overlapping marks, level is increased for each overlapping mark,
+    // so that we can draw them at different positions: The marks at the top go lower
+    // when the level increased, the marks at the bottom higher.
+    int m_level;
 
     WaveformMarkLabel m_label;
 
@@ -118,10 +162,9 @@ class WaveformMark {
     std::unique_ptr<ControlProxy> m_pEndPositionCO;
     std::unique_ptr<ControlProxy> m_pVisibleCO;
 
-    friend class allshader::WaveformRenderMark;
-
     std::unique_ptr<Graphics> m_pGraphics;
 
+    int m_iPriority;
     int m_iHotCue;
 
     QColor m_fillColor;
@@ -129,6 +172,8 @@ class WaveformMark {
     QColor m_labelColor;
 
     friend class WaveformRenderMark;
+    friend class WaveformRenderMarkBase;
+    friend class allshader::WaveformRenderMark;
 };
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
@@ -140,27 +185,18 @@ typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 // temporarily incorrect sort order is acceptable.
 class WaveformMarkSortKey {
   public:
-    WaveformMarkSortKey(double samplePosition, int hotcue)
+    WaveformMarkSortKey(double samplePosition, int priority)
             : m_samplePosition(samplePosition),
-              m_hotcue(hotcue) {
+              m_priority(priority) {
     }
 
     bool operator<(const WaveformMarkSortKey& other) const {
-        if (m_samplePosition == other.m_samplePosition) {
-            // Sort WaveformMarks without hotcues before those with hotcues;
-            // if both have hotcues, sort numerically by hotcue number.
-            if (m_hotcue == Cue::kNoHotCue && other.m_hotcue != Cue::kNoHotCue) {
-                return true;
-            } else if (m_hotcue != Cue::kNoHotCue && other.m_hotcue == Cue::kNoHotCue) {
-                return false;
-            } else {
-                return m_hotcue < other.m_hotcue;
-            }
-        }
-        return m_samplePosition < other.m_samplePosition;
+        return m_samplePosition == other.m_samplePosition
+                ? m_priority < other.m_priority
+                : m_samplePosition < other.m_samplePosition;
     }
 
   private:
     double m_samplePosition;
-    int m_hotcue;
+    int m_priority;
 };

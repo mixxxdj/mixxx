@@ -91,13 +91,37 @@ QStringList trackReleaseColumnValues(
     return columnValues;
 }
 
-void addTrack(
+void addTagRow(
         const QStringList& trackRow,
         int tagIndex,
         QTreeWidget* pParent) {
     QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent, trackRow);
     pItem->setData(0, Qt::UserRole, tagIndex);
     pItem->setData(0, Qt::TextAlignmentRole, Qt::AlignLeft);
+    if (tagIndex == kOriginalTrackIndex) {
+        // Disable the original tag row so it can't be selected.
+        // Only setDisabled() prevents currentItemChanged() signal, removing the
+        // Qt::ItemIsSelectable is not sufficient.
+        // Store the normal text brush
+        const auto brush = pParent->palette().windowText();
+        pItem->setDisabled(true);
+        // Restore the normal text color to ensure the tags are readable
+        for (int col = 0; col < pItem->columnCount(); col++) {
+            pItem->setForeground(col, brush);
+        }
+    }
+}
+
+void addDivider(const QString& text, QTreeWidget* pParent) {
+    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent);
+    pItem->setFirstColumnSpanned(true);
+    pItem->setText(0, text);
+    pItem->setFlags(Qt::NoItemFlags);
+    pItem->setForeground(0, pParent->palette().color(QPalette::Disabled, QPalette::Text));
+
+    QFont bold_font(pParent->font());
+    bold_font.setBold(true);
+    pItem->setFont(0, bold_font);
 }
 
 void updateOriginalTag(const Track& track, QTreeWidget* pParent) {
@@ -144,8 +168,7 @@ void DlgTagFetcher::init() {
         btnPrev->hide();
     }
 
-    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::applyTagsAndCover);
-    connect(btnApplyCover, &QPushButton::clicked, this, &DlgTagFetcher::applyCover);
+    connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
     connect(btnRetry, &QPushButton::clicked, this, &DlgTagFetcher::retry);
     connect(tags, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::tagSelected);
@@ -168,7 +191,11 @@ void DlgTagFetcher::init() {
     loadingProgressBar->setMaximum(kMaximumValueOfQProgressBar);
 
     btnRetry->setDisabled(true);
-    btnApplyCover->setDisabled(true);
+
+    int iApplyTags = m_pConfig->getValue(mixxx::library::prefs::kTagFetcherApplyTagsConfigKey, 1);
+    int iApplyCover = m_pConfig->getValue(mixxx::library::prefs::kTagFetcherApplyCoverConfigKey, 1);
+    checkBoxTags->setChecked(iApplyTags == 1);
+    checkBoxCover->setChecked(iApplyCover == 1);
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -238,12 +265,13 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
 
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
-    btnApplyCover->setDisabled(true);
+    checkBoxTags->setDisabled(true);
+    checkBoxCover->setDisabled(true);
     statusMessage->setVisible(false);
     loadingProgressBar->setVisible(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     addDivider(tr("Original tags"), tags);
-    addTrack(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
+    addTagRow(trackColumnValues(*m_pTrack), kOriginalTrackIndex, tags);
 
     connect(m_pTrack.get(),
             &Track::changed,
@@ -266,7 +294,20 @@ void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
     }
 }
 
-void DlgTagFetcher::applyTagsAndCover() {
+void DlgTagFetcher::apply() {
+    if (checkBoxTags->isChecked()) {
+        applyTags();
+        statusMessage->setText(tr("Metadata applied"));
+    }
+    // If only/also the cover shall be updated (and the worker succeeds) the
+    // delayed slotWorkerCoverArtUpdated() will (over)write the status message,
+    // so let slot take care of updating the status message accordingly.
+    if (checkBoxCover->isChecked()) {
+        applyCover();
+    }
+}
+
+void DlgTagFetcher::applyTags() {
     int tagIndex = m_data.m_selectedTag;
     if (tagIndex < 0) {
         return;
@@ -330,16 +371,12 @@ void DlgTagFetcher::applyTagsAndCover() {
     }
 #endif // __EXTRA_METADATA__
 
-    applyCover();
-
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp
             // to the current time.
             QDateTime::currentDateTimeUtc());
-
-    statusMessage->setText(tr("Metadata & Cover Art applied"));
 }
 
 void DlgTagFetcher::applyCover() {
@@ -393,19 +430,29 @@ void DlgTagFetcher::applyCover() {
 void DlgTagFetcher::retry() {
     btnRetry->setDisabled(true);
     btnApply->setDisabled(true);
-    btnApplyCover->setDisabled(true);
+    checkBoxTags->setDisabled(true);
+    checkBoxCover->setDisabled(true);
     loadingProgressBar->setValue(kMinimumValueOfQProgressBar);
     m_tagFetcher.startFetch(m_pTrack);
 }
 
 void DlgTagFetcher::quit() {
     m_tagFetcher.cancel();
+    saveCheckBoxState();
     accept();
 }
 
 void DlgTagFetcher::reject() {
     m_tagFetcher.cancel();
+    saveCheckBoxState();
     accept();
+}
+
+void DlgTagFetcher::saveCheckBoxState() {
+    m_pConfig->set(mixxx::library::prefs::kTagFetcherApplyTagsConfigKey,
+            ConfigValue(checkBoxTags->isChecked()));
+    m_pConfig->set(mixxx::library::prefs::kTagFetcherApplyCoverConfigKey,
+            ConfigValue(checkBoxCover->isChecked()));
 }
 
 void DlgTagFetcher::showProgressOfConstantTask(const QString& text) {
@@ -444,8 +491,9 @@ void DlgTagFetcher::fetchTagFinished(
         return;
     } else {
         btnApply->setDisabled(true);
-        btnApplyCover->setDisabled(true);
         btnRetry->setDisabled(true);
+        checkBoxTags->setDisabled(true);
+        checkBoxCover->setDisabled(true);
         loadingProgressBar->setVisible(false);
         statusMessage->setVisible(true);
 
@@ -462,7 +510,7 @@ void DlgTagFetcher::fetchTagFinished(
                 // Add fetched tag into TreeItemWidget, if it is not added before
                 if (!allColumnValues.contains(columnValues)) {
                     allColumnValues.insert(columnValues);
-                    addTrack(columnValues, trackIndex, tags);
+                    addTagRow(columnValues, trackIndex, tags);
                 }
                 ++trackIndex;
             }
@@ -497,31 +545,23 @@ void DlgTagFetcher::slotNetworkResult(
     return;
 }
 
-void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* pParent) const {
-    QTreeWidgetItem* pItem = new QTreeWidgetItem(pParent);
-    pItem->setFirstColumnSpanned(true);
-    pItem->setText(0, text);
-    pItem->setFlags(Qt::NoItemFlags);
-    pItem->setForeground(0, palette().color(QPalette::Disabled, QPalette::Text));
-
-    QFont bold_font(font());
-    bold_font.setBold(true);
-    pItem->setFont(0, bold_font);
-}
-
 void DlgTagFetcher::tagSelected() {
     if (!tags->currentItem()) {
         btnApply->setDisabled(true);
+        checkBoxTags->setDisabled(true);
+        checkBoxCover->setDisabled(true);
         return;
     }
 
     if (tags->currentItem()->data(0, Qt::UserRole).toInt() == kOriginalTrackIndex) {
         tags->currentItem()->setFlags(Qt::ItemIsEnabled);
         btnApply->setDisabled(true);
+        checkBoxTags->setDisabled(true);
         return;
     }
     // Allow applying the tags, regardless the cover art
     btnApply->setEnabled(true);
+    checkBoxTags->setEnabled(true);
 
     const int tagIndex = tags->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedTag = tagIndex;
@@ -530,7 +570,6 @@ void DlgTagFetcher::tagSelected() {
     m_pWFetchedCoverArtLabel->loadData(QByteArray());
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
-    btnApplyCover->setDisabled(true);
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
@@ -601,7 +640,7 @@ void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
             m_fetchedCoverArtByteArrays); // This data loaded because for full size.
     m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
 
-    btnApplyCover->setDisabled(data.isNull());
+    checkBoxCover->setEnabled(!data.isNull());
 }
 
 void DlgTagFetcher::getCoverArt(const QString& url) {
@@ -614,6 +653,7 @@ void DlgTagFetcher::slotCoverArtLinkNotFound() {
     loadingProgressBar->setVisible(false);
     statusMessage->setText(tr("Cover Art is not available for selected metadata"));
     statusMessage->setVisible(true);
+    checkBoxCover->setDisabled(true);
 }
 
 void DlgTagFetcher::slotWorkerStarted() {
@@ -624,7 +664,14 @@ void DlgTagFetcher::slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo
     qDebug() << "DlgTagFetcher::slotWorkerCoverArtUpdated" << coverInfo;
     m_pTrack->setCoverInfo(coverInfo);
     loadCurrentTrackCover();
-    statusMessage->setText(tr("Selected cover art applied"));
+    // If 'Tags' was checked those were already applied by now.
+    // Update the status message now accordingly.
+    // Assumes the checkbox wasn't toggled since hitting Apply
+    if (checkBoxTags->isChecked()) {
+        statusMessage->setText(tr("Metadata & Cover Art applied"));
+    } else {
+        statusMessage->setText(tr("Selected cover art applied"));
+    }
 }
 
 void DlgTagFetcher::slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,

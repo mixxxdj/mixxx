@@ -26,8 +26,8 @@
         <Children>
           <EffectParameterKnobComposed>
             <Size>26f,26f</Size>
-            <Knob>skin:../LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_fx_<Variable name="KnobColorFxParameter"/>.svg</Knob>
-            <BackPath>skin:../LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
+            <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_fx_<Variable name="KnobColorFxParameter"/>.svg</Knob>
+            <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_fx.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <EffectUnitGroup><Variable name="FxUnitGroup"/></EffectUnitGroup>
@@ -64,7 +64,7 @@
         <Children>
           <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
           <!-- Meta knob link invert button -->
-          <Template src="skin:../LateNight/controls/button_2state.xml">
+          <Template src="skins:LateNight/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkInvertButton</SetVariable>
             <SetVariable name="Size">8f,7f</SetVariable>
@@ -72,7 +72,7 @@
           </Template>
 
           <!-- Meta knob link button -->
-          <Template src="skin:../LateNight/controls/button_5state.xml">
+          <Template src="skins:LateNight/controls/button_5state.xml">
             <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
             <SetVariable name="ObjectName">FxSuperLinkButton</SetVariable>
             <SetVariable name="Size">34,7f</SetVariable>

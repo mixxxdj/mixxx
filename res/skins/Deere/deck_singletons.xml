@@ -12,21 +12,21 @@
   <SingletonDefinition>
     <ObjectName>DeckWaveform<Variable name="i"/></ObjectName>
     <Children>
-      <Template src="skin:../Deere/deck_waveform.xml"/>
+      <Template src="skins:Deere/deck_waveform.xml"/>
     </Children>
   </SingletonDefinition>
 
   <SingletonDefinition>
     <ObjectName>DeckCoverArt<Variable name="i"/></ObjectName>
     <Children>
-      <Template src="skin:../Deere/deck_coverart.xml"/>
+      <Template src="skins:Deere/deck_coverart.xml"/>
     </Children>
   </SingletonDefinition>
 
   <SingletonDefinition>
     <ObjectName>DeckOverview<Variable name="i"/></ObjectName>
     <Children>
-      <Template src="skin:../Deere/deck_overview.xml"/>
+      <Template src="skins:Deere/deck_overview.xml"/>
     </Children>
   </SingletonDefinition>
 </Template>

@@ -23,13 +23,16 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
     QDomNode child = node.firstChild();
     QDomNode defaultChild;
+    int priority = 0;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(group, child, context, signalColors));
+            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(
+                    group, child, context, --priority, signalColors));
             hasDefaultMark = true;
             defaultChild = child;
         } else if (child.nodeName() == "Mark") {
-            WaveformMarkPointer pMark(new WaveformMark(group, child, context, signalColors));
+            WaveformMarkPointer pMark(new WaveformMark(
+                    group, child, context, --priority, signalColors));
             if (pMark->isValid()) {
                 // guarantee uniqueness even if there is a misdesigned skin
                 QString item = pMark->getItem();
@@ -52,7 +55,8 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
         for (int i = 0; i < NUM_HOT_CUES; ++i) {
             if (m_hotCueMarks.value(i).isNull()) {
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
-                WaveformMarkPointer pMark(new WaveformMark(group, defaultChild, context, signalColors, i));
+                WaveformMarkPointer pMark(new WaveformMark(
+                        group, defaultChild, context, i, signalColors, i));
                 m_marks.push_front(pMark);
                 m_hotCueMarks.insert(pMark->getHotCue(), pMark);
             }
@@ -68,6 +72,12 @@ WaveformMarkPointer WaveformMarkSet::getDefaultMark() const {
     return m_pDefaultMark;
 }
 
+void WaveformMarkSet::setBreadth(float breadth) {
+    for (auto& pMark : m_marks) {
+        pMark->setBreadth(breadth);
+    }
+}
+
 void WaveformMarkSet::update() {
     std::map<WaveformMarkSortKey, WaveformMarkPointer> map;
     for (const auto& pMark : std::as_const(m_marks)) {
@@ -77,7 +87,7 @@ void WaveformMarkSet::update() {
                 // Create a stable key for sorting, because the WaveformMark's samplePosition is a
                 // ControlObject which can change at any time by other threads. Such a change causes
                 // another updateCues() call, rebuilding map.
-                auto key = WaveformMarkSortKey(samplePosition, pMark->getHotCue());
+                auto key = WaveformMarkSortKey(samplePosition, pMark->getPriority());
                 map.emplace(key, pMark);
             }
         }
@@ -89,6 +99,20 @@ void WaveformMarkSet::update() {
             map.end(),
             std::back_inserter(m_marksToRender),
             [](auto const& pair) { return pair.second; });
+
+    double prevSamplePosition = Cue::kNoPosition;
+
+    // Avoid overlapping marks by increasing the level per alignment.
+    // We take this into account when drawing the marks aligned at:
+    // left top, right top, left bottom, right bottom.
+    std::map<Qt::Alignment, int> levels;
+    for (auto& pMark : m_marksToRender) {
+        if (pMark->getSamplePosition() != prevSamplePosition) {
+            prevSamplePosition = pMark->getSamplePosition();
+            levels.clear();
+        }
+        pMark->setLevel(levels[pMark->m_align]++);
+    }
 }
 
 WaveformMarkPointer WaveformMarkSet::findHoveredMark(
@@ -102,6 +126,12 @@ WaveformMarkPointer WaveformMarkSet::findHoveredMark(
     for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
         const WaveformMarkPointer& pMark = *it;
         if (pMark->contains(pos, orientation)) {
+            return pMark;
+        }
+    }
+    for (auto it = m_marksToRender.crbegin(); it != m_marksToRender.crend(); ++it) {
+        const WaveformMarkPointer& pMark = *it;
+        if (pMark->lineHovered(pos, orientation)) {
             return pMark;
         }
     }

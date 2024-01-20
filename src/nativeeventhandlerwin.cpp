@@ -8,8 +8,6 @@
 #include <winuser.h>  // for MSG, RedrawWindow PostMessageW
 // clang-format on
 
-#include "moc_nativeeventhandlerwin.cpp"
-
 bool WindowsEventHandler::nativeEventFilter(
         const QByteArray& eventType,
         void* message,

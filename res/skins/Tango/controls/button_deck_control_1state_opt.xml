@@ -23,8 +23,8 @@ Variables:
     <NumberStates>1</NumberStates>
     <State>
       <Number>0</Number>
-      <Pressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:../Tango/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
+      <Pressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skins:Tango/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey persist="true"><Variable name="group"/>,<Variable name="Control"/></ConfigKey>

@@ -3,6 +3,7 @@
 #include <QPair>
 #include <QSemaphore>
 #include <QThread>
+#include <mutex>
 
 #include "util/performancetimer.h"
 
@@ -17,6 +18,7 @@ class VSyncThread : public QThread {
         ST_SGI_VIDEO_SYNC,
         ST_OML_SYNC_CONTROL,
         ST_FREE,
+        ST_PLL,
         ST_COUNT // Dummy Type at last, counting possible types
     };
 
@@ -27,7 +29,6 @@ class VSyncThread : public QThread {
 
     bool waitForVideoSync(WGLWidget* glw);
     int elapsed();
-    int toNextSyncMicros();
     void setSyncIntervalTimeMicros(int usSyncTimer);
     void setVSyncType(int mode);
     int droppedFrames();
@@ -41,11 +42,17 @@ class VSyncThread : public QThread {
     int getSyncIntervalTimeMicros() const {
         return m_syncIntervalTimeMicros;
     }
+    void updatePLL();
   signals:
+    void vsyncSwapAndRender();
     void vsyncRender();
     void vsyncSwap();
 
   private:
+    void runFree();
+    void runPLL();
+    void runTimer();
+
     bool m_bDoRendering;
     bool m_vSyncTypeChanged;
     int m_syncIntervalTimeMicros;
@@ -59,4 +66,10 @@ class VSyncThread : public QThread {
     double m_displayFrameRate;
     int m_vSyncPerRendering;
     mixxx::Duration m_sinceLastSwap;
+    // phase locked loop
+    std::mutex m_pllMutex;
+    PerformanceTimer m_pllTimer;
+    double m_pllPhaseOut;
+    double m_pllDeltaOut;
+    double m_pllLogging;
 };

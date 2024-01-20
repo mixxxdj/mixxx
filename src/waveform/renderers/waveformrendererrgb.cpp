@@ -71,7 +71,7 @@ void WaveformRendererRGB::draw(
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     QColor color;
 

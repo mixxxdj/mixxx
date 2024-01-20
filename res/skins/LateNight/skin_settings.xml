@@ -35,14 +35,14 @@ Description:
                 <Text>Decks</Text>
                 <Size>56f,23f</Size>
               </Label>
-              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                 <SetVariable name="Text">2</SetVariable>
                 <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                 <SetVariable name="IsEqual">0</SetVariable>
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="Width">25f</SetVariable>
               </Template>
-              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                 <SetVariable name="Text">4</SetVariable>
                 <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
                 <SetVariable name="IsEqual">1</SetVariable>
@@ -104,7 +104,6 @@ Description:
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Text></Text>
                       <Alignment>left</Alignment>
                     </State>
                     <Connection>
@@ -124,17 +123,17 @@ Description:
                     <Size>0me,18f</Size>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:../LateNight/helpers/skin_settings_deck_size_button.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_deck_size_button.xml">
                         <SetVariable name="Text">FULL</SetVariable>
                         <SetVariable name="Size">full</SetVariable>
                         <SetVariable name="Width">40f</SetVariable>
                       </Template>
-                      <Template src="skin:../LateNight/helpers/skin_settings_deck_size_button.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_deck_size_button.xml">
                         <SetVariable name="Text">Compact</SetVariable>
                         <SetVariable name="Size">compact</SetVariable>
                         <SetVariable name="Width">66f</SetVariable>
                       </Template>
-                      <Template src="skin:../LateNight/helpers/skin_settings_deck_size_button.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_deck_size_button.xml">
                         <SetVariable name="Text">mini</SetVariable>
                         <SetVariable name="Size">mini</SetVariable>
                         <SetVariable name="Width">40f</SetVariable>
@@ -169,21 +168,21 @@ Description:
                           <WidgetGroup trigger="[LateNight],show_mini_deck">
                             <Layout>horizontal</Layout>
                             <Children>
-                              <Template src="skin:../LateNight/helpers/skin_settings_mini_deck.xml"/>
+                              <Template src="skins:LateNight/helpers/skin_settings_mini_deck.xml"/>
                             </Children>
                           </WidgetGroup>
                           <!-- Compact deck selected -->
                           <WidgetGroup trigger="[LateNight],show_compact_deck">
                             <Layout>horizontal</Layout>
                             <Children>
-                              <Template src="skin:../LateNight/helpers/skin_settings_compact_deck.xml"/>
+                              <Template src="skins:LateNight/helpers/skin_settings_compact_deck.xml"/>
                             </Children>
                           </WidgetGroup>
                           <!-- Full deck selected -->
                           <WidgetGroup trigger="[LateNight],show_full_deck">
                             <Layout>horizontal</Layout>
                             <Children>
-                              <Template src="skin:../LateNight/helpers/skin_settings_full_deck.xml"/>
+                              <Template src="skins:LateNight/helpers/skin_settings_full_deck.xml"/>
                             </Children>
                           </WidgetGroup>
                         </Children>
@@ -192,7 +191,7 @@ Description:
                       <WidgetGroup trigger="[Skin],show_mixer" on_hide_select="0">
                         <Layout>horizontal</Layout>
                         <Children>
-                          <Template src="skin:../LateNight/helpers/skin_settings_full_deck.xml"/>
+                          <Template src="skins:LateNight/helpers/skin_settings_full_deck.xml"/>
                         </Children>
                       </WidgetGroup>
                     </Children>
@@ -202,10 +201,10 @@ Description:
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when there are no decks above BIG Library-->
-                      <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                         <SetVariable name="Setting">[LateNight],max_lib_show_decks</SetVariable>
                       </Template>
-                      <Template src="skin:../LateNight/helpers/skin_settings_mini_deck.xml"/>
+                      <Template src="skins:LateNight/helpers/skin_settings_mini_deck.xml"/>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -228,7 +227,7 @@ Description:
             <Layout>stacked</Layout>
             <Children>
               <!-- translucent cover when Library is not maximized -->
-              <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_cover.xml">
                 <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
@@ -236,7 +235,7 @@ Description:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
+                  <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
                     <SetVariable name="Text">Waveforms</SetVariable>
                     <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
                     <SetVariable name="TooltipId">show_waveforms</SetVariable>
@@ -250,16 +249,16 @@ Description:
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when waveforms are hidden -->
-                      <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                         <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
                       </Template>
 
                       <!-- translucent cover when beatgrid controls are hidden -->
-                      <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                         <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
                       </Template>
 
-                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
                         <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
                         <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
@@ -284,7 +283,7 @@ Description:
             <Layout>stacked</Layout>
             <Children>
               <!-- translucent cover when Library is maximized -->
-              <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_cover.xml">
                 <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
@@ -292,7 +291,7 @@ Description:
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
+                  <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
                     <SetVariable name="Text">Mixer</SetVariable>
                     <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
                     <SetVariable name="TooltipId">show_mixer</SetVariable>
@@ -305,7 +304,7 @@ Description:
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when Channel Mixer is hidden -->
-                      <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                         <SetVariable name="Setting">[Skin],show_mixer</SetVariable>
                       </Template>
 
@@ -314,12 +313,12 @@ Description:
                         <Layout>vertical</Layout>
                         <Children>
 
-                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Main / Headphone Mixer</SetVariable>
                             <SetVariable name="Setting">[Skin],show_main_head_mixer</SetVariable>
                           </Template>
 
-                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">EQ Knobs</SetVariable>
                             <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                           </Template>
@@ -330,17 +329,17 @@ Description:
                             <Size>180min,18f</Size>
                             <Children>
                               <!-- translucent cover when EQ knobs are hidden -->
-                              <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                              <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                                 <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                               </Template>
-                              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                                 <SetVariable name="Text">EQ Kill Buttons</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
                               </Template>
                             </Children>
                           </WidgetGroup><!-- /EQ Kill -->
 
-                          <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                          <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="Text">Crossfader</SetVariable>
                             <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
                           </Template>
@@ -366,7 +365,7 @@ Description:
             <Layout>stacked</Layout>
             <Children>
               <!-- translucent cover when Library is maximized -->
-              <Template src="skin:../LateNight/helpers/skin_settings_cover.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_cover.xml">
                 <SetVariable name="Setting">[Skin],show_maximized_library</SetVariable>
               </Template>
 
@@ -378,7 +377,7 @@ Description:
                     <Layout>horizontal</Layout>
                     <Size>180min,1min</Size>
                     <Children>
-                      <Template src="skin:../LateNight/helpers/skin_settings_labelbutton_2state.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_labelbutton_2state.xml">
                         <SetVariable name="Text">Effect Units</SetVariable>
                         <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                         <SetVariable name="TooltipId">show_effects</SetVariable>
@@ -390,7 +389,7 @@ Description:
                         <Layout>stacked</Layout>
                         <Children>
                           <!-- translucent cover when effect rack is hidden -->
-                          <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                          <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                             <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                           </Template>
 
@@ -398,13 +397,13 @@ Description:
                             <Layout>horizontal</Layout>
                             <Size>0me,1min</Size>
                             <Children>
-                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">2</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                                 <SetVariable name="IsEqual">0</SetVariable>
                                 <SetVariable name="Width">25f</SetVariable>
                               </Template>
-                              <Template src="skin:../LateNight/helpers/skin_settings_numToggle_header.xml">
+                              <Template src="skins:LateNight/helpers/skin_settings_numToggle_header.xml">
                                 <SetVariable name="Text">4</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                                 <SetVariable name="IsEqual">1</SetVariable>
@@ -425,11 +424,11 @@ Description:
                     <Layout>stacked</Layout>
                     <Children>
                       <!-- translucent cover when effect rack is hidden -->
-                      <Template src="skin:../LateNight/helpers/skin_settings_cover_inverted.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_cover_inverted.xml">
                         <SetVariable name="Setting">[Skin],show_effectrack</SetVariable>
                       </Template>
 
-                      <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+                      <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="Text">Super Knobs</SetVariable>
                         <SetVariable name="Setting">[Skin],show_superknobs</SetVariable>
                       </Template>
@@ -446,7 +445,9 @@ Description:
           </WidgetGroup>
 
           <!-- Samplers -->
-          <Template src="skin:/helpers/skin_settings_samplers.xml"/>
+          <SingletonContainer>
+            <ObjectName>SamplerSettingsSingleton</ObjectName>
+          </SingletonContainer>
 
           <WidgetGroup>
             <ObjectName>SkinSettingsSeparator</ObjectName>
@@ -467,14 +468,14 @@ Description:
             <Children>
 
               <!-- Preview Deck -->
-              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_previewdeck</SetVariable>
                 <SetVariable name="Text">Preview Deck</SetVariable>
                 <SetVariable name="Setting">[Skin],show_preview_decks</SetVariable>
               </Template>
 
               <!-- Cover Art -->
-              <Template src="skin:../LateNight/helpers/skin_settings_button_2state.xml">
+              <Template src="skins:LateNight/helpers/skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_coverart</SetVariable>
                 <SetVariable name="Text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Skin],show_library_coverart</SetVariable>

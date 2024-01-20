@@ -3,13 +3,13 @@
 
   <!-- Create Singletons for samplers 1-4 because they're needed when
     showing 4 or 8 samplers... -->
-  <Template src="skin:../LateNight/samplers/singletons.xml"/>
+  <Template src="skins:LateNight/samplers/singletons.xml"/>
   <!-- ...the create a singleton for samplers_8decks.xml because it's used
     when showing 8 or 16 samplers. -->
   <SingletonDefinition>
     <ObjectName>Samplers_1-8</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/samplers_8decks.xml">
+      <Template src="skins:LateNight/samplers/samplers_8decks.xml">
         <SetVariable name="Count">1-8</SetVariable>
       </Template>
     </Children>
@@ -18,7 +18,7 @@
   <SingletonDefinition>
     <ObjectName>Samplers_9-16</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/samplers_row.xml">
+      <Template src="skins:LateNight/samplers/samplers_row.xml">
         <SetVariable name="Count">9-16</SetVariable>
         <SetVariable name="Sampler1">9</SetVariable>
         <SetVariable name="Sampler2">10</SetVariable>
@@ -41,7 +41,7 @@
         <Children>
 
           <!--4 Samplers -->
-          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:../LateNight/samplers/samplers_4decks.xml">
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skins:LateNight/samplers/samplers_4decks.xml">
             <SetVariable name="Count">1-4</SetVariable>
           </Template>
 

@@ -335,6 +335,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     loadParameters();
 
+    m_pControlMetaParameter->setDefaultValue(pManifest->metaknobDefault());
+
     m_pControlLoaded->forceSet(1.0);
 
     if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
@@ -386,6 +388,8 @@ void EffectSlot::unloadEffect() {
     for (auto& parameterList : m_hiddenParameters) {
         parameterList.clear();
     }
+
+    m_pControlMetaParameter->setDefaultValue(0.0);
 
     m_pManifest.clear();
 

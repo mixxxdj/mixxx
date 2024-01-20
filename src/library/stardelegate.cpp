@@ -18,7 +18,8 @@ void StarDelegate::paintItem(
         QPainter* painter,
         const QStyleOptionViewItem& option,
         const QModelIndex& index) const {
-    // let the editor do the painting if this cell is currently being edited
+    // Let the editor do the painting if this cell is currently being edited.
+    // Note: if required, the focus border will be drawn by the editor.
     if (index == m_currentEditedCellIndex) {
         return;
     }
@@ -43,7 +44,8 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    StarEditor* editor = new StarEditor(parent, m_pTableView, index, newOption);
+    StarEditor* editor =
+            new StarEditor(parent, m_pTableView, index, newOption, m_pFocusBorderColor);
     connect(editor,
             &StarEditor::editingFinished,
             this,
@@ -76,6 +78,7 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // StarRating.
     if (index.data().canConvert<StarRating>()) {
         if (m_isOneCellInEditMode) {
+            // Don't close other editors when hovering the stars cell!
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }
         m_pTableView->openPersistentEditor(index);

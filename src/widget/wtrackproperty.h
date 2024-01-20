@@ -32,17 +32,12 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
 
   protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
-
-  private slots:
-    void slotTrackChanged(TrackId);
-
-  private:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dropEvent(QDropEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 
-    void updateLabel();
+    virtual void updateLabel();
 
     void ensureTrackMenuIsCreated();
 
@@ -53,4 +48,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     QString m_property;
 
     parented_ptr<WTrackMenu> m_pTrackMenu;
+
+  private slots:
+    void slotTrackChanged(TrackId);
 };

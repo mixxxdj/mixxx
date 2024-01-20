@@ -1,10 +1,7 @@
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "moc_waveformrendermark.cpp"
-#include "track/track.h"
 #include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "widget/wimagestore.h"
 
 class ImageGraphics : public WaveformMark::Graphics {
     QImage m_image;
@@ -20,13 +17,8 @@ class ImageGraphics : public WaveformMark::Graphics {
 };
 
 WaveformRenderMark::WaveformRenderMark(
-        WaveformWidgetRenderer* waveformWidgetRenderer) :
-    WaveformRendererAbstract(waveformWidgetRenderer) {
-}
-
-void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
-    m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+        WaveformWidgetRenderer* waveformWidgetRenderer)
+        : WaveformRenderMarkBase(waveformWidgetRenderer, true) {
 }
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -37,12 +29,6 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setWorldMatrixEnabled(false);
 
     for (const auto& pMark : std::as_const(m_marks)) {
-        // Generate image on first paint can't be done in setup since we need to
-        // wait for the render widget to be resized yet.
-        if (!pMark->m_pGraphics || pMark->m_pGraphics->m_obsolete) {
-            generateMarkImage(pMark);
-        }
-
         const QImage& image = static_cast<ImageGraphics*>(pMark->m_pGraphics.get())->image();
 
         const double samplePosition = pMark->getSamplePosition();
@@ -149,72 +135,13 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 }
 
-void WaveformRenderMark::onResize() {
-    // Flag that the mark image has to be updated. New images will be created on next paint.
-    for (const auto& pMark : std::as_const(m_marks)) {
-        if (pMark->m_pGraphics) {
-            pMark->m_pGraphics->m_obsolete = true;
-        }
-    }
-}
-
-void WaveformRenderMark::onSetTrack() {
-    slotCuesUpdated();
-
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
-    if (!pTrackInfo) {
-        return;
-    }
-    connect(pTrackInfo.get(),
-            &Track::cuesUpdated,
-            this,
-            &WaveformRenderMark::slotCuesUpdated);
-}
-
-void WaveformRenderMark::slotCuesUpdated() {
-    const TrackPointer pTrackInfo = m_waveformRenderer->getTrackInfo();
-    if (!pTrackInfo) {
-        return;
-    }
-
-    QList<CuePointer> loadedCues = pTrackInfo->getCuePoints();
-    for (const CuePointer& pCue : loadedCues) {
-        int hotCue = pCue->getHotCue();
-        if (hotCue == Cue::kNoHotCue) {
-            continue;
-        }
-
-        // Here we assume no two cues can have the same hotcue assigned,
-        // because WaveformMarkSet stores one mark for each hotcue.
-        WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
-        if (pMark.isNull()) {
-            continue;
-        }
-
-        QString newLabel = pCue->getLabel();
-        QColor newColor = mixxx::RgbColor::toQColor(pCue->getColor());
-        if (pMark->m_text.isNull() || newLabel != pMark->m_text ||
-                !pMark->fillColor().isValid() ||
-                newColor != pMark->fillColor()) {
-            pMark->m_text = newLabel;
-            int dimBrightThreshold = m_waveformRenderer->getDimBrightThreshold();
-            pMark->setBaseColor(newColor, dimBrightThreshold);
-            generateMarkImage(pMark);
-        }
-    }
-
-    m_marks.update();
-}
-
-void WaveformRenderMark::generateMarkImage(WaveformMarkPointer pMark) {
+void WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
         pMark->m_pGraphics = std::make_unique<ImageGraphics>(
-                pMark->generateImage(m_waveformRenderer->getBreadth(),
-                        m_waveformRenderer->getDevicePixelRatio()));
+                pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
     } else {
         pMark->m_pGraphics = std::make_unique<ImageGraphics>(
-                pMark->generateImage(m_waveformRenderer->getBreadth(),
-                             m_waveformRenderer->getDevicePixelRatio())
+                pMark->generateImage(m_waveformRenderer->getDevicePixelRatio())
                         .transformed(QTransform().rotate(90)));
     }
 }
