@@ -1,0 +1,122 @@
+.Dd $Mdocdate: Dec 16 2020$
+.Dt SHOUT 1
+.Os
+.\"
+.Sh NAME
+.\"
+.Nm shout
+.Nd Icecast source client
+.\"
+.Sh SYNOPSIS
+.\"
+.Nm
+[OPTIONS]
+.\"
+.Sh DESCRIPTION
+.\"
+.Nm
+reads data from standard input and streams it to Icecast.
+.\"
+.Sh OPTIONS
+.\"
+.Bl -tag -width 4n
+.\"
+.It Fl \-format Ar format
+Set stream format. This can be "ogg", "mp3", or "webm". Default is "ogg".
+.\"
+.It Fl H Ar host
+See
+.Fl \-host
+.\"
+.It Fl h
+See
+.Fl \-help
+.\"
+.It Fl \-help
+Show help.
+.\"
+.It Fl \-host Ar host
+Set destination host. Default is "localhost".
+.It Fl \-mount Ar string
+Set mountpoint. Default is "/example.ogg".
+.\"
+.It Fl P Ar port
+See
+.Fl \-port
+.\"
+.It Fl \-pass Ar string
+Set source password. Default is "hackme".
+.\"
+.It Fl \-port Ar port
+Set destination port. Symbolic names are supported. Default is 8000.
+.\"
+.It Fl \-proto Ar protocol
+Set protocol. Default is "http".
+.\" STATION METADATA
+.It Fl \-station-description Ar string
+Set stream description.
+.\"
+.It Fl \-station-genre Ar string
+Set stream genre.
+.\"
+.\" --station-meta
+.It Fl \-station-meta Ar key Ns No = Ns Ar value
+Set meta information. Both
+.Ar key
+and
+.Ar value
+are arbitrary strings.
+.\"
+.It Fl \-station-name Ar string
+Set stream name.
+.\"
+.It Fl \-station-url Ar string
+Set stream URL.
+.\"
+.It Fl \-tls-mode Ar tls-mode
+Set TLS mode. This can be "disabled", "auto", "auto_no_plain", "rfc2818", or "rfc2817". Default is "auto".
+
+When libshout is build without TLS support only "disabled", and "auto" are supported.
+.\"
+.It Fl \-usage Ar usage{,usage}
+Set stream usages. This can be:
+.Bl -tag -width 13n -compact
+.It Qq audio
+for audio substreams
+.It Qq visual
+for picture/video substreams (most often combined with "audio")
+.It Qq text
+for text substreams that are not subtitles
+.It Qq subtitle
+for subtitle substreams
+.It Qq light
+for light control substreams
+.It Qq ui
+for user interface data, such as DVD menus or buttons
+.It Qq metadata
+for substreams that include metadata for the stream
+.It Qq application
+for application specific data substreams
+.It Qq control
+for substreams that control the infrastructure
+.It Qq complex
+for substreams that are themself a mixture of other types
+.It Qq other
+for substream of types not listed here
+.It Qq unknown
+for streams that may contain additional substreams of unknown nature
+.It Qq 3d
+for streams that contain information for 3D playback
+.It Qq 4d
+for streams that contain information for 4D/XD playback
+.El
+.\"
+.It Fl \-user Ar string
+Set source user. Default is "source".
+.\"
+.El
+.\"
+.Sh NOTES
+If this binary is symlinked, or hardlinked to the name "oggfwd" it provides drop-in compatibly with
+.Xr oggfwd 1 .
+.\"
