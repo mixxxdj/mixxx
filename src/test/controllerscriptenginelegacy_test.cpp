@@ -257,7 +257,7 @@ TEST_F(ControllerScriptEngineLegacyTest, trigger) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.connectControl('[Test]', 'co', reaction);"
             "engine.trigger('[Test]', 'co');"));
@@ -279,7 +279,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByString) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', 'reaction');"
             "engine.trigger('[Test]', 'co');"
@@ -306,7 +306,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByStringForbidDuplicateC
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', 'reaction');"
             "engine.connectControl('[Test]', 'co', 'reaction');"
@@ -329,7 +329,7 @@ TEST_F(ControllerScriptEngineLegacyTest,
 
     QString script(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
@@ -337,7 +337,7 @@ TEST_F(ControllerScriptEngineLegacyTest,
             // to check that disconnecting one does not disconnect both.
             "var connection2 = engine.connectControl('[Test]', 'co', 'incrementCounterCO');"
             "function changeTestCoValue() {"
-            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  let testCoValue = engine.getValue('[Test]', 'co');"
             "  engine.setValue('[Test]', 'co', testCoValue + 1);"
             "};"
             "function disconnectConnection2() {"
@@ -367,7 +367,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunction) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.connectControl('[Test]', 'co', reaction);"
             "connection.trigger();"));
@@ -385,7 +385,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunctionAllowDuplicate
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', reaction);"
             "engine.connectControl('[Test]', 'co', reaction);"
@@ -409,7 +409,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_toDisconnectRemovesAllCo
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "engine.connectControl('[Test]', 'co', reaction);"
             "engine.connectControl('[Test]', 'co', reaction);"
@@ -433,7 +433,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByLambda) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var connection = engine.connectControl('[Test]', 'co', function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); });"
             "connection.trigger();"
             "function disconnect() { "
@@ -456,7 +456,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_Disconnect) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection = engine.makeConnection('[Test]', 'co', reaction);"
             "connection.trigger();"
@@ -480,15 +480,15 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_reflectDisconnect) {
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(success) { "
             "  if (success) {"
-            "    var pass = engine.getValue('[Test]', 'passed');"
+            "    let pass = engine.getValue('[Test]', 'passed');"
             "    engine.setValue('[Test]', 'passed', pass + 1.0); "
             "  }"
             "};"
-            "var dummy_callback = function(value) {};"
-            "var connection = engine.makeConnection('[Test]', 'co', dummy_callback);"
+            "let dummy_callback = function(value) {};"
+            "let connection = engine.makeConnection('[Test]', 'co', dummy_callback);"
             "reaction(connection);"
             "reaction(connection.isConnected);"
-            "var successful_disconnect = connection.disconnect();"
+            "let successful_disconnect = connection.disconnect();"
             "reaction(successful_disconnect);"
             "reaction(!connection.isConnected);"));
     processEvents();
@@ -508,7 +508,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_DisconnectByPassingToC
 
     EXPECT_TRUE(evaluateAndAssert(
             "var reaction = function(value) { "
-            "  var pass = engine.getValue('[Test]', 'passed');"
+            "  let pass = engine.getValue('[Test]', 'passed');"
             "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
             "var connection1 = engine.connectControl('[Test]', 'co', reaction);"
             "var connection2 = engine.connectControl('[Test]', 'co', reaction);"
@@ -545,7 +545,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_MakesIndependentConnec
 
     EXPECT_TRUE(evaluateAndAssert(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
@@ -553,7 +553,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_MakesIndependentConnec
             // to check that disconnecting one does not disconnect both.
             "var connection2 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
             "function changeTestCoValue() {"
-            "  var testCoValue = engine.getValue('[Test]', 'co');"
+            "  let testCoValue = engine.getValue('[Test]', 'co');"
             "  engine.setValue('[Test]', 'co', testCoValue + 1);"
             "}"
             "function disconnectConnection1() {"
@@ -583,7 +583,7 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionObject_trigger) {
 
     EXPECT_TRUE(evaluateAndAssert(
             "var incrementCounterCO = function () {"
-            "  var counter = engine.getValue('[Test]', 'counter');"
+            "  let counter = engine.getValue('[Test]', 'counter');"
             "  engine.setValue('[Test]', 'counter', counter + 1);"
             "};"
             "var connection1 = engine.makeConnection('[Test]', 'co', incrementCounterCO);"
