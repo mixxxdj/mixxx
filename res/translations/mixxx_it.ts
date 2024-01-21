@@ -11107,8 +11107,8 @@ Suggerimento: compensa le voci &quot;chipmunk&quot; o &quot;ringhio&quot;</trans
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
-        <translation>Segna tutte le tracce suonate)</translation>
+        <source>Mark all tracks played</source>
+        <translation>Segna tutte le tracce suonate</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="70"/>

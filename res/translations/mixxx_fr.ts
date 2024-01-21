@@ -11107,8 +11107,8 @@ Astuce : compense les voix de &quot;canard&quot; ou &quot;grondante&quot;</trans
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
-        <translation>Marquer toutes les pistes jouées)</translation>
+        <source>Mark all tracks played</source>
+        <translation>Marquer toutes les pistes jouées</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="70"/>

@@ -11108,8 +11108,8 @@ Nápověda: vyvažuje „čipmánčí“ nebo „vrčící“ hlasy</translation
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
-        <translation>Označit všechny skladby jako přehrané)</translation>
+        <source>Mark all tracks played</source>
+        <translation>Označit všechny skladby jako přehrané</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="70"/>

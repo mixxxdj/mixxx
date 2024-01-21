@@ -11106,8 +11106,8 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
-        <translation>Отметить все треки как воспроизведённые)</translation>
+        <source>Mark all tracks played</source>
+        <translation>Отметить все треки как воспроизведённые</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="70"/>

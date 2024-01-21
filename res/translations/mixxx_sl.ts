@@ -11102,7 +11102,7 @@ Namig: kompenzira &quot;veveričji&quot; ali &quot;renčeč&quot; glas</translat
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
+        <source>Mark all tracks played</source>
         <translation>Označi vse skladbe kot predvajane</translation>
     </message>
     <message>

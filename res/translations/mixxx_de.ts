@@ -11105,7 +11105,7 @@ Hinweis: Kompensiert &quot;Chipmunk&quot;- oder &quot;Brumm&quot;- Stimmen</tran
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
+        <source>Mark all tracks played</source>
         <translation>Alle Tracks als gespielt markieren</translation>
     </message>
     <message>

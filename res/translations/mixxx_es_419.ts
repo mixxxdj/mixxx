@@ -11105,8 +11105,8 @@ Consejo: compensa las voces de &quot;ardillitas&quot; o &quot;gruñonas&quot;</t
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="64"/>
-        <source>Mark all tracks played)</source>
-        <translation>Marcar todas las pistas reproducidas)</translation>
+        <source>Mark all tracks played</source>
+        <translation>Marcar todas las pistas reproducidas</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/setlogfeature.cpp" line="70"/>
