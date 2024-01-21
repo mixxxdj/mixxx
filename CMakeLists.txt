@@ -2814,9 +2814,7 @@ else()
         COMPONENT applocal)
     endif()
 
-    add_custom_command(
-        TARGET mixxx POST_BUILD
-        COMMAND "${CMAKE_COMMAND}" -DCOMPONENT=applocal -DCMAKE_INSTALL_PREFIX="${CMAKE_CURRENT_BINARY_DIR}" -P cmake_install.cmake)
+    set(APPLOCAL_COMPONENT_DEFINED true)
   endif()
 endif()
 
