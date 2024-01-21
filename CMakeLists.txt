@@ -3518,7 +3518,7 @@ set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 if(QT6)
   if(QML)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins,\
- qml6-module-qtquick-controls, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-shapes")
+ qml6-module-qtquick-controls, qml6-module-qt-labs-qmlmodels, qml6-module-qtquick-shapes, qml6-module-qtqml-workerscript")
   else()
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt6sql6-sqlite, fonts-open-sans, fonts-ubuntu, qt6-qpa-plugins")
   endif()

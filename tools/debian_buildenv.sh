@@ -101,8 +101,9 @@ case "$1" in
             qtkeychain-qt6-dev \
             qt6-declarative-dev \
             qt6-qpa-plugins \
-            qml6-module-qtquick-controls \
             qml6-module-qt-labs-qmlmodels \
+            qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-controls \
             qml6-module-qtquick-shapes \
             "${PACKAGES_EXTRA[@]}"
         ;;
