@@ -2568,7 +2568,11 @@ else()
 endif()
 if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
+  list(APPEND QT_EXTRA_COMPONENTS "LabsQmlModels")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickControls2Impl")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
@@ -2749,6 +2753,31 @@ else()
       COMPONENT applocal)
 
     if(QML)
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::LabsQmlModels
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QuickControls2
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QuickControls2Impl
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QuickShapesPrivate
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QuickTemplates2
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
       # install qml6-module-qtquick-controls
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
