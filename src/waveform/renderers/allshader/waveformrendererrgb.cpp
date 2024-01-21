@@ -28,6 +28,19 @@ void WaveformRendererRGB::initializeGL() {
     m_shader.init();
 }
 
+namespace {
+int findRoundingFactor(double r) {
+    const double epsilon = 0.0001;
+    for (int i = 1; i <= 8; i++) {
+        double m = static_cast<double>(i) * r;
+        if (std::abs(m - std::round(m)) < epsilon) {
+            return std::lround(m);
+        }
+    }
+    return 1;
+}
+} // namespace
+
 void WaveformRendererRGB::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
@@ -106,9 +119,18 @@ void WaveformRendererRGB::paintGL() {
 
     const double maxSamplingRange = visualIncrementPerPixel / 2.0;
 
+    const int roundingFactor = findRoundingFactor(devicePixelRatio);
+    const double fRoundingFactor = roundingFactor;
+
     for (int pos = 0; pos < length; ++pos) {
-        const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
-        const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
+        const int visualFrameStart =
+                std::lround(
+                        (xVisualFrame - maxSamplingRange) / fRoundingFactor) *
+                roundingFactor;
+        const int visualFrameStop =
+                std::lround(
+                        (xVisualFrame + maxSamplingRange) / fRoundingFactor) *
+                roundingFactor;
 
         const int visualIndexStart = std::max(visualFrameStart * 2, 0);
         const int visualIndexStop =
