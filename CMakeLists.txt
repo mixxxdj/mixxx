@@ -2574,6 +2574,7 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickShapesPrivate")
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
+  list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2778,6 +2779,11 @@ else()
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
 
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
       # install qml6-module-qtquick-controls
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
@@ -2795,6 +2801,13 @@ else()
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/qmlmodels"
         DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/Qt/labs"
         COMPONENT applocal)
+
+      # qml6-module-qtqml-workerscript
+      install(
+        DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/WorkerScript"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQml"
+        COMPONENT applocal)
+
     endif()
 
     if(WIN32)
