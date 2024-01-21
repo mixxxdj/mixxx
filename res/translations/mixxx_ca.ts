@@ -10446,10 +10446,9 @@ Centrat: no canvia la senyal original.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
-        <source>An gentle 2-band parametric equalizer based on biquad filters.
+        <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
-        <translation>Un equalitzador de 2 bandes amb caiguda suau basat en filtres biquad.
-Està dissenyat com a complement dels equalitzadors de mescla amb caiguda accentuada.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="33"/>

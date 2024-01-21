@@ -10467,7 +10467,7 @@ Au centre: ne change pas le signal d&apos;origine</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
-        <source>An gentle 2-band parametric equalizer based on biquad filters.
+        <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
         <translation>Un égaliseur paramétrique à 2 bandes doux basé sur des filtres Biquad.
 Il est conçu comme un complément aux égaliseurs de mixage raide.</translation>

@@ -10468,7 +10468,7 @@ Střední: nezmění původní signál.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
-        <source>An gentle 2-band parametric equalizer based on biquad filters.
+        <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
         <translation>Jemný 2-pásmový parametrický ekvalizér založený na filtrech čtvrtého stupně.
 Je navržen jako doplněk k strmým míchacím ekvalizérům.</translation>

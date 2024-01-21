@@ -10435,10 +10435,10 @@ Center: does not change the original signal.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
-        <source>An gentle 2-band parametric equalizer based on biquad filters.
+        <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
-        <translation>An gentle 2-band parametric equalizer based on biquad filters.
-It is designed as a complement to the steep mixing equalizers.</translation>
+        <translation>A gentle 2-band parametric equaliser based on biquad filters.
+It is designed as a complement to the steep mixing equalisers.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="33"/>

@@ -10463,9 +10463,9 @@ Sredina: ne spreminja originalnega zvoka.</translation>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="25"/>
-        <source>An gentle 2-band parametric equalizer based on biquad filters.
+        <source>A gentle 2-band parametric equalizer based on biquad filters.
 It is designed as a complement to the steep mixing equalizers.</source>
-        <translation>Nežen 2-stezni parametrični izravnalnik, ki temelji na biquad filtrih. Narejen je kot komplement ostrim izravnalnikom za miksanje.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/backends/builtin/parametriceqeffect.cpp" line="33"/>
