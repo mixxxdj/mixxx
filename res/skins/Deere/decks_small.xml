@@ -8,11 +8,11 @@
         <Layout>horizontal</Layout>
         <Size>0me,51f</Size>
         <Children>
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Deere/deck_small.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Deere/deck_small.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
         </Children>
@@ -22,11 +22,11 @@
         <Layout>horizontal</Layout>
         <Size>0me,51f</Size>
         <Children>
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Deere/deck_small.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Deere/deck_small.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
         </Children>

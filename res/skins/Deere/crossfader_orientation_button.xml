@@ -1,5 +1,5 @@
 <Template>
-  <Template src="skin:left_3state_button.xml">
+  <Template src="skins:Deere/left_3state_button.xml">
     <SetVariable name="TooltipId">orientation</SetVariable>
     <SetVariable name="ObjectName">OrientationButton<Variable name="Unit"/></SetVariable>
     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>

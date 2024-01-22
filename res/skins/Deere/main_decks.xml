@@ -8,9 +8,9 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
-      <Template src="skin:left_gutter.xml"/>
-      <Template src="skin:mixer.xml"/>
-      <Template src="skin:right_gutter.xml"/>
+      <Template src="skins:Deere/left_gutter.xml"/>
+      <Template src="skins:Deere/mixer.xml"/>
+      <Template src="skins:Deere/right_gutter.xml"/>
     </Children>
   </WidgetGroup>
 </Template>

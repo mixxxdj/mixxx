@@ -19,7 +19,7 @@
             <Layout>horizontal</Layout>
             <ObjectName>RateTempButtons</ObjectName>
             <Children>
-              <Template src="skin:left_right_2state_button.xml">
+              <Template src="skins:Deere/left_right_2state_button.xml">
                 <SetVariable name="TooltipId">sync_enabled</SetVariable>
                 <SetVariable name="ObjectName">DeckSync</SetVariable>
                 <SetVariable name="MinimumSize">35,18</SetVariable>
@@ -30,7 +30,7 @@
                 <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
                 <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
-              <Template src="skin:left_3state_button.xml">
+              <Template src="skins:Deere/left_3state_button.xml">
                 <SetVariable name="TooltipId">sync_leader</SetVariable>
                 <SetVariable name="ObjectName">SyncLeader</SetVariable>
                 <SetVariable name="MinimumSize">15,18</SetVariable>
@@ -45,7 +45,7 @@
             <ObjectName>RateTempButtons</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_right_1state_button.xml">
+              <Template src="skins:Deere/left_right_1state_button.xml">
                 <SetVariable name="ObjectName">TempRateDown</SetVariable>
                 <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
                 <SetVariable name="MinimumSize">20,20</SetVariable>
@@ -58,7 +58,7 @@
                 <SetVariable name="right_connection_control"><Variable name="group"/>,rate_temp_down_small</SetVariable>
               </Template>
 
-              <Template src="skin:left_right_1state_button.xml">
+              <Template src="skins:Deere/left_right_1state_button.xml">
                 <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>
                 <SetVariable name="ObjectName">TempRateUp</SetVariable>
                 <SetVariable name="MinimumSize">20,20</SetVariable>

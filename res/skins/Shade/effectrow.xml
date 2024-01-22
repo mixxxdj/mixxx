@@ -23,13 +23,13 @@
                   <WidgetGroup>
                     <Size>0e,1f</Size>
                   </WidgetGroup>
-                  <Template src="skin:effectunitsmall.xml">
+                  <Template src="skins:Shade/effectunitsmall.xml">
                     <SetVariable name="effectunitnum">1</SetVariable>
                   </Template>
-                  <Template src="skin:effectunit_parameters.xml">
+                  <Template src="skins:Shade/effectunit_parameters.xml">
                     <SetVariable name="effectunitnum">1</SetVariable>
                   </Template>
-                  <Template src="skin:effectunit_border.xml"/>
+                  <Template src="skins:Shade/effectunit_border.xml"/>
                   <WidgetGroup>
                     <Size>0e,2f</Size>
                   </WidgetGroup>
@@ -43,13 +43,13 @@
                   <WidgetGroup>
                     <Size>0e,1f</Size>
                   </WidgetGroup>
-                  <Template src="skin:effectunitsmall.xml">
+                  <Template src="skins:Shade/effectunitsmall.xml">
                     <SetVariable name="effectunitnum">2</SetVariable>
                   </Template>
-                  <Template src="skin:effectunit_parameters.xml">
+                  <Template src="skins:Shade/effectunit_parameters.xml">
                     <SetVariable name="effectunitnum">2</SetVariable>
                   </Template>
-                  <Template src="skin:effectunit_border.xml"/>
+                  <Template src="skins:Shade/effectunit_border.xml"/>
                   <WidgetGroup>
                     <Size>0e,2f</Size>
                   </WidgetGroup>

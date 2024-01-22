@@ -12,13 +12,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_fx_plus.png</Pressed>
-          <Unpressed>skin:/btn/btn_fx_plus.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fx_plus.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fx_plus.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_fx_minus.png</Pressed>
-          <Unpressed>skin:/btn/btn_fx_minus.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fx_minus.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fx_minus.png</Unpressed>
         </State>
         <Pos>2,0</Pos>
         <Connection>
@@ -31,13 +31,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_beatloop_<Variable name="effectunitnum"/>_down.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_beatloop_<Variable name="effectunitnum"/>.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectunitnum"/>_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_beatloop_<Variable name="effectunitnum"/>_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_beatloop_<Variable name="effectunitnum"/>_over.png</Unpressed>
         </State>
         <Pos>4,14</Pos>
         <Connection>
@@ -51,13 +51,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_pfl_fx_down.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_pfl_fx.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_pfl_fx_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_pfl_fx_over.png</Unpressed>
         </State>
           <Pos>25,14</Pos>
         <Connection>
@@ -71,13 +71,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
         </State>
           <Pos>4,35</Pos>
         <Connection>
@@ -89,7 +89,7 @@
       <WidgetGroup>
         <Size>17f,5f</Size>
         <Pos>53,14</Pos>
-        <BackPath>skin:/btn/btn_mix.png</BackPath>
+        <BackPath>skins:Shade/btn/btn_mix.png</BackPath>
       </WidgetGroup>
 
       <Knob>
@@ -107,13 +107,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_fxmix_d-w.svg</Pressed>
-          <Unpressed>skin:/btn/btn_fxmix_d-w.svg</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fxmix_d-w.svg</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fxmix_d-w.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_fxmix_d+w.svg</Pressed>
-          <Unpressed>skin:/btn/btn_fxmix_d+w.svg</Unpressed>
+          <Pressed>skins:Shade/btn/btn_fxmix_d+w.svg</Pressed>
+          <Unpressed>skins:Shade/btn/btn_fxmix_d+w.svg</Unpressed>
         </State>
         <Size>20f,9f</Size>
         <Pos>52,46</Pos>
@@ -125,7 +125,7 @@
       <WidgetGroup>
         <Size>29f,5f</Size>
         <Pos>76,14</Pos>
-        <BackPath>skin:/btn/btn_super.png</BackPath>
+        <BackPath>skins:Shade/btn/btn_super.png</BackPath>
       </WidgetGroup>
 
       <Knob>

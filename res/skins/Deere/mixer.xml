@@ -27,11 +27,11 @@
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
-                      <Template src="skin:mixer_controls_2decks_left.xml">
+                      <Template src="skins:Deere/mixer_controls_2decks_left.xml">
                         <SetVariable name="i">1</SetVariable>
                       </Template>
-                      <Template src="skin:mixer_column_main_vu_2decks.xml"/>
-                      <Template src="skin:mixer_controls_2decks_right.xml">
+                      <Template src="skins:Deere/mixer_column_main_vu_2decks.xml"/>
+                      <Template src="skins:Deere/mixer_controls_2decks_right.xml">
                         <SetVariable name="i">2</SetVariable>
                       </Template>
                     </Children>
@@ -92,21 +92,21 @@
                 <Layout>horizontal</Layout>
                 <Children>
                   <!-- See comments in the templates for explanation of the modes -->
-                  <Template src="skin:mixer_controls_4decks_left.xml">
+                  <Template src="skins:Deere/mixer_controls_4decks_left.xml">
                     <SetVariable name="i">3</SetVariable>
                   </Template>
-                  <Template src="skin:mixer_controls_4decks_left.xml">
+                  <Template src="skins:Deere/mixer_controls_4decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
                   <!-- The 4-deck main VU meter column contains the same
                       structure and mechanisms as the left/right channel controls.
                       When altering those remember to change i.e. <MaximumSize>
                       and fixed spacers there as well -->
-                  <Template src="skin:mixer_column_main_vu_4decks.xml"/>
-                  <Template src="skin:mixer_controls_4decks_right.xml">
+                  <Template src="skins:Deere/mixer_column_main_vu_4decks.xml"/>
+                  <Template src="skins:Deere/mixer_controls_4decks_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
-                  <Template src="skin:mixer_controls_4decks_right.xml">
+                  <Template src="skins:Deere/mixer_controls_4decks_right.xml">
                     <SetVariable name="i">4</SetVariable>
                   </Template>
                 </Children>
@@ -140,7 +140,7 @@
                     <Layout>vertical</Layout>
                     <Size>28f,22f</Size>
                     <Children>
-                      <Template src="skin:crossfader_orientation_button.xml">
+                      <Template src="skins:Deere/crossfader_orientation_button.xml">
                         <SetVariable name="group">[Channel1]</SetVariable>
                         <SetVariable name="Unit">Deck1</SetVariable>
                       </Template>
@@ -204,7 +204,7 @@
                     <Layout>vertical</Layout>
                     <Size>28f,22f</Size>
                     <Children>
-                      <Template src="skin:crossfader_orientation_button.xml">
+                      <Template src="skins:Deere/crossfader_orientation_button.xml">
                         <SetVariable name="group">[Channel2]</SetVariable>
                         <SetVariable name="Unit">Deck2</SetVariable>
                       </Template>

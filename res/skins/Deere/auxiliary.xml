@@ -46,7 +46,7 @@
                     <SizePolicy>min,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:knob.xml">
+                      <Template src="skins:Deere/knob.xml">
                         <SetVariable name="TooltipId">microphone_pregain</SetVariable>
                         <SetVariable name="control">pregain</SetVariable>
                         <SetVariable name="color">green</SetVariable>
@@ -56,7 +56,7 @@
                         <SizePolicy>min,min</SizePolicy>
                         <Layout>vertical</Layout>
                         <Children>
-                          <Template src="skin:left_3state_button.xml">
+                          <Template src="skins:Deere/left_3state_button.xml">
                             <SetVariable name="TooltipId">orientation</SetVariable>
                             <SetVariable name="ObjectName">OrientationButtonAux</SetVariable>
                             <SetVariable name="MinimumSize">30,14</SetVariable>
@@ -75,7 +75,7 @@
                     </Children>
                   </WidgetGroup>
 
-                  <Template src="skin:vumeter.xml">
+                  <Template src="skins:Deere/vumeter.xml">
                     <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
                     <SetVariable name="Size">5f,42f</SetVariable>
                     <SetVariable name="control">vu_meter</SetVariable>
@@ -100,7 +100,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:left_2state_button.xml">
+                  <Template src="skins:Deere/left_2state_button.xml">
                     <SetVariable name="TooltipId">main_enable</SetVariable>
                     <SetVariable name="ObjectName">AuxPlayButton</SetVariable>
                     <SetVariable name="MinimumSize">32,22</SetVariable>
@@ -111,7 +111,7 @@
                     <SetVariable name="left_connection_control"><Variable name="group"/>,main_mix</SetVariable>
                   </Template>
 
-                  <Template src="skin:left_2state_button.xml">
+                  <Template src="skins:Deere/left_2state_button.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">AuxPFLButton</SetVariable>
                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -134,12 +134,12 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">1</SetVariable>
                     <SetVariable name="SourceType">auxiliary</SetVariable>
                   </Template>
 
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">2</SetVariable>
                     <SetVariable name="SourceType">auxiliary</SetVariable>
                   </Template>
@@ -151,7 +151,7 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">3</SetVariable>
                     <SetVariable name="SourceType">auxiliary</SetVariable>
                   </Template>
@@ -159,7 +159,7 @@
                   <!-- Workaround for layout spacing -->
                   <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">4</SetVariable>
                     <SetVariable name="SourceType">auxiliary</SetVariable>
                   </Template>

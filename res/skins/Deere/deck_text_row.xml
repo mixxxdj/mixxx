@@ -164,7 +164,7 @@
                                 <Layout>horizontal</Layout>
                                 <SizePolicy>min,me</SizePolicy>
                                 <Children>
-                                  <Template src="skin:left_right_1state_button.xml">
+                                  <Template src="skins:Deere/left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                                     <SetVariable name="ObjectName">HotcuesEarlierButton</SetVariable>
                                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -177,7 +177,7 @@
                                     <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
                                   </Template>
 
-                                  <Template src="skin:left_right_1state_button.xml">
+                                  <Template src="skins:Deere/left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                                     <SetVariable name="ObjectName">HotcuesLaterButton</SetVariable>
                                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -196,7 +196,7 @@
                                 </Connection>
                               </WidgetGroup>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                                 <SetVariable name="ObjectName">BeatsAdjustFasterButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -208,7 +208,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_faster</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                                 <SetVariable name="ObjectName">BeatsAdjustSlowerButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -220,7 +220,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,beats_adjust_slower</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                                 <SetVariable name="ObjectName">BeatsTranslateEarlierButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -232,7 +232,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                                 <SetVariable name="ObjectName">BeatsTranslateLaterButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -244,7 +244,7 @@
                                 <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                                 <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -476,7 +476,7 @@
                             <MinimumSize>80,20</MinimumSize>
                             <MaximumSize>120,30</MaximumSize>
                             <Children>
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">pitch_down</SetVariable>
                                 <SetVariable name="ObjectName">PitchDownButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -489,7 +489,7 @@
                                 <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_down_small</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">pitch_up</SetVariable>
                                 <SetVariable name="ObjectName">PitchUpButton</SetVariable>
                                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -502,7 +502,7 @@
                                 <SetVariable name="right_connection_control"><Variable name="group"/>,pitch_up_small</SetVariable>
                               </Template>
 
-                              <Template src="skin:left_right_1state_button.xml">
+                              <Template src="skins:Deere/left_right_1state_button.xml">
                                 <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                                 <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
                                 <SetVariable name="MinimumSize">46,22</SetVariable>

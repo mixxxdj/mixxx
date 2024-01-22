@@ -13,7 +13,7 @@
     <Layout>horizontal</Layout>
     <Children>
 
-      <Template src="skin:knob.xml"/>
+      <Template src="skins:Deere/knob.xml"/>
 
       <PushButton>
         <TooltipId><Variable name="button_TooltipId"/></TooltipId>

@@ -13,7 +13,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
-      <Template src="skin:sampler_text_row.xml"/>
+      <Template src="skins:Deere/sampler_text_row.xml"/>
       <WidgetGroup>
         <Connection>
           <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
@@ -21,7 +21,7 @@
         </Connection>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:sampler_controls_row.xml"/>
+          <Template src="skins:Deere/sampler_controls_row.xml"/>
         </Children>
       </WidgetGroup>
     </Children>

@@ -9,14 +9,14 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-      <Template src="skin:deck.xml">
+      <Template src="skins:Deere/deck.xml">
         <SetVariable name="i">1</SetVariable>
       </Template>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:deck.xml">
+          <Template src="skins:Deere/deck.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
         </Children>

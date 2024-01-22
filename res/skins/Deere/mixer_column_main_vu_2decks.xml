@@ -20,7 +20,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <Template src="skin:vumeter_main.xml"/>
+          <Template src="skins:Deere/vumeter_main.xml"/>
         </Children>
       </WidgetGroup>
 

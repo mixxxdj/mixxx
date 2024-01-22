@@ -126,11 +126,11 @@ WEffectSelector::indicator:unchecked:selected,
 
 #MainMenu QMenu::indicator:checked,
 #MainMenu QMenu::indicator:checked:selected {
-  image: url(skin:/btn/btn_mainmenu_summer_checkbox_checked.svg);
+  image: url(skins:Shade/btn/btn_mainmenu_summer_checkbox_checked.svg);
 }
 #MainMenu QMenu::indicator:unchecked,
 #MainMenu QMenu::indicator:unchecked:selected {
-  image: url(skin:/btn/btn_mainmenu_summer_checkbox.svg);
+  image: url(skins:Shade/btn/btn_mainmenu_summer_checkbox.svg);
 }
 
 #EffectSelectorGroup[highlight="1"]{
@@ -173,7 +173,7 @@ WSearchLineEdit:focus {
     }
 
 #LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
+  image: url(skins:Shade/btn/btn_lib_radio_button_on_neongreen.svg) center center;
 }
 
 /* 'Enable AutoDJ' button	*/

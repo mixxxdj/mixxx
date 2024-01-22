@@ -23,7 +23,7 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_right_display_2state_button.xml">
+              <Template src="skins:Deere/left_right_display_2state_button.xml">
                 <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
                 <SetVariable name="ObjectName">SamplerPlayButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -55,7 +55,7 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:left_right_display_2state_button.xml">
+              <Template src="skins:Deere/left_right_display_2state_button.xml">
                 <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
                 <SetVariable name="ObjectName">SamplerPlayButtonRepeating</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>

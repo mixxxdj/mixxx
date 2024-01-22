@@ -9,7 +9,7 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <Template src="skin:knob.xml"/>
+      <Template src="skins:Deere/knob.xml"/>
       <Label>
         <Size>40f,11f</Size>
         <ObjectName>KnobLabel</ObjectName>

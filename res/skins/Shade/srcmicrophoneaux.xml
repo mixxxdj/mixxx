@@ -16,7 +16,7 @@
           <WidgetGroup>
             <Size>93f,54f</Size>
             <Children>
-              <Template src="skin:microphone.xml">
+              <Template src="skins:Shade/microphone.xml">
               </Template>
             </Children>
             <Connection>
@@ -30,7 +30,7 @@
           <WidgetGroup>
             <Size>108f,54f</Size>
             <Children>
-              <Template src="skin:auxiliary.xml">
+              <Template src="skins:Shade/auxiliary.xml">
               </Template>
             </Children>
             <Connection>

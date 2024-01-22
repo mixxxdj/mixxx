@@ -11,8 +11,8 @@
       -->
       <StatusLight>
         <TooltipId>auxiliary_peak_indicator</TooltipId>
-        <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
-        <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
+        <PathStatusLight>skins:Shade/style/volume_clipping_microphone_over.png</PathStatusLight>
+        <PathBack>skins:Shade/style/volume_clipping_microphone.png</PathBack>
         <Pos>99,6</Pos>
         <Connection>
           <ConfigKey>[Auxiliary<Variable name="auxnum"/>],peak_indicator</ConfigKey>
@@ -31,8 +31,8 @@
         <Children>
           <VuMeter>
             <TooltipId>auxiliary_VuMeter</TooltipId>
-            <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
-            <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+            <PathVu>skins:Shade/style/volume_display_microphone_over.png</PathVu>
+            <PathBack>skins:Shade/style/volume_display_microphone.png</PathBack>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>500</PeakHoldTime>
             <PeakFallTime>50</PeakFallTime>
@@ -59,18 +59,18 @@
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
-          <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
-          <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_orientation_sampler_main.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_orientation_sampler_main.png</Unpressed>
         </State>
         <State>
           <Number>2</Number>
-          <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
-          <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Unpressed>
         </State>
         <Pos>0,28</Pos>
         <Connection>
@@ -85,13 +85,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_pfl_fx_down.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_pfl_fx.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_pfl_fx_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_pfl_fx_over.png</Unpressed>
         </State>
         <Pos>21,30</Pos>
         <Connection>

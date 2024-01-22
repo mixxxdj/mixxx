@@ -5,7 +5,7 @@
   <SingletonDefinition>
     <ObjectName>StereoVUMeterMain</ObjectName>
     <Children>
-      <Template src="skin:vumeter_main.xml"/>
+      <Template src="skins:Deere/vumeter_main.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -48,7 +48,7 @@
         </Connection>
         <Children>
 
-          <Template src="skin:mixer_spacer_topbottom.xml" />
+          <Template src="skins:Deere/mixer_spacer_topbottom.xml" />
 
           <!-- Gain knob spacer -->
           <WidgetGroup><Size>0me,34f</Size></WidgetGroup>
@@ -161,7 +161,7 @@
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:mixer_spacer_topbottom.xml" />
+          <Template src="skins:Deere/mixer_spacer_topbottom.xml" />
 
         </Children>
       </WidgetGroup>

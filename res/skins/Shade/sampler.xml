@@ -89,8 +89,8 @@
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_tap_sampler_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_tap_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_tap_sampler_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_tap_sampler.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,bpm_tap</ConfigKey>
@@ -119,13 +119,13 @@
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_play_sampler.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_sampler.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_sampler_preview.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_sampler_preview.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_sampler_preview.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_sampler_preview.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play</ConfigKey>
@@ -140,12 +140,12 @@
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+                      <Pressed>skins:Shade/btn/btn_play_sampler_down.png</Pressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_pause_sampler_overdown.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_pause_sampler_over.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
@@ -212,13 +212,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_repeat_sampler.png</Pressed>
-                      <Unpressed>skin:/btn/btn_repeat_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_repeat_sampler.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_repeat_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_repeat_sampler_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_repeat_sampler_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_repeat_sampler_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_repeat_sampler_over.png</Unpressed>
                     </State>
                     <Pos>1,0</Pos>
                     <Connection>
@@ -230,8 +230,8 @@
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_eject_sampler_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_eject_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_eject_sampler_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_eject_sampler.png</Unpressed>
                     </State>
                     <Pos>22,0</Pos>
                     <Connection>
@@ -246,18 +246,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_main.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Unpressed>
                     </State>
                     <Pos>1,17</Pos>
                     <Connection>
@@ -271,13 +271,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_keylock_sampler.png</Pressed>
-                      <Unpressed>skin:/btn/btn_keylock_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_keylock_sampler.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_keylock_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_keylock_sampler_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_keylock_sampler_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_keylock_sampler_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_keylock_sampler_over.png</Unpressed>
                     </State>
                     <Pos>21,17</Pos>
                     <Connection>
@@ -304,8 +304,8 @@
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_sync_sampler_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_sync_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_sync_sampler_overdown.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_sync_sampler.png</Unpressed>
                     </State>
                     <Pos>3,4</Pos>
                     <Connection>
@@ -320,19 +320,19 @@
                     </Connection>
                   </PushButton>
 
-                  <Template src="skin:hotcue_button.xml">
+                  <Template src="skins:Shade/hotcue_button.xml">
                     <SetVariable name="hotcue">1</SetVariable>
                     <SetVariable name="pos">47,4</SetVariable>
                   </Template>
-                  <Template src="skin:hotcue_button.xml">
+                  <Template src="skins:Shade/hotcue_button.xml">
                     <SetVariable name="hotcue">2</SetVariable>
                     <SetVariable name="pos">68,4</SetVariable>
                   </Template>
-                  <Template src="skin:hotcue_button.xml">
+                  <Template src="skins:Shade/hotcue_button.xml">
                     <SetVariable name="hotcue">3</SetVariable>
                     <SetVariable name="pos">89,4</SetVariable>
                   </Template>
-                  <Template src="skin:hotcue_button.xml">
+                  <Template src="skins:Shade/hotcue_button.xml">
                     <SetVariable name="hotcue">4</SetVariable>
                     <SetVariable name="pos">110,4</SetVariable>
                   </Template>
@@ -342,13 +342,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_pfl_sampler_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_pfl_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_pfl_sampler_down.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_pfl_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_pfl_sampler_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_pfl_sampler_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_pfl_sampler_overdown.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_pfl_sampler_over.png</Unpressed>
                     </State>
                     <Pos>134,4</Pos>
                     <Connection>
@@ -380,8 +380,8 @@
             <Children>
               <StatusLight>
                 <TooltipId>sampler_peak_indicator</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
+                <PathStatusLight>skins:Shade/style/volume_clipping_sampler_over.png</PathStatusLight>
+                <PathBack>skins:Shade/style/volume_clipping_sampler.png</PathBack>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
                 </Connection>
@@ -394,8 +394,8 @@
             <Children>
               <VuMeter>
                 <TooltipId>sampler_VuMeter</TooltipId>
-                <PathVu>skin:/style/volume_display_sampler_over.png</PathVu>
-                <PathBack>skin:/style/volume_display_sampler.png</PathBack>
+                <PathVu>skins:Shade/style/volume_display_sampler_over.png</PathVu>
+                <PathBack>skins:Shade/style/volume_display_sampler.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>

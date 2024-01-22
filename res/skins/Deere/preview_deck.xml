@@ -36,7 +36,7 @@
                     <Elide>right</Elide>
                   </TrackProperty>
 
-                  <Template src="skin:left_1state_button.xml">
+                  <Template src="skins:Deere/left_1state_button.xml">
                     <SetVariable name="TooltipId">eject</SetVariable>
                     <SetVariable name="ObjectName">PreviewDeckEjectButton</SetVariable>
                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -70,7 +70,7 @@
                 <ObjectName>PreviewDeckVisualRow</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:left_right_2state_button.xml">
+                  <Template src="skins:Deere/left_right_2state_button.xml">
                     <SetVariable name="TooltipId">play_start</SetVariable>
                     <SetVariable name="ObjectName">PreviewDeckPlayButton</SetVariable>
                     <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -129,7 +129,7 @@
             <SizePolicy>min,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:vumeter.xml">
+              <Template src="skins:Deere/vumeter.xml">
                 <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
                 <SetVariable name="control">vu_meter</SetVariable>
               </Template>

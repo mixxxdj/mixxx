@@ -15,15 +15,15 @@
         <BackPath>style/style_bg_looping.png</BackPath>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:effectslotsmall.xml">
+          <Template src="skins:Shade/effectslotsmall.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">1</SetVariable>
           </Template>
-          <Template src="skin:effectslotsmall.xml">
+          <Template src="skins:Shade/effectslotsmall.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">2</SetVariable>
           </Template>
-          <Template src="skin:effectslotsmall.xml">
+          <Template src="skins:Shade/effectslotsmall.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">3</SetVariable>
           </Template>

@@ -40,12 +40,12 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:knob.xml">
+                  <Template src="skins:Deere/knob.xml">
                     <SetVariable name="TooltipId">microphone_pregain</SetVariable>
                     <SetVariable name="control">pregain</SetVariable>
                     <SetVariable name="color">green</SetVariable>
                   </Template>
-                  <Template src="skin:vumeter.xml">
+                  <Template src="skins:Deere/vumeter.xml">
                     <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
                     <SetVariable name="Size">5f,42f</SetVariable>
                     <SetVariable name="control">vu_meter</SetVariable>
@@ -69,7 +69,7 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:left_2state_button.xml">
+                  <Template src="skins:Deere/left_2state_button.xml">
                     <SetVariable name="TooltipId">microphone_talkover</SetVariable>
                     <SetVariable name="ObjectName">MicTalkButton</SetVariable>
                     <SetVariable name="MinimumSize">32,22</SetVariable>
@@ -80,7 +80,7 @@
                     <SetVariable name="left_connection_control"><Variable name="group"/>,talkover</SetVariable>
                   </Template>
 
-                  <Template src="skin:left_2state_button.xml">
+                  <Template src="skins:Deere/left_2state_button.xml">
                     <SetVariable name="TooltipId">pfl</SetVariable>
                     <SetVariable name="ObjectName">MicPFLButton</SetVariable>
                     <SetVariable name="MinimumSize">18,22</SetVariable>
@@ -102,12 +102,12 @@
                 <ObjectName>ButtonGrid</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">1</SetVariable>
                     <SetVariable name="SourceType">microphone</SetVariable>
                   </Template>
 
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">2</SetVariable>
                     <SetVariable name="SourceType">microphone</SetVariable>
                   </Template>
@@ -118,7 +118,7 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">3</SetVariable>
                     <SetVariable name="SourceType">microphone</SetVariable>
                   </Template>
@@ -126,7 +126,7 @@
                   <!-- Workaround for layout spacing -->
                   <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
+                  <Template src="skins:Deere/fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">4</SetVariable>
                     <SetVariable name="SourceType">microphone</SetVariable>
                   </Template>

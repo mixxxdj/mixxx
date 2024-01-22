@@ -8,18 +8,18 @@
         <NumberStates>3</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_ducking_auto_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_ducking_auto_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_ducking_auto_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_ducking_auto_over.png</Unpressed>
         </State>
         <State>
           <Number>2</Number>
-          <Pressed>skin:/btn/btn_ducking_man_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_ducking_man_over.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_ducking_man_overdown.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_ducking_man_over.png</Unpressed>
         </State>
         <Pos>6,30</Pos>
         <Connection>

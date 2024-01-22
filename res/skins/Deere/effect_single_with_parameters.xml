@@ -18,7 +18,7 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:effect_single_with_parameters_row.xml" />
+          <Template src="skins:Deere/effect_single_with_parameters_row.xml" />
         </Children>
         <Connection>
           <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
@@ -40,7 +40,7 @@ Variables:
     <ObjectName>EffectNotHighlightable</ObjectName>
     <Layout>horizontal</Layout>
     <Children>
-      <Template src="skin:effect_single_with_parameters_row.xml" />
+      <Template src="skins:Deere/effect_single_with_parameters_row.xml" />
     </Children>
     <Connection>
       <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>

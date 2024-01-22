@@ -92,13 +92,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_play_deck.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_over.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel1],play_indicator</ConfigKey>
@@ -113,8 +113,8 @@
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_play_deck_preview.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck_preview.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_preview.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck_preview.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel1],play</ConfigKey>
@@ -127,13 +127,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_down.png</Pressed>
                   <Unpressed></Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel1],play</ConfigKey>
@@ -156,13 +156,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_play_deck.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_over.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel2],play_indicator</ConfigKey>
@@ -177,8 +177,8 @@
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_deck_preview.png</Pressed>
-                  <Unpressed>skin:/btn/btn_deck_preview.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_deck_preview.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_deck_preview.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel2],play</ConfigKey>
@@ -191,13 +191,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_down.png</Pressed>
                   <Unpressed></Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_play_deck_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_play_deck_over.png</Unpressed>
                 </State>
                 <Connection>
                   <ConfigKey>[Channel2],play</ConfigKey>
@@ -223,13 +223,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_cue_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_cue.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_cue_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_cue.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_cue_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_cue_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_cue_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_cue_over.png</Unpressed>
                 </State>
                 <Pos>11,179</Pos>
                 <Connection>
@@ -251,13 +251,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_cue_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_cue.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_cue_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_cue.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_cue_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_cue_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_cue_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_cue_over.png</Unpressed>
                 </State>
                 <Pos>203,179</Pos>
                 <Connection>
@@ -285,13 +285,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_pfl_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_pfl.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_pfl_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_pfl.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_pfl_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_pfl_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_pfl_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_pfl_over.png</Unpressed>
                 </State>
                 <Pos>65,161</Pos>
                 <Connection>
@@ -303,13 +303,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_pfl_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_pfl.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_pfl_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_pfl.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_pfl_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_pfl_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_pfl_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_pfl_over.png</Unpressed>
                 </State>
                 <Pos>160,161</Pos>
                 <Connection>
@@ -329,13 +329,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>11,84</Pos>
                 <Connection>
@@ -355,13 +355,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>11,113</Pos>
                 <Connection>
@@ -381,13 +381,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>11,142</Pos>
                 <Connection>
@@ -408,13 +408,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>229,84</Pos>
                 <Connection>
@@ -434,13 +434,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>229,113</Pos>
                 <Connection>
@@ -460,13 +460,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_kill_over.png</Unpressed>
                 </State>
                 <Pos>229,142</Pos>
                 <Connection>
@@ -529,8 +529,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>audio_latency_usage</TooltipId>
-                    <PathVu>skin:/audio_latency/audio_latency_usage.png</PathVu>
-                    <PathBack>skin:/audio_latency/audio_latency_usage_back.png</PathBack>
+                    <PathVu>skins:Shade/audio_latency/audio_latency_usage.png</PathVu>
+                    <PathBack>skins:Shade/audio_latency/audio_latency_usage_back.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>1000</PeakHoldTime>
                     <PeakFallTime>100</PeakFallTime>
@@ -547,28 +547,28 @@
                 <NumberStates>5</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_broadcast_unconnected.png</Pressed>
-                  <Unpressed>skin:/btn/btn_broadcast_unconnected.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_broadcast_unconnected.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_broadcast_unconnected.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_broadcast_connecting.png</Pressed>
-                  <Unpressed>skin:/btn/btn_broadcast_connecting.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_broadcast_connecting.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_broadcast_connecting.png</Unpressed>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Pressed>skin:/btn/btn_broadcast_connected.png</Pressed>
-                  <Unpressed>skin:/btn/btn_broadcast_connected.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_broadcast_connected.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_broadcast_connected.png</Unpressed>
                 </State>
                 <State>
                   <Number>3</Number>
-                  <Pressed>skin:/btn/btn_broadcast_failure.png</Pressed>
-                  <Unpressed>skin:/btn/btn_broadcast_failure.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_broadcast_failure.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_broadcast_failure.png</Unpressed>
                 </State>
                 <State>
                   <Number>4</Number>
-                  <Pressed>skin:/btn/btn_broadcast_warning.png</Pressed>
-                  <Unpressed>skin:/btn/btn_broadcast_warning.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_broadcast_warning.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_broadcast_warning.png</Unpressed>
                 </State>
                 <Pos>111,29</Pos>
                 <Connection>
@@ -591,18 +591,18 @@
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_record_off.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record_off.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_record_off.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_record_off.png</Unpressed>
                 </State>
                   <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_record_ready.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record_ready.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_record_ready.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_record_ready.png</Unpressed>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Pressed>skin:/btn/btn_record_on.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record_on.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_record_on.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_record_on.png</Unpressed>
                 </State>
                 <Pos>214,18</Pos>
                 <Connection>
@@ -696,13 +696,13 @@
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_headsplit_down.png</Pressed>
-                  <Unpressed>skin:/btn/btn_headsplit.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_headsplit_down.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_headsplit.png</Unpressed>
                 </State>
                 <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_headsplit_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_headsplit_over.png</Unpressed>
+                  <Pressed>skins:Shade/btn/btn_headsplit_overdown.png</Pressed>
+                  <Unpressed>skins:Shade/btn/btn_headsplit_over.png</Unpressed>
                 </State>
                 <Pos>11,18</Pos>
                 <Connection>
@@ -839,8 +839,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>skin:/style/volume_display_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display.png</PathBack>
+                    <PathVu>skins:Shade/style/volume_display_over.png</PathVu>
+                    <PathBack>skins:Shade/style/volume_display.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
@@ -860,8 +860,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>channel_VuMeter</TooltipId>
-                    <PathVu>skin:/style/volume_display_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display.png</PathBack>
+                    <PathVu>skins:Shade/style/volume_display_over.png</PathVu>
+                    <PathBack>skins:Shade/style/volume_display.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
@@ -880,8 +880,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>main_VuMeterL</TooltipId>
-                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_main.png</PathBack>
+                    <PathVu>skins:Shade/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skins:Shade/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -899,8 +899,8 @@
                 <Children>
                   <VuMeter>
                     <TooltipId>main_VuMeterR</TooltipId>
-                    <PathVu>skin:/style/volume_display_main_over.png</PathVu>
-                    <PathBack>skin:/style/volume_display_main.png</PathBack>
+                    <PathVu>skins:Shade/style/volume_display_main_over.png</PathVu>
+                    <PathBack>skins:Shade/style/volume_display_main.png</PathBack>
                     <PeakHoldSize>5</PeakHoldSize>
                     <PeakHoldTime>500</PeakHoldTime>
                     <PeakFallTime>50</PeakFallTime>
@@ -918,8 +918,8 @@
               -->
               <StatusLight>
                 <TooltipId>channel_peak_indicator</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping.png</PathBack>
+                <PathStatusLight>skins:Shade/style/volume_clipping_over.png</PathStatusLight>
+                <PathBack>skins:Shade/style/volume_clipping.png</PathBack>
                 <Pos>107,57</Pos>
                 <Connection>
                   <ConfigKey>[Channel1],peak_indicator</ConfigKey>
@@ -927,8 +927,8 @@
               </StatusLight>
               <StatusLight>
                 <TooltipId>channel_peak_indicator</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping.png</PathBack>
+                <PathStatusLight>skins:Shade/style/volume_clipping_over.png</PathStatusLight>
+                <PathBack>skins:Shade/style/volume_clipping.png</PathBack>
                 <Pos>143,57</Pos>
                 <Connection>
                   <ConfigKey>[Channel2],peak_indicator</ConfigKey>
@@ -936,8 +936,8 @@
               </StatusLight>
               <StatusLight>
                 <TooltipId>main_peak_indicator_left</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
+                <PathStatusLight>skins:Shade/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skins:Shade/style/volume_clipping_main.png</PathBack>
                 <Pos>122,57</Pos>
                 <Connection>
                   <ConfigKey>[Main],peak_indicator_left</ConfigKey>
@@ -945,8 +945,8 @@
               </StatusLight>
               <StatusLight>
                 <TooltipId>main_peak_indicator_right</TooltipId>
-                <PathStatusLight>skin:/style/volume_clipping_main_over.png</PathStatusLight>
-                <PathBack>skin:/style/volume_clipping_main.png</PathBack>
+                <PathStatusLight>skins:Shade/style/volume_clipping_main_over.png</PathStatusLight>
+                <PathBack>skins:Shade/style/volume_clipping_main.png</PathBack>
                 <Pos>128,57</Pos>
                 <Connection>
                   <ConfigKey>[Main],peak_indicator_right</ConfigKey>

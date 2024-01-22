@@ -14,7 +14,7 @@
         <ObjectName>ButtonContainer</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:left_2state_button.xml">
+          <Template src="skins:Deere/left_2state_button.xml">
             <SetVariable name="TooltipId">pfl</SetVariable>
             <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
             <SetVariable name="MinimumSize">22,22</SetVariable>
@@ -41,13 +41,13 @@
             <Layout>horizontal</Layout>
             <MaximumSize>22,150</MaximumSize>
             <Children>
-              <Template src="skin:vumeter_v.xml">
+              <Template src="skins:Deere/vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="side">_left</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
                 <SetVariable name="tooltip_clip">channel_peak_indicator_left</SetVariable>
               </Template>
-              <Template src="skin:vumeter_v.xml">
+              <Template src="skins:Deere/vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="side">_right</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
@@ -65,7 +65,7 @@
             <Layout>vertical</Layout>
             <Size>28f,28min</Size>
             <Children>
-              <Template src="skin:crossfader_orientation_button.xml">
+              <Template src="skins:Deere/crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
               </Template>
             </Children>

@@ -38,7 +38,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <Template src="skin:left_1state_button.xml">
+              <Template src="skins:Deere/left_1state_button.xml">
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>

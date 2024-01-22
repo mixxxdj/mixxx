@@ -24,17 +24,17 @@ Container for all the effect units
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit.xml">
+              <Template src="skins:Deere/effect_unit.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">1</SetVariable>
               </Template>
 
-              <Template src="skin:spacer_hx.xml">
+              <Template src="skins:Deere/spacer_hx.xml">
                 <SetVariable name="width">5</SetVariable>
                 <SetVariable name="color">22</SetVariable>
               </Template>
 
-              <Template src="skin:effect_unit.xml">
+              <Template src="skins:Deere/effect_unit.xml">
                 <SetVariable name="EffectRack">1</SetVariable>
                 <SetVariable name="EffectUnit">2</SetVariable>
               </Template>
@@ -50,17 +50,17 @@ Container for all the effect units
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <Template src="skin:effect_unit.xml">
+                  <Template src="skins:Deere/effect_unit.xml">
                     <SetVariable name="EffectRack">1</SetVariable>
                     <SetVariable name="EffectUnit">3</SetVariable>
                   </Template>
 
-                  <Template src="skin:spacer_hx.xml">
+                  <Template src="skins:Deere/spacer_hx.xml">
                     <SetVariable name="width">5</SetVariable>
                     <SetVariable name="color">22</SetVariable>
                   </Template>
 
-                  <Template src="skin:effect_unit.xml">
+                  <Template src="skins:Deere/effect_unit.xml">
                     <SetVariable name="EffectRack">1</SetVariable>
                     <SetVariable name="EffectUnit">4</SetVariable>
                   </Template>

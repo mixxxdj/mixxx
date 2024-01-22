@@ -21,27 +21,27 @@
             to the preferences pane for easy set up. Once Mic 1 is
             set up, this widget hides itself. -->
 
-          <Template src="skin:microphone.xml"/>
-          <Template src="skin:microphone_unconfigured.xml"/>
+          <Template src="skins:Deere/microphone.xml"/>
+          <Template src="skins:Deere/microphone_unconfigured.xml"/>
 
-          <Template src="skin:microphone.xml">
+          <Template src="skins:Deere/microphone.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
-          <Template src="skin:microphone_unconfigured.xml">
+          <Template src="skins:Deere/microphone_unconfigured.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
 
-          <Template src="skin:microphone.xml">
+          <Template src="skins:Deere/microphone.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
-          <Template src="skin:microphone_unconfigured.xml">
+          <Template src="skins:Deere/microphone_unconfigured.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
 
-          <Template src="skin:microphone.xml">
+          <Template src="skins:Deere/microphone.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
-          <Template src="skin:microphone_unconfigured.xml">
+          <Template src="skins:Deere/microphone_unconfigured.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
 
@@ -90,7 +90,7 @@
 
                   <!-- knob_with_label.xml template will not work here because
                   "Strength" label exceeds width of knob. -->
-                  <Template src="skin:knob.xml">
+                  <Template src="skins:Deere/knob.xml">
                     <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="control">duckStrength</SetVariable>
                     <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
@@ -122,31 +122,31 @@
 
           <!-- Auxiliary input controls -->
 
-          <Template src="skin:auxiliary.xml">
+          <Template src="skins:Deere/auxiliary.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
-          <Template src="skin:auxiliary_unconfigured.xml">
+          <Template src="skins:Deere/auxiliary_unconfigured.xml">
             <SetVariable name="i">1</SetVariable>
           </Template>
 
-          <Template src="skin:auxiliary.xml">
+          <Template src="skins:Deere/auxiliary.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
-          <Template src="skin:auxiliary_unconfigured.xml">
+          <Template src="skins:Deere/auxiliary_unconfigured.xml">
             <SetVariable name="i">2</SetVariable>
           </Template>
 
-          <Template src="skin:auxiliary.xml">
+          <Template src="skins:Deere/auxiliary.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
-          <Template src="skin:auxiliary_unconfigured.xml">
+          <Template src="skins:Deere/auxiliary_unconfigured.xml">
             <SetVariable name="i">3</SetVariable>
           </Template>
 
-          <Template src="skin:auxiliary.xml">
+          <Template src="skins:Deere/auxiliary.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
-          <Template src="skin:auxiliary_unconfigured.xml">
+          <Template src="skins:Deere/auxiliary_unconfigured.xml">
             <SetVariable name="i">4</SetVariable>
           </Template>
 

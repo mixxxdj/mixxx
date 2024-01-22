@@ -9,13 +9,13 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Shade/deck_small.xml">
             <SetVariable name="channum">1</SetVariable>
           </Template>
 
           <WidgetGroup><Size>4f,40f</Size></WidgetGroup>
 
-          <Template src="skin:deck_small.xml">
+          <Template src="skins:Shade/deck_small.xml">
             <SetVariable name="channum">2</SetVariable>
           </Template>
 

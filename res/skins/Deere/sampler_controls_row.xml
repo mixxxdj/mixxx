@@ -15,7 +15,7 @@
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:left_2state_button.xml">
+          <Template src="skins:Deere/left_2state_button.xml">
             <SetVariable name="TooltipId">repeat</SetVariable>
             <SetVariable name="ObjectName">RepeatButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -78,13 +78,13 @@
         <Layout>horizontal</Layout>
         <ObjectName>ButtonGrid</ObjectName>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skins:Deere/knob.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">green</SetVariable>
           </Template>
 
-          <Template src="skin:left_right_1state_button.xml">
+          <Template src="skins:Deere/left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
             <SetVariable name="MinimumSize">32,22</SetVariable>
@@ -97,11 +97,11 @@
             <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
 
-          <Template src="skin:crossfader_orientation_button.xml">
+          <Template src="skins:Deere/crossfader_orientation_button.xml">
             <SetVariable name="Unit">Sampler</SetVariable>
           </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <Template src="skins:Deere/left_1state_button.xml">
             <SetVariable name="TooltipId">eject</SetVariable>
             <SetVariable name="ObjectName">EjectButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>

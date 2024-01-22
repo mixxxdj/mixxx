@@ -18,10 +18,10 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
           </Template>
         </Children>
@@ -32,10 +32,10 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
           </Template>
         </Children>
@@ -62,16 +62,16 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
           </Template>
         </Children>
@@ -82,16 +82,16 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">5</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">6</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">7</SetVariable>
           </Template>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Deere/hotcue_button.xml">
             <SetVariable name="hotcue">8</SetVariable>
           </Template>
         </Children>

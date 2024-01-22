@@ -21,13 +21,13 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+              <Pressed>skins:Shade/btn/btn_play_sampler_down.png</Pressed>
+              <Unpressed>skins:Shade/btn/btn_play_sampler.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
+              <Pressed>skins:Shade/btn/btn_pause_sampler_overdown.png</Pressed>
+              <Unpressed>skins:Shade/btn/btn_pause_sampler_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Sampler<Variable name="samplernum"/>],cue_gotoandplay</ConfigKey>
@@ -121,8 +121,8 @@
                     <NumberStates>1</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_eject_sampler_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_eject_sampler.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_eject_sampler_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_eject_sampler.png</Unpressed>
                     </State>
                     <Pos>0,0</Pos>
                     <Connection>
@@ -137,18 +137,18 @@
                     <NumberStates>3</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_left_over.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_main.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_orientation_sampler_right_over.png</Unpressed>
                     </State>
                     <Pos>0,13</Pos>
                     <Connection>

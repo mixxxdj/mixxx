@@ -49,20 +49,20 @@
         <SizePolicy>me,min</SizePolicy>
         <MaximumSize>-1,210</MaximumSize>
         <Children>
-          <Template src="skin:spacer_h.xml"/>
+          <Template src="skins:Deere/spacer_h.xml"/>
           <WidgetGroup>
             <ObjectName>channel_VuMeter_Group</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <MaximumSize>22,210</MaximumSize>
             <Children>
-              <Template src="skin:vumeter_v.xml">
+              <Template src="skins:Deere/vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="side">_left</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
                 <SetVariable name="tooltip_clip">channel_peak_indicator_left</SetVariable>
               </Template>
-              <Template src="skin:vumeter_v.xml">
+              <Template src="skins:Deere/vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
                 <SetVariable name="side">_right</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
@@ -81,7 +81,7 @@
     <Layout>vertical</Layout>
     <Children>
 
-      <Template src="skin:mixer_spacer_topbottom.xml" />
+      <Template src="skins:Deere/mixer_spacer_topbottom.xml" />
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -89,7 +89,7 @@
         <Children>
           <!-- Expanding spacer to push EQ knob to right side -->
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
-          <Template src="skin:knob.xml">
+          <Template src="skins:Deere/knob.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">green</SetVariable>
@@ -101,7 +101,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,max</SizePolicy>
         <Children>
-          <Template src="skin:mixer_column_eq_left.xml"/>
+          <Template src="skins:Deere/mixer_column_eq_left.xml"/>
         </Children>
       </WidgetGroup>
 
@@ -132,7 +132,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
                 <SetVariable name="MinimumSize">22,22</SetVariable>
@@ -170,7 +170,7 @@
                     <Layout>horizontal</Layout>
                     <ObjectName>4DecksMixerMonoMeterLeft</ObjectName>
                     <Children>
-                      <Template src="skin:vumeter_v.xml">
+                      <Template src="skins:Deere/vumeter_v.xml">
                         <SetVariable name="group"><Variable name="group"/></SetVariable>
                         <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
                         <SetVariable name="tooltip_clip">channel_peak_indicator</SetVariable>
@@ -278,7 +278,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:crossfader_orientation_button.xml">
+              <Template src="skins:Deere/crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
               </Template>
             </Children>
@@ -287,7 +287,7 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:mixer_spacer_topbottom.xml" />
+      <Template src="skins:Deere/mixer_spacer_topbottom.xml" />
 
     </Children>
   </WidgetGroup>

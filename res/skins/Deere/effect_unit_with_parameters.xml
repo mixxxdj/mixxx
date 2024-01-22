@@ -23,15 +23,15 @@ Variables:
         <Layout>vertical</Layout>
         <Children>
 
-          <Template src="skin:effect_single_with_parameters.xml">
+          <Template src="skins:Deere/effect_single_with_parameters.xml">
             <SetVariable name="Effect">1</SetVariable>
           </Template>
 
-          <Template src="skin:effect_single_with_parameters.xml">
+          <Template src="skins:Deere/effect_single_with_parameters.xml">
             <SetVariable name="Effect">2</SetVariable>
           </Template>
 
-          <Template src="skin:effect_single_with_parameters.xml">
+          <Template src="skins:Deere/effect_single_with_parameters.xml">
             <SetVariable name="Effect">3</SetVariable>
           </Template>
 
