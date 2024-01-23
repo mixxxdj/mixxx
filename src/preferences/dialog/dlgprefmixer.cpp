@@ -997,8 +997,12 @@ void DlgPrefMixer::setUpMainEQ() {
     if (configuredIndex == -1) {
         return;
     }
-    // Set index and create required sliders and labels
-    comboBoxMainEq->setCurrentIndex(configuredIndex);
+    // Set index and create required sliders and labels.
+    // Call the update slot directly so we can be sure all sliders have been
+    // created when we set their properties below.
+    comboBoxMainEq->blockSignals(true);
+    slotMainEqEffectChanged(configuredIndex);
+    comboBoxMainEq->blockSignals(false);
 
     // Load parameters from preferences and set sliders
     for (QSlider* pSlider : std::as_const(m_mainEQSliders)) {
@@ -1158,6 +1162,9 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
 
         m_mainEQValues.append(pValueLabel);
         slidersGridLayout->addWidget(pValueLabel, 2, i + 1, Qt::AlignCenter);
+
+        // Make sure the macOS-specific style is applied for this new widget
+        style()->polish(pSlider);
     }
 }
 

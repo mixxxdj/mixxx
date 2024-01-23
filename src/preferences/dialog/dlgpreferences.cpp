@@ -61,6 +61,9 @@ DlgPreferences::DlgPreferences(
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
+    // This applies only to sliders that are created by .ui files.
+    // For dynamically added sliders, e.g. main EQ sliers in DlgPrefMixer, this
+    // needs to be called again per slider.
     fixSliderStyle();
     contentsTreeWidget->setHeaderHidden(true);
 
