@@ -90,6 +90,9 @@ class EffectsManager {
     void readEffectsXmlSingleDeck(const QString& deckGroup);
     void saveEffectsXml();
 
+    void unifiedPresetIndexChanged(int presetIndex);
+    void updateQuickEffectPresets(int presetIndex);
+
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     UserSettingsPointer m_pConfig;
@@ -109,6 +112,9 @@ class EffectsManager {
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;
     EffectChainPresetManagerPointer m_pChainPresetManager;
+
+    // This is used for Controlling the effect of all QuickEffectChains at once
+    ControlObject m_unifiedQuickEffectPresetIndex;
 
     // ControlObjects for Equalizers' frequencies
     // TODO: replace these with effect parameters that are hidden by default
