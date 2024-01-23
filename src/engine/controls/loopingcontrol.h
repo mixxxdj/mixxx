@@ -117,6 +117,7 @@ class LoopingControl : public EngineControl {
     void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
+    void slotBeatLoopKeepLoopIn(double pressed);
     void slotBeatLoopRollActivate(double pressed);
     void slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl);
     void slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl);
@@ -207,6 +208,7 @@ class LoopingControl : public EngineControl {
 
     // Base BeatLoop Control Object.
     ControlObject* m_pCOBeatLoop;
+    ControlObject* m_pCOBeatLoopKeepLoopIn;
     ControlObject* m_pCOBeatLoopSize;
     // Different sizes for Beat Loops/Seeks.
     static double s_dBeatSizes[];

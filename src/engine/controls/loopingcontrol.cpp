@@ -144,6 +144,11 @@ LoopingControl::LoopingControl(const QString& group,
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
     connect(m_pCOBeatLoopActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopToggle);
+    m_pCOBeatLoopKeepLoopIn = new ControlPushButton(ConfigKey(group, "beatloop_keep_loop_in"));
+    connect(m_pCOBeatLoopKeepLoopIn,
+            &ControlObject::valueChanged,
+            this,
+            &LoopingControl::slotBeatLoopKeepLoopIn);
     m_pCOBeatLoopRollActivate = new ControlPushButton(ConfigKey(group, "beatlooproll_activate"));
     connect(m_pCOBeatLoopRollActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopRollActivate);
@@ -264,6 +269,7 @@ LoopingControl::~LoopingControl() {
     delete m_pLoopRemoveButton;
 
     delete m_pCOBeatLoop;
+    delete m_pCOBeatLoopKeepLoopIn;
     while (!m_beatLoops.isEmpty()) {
         BeatLoopingControl* pBeatLoop = m_beatLoops.takeLast();
         delete pBeatLoop;
@@ -1555,6 +1561,12 @@ void LoopingControl::slotBeatLoopToggle(double pressed) {
             // Create a loop at current position
             slotBeatLoop(m_pCOBeatLoopSize->get());
         }
+    }
+}
+
+void LoopingControl::slotBeatLoopKeepLoopIn(double pressed) {
+    if (pressed > 0) {
+        slotBeatLoop(m_pCOBeatLoopSize->get(), true);
     }
 }
 
