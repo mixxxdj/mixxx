@@ -845,6 +845,47 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+void WTrackTableView::resizeEvent(QResizeEvent* event) {
+    // When the tracks view shrinks in height, e.g. when other skin regions expand,
+    // and if the row was visible before resizing, scroll to it afterwards.
+
+    // these heights are the actual inner region without header, scrollbars and padding
+    int oldHeight = event->oldSize().height();
+    int newHeight = event->size().height();
+
+    if (newHeight >= oldHeight) {
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    QModelIndex currIndex = currentIndex();
+    int currRow = currIndex.row();
+    int rHeight = rowHeight(currRow);
+
+    if (currRow < 0 || rHeight == 0) { // true if currIndex is invalid
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    // y-pos of the top edge, negative value means above viewport boundary
+    int posInView = rowViewportPosition(currRow);
+    // Check if the row is visible.
+    // Note: don't use viewport()->height() because that may already have changed
+    bool rowWasVisible = posInView > 0 && posInView - rHeight < oldHeight;
+
+    QTableView::resizeEvent(event);
+
+    if (!rowWasVisible) {
+        return;
+    }
+
+    // Check if the item is fully visible. If not, scroll to show it
+    posInView = rowViewportPosition(currRow);
+    if (posInView - rHeight < 0 || posInView + rHeight > newHeight) {
+        scrollTo(currIndex);
+    }
+}
+
 void WTrackTableView::hideOrRemoveSelectedTracks() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.isEmpty()) {
