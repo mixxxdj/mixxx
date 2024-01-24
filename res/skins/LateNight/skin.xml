@@ -235,6 +235,7 @@
 
     <Scheme>
       <Name>Classic</Name>
+      <!-- Classic theme. Bulky containers, hatched backgrounds, no knob arcs -->
       <Style src="skins:LateNight/style_classic.qss"/>
       <SetVariable name="BtnScheme">classic</SetVariable>
       <SetVariable name="KnobScheme">classic</SetVariable>
