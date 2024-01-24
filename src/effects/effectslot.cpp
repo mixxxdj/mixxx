@@ -397,7 +397,7 @@ void EffectSlot::unloadEffect() {
         parameterList.clear();
     }
 
-    m_pControlMetaParameter->setDefaultValue(0.0);
+    m_pControlMetaParameter->setDefaultValue(kDefaultMetaParameter);
 
     m_pManifest.clear();
 
