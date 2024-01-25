@@ -2244,7 +2244,7 @@
 			<control>
 				<group>[Channel2]</group>
 				<key>DJCi300.scratchWheel</key>
-				<description>Pitch Bend Deck B (Jog-Wheel)</description>
+				<description>Scratch Deck B (Jog-Wheel)</description>
 				<status>0xB2</status>
 				<midino>0x0A</midino>
 				<options>

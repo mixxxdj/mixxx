@@ -73,14 +73,14 @@ DJCi300.init = function() {
     };
 
     // Tone play LED control (one for each deck)
-    DJCi300.tonePlayLED = [
-        0x40,
-        0x40
-    ];
-    DJCi300.timer = [
-        0,
-        0
-    ];
+    DJCi300.tonePlayLED = {
+        1: 0x40,
+        2: 0x40
+    };
+    DJCi300.timer = {
+        1: 0,
+        2: 0
+    };
 
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
@@ -238,21 +238,21 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
         }
 
         // Turn off the last button's LED and turn on the current button's LED
-        midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
+        midi.sendShortMsg(status, DJCi300.tonePlayLED, 0x00);
         midi.sendShortMsg(status, control, 0x7F);
-        DJCi300.tonePlayLED[deck - 1] = control;
+        DJCi300.tonePlayLED = control;
     } else {
         // After button release, turn off the light after no input for 5 seconds
         // Reset timer (if it exists)
-        if (DJCi300.timer[deck - 1] !== 0) {
-            engine.stopTimer(DJCi300.timer[deck - 1]);
-            DJCi300.timer[deck - 1] = 0;
+        if (DJCi300.timer !== 0) {
+            engine.stopTimer(DJCi300.timer);
+            DJCi300.timer = 0;
         }
         // Start timer
-        DJCi300.timer[deck - 1] = engine.beginTimer(5000,
+        DJCi300.timer = engine.beginTimer(5000,
             function() {
-                DJCi300.timer[deck - 1] = 0;
-                midi.sendShortMsg(status, DJCi300.tonePlayLED[deck - 1], 0x00);
+                DJCi300.timer = 0;
+                midi.sendShortMsg(status, DJCi300.tonePlayLED, 0x00);
             },
             true);
     }
