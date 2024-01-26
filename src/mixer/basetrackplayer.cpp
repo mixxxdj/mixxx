@@ -702,6 +702,31 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
     slotLoadTrack(pTrack, false);
 }
 
+void BaseTrackPlayerImpl::ensureStarControlsArePrepared() {
+    if (m_pStarsUp == nullptr) {
+        m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_up"));
+        connect(m_pStarsUp.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    if (value > 0) {
+                        emit trackRatingChangeRequest(1);
+                    }
+                });
+    }
+    if (m_pStarsDown == nullptr) {
+        m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_down"));
+        connect(m_pStarsDown.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    if (value > 0) {
+                        emit trackRatingChangeRequest(-1);
+                    }
+                });
+    }
+}
+
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
     // Do not change replay gain when track is playing because
     // this may lead to an unexpected volume change.

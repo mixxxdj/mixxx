@@ -37,13 +37,14 @@ class BaseTrackPlayer : public BasePlayer {
 
     virtual TrackPointer getLoadedTrack() const = 0;
     virtual void setupEqControls() = 0;
+    virtual void ensureStarControlsArePrepared(){};
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
-    virtual void slotSetTrackRating(int rating) = 0;
+    virtual void slotSetTrackRating(int){};
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -52,6 +53,7 @@ class BaseTrackPlayer : public BasePlayer {
     void playerEmpty();
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
+    void trackRatingChangeRequest(int change);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -70,13 +72,18 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     TrackPointer getLoadedTrack() const final;
 
-    // TODO(XXX): Only exposed to let the passthrough AudioInput get
-    // connected. Delete me when EngineMixer supports AudioInput assigning.
+    /// TODO(XXX): Only exposed to let the passthrough AudioInput get
+    /// connected. Delete me when EngineMixer supports AudioInput assigning.
     EngineDeck* getEngineDeck() const;
 
     void setupEqControls() final;
 
-    // For testing, loads a fake track.
+    /// Controls to change the star rating.
+    /// Created on request only, because we need them only when there is
+    /// a star rating widget for this player.
+    void ensureStarControlsArePrepared() final;
+
+    /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
@@ -87,8 +94,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
-    // When the replaygain is adjusted, we modify the track pregain
-    // to compensate so there is no audible change in volume.
+    /// When the replaygain is adjusted, we modify the track pregain
+    /// to compensate so there is no audible change in volume.
     void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotSetTrackRating(int rating) final;
@@ -163,6 +170,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 
     std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
