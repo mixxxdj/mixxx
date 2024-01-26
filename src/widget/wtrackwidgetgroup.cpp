@@ -2,6 +2,7 @@
 
 #include <QStylePainter>
 
+#include "control/controlobject.h"
 #include "moc_wtrackwidgetgroup.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
@@ -133,5 +134,14 @@ void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
     if (m_pTrackMenu.get() == nullptr) {
         m_pTrackMenu = make_parented<WTrackMenu>(
                 this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
+
+        // See WTrackProperty for info
+        connect(m_pTrackMenu,
+                &WTrackMenu::trackMenuVisible,
+                this,
+                [this](bool visible) {
+                    ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
+                            visible ? 1.0 : 0.0);
+                });
     }
 }

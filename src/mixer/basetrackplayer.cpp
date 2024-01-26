@@ -1,6 +1,7 @@
 #include "mixer/basetrackplayer.h"
 
 #include <QMessageBox>
+#include <QMetaMethod>
 
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
@@ -705,6 +706,37 @@ void BaseTrackPlayerImpl::loadTrackFromGroup(const QString& group) {
     }
 
     slotLoadTrack(pTrack, false);
+}
+
+bool BaseTrackPlayerImpl::isTrackMenuControlAvailable() {
+    if (m_pShowTrackMenuControl == nullptr) {
+        // Create the control and return true so LegacySkinParser knows it should
+        // connect our signal to WTrackProperty.
+        m_pShowTrackMenuControl = std::make_unique<ControlPushButton>(
+                ConfigKey(getGroup(), "show_track_menu"));
+        m_pShowTrackMenuControl->connectValueChangeRequest(
+                this,
+                [this](double value) {
+                    emit trackMenuChangeRequest(value > 0);
+                });
+        return true;
+    } else if (isSignalConnected(
+                       QMetaMethod::fromSignal(&BaseTrackPlayer::trackMenuChangeRequest))) {
+        // Control exists and we're already connected.
+        // This means the request was made while creating the 2nd or later WTrackProperty.
+        return false;
+    } else {
+        // Control already exists but signal is not connected, which is the case
+        // after loading a skin. Return true so LegacySkinParser makes a new connection.
+        return true;
+    }
+}
+
+void BaseTrackPlayerImpl::slotSetAndConfirmTrackMenuControl(bool visible) {
+    VERIFY_OR_DEBUG_ASSERT(m_pShowTrackMenuControl) {
+        return;
+    }
+    m_pShowTrackMenuControl->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {

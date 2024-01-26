@@ -37,6 +37,9 @@ class BaseTrackPlayer : public BasePlayer {
 
     virtual TrackPointer getLoadedTrack() const = 0;
     virtual void setupEqControls() = 0;
+    virtual bool isTrackMenuControlAvailable() {
+        return false;
+    };
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
@@ -44,6 +47,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
     virtual void slotSetTrackRating(int rating) = 0;
+    virtual void slotSetAndConfirmTrackMenuControl(bool){};
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -52,6 +56,7 @@ class BaseTrackPlayer : public BasePlayer {
     void playerEmpty();
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
+    void trackMenuChangeRequest(bool show);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -76,7 +81,13 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void setupEqControls() final;
 
-    // For testing, loads a fake track.
+    /// Returns true if PushButton has been created and no slot is currently
+    /// connected to trackMenuChangeRequest().
+    /// PushButtons persist skin reload, connected widgets don't, i.e. the
+    /// connection is removed on skin reload and available again afterwards.
+    bool isTrackMenuControlAvailable() final;
+
+    /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
@@ -92,6 +103,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotSetTrackRating(int rating) final;
+    /// Called via signal from WTrackProperty. Just set and confirm as requested.
+    void slotSetAndConfirmTrackMenuControl(bool visible) final;
     void slotPlayToggled(double);
 
   private slots:
@@ -163,6 +176,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlPushButton> m_pShiftCuesLater;
     std::unique_ptr<ControlPushButton> m_pShiftCuesLaterSmall;
     std::unique_ptr<ControlObject> m_pShiftCues;
+
+    std::unique_ptr<ControlPushButton> m_pShowTrackMenuControl;
 
     std::unique_ptr<ControlObject> m_pUpdateReplayGainFromPregain;
 
