@@ -1,6 +1,6 @@
 #include "util/macosversion.h"
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 QString getMacOsVersion() {
     NSProcessInfo* processInfo = [NSProcessInfo processInfo];
