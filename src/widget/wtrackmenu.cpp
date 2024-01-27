@@ -95,7 +95,15 @@ int WTrackMenu::getTrackCount() const {
     }
 }
 
+const QString WTrackMenu::getDeckGroup() const {
+    return m_deckGroup;
+}
+
 void WTrackMenu::closeEvent(QCloseEvent* event) {
+    // Unfortunately, trackMenuVisible(false) is emitted before the menu is effectively
+    // closed, which causes issues in WTrackProperty::slotShowTrackMenuChangeRequest.
+    // Explicitly hide() to avoid this.
+    hide();
     // Actually the event is accepted by default. doing it explicitly doesn't hurt.
     // If it's not accepted the menu remains open and entire GUI will be blocked!
     event->accept();

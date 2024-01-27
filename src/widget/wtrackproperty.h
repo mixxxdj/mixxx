@@ -7,6 +7,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
+class ControlPushButton;
 class Library;
 class WTrackMenu;
 
@@ -25,10 +26,12 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+    void setAndConfirmTrackMenuControl(bool visible);
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void slotShowTrackMenuChangeRequest(bool show);
 
   protected:
     void contextMenuEvent(QContextMenuEvent* event) override;
@@ -37,7 +40,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 
-    virtual void updateLabel();
+  private:
+    void updateLabel();
 
     void ensureTrackMenuIsCreated();
 

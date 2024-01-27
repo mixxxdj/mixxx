@@ -828,7 +828,8 @@ FocusWidget LibraryControl::getFocusedWidget() {
         // WTrackMenuClassWindow = WTrackMenu + submenus
         // QMenuClassWindow      = e.g. sidebar context menu
         // qt_edit_menuWindow    = QLineEdit/QCombobox context menu
-        // QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
+        // QComboBoxPrivateContainerClassWindow
+        //    = QComboBoxListView of WEffectSelector, WSearchLineEdit, ...
         return FocusWidget::ContextMenu;
     } else if (focusWindow->type() == Qt::Dialog) {
         // DlgPreferencesDlgWindow
