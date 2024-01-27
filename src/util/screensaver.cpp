@@ -19,7 +19,7 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 
 #include <QDebug>
 
-#if defined(__APPLE__)
+#if defined(Q_OS_MACOS)
 #  include "util/mac.h"
 #elif defined(_WIN32)
 #  include <windows.h>
@@ -56,8 +56,7 @@ void ScreenSaverHelper::uninhibit()
     }
 }
 
-
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 IOPMAssertionID ScreenSaverHelper::s_systemSleepAssertionID=0;
 IOPMAssertionID ScreenSaverHelper::s_userActivityAssertionID=0;
 
@@ -334,7 +333,6 @@ void ScreenSaverHelper::uninhibitInternal()
 {
     DEBUG_ASSERT(!"Screensaver suspending not implemented");
 }
-#endif // Q_OS_MAC
-
+#endif // Q_OS_MACOS
 
 } // namespace mixxx
