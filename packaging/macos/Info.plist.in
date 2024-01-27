@@ -12,7 +12,7 @@
     <string>APPL</string>
 
     <key>CFBundleIdentifier</key>
-    <string>org.mixxx.mixxx</string>
+    <string>@MACOS_BUNDLE_IDENTIFIER@</string>
 
     <key>CFBundleName</key>
     <string>Mixxx</string>
