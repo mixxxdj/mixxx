@@ -1159,6 +1159,7 @@ WBeatSpinBox,
     This would make them overlap so we need to move one of those two
     buttons out of the way: */
     right: -16px;
+    image: url(skin:/../Tango/buttons/btn_beatbox_up.svg) no-repeat;
     }
     WBeatSpinBox::up-button:hover,
     #spinBoxTransition::up-button:hover {
