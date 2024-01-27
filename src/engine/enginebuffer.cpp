@@ -7,7 +7,6 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/bufferscalers/enginebufferscalelinear.h"
-#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/bufferscalers/enginebufferscalest.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/channels/enginechannel.h"
@@ -33,6 +32,10 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
+
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#endif
 
 #ifdef __VINYLCONTROL__
 #include "engine/controls/vinylcontrolcontrol.h"
@@ -254,7 +257,9 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
+#ifdef __RUBBERBAND__
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
+#endif
     slotKeylockEngineChanged(m_pKeylockEngine->get());
     m_pScaleVinyl = m_pScaleLinear;
     m_pScale = m_pScaleVinyl;
@@ -305,7 +310,9 @@ EngineBuffer::~EngineBuffer() {
 
     delete m_pScaleLinear;
     delete m_pScaleST;
+#ifdef __RUBBERBAND__
     delete m_pScaleRB;
+#endif
 
     delete m_pKeylock;
 
@@ -805,6 +812,7 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
     case KeylockEngine::SoundTouch:
         m_pScaleKeylock = m_pScaleST;
         break;
+#ifdef __RUBBERBAND__
     case KeylockEngine::RubberBandFaster:
         m_pScaleRB->useEngineFiner(false);
         m_pScaleKeylock = m_pScaleRB;
@@ -814,6 +822,7 @@ void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
                 true); // in case of Rubberband V2 it falls back to RUBBERBAND_FASTER
         m_pScaleKeylock = m_pScaleRB;
         break;
+#endif
     default:
         slotKeylockEngineChanged(static_cast<double>(defaultKeylockEngine()));
         break;
@@ -1147,7 +1156,9 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // We do this even if rubberband is not active.
     m_pScaleLinear->setSampleRate(m_sampleRate);
     m_pScaleST->setSampleRate(m_sampleRate);
+#ifdef __RUBBERBAND__
     m_pScaleRB->setSampleRate(m_sampleRate);
+#endif
 
     bool hasStableTrack = m_pTrackLoaded->toBool() && m_iTrackLoading.loadAcquire() == 0;
     if (hasStableTrack && m_pause.tryLock()) {

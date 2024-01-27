@@ -8,7 +8,6 @@
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
-#include "engine/bufferscalers/enginebufferscalerubberband.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/slipmodestate.h"
@@ -17,6 +16,10 @@
 #include "track/bpm.h"
 #include "track/track_decl.h"
 #include "util/types.h"
+
+#ifdef __RUBBERBAND__
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#endif
 
 //for the writer
 #ifdef __SCALER_DEBUG__
@@ -80,15 +83,20 @@ class EngineBuffer : public EngineObject {
     // Don't remove or swap values to keep backward compatibility
     enum class KeylockEngine {
         SoundTouch = 0,
+#ifdef __RUBBERBAND__
         RubberBandFaster = 1,
         RubberBandFiner = 2,
+#endif
     };
 
     // intended for iteration over the KeylockEngine enum
     constexpr static std::initializer_list<KeylockEngine> kKeylockEngines = {
             KeylockEngine::SoundTouch,
+#ifdef __RUBBERBAND__
             KeylockEngine::RubberBandFaster,
-            KeylockEngine::RubberBandFiner};
+            KeylockEngine::RubberBandFiner
+#endif
+    };
 
     EngineBuffer(const QString& group,
             UserSettingsPointer pConfig,
@@ -158,6 +166,7 @@ class EngineBuffer : public EngineObject {
         switch (engine) {
         case KeylockEngine::SoundTouch:
             return tr("Soundtouch (faster)");
+#ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
             return tr("Rubberband (better)");
         case KeylockEngine::RubberBandFiner:
@@ -165,8 +174,13 @@ class EngineBuffer : public EngineObject {
                 return tr("Rubberband R3 (near-hi-fi quality)");
             }
             [[fallthrough]];
+#endif
         default:
+#ifdef __RUBBERBAND__
             return tr("Unknown, using Rubberband (better)");
+#else
+            return tr("Unknown, using Soundtouch");
+#endif
         }
     }
 
@@ -174,17 +188,23 @@ class EngineBuffer : public EngineObject {
         switch (engine) {
         case KeylockEngine::SoundTouch:
             return true;
+#ifdef __RUBBERBAND__
         case KeylockEngine::RubberBandFaster:
             return true;
         case KeylockEngine::RubberBandFiner:
             return EngineBufferScaleRubberBand::isEngineFinerAvailable();
+#endif
         default:
             return false;
         }
     }
 
     constexpr static KeylockEngine defaultKeylockEngine() {
+#ifdef __RUBBERBAND__
         return KeylockEngine::RubberBandFaster;
+#else
+        return KeylockEngine::SoundTouch;
+#endif
     }
 
     // Request that the EngineBuffer load a track. Since the process is
@@ -407,7 +427,9 @@ class EngineBuffer : public EngineObject {
     EngineBufferScaleLinear* m_pScaleLinear;
     // Objects used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
+#ifdef __RUBBERBAND__
     EngineBufferScaleRubberBand* m_pScaleRB;
+#endif
 
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

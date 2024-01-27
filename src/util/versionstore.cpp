@@ -16,11 +16,14 @@
 #undef WIN32
 #endif
 
+#ifdef __RUBBERBAND__
+#include <rubberband/RubberBandStretcher.h>
+#endif
+
 #include <FLAC/format.h>
 #include <chromaprint.h>
 #include <lame/lame.h>
 #include <portaudio.h>
-#include <rubberband/RubberBandStretcher.h>
 #include <sndfile.h>
 #include <soundtouch/SoundTouch.h>
 #include <taglib/taglib.h>
@@ -160,8 +163,10 @@ QStringList VersionStore::dependencyVersions() {
             << QString("PortAudio: %1 %2")
                        .arg(Pa_GetVersion())
                        .arg(Pa_GetVersionText())
+#ifdef __RUBBERBAND__
             // The version of the RubberBand headers Mixxx was compiled with.
             << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
+#endif
             // The version of the SoundTouch headers Mixxx was compiled with.
             << QString("SoundTouch: %1").arg(SOUNDTOUCH_VERSION)
             // The version of the TagLib headers Mixxx was compiled with.
