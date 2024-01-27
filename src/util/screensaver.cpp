@@ -18,6 +18,7 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 #include "util/screensaver.h"
 
 #include <QDebug>
+#include <QtGlobal>
 
 #include "util/assert.h"
 

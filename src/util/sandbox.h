@@ -5,6 +5,7 @@
 #include <QFileInfo>
 #include <QHash>
 #include <QSharedPointer>
+#include <QtGlobal>
 
 #include "preferences/configobject.h"
 #include "util/compatibility/qmutex.h"
@@ -33,7 +34,7 @@ class Sandbox {
     static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     static QString migrateOldSettings();
 #endif
 

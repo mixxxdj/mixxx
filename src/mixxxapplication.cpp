@@ -3,6 +3,7 @@
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "audio/frame.h"
 #include "audio/types.h"
