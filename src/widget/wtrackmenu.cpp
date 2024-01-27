@@ -49,6 +49,11 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+
+const QString samplerTrString(int i) {
+    return QObject::tr("Sampler %1").arg(i);
+}
+
 } // namespace
 
 WTrackMenu::WTrackMenu(
@@ -818,19 +823,35 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
+        const int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
+        const int maxSamplersPerMenu = 16;
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
+            QMenu* pMenu = m_pSamplerMenu;
+            int samplersInMenu = 0;
             for (int i = 1; i <= iNumSamplers; ++i) {
+                if (samplersInMenu == maxSamplersPerMenu) {
+                    samplersInMenu = 0;
+                    int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
+                    const QString label = samplerTrString(i) + QStringLiteral("- %1").arg(limit);
+                    pMenu = new QMenu(label, m_pSamplerMenu);
+                    m_pSamplerMenu->addMenu(pMenu);
+                }
+                samplersInMenu++;
                 // PlayerManager::groupForSampler is 0-indexed.
                 QString samplerGroup = PlayerManager::groupForSampler(i - 1);
                 bool samplerPlaying = ControlObject::get(
                                               ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && singleTrackSelected;
-                QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+                QAction* pAction = new QAction(samplerTrString(i), pMenu);
                 pAction->setEnabled(samplerEnabled);
-                m_pSamplerMenu->addAction(pAction);
-                connect(pAction, &QAction::triggered, this, [this, samplerGroup] { loadSelectionToGroup(samplerGroup); });
+                pMenu->addAction(pAction);
+                connect(pAction,
+                        &QAction::triggered,
+                        this,
+                        [this, samplerGroup] {
+                            loadSelectionToGroup(samplerGroup);
+                        });
             }
         }
     }
