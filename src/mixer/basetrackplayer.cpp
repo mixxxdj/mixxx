@@ -871,6 +871,7 @@ void BaseTrackPlayerImpl::slotShiftCuesMillis(double milliseconds) {
         return;
     }
     m_pLoadedTrack->shiftCuePositionsMillis(milliseconds);
+    m_pLoadedTrack->shiftBeatsMillis(milliseconds);
 }
 
 void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double milliseconds) {
