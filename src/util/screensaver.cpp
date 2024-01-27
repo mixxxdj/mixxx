@@ -19,6 +19,8 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 
 #include <QDebug>
 
+#include "util/assert.h"
+
 #if defined(Q_OS_MACOS)
 #  include "util/mac.h"
 #elif defined(_WIN32)
