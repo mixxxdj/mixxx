@@ -357,6 +357,7 @@ void WTrackTableView::initTrackMenu() {
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackDoubleClickAction setting
+    // TODO simplify this casting madness
     int doubleClickActionConfigValue =
             m_pConfig->getValue(mixxx::library::prefs::kTrackDoubleClickActionConfigKey,
                     static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
@@ -822,11 +823,17 @@ TrackModel* WTrackTableView::getTrackModel() const {
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
+        // Return invokes the double-click action.
         // Ctrl+Return opens track properties dialog.
         // Ignore it if any cell editor is open.
-        // Note: the shortcut is displayed in the track context menu
-        if ((event->modifiers() & kPropertiesShortcutModifier) &&
-                state() != QTableView::EditingState) {
+        // Note: we use kPropertiesShortcutKey/~Mofifier here and in
+        // in WTrackMenu to display the shortcut.
+        if (state() == QTableView::EditingState) {
+            break;
+        }
+        if (event->modifiers().testFlag(Qt::NoModifier)) {
+            slotMouseDoubleClicked(currentIndex());
+        } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
             QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.length() == 1) {
                 m_pTrackMenu->loadTrackModelIndices(indices);
