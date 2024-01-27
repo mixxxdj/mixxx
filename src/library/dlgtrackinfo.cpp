@@ -267,12 +267,9 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotReloadCoverArt);
 
     connect(m_pWStarRating,
-            &WStarRating::ratingChanged,
+            &WStarRating::ratingChangeRequest,
             this,
-            [this](int rating) {
-                m_pWStarRating->slotSetRating(rating);
-                m_trackRecord.setRating(rating);
-            });
+            &DlgTrackInfo::slotRatingChanged);
 
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
     QMenu* pColorPickerMenu = new QMenu(this);
@@ -745,6 +742,17 @@ void DlgTrackInfo::slotKeyTextChanged() {
     if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
         // Ensure that the text field always reflects the actual value
         displayKeyText();
+    }
+}
+
+void DlgTrackInfo::slotRatingChanged(int rating) {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    if (m_trackRecord.isValidRating(rating) &&
+            rating != m_trackRecord.getRating()) {
+        m_pWStarRating->slotSetRating(rating);
+        m_trackRecord.setRating(rating);
     }
 }
 
