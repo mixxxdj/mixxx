@@ -114,7 +114,8 @@ void DlgPrefEffects::slotUpdate() {
     m_pHiddenEffectsModel->setList(hiddenEffects);
 
     // No chain preset is selected when the preferences are opened
-    clearChainInfoDisableButtons();
+    clearChainInfo();
+    updateButtons(0);
 
     loadChainPresetLists();
 
@@ -155,13 +156,18 @@ void DlgPrefEffects::clearEffectInfo() {
     effectType->clear();
 }
 
-void DlgPrefEffects::clearChainInfoDisableButtons() {
+void DlgPrefEffects::clearChainInfo() {
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
         m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
     }
-    chainPresetExportButton->setEnabled(false);
-    chainPresetRenameButton->setEnabled(false);
-    chainPresetDeleteButton->setEnabled(false);
+}
+
+void DlgPrefEffects::updateButtons(int selectedIndices) {
+    // Allow Delete and Export of multiple presets
+    chainPresetDeleteButton->setEnabled(selectedIndices > 0);
+    chainPresetExportButton->setEnabled(selectedIndices > 0);
+    // Enable Rename only for one preset
+    chainPresetRenameButton->setEnabled(selectedIndices == 1);
 }
 
 void DlgPrefEffects::loadChainPresetLists() {
@@ -218,12 +224,15 @@ void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selec
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
-    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
-    // in eventFilter()
     auto* pSelModel = m_pFocusedChainList->selectionModel();
     auto selIndices = pSelModel->selectedIndexes();
+
+    updateButtons(selIndices.count());
+
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
     if (selIndices.count() != 1) {
-        clearChainInfoDisableButtons();
+        clearChainInfo();
         return;
     }
 
@@ -249,10 +258,6 @@ void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selec
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
         }
     }
-
-    chainPresetExportButton->setEnabled(true);
-    chainPresetRenameButton->setEnabled(true);
-    chainPresetDeleteButton->setEnabled(true);
 }
 
 void DlgPrefEffects::slotImportPreset() {
