@@ -6,6 +6,7 @@
 #include <QTextCodec>
 #include <QThread>
 #include <QtDebug>
+#include <QtGlobal>
 #include <cstdio>
 #include <stdexcept>
 
@@ -209,7 +210,7 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash
