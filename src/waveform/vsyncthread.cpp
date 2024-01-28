@@ -4,13 +4,22 @@
 #include "util/math.h"
 #include "util/performancetimer.h"
 
-VSyncThread::VSyncThread(QObject* pParent)
+namespace {
+VSyncThread::VSyncMode defaultVSyncMode() {
+#ifdef __APPLE__
+    return VSyncThread::ST_PLL;
+#else
+    return VSyncThread::ST_TIMER;
+#endif
+}
+} // namespace
+
+VSyncThread::VSyncThread(QObject* pParent, VSyncThread::VSyncMode vSyncMode)
         : QThread(pParent),
           m_bDoRendering(true),
-          m_vSyncTypeChanged(false),
           m_syncIntervalTimeMicros(33333), // 30 FPS
           m_waitToSwapMicros(0),
-          m_vSyncMode(ST_TIMER),
+          m_vSyncMode(vSyncMode == VSyncThread::ST_DEFAULT ? defaultVSyncMode() : vSyncMode),
           m_syncOk(false),
           m_droppedFrames(0),
           m_swapWait(0),
@@ -217,17 +226,6 @@ void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
     }
 }
 
-void VSyncThread::setVSyncType(int type) {
-    // qDebug() << "setting vsync type" << type;
-
-    if (type >= (int)VSyncThread::ST_COUNT) {
-        type = VSyncThread::ST_TIMER;
-    }
-    m_vSyncMode = (enum VSyncMode)type;
-    m_droppedFrames = 0;
-    m_vSyncTypeChanged = true;
-}
-
 int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
     int difference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
@@ -259,13 +257,13 @@ void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
             case VSyncThread::ST_TIMER:
                 name = tr("Timer (Fallback)");
                 break;
-            case VSyncThread::ST_MESA_VBLANK_MODE_1:
+            case VSyncThread::ST_MESA_VBLANK_MODE_1_DEPRECATED:
                 name = tr("MESA vblank_mode = 1");
                 break;
-            case VSyncThread::ST_SGI_VIDEO_SYNC:
+            case VSyncThread::ST_SGI_VIDEO_SYNC_DEPRECATED:
                 name = tr("Wait for Video sync");
                 break;
-            case VSyncThread::ST_OML_SYNC_CONTROL:
+            case VSyncThread::ST_OML_SYNC_CONTROL_DEPRECATED:
                 name = tr("Sync Control");
                 break;
             case VSyncThread::ST_FREE:
