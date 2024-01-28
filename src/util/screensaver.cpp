@@ -323,6 +323,13 @@ void ScreenSaverHelper::uninhibitInternal()
     s_enabled = false;
 }
 
+#elif defined(Q_OS_IOS)
+void ScreenSaverHelper::triggerUserActivity() {
+}
+void ScreenSaverHelper::inhibitInternal() {
+}
+void ScreenSaverHelper::uninhibitInternal() {
+}
 #else
 void ScreenSaverHelper::triggerUserActivity()
 {
