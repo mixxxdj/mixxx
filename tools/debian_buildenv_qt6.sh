@@ -100,10 +100,6 @@ case "$1" in
             protobuf-compiler \
             qtkeychain-qt6-dev \
             qt6-declarative-dev \
-            qml-module-qtquick-controls \
-            qml-module-qtquick-controls2 \
-            qml-module-qt-labs-qmlmodels \
-            qml-module-qtquick-shapes \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)
