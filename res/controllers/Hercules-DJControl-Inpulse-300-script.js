@@ -51,6 +51,13 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
+// Timer lengths
+DJCi300.LEDtimerLength = 5000
+DJCi300.wheelTimerLength = 25
+
+// Determines how fast the wheel must be moving to be considered "slipping"
+DJCi300.slipThreshold = 0.01
+
 DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
     value = (value * 122) + 5;
     midi.sendShortMsg(0xB0, 0x40, value);
@@ -72,12 +79,18 @@ DJCi300.init = function() {
     2: DJCi300.kScratchActionNone
     };
 
+    // Jogwheel timer
+    DJCi300.wheelTimer = {
+        1: 0,
+        2: 0
+    };
+
     // Tone play LED control (one for each deck)
     DJCi300.tonePlayLED = {
         1: 0x40,
         2: 0x40
     };
-    DJCi300.timer = {
+    DJCi300.LEDtimer = {
         1: 0,
         2: 0
     };
@@ -136,8 +149,43 @@ DJCi300._convertWheelRotation = function(value) {
     return value < 0x40 ? 1 : -1;
 };
 
+DJCi300._isSlipping = function(group) {
+    // Function that checks whether or not the jogwheel is "slipping"
+    // (IOW it was spun with touch action, but now it's still spinning
+    // due to inertia)
+
+    // If the jogwheel is at a certain speed, it is considered slipping
+    // This allows us to do tricks like backspins
+    var scratchRate = engine.getValue(group, "scratch2", 1);
+
+    if (Math.abs(scratchRate) > DJCi300.slipThreshold) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+DJCi300._wheelRelease = function(deck) {
+    // This is called after the wheel is released and we want to
+    // switch between scratching and jogging gracefully
+    // Create a timer that disables slipping after some time (switches from scratching to bending)
+    // Reset timer (if it exists)
+    if (DJCi300.wheelTimer !== 0) {
+        engine.stopTimer(DJCi300.wheelTimer);
+        DJCi300.wheelTimer = 0;
+    }
+    // Start timer
+    DJCi300.wheelTimer = engine.beginTimer(DJCi300.wheelTimerLength,
+        function() {
+            DJCi300.wheelTimer = 0;
+            engine.scratchDisable(deck);
+            DJCi300.scratchAction[deck] = DJCi300.kScratchActionBend;
+        },
+        true);
+}
+
 // The touch action on the jog wheel's top surface
-DJCi300.wheelTouch = function(channel, control, value, _status, _group) {
+DJCi300.wheelTouch = function(channel, control, value, _status, group) {
     var deck = channel;
     if (value > 0) {
         //  Touching the wheel.
@@ -149,8 +197,11 @@ DJCi300.wheelTouch = function(channel, control, value, _status, _group) {
         }
     } else {
         // Released the wheel.
-        engine.scratchDisable(deck);
-        DJCi300.scratchAction[deck] = DJCi300.kScratchActionNone;
+        // Only disable scratching if the wheel is not spinning
+        if (!DJCi300._isSlipping(deck)) {
+            DJCi300._wheelRelease(deck);
+        }
+        
     }
 };
 
@@ -173,7 +224,7 @@ DJCi300.scratchWheel = function(channel, control, value, status, _group) {
     var deck;
     switch (status) {
     case 0xB1:
-    case 0xB4:
+    case 0xB4: 
         deck  = 1;
         break;
     case 0xB2:
@@ -192,16 +243,25 @@ DJCi300.scratchWheel = function(channel, control, value, status, _group) {
             interval *  DJCi300.scratchScale *
             DJCi300.scratchShiftMultiplier);
     } else {
+        DJCi300._wheelRelease(channel);
         engine.setValue(
             "[Channel" + deck + "]", "jog", interval * DJCi300.bendScale);
     }
 };
 
 // Bending on the jog wheel (rotating using the edge)
-DJCi300.bendWheel = function(channel, control, value, _status, _group) {
+DJCi300.bendWheel = function(channel, control, value, _status, group) {
     var interval = DJCi300._convertWheelRotation(value);
-    engine.setValue(
-        "[Channel" + channel + "]", "jog", interval * DJCi300.bendScale);
+
+    // Keep scratching if the wheel is already spinning (due to inertia)
+    if (DJCi300._isSlipping) {
+        engine.scratchTick(channel, interval * DJCi300.scratchScale);
+    } else {
+    // Otherwise, switch to bending
+        DJCi300._wheelRelease(channel);
+        engine.setValue(
+            "[Channel" + channel + "]", "jog", interval * DJCi300.bendScale);
+    }
 };
 
 // Toneplay
@@ -244,14 +304,14 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
     } else {
         // After button release, turn off the light after no input for 5 seconds
         // Reset timer (if it exists)
-        if (DJCi300.timer !== 0) {
-            engine.stopTimer(DJCi300.timer);
-            DJCi300.timer = 0;
+        if (DJCi300.LEDtimer !== 0) {
+            engine.stopTimer(DJCi300.LEDtimer);
+            DJCi300.LEDtimer = 0;
         }
         // Start timer
-        DJCi300.timer = engine.beginTimer(5000,
+        DJCi300.LEDtimer = engine.beginTimer(DJCi300.LEDtimerLength,
             function() {
-                DJCi300.timer = 0;
+                DJCi300.LEDtimer = 0;
                 midi.sendShortMsg(status, DJCi300.tonePlayLED, 0x00);
             },
             true);

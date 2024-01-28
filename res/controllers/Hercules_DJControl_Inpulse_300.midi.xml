@@ -3123,7 +3123,7 @@
 				<on>0x7f</on>
 			</output>
 			<output>
-				<group>[EffectRack1_EffectUnit1]</group>
+				<group>[EffectRack1_EffectUnit2]</group>
 				<key>group_[Channel1]_enable</key>
 				<description>FX2 is active on Deck A</description>
 				<minimum>0.5</minimum>
