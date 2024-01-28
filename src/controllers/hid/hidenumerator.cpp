@@ -14,7 +14,7 @@ bool recognizeDevice(const hid_device_info& device_info) {
     // Skip mice and keyboards. Users can accidentally disable their mouse
     // and/or keyboard by enabling them as HID controllers in Mixxx.
     // https://github.com/mixxxdj/mixxx/issues/10498
-    if (!CmdlineArgs::Instance().getDeveloper() &&
+    if (!TRUE /*CmdlineArgs::Instance().getDeveloper()*/ &&
             device_info.usage_page == mixxx::hid::kGenericDesktopUsagePage &&
             (device_info.usage == mixxx::hid::kGenericDesktopMouseUsage ||
                     device_info.usage == mixxx::hid::kGenericDesktopKeyboardUsage)) {
