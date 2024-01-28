@@ -359,6 +359,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::ResetPlayed |
+            Capability::Hide |
             Capability::Analyze;
 
     if (m_iPlaylistId !=

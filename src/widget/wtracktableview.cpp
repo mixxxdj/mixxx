@@ -905,14 +905,17 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 
     TrackModel::Capability cap;
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-        cap = TrackModel::Capability::Hide;
-    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
+    // In the track menu the hotkey is shown for 'Remove ..' actions, or if there
+    // is no remove action, for 'Hide ..'. Hence, to match the hotkey, do Hide
+    // only if the track model doesn't support any Remove actions.
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
         cap = TrackModel::Capability::Remove;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
         cap = TrackModel::Capability::RemoveCrate;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
         cap = TrackModel::Capability::RemovePlaylist;
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
+        cap = TrackModel::Capability::Hide;
     } else {
         return;
     }
