@@ -24,6 +24,8 @@ https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c
 
 #if defined(Q_OS_MACOS)
 #  include "util/mac.h"
+#elif defined(Q_OS_IOS)
+#include "util/screensaverios.h"
 #elif defined(_WIN32)
 #  include <windows.h>
 #elif defined(__LINUX__)
@@ -327,8 +329,12 @@ void ScreenSaverHelper::uninhibitInternal()
 void ScreenSaverHelper::triggerUserActivity() {
 }
 void ScreenSaverHelper::inhibitInternal() {
+    setIdleTimerDisabled(true);
+    s_enabled = true;
 }
 void ScreenSaverHelper::uninhibitInternal() {
+    setIdleTimerDisabled(false);
+    s_enabled = false;
 }
 #else
 void ScreenSaverHelper::triggerUserActivity()
