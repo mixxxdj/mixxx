@@ -5,6 +5,9 @@
 #include "util/performancetimer.h"
 
 namespace {
+
+constexpr int kNumStableDeltasRequired = 20;
+
 VSyncThread::VSyncMode defaultVSyncMode() {
 #ifdef __APPLE__
     return VSyncThread::ST_PLL;
@@ -12,6 +15,7 @@ VSyncThread::VSyncMode defaultVSyncMode() {
     return VSyncThread::ST_TIMER;
 #endif
 }
+
 } // namespace
 
 VSyncThread::VSyncThread(QObject* pParent, VSyncThread::VSyncMode vSyncMode)
@@ -285,12 +289,8 @@ mixxx::Duration VSyncThread::sinceLastSwap() const {
     return m_sinceLastSwap;
 }
 
-namespace {
-const int numStableDeltasRequired = 20;
-}
-
 bool VSyncThread::pllInitializing() const {
-    return m_pllInitCnt < numStableDeltasRequired;
+    return m_pllInitCnt < kNumStableDeltasRequired;
 }
 
 void VSyncThread::updatePLL() {
@@ -303,7 +303,7 @@ void VSyncThread::updatePLL() {
 
     const double pllPhaseIn = m_pllTimer.elapsed().toDoubleMicros();
 
-    if (m_pllInitCnt < numStableDeltasRequired) {
+    if (m_pllInitCnt < kNumStableDeltasRequired) {
         // Before activating the phase-lock-looped, we need an initial
         // delta and phase, which we calculate by taking the average
         // delta over a number of stable deltas.
@@ -318,7 +318,7 @@ void VSyncThread::updatePLL() {
             m_pllInitSum = 0.0;
             m_pllInitCnt = 0;
         }
-        if (m_pllInitCnt == numStableDeltasRequired) {
+        if (m_pllInitCnt == kNumStableDeltasRequired) {
             m_pllDeltaOut = m_pllInitAvg;
         }
         return;
