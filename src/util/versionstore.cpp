@@ -72,8 +72,12 @@ QString VersionStore::applicationName() {
 
 // static
 QString VersionStore::platform() {
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+    QString base = QStringLiteral("iOS");
+#elif defined(Q_OS_MACOS)
     QString base = QStringLiteral("macOS");
+#elif defined(__APPLE__)
+    QString base = QStringLiteral("Apple");
 #elif defined(__LINUX__)
     QString base = QStringLiteral("Linux");
 #elif defined(__WINDOWS__)
