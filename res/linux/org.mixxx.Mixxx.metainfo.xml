@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706534342">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706539630">
       <description>
  <p>
   Cover Art
@@ -932,13 +932,30 @@
  </p>
  <ul>
   <li>
+   new: Hercules DJControl MIX controller mapping
+   #11279
+  </li>
+  <li>
+   new: Traktor Kontrol S4 Mk3 controller mapping
+   #11284
+  </li>
+  <li>
+   new: Pioneer DDJ-FLX4 controller mapping based on DDJ-400
+   #11245
+  </li>
+  <li>
+   new: Traktor Kontrol Z1 HID controller mapping
+   #12366
+   #12426
+  </li>
+  <li>
+   new: Yaeltex MiniMixxx controller mapping
+   #4350
+  </li>
+  <li>
    Behringer DDM4000 mixer: Update controller mapping
    #4262
    #4799
-  </li>
-  <li>
-   Hercules DJControl MIX: New mapping
-   #11279
   </li>
   <li>
    Hercules DJ Console RMX: Replace not defined CO name pitch_reset by pitch_set_default
@@ -981,10 +998,6 @@
    #12369
   </li>
   <li>
-   Pioneer DDJ-FLX4: New mapping base on DDJ-400
-   #11245
-  </li>
-  <li>
    Roland DJ-505: Make blinking lights blink in sync and other improvements
    #4159
    #4517
@@ -1008,19 +1021,6 @@
    #10645
    #12409
    #12510
-  </li>
-  <li>
-   Traktor Kontrol S4 Mk3: add controller mapping
-   #11284
-  </li>
-  <li>
-   Traktor Kontrol Z1: Add new HID mapping
-   #12366
-   #12426
-  </li>
-  <li>
-   Yaeltex MiniMixxx: Add controller mapping
-   #4350
   </li>
   <li>
    Various mappings: Fix

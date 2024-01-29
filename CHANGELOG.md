@@ -381,8 +381,12 @@
 
 ### Controller Mappings
 
+* new: Hercules DJControl MIX controller mapping [#11279](https://github.com/mixxxdj/mixxx/pull/11279)
+* new: Traktor Kontrol S4 Mk3 controller mapping [#11284](https://github.com/mixxxdj/mixxx/pull/11284)
+* new: Pioneer DDJ-FLX4 controller mapping based on DDJ-400 [#11245](https://github.com/mixxxdj/mixxx/pull/11245)
+* new: Traktor Kontrol Z1 HID controller mapping [#12366](https://github.com/mixxxdj/mixxx/pull/12366) [#12426](https://github.com/mixxxdj/mixxx/pull/12426)
+* new: Yaeltex MiniMixxx controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
 * Behringer DDM4000 mixer: Update controller mapping [#4262](https://github.com/mixxxdj/mixxx/pull/4262) [#4799](https://github.com/mixxxdj/mixxx/pull/4799)
-* Hercules DJControl MIX: New mapping [#11279](https://github.com/mixxxdj/mixxx/pull/11279)
 * Hercules DJ Console RMX: Replace not defined CO name pitch_reset by pitch_set_default [#12441](https://github.com/mixxxdj/mixxx/pull/12441)
 * Korg nanoKONTROL2: Removed Mixco scripts [#2682](https://github.com/mixxxdj/mixxx/pull/2682)
 * Korg nanoKONTROL2: Don't try to configure more than 4 main decks [#12322](https://github.com/mixxxdj/mixxx/pull/12322) [#12317](https://github.com/mixxxdj/mixxx/issues/12317)
@@ -392,7 +396,6 @@
 * Novation Launchpad: Update controller scripts [#2600](https://github.com/mixxxdj/mixxx/pull/2600) [#11914](https://github.com/mixxxdj/mixxx/pull/11914)
 * Numark DJ2GO2 Touch: Fix sampler, hotcue, beatloop buttons [#4287](https://github.com/mixxxdj/mixxx/pull/4287) [#11595](https://github.com/mixxxdj/mixxx/pull/11595)
 * Numark MixTrack Pro 3: Fix beginTimer callback syntax [#12401](https://github.com/mixxxdj/mixxx/pull/12401) [#12369](https://github.com/mixxxdj/mixxx/issues/12369)
-* Pioneer DDJ-FLX4: New mapping base on DDJ-400 [#11245](https://github.com/mixxxdj/mixxx/pull/11245)
 * Roland DJ-505: Make blinking lights blink in sync and other improvements [#4159](https://github.com/mixxxdj/mixxx/pull/4159) [#4517](https://github.com/mixxxdj/mixxx/pull/4517)
 * Traktor Kontrol S2 MK1: Add calibration and refactor [#11237](https://github.com/mixxxdj/mixxx/pull/11237)
 * Traktor Kontrol S2 MK2 fix loaded chain preset CO [#11823](https://github.com/mixxxdj/mixxx/pull/11823) [#10667](https://github.com/mixxxdj/mixxx/issues/10667)
@@ -403,9 +406,6 @@
   [#10645](https://github.com/mixxxdj/mixxx/issues/10645)
   [#12409](https://github.com/mixxxdj/mixxx/pull/12409)
   [#12510](https://github.com/mixxxdj/mixxx/pull/12510)
-* Traktor Kontrol S4 Mk3: add controller mapping [#11284](https://github.com/mixxxdj/mixxx/pull/11284)
-* Traktor Kontrol Z1: Add new HID mapping [#12366](https://github.com/mixxxdj/mixxx/pull/12366) [#12426](https://github.com/mixxxdj/mixxx/pull/12426)
-* Yaeltex MiniMixxx: Add controller mapping [#4350](https://github.com/mixxxdj/mixxx/pull/4350)
 * Various mappings: Fix `waveform_zoom` ranges [#12393](https://github.com/mixxxdj/mixxx/pull/12393)
 
 ### Controller Backend
