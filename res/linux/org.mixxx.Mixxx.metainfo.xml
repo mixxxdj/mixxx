@@ -96,46 +96,8 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706539630">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706539671">
       <description>
- <p>
-  Cover Art
- </p>
- <ul>
-  <li>
-   Prevent wrong cover art display due to hash conflicts
-   #2524
-   #4904
-  </li>
-  <li>
-   Add background color for quick cover art preview
-   #2524
-  </li>
-  <li>
-   Fix coverart tooltip if cover is not cached
-   #12087
-  </li>
-  <li>
-   Add cover art fetcher to the Musicbrainz dialog
-   #10908
-   #4871
-   #10795
-   #10796
-   #10902
-   #4851
-   #11938
-   #11086
-   #12041
-   #12300
-   #12543
-   #12532
-   #12543
-  </li>
-  <li>
-   CoverArtCache refactoring + Fix scrolling lag after updating Mixxx
-   #12009
-  </li>
- </ul>
  <p>
   Music Library
  </p>
@@ -1596,6 +1558,44 @@
    #12538
    #12506
    #12513
+  </li>
+ </ul>
+ <p>
+  Cover Art
+ </p>
+ <ul>
+  <li>
+   Prevent wrong cover art display due to hash conflicts
+   #2524
+   #4904
+  </li>
+  <li>
+   Add background color for quick cover art preview
+   #2524
+  </li>
+  <li>
+   Fix coverart tooltip if cover is not cached
+   #12087
+  </li>
+  <li>
+   Add cover art fetcher to the Musicbrainz dialog
+   #10908
+   #4871
+   #10795
+   #10796
+   #10902
+   #4851
+   #11938
+   #11086
+   #12041
+   #12300
+   #12543
+   #12532
+   #12543
+  </li>
+  <li>
+   CoverArtCache refactoring + Fix scrolling lag after updating Mixxx
+   #12009
   </li>
  </ul>
  <p>

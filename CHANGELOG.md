@@ -2,27 +2,6 @@
 
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
-### Cover Art
-
-* Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524) [#4904](https://github.com/mixxxdj/mixxx/pull/4904)
-* Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
-* Fix coverart tooltip if cover is not cached [#12087](https://github.com/mixxxdj/mixxx/pull/12087)
-* Add cover art fetcher to the Musicbrainz dialog
-  [#10908](https://github.com/mixxxdj/mixxx/pull/10908)
-  [#4871](https://github.com/mixxxdj/mixxx/pull/4871)
-  [#10795](https://github.com/mixxxdj/mixxx/issues/10795)
-  [#10796](https://github.com/mixxxdj/mixxx/issues/10796)
-  [#10902](https://github.com/mixxxdj/mixxx/pull/10902)
-  [#4851](https://github.com/mixxxdj/mixxx/pull/4851)
-  [#11938](https://github.com/mixxxdj/mixxx/pull/11938)
-  [#11086](https://github.com/mixxxdj/mixxx/issues/11086)
-  [#12041](https://github.com/mixxxdj/mixxx/pull/12041)
-  [#12300](https://github.com/mixxxdj/mixxx/pull/12300)
-  [#12543](https://github.com/mixxxdj/mixxx/pull/12543)
-  [#12532](https://github.com/mixxxdj/mixxx/issues/12532)
-  [#12543](https://github.com/mixxxdj/mixxx/pull/12543)
-* CoverArtCache refactoring + Fix scrolling lag after updating Mixxx  [#12009](https://github.com/mixxxdj/mixxx/pull/12009)
-
 ### Music Library
 
 #### Backend / Database
@@ -576,6 +555,27 @@
   [#12538](https://github.com/mixxxdj/mixxx/pull/12538)
   [#12506](https://github.com/mixxxdj/mixxx/issues/12506)
   [#12513](https://github.com/mixxxdj/mixxx/issues/12513)
+
+### Cover Art
+
+* Prevent wrong cover art display due to hash conflicts [#2524](https://github.com/mixxxdj/mixxx/pull/2524) [#4904](https://github.com/mixxxdj/mixxx/pull/4904)
+* Add background color for quick cover art preview [#2524](https://github.com/mixxxdj/mixxx/pull/2524)
+* Fix coverart tooltip if cover is not cached [#12087](https://github.com/mixxxdj/mixxx/pull/12087)
+* Add cover art fetcher to the Musicbrainz dialog
+  [#10908](https://github.com/mixxxdj/mixxx/pull/10908)
+  [#4871](https://github.com/mixxxdj/mixxx/pull/4871)
+  [#10795](https://github.com/mixxxdj/mixxx/issues/10795)
+  [#10796](https://github.com/mixxxdj/mixxx/issues/10796)
+  [#10902](https://github.com/mixxxdj/mixxx/pull/10902)
+  [#4851](https://github.com/mixxxdj/mixxx/pull/4851)
+  [#11938](https://github.com/mixxxdj/mixxx/pull/11938)
+  [#11086](https://github.com/mixxxdj/mixxx/issues/11086)
+  [#12041](https://github.com/mixxxdj/mixxx/pull/12041)
+  [#12300](https://github.com/mixxxdj/mixxx/pull/12300)
+  [#12543](https://github.com/mixxxdj/mixxx/pull/12543)
+  [#12532](https://github.com/mixxxdj/mixxx/issues/12532)
+  [#12543](https://github.com/mixxxdj/mixxx/pull/12543)
+* CoverArtCache refactoring + Fix scrolling lag after updating Mixxx  [#12009](https://github.com/mixxxdj/mixxx/pull/12009)
 
 ### Effects
 
