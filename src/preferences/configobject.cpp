@@ -68,7 +68,7 @@ QString computeResourcePathImpl() {
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#elif defined(__APPLE__)
+#elif defined(Q_OS_MACOS)
         else if (mixxxDir.cd("../Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
