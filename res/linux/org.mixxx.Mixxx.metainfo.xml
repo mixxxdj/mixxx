@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540816">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706546791">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -856,11 +856,6 @@
    #11717
   </li>
   <li>
-   Fix wrong visual play position when inside loop
-   #11840
-   #11836
-  </li>
-  <li>
    Slip mode: consider loop for background position only if it was enabled  before slip
    #11848
    #11844
@@ -871,7 +866,7 @@
    #12223
   </li>
   <li>
-   make decks' xfader assignment persistent
+   Make decks' xfader assignment persistent
    #12074
    #10122
   </li>
@@ -911,7 +906,15 @@
    #12441
   </li>
   <li>
-   Korg nanoKONTROL2: Removed Mixco scripts
+   MAudio Xponent: Removed along with Mixco scripts
+   #2682
+  </li>
+  <li>
+   Novation Twitch: Removed along with Mixco scripts
+   #2682
+  </li>
+  <li>
+   Korg nanoKONTROL2: Removed along with Mixco scripts
    #2682
   </li>
   <li>
@@ -920,16 +923,8 @@
    #12317
   </li>
   <li>
-   MAudio Xponent: Removed along with Mixco scripts
-   #2682
-  </li>
-  <li>
    MIDI4lights: Give beginTimer callbacks the anonymous function expression form
    #12048
-  </li>
-  <li>
-   Novation Twitch: Removed along with Mixco scripts
-   #2682
   </li>
   <li>
    Novation Launchpad: Update controller scripts
@@ -1430,20 +1425,20 @@
    #12489
   </li>
   <li>
-   Fix micro jitter from clamping position offset to vsync interval
-   #12470
-  </li>
-  <li>
-   Avoid flickering when resizing
-   #12487
-  </li>
-  <li>
    Use WaveformWidgetType::AllShaderRGBWaveform as autoChooseWidgetType
    #11822
   </li>
   <li>
    Add new "RGB Stacked" waveform
    #3153
+  </li>
+  <li>
+   Fix micro jitter from clamping position offset to vsync interval
+   #12470
+  </li>
+  <li>
+   Avoid flickering when resizing
+   #12487
   </li>
   <li>
    Invert scroll wheel waveform zoom direction to mach other applications
@@ -1474,6 +1469,19 @@
    #10764
   </li>
   <li>
+   Fix visual play position related to looping
+   #11840
+   #11836
+   #12538
+   #12506
+   #12513
+  </li>
+  <li>
+   Fix for visual position while scratching outside of an activated loop
+   #12281
+   #12274
+  </li>
+  <li>
    Spinny: Fix drawing of non-square cover arts
    #11971
    #11967
@@ -1484,7 +1492,7 @@
    #11930
   </li>
   <li>
-   Don't use OpenGL for the VU-Meters by default
+   VU-Meter: Don't use OpenGL by default
    #11722
   </li>
   <li>
@@ -1503,11 +1511,6 @@
    #12237
   </li>
   <li>
-   Fix for visual waveform position while scratching outside of an activated loop
-   #12281
-   #12274
-  </li>
-  <li>
    avoid overlapping marks
    #12273
   </li>
@@ -1516,7 +1519,7 @@
    #12501
   </li>
   <li>
-   fix clamping of the index for drawing the waveform left of zero position
+   Fix clamping of the index for drawing the waveform left of zero position
    #12411
   </li>
   <li>
@@ -1536,15 +1539,9 @@
    #12607
   </li>
   <li>
-   Preferences waveforms: recall correct waveform type when selecting an overview type
+   Preferences: recall correct waveform type when selecting an overview type
    #12231
    #12226
-  </li>
-  <li>
-   Fix for LoopIn/LoopOut visualisation in waveforms
-   #12538
-   #12506
-   #12513
   </li>
  </ul>
  <p>
