@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563540">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563607">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -1266,14 +1266,6 @@
    #4505
   </li>
   <li>
-   Add new Quick Effect selector and effect chain buttons
-   #4501
-   #4502
-   #4503
-   #4590
-   #4593
-  </li>
-  <li>
    Passthrough: improve UI / UX
    #4794
   </li>
@@ -1287,17 +1279,8 @@
    #11077
   </li>
   <li>
-   Effect parameter label: set hand cursor to make dragability more discoverable
-   #11062
-  </li>
-  <li>
    Move skin control hack to c++ (spinny/cover controls, mic/ducking controls)
    #11183
-  </li>
-  <li>
-   Show effect parameter units in parameter name label
-   #11041
-   #11194
   </li>
   <li>
    LateNight: Move logo to the right
@@ -1650,6 +1633,12 @@
    #10605
    #4702
    #10579
+   #4501
+   #4502
+   #4503
+   #4590
+   #4593
+   #11062
   </li>
   <li>
    Add Noise effect
@@ -1677,6 +1666,11 @@
   <li>
    Effect parameter knobs: Implement ValueScaler::Integral, snap value to int
    #11061
+  </li>
+  <li>
+   Show effect parameter units in parameter name label
+   #11041
+   #11194
   </li>
   <li>
    Fix gain compensation for the Moog filter
