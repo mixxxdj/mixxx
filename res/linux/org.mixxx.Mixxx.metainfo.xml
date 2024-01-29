@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706547284">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563540">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -1028,13 +1028,13 @@
    #3472
   </li>
   <li>
-   Library: Add control object
+   Introduce new control object
    [Library],show_track_menu
    to open/close the track menu
    #4465
   </li>
   <li>
-   Library: Add control object
+   Introduce new control object
    [Library],sort_focused_column
    #4749
    #4763
@@ -1094,7 +1094,7 @@
    #11867
   </li>
   <li>
-   Added Trace for the mapping connections, to allow JS profiling
+   Add Trace for the mapping connections, to allow JS profiling
    #4766
   </li>
   <li>
@@ -1104,7 +1104,7 @@
    #10539
   </li>
   <li>
-   Added TypeScript declarations for engine and controller scripting API to improve IDE code completion during mapping developent
+   Add TypeScript declarations for engine and controller scripting API to improve IDE code completion during mapping developent
    #4759
   </li>
   <li>
@@ -1119,7 +1119,7 @@
    #11473
   </li>
   <li>
-   feat(control): Do not show CO aliases in developer tools window
+   Do not show ControlObject aliases in developer tools window
    #12265
   </li>
   <li>
@@ -1127,21 +1127,24 @@
    #11990
   </li>
   <li>
-   Fix creation of Sampler "end_of_track" CO
+   Fix creation of Sampler
+   end_of_track
+   ControlObjects
    #12305
    #12304
   </li>
   <li>
-   Adds a test SoftTakeoverTest.CatchOutOfBounds
+   Add a test SoftTakeoverTest.CatchOutOfBounds
    #12114
    #12011
   </li>
   <li>
-   make WHotcueButton learnable with the MIDI Wizard
+   Make WHotcueButton learnable with the MIDI Wizard
    #12252
   </li>
   <li>
-   Control picker menu: add 'waveform_zoom_set_default'
+   Control picker menu: add
+   waveform_zoom_set_default
    #12247
   </li>
   <li>
@@ -1154,7 +1157,7 @@
    #12007
   </li>
   <li>
-   Fix use of deprecated COs in Skins
+   Remove deprecated ControlObjects from Skins
    #12030
   </li>
   <li>
@@ -1166,7 +1169,7 @@
    #11973
   </li>
   <li>
-   Repeat certain control actions if keyboard key is held
+   Keyboard: Repeat certain control actions if key is held
    #12474
   </li>
   <li>
@@ -1174,7 +1177,7 @@
    #12639
   </li>
   <li>
-   Keyboard sheet update
+   Update keyboard sheet
    #12578
   </li>
   <li>
