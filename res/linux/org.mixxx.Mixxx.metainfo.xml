@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706546791">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706547284">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -880,12 +880,12 @@
    #11279
   </li>
   <li>
-   new: Traktor Kontrol S4 Mk3 controller mapping
-   #11284
-  </li>
-  <li>
    new: Pioneer DDJ-FLX4 controller mapping based on DDJ-400
    #11245
+  </li>
+  <li>
+   new: Traktor Kontrol S4 Mk3 controller mapping
+   #11284
   </li>
   <li>
    new: Traktor Kontrol Z1 HID controller mapping
@@ -906,25 +906,25 @@
    #12441
   </li>
   <li>
-   MAudio Xponent: Removed along with Mixco scripts
-   #2682
-  </li>
-  <li>
-   Novation Twitch: Removed along with Mixco scripts
-   #2682
+   Korg nanoKONTROL2: Don't try to configure more than 4 main decks
+   #12322
+   #12317
   </li>
   <li>
    Korg nanoKONTROL2: Removed along with Mixco scripts
    #2682
   </li>
   <li>
-   Korg nanoKONTROL2: Don't try to configure more than 4 main decks
-   #12322
-   #12317
+   MAudio Xponent: Removed along with Mixco scripts
+   #2682
   </li>
   <li>
    MIDI4lights: Give beginTimer callbacks the anonymous function expression form
    #12048
+  </li>
+  <li>
+   Novation Twitch: Removed along with Mixco scripts
+   #2682
   </li>
   <li>
    Novation Launchpad: Update controller scripts
