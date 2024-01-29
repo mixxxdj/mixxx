@@ -22,8 +22,8 @@
                 <TooltipId>track_title</TooltipId>
                 <ObjectName>SamplerTitle</ObjectName>
                 <SizePolicy>me,me</SizePolicy>
-                <Property>title</Property>
                 <Group><Variable name="Group"/></Group>
+                <Property>titleInfo</Property>
                 <Elide>right</Elide>
               </TrackProperty>
 

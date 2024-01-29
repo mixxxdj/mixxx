@@ -90,12 +90,16 @@ bool selectInXfce(const QString& path) {
 #endif
 
 void selectViaCommand(const QString& path) {
+#ifdef Q_OS_IOS
+    qWarning() << "Starting process (" << path << ") is not supported on iOS!";
+#else
     QStringList arguments = sSelectInFileBrowserCommand.split(" ");
     // No escaping required because QProcess bypasses the shell
     arguments.append(QDir::toNativeSeparators(path));
     QString program = arguments.takeFirst();
     qDebug() << "Calling:" << program << arguments;
     QProcess::startDetached(program, arguments);
+#endif
 }
 
 } // anonymous namespace

@@ -120,7 +120,6 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_pVisualsManager(nullptr),
           m_frameCnt(0),
           m_actualFrameRate(0),
-          m_vSyncType(0),
           m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -359,8 +358,6 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","EndOfTrackWarningTime"),
                 ConfigValue(m_endOfTrackWarningTime));
     }
-
-    m_vSyncType = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
 
     double defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toDouble(&ok);
     if (ok) {
@@ -794,16 +791,23 @@ void WaveformWidgetFactory::swap() {
 }
 
 void WaveformWidgetFactory::swapAndRender() {
+    // used for PLL
+    WGLWidget* widget = SharedGLContext::getWidget();
+    widget->getOpenGLWindow()->update();
+
     swapSelf();
     renderSelf();
+
     m_vsyncThread->vsyncSlotFinished();
 }
 
 void WaveformWidgetFactory::slotFrameSwapped() {
 #ifdef MIXXX_USE_QOPENGL
-    WGLWidget* widget = SharedGLContext::getWidget();
-    // continuously trigger redraws
-    widget->getOpenGLWindow()->update();
+    if (m_vsyncThread->pllInitializing()) {
+        // continuously trigger redraws during PLL init
+        WGLWidget* widget = SharedGLContext::getWidget();
+        widget->getOpenGLWindow()->update();
+    }
     // update the phase-locked-loop
     m_vsyncThread->updatePLL();
 #endif
@@ -1109,15 +1113,17 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 }
 
 void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
+    const auto vSyncMode = static_cast<VSyncThread::VSyncMode>(
+            m_config->getValue(ConfigKey("[Waveform]", "VSync"), 0));
+
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
-    m_vsyncThread = new VSyncThread(this);
+    m_vsyncThread = new VSyncThread(this, vSyncMode);
     m_vsyncThread->setObjectName(QStringLiteral("VSync"));
-    m_vsyncThread->setVSyncType(m_vSyncType);
     m_vsyncThread->setSyncIntervalTimeMicros(static_cast<int>(1e6 / m_frameRate));
 
 #ifdef MIXXX_USE_QOPENGL
-    if (m_vSyncType == VSyncThread::ST_PLL) {
+    if (m_vsyncThread->vsyncMode() == VSyncThread::ST_PLL) {
         WGLWidget* widget = SharedGLContext::getWidget();
         connect(widget->getOpenGLWindow(),
                 &QOpenGLWindow::frameSwapped,

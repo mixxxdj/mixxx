@@ -4,20 +4,35 @@
 #include "util/math.h"
 #include "util/performancetimer.h"
 
-VSyncThread::VSyncThread(QObject* pParent)
+namespace {
+
+constexpr int kNumStableDeltasRequired = 20;
+
+VSyncThread::VSyncMode defaultVSyncMode() {
+#ifdef __APPLE__
+    return VSyncThread::ST_PLL;
+#else
+    return VSyncThread::ST_TIMER;
+#endif
+}
+
+} // namespace
+
+VSyncThread::VSyncThread(QObject* pParent, VSyncThread::VSyncMode vSyncMode)
         : QThread(pParent),
           m_bDoRendering(true),
-          m_vSyncTypeChanged(false),
           m_syncIntervalTimeMicros(33333), // 30 FPS
           m_waitToSwapMicros(0),
-          m_vSyncMode(ST_TIMER),
+          m_vSyncMode(vSyncMode == VSyncThread::ST_DEFAULT ? defaultVSyncMode() : vSyncMode),
           m_syncOk(false),
           m_droppedFrames(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
           m_vSyncPerRendering(1),
+          m_pllInitCnt(0),
+          m_pllInitSum(0.0),
           m_pllPhaseOut(0.0),
-          m_pllDeltaOut(16666.6), // 60 FPS initial delta
+          m_pllDeltaOut(16666.6),
           m_pllLogging(0.0) {
     m_pllTimer.start();
 }
@@ -73,14 +88,17 @@ void VSyncThread::runFree() {
 
 void VSyncThread::runPLL() {
     assert(m_vSyncMode == ST_PLL);
+    qint64 offsetAdjustedAt = 0;
     qint64 offset = 0;
     qint64 nextSwapMicros = 0;
+    qint64 multiplierAdjustedPllPhaseOut = 0;
     while (m_bDoRendering) {
         // Use a phase-locked-loop on the QOpenGLWindow::frameSwapped signal
         // to determine when the vsync occurs
 
         qint64 pllPhaseOut;
         qint64 pllDeltaOut;
+        qint64 multiplierAdjustedPllDeltaOut;
         qint64 now;
 
         {
@@ -90,37 +108,73 @@ void VSyncThread::runPLL() {
             // estimated frame interval
             pllDeltaOut = std::llround(m_pllDeltaOut);
             now = m_pllTimer.elapsed().toIntegerMicros();
-        }
-        if (pllPhaseOut > nextSwapMicros) {
-            nextSwapMicros = pllPhaseOut;
-        }
-        if (nextSwapMicros == pllPhaseOut) {
-            nextSwapMicros += pllDeltaOut;
+
+            // Calculate the nearest integer number of PLL intervals that
+            // correspond with the interval based on the frame rate from the
+            // user settings. E.g. if the PLL is running at 60 fps, and the user
+            // settings is between 25 and 40 fps, we do run effectively at 30
+            // fps (multiplier is 2)
+            //
+            // Note this also is applied when running at 120 fps (ProMotion)
+            const auto multiplier = std::max<qint64>(1,
+                    (m_syncIntervalTimeMicros + pllDeltaOut / 2) / pllDeltaOut);
+
+            // Update the multiplierAdjustedPllPhaseOut to pllPhaseOut, if pllPhaseOut has increased
+            // multiplier * pllDeltaOut intervals.
+            if (multiplierAdjustedPllPhaseOut == 0 ||
+                    ((pllPhaseOut - multiplierAdjustedPllPhaseOut +
+                             pllDeltaOut / 2) /
+                            pllDeltaOut) %
+                                    multiplier ==
+                            0) {
+                multiplierAdjustedPllPhaseOut = pllPhaseOut;
+            }
+
+            multiplierAdjustedPllDeltaOut = pllDeltaOut * multiplier;
         }
 
-        // sleep an integer number of frames extra to approximate the
-        // selected framerate (eg 10,15,20,30)
-        const auto skippedFrames = (m_syncIntervalTimeMicros - pllDeltaOut / 2) / pllDeltaOut;
-        qint64 sleepForSkippedFrames = skippedFrames * pllDeltaOut;
+        if (multiplierAdjustedPllPhaseOut > nextSwapMicros) {
+            // We received a new pll phase
+            nextSwapMicros = multiplierAdjustedPllPhaseOut;
+        } else {
+            // We didn't receive a new pll phase out, so freewheel to estimated
+            // next with the current delta.
+            nextSwapMicros += multiplierAdjustedPllDeltaOut;
+        }
 
-        qint64 sleepUntilSwap = (nextSwapMicros + offset - now) % pllDeltaOut;
+        qint64 sleepUntilSwap = (nextSwapMicros + offset - now) % multiplierAdjustedPllDeltaOut;
         if (sleepUntilSwap < 0) {
-            sleepUntilSwap += pllDeltaOut;
+            sleepUntilSwap += multiplierAdjustedPllDeltaOut;
         }
-        usleep(sleepUntilSwap + sleepForSkippedFrames);
+        usleep(sleepUntilSwap);
 
         m_sinceLastSwap = m_timer.restart();
-        m_waitToSwapMicros = pllDeltaOut + sleepForSkippedFrames;
+        m_waitToSwapMicros = multiplierAdjustedPllDeltaOut;
 
         // Signal to swap the gl widgets (waveforms, spinnies, vumeters)
         // and render them for the next swap
-        emit vsyncSwapAndRender();
-        m_semaVsyncSlot.acquire();
-        if (m_sinceLastSwap.toIntegerMicros() > sleepForSkippedFrames + pllDeltaOut * 3 / 2) {
+        if (!pllInitializing() || m_pllPendingUpdate) {
+            emit vsyncSwapAndRender();
+            m_semaVsyncSlot.acquire();
+            m_pllPendingUpdate = false;
+        }
+
+        if (m_sinceLastSwap.toIntegerMicros() > multiplierAdjustedPllDeltaOut * 3 / 2) {
+            // Too much time passed since last swap: consider frame dropped.
+            // Automatically adjust the time offset between the PLL and our signal,
+            // ideally settling on an offset with no or little frame drops.
+            const auto sinceLastOffsetAdjust = now - offsetAdjustedAt;
+            // Don't adjust too often (max once every 100 ms)
+            if (sinceLastOffsetAdjust > 100000) {
+                // And don't adjust (immediately) if we have been running
+                // without drops for over 1 second
+                if (sinceLastOffsetAdjust < 1000000) {
+                    offset = (offset + pllDeltaOut / 8) % multiplierAdjustedPllDeltaOut;
+                }
+                offsetAdjustedAt = now;
+            }
             m_droppedFrames++;
-            // Adjusting the offset on each frame drop ends up at
-            // an offset with no frame drops
-            offset = (offset + 2000) % pllDeltaOut;
+            qDebug() << "DROP";
         }
     }
 }
@@ -176,17 +230,6 @@ void VSyncThread::setSyncIntervalTimeMicros(int syncTime) {
     }
 }
 
-void VSyncThread::setVSyncType(int type) {
-    // qDebug() << "setting vsync type" << type;
-
-    if (type >= (int)VSyncThread::ST_COUNT) {
-        type = VSyncThread::ST_TIMER;
-    }
-    m_vSyncMode = (enum VSyncMode)type;
-    m_droppedFrames = 0;
-    m_vSyncTypeChanged = true;
-}
-
 int VSyncThread::fromTimerToNextSyncMicros(const PerformanceTimer& timer) {
     int difference = static_cast<int>(m_timer.difference(timer).toIntegerMicros());
     // int math is fine here, because we do not expect times > 4.2 s
@@ -218,13 +261,13 @@ void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString>>* pList) {
             case VSyncThread::ST_TIMER:
                 name = tr("Timer (Fallback)");
                 break;
-            case VSyncThread::ST_MESA_VBLANK_MODE_1:
+            case VSyncThread::ST_MESA_VBLANK_MODE_1_DEPRECATED:
                 name = tr("MESA vblank_mode = 1");
                 break;
-            case VSyncThread::ST_SGI_VIDEO_SYNC:
+            case VSyncThread::ST_SGI_VIDEO_SYNC_DEPRECATED:
                 name = tr("Wait for Video sync");
                 break;
-            case VSyncThread::ST_OML_SYNC_CONTROL:
+            case VSyncThread::ST_OML_SYNC_CONTROL_DEPRECATED:
                 name = tr("Sync Control");
                 break;
             case VSyncThread::ST_FREE:
@@ -246,26 +289,53 @@ mixxx::Duration VSyncThread::sinceLastSwap() const {
     return m_sinceLastSwap;
 }
 
+bool VSyncThread::pllInitializing() const {
+    return m_pllInitCnt < kNumStableDeltasRequired;
+}
+
 void VSyncThread::updatePLL() {
     std::scoped_lock lock(m_pllMutex);
 
+    m_pllPendingUpdate = false;
+
     // Phase-lock-looped to estimate the vsync based on the
     // QOpenGLWindow::frameSwapped signal
+
+    const double pllPhaseIn = m_pllTimer.elapsed().toDoubleMicros();
+
+    if (m_pllInitCnt < kNumStableDeltasRequired) {
+        // Before activating the phase-lock-looped, we need an initial
+        // delta and phase, which we calculate by taking the average
+        // delta over a number of stable deltas.
+        const double delta = pllPhaseIn - m_pllPhaseOut;
+        m_pllPhaseOut = pllPhaseIn;
+        m_pllInitSum += delta;
+        m_pllInitCnt++;
+        m_pllInitAvg = m_pllInitSum / static_cast<double>(m_pllInitCnt);
+        if (std::abs(delta - m_pllInitAvg) > 2000.0) {
+            // The current delta is too different from the current
+            // average so we reset the init process.
+            m_pllInitSum = 0.0;
+            m_pllInitCnt = 0;
+        }
+        if (m_pllInitCnt == kNumStableDeltasRequired) {
+            m_pllDeltaOut = m_pllInitAvg;
+        }
+        return;
+    }
 
     // inspired by https://liquidsdr.org/blog/pll-simple-howto/
     const double alpha = 0.01;               // the page above uses 0.05, but a more narrow
                                              // filter seems to work better here
     const double beta = 0.5 * alpha * alpha; // increment adjustment factor
 
-    const double pllPhaseIn = m_pllTimer.elapsed().toDoubleMicros();
-
     m_pllPhaseOut += m_pllDeltaOut;
 
     double pllPhaseError = pllPhaseIn - m_pllPhaseOut;
 
     if (pllPhaseError > 0) {
-        // when advanced more than a frame, jump to the current frame
-        m_pllPhaseOut += std::floor(pllPhaseError / m_pllDeltaOut) * m_pllDeltaOut;
+        // when advanced more than a frame, jump to the nearest frame
+        m_pllPhaseOut += std::round(pllPhaseError / m_pllDeltaOut) * m_pllDeltaOut;
         pllPhaseError = pllPhaseIn - m_pllPhaseOut;
     }
 
@@ -277,9 +347,12 @@ void VSyncThread::updatePLL() {
         if (m_pllLogging == 0) {
             m_pllLogging = pllPhaseIn;
         } else {
-            qDebug() << "phase-locked-loop:" << m_pllPhaseOut << m_pllDeltaOut;
+            qDebug() << "phase-locked-loop:" << std::llround(m_pllPhaseOut)
+                     << m_pllDeltaOut << pllPhaseError;
         }
         // log every 10 seconds
         m_pllLogging += 10000000.0;
     }
+
+    m_pllPendingUpdate = true;
 }

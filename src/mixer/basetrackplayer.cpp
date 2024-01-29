@@ -478,7 +478,7 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
 
     // Request a new track from EngineBuffer
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
-    pEngineBuffer->loadTrack(pNewTrack, bPlay);
+    pEngineBuffer->loadTrack(pNewTrack, bPlay, m_pChannelToCloneFrom);
 }
 
 void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, const QString& reason) {
@@ -591,20 +591,17 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         } else {
             // perform a clone of the given channel
 
-            // copy rate
-            m_pRateRatio->set(ControlObject::get(ConfigKey(
-                    m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
+            // Don't touch the rate_ratio if it is follower under sync control
+            // During sync this is applied to all synced decks
+            if (ControlObject::get(ConfigKey(getGroup(), "sync_mode")) !=
+                    static_cast<double>(SyncMode::Follower)) {
+                m_pRateRatio->set(ControlObject::get(ConfigKey(
+                        m_pChannelToCloneFrom->getGroup(), "rate_ratio")));
+            }
 
             // copy pitch
             m_pPitchAdjust->set(ControlObject::get(ConfigKey(
                     m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
-
-            // copy play state
-            ControlObject::set(ConfigKey(getGroup(), "play"),
-                    ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play")));
-
-            // copy the play position
-            m_pChannel->getEngineBuffer()->requestClonePosition(m_pChannelToCloneFrom);
 
             // copy the loop state
             if (ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "loop_enabled")) == 1.0) {
@@ -666,22 +663,18 @@ void BaseTrackPlayerImpl::slotCloneFromSampler(double d) {
 
 void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     // don't clone from ourselves
-    if (pChannel == m_pChannel) {
+    if (!pChannel || pChannel == m_pChannel) {
+        return;
+    }
+
+    TrackPointer pTrack = pChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
         return;
     }
 
     m_pChannelToCloneFrom = pChannel;
-    if (!m_pChannelToCloneFrom) {
-        return;
-    }
-
-    TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        m_pChannelToCloneFrom = nullptr;
-        return;
-    }
-
-    slotLoadTrack(pTrack, false);
+    bool play = ControlObject::toBool(ConfigKey(m_pChannelToCloneFrom->getGroup(), "play"));
+    slotLoadTrack(pTrack, play);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrackFromDeck(double d) {
@@ -737,6 +730,31 @@ void BaseTrackPlayerImpl::slotSetAndConfirmTrackMenuControl(bool visible) {
         return;
     }
     m_pShowTrackMenuControl->setAndConfirm(visible ? 1.0 : 0.0);
+}
+
+void BaseTrackPlayerImpl::ensureStarControlsArePrepared() {
+    if (m_pStarsUp == nullptr) {
+        m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_up"));
+        connect(m_pStarsUp.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    if (value > 0) {
+                        emit trackRatingChangeRequest(1);
+                    }
+                });
+    }
+    if (m_pStarsDown == nullptr) {
+        m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(getGroup(), "stars_down"));
+        connect(m_pStarsDown.get(),
+                &ControlObject::valueChanged,
+                this,
+                [this](double value) {
+                    if (value > 0) {
+                        emit trackRatingChangeRequest(-1);
+                    }
+                });
+    }
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {

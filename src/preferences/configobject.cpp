@@ -76,7 +76,10 @@ QString computeResourcePathImpl() {
     }
 
     if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+        reportCriticalErrorAndQuit(
+                "qResourcePath is empty, this should not happen -- did our "
+                "developers forget to define __UNIX__, __WINDOWS__ or "
+                "__APPLE__??");
     }
 
     // If the directory does not end with a "/", add one

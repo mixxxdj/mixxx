@@ -357,6 +357,7 @@ void WTrackTableView::initTrackMenu() {
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackDoubleClickAction setting
+    // TODO simplify this casting madness
     int doubleClickActionConfigValue =
             m_pConfig->getValue(mixxx::library::prefs::kTrackDoubleClickActionConfigKey,
                     static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
@@ -822,11 +823,17 @@ TrackModel* WTrackTableView::getTrackModel() const {
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
+        // Return invokes the double-click action.
         // Ctrl+Return opens track properties dialog.
         // Ignore it if any cell editor is open.
-        // Note: the shortcut is displayed in the track context menu
-        if ((event->modifiers() & kPropertiesShortcutModifier) &&
-                state() != QTableView::EditingState) {
+        // Note: we use kPropertiesShortcutKey/~Mofifier here and in
+        // in WTrackMenu to display the shortcut.
+        if (state() == QTableView::EditingState) {
+            break;
+        }
+        if (event->modifiers().testFlag(Qt::NoModifier)) {
+            slotMouseDoubleClicked(currentIndex());
+        } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
             QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.length() == 1) {
                 m_pTrackMenu->loadTrackModelIndices(indices);
@@ -842,6 +849,47 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     } break;
     default:
         QTableView::keyPressEvent(event);
+    }
+}
+
+void WTrackTableView::resizeEvent(QResizeEvent* event) {
+    // When the tracks view shrinks in height, e.g. when other skin regions expand,
+    // and if the row was visible before resizing, scroll to it afterwards.
+
+    // these heights are the actual inner region without header, scrollbars and padding
+    int oldHeight = event->oldSize().height();
+    int newHeight = event->size().height();
+
+    if (newHeight >= oldHeight) {
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    QModelIndex currIndex = currentIndex();
+    int currRow = currIndex.row();
+    int rHeight = rowHeight(currRow);
+
+    if (currRow < 0 || rHeight == 0) { // true if currIndex is invalid
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    // y-pos of the top edge, negative value means above viewport boundary
+    int posInView = rowViewportPosition(currRow);
+    // Check if the row is visible.
+    // Note: don't use viewport()->height() because that may already have changed
+    bool rowWasVisible = posInView > 0 && posInView - rHeight < oldHeight;
+
+    QTableView::resizeEvent(event);
+
+    if (!rowWasVisible) {
+        return;
+    }
+
+    // Check if the item is fully visible. If not, scroll to show it
+    posInView = rowViewportPosition(currRow);
+    if (posInView - rHeight < 0 || posInView + rHeight > newHeight) {
+        scrollTo(currIndex);
     }
 }
 

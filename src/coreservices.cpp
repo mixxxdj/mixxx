@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -179,7 +180,7 @@ CoreServices::~CoreServices() {
 }
 
 void CoreServices::initializeSettings() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash

@@ -3,6 +3,7 @@
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -25,6 +26,8 @@
 #if defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#elif defined(Q_OS_IOS)
+Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)

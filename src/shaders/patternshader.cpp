@@ -17,7 +17,7 @@ void main()
 
     QString fragmentShaderCode = QStringLiteral(R"--(
 uniform sampler2D texture;
-uniform vec2 repetitions;
+uniform highp vec2 repetitions;
 varying highp vec2 vTexcoor;
 void main()
 {

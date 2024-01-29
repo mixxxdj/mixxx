@@ -4,12 +4,16 @@
 #include <QFileInfo>
 #include <QObject>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "util/mac.h"
 
 #ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
+#endif
+
+#ifdef Q_OS_MACOS
 #include <Security/SecCode.h>
 #include <Security/SecRequirement.h>
 #endif
@@ -27,7 +31,10 @@ QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
 
 // static
 void Sandbox::checkSandboxed() {
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+    // iOS apps are always sandboxed
+    s_bInSandbox = true;
+#elif defined(Q_OS_MACOS)
     SecCodeRef secCodeSelf;
     if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
         SecRequirementRef sandboxReq;
@@ -187,9 +194,14 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
             kCFURLPOSIXPathStyle, isDirectory);
     if (url) {
         CFErrorRef error = NULL;
+#ifdef Q_OS_IOS
+        // https://bugreports.qt.io/browse/QTBUG-67522
+        CFURLBookmarkCreationOptions options = kCFURLBookmarkCreationSuitableForBookmarkFile;
+#else
+        CFURLBookmarkCreationOptions options = kCFURLBookmarkCreationWithSecurityScope;
+#endif
         CFDataRef bookmark = CFURLCreateBookmarkData(
-                kCFAllocatorDefault, url,
-                kCFURLBookmarkCreationWithSecurityScope, nil, nil, &error);
+                kCFAllocatorDefault, url, options, nil, nil, &error);
         CFRelease(url);
         if (bookmark) {
             QByteArray bookmarkBA = QByteArray(
@@ -365,10 +377,13 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
                 bookmarkBA.length());
         Boolean stale;
         CFErrorRef error = NULL;
+#ifdef Q_OS_IOS
+        CFURLBookmarkResolutionOptions options = 0;
+#else
+        CFURLBookmarkResolutionOptions options = kCFURLBookmarkResolutionWithSecurityScope;
+#endif
         CFURLRef url = CFURLCreateByResolvingBookmarkData(
-                kCFAllocatorDefault, bookmarkData,
-                kCFURLBookmarkResolutionWithSecurityScope, NULL, NULL,
-                &stale, &error);
+                kCFAllocatorDefault, bookmarkData, options, NULL, NULL, &stale, &error);
         if (error != NULL) {
             if (sDebug) {
                 qDebug() << "Error creating URL from bookmark data:"
@@ -402,7 +417,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     return nullptr;
 }
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 QString Sandbox::migrateOldSettings() {
     // QStandardPaths::DataLocation returns a different location depending on whether the build
     // is signed (and therefore sandboxed with the hardened runtime), so use the absolute path

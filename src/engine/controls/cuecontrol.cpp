@@ -852,7 +852,25 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
-        mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
+        if (loopEnabled) {
+            // Don't create a hotcue at loop start if there is one already.
+            // This allows to set a hotuce inside an active, saved loop with
+            // 'hotcue_X_activate'.
+            auto* pSavedLoopControl = m_pCurrentSavedLoopControl.loadAcquire();
+            if (pSavedLoopControl &&
+                    pSavedLoopControl->getPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopStartPosition->get()) &&
+                    pSavedLoopControl->getEndPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopEndPosition->get())) {
+                mode = HotcueSetMode::Cue;
+            } else {
+                mode = HotcueSetMode::Loop;
+            }
+        } else {
+            mode = HotcueSetMode::Cue;
+        }
     }
 
     switch (mode) {
