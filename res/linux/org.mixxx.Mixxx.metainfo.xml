@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706539671">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540545">
       <description>
  <p>
   Music Library
@@ -1603,103 +1603,6 @@
  </p>
  <ul>
   <li>
-   Add a noise effect
-   #2921
-  </li>
-  <li>
-   Add a pitch shift effect
-   #4775
-   #7389
-   #4810
-   #4901
-   #10858
-  </li>
-  <li>
-   Fix gain compensation for the Moog filter
-   #11177
-  </li>
-  <li>
-   Fix memory leak in AutoPan
-   #11346
-  </li>
-  <li>
-   Add a distortion effect
-   #10932
-  </li>
-  <li>
-   Use '---' instead of 'None' for empty slots to spot them easier
-   #4469
-  </li>
-  <li>
-   EngineFilterDelay: clamp wrong delay values
-   #4869
-  </li>
-  <li>
-   Fix crash when changing effect unit routing
-   #4707
-   #9331
-  </li>
-  <li>
-   Clear effect buffer after ejecting a track
-   #10692
-  </li>
-  <li>
-   Effect parameter: Briefly show value in parameter name widget
-   #11032
-   #9022
-   #11034
-  </li>
-  <li>
-   Effect parameter knobs: implement ValueScaler::Integral, snap value to int
-   #11061
-  </li>
-  <li>
-   Allow clearing chains with empty '---' preset
-   #10859
-   #10777
-  </li>
-  <li>
-   Show Effectchain tooltip
-   #11902
-   #10605
-  </li>
-  <li>
-   Center Super knob when loading empty (QuickEffect) chain preset
-   #12320
-  </li>
-  <li>
-   Read effect data for decks added after initial setup
-   #12282
-   #12277
-  </li>
-  <li>
-   Fix deletion of effect chain presets created in current session
-   #11886
-  </li>
-  <li>
-   Don't reset "super" and "mix" knob on startup
-   #11781
-   #11773
-  </li>
-  <li>
-   Re-add empty chain preset when resetting to defaults
-   #11705
-  </li>
-  <li>
-   Add a missing early return
-   #11809
-   #111808
-  </li>
-  <li>
-   Pitch Shift effect: set Meta default to 0.5 (center)
-   #12481
-  </li>
-  <li>
-   Update EffectSlot meta default value according to loaded effect
-   #12480
-   #12479
-  </li>
-  <li>
    Effect refactoring: Effect chain saving/loading, parameter hiding/rearrangement, effect preferences overhaul
    #4467
    #4431
@@ -1749,6 +1652,84 @@
    #11695
    #12633
    #12561
+   #10859
+   #10777
+   #11886
+   #12282
+   #12277
+   #11705
+   #4469
+   #11902
+   #10605
+   #4702
+   #10579
+  </li>
+  <li>
+   Add Noise effect
+   #2921
+  </li>
+  <li>
+   Add Pitch Shift effect
+   #4775
+   #7389
+   #4810
+   #4901
+   #10858
+   #12481
+  </li>
+  <li>
+   Add Distortion effect
+   #10932
+  </li>
+  <li>
+   Effect parameter knobs: Briefly show parameter value in parameter name widget
+   #11032
+   #9022
+   #11034
+  </li>
+  <li>
+   Effect parameter knobs: Implement ValueScaler::Integral, snap value to int
+   #11061
+  </li>
+  <li>
+   Fix gain compensation for the Moog filter
+   #11177
+  </li>
+  <li>
+   Fix memory leak in AutoPan
+   #11346
+  </li>
+  <li>
+   EngineFilterDelay: clamp wrong delay values
+   #4869
+  </li>
+  <li>
+   Fix crash when changing effect unit routing
+   #4707
+   #9331
+  </li>
+  <li>
+   Clear effect buffer after ejecting a track
+   #10692
+  </li>
+  <li>
+   Center Super knob when loading empty (QuickEffect) chain preset
+   #12320
+  </li>
+  <li>
+   Don't reset "super" and "mix" knob on startup
+   #11781
+   #11773
+  </li>
+  <li>
+   Add a missing early return
+   #11809
+   #111808
+  </li>
+  <li>
+   Update EffectSlot meta default value according to loaded effect
+   #12480
+   #12479
   </li>
  </ul>
  <p>
@@ -1905,41 +1886,31 @@
  </p>
  <ul>
   <li>
-   Always show tooltips in preferences
+   Always show tooltips
    #4198
    #9716
   </li>
   <li>
-   Preferences &gt; Effects: Fix Tab key navigation / UX
-   #4702
-   #10579
-  </li>
-  <li>
-   Preferences: Added option to keep deck playing on track load
+   Add option to keep deck playing on track load
    #10944
    #10548
   </li>
   <li>
-   Preferences: always enable Alt shortcut keys
+   Always enable Alt shortcut keys
    #11145
    #10413
   </li>
   <li>
-   Preferences: simplification &amp; layout fixes
-   #12429
-  </li>
-  <li>
-   Pref Sound: auto select free device channels
+   Sound Hardware: auto select free device channels
    #11859
    #10163
   </li>
   <li>
-   minor Preferences fixes
+   Various layout and UX fixes
+   #12429
    #12399
-  </li>
-  <li>
-   Preferences: use helper for input widget scroll safeguard
    #11663
+   #11926
   </li>
   <li>
    macOS: set preferences dialog title to the selected page title
@@ -1954,32 +1925,28 @@
    #11647
   </li>
   <li>
-   Preferences Vinyl control Improve quality indicator
+   Vinyl control: Improve quality indicator
    #3279
   </li>
   <li>
-   Preferences &gt; Mixer: apply &amp; save settings only in slotApply(), fix bugs, improve UX
+   Mixer: apply &amp; save settings only in slotApply(), fix bugs, improve UX
    #11527
   </li>
   <li>
-   Preferences &gt; Mixer: fix reset of EQ auto-reset checkbox
+   Mixer: fix reset of EQ auto-reset checkbox
    #11818
    #11817
   </li>
   <li>
-   Preferences &gt; Interface: avoid unneeded skin reload, clean up
+   Interface: avoid unneeded skin reload, clean up
    #11853
   </li>
   <li>
-   Preferences &gt; Hardware: sound tab order
-   #11926
-  </li>
-  <li>
-   Library Preferences: Added link to settings files info in the manual
+   Library: Add link to settings files info in the manual
    #4367
   </li>
   <li>
-   Controller preferences: add search bars to mapping tables
+   Controllers: add search bars to mapping tables
    #11165
   </li>
   <li>
