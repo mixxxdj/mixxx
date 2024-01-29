@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563607">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563668">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -309,6 +309,7 @@
    Add recent searches to a drop down menu of the search box
    #3171
    #3262
+   #4505
   </li>
   <li>
    Save search queries across restarts
@@ -1205,23 +1206,23 @@
    #3624
   </li>
   <li>
-   Make beat indicator control behaviour more natural
-   #3608
-  </li>
-  <li>
    Allow skin scaling from preferences
    #3960
    #11588
    #11586
   </li>
   <li>
-   Increased pixmapCache size limit and made it dependent on devicePixelRatio (for HiDPI/Retina displays)
+   Fix icon rendering on HiDPI/Retina screens
+   #12407
+   #12361
+  </li>
+  <li>
+   Increase pixmapCache size limit and made it dependent on devicePixelRatio (for HiDPI/Retina displays)
    #12416
   </li>
   <li>
-   Fix Icon rendering on HiDPI/retina screens
-   #12407
-   #12361
+   Make beat indicator control behaviour more natural
+   #3608
   </li>
   <li>
    Fix crash if no skin is available
@@ -1229,18 +1230,14 @@
    #3939
   </li>
   <li>
+   Fix crash when starting without a valid skin directory
+   #4575
+   #10461
+  </li>
+  <li>
    Fix leaked controls
    #4213
    #10293
-  </li>
-  <li>
-   Shade: Remove initial setting of now accessible effect controls
-   #4398
-   #10557
-  </li>
-  <li>
-   Shade: Audio Latency meter fix
-   #11601
   </li>
   <li>
    Fix switching from Shade to other skins
@@ -1262,17 +1259,8 @@
    #10015
   </li>
   <li>
-   Add new searchbox styles
-   #4505
-  </li>
-  <li>
    Passthrough: improve UI / UX
    #4794
-  </li>
-  <li>
-   Fix crash when starting without a valid skin directory
-   #4575
-   #10461
   </li>
   <li>
    Knob: Hide cursor on wheel event for .8s
@@ -1312,6 +1300,24 @@
    #11715
   </li>
   <li>
+   Deere: fix skin/library layout (library missing in default view with Qt6)
+   #11912
+  </li>
+  <li>
+   Deere: use decks' waveform colors for sliders (Vol + pitch)
+   #12129
+   #10240
+  </li>
+  <li>
+   Shade: Remove initial setting of now accessible effect controls
+   #4398
+   #10557
+  </li>
+  <li>
+   Shade: Audio Latency meter fix
+   #11601
+  </li>
+  <li>
    Fix outdated tooltips
    #11387
    #11384
@@ -1321,15 +1327,6 @@
    Add settings directory link to Help menu
    #11670
    #11667
-  </li>
-  <li>
-   Deere: fix skin/library layout (library missing in default view with Qt6)
-   #11912
-  </li>
-  <li>
-   Deere: use decks' waveform colors for sliders (Vol + pitch)
-   #12129
-   #10240
   </li>
   <li>
    Fix sidebar item styling
