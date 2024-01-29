@@ -52,6 +52,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+
     const double firstDisplayedPosition =
             m_waveformRenderer->getFirstDisplayedPosition();
     const double lastDisplayedPosition =
@@ -91,7 +93,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
-        xBeatPoint = qRound(xBeatPoint);
+        xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         // If we don't have enough space, double the size.
         if (beatCount >= m_beats.size()) {
