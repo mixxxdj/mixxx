@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-15" timestamp="1705357739">
+    <release version="2.4.0" type="development" date="2024-01-28" timestamp="1706455175">
       <description>
  <p>
   Cover Art
@@ -129,6 +129,7 @@
    #12300
    #12543
    #12532
+   #12543
   </li>
   <li>
    CoverArtCache refactoring + Fix scrolling lag after updating Mixxx
@@ -311,6 +312,11 @@
    #4631
    #4847
    #10782
+  </li>
+  <li>
+   Track Metadata: Do not overwrite unchanged multi-valued fields
+   #12613
+   #12587
   </li>
   <li>
    Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
@@ -620,6 +626,10 @@
    #4577
    #1947992
   </li>
+  <li>
+   Tracks table: Keep current item visible when the view shrinks vertically
+   #11273
+  </li>
  </ul>
  <p>
   Sync
@@ -647,6 +657,10 @@
    #11788
    #12234
    #12499
+  </li>
+  <li>
+   Fix pitch issue with dynamic tracks and sync while cloning tracks
+   #12515
   </li>
   <li>
    Fix issue with half/double BPM calculation when using sync
@@ -784,6 +798,8 @@
    #7574
    #11006
    #11003
+   #12637
+   #12632
   </li>
   <li>
    Fix an issue when pressing multiple cue buttons at the same time
@@ -898,6 +914,11 @@
    Looping: reset loop_end_pos on eject
    #12224
    #12223
+  </li>
+  <li>
+   Hotcue: allow setting hotcue inside active, saved loop
+   #12623
+   #12618
   </li>
   <li>
    make decks' xfader assignment persistent
@@ -1214,11 +1235,25 @@
    #12474
   </li>
   <li>
+   Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P
+   #12639
+  </li>
+  <li>
+   Keyboard sheet update
+   #12578
+  </li>
+  <li>
    Logging: Add support for
    QT_MESSAGE_PATTERN
    environment variable
    #3204
    #3518
+  </li>
+  <li>
+   Avoid issue with
+   stars_up/_down
+   ControlObjects
+   #12591
   </li>
  </ul>
  <p>
@@ -1451,8 +1486,12 @@
    #11918
   </li>
   <li>
-   vsyncthread mode for qopenglwindow frameswapped driven phase locked loop
+   Introduce a VSsync mode driven by a phase locked loop
    #12469
+  </li>
+  <li>
+   Make VSync mode 0 refer to the default mode and make ST_PLL the default on macOS, ST_TIMER otherwise
+   #12489
   </li>
   <li>
    Fix micro jitter from clamping position offset to vsync interval
@@ -1558,11 +1597,18 @@
    #11982
    #11995
    #11994
+   #12607
   </li>
   <li>
    Preferences waveforms: recall correct waveform type when selecting an overview type
    #12231
    #12226
+  </li>
+  <li>
+   Fix for LoopIn/LoopOut visualisation in waveforms
+   #12538
+   #12506
+   #12513
   </li>
  </ul>
  <p>
@@ -1714,6 +1760,8 @@
    #11456
    #11454
    #11695
+   #12633
+   #12561
   </li>
  </ul>
  <p>
@@ -1723,6 +1771,10 @@
   <li>
    Added support for macOS ARM builds on M1/M2 Apple silicon
    #11398
+  </li>
+  <li>
+   Set app_id to fix Mixxx window icon on Wayland
+   #12635
   </li>
   <li>
    Require C++20 but keep Ubuntu Focal support
@@ -1793,6 +1845,10 @@
    #10958
   </li>
   <li>
+   macOS packaging: Capitalize bundle and executable name (Mixxx.app)
+   #12656
+  </li>
+  <li>
    OpenBSD: Allow building Mixxx
    #11083
   </li>
@@ -1802,6 +1858,15 @@
    #11820
    #11805
    #12424
+  </li>
+  <li>
+   Experimental iOS support
+   #12665
+   #12666
+   #12662
+   #12663
+   #12661
+   #12650
   </li>
  </ul>
  <p>
@@ -1831,6 +1896,11 @@
    Don't clear unsaved properties when updating star rating
    #11565
    #11540
+  </li>
+  <li>
+   Fix glitch in Star rating
+   #12582
+   #12576
   </li>
   <li>
    Focus Double-clicked property field for edit
