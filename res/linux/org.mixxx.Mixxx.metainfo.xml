@@ -96,206 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540545">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540585">
       <description>
  <p>
   Music Library
  </p>
- <h4>
-  Backend / Database
- </h4>
- <ul>
-  <li>
-   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
-   #3076
-  </li>
-  <li>
-   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
-   #3811
-  </li>
-  <li>
-   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
-   #3978
-   #4012
-  </li>
-  <li>
-   Track Metadata: Fix synchronization (import/export) of file tags
-   #4628
-   #4631
-   #4847
-   #10782
-  </li>
-  <li>
-   Track Metadata: Do not overwrite unchanged multi-valued fields
-   #12613
-   #12587
-  </li>
-  <li>
-   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
-   #4873
-  </li>
-  <li>
-   Logging: Suppress expected and harmless schema migration errors
-   #4248
-  </li>
-  <li>
-   Fix handling of undefined BPM values
-   #4062
-   #4063
-   #4100
-   #4154
-   #4165
-   #4168
-  </li>
-  <li>
-   Automatic analyze and optimize database
-   #4199
-  </li>
-  <li>
-   Re-import and update metadata after files have been modified when loading tracks
-   #4218
-  </li>
-  <li>
-   Re-enable shortcuts after editing controls
-   #4360
-   #10184
-   #10523
-  </li>
-  <li>
-   Allow to remove a track form the disk
-   #3212
-   #4639
-  </li>
-  <li>
-   Fix accasional resetting of played counter in database
-   #4578
-   #10617
-  </li>
-  <li>
-   Experimental: Fix writing of undefined MusicBrainz Recording ID
-   #4694
-  </li>
-  <li>
-   Traktor library: fix importing track key
-   #4701
-  </li>
-  <li>
-   Fix exporting m3u files with tracks and special characters by using the URL format
-   #4752
-  </li>
-  <li>
-   Library Scanner: Sort files before adding them
-   #10919
-  </li>
-  <li>
-   Library Scanner: Fix track relocation query
-   #12462
-  </li>
-  <li>
-   MenuBar: Add shortcut for rescanning library
-   #11136
-  </li>
-  <li>
-   Playlists: simplify import function, add whitespace before the # suffix
-   #12246
-  </li>
-  <li>
-   Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion
-   #12341
-   #12242
-  </li>
-  <li>
-   iTunes: Modularize importer and use
-   iTunesLibrary
-   on macOS for compatibility with
-   Music.app
-   #11353
-   #11256
-   #11446
-   #11444
-   #11503
-   #11500
-   #11509
-  </li>
-  <li>
-   iTunes: Fix sporadic crash during unit tests due to a not initialized reference.
-   #11666
-  </li>
-  <li>
-   iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name)
-   #11794
-  </li>
-  <li>
-   iTunes: Re-enable test and add
-   composer
-   ,
-   playCount
-   ,
-   lastPlayedAt
-   and
-   dateAdded
-   to model
-   #11948
-  </li>
-  <li>
-   Fix setting the wrong default cue color
-   #11554
-   #11260
-  </li>
-  <li>
-   Ensure that tracks with an invalid BPM are re-analyzed
-   #2776
-  </li>
-  <li>
-   Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
-   #2753
-   #2932
-   #3102
-   #3155
-   #3621
-   #3776
-   #3787
-   #3797
-   #3798
-   #4025
-   #4087
-   #4102
-   #4143
-   #4463
-   #11815
-   #12309
-   #12005
-   #11816
-   #11720
-   #11834
-   #12452
-   #11979
-  </li>
-  <li>
-   Rekordbox: Save all loops and correct AAC timing offset for CoreAudio
-   #2779
-  </li>
-  <li>
-   Rekordbox: Fix missing playlists due to invalid child ID
-   #10955
-  </li>
-  <li>
-   Rekordbox: Fix unhandled exception when parsing corrupt PDB files
-   #10452
-   #4040
-  </li>
-  <li>
-   Improve log messages during schema migration
-   #2979
-  </li>
-  <li>
-   Search related tracks in collection
-   #3181
-   #3213
-   #2796
-   #4207
-  </li>
- </ul>
  <h4>
   Tracks Table
  </h4>
@@ -582,6 +387,201 @@
   <li>
    Enable Lock BPM action if any selected track BPM is unlocked
    #12385
+  </li>
+ </ul>
+ <h4>
+  Backend / Database
+ </h4>
+ <ul>
+  <li>
+   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
+   #3076
+  </li>
+  <li>
+   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
+   #3811
+  </li>
+  <li>
+   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+   #3978
+   #4012
+  </li>
+  <li>
+   Track Metadata: Fix synchronization (import/export) of file tags
+   #4628
+   #4631
+   #4847
+   #10782
+  </li>
+  <li>
+   Track Metadata: Do not overwrite unchanged multi-valued fields
+   #12613
+   #12587
+  </li>
+  <li>
+   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
+   #4873
+  </li>
+  <li>
+   Logging: Suppress expected and harmless schema migration errors
+   #4248
+  </li>
+  <li>
+   Fix handling of undefined BPM values
+   #4062
+   #4063
+   #4100
+   #4154
+   #4165
+   #4168
+  </li>
+  <li>
+   Automatic analyze and optimize database
+   #4199
+  </li>
+  <li>
+   Re-import and update metadata after files have been modified when loading tracks
+   #4218
+  </li>
+  <li>
+   Re-enable shortcuts after editing controls
+   #4360
+   #10184
+   #10523
+  </li>
+  <li>
+   Allow to remove a track form the disk
+   #3212
+   #4639
+  </li>
+  <li>
+   Fix accasional resetting of played counter in database
+   #4578
+   #10617
+  </li>
+  <li>
+   Experimental: Fix writing of undefined MusicBrainz Recording ID
+   #4694
+  </li>
+  <li>
+   Traktor library: fix importing track key
+   #4701
+  </li>
+  <li>
+   Fix exporting m3u files with tracks and special characters by using the URL format
+   #4752
+  </li>
+  <li>
+   Library Scanner: Sort files before adding them
+   #10919
+  </li>
+  <li>
+   Library Scanner: Fix track relocation query
+   #12462
+  </li>
+  <li>
+   MenuBar: Add shortcut for rescanning library
+   #11136
+  </li>
+  <li>
+   Playlists: simplify import function, add whitespace before the # suffix
+   #12246
+  </li>
+  <li>
+   Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion
+   #12341
+   #12242
+  </li>
+  <li>
+   iTunes: Modularize importer and use
+   iTunesLibrary
+   on macOS for compatibility with
+   Music.app
+   #11353
+   #11256
+   #11446
+   #11444
+   #11503
+   #11500
+   #11509
+  </li>
+  <li>
+   iTunes: Fix sporadic crash during unit tests due to a not initialized reference.
+   #11666
+  </li>
+  <li>
+   iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name)
+   #11794
+  </li>
+  <li>
+   iTunes: Re-enable test and add
+   composer
+   ,
+   playCount
+   ,
+   lastPlayedAt
+   and
+   dateAdded
+   to model
+   #11948
+  </li>
+  <li>
+   Fix setting the wrong default cue color
+   #11554
+   #11260
+  </li>
+  <li>
+   Ensure that tracks with an invalid BPM are re-analyzed
+   #2776
+  </li>
+  <li>
+   Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
+   #2753
+   #2932
+   #3102
+   #3155
+   #3621
+   #3776
+   #3787
+   #3797
+   #3798
+   #4025
+   #4087
+   #4102
+   #4143
+   #4463
+   #11815
+   #12309
+   #12005
+   #11816
+   #11720
+   #11834
+   #12452
+   #11979
+  </li>
+  <li>
+   Rekordbox: Save all loops and correct AAC timing offset for CoreAudio
+   #2779
+  </li>
+  <li>
+   Rekordbox: Fix missing playlists due to invalid child ID
+   #10955
+  </li>
+  <li>
+   Rekordbox: Fix unhandled exception when parsing corrupt PDB files
+   #10452
+   #4040
+  </li>
+  <li>
+   Improve log messages during schema migration
+   #2979
+  </li>
+  <li>
+   Search related tracks in collection
+   #3181
+   #3213
+   #2796
+   #4207
   </li>
  </ul>
  <p>
