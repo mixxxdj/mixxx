@@ -7613,122 +7613,122 @@ Vyberte z různých druhů zobrazení průběhových křivek, které se v prvé 
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="106"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="107"/>
         <source>Sound Hardware</source>
         <translation>Zvuk</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="125"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="126"/>
         <source>Controllers</source>
         <translation>Ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="116"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="117"/>
         <source>Library</source>
         <translation>Knihovna</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="154"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="155"/>
         <source>Interface</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="164"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="165"/>
         <source>Waveforms</source>
         <translation>Křivky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="189"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="190"/>
         <source>Mixer</source>
         <translation>Směšovač</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="201"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="202"/>
         <source>Auto DJ</source>
         <translation>Diskžokej</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="183"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="184"/>
         <source>Decks</source>
         <translation>Přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="177"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="178"/>
         <source>Colors</source>
         <translation>Barvy</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="70"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="71"/>
         <source>&amp;Help</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Nápověda</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="72"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="73"/>
         <source>&amp;Restore Defaults</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Obnovit výchozí hodnoty</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="74"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="75"/>
         <source>&amp;Apply</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Použít</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="76"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="77"/>
         <source>&amp;Cancel</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="79"/>
         <source>&amp;Ok</source>
         <extracomment>Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&amp;)</extracomment>
         <translation>&amp;OK</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="195"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="196"/>
         <source>Effects</source>
         <translation>Efekty</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="215"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="216"/>
         <source>Recording</source>
         <translation>Nahrávání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="221"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="222"/>
         <source>Beat Detection</source>
         <translation>Rytmus</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="227"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="228"/>
         <source>Key Detection</source>
         <translation>Tónina</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="232"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="233"/>
         <source>Normalization</source>
         <translation>Normalizace</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="256"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="257"/>
         <source>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Some preferences pages have errors. To apply the changes please first fix the issues.&lt;/b&gt;&lt;/font&gt;</source>
         <translation>&lt;font color=&apos;#BB0000&apos;&gt;&lt;b&gt;Některé stránky s nastavením mají chyby. Chcete-li použít změny, nejprve opravte problémy.&lt;/b&gt;&lt;/font&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="134"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="135"/>
         <source>Vinyl Control</source>
         <translation>Vinyl</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="208"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="209"/>
         <source>Live Broadcasting</source>
         <translation>Živé vysílání</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="239"/>
+        <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="240"/>
         <source>Modplug Decoder</source>
         <translation>Dekodér</translation>
     </message>
@@ -8401,7 +8401,7 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="145"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="522"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="538"/>
         <source>imported</source>
         <translation>zavedeno</translation>
     </message>
@@ -8457,19 +8457,19 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="284"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="457"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="473"/>
         <source>Effect chain preset name must not be empty.</source>
         <translation>Název přednastavení efektového řetězce nesmí být prázdné.</translation>
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="286"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="459"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="475"/>
         <source>Invalid name &quot;%1&quot;</source>
         <translation>Neplatný název &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="289"/>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="462"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="478"/>
         <source>An effect chain preset named &quot;%1&quot; already exists.</source>
         <translation>Přednastavení efektového řetězce s názvem &quot;%1&quot; již existuje.</translation>
     </message>
@@ -8514,22 +8514,22 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
         <translation>Nelze smazat přednastavení efektového řetězce &quot;%1&quot;</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="446"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="462"/>
         <source>Save preset for effect chain</source>
         <translation>Uložit přednastavení efektového řetězce</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="447"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="463"/>
         <source>Name for new effect chain preset:</source>
         <translation>Název nového přednastavení efektového řetězce:</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="641"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="658"/>
         <source>Error saving effect chain preset</source>
         <translation>Chyba při ukládání přednastavení efektového řetězce</translation>
     </message>
     <message>
-        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="643"/>
+        <location filename="../../src/effects/presets/effectchainpresetmanager.cpp" line="660"/>
         <source>Could not save effect chain preset &quot;%1&quot;</source>
         <translation>Nelze uložit přednastavení efektového řetězce &quot;%1&quot;</translation>
     </message>
@@ -8581,24 +8581,29 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>EngineBuffer</name>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="158"/>
+        <location filename="../../src/engine/enginebuffer.h" line="168"/>
         <source>Soundtouch (faster)</source>
         <translation>Soundtouch (rychlejší)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="160"/>
+        <location filename="../../src/engine/enginebuffer.h" line="171"/>
         <source>Rubberband (better)</source>
         <translation>Rubberband (lepší)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="163"/>
+        <location filename="../../src/engine/enginebuffer.h" line="174"/>
         <source>Rubberband R3 (near-hi-fi quality)</source>
         <translation>Rubberband R3 (kvalita poblíž hi-fi)</translation>
     </message>
     <message>
-        <location filename="../../src/engine/enginebuffer.h" line="167"/>
+        <location filename="../../src/engine/enginebuffer.h" line="180"/>
         <source>Unknown, using Rubberband (better)</source>
         <translation>Neznámé zařízení používající Rubberband (lepší)</translation>
+    </message>
+    <message>
+        <location filename="../../src/engine/enginebuffer.h" line="182"/>
+        <source>Unknown, using Soundtouch</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -8819,15 +8824,15 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
 <context>
     <name>LegacySkinParser</name>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1290"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1381"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1299"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1390"/>
         <source>Safe Mode Enabled</source>
         <extracomment>Shown when Mixxx is running in safe mode.</extracomment>
         <translation>Bezpečný režim povolen</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1300"/>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1389"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1309"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="1398"/>
         <source>No OpenGL
 support.</source>
         <extracomment>Shown when Spinny can not be displayed. Please keep 
@@ -8839,57 +8844,57 @@ Shown when VuMeter can not be displayed. Please keep
 pro OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2387"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2396"/>
         <source>activate</source>
         <translation>Zapnout</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2392"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2401"/>
         <source>toggle</source>
         <translation>Přepnout</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2402"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2411"/>
         <source>right</source>
         <translation>Vpravo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2407"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2416"/>
         <source>left</source>
         <translation>Vlevo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2412"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2421"/>
         <source>right small</source>
         <translation>Trochu doprava</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2417"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2426"/>
         <source>left small</source>
         <translation>Trochu doleva</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2422"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2431"/>
         <source>up</source>
         <translation>Nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2427"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2436"/>
         <source>down</source>
         <translation>Dolů</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2432"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2441"/>
         <source>up small</source>
         <translation>Trochu nahoru</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2437"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2446"/>
         <source>down small</source>
         <translation>Trochu dolů</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2465"/>
+        <location filename="../../src/skin/legacy/legacyskinparser.cpp" line="2474"/>
         <source>Shortcut</source>
         <translation>Klávesová zkratka</translation>
     </message>
@@ -9314,59 +9319,59 @@ Chcete vybrat vstupní zařízení?</translation>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="527"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="558"/>
         <source>Upgrading Mixxx</source>
         <translation>Aktualizuje se Mixxx</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="528"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="559"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Mixxx nyní podporuje zobrazení obrázků obalů.
 Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="531"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="562"/>
         <source>Scan</source>
         <translation>Prohledat</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="532"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="563"/>
         <source>Later</source>
         <translation>Později</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="541"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="572"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation>Aktualizuje se Mixxx z verze 1.9.x/1.10.x.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="543"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="574"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation>Mixxx má nové a vylepšené rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="544"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="575"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation>Když nahrajete skladby, Mixxx je může znovu rozebrat a vytvoři novou, přesnější rytmickou mřížku. Tím bude automatické seřízení rytmu a smyčkování pracovat spolehlivěji.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="548"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="579"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation>Toto neovlivní značky, rychlé značky, seznamy skladeb nebo přepravky.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="550"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="581"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation>Pokud nechcete, aby Mixxx znovu rozebral vaše skladby, vyberte Zachovat nynější rytmické mřížky. Toto nastavení můžete kdykoliv změnit v nastavení v části Rozpoznávání rytmu.</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="554"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="585"/>
         <source>Keep Current Beatgrids</source>
         <translation>Zachovat nynější rytmické mřížky</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="555"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="586"/>
         <source>Generate New Beatgrids</source>
         <translation>Vytvořit nové rytmické mřížky</translation>
     </message>
@@ -13973,32 +13978,32 @@ Použijte toto ke změně efektového (zpracovaného) signálu pomocí EQ a filt
 <context>
     <name>VSyncThread</name>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="260"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="262"/>
         <source>Timer (Fallback)</source>
         <translation>Časovač (náhradní postup)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="263"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="265"/>
         <source>MESA vblank_mode = 1</source>
         <translation>MESA vblank_mode = 1</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="266"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="268"/>
         <source>Wait for Video sync</source>
         <translation>Čekat na seřízení obrazu</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="269"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="271"/>
         <source>Sync Control</source>
         <translation>Ovládání seřízení</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="272"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="274"/>
         <source>Free + 1 ms (for benchmark only)</source>
         <translation>Volné + 1 ms (jen pro zkoušky výkonu)</translation>
     </message>
     <message>
-        <location filename="../../src/waveform/vsyncthread.cpp" line="275"/>
+        <location filename="../../src/waveform/vsyncthread.cpp" line="277"/>
         <source>frameSwapped-signal driven phase locked loop</source>
         <translation type="unfinished"/>
     </message>
@@ -15422,37 +15427,37 @@ Tento krok nelze vrátit zpět!</translation>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="877"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="925"/>
         <source>Confirm track hide</source>
         <translation>Potvrdit skrytí skladby</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="878"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="926"/>
         <source>Are you sure you want to hide the selected tracks?</source>
         <translation>Opravdu chcete skrýt vybrané skladby?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="884"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="932"/>
         <source>Are you sure you want to remove the selected tracks from AutoDJ queue?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z řady automatického diskžokeje?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="888"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="936"/>
         <source>Are you sure you want to remove the selected tracks from this crate?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z této přepravky?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="892"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="940"/>
         <source>Are you sure you want to remove the selected tracks from this playlist?</source>
         <translation>Opravdu chcete odstranit vybrané skladby z tohoto seznamu skladeb?</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="901"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="949"/>
         <source>Don&apos;t ask again during this session</source>
         <translation>Příště se během tohoto sezení nepsat</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="880"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="928"/>
         <source>Confirm track removal</source>
         <translation>Potvrdit odstranění skladby</translation>
     </message>
@@ -15468,7 +15473,7 @@ Tento krok nelze vrátit zpět!</translation>
 <context>
     <name>WaveformWidgetFactory</name>
     <message>
-        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1204"/>
+        <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="1203"/>
         <source>legacy</source>
         <translation>starší</translation>
     </message>
@@ -15516,52 +15521,52 @@ Tento krok nelze vrátit zpět!</translation>
 <context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="239"/>
+        <location filename="../../src/coreservices.cpp" line="240"/>
         <source>fonts</source>
         <translation>písma</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="243"/>
+        <location filename="../../src/coreservices.cpp" line="244"/>
         <source>database</source>
         <translation>databáze</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="258"/>
+        <location filename="../../src/coreservices.cpp" line="259"/>
         <source>effects</source>
         <translation>efekty</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="268"/>
+        <location filename="../../src/coreservices.cpp" line="269"/>
         <source>audio interface</source>
         <translation>rozhraní zvuku</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="288"/>
+        <location filename="../../src/coreservices.cpp" line="289"/>
         <source>decks</source>
         <translation>Přehrávače</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="334"/>
+        <location filename="../../src/coreservices.cpp" line="335"/>
         <source>library</source>
         <translation>knihovna</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="367"/>
+        <location filename="../../src/coreservices.cpp" line="368"/>
         <source>Choose music library directory</source>
         <translation>Vybrat adresář s hudební knihovnou</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="377"/>
+        <location filename="../../src/coreservices.cpp" line="378"/>
         <source>controllers</source>
         <translation>ovladače</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="517"/>
+        <location filename="../../src/coreservices.cpp" line="518"/>
         <source>Cannot open database</source>
         <translation>Nelze otevřít databázi</translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="518"/>
+        <location filename="../../src/coreservices.cpp" line="519"/>
         <source>Unable to establish a database connection.
 Mixxx requires QT with SQLite support. Please read the Qt SQL driver documentation for information on how to build it.
 
