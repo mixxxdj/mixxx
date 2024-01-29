@@ -28,8 +28,12 @@
 //
 // * SLICER/SLICER LOOP
 //
-// * FX:
-//  	- See how to preselect effects for a rack
+// * FX: See how to preselect effects for a rack
+//
+// * SCRATCHING: Fix so that jogging is possible again
+//
+// * BEATMATCH GUIDE
+//
 // ****************************************************************************
 var DJCi300 = {};
 ///////////////////////////////////////////////////////////////
@@ -51,8 +55,17 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 DJCi300.kScratchActionBend = 3;
 
+// Pad modes
+DJCi300.padModeHotcue = 0;
+DJCi300.padModeRoll = 1;
+DJCi300.padModeSlicer = 2;
+DJCi300.padModeSampler = 3;
+DJCi300.padModeToneplay = 4;
+DJCi300.padModeFX = 5;
+DJCi300.padModeSlicerloop = 6;
+DJCi300.padModeBeatjump = 7;
+
 // Timer lengths
-DJCi300.LEDtimerLength = 5000
 DJCi300.wheelTimerLength = 25
 
 // Determines how fast the wheel must be moving to be considered "slipping"
@@ -70,6 +83,33 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
     midi.sendShortMsg(status, 0x40, value);
 };
 
+// Update toneplay LEDs (will change depending on pitch, even if not caused by toneplay)
+DJCi300.updateToneplayLED = function(value, group, _control) {
+    var status = (group === "[Channel1]") ? 0x96 : 0x97;
+    var control = 0x40
+
+    // Cut off the value at -4 and 3 semitones, then round
+    value = Math.min(value, 3);
+    value = Math.max(value, -4);
+    value = Math.round(value);
+
+    // Buttons 1-4 (ctrl 0x40-0x43) are +0 to +3 semitones
+    // Buttons 5-8 (ctrl 0x44-0x47) are -4 to -1 semitones
+    if (value >= 0) {
+        control = control + value;
+    } else {
+        control = control + 8 + value;
+    }
+
+    // Turn off all LEDs
+    for (var i = 0; i < 8; i++) {
+        midi.sendShortMsg(status, 0x40 + i, 0x00);
+    }
+    // Turn on current LED
+    midi.sendShortMsg(status, control, 0x7F);
+
+};
+
 DJCi300.init = function() {
     // Scratch button state
     DJCi300.scratchButtonState = true;
@@ -85,14 +125,10 @@ DJCi300.init = function() {
         2: 0
     };
 
-    // Tone play LED control (one for each deck)
-    DJCi300.tonePlayLED = {
-        1: 0x40,
-        2: 0x40
-    };
-    DJCi300.LEDtimer = {
-        1: 0,
-        2: 0
+    // Pad mode
+    DJCi300.padMode = {
+        1: DJCi300.padModeHotcue,
+        2: DJCi300.padModeHotcue
     };
 
     // Turn On Vinyl buttons LED(one for each deck).
@@ -117,6 +153,10 @@ DJCi300.init = function() {
     engine.connectControl("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
 	engine.getValue("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
     engine.getValue("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
+
+    // Connect the LED updates
+    engine.connectControl("[Channel1]", "pitch", "DJCi300.updateToneplayLED");
+    engine.connectControl("[Channel2]", "pitch", "DJCi300.updateToneplayLED");
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
@@ -264,8 +304,19 @@ DJCi300.bendWheel = function(channel, control, value, _status, group) {
     }
 };
 
+// Mode buttons
+DJCi300.changeMode = function(channel, control, value, _status, _group) {
+    var deck = channel;
+    var mode = control - 15;
+
+    // We only need to trigger certain functions for toneplay, slicer, and slicerloop
+    // But you could theoretically mod this to do cool stuff when entering other modes as well
+    if (mode === DJCi300.padModeToneplay)
+        print("a")
+};
+
 // Toneplay
-DJCi300.tonePlay = function(channel, control, value, status, _group) {
+DJCi300.toneplay = function(channel, control, value, status, _group) {
     const deck = channel - 5;
     const button = control - 0x40 + 1;
 
@@ -296,27 +347,10 @@ DJCi300.tonePlay = function(channel, control, value, status, _group) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
             }
         }
-
-        // Turn off the last button's LED and turn on the current button's LED
-        midi.sendShortMsg(status, DJCi300.tonePlayLED, 0x00);
-        midi.sendShortMsg(status, control, 0x7F);
-        DJCi300.tonePlayLED = control;
-    } else {
-        // After button release, turn off the light after no input for 5 seconds
-        // Reset timer (if it exists)
-        if (DJCi300.LEDtimer !== 0) {
-            engine.stopTimer(DJCi300.LEDtimer);
-            DJCi300.LEDtimer = 0;
-        }
-        // Start timer
-        DJCi300.LEDtimer = engine.beginTimer(DJCi300.LEDtimerLength,
-            function() {
-                DJCi300.LEDtimer = 0;
-                midi.sendShortMsg(status, DJCi300.tonePlayLED, 0x00);
-            },
-            true);
     }
 };
+
+
 
 DJCi300.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x00);
