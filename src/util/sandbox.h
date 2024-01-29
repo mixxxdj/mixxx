@@ -11,14 +11,14 @@
 #include "util/compatibility/qmutex.h"
 #include "util/fileinfo.h"
 
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CFURL.h>
 #endif
 
 struct SandboxSecurityToken {
     ~SandboxSecurityToken();
     QString m_path;
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
     SandboxSecurityToken(const QString& path, CFURLRef url);
     CFURLRef m_url;
 #endif
