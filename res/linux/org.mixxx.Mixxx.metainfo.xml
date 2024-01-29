@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-28" timestamp="1706455175">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706534342">
       <description>
  <p>
   Cover Art
@@ -139,7 +139,147 @@
  <p>
   Music Library
  </p>
+ <h4>
+  Backend / Database
+ </h4>
  <ul>
+  <li>
+   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
+   #3076
+  </li>
+  <li>
+   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
+   #3811
+  </li>
+  <li>
+   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+   #3978
+   #4012
+  </li>
+  <li>
+   Track Metadata: Fix synchronization (import/export) of file tags
+   #4628
+   #4631
+   #4847
+   #10782
+  </li>
+  <li>
+   Track Metadata: Do not overwrite unchanged multi-valued fields
+   #12613
+   #12587
+  </li>
+  <li>
+   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
+   #4873
+  </li>
+  <li>
+   Logging: Suppress expected and harmless schema migration errors
+   #4248
+  </li>
+  <li>
+   Fix handling of undefined BPM values
+   #4062
+   #4063
+   #4100
+   #4154
+   #4165
+   #4168
+  </li>
+  <li>
+   Automatic analyze and optimize database
+   #4199
+  </li>
+  <li>
+   Re-import and update metadata after files have been modified when loading tracks
+   #4218
+  </li>
+  <li>
+   Re-enable shortcuts after editing controls
+   #4360
+   #10184
+   #10523
+  </li>
+  <li>
+   Allow to remove a track form the disk
+   #3212
+   #4639
+  </li>
+  <li>
+   Fix accasional resetting of played counter in database
+   #4578
+   #10617
+  </li>
+  <li>
+   Experimental: Fix writing of undefined MusicBrainz Recording ID
+   #4694
+  </li>
+  <li>
+   Traktor library: fix importing track key
+   #4701
+  </li>
+  <li>
+   Fix exporting m3u files with tracks and special characters by using the URL format
+   #4752
+  </li>
+  <li>
+   Library Scanner: Sort files before adding them
+   #10919
+  </li>
+  <li>
+   Library Scanner: Fix track relocation query
+   #12462
+  </li>
+  <li>
+   MenuBar: Add shortcut for rescanning library
+   #11136
+  </li>
+  <li>
+   Playlists: simplify import function, add whitespace before the # suffix
+   #12246
+  </li>
+  <li>
+   Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion
+   #12341
+   #12242
+  </li>
+  <li>
+   iTunes: Modularize importer and use
+   iTunesLibrary
+   on macOS for compatibility with
+   Music.app
+   #11353
+   #11256
+   #11446
+   #11444
+   #11503
+   #11500
+   #11509
+  </li>
+  <li>
+   iTunes: Fix sporadic crash during unit tests due to a not initialized reference.
+   #11666
+  </li>
+  <li>
+   iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name)
+   #11794
+  </li>
+  <li>
+   iTunes: Re-enable test and add
+   composer
+   ,
+   playCount
+   ,
+   lastPlayedAt
+   and
+   dateAdded
+   to model
+   #11948
+  </li>
+  <li>
+   Fix setting the wrong default cue color
+   #11554
+   #11260
+  </li>
   <li>
    Ensure that tracks with an invalid BPM are re-analyzed
    #2776
@@ -193,13 +333,166 @@
    #2796
    #4207
   </li>
+ </ul>
+ <h4>
+  Tracks Table
+ </h4>
+ <ul>
+  <li>
+   Remember track selection when switching library features, fix initial selection etc.
+   #4177
+   #4536
+   #12321
+   #12064
+   #11196
+   #11130
+  </li>
+  <li>
+   Add new library column that shows the last time a track was played
+   #3140
+   #3457
+   #3494
+   #3596
+   #3740
+  </li>
+  <li>
+   Add keyboard shortcut Ctrl+Enter to open track properties
+   #4347
+  </li>
+  <li>
+   Home/End keys jump to first/last row
+   #4850
+  </li>
+  <li>
+   Wrap selection around at the bottom/top, only if Shift is not pressed
+   #11090
+   #11100
+   #12391
+  </li>
+  <li>
+   Allow to hide/remove tracks from the library by pressing the Delete key
+   #4330
+   #7176
+   #9793
+   #9837
+   #10537
+   #11239
+   #4577
+   #1947992
+  </li>
+  <li>
+   Fix Recording table refresh issues
+   #4648
+  </li>
+  <li>
+   Show time in addition to the date in the timestamp column
+   #4900
+   #10726
+   #11020
+  </li>
+  <li>
+   Show only the date in Date Added / Last Played columns. Move the time of day to tooltips
+   #3945
+  </li>
+  <li>
+   Right-align BPM, duration &amp; bitrate values
+   #11634
+   #11668
+   #11657
+  </li>
+  <li>
+   Remove parenthesis from play counter display
+   #11357
+  </li>
+  <li>
+   Refocus library, after editing skin controls
+   #11767
+  </li>
+  <li>
+   Fix performance with large playlists
+   #11851
+   #11724
+  </li>
+  <li>
+   Add multi-line editor delegate for comment column
+   #11752
+  </li>
+  <li>
+   Keep current item visible when the view shrinks vertically
+   #11273
+  </li>
+  <li>
+   macOS scrollbar: Make sure last track is shown in library
+   #11669
+   #9495
+  </li>
+ </ul>
+ <h4>
+  Sidebar
+ </h4>
+ <ul>
+  <li>
+   Add F2 and Del/Backspace shortcuts for renaming &amp; deleting playlists and crates
+   #11172
+   #11235
+   #4697
+   #4700
+   #10294
+  </li>
+  <li>
+   Improve presentation of the History library tree
+   #2996
+   #4298
+   #10533
+  </li>
+  <li>
+   History: Fix sidebar context menu actions
+   #4384
+   #4297
+   #10529
+  </li>
+  <li>
+   History: Add cleanup options
+   #4726
+   #9259
+   #10714
+  </li>
+  <li>
+   History: Fix update of play count after removing tracks
+   #12258
+   #12046
+   #12256
+  </li>
+  <li>
+   Improve UX with right-click and selection after add, rename, delete, duplicate etc.
+   #11208
+   #4193
+   #10488
+   #11574
+   #11208
+   #11712
+  </li>
+  <li>
+   Map Left Arrow Key to jump to parent node and activates it
+   #4253
+  </li>
+  <li>
+   Crates: only store or activate sibling crate if it's valid
+   #11770
+   #11769
+  </li>
+ </ul>
+ <h4>
+  Searchbar
+ </h4>
+ <ul>
   <li>
    Add recent searches to a drop down menu of the search box
    #3171
    #3262
   </li>
   <li>
-   Search: Save queries across restarts
+   Save search queries across restarts
    #4458
    #10517
    #10561
@@ -212,7 +505,7 @@
    #4382
   </li>
   <li>
-   Search: Update Clear button when search is disabled
+   Update Clear button when search is disabled
    #4447
   </li>
   <li>
@@ -221,414 +514,112 @@
    #10589
   </li>
   <li>
-   Search: Ctrl+F in focused search box selects the entire search string
+   Ctrl+F in focused search box selects the entire search string
    #4515
   </li>
   <li>
-   Search: Improve keypress handling, fix glitch in popup, strip whitespaces
+   Improve keypress handling, fix glitch in popup, strip whitespaces
    #4658
   </li>
   <li>
-   Search: Enter jumps to track table if search query was transmitted
+   Enter jumps to track table if search query was transmitted
    #4844
-   Search: Push completion entry to top, to make up/down behave naturally
+   Push completion entry to top, to make up/down behave naturally
+  </li>
+  <li>
+   Remove ESC shortcut in favour of new
+   [Library],focused_widget
+   #4571
    #11030
    #10975
   </li>
   <li>
-   Search: Restore previous search term when switching between playlists and crates
+   Restore previous search term when switching between playlists and crates
    #11129
    #11015
    #11477
    #11476
   </li>
   <li>
-   Search: Add options to disable auto-completion and history
+   Add options to disable auto-completion and history
    #10942
    #10634
   </li>
   <li>
-   Search: Require Enter or Right key to search for auto completed strings
+   Require Enter or Right key to search for auto completed strings
    #11207
    #11289
    #11287
   </li>
   <li>
-   Search: Allow to use := and quotes to find exact matches
+   Allow to use := and quotes to find exact matches
    #12063
    #10699
   </li>
+ </ul>
+ <h4>
+  Track Menu
+ </h4>
+ <ul>
   <li>
-   Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
-   #3076
-  </li>
-  <li>
-   Add new library column that shows the last time a track was played
-   #3140
-   #3457
-   #3494
-   #3596
-   #3740
-  </li>
-  <li>
-   Improve presentation of the History library tree
-   #2996
-   #4298
-   #10533
-  </li>
-  <li>
-   History: Fix sidebar context menu actions
-   #4384
-  </li>
-  <li>
-   Fix assertion when navigating History playlists
-   #4297
-   #10529
-  </li>
-  <li>
-   Add History cleanup options
-   #4726
-   #9259
-   #10714
-  </li>
-  <li>
-   Fix update of play count after removing tracks from history playlist
-   #12258
-   #12046
-   #12256
-  </li>
-  <li>
-   Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags
-   #3811
-  </li>
-  <li>
-   Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
-   #3978
-   #4012
-  </li>
-  <li>
-   Track Metadata: Fix synchronization (import/export) of file tags
-   #4628
-   #4631
-   #4847
-   #10782
-  </li>
-  <li>
-   Track Metadata: Do not overwrite unchanged multi-valued fields
-   #12613
-   #12587
-  </li>
-  <li>
-   Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1").
-   #4873
-  </li>
-  <li>
-   Logging: Suppress expected and harmless schema migration errors
-   #4248
-  </li>
-  <li>
-   Only show the date in Date Added / Last Played columns. Move the time of day to tooltips
-   #3945
-  </li>
-  <li>
-   Fix handling of undefined BPM values
-   #4062
-   #4063
-   #4100
-   #4154
-   #4165
-   #4168
-  </li>
-  <li>
-   Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value
-   #4031
-  </li>
-  <li>
-   Automatic analyze and optimize database
-   #4199
-  </li>
-  <li>
-   Re-import and update metadata after files have been modified when loading tracks
-   #4218
-  </li>
-  <li>
-   Fix playlists sidebar navigation/activation
-   #4193
-   #10488
-  </li>
-  <li>
-   Sidebar: Improve UX (right-click and selection after add, rename, delete, duplicate etc.)
-   #11208
-  </li>
-  <li>
-   Sidebar: Map Left Arrow Key to jump to parent node and activates it
-   #4253
-  </li>
-  <li>
-   Library sidebar: add F2 and Del/Backspace shortcuts for renaming &amp; deleting playlists and crates
-   #11172
-   #11235
-  </li>
-  <li>
-   Tracks table: Add keyboard shortcut Ctrl+Enter to open track properties
-   #4347
-  </li>
-  <li>
-   Tracks table: Home/End keys jump to first/last row
-   #4850
-  </li>
-  <li>
-   Tracks table: dont wrap around if Shift is pressed
-   #12391
-  </li>
-  <li>
-   Tracks table: avoid wrong pre-selection with no tracks selected previously
-   #12321
-   #12064
-  </li>
-  <li>
-   Tracks table: Fix initial track selection with BackTab
-   #11130
-  </li>
-  <li>
-   Tracks table: Try to restore selection position after track removal
-   #11196
-  </li>
-  <li>
-   Tracks table: Remove parenthesis from play counter display
-   #11357
-  </li>
-  <li>
-   Re-enable shortcuts after editing controls
-   #4360
-   #10184
-   #10523
-  </li>
-  <li>
-   Allow to remove tracks from the library by pressing the Delete key
-   #4330
-   #7176
-   #9793
-   #9837
-   #10537
-  </li>
-  <li>
-   Remember track selection when switching library features, save model state
-   #4177
-   #4536
-  </li>
-  <li>
-   Allow to remove a track form the disk
-   #3212
-   #4639
-  </li>
-  <li>
-   Fix accasional resetting of played counter in database
-   #4578
-   #10617
-  </li>
-  <li>
-   Recording: Fix table refresh issues
-   #4648
-  </li>
-  <li>
-   Add popup before deletion playlist and crates
-   #4697
-   #4700
-   #10294
-  </li>
-  <li>
-   Experimental: Fix writing of undefined MusicBrainz Recording ID
-   #4694
-  </li>
-  <li>
-   Traktor library: fix importing track key
-   #4701
-  </li>
-  <li>
-   Track Menu: Add action to select loaded track in library
+   Add action to select loaded track in library
    #4740
   </li>
   <li>
-   Track Menu: Add menu for Analyze and Reanalyze
+   Add menu for Analyze and Reanalyze
    #4806
    #11873
    #11872
   </li>
   <li>
-   Track Menu: Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
+   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
    #10931
   </li>
   <li>
-   Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
    #4772
    #4836
   </li>
   <li>
-   Track Menu: Add Remove from disk and fix undeleted message and progress dialog
+   Add "Delete Track Files" action, does "Move to Trash" with Qt &gt;= 5.15
    #4560
    #4831
    #10763
    #11580
    #11577
    #11583
+   #3212
+   #11842
   </li>
   <li>
-   Track Menu: Allow to clear the comment field
+   Allow to clear the comment field
    #4722
    #10615
   </li>
   <li>
-   Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object
+   Allow to reset loops and also via "[ChannelN], loop_remove" control object
    #4802
    #10748
    #12392
    #12521
   </li>
   <li>
-   Track Menu: Show 'Update ReplayGain' only in decks' menus
+   Show 'Update ReplayGain' only in decks' menus
    #4719
   </li>
   <li>
-   Track Menu: Fix showing wrong Remove hotkey
+   Fix showing wrong Remove hotkey
    #11171
    #10761
   </li>
   <li>
-   Track Menu: Restore "Remove from playlist" in History
+   Restore "Remove from playlist" in History
    #11591
    #10974
   </li>
   <li>
-   Track menu: Enable Lock BPM action if any selected track BPM is unlocked
+   Enable Lock BPM action if any selected track BPM is unlocked
    #12385
-  </li>
-  <li>
-   Track menu: Add "Delete Track Files" entry as move to trash with Qt &gt;= 5.15
-   #3212
-   #11842
-  </li>
-  <li>
-   Remove/hide tracks dialog: Add 'Don't ask again' checkbox
-   #11239
-  </li>
-  <li>
-   Fix exporting m3u files with tracks and special characters by using the URL format
-   #4752
-  </li>
-  <li>
-   Library Scanner: Sort files before adding them
-   #10919
-  </li>
-  <li>
-   Library Scanner: Fix track relocation query
-   #12462
-  </li>
-  <li>
-   Show time in addition to the date in the timestamp column
-   #4900
-   #10726
-   #11020
-  </li>
-  <li>
-   Wrap selection around at the bottom/top of the library's tracks list
-   #11090
-   #11100
-  </li>
-  <li>
-   MenuBar: Add shortcut for rescanning library
-   #11136
-  </li>
-  <li>
-   macOS scrollbar: Make sure last track is shown in library
-   #11669
-   #9495
-  </li>
-  <li>
-   library: right align BPM, duration &amp; bitrate values
-   #11634
-   #11668
-   #11657
-  </li>
-  <li>
-   Lib sidebar: right click selection fixes
-   #11574
-   #11208
-   #11712
-  </li>
-  <li>
-   Refocus library, after editing skin controls
-   #11767
-  </li>
-  <li>
-   Crates: only store or activate sibling crate if it's valid
-   #11770
-   #11769
-  </li>
-  <li>
-   Library: fix performance with large playlists
-   #11851
-   #11724
-  </li>
-  <li>
-   Playlists: simplify import function, add whitespace before the # suffix
-   #12246
-  </li>
-  <li>
-   Library: add multi-line editor delegate for comment column
-   #11752
-  </li>
-  <li>
-   Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion
-   #12341
-   #12242
-  </li>
-  <li>
-   iTunes: Modularize importer and use
-   iTunesLibrary
-   on macOS for compatibility with
-   Music.app
-   #11353
-   #11256
-   #11446
-   #11444
-   #11503
-   #11500
-   #11509
-  </li>
-  <li>
-   iTunes: Fix sporadic crash during unit tests due to a not initialized reference.
-   #11666
-  </li>
-  <li>
-   iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name)
-   #11794
-  </li>
-  <li>
-   iTunes: Re-enable test and add
-   composer
-   ,
-   playCount
-   ,
-   lastPlayedAt
-   and
-   dateAdded
-   to model
-   #11948
-  </li>
-  <li>
-   Fix setting the wrong default cue color
-   #11554
-   #11260
-  </li>
-  <li>
-   Tweak remove/hide track confirm message to match confirm exit message
-   #4577
-   #1947992
-  </li>
-  <li>
-   Tracks table: Keep current item visible when the view shrinks vertically
-   #11273
   </li>
  </ul>
  <p>
@@ -800,6 +791,8 @@
    #11003
    #12637
    #12632
+   #12623
+   #12618
   </li>
   <li>
    Fix an issue when pressing multiple cue buttons at the same time
@@ -812,13 +805,41 @@
    #4153
   </li>
   <li>
+   Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value
+   #4031
+  </li>
+  <li>
    Add halve/double controls for beatjump size
    #4269
+  </li>
+  <li>
+   Implement Un-eject by pressing eject again
+   #4668
+   #11246
+  </li>
+  <li>
+   Implement Un-replace by double-clicking eject
+   #11246
+  </li>
+  <li>
+   Allow to cancel active loops via beatloop_activate
+   #4328
+   #9950
+  </li>
+  <li>
+   Slip Mode: Preserve active (regular) loop when leaving Slip Mode
+   #11435
+   #6993
   </li>
   <li>
    Fix possible segfault when ejecting track
    #4362
    #10497
+  </li>
+  <li>
+   Fix: possible cash when ejecting track from a controller
+   #11884
+   #11819
   </li>
   <li>
    Fix an assertion when loop is before track start
@@ -829,11 +850,6 @@
    Fix and improve snapping to beats in various situations
    #4366
    #10541
-  </li>
-  <li>
-   Allow to cancel active loops via beatloop_activate
-   #4328
-   #9950
   </li>
   <li>
    Don't wipe inapplicable sound config immediately
@@ -864,11 +880,6 @@
    #11203
   </li>
   <li>
-   Slip Mode: Preserve active (regular) loop when leaving Slip Mode
-   #11435
-   #6993
-  </li>
-  <li>
    Auto DJ: Fix sharp cut transition after cueing a track without a defined intro
    #11629
    #11621
@@ -882,11 +893,6 @@
    #12530
    #12520
    #12537
-  </li>
-  <li>
-   Fix: possible cash when ejecting track from a controller
-   #11884
-   #11819
   </li>
   <li>
    KeyControl: fix keylock/unlock bugs, reset pitch_adjust
@@ -914,11 +920,6 @@
    Looping: reset loop_end_pos on eject
    #12224
    #12223
-  </li>
-  <li>
-   Hotcue: allow setting hotcue inside active, saved loop
-   #12623
-   #12618
   </li>
   <li>
    make decks' xfader assignment persistent
@@ -1120,16 +1121,6 @@
    and
    LoadTrackFromSampler
    #11244
-  </li>
-  <li>
-   Search bar: Remove ESC shortcut in favour of new
-   [Library],focused_widget
-   #4571
-  </li>
-  <li>
-   Beat spinBox/AutoDJ spinbox: Enter &amp; Esc also move focus to library
-   #4617
-   #4845
   </li>
   <li>
    Don't automatically enable controller if it was disabled before
@@ -1457,13 +1448,9 @@
    #12004
   </li>
   <li>
-   Implement Un-eject by pressing eject again
-   #4668
-   #11246
-  </li>
-  <li>
-   Implement Un-replace by double-clicking eject
-   #11246
+   Beat spinBox/AutoDJ spinbox: Enter &amp; Esc also move focus to library
+   #4617
+   #4845
   </li>
  </ul>
  <p>

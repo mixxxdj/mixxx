@@ -25,6 +25,55 @@
 
 ### Music Library
 
+#### Backend / Database
+
+* Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
+* Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags [#3811](https://github.com/mixxxdj/mixxx/pull/3811)
+* Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
+  [#3978](https://github.com/mixxxdj/mixxx/pull/3978)
+  [#4012](https://github.com/mixxxdj/mixxx/pull/4012)
+* Track Metadata: Fix synchronization (import/export) of file tags
+  [#4628](https://github.com/mixxxdj/mixxx/pull/4628)
+  [#4631](https://github.com/mixxxdj/mixxx/pull/4631)
+  [#4847](https://github.com/mixxxdj/mixxx/pull/4847) [#10782](https://bugs.launchpad.net/bugs/1981106)
+* Track Metadata: Do not overwrite unchanged multi-valued fields [#12613](https://github.com/mixxxdj/mixxx/pull/12613) [#12587](https://github.com/mixxxdj/mixxx/issues/12587)
+* Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1"). [#4873](https://github.com/mixxxdj/mixxx/pull/4873)
+* Logging: Suppress expected and harmless schema migration errors [#4248](https://github.com/mixxxdj/mixxx/pull/4248)
+* Fix handling of undefined BPM values
+  [#4062](https://github.com/mixxxdj/mixxx/pull/4062)
+  [#4063](https://github.com/mixxxdj/mixxx/pull/4063)
+  [#4100](https://github.com/mixxxdj/mixxx/pull/4100)
+  [#4154](https://github.com/mixxxdj/mixxx/pull/4154)
+  [#4165](https://github.com/mixxxdj/mixxx/pull/4165)
+  [#4168](https://github.com/mixxxdj/mixxx/pull/4168)
+* Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
+* Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
+* Re-enable shortcuts after editing controls
+  [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
+  [#10184](https://github.com/mixxxdj/mixxx/issues/10184)
+  [#10523](https://github.com/mixxxdj/mixxx/issues/10523)
+* Allow to remove a track form the disk [#3212](https://github.com/mixxxdj/mixxx/pull/3212) [#4639](https://github.com/mixxxdj/mixxx/pull/4639)
+* Fix accasional resetting of played counter in database [#4578](https://github.com/mixxxdj/mixxx/pull/4578) [#10617](https://github.com/mixxxdj/mixxx/issues/10617)
+* Experimental: Fix writing of undefined MusicBrainz Recording ID [#4694](https://github.com/mixxxdj/mixxx/pull/4694)
+* Traktor library: fix importing track key [#4701](https://github.com/mixxxdj/mixxx/pull/4701)
+* Fix exporting m3u files with tracks and special characters by using the URL format [#4752](https://github.com/mixxxdj/mixxx/pull/4752)
+* Library Scanner: Sort files before adding them [#10919](https://github.com/mixxxdj/mixxx/pull/10919)
+* Library Scanner: Fix track relocation query [#12462](https://github.com/mixxxdj/mixxx/pull/12462)
+* MenuBar: Add shortcut for rescanning library [#11136](https://github.com/mixxxdj/mixxx/pull/11136)
+* Playlists: simplify import function, add whitespace before the # suffix [#12246](https://github.com/mixxxdj/mixxx/pull/12246)
+* Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion [#12341](https://github.com/mixxxdj/mixxx/pull/12341) [#12242](https://github.com/mixxxdj/mixxx/issues/12242)
+* iTunes: Modularize importer and use `iTunesLibrary` on macOS for compatibility with `Music.app`
+  [#11353](https://github.com/mixxxdj/mixxx/pull/11353)
+  [#11256](https://github.com/mixxxdj/mixxx/issues/11256)
+  [#11446](https://github.com/mixxxdj/mixxx/pull/11446)
+  [#11444](https://github.com/mixxxdj/mixxx/pull/11444)
+  [#11503](https://github.com/mixxxdj/mixxx/pull/11503)
+  [#11500](https://github.com/mixxxdj/mixxx/pull/11500)
+  [#11509](https://github.com/mixxxdj/mixxx/pull/11509)
+* iTunes: Fix sporadic crash during unit tests due to a not initialized reference. [#11666](https://github.com/mixxxdj/mixxx/pull/11666)
+* iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name) [#11794](https://github.com/mixxxdj/mixxx/pull/11794)
+* iTunes: Re-enable test and add `composer`, `playCount`, `lastPlayedAt` and `dateAdded` to model [#11948](https://github.com/mixxxdj/mixxx/pull/11948)
+* Fix setting the wrong default cue color [#11554](https://github.com/mixxxdj/mixxx/pull/11554) [#11260](https://github.com/mixxxdj/mixxx/issues/11260)
 * Ensure that tracks with an invalid BPM are re-analyzed [#2776](https://github.com/mixxxdj/mixxx/pull/2776)
 * Add support for exporting crates, playlists and the library to Engine Prime and Denon standalone controllers
   [#2753](https://github.com/mixxxdj/mixxx/pull/2753)
@@ -60,158 +109,150 @@
   [#3213](https://github.com/mixxxdj/mixxx/pull/3213)
   [#2796](https://github.com/mixxxdj/mixxx/pull/2796)
   [#4207](https://github.com/mixxxdj/mixxx/pull/4207)
-* Add recent searches to a drop down menu of the search box
-  [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
-  [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
-* Search: Save queries across restarts
-  [#4458](https://github.com/mixxxdj/mixxx/pull/4458)
-  [#10517](https://github.com/mixxxdj/mixxx/issues/10517)
-  [#10561](https://github.com/mixxxdj/mixxx/issues/10561)
-  [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
-* Enable search in Browse & Recording views [#11014](https://github.com/mixxxdj/mixxx/pull/11014) [#11012](https://github.com/mixxxdj/mixxx/issues/11012) [#4382](https://github.com/mixxxdj/mixxx/pull/4382)
-* Search: Update Clear button when search is disabled [#4447](https://github.com/mixxxdj/mixxx/pull/4447)
-* Fix reset to default of search timeout in preferences [#4504](https://github.com/mixxxdj/mixxx/pull/4504) [#10589](https://github.com/mixxxdj/mixxx/issues/10589)
-* Search: Ctrl+F in focused search box selects the entire search string [#4515](https://github.com/mixxxdj/mixxx/pull/4515)
-* Search: Improve keypress handling, fix glitch in popup, strip whitespaces [#4658](https://github.com/mixxxdj/mixxx/pull/4658)
-* Search: Enter jumps to track table if search query was transmitted [#4844](https://github.com/mixxxdj/mixxx/pull/4844)
-  Search: Push completion entry to top, to make up/down behave naturally
-  [#11030](https://github.com/mixxxdj/mixxx/pull/11030)
-  [#10975](https://github.com/mixxxdj/mixxx/issues/10975)
-* Search: Restore previous search term when switching between playlists and crates
-  [#11129](https://github.com/mixxxdj/mixxx/pull/11129)
-  [#11015](https://github.com/mixxxdj/mixxx/issues/11015)
-  [#11477](https://github.com/mixxxdj/mixxx/pull/11477)
-  [#11476](https://github.com/mixxxdj/mixxx/issues/11476)
-* Search: Add options to disable auto-completion and history [#10942](https://github.com/mixxxdj/mixxx/pull/10942) [#10634](https://github.com/mixxxdj/mixxx/issues/10634)
-* Search: Require Enter or Right key to search for auto completed strings
-  [#11207](https://github.com/mixxxdj/mixxx/pull/11207)
-  [#11289](https://github.com/mixxxdj/mixxx/pull/11289)
-  [#11287](https://github.com/mixxxdj/mixxx/issues/11287)
-* Search: Allow to use := and quotes to find exact matches [#12063](https://github.com/mixxxdj/mixxx/pull/12063) [#10699](https://github.com/mixxxdj/mixxx/issues/10699)
-* Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
+
+#### Tracks Table
+
+* Remember track selection when switching library features, fix initial selection etc.
+  [#4177](https://github.com/mixxxdj/mixxx/pull/4177)
+  [#4536](https://github.com/mixxxdj/mixxx/pull/4536)
+  [#12321](https://github.com/mixxxdj/mixxx/pull/12321)
+  [#12064](https://github.com/mixxxdj/mixxx/issues/12064)
+  [#11196](https://github.com/mixxxdj/mixxx/pull/11196)
+  [#11130](https://github.com/mixxxdj/mixxx/pull/11130)
 * Add new library column that shows the last time a track was played
   [#3140](https://github.com/mixxxdj/mixxx/pull/3140)
   [#3457](https://github.com/mixxxdj/mixxx/pull/3457)
   [#3494](https://github.com/mixxxdj/mixxx/pull/3494)
   [#3596](https://github.com/mixxxdj/mixxx/pull/3596)
   [#3740](https://github.com/mixxxdj/mixxx/pull/3740)
-* Improve presentation of the History library tree
-  [#2996](https://github.com/mixxxdj/mixxx/pull/2996)
-  [#4298](https://github.com/mixxxdj/mixxx/pull/4298) [#10533](https://github.com/mixxxdj/mixxx/issues/10533)
-* History: Fix sidebar context menu actions [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
-* Fix assertion when navigating History playlists [#4297](https://github.com/mixxxdj/mixxx/pull/4297) [#10529](https://github.com/mixxxdj/mixxx/issues/10529)
-* Add History cleanup options [#4726](https://github.com/mixxxdj/mixxx/pull/4726) [#9259](https://github.com/mixxxdj/mixxx/issues/9259) [#10714](https://github.com/mixxxdj/mixxx/issues/10714)
-* Fix update of play count after removing tracks from history playlist [#12258](https://github.com/mixxxdj/mixxx/pull/12258) [#12046](https://github.com/mixxxdj/mixxx/issues/12046) [#12256](https://github.com/mixxxdj/mixxx/issues/12256)
-* Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags [#3811](https://github.com/mixxxdj/mixxx/pull/3811)
-* Update library schema to 37 for synchronizing file modified time with track source on metadata import/export
-  [#3978](https://github.com/mixxxdj/mixxx/pull/3978)
-  [#4012](https://github.com/mixxxdj/mixxx/pull/4012)
-* Track Metadata: Fix synchronization (import/export) of file tags
-  [#4628](https://github.com/mixxxdj/mixxx/pull/4628)
-  [#4631](https://github.com/mixxxdj/mixxx/pull/4631)
-  [#4847](https://github.com/mixxxdj/mixxx/pull/4847) [#10782](https://bugs.launchpad.net/bugs/1981106)
-* Track Metadata: Do not overwrite unchanged multi-valued fields [#12613](https://github.com/mixxxdj/mixxx/pull/12613) [#12587](https://github.com/mixxxdj/mixxx/issues/12587)
-* Optionally reset metadata on reimport if file tags are missing, enabled by "[Library] ResetMissingTagMetadataOnImport 1"). [#4873](https://github.com/mixxxdj/mixxx/pull/4873)
-* Logging: Suppress expected and harmless schema migration errors [#4248](https://github.com/mixxxdj/mixxx/pull/4248)
-* Only show the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
-* Fix handling of undefined BPM values
-  [#4062](https://github.com/mixxxdj/mixxx/pull/4062)
-  [#4063](https://github.com/mixxxdj/mixxx/pull/4063)
-  [#4100](https://github.com/mixxxdj/mixxx/pull/4100)
-  [#4154](https://github.com/mixxxdj/mixxx/pull/4154)
-  [#4165](https://github.com/mixxxdj/mixxx/pull/4165)
-  [#4168](https://github.com/mixxxdj/mixxx/pull/4168)
-* Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value [#4031](https://github.com/mixxxdj/mixxx/pull/4031)
-* Automatic analyze and optimize database [#4199](https://github.com/mixxxdj/mixxx/pull/4199)
-* Re-import and update metadata after files have been modified when loading tracks [#4218](https://github.com/mixxxdj/mixxx/pull/4218)
-* Fix playlists sidebar navigation/activation [#4193](https://github.com/mixxxdj/mixxx/pull/4193) [#10488](https://github.com/mixxxdj/mixxx/issues/10488)
-* Sidebar: Improve UX (right-click and selection after add, rename, delete, duplicate etc.) [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
-* Sidebar: Map Left Arrow Key to jump to parent node and activates it [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
-* Library sidebar: add F2 and Del/Backspace shortcuts for renaming & deleting playlists and crates
-  [#11172](https://github.com/mixxxdj/mixxx/pull/11172)
-  [#11235](https://github.com/mixxxdj/mixxx/pull/11235)
-* Tracks table: Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
-* Tracks table: Home/End keys jump to first/last row [#4850](https://github.com/mixxxdj/mixxx/pull/4850)
-* Tracks table: dont wrap around if Shift is pressed [#12391](https://github.com/mixxxdj/mixxx/pull/12391)
-* Tracks table: avoid wrong pre-selection with no tracks selected previously [#12321](https://github.com/mixxxdj/mixxx/pull/12321) [#12064](https://github.com/mixxxdj/mixxx/issues/12064)
-* Tracks table: Fix initial track selection with BackTab [#11130](https://github.com/mixxxdj/mixxx/pull/11130)
-* Tracks table: Try to restore selection position after track removal [#11196](https://github.com/mixxxdj/mixxx/pull/11196)
-* Tracks table: Remove parenthesis from play counter display [#11357](https://github.com/mixxxdj/mixxx/pull/11357)
-* Re-enable shortcuts after editing controls
-  [#4360](https://github.com/mixxxdj/mixxx/pull/4360)
-  [#10184](https://github.com/mixxxdj/mixxx/issues/10184)
-  [#10523](https://github.com/mixxxdj/mixxx/issues/10523)
-* Allow to remove tracks from the library by pressing the Delete key
+* Add keyboard shortcut Ctrl+Enter to open track properties [#4347](https://github.com/mixxxdj/mixxx/pull/4347)
+* Home/End keys jump to first/last row [#4850](https://github.com/mixxxdj/mixxx/pull/4850)
+* Wrap selection around at the bottom/top, only if Shift is not pressed
+  [#11090](https://github.com/mixxxdj/mixxx/pull/11090)
+  [#11100](https://github.com/mixxxdj/mixxx/pull/11100)
+  [#12391](https://github.com/mixxxdj/mixxx/pull/12391)
+* Allow to hide/remove tracks from the library by pressing the Delete key
   [#4330](https://github.com/mixxxdj/mixxx/pull/4330)
   [#7176](https://github.com/mixxxdj/mixxx/issues/7176)
   [#9793](https://github.com/mixxxdj/mixxx/issues/9793)
   [#9837](https://github.com/mixxxdj/mixxx/issues/9837)
   [#10537](https://github.com/mixxxdj/mixxx/issues/10537)
-* Remember track selection when switching library features, save model state [#4177](https://github.com/mixxxdj/mixxx/pull/4177) [#4536](https://github.com/mixxxdj/mixxx/pull/4536)
-* Allow to remove a track form the disk [#3212](https://github.com/mixxxdj/mixxx/pull/3212) [#4639](https://github.com/mixxxdj/mixxx/pull/4639)
-* Fix accasional resetting of played counter in database [#4578](https://github.com/mixxxdj/mixxx/pull/4578) [#10617](https://github.com/mixxxdj/mixxx/issues/10617)
-* Recording: Fix table refresh issues [#4648](https://github.com/mixxxdj/mixxx/pull/4648)
-* Add popup before deletion playlist and crates [#4697](https://github.com/mixxxdj/mixxx/pull/4697) [#4700](https://github.com/mixxxdj/mixxx/pull/4700) [#10294](https://github.com/mixxxdj/mixxx/issues/10294)
-* Experimental: Fix writing of undefined MusicBrainz Recording ID [#4694](https://github.com/mixxxdj/mixxx/pull/4694)
-* Traktor library: fix importing track key [#4701](https://github.com/mixxxdj/mixxx/pull/4701)
-* Track Menu: Add action to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
-* Track Menu: Add menu for Analyze and Reanalyze
+  [#11239](https://github.com/mixxxdj/mixxx/pull/11239)
+  [#4577](https://github.com/mixxxdj/mixxx/pull/4577)
+  [#1947992](https://github.com/mixxxdj/mixxx/issues/10577)
+* Fix Recording table refresh issues [#4648](https://github.com/mixxxdj/mixxx/pull/4648)
+* Show time in addition to the date in the timestamp column
+  [#4900](https://github.com/mixxxdj/mixxx/pull/4900)
+  [#10726](https://github.com/mixxxdj/mixxx/issues/10726)
+  [#11020](https://github.com/mixxxdj/mixxx/pull/11020)
+* Show only the date in Date Added / Last Played columns. Move the time of day to tooltips [#3945](https://github.com/mixxxdj/mixxx/pull/3945)
+* Right-align BPM, duration & bitrate values [#11634](https://github.com/mixxxdj/mixxx/pull/11634) [#11668](https://github.com/mixxxdj/mixxx/pull/11668) [#11657](https://github.com/mixxxdj/mixxx/issues/11657)
+* Remove parenthesis from play counter display [#11357](https://github.com/mixxxdj/mixxx/pull/11357)
+* Refocus library, after editing skin controls [#11767](https://github.com/mixxxdj/mixxx/pull/11767)
+* Fix performance with large playlists [#11851](https://github.com/mixxxdj/mixxx/pull/11851) [#11724](https://github.com/mixxxdj/mixxx/issues/11724)
+* Add multi-line editor delegate for comment column [#11752](https://github.com/mixxxdj/mixxx/pull/11752)
+* Keep current item visible when the view shrinks vertically [#11273](https://github.com/mixxxdj/mixxx/pull/11273)
+* macOS scrollbar: Make sure last track is shown in library [#11669](https://github.com/mixxxdj/mixxx/pull/11669) [#9495](https://github.com/mixxxdj/mixxx/issues/9495)
+
+#### Sidebar
+
+* Add F2 and Del/Backspace shortcuts for renaming & deleting playlists and crates
+  [#11172](https://github.com/mixxxdj/mixxx/pull/11172)
+  [#11235](https://github.com/mixxxdj/mixxx/pull/11235)
+  [#4697](https://github.com/mixxxdj/mixxx/pull/4697)
+  [#4700](https://github.com/mixxxdj/mixxx/pull/4700)
+  [#10294](https://github.com/mixxxdj/mixxx/issues/10294)
+* Improve presentation of the History library tree
+  [#2996](https://github.com/mixxxdj/mixxx/pull/2996)
+  [#4298](https://github.com/mixxxdj/mixxx/pull/4298)
+  [#10533](https://github.com/mixxxdj/mixxx/issues/10533)
+* History: Fix sidebar context menu actions
+  [#4384](https://github.com/mixxxdj/mixxx/pull/4384)
+  [#4297](https://github.com/mixxxdj/mixxx/pull/4297)
+  [#10529](https://github.com/mixxxdj/mixxx/issues/10529)
+* History: Add cleanup options
+  [#4726](https://github.com/mixxxdj/mixxx/pull/4726)
+  [#9259](https://github.com/mixxxdj/mixxx/issues/9259)
+  [#10714](https://github.com/mixxxdj/mixxx/issues/10714)
+* History: Fix update of play count after removing tracks
+  [#12258](https://github.com/mixxxdj/mixxx/pull/12258)
+  [#12046](https://github.com/mixxxdj/mixxx/issues/12046)
+  [#12256](https://github.com/mixxxdj/mixxx/issues/12256)
+* Improve UX with right-click and selection after add, rename, delete, duplicate etc.
+  [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
+  [#4193](https://github.com/mixxxdj/mixxx/pull/4193)
+  [#10488](https://github.com/mixxxdj/mixxx/issues/10488)
+  [#11574](https://github.com/mixxxdj/mixxx/pull/11574)
+  [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
+  [#11712](https://github.com/mixxxdj/mixxx/pull/11712)
+* Map Left Arrow Key to jump to parent node and activates it
+  [#4253](https://github.com/mixxxdj/mixxx/pull/4253)
+* Crates: only store or activate sibling crate if it's valid
+  [#11770](https://github.com/mixxxdj/mixxx/pull/11770)
+  [#11769](https://github.com/mixxxdj/mixxx/issues/11769)
+
+#### Searchbar
+
+* Add recent searches to a drop down menu of the search box
+  [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
+  [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
+* Save search queries across restarts
+  [#4458](https://github.com/mixxxdj/mixxx/pull/4458)
+  [#10517](https://github.com/mixxxdj/mixxx/issues/10517)
+  [#10561](https://github.com/mixxxdj/mixxx/issues/10561)
+  [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
+* Enable search in Browse & Recording views [#11014](https://github.com/mixxxdj/mixxx/pull/11014) [#11012](https://github.com/mixxxdj/mixxx/issues/11012) [#4382](https://github.com/mixxxdj/mixxx/pull/4382)
+* Update Clear button when search is disabled [#4447](https://github.com/mixxxdj/mixxx/pull/4447)
+* Fix reset to default of search timeout in preferences [#4504](https://github.com/mixxxdj/mixxx/pull/4504) [#10589](https://github.com/mixxxdj/mixxx/issues/10589)
+* Ctrl+F in focused search box selects the entire search string [#4515](https://github.com/mixxxdj/mixxx/pull/4515)
+* Improve keypress handling, fix glitch in popup, strip whitespaces [#4658](https://github.com/mixxxdj/mixxx/pull/4658)
+* Enter jumps to track table if search query was transmitted [#4844](https://github.com/mixxxdj/mixxx/pull/4844)
+  Push completion entry to top, to make up/down behave naturally
+* Remove ESC shortcut in favour of new `[Library],focused_widget` [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
+  [#11030](https://github.com/mixxxdj/mixxx/pull/11030)
+  [#10975](https://github.com/mixxxdj/mixxx/issues/10975)
+* Restore previous search term when switching between playlists and crates
+  [#11129](https://github.com/mixxxdj/mixxx/pull/11129)
+  [#11015](https://github.com/mixxxdj/mixxx/issues/11015)
+  [#11477](https://github.com/mixxxdj/mixxx/pull/11477)
+  [#11476](https://github.com/mixxxdj/mixxx/issues/11476)
+* Add options to disable auto-completion and history [#10942](https://github.com/mixxxdj/mixxx/pull/10942) [#10634](https://github.com/mixxxdj/mixxx/issues/10634)
+* Require Enter or Right key to search for auto completed strings
+  [#11207](https://github.com/mixxxdj/mixxx/pull/11207)
+  [#11289](https://github.com/mixxxdj/mixxx/pull/11289)
+  [#11287](https://github.com/mixxxdj/mixxx/issues/11287)
+* Allow to use := and quotes to find exact matches [#12063](https://github.com/mixxxdj/mixxx/pull/12063) [#10699](https://github.com/mixxxdj/mixxx/issues/10699)
+
+#### Track Menu
+
+* Add action to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
+* Add menu for Analyze and Reanalyze
   [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
   [#11873](https://github.com/mixxxdj/mixxx/pull/11873)
   [#11872](https://github.com/mixxxdj/mixxx/issues/11872)
-* Track Menu: Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
-* Track Menu: Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
-* Track Menu: Add Remove from disk and fix undeleted message and progress dialog
+* Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
+* Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
+* Add "Delete Track Files" action, does "Move to Trash" with Qt >= 5.15
   [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
   [#4831](https://github.com/mixxxdj/mixxx/pull/4831)
   [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
   [#11580](https://github.com/mixxxdj/mixxx/pull/11580)
   [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
   [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
-* Track Menu: Allow to clear the comment field [#4722](https://github.com/mixxxdj/mixxx/pull/4722) [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
-* Track Menu: Allow to reset loops and also via "[ChannelN], loop_remove" control object
+  [#3212](https://github.com/mixxxdj/mixxx/pull/3212)
+  [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
+* Allow to clear the comment field
+  [#4722](https://github.com/mixxxdj/mixxx/pull/4722)
+  [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
+* Allow to reset loops and also via "[ChannelN], loop_remove" control object
   [#4802](https://github.com/mixxxdj/mixxx/pull/4802)
   [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
   [#12392](https://github.com/mixxxdj/mixxx/pull/12392)
   [#12521](https://github.com/mixxxdj/mixxx/pull/12521)
-* Track Menu: Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
-* Track Menu: Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
-* Track Menu: Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
-* Track menu: Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
-* Track menu: Add "Delete Track Files" entry as move to trash with Qt >= 5.15 [#3212](https://github.com/mixxxdj/mixxx/pull/3212) [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
-* Remove/hide tracks dialog: Add 'Don't ask again' checkbox  [#11239](https://github.com/mixxxdj/mixxx/pull/11239)
-* Fix exporting m3u files with tracks and special characters by using the URL format [#4752](https://github.com/mixxxdj/mixxx/pull/4752)
-* Library Scanner: Sort files before adding them [#10919](https://github.com/mixxxdj/mixxx/pull/10919)
-* Library Scanner: Fix track relocation query [#12462](https://github.com/mixxxdj/mixxx/pull/12462)
-* Show time in addition to the date in the timestamp column [#4900](https://github.com/mixxxdj/mixxx/pull/4900) [#10726](https://github.com/mixxxdj/mixxx/issues/10726) [#11020](https://github.com/mixxxdj/mixxx/pull/11020)
-* Wrap selection around at the bottom/top of the library's tracks list [#11090](https://github.com/mixxxdj/mixxx/pull/11090) [#11100](https://github.com/mixxxdj/mixxx/pull/11100)
-* MenuBar: Add shortcut for rescanning library [#11136](https://github.com/mixxxdj/mixxx/pull/11136)
-* macOS scrollbar: Make sure last track is shown in library [#11669](https://github.com/mixxxdj/mixxx/pull/11669) [#9495](https://github.com/mixxxdj/mixxx/issues/9495)
-* library: right align BPM, duration & bitrate values [#11634](https://github.com/mixxxdj/mixxx/pull/11634) [#11668](https://github.com/mixxxdj/mixxx/pull/11668) [#11657](https://github.com/mixxxdj/mixxx/issues/11657)
-* Lib sidebar: right click selection fixes
-  [#11574](https://github.com/mixxxdj/mixxx/pull/11574)
-  [#11208](https://github.com/mixxxdj/mixxx/pull/11208)
-  [#11712](https://github.com/mixxxdj/mixxx/pull/11712)
-* Refocus library, after editing skin controls [#11767](https://github.com/mixxxdj/mixxx/pull/11767)
-* Crates: only store or activate sibling crate if it's valid [#11770](https://github.com/mixxxdj/mixxx/pull/11770) [#11769](https://github.com/mixxxdj/mixxx/issues/11769)
-* Library: fix performance with large playlists [#11851](https://github.com/mixxxdj/mixxx/pull/11851) [#11724](https://github.com/mixxxdj/mixxx/issues/11724)
-* Playlists: simplify import function, add whitespace before the # suffix [#12246](https://github.com/mixxxdj/mixxx/pull/12246)
-* Library: add multi-line editor delegate for comment column [#11752](https://github.com/mixxxdj/mixxx/pull/11752)
-* Destroy PlayerInfo after EngineRecord is stopped to fix a debug assertion [#12341](https://github.com/mixxxdj/mixxx/pull/12341) [#12242](https://github.com/mixxxdj/mixxx/issues/12242)
-* iTunes: Modularize importer and use `iTunesLibrary` on macOS for compatibility with `Music.app`
-  [#11353](https://github.com/mixxxdj/mixxx/pull/11353)
-  [#11256](https://github.com/mixxxdj/mixxx/issues/11256)
-  [#11446](https://github.com/mixxxdj/mixxx/pull/11446)
-  [#11444](https://github.com/mixxxdj/mixxx/pull/11444)
-  [#11503](https://github.com/mixxxdj/mixxx/pull/11503)
-  [#11500](https://github.com/mixxxdj/mixxx/pull/11500)
-  [#11509](https://github.com/mixxxdj/mixxx/pull/11509)
-* iTunes: Fix sporadic crash during unit tests due to a not initialized reference. [#11666](https://github.com/mixxxdj/mixxx/pull/11666)
-* iTunes: Permit duplicate playlist names by identifying playlists by id (rather than name) [#11794](https://github.com/mixxxdj/mixxx/pull/11794)
-* iTunes: Re-enable test and add `composer`, `playCount`, `lastPlayedAt` and `dateAdded` to model [#11948](https://github.com/mixxxdj/mixxx/pull/11948)
-* Fix setting the wrong default cue color [#11554](https://github.com/mixxxdj/mixxx/pull/11554) [#11260](https://github.com/mixxxdj/mixxx/issues/11260)
-* Tweak remove/hide track confirm message to match confirm exit message [#4577](https://github.com/mixxxdj/mixxx/pull/4577) [#1947992](https://github.com/mixxxdj/mixxx/issues/10577)
-* Tracks table: Keep current item visible when the view shrinks vertically [#11273](https://github.com/mixxxdj/mixxx/pull/11273)
+* Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
+* Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
+* Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
+* Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
 
 ### Sync
 
@@ -295,16 +336,26 @@
   [#11003](https://github.com/mixxxdj/mixxx/issues/11003)
   [#12637](https://github.com/mixxxdj/mixxx/pull/12637)
   [#12632](https://github.com/mixxxdj/mixxx/pull/12632)
+  [#12623](https://github.com/mixxxdj/mixxx/pull/12623)
+  [#12618](https://github.com/mixxxdj/mixxx/issues/12618)
 * Fix an issue when pressing multiple cue buttons at the same time [#3382](https://github.com/mixxxdj/mixxx/pull/3382)
 * Fix synchronization of main cue point/position
   [#4137](https://github.com/mixxxdj/mixxx/pull/4137)
   [#10478](https://github.com/mixxxdj/mixxx/issues/10478)
   [#4153](https://github.com/mixxxdj/mixxx/pull/4153)
+* Adjust ReplayGain: Allow user to update the replaygain value based on a deck pregain value [#4031](https://github.com/mixxxdj/mixxx/pull/4031)
 * Add halve/double controls for beatjump size [#4269](https://github.com/mixxxdj/mixxx/pull/4269)
+* Implement Un-eject by pressing eject again
+  [#4668](https://github.com/mixxxdj/mixxx/pull/4668)
+  [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
+* Implement Un-replace by double-clicking eject
+  [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
+* Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [#9950](https://github.com/mixxxdj/mixxx/issues/9950)
+* Slip Mode: Preserve active (regular) loop when leaving Slip Mode [#11435](https://github.com/mixxxdj/mixxx/pull/11435) [#6993](https://github.com/mixxxdj/mixxx/issues/6993)
 * Fix possible segfault when ejecting track [#4362](https://github.com/mixxxdj/mixxx/pull/4362) [#10497](https://github.com/mixxxdj/mixxx/issues/10497)
+* Fix: possible cash when ejecting track from a controller [#11884](https://github.com/mixxxdj/mixxx/pull/11884) [#11819](https://github.com/mixxxdj/mixxx/issues/11819)
 * Fix an assertion when loop is before track start [#4383](https://github.com/mixxxdj/mixxx/pull/4383) [#10556](https://github.com/mixxxdj/mixxx/issues/10556)
 * Fix and improve snapping to beats in various situations [#4366](https://github.com/mixxxdj/mixxx/pull/4366) [#10541](https://github.com/mixxxdj/mixxx/issues/10541)
-* Allow to cancel active loops via beatloop_activate [#4328](https://github.com/mixxxdj/mixxx/pull/4328) [#9950](https://github.com/mixxxdj/mixxx/issues/9950)
 * Don't wipe inapplicable sound config immediately [#4544](https://github.com/mixxxdj/mixxx/pull/4544)
 * Rubberband: Support Version 3 "finer" (near-hi-fi quality) setting, on Windows and MacOs and when available on Linux
   [#4853](https://github.com/mixxxdj/mixxx/pull/4853)
@@ -314,21 +365,18 @@
 * Rubberband: Improve mono-compatibility for R3 "finer" [#11418](https://github.com/mixxxdj/mixxx/pull/11418)
 * Fix a possible crash when ejecting a track [#11334](https://github.com/mixxxdj/mixxx/pull/11334) [#11257](https://github.com/mixxxdj/mixxx/issues/11257)
 * Add a range limits for beatjump_size of 512 [#11248](https://github.com/mixxxdj/mixxx/pull/11248) [#11203](https://github.com/mixxxdj/mixxx/issues/11203)
-* Slip Mode: Preserve active (regular) loop when leaving Slip Mode [#11435](https://github.com/mixxxdj/mixxx/pull/11435) [#6993](https://github.com/mixxxdj/mixxx/issues/6993)
 * Auto DJ: Fix sharp cut transition after cueing a track without a defined intro [#11629](https://github.com/mixxxdj/mixxx/pull/11629) [#11621](https://github.com/mixxxdj/mixxx/issues/11621)
 * Auto DJ: Don't use removed Intro end and outro start makers, use transition time instead [#11830](https://github.com/mixxxdj/mixxx/pull/11830)
 * Auto DJ: Fix GUI freeze when updating duration for many selected tracks
   [#12530](https://github.com/mixxxdj/mixxx/pull/12530)
   [#12520](https://github.com/mixxxdj/mixxx/issues/12520)
   [#12537](https://github.com/mixxxdj/mixxx/pull/12537)
-* Fix: possible cash when ejecting track from a controller [#11884](https://github.com/mixxxdj/mixxx/pull/11884) [#11819](https://github.com/mixxxdj/mixxx/issues/11819)
 * KeyControl: fix keylock/unlock bugs, reset pitch_adjust [4710](https://github.com/mixxxdj/mixxx/pull/4710)
 * Looping: fix asserts for loop move [#11735](https://github.com/mixxxdj/mixxx/pull/11735)
 * ReadAheadManager: fix loop wraparound reader condition [#11717](https://github.com/mixxxdj/mixxx/pull/11717)
 * Fix wrong visual play position when inside loop [#11840](https://github.com/mixxxdj/mixxx/pull/11840) [#11836](https://github.com/mixxxdj/mixxx/issues/11836)
 * Slip mode: consider loop for background position only if it was enabled  before slip [#11848](https://github.com/mixxxdj/mixxx/pull/11848) [#11844](https://github.com/mixxxdj/mixxx/issues/11844)
 * Looping: reset loop_end_pos on eject [#12224](https://github.com/mixxxdj/mixxx/pull/12224) [#12223](https://github.com/mixxxdj/mixxx/issues/12223)
-* Hotcue: allow setting hotcue inside active, saved loop [#12623](https://github.com/mixxxdj/mixxx/pull/12623) [#12618](https://github.com/mixxxdj/mixxx/issues/12618)
 * make decks' xfader assignment persistent [#12074](https://github.com/mixxxdj/mixxx/pull/12074) [#10122](https://github.com/mixxxdj/mixxx/issues/10122)
 
 ### Controller Mappings
@@ -382,8 +430,6 @@
 * Introduce new control object `[Library],clear_search` [#4331](https://github.com/mixxxdj/mixxx/pull/4331)
 * Introduce new control object `[Library],focused_widget` to focus library directly [#4369](https://github.com/mixxxdj/mixxx/pull/4369) [#4490](https://github.com/mixxxdj/mixxx/pull/4490)
 * Introduce new control object `LoadTrackFromDeck` and `LoadTrackFromSampler` [#11244](https://github.com/mixxxdj/mixxx/pull/11244)
-* Search bar: Remove ESC shortcut in favour of new `[Library],focused_widget` [#4571](https://github.com/mixxxdj/mixxx/pull/4571)
-* Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617) [#4845](https://github.com/mixxxdj/mixxx/pull/4845)
 * Don't automatically enable controller if it was disabled before [#4244](https://github.com/mixxxdj/mixxx/pull/4244) [#10503](https://github.com/mixxxdj/mixxx/issues/10503)
 * Enable Qt logging categories for controller logging [#4523](https://github.com/mixxxdj/mixxx/pull/4523)
 * Fix segfault during Mixxx shutdown due to a stale controller connection [#4476](https://github.com/mixxxdj/mixxx/pull/4476) [#10553](https://github.com/mixxxdj/mixxx/issues/10553)
@@ -477,11 +523,7 @@
 * Fix inconsistent/wrong musical keys in the UI [#12051](https://github.com/mixxxdj/mixxx/pull/12051) [#12044](https://github.com/mixxxdj/mixxx/issues/12044)
 * Add `skins:` path alias [#12463](https://github.com/mixxxdj/mixxx/pull/12463)
 * Remove `Text`, use `TrackProperty` or `Label` [#12004](https://github.com/mixxxdj/mixxx/pull/12004)
-* Implement Un-eject by pressing eject again
-  [#4668](https://github.com/mixxxdj/mixxx/pull/4668)
-  [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
-* Implement Un-replace by double-clicking eject
-  [#11246](https://github.com/mixxxdj/mixxx/pull/11246)
+* Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617) [#4845](https://github.com/mixxxdj/mixxx/pull/4845)
 
 ### Waveforms and GL Widgets
 
