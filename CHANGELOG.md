@@ -2,9 +2,7 @@
 
 ## [2.4.0](https://launchpad.net/mixxx/+milestone/2.4.0) (Unreleased)
 
-### Music Library
-
-#### Tracks Table
+### Music Library: Tracks Table & Track Menu
 
 * Remember track selection when switching library features, fix initial selection etc.
   [#4177](https://github.com/mixxxdj/mixxx/pull/4177)
@@ -47,8 +45,36 @@
 * Add multi-line editor delegate for comment column [#11752](https://github.com/mixxxdj/mixxx/pull/11752)
 * Keep current item visible when the view shrinks vertically [#11273](https://github.com/mixxxdj/mixxx/pull/11273)
 * macOS scrollbar: Make sure last track is shown in library [#11669](https://github.com/mixxxdj/mixxx/pull/11669) [#9495](https://github.com/mixxxdj/mixxx/issues/9495)
+* Add action to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
+* Add menu for Analyze and Reanalyze
+  [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
+  [#11873](https://github.com/mixxxdj/mixxx/pull/11873)
+  [#11872](https://github.com/mixxxdj/mixxx/issues/11872)
+* Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
+* Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
+* Add "Delete Track Files" action, does "Move to Trash" with Qt >= 5.15
+  [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
+  [#4831](https://github.com/mixxxdj/mixxx/pull/4831)
+  [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
+  [#11580](https://github.com/mixxxdj/mixxx/pull/11580)
+  [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
+  [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
+  [#3212](https://github.com/mixxxdj/mixxx/pull/3212)
+  [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
+* Allow to clear the comment field
+  [#4722](https://github.com/mixxxdj/mixxx/pull/4722)
+  [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
+* Allow to reset loops and also via "[ChannelN], loop_remove" control object
+  [#4802](https://github.com/mixxxdj/mixxx/pull/4802)
+  [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
+  [#12392](https://github.com/mixxxdj/mixxx/pull/12392)
+  [#12521](https://github.com/mixxxdj/mixxx/pull/12521)
+* Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
+* Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
+* Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
+* Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
 
-#### Sidebar
+### Music Library: Sidebar & Searchbar
 
 * Add F2 and Del/Backspace shortcuts for renaming & deleting playlists and crates
   [#11172](https://github.com/mixxxdj/mixxx/pull/11172)
@@ -84,9 +110,6 @@
 * Crates: only store or activate sibling crate if it's valid
   [#11770](https://github.com/mixxxdj/mixxx/pull/11770)
   [#11769](https://github.com/mixxxdj/mixxx/issues/11769)
-
-#### Searchbar
-
 * Add recent searches to a drop down menu of the search box
   [#3171](https://github.com/mixxxdj/mixxx/pull/3171)
   [#3262](https://github.com/mixxxdj/mixxx/pull/3262)
@@ -117,38 +140,7 @@
   [#11287](https://github.com/mixxxdj/mixxx/issues/11287)
 * Allow to use := and quotes to find exact matches [#12063](https://github.com/mixxxdj/mixxx/pull/12063) [#10699](https://github.com/mixxxdj/mixxx/issues/10699)
 
-#### Track Menu
-
-* Add action to select loaded track in library [#4740](https://github.com/mixxxdj/mixxx/pull/4740)
-* Add menu for Analyze and Reanalyze
-  [#4806](https://github.com/mixxxdj/mixxx/pull/4806)
-  [#11873](https://github.com/mixxxdj/mixxx/pull/11873)
-  [#11872](https://github.com/mixxxdj/mixxx/issues/11872)
-* Add support for overriding analyzis settings about variable/constant BPM on a per-track basis [#10931](https://github.com/mixxxdj/mixxx/pull/10931)
-* Add menu for looking up track metadata at Discogs, Soundcoud and LastFM [#4772](https://github.com/mixxxdj/mixxx/pull/4772) [#4836](https://github.com/mixxxdj/mixxx/pull/4836)
-* Add "Delete Track Files" action, does "Move to Trash" with Qt >= 5.15
-  [#4560](https://github.com/mixxxdj/mixxx/pull/4560)
-  [#4831](https://github.com/mixxxdj/mixxx/pull/4831)
-  [#10763](https://github.com/mixxxdj/mixxx/issues/10763)
-  [#11580](https://github.com/mixxxdj/mixxx/pull/11580)
-  [#11577](https://github.com/mixxxdj/mixxx/issues/11577)
-  [#11583](https://github.com/mixxxdj/mixxx/pull/11583)
-  [#3212](https://github.com/mixxxdj/mixxx/pull/3212)
-  [#11842](https://github.com/mixxxdj/mixxx/pull/11842)
-* Allow to clear the comment field
-  [#4722](https://github.com/mixxxdj/mixxx/pull/4722)
-  [#10615](https://github.com/mixxxdj/mixxx/issues/10615)
-* Allow to reset loops and also via "[ChannelN], loop_remove" control object
-  [#4802](https://github.com/mixxxdj/mixxx/pull/4802)
-  [#10748](https://github.com/mixxxdj/mixxx/issues/10748)
-  [#12392](https://github.com/mixxxdj/mixxx/pull/12392)
-  [#12521](https://github.com/mixxxdj/mixxx/pull/12521)
-* Show 'Update ReplayGain' only in decks' menus [#4719](https://github.com/mixxxdj/mixxx/pull/4719)
-* Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
-* Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
-* Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
-
-#### Backend / Database
+### Music Library: Backend & Database
 
 * Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers [#3076](https://github.com/mixxxdj/mixxx/pull/3076)
 * Don't store or update metadata of missing tracks in the Mixxx database to prevent inconsistencies with file tags [#3811](https://github.com/mixxxdj/mixxx/pull/3811)

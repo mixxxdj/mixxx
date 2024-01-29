@@ -96,14 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540585">
+    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706540816">
       <description>
  <p>
-  Music Library
+  Music Library: Tracks Table &amp; Track Menu
  </p>
- <h4>
-  Tracks Table
- </h4>
  <ul>
   <li>
    Remember track selection when switching library features, fix initial selection etc.
@@ -193,10 +190,70 @@
    #11669
    #9495
   </li>
+  <li>
+   Add action to select loaded track in library
+   #4740
+  </li>
+  <li>
+   Add menu for Analyze and Reanalyze
+   #4806
+   #11873
+   #11872
+  </li>
+  <li>
+   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
+   #10931
+  </li>
+  <li>
+   Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   #4772
+   #4836
+  </li>
+  <li>
+   Add "Delete Track Files" action, does "Move to Trash" with Qt &gt;= 5.15
+   #4560
+   #4831
+   #10763
+   #11580
+   #11577
+   #11583
+   #3212
+   #11842
+  </li>
+  <li>
+   Allow to clear the comment field
+   #4722
+   #10615
+  </li>
+  <li>
+   Allow to reset loops and also via "[ChannelN], loop_remove" control object
+   #4802
+   #10748
+   #12392
+   #12521
+  </li>
+  <li>
+   Show 'Update ReplayGain' only in decks' menus
+   #4719
+  </li>
+  <li>
+   Fix showing wrong Remove hotkey
+   #11171
+   #10761
+  </li>
+  <li>
+   Restore "Remove from playlist" in History
+   #11591
+   #10974
+  </li>
+  <li>
+   Enable Lock BPM action if any selected track BPM is unlocked
+   #12385
+  </li>
  </ul>
- <h4>
-  Sidebar
- </h4>
+ <p>
+  Music Library: Sidebar &amp; Searchbar
+ </p>
  <ul>
   <li>
    Add F2 and Del/Backspace shortcuts for renaming &amp; deleting playlists and crates
@@ -248,11 +305,6 @@
    #11770
    #11769
   </li>
- </ul>
- <h4>
-  Searchbar
- </h4>
- <ul>
   <li>
    Add recent searches to a drop down menu of the search box
    #3171
@@ -324,74 +376,9 @@
    #10699
   </li>
  </ul>
- <h4>
-  Track Menu
- </h4>
- <ul>
-  <li>
-   Add action to select loaded track in library
-   #4740
-  </li>
-  <li>
-   Add menu for Analyze and Reanalyze
-   #4806
-   #11873
-   #11872
-  </li>
-  <li>
-   Add support for overriding analyzis settings about variable/constant BPM on a per-track basis
-   #10931
-  </li>
-  <li>
-   Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
-   #4772
-   #4836
-  </li>
-  <li>
-   Add "Delete Track Files" action, does "Move to Trash" with Qt &gt;= 5.15
-   #4560
-   #4831
-   #10763
-   #11580
-   #11577
-   #11583
-   #3212
-   #11842
-  </li>
-  <li>
-   Allow to clear the comment field
-   #4722
-   #10615
-  </li>
-  <li>
-   Allow to reset loops and also via "[ChannelN], loop_remove" control object
-   #4802
-   #10748
-   #12392
-   #12521
-  </li>
-  <li>
-   Show 'Update ReplayGain' only in decks' menus
-   #4719
-  </li>
-  <li>
-   Fix showing wrong Remove hotkey
-   #11171
-   #10761
-  </li>
-  <li>
-   Restore "Remove from playlist" in History
-   #11591
-   #10974
-  </li>
-  <li>
-   Enable Lock BPM action if any selected track BPM is unlocked
-   #12385
-  </li>
- </ul>
- <h4>
-  Backend / Database
- </h4>
+ <p>
+  Music Library: Backend &amp; Database
+ </p>
  <ul>
   <li>
    Add new "[AutoDJ],add_random_track" to make this feature accessible from controllers
