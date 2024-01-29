@@ -267,7 +267,7 @@ jobs:
 
       - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
         if: runner.os != 'Windows'
-        uses: ammaraskar/gcc-problem-matcher@0.2.0
+        uses: ammaraskar/gcc-problem-matcher@0.3.0
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
