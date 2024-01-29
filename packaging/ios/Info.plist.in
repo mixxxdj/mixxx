@@ -43,6 +43,12 @@
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
 
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mixxx requires microphone access for microphone and vinyl input.</string>
+
+    <key>NSAppleMusicUsageDescription</key>
+    <string>Mixxx accesses the Apple Music library to presents its tracks and playlists in the library.</string>
+
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
