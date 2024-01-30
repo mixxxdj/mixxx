@@ -271,7 +271,7 @@ jobs:
 
       - name: "[Windows] Set up MSVC problem matcher"
         if: runner.os == 'Windows'
-        uses: ammaraskar/msvc-problem-matcher@0.2.0
+        uses: ammaraskar/msvc-problem-matcher@0.3.0
 
       - name: "Build"
         run: cmake --build . --config RelWithDebInfo
