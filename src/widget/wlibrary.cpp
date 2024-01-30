@@ -1,5 +1,6 @@
 #include "widget/wlibrary.h"
 
+#include <QKeyEvent>
 #include <QtDebug>
 
 #include "library/libraryview.h"
