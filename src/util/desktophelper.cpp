@@ -175,6 +175,7 @@ bool DesktopHelper::openUrl(const QUrl& url) {
 #ifdef Q_OS_IOS
     QUrl urlToOpen = url;
     // Open files and folders in the iOS Files app
+    // See https://stackoverflow.com/q/46499842
     if (urlToOpen.scheme() == "file") {
         urlToOpen.setScheme("shareddocuments");
     }
