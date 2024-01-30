@@ -19,7 +19,7 @@ const QString kSelectInXfce = "xf";
 QString sSelectInFileBrowserCommand;
 
 QString getSelectInFileBrowserCommand() {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     return "open -R";
 #elif defined(Q_OS_WIN)
     return "explorer.exe /select,";
