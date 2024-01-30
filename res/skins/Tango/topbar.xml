@@ -85,54 +85,27 @@ Description:
         </Children>
       </WidgetGroup><!-- /Logo + Main, Headphone & Booth Mixer -->
 
-      <WidgetGroup><!-- Crossfader, hidden with maximized library -->
-        <SizePolicy>min,min</SizePolicy>
-        <Layout>horizontal</Layout>
+      <WidgetGroup><!-- Crossfader -->
+        <ObjectName>CrossfaderContainer</ObjectName>
+        <SizePolicy>min,f</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
-		      <WidgetGroup>
-		        <SizePolicy>min,min</SizePolicy>
-		        <Layout>horizontal</Layout>
-		        <Children>
-		          <WidgetGroup>
-		            <SizePolicy>min,min</SizePolicy>
-		            <Layout>horizontal</Layout>
-		            <Children>
-		              <WidgetGroup>
-		                <ObjectName>CrossfaderContainer</ObjectName>
-		                <SizePolicy>min,f</SizePolicy>
-		                <Layout>vertical</Layout>
-		                <Children>
-		                  <SliderComposed>
-		                    <TooltipId>crossfader</TooltipId>
-		                    <Size>108f,32f</Size>
-		                    <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
-		                    <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
-		                    <Horizontal>true</Horizontal>
-		                    <Connection>
-		                      <ConfigKey>[Master],crossfader</ConfigKey>
-		                    </Connection>
-		                  </SliderComposed>
-		                </Children>
-		              </WidgetGroup>
-		            </Children>
-		            <Connection>
-		              <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
-		              <BindProperty>visible</BindProperty>
-		            </Connection>
-		          </WidgetGroup>
-            </Children>
+          <SliderComposed>
+            <TooltipId>crossfader</TooltipId>
+            <Size>108f,28f</Size>
+            <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_handle.svg</Handle>
+            <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/crossfader_scale.svg</Slider>
+            <Horizontal>true</Horizontal>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
+              <ConfigKey>[Master],crossfader</ConfigKey>
             </Connection>
-          </WidgetGroup>
+          </SliderComposed>
         </Children>
         <Connection>
-          <ConfigKey>[Skin],show_maximized_library</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Crossfader, hidden with maximized library -->
+      </WidgetGroup><!-- /Crossfader -->
 
       <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
         <Layout>horizontal</Layout>
