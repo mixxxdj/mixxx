@@ -1,7 +1,5 @@
 #include "controllers/dlgprefcontrollers.h"
 
-#include <QDesktopServices>
-
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -9,6 +7,7 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
+#include "util/desktophelper.h"
 #include "util/string.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
@@ -78,7 +77,7 @@ DlgPrefControllers::~DlgPrefControllers() {
 }
 
 void DlgPrefControllers::openLocalFile(const QString& file) {
-    QDesktopServices::openUrl(QUrl::fromLocalFile(file));
+    mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(file));
 }
 
 void DlgPrefControllers::slotUpdate() {

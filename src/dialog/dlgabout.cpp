@@ -1,13 +1,13 @@
 #include "dialog/dlgabout.h"
 
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFile>
 #include <QLocale>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/versionstore.h"
 
 DlgAbout::DlgAbout()
@@ -411,7 +411,7 @@ DlgAbout::DlgAbout()
     }
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
-        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+        mixxx::DesktopHelper::openUrl(QUrl(MIXXX_DONATE_URL));
     });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);

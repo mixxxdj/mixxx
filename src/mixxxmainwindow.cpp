@@ -2,7 +2,6 @@
 
 #include <QCloseEvent>
 #include <QDebug>
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QOpenGLContext>
 #include <QUrl>
@@ -48,6 +47,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/debug.h"
+#include "util/desktophelper.h"
 #include "util/sandbox.h"
 #include "util/timer.h"
 #include "util/versionstore.h"
@@ -554,7 +554,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
+            mixxx::DesktopHelper::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();

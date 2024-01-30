@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QCoreApplication>
-#include <QDesktopServices>
 #include <QDir>
 #include <QList>
 #include <QString>

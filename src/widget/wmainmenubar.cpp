@@ -7,6 +7,7 @@
 #include "defs_urls.h"
 #include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
+#include "util/desktophelper.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -733,7 +734,7 @@ void WMainMenuBar::slotDeveloperDebugger(bool toggle) {
 }
 
 void WMainMenuBar::slotVisitUrl(const QUrl& url) {
-    QDesktopServices::openUrl(url);
+    mixxx::DesktopHelper::openUrl(url);
 }
 
 void WMainMenuBar::createVisibilityControl(QAction* pAction,
