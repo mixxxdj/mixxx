@@ -1479,14 +1479,23 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
     }
 
     if (samplerControls) {
-        QMenu* samplerControlMenu = new QMenu(tr("Samplers"), controlMenu);
-        controlMenu->addMenu(samplerControlMenu);
+        QMenu* samplerControlMainMenu = addSubmenu(tr("Samplers"), controlMenu);
+        QMenu* samplerControlMenu = samplerControlMainMenu;
+        QMenu* samplerResetControlMainMenu = nullptr;
         QMenu* samplerResetControlMenu = nullptr;
         if (resetControlMenu) {
-            samplerResetControlMenu = new QMenu(tr("Samplers"), resetControlMenu);
-            resetControlMenu->addMenu(samplerResetControlMenu);
+            samplerResetControlMainMenu = addSubmenu(tr("Samplers"), resetControlMenu);
+            samplerResetControlMenu = samplerResetControlMainMenu;
         }
+        const int maxSamplersPerMenu = 16;
+        int samplersInMenu = 0;
+        QString submenuLabel;
         for (int i = 1; i <= iNumSamplers; ++i) {
+            if (samplersInMenu == maxSamplersPerMenu) {
+                int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
+                submenuLabel = m_samplerStr.arg(i) + QStringLiteral("- %1").arg(limit);
+                samplerControlMenu = addSubmenu(submenuLabel, samplerControlMainMenu);
+            }
             // PlayerManager::groupForSampler is 0-indexed.
             QString prefix = m_samplerStr.arg(i);
             QString group = PlayerManager::groupForSampler(i - 1);
@@ -1499,6 +1508,10 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                     prefix);
 
             if (resetControlMenu) {
+                if (samplersInMenu == maxSamplersPerMenu) {
+                    samplerResetControlMenu = addSubmenu(
+                            submenuLabel, samplerResetControlMainMenu);
+                }
                 QString resetTitle = QString("%1 (%2)").arg(controlTitle, m_resetStr);
                 QString resetDescription = QString("%1 (%2)").arg(controlDescription, m_resetStr);
                 addSingleControl(group,
@@ -1509,6 +1522,10 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                         prefix,
                         prefix);
             }
+            if (samplersInMenu == maxSamplersPerMenu) {
+                samplersInMenu = 0;
+            }
+            samplersInMenu++;
         }
     }
 }
