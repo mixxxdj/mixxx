@@ -1,19 +1,10 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="mr" sourcelanguage="en">
 <context>
-    <name>:</name>
-    <message>
-        <location filename="../../src/dlgrecording.cpp" line="176"/>
-        <source/>
-        <comment>The size of the file which has been stored during the current recording in megabytes (MB)</comment>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
     <name>AnalysisFeature</name>
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="51"/>
         <source>Analyze</source>
-        <translation>Analyze</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -21,22 +12,22 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="73"/>
         <source>Crates</source>
-        <translation>Crates</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Remove Crate as Track Source</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="110"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="295"/>
         <source>Add Crate as Track Source</source>
-        <translation>Add Crate as Track Source</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -45,27 +36,25 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="25"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="107"/>
         <source>Banshee</source>
-        <translation>Banshee</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="71"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="82"/>
         <source>Error loading Banshee database</source>
-        <translation>Error loading Banshee database</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="72"/>
         <source>Banshee database file not found at
 </source>
-        <translation>Banshee database file not found at
-</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="83"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>There was an error loading your Banshee database at
-</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -73,12 +62,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="25"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Add to Auto DJ Queue (bottom)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="31"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Add to Auto DJ Queue (top)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="37"/>
@@ -93,12 +82,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="123"/>
         <source>Playlist Creation Failed</source>
-        <translation>Playlist Creation Failed</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="124"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>An unknown error occurred while creating playlist: </translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -111,18 +100,18 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="99"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Add to Auto DJ Queue (bottom)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="66"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="348"/>
         <source>Create New Playlist</source>
-        <translation>Create New Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="104"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Add to Auto DJ Queue (top)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="83"/>
@@ -142,45 +131,45 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="78"/>
         <source>Duplicate</source>
-        <translation>Duplicate</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="121"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="126"/>
         <source>Import Playlist</source>
-        <translation>Import Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="136"/>
         <source>Export Track Files</source>
-        <translation>Export Track Files</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="115"/>
         <source>Analyze entire Playlist</source>
-        <translation>Analyze entire Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="255"/>
         <source>Enter new name for playlist:</source>
-        <translation>Enter new name for playlist:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="296"/>
         <source>Duplicate Playlist</source>
-        <translation>Duplicate Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="297"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="349"/>
         <source>Enter name for new playlist:</source>
-        <translation>Enter name for new playlist:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="131"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="545"/>
         <source>Export Playlist</source>
-        <translation>Export Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="109"/>
@@ -190,7 +179,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="254"/>
         <source>Rename Playlist</source>
-        <translation>Rename Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="268"/>
@@ -227,13 +216,13 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="377"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="517"/>
         <source>Playlist Creation Failed</source>
-        <translation>Playlist Creation Failed</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="378"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="518"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>An unknown error occurred while creating playlist: </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="423"/>
@@ -1849,7 +1838,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Add to Auto DJ Queue (bottom)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="759"/>
@@ -1859,7 +1848,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="762"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Add to Auto DJ Queue (top)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="763"/>
@@ -3044,7 +3033,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1207"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1210"/>
@@ -3420,12 +3409,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="125"/>
         <source>Export Track Files</source>
-        <translation>Export Track Files</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="76"/>
         <source>Duplicate</source>
-        <translation>Duplicate</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="104"/>
@@ -3446,7 +3435,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="187"/>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="191"/>
         <source>Crates</source>
-        <translation>Crates</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="110"/>
@@ -3684,7 +3673,7 @@ trace    - Above + Profiling messages</source>
         <location filename="../../src/library/dlganalysis.ui" line="98"/>
         <location filename="../../src/library/dlganalysis.cpp" line="184"/>
         <source>Analyze</source>
-        <translation>Analyze</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="56"/>
@@ -3896,7 +3885,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="296"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="302"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="94"/>
@@ -7566,7 +7555,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="202"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="184"/>
@@ -8832,7 +8821,7 @@ Shown when VuMeter can not be displayed. Please keep
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="41"/>
         <source>Import Playlist</source>
-        <translation>Import Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="43"/>
@@ -9220,7 +9209,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/trackset/playlistfeature.cpp" line="340"/>
         <source>Create New Playlist</source>
-        <translation>Create New Playlist</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -9467,12 +9456,12 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="115"/>
+        <location filename="../../src/util/sandbox.cpp" line="122"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="118"/>
+        <location filename="../../src/util/sandbox.cpp" line="125"/>
         <source>Your permission is required to access the following location:
 
 %1
@@ -9481,17 +9470,17 @@ After clicking OK, you will see a file picker. Please select &apos;%2&apos; to p
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="156"/>
+        <location filename="../../src/util/sandbox.cpp" line="163"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="450"/>
+        <location filename="../../src/util/sandbox.cpp" line="465"/>
         <source>Upgrading old Mixxx settings</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="453"/>
+        <location filename="../../src/util/sandbox.cpp" line="468"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -10961,7 +10950,7 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="970"/>
         <source>Crates</source>
-        <translation>Crates</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="973"/>
@@ -14743,7 +14732,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="131"/>
         <source>Crates</source>
-        <translation>Crates</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="138"/>
@@ -14780,7 +14769,7 @@ This can not be undone!</source>
         <location filename="../../src/widget/wtrackmenu.cpp" line="167"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="440"/>
         <source>Analyze</source>
-        <translation>Analyze</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="219"/>
@@ -14791,12 +14780,12 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="231"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Add to Auto DJ Queue (bottom)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="234"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Add to Auto DJ Queue (top)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="237"/>
@@ -15027,12 +15016,12 @@ This can not be undone!</source>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1246"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1270"/>
         <source>Create New Playlist</source>
-        <translation>Create New Playlist</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1271"/>
         <source>Enter name for new playlist:</source>
-        <translation>Enter name for new playlist:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1273"/>
@@ -15044,7 +15033,7 @@ This can not be undone!</source>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1285"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1294"/>
         <source>Playlist Creation Failed</source>
-        <translation>Playlist Creation Failed</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1282"/>
@@ -15059,7 +15048,7 @@ This can not be undone!</source>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1295"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>An unknown error occurred while creating playlist: </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1361"/>
