@@ -16,10 +16,20 @@ ControlModel::ControlModel(QObject* pParent)
     const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
             ControlDoublePrivate::getAllInstances();
 
+    QSet<ConfigKey> controlKeys;
+
     for (const QSharedPointer<ControlDoublePrivate>& pControl : controlsList) {
         if (!pControl) {
             continue;
         }
+
+        // Skip duplicates
+        // This skips either the alias or original key, whatever comes first
+        // in controlsList, but that doesn't make a difference here.
+        if (controlKeys.contains(pControl->getKey())) {
+            continue;
+        }
+        controlKeys.insert(pControl->getKey());
 
         addControl(pControl->getKey(),
                 pControl->name(),
