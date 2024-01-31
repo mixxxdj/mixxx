@@ -12,7 +12,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "library/coverartutils.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -66,14 +65,13 @@ WTrackMenu::WTrackMenu(
           m_pTrackModel(trackModel),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
+          m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
+          m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
+          m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
-    m_pNumSamplers = new ControlProxy(kAppGroup, QStringLiteral("num_samplers"), this);
-    m_pNumDecks = new ControlProxy(kAppGroup, QStringLiteral("num_decks"), this);
-    m_pNumPreviewDecks = new ControlProxy(kAppGroup, QStringLiteral("num_preview_decks"), this);
-
     // Warn if any of the chosen features depend on a TrackModel
     VERIFY_OR_DEBUG_ASSERT(trackModel || (m_eTrackModelFeatures & flags) == 0) {
         // Remove unsupported features
@@ -512,7 +510,7 @@ void WTrackMenu::setupActions() {
 
         m_pLoadToMenu->addMenu(m_pSamplerMenu);
 
-        if (m_pNumPreviewDecks->get() > 0.0) {
+        if (m_pNumPreviewDecks.get() > 0.0) {
             m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
         }
 
@@ -788,7 +786,7 @@ void WTrackMenu::updateMenus() {
     const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        int iNumDecks = static_cast<int>(m_pNumDecks->get());
+        int iNumDecks = static_cast<int>(m_pNumDecks.get());
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -823,7 +821,7 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        const int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
+        int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
         const int maxSamplersPerMenu = 16;
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
