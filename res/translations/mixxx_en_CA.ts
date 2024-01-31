@@ -239,12 +239,12 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="549"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>M3U Playlist (*.m3u)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="547"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);; M3U8 Playlist (*.m3u8);; PLS Playlist (*.pls);; Text CSV (*.csv);; Readable Text (*.txt)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -318,7 +318,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="193"/>
         <source>Cover Art</source>
-        <translation>Show Cover Art</translation>
+        <translation>Cover Art</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="197"/>
@@ -669,7 +669,7 @@
     <message>
         <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="82"/>
         <source>USB Controller</source>
-        <translation>Controls</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -832,7 +832,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="52"/>
         <source>No control chosen.</source>
-        <translation>No controllers available.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -840,12 +840,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Group</source>
-        <translation>Grouping</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
         <source>Item</source>
-        <translation>New Item</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
@@ -3495,12 +3495,12 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="786"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);; M3U8 Playlist (*.m3u8);; PLS Playlist (*.pls);; Text CSV (*.csv);; Readable Text (*.txt)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="788"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>M3U Playlist (*.m3u)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="193"/>
@@ -8888,7 +8888,7 @@ support.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="43"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-        <translation>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="85"/>
@@ -11701,7 +11701,7 @@ Hint: compensates &quot;chipmunk&quot; or &quot;growling&quot; voices</source>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="258"/>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="856"/>
         <source>Cover Art</source>
-        <translation>Show Cover Art</translation>
+        <translation>Cover Art</translation>
     </message>
     <message>
         <location filename="../../src/skin/legacy/tooltips.cpp" line="255"/>

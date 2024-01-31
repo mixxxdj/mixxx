@@ -244,7 +244,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="547"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);; M3U8 Playlist (*.m3u8);; PLS Playlist (*.pls);; Text CSV (*.csv);; Readable Text (*.txt)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -669,7 +669,7 @@
     <message>
         <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="82"/>
         <source>USB Controller</source>
-        <translation>Controls</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -832,7 +832,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="52"/>
         <source>No control chosen.</source>
-        <translation>No controllers available.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -840,7 +840,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Group</source>
-        <translation>Grouping</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
@@ -3495,7 +3495,7 @@ trace    - Above + Profiling messages</source>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="786"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);; M3U8 Playlist (*.m3u8);; PLS Playlist (*.pls);; Text CSV (*.csv);; Readable Text (*.txt)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="788"/>
