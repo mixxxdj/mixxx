@@ -2940,6 +2940,9 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
+if (NOT TagLib_VERSION VERSION_LESS 2.0.0)
+    message(FATAL_ERROR "Installed Taglib ${TagLib_VERSION} is not supported. Use Version >= 1.11 and < 2.0 and its development headers.")
+endif()
 
 # Threads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
