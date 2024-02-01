@@ -1,6 +1,5 @@
 #include "controllers/dlgprefcontroller.h"
 
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -21,6 +20,7 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
+#include "util/desktophelper.h"
 #include "util/string.h"
 
 namespace {
@@ -113,7 +113,7 @@ DlgPrefController::DlgPrefController(
     connect(m_ui.labelLoadedMappingScriptFileLinks,
             &QLabel::linkActivated,
             [](const QString& path) {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+                mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(path));
             });
 
     // Input mappings

@@ -1,6 +1,5 @@
 #include "preferences/dialog/dlgpreferences.h"
 
-#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
@@ -16,6 +15,7 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
@@ -436,7 +436,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         if (pCurrentPage) {
             QUrl helpUrl = pCurrentPage->helpUrl();
             DEBUG_ASSERT(helpUrl.isValid());
-            QDesktopServices::openUrl(helpUrl);
+            mixxx::DesktopHelper::openUrl(helpUrl);
         }
         break;
     default:
