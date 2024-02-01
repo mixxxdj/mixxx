@@ -1,8 +1,8 @@
-#include "util/macosversion.h"
+#include "util/appleosversion.h"
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
-QString getMacOsVersion() {
+QString getAppleOsVersion() {
     NSProcessInfo* processInfo = [NSProcessInfo processInfo];
     NSString* osVer = processInfo.operatingSystemVersionString;
     return QString::fromCFString((__bridge CFStringRef)osVer);

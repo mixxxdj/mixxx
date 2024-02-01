@@ -1018,9 +1018,15 @@ WLabel#TrackComment {
 #HotcueButton[light="true"] {
     color: #0f0f0f;
 }
-
 #HotcueButton[light="true"]:hover {
     border: 1px solid #808080;
+}
+
+#HotcueButton[light="true"][type="loop"] {
+  image: url(skin:/../Tango/buttons/btn_hotcue_loop_dark.svg) no-repeat;
+}
+#HotcueButton[dark="true"][type="loop"] {
+  image: url(skin:/../Tango/buttons/btn_hotcue_loop_light.svg) no-repeat;
 }
 
 #CueButton {

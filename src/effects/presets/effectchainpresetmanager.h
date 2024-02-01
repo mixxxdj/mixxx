@@ -76,6 +76,8 @@ class EffectChainPresetManager : public QObject {
     EffectManifestPointer getDefaultEqEffect();
     EffectChainPresetPointer getDefaultQuickEffectPreset();
 
+    static EffectChainPresetPointer createEmptyNamelessChainPreset();
+
     EffectsXmlData readEffectsXml(const QDomDocument& doc, const QStringList& deckStrings);
     EffectXmlDataSingleDeck readEffectsXmlSingleDeck(
             const QDomDocument& doc, const QString& deckString);

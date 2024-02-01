@@ -1,7 +1,7 @@
 <Template>
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
-    <Size>150me,20me</Size>
+    <Size>-1me,20me</Size>
     <Group><Variable name="Group"/></Group>
     <Connection>
       <ConfigKey><Variable name="Group"/>,playposition</ConfigKey>

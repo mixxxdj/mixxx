@@ -983,6 +983,10 @@ QPushButton#pushButtonRepeatPlaylist {
 #HotcueButton {
     background-color: #aab2b7;
 }
+#HotcueButton[displayValue="1"][type="loop"],
+#HotcueButton[displayValue="2"][type="loop"] {
+    image: url(skin:/btn/btn_hotcue_loop.png) no-repeat;
+}
 
 WRateRange {
   color: #4B515F;

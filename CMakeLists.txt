@@ -757,7 +757,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/moogladder4filtereffect.cpp
   src/effects/backends/builtin/parametriceqeffect.cpp
   src/effects/backends/builtin/phasereffect.cpp
-  src/effects/backends/builtin/pitchshifteffect.cpp
   src/effects/backends/builtin/reverbeffect.cpp
   src/effects/backends/builtin/threebandbiquadeqeffect.cpp
   src/effects/backends/builtin/tremoloeffect.cpp
@@ -799,7 +798,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/encoder/encoderwavesettings.cpp
   src/engine/bufferscalers/enginebufferscale.cpp
   src/engine/bufferscalers/enginebufferscalelinear.cpp
-  src/engine/bufferscalers/enginebufferscalerubberband.cpp
   src/engine/bufferscalers/enginebufferscalest.cpp
   src/engine/cachingreader/cachingreader.cpp
   src/engine/cachingreader/cachingreaderchunk.cpp
@@ -1532,9 +1530,15 @@ if(APPLE)
   target_compile_definitions(mixxx-lib PUBLIC GL_SILENCE_DEPRECATION)
 
   target_sources(mixxx-lib PRIVATE
+    src/util/appleosversion.mm
     src/util/darkappearance.mm
-    src/util/macosversion.mm
   )
+
+  if(IOS)
+    target_sources(mixxx-lib PRIVATE
+      src/util/screensaverios.mm
+    )
+  endif()
 
   option(MACOS_ITUNES_LIBRARY "Native macOS iTunes/Music.app library integration" ON)
   if(MACOS_ITUNES_LIBRARY)
@@ -1655,7 +1659,8 @@ set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MACOS_BUNDLE_NAME mixxx)
+  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MACOS_BUNDLE_IDENTIFIER org.mixxx.mixxx)
   set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
   set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
   set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
@@ -1739,6 +1744,7 @@ if (APPLE)
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
+        OUTPUT_NAME "${MACOS_BUNDLE_NAME}"
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/packaging/macos/Info.plist.in"
     )
   endif()
@@ -2545,8 +2551,7 @@ set(
     Network
     OpenGL
     PrintSupport
-    Qml
-    QuickWidgets
+    Qml # for QJSEngine
     Sql
     Svg
     Test
@@ -2558,12 +2563,11 @@ if(QT6)
   find_package(QT 6.2 NAMES Qt6 COMPONENTS Core REQUIRED)
   list(APPEND QT_EXTRA_COMPONENTS "SvgWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "Core5Compat")
-else()
-  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
-endif()
-if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "Quick")
   list(APPEND QT_EXTRA_COMPONENTS "QuickControls2")
+  list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
+else()
+  find_package(QT 5.12 NAMES Qt5 COMPONENTS Core REQUIRED)
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2959,8 +2963,16 @@ target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PRIVATE Reverb)
 
 # Rubberband
-find_package(rubberband REQUIRED)
-target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
+option(RUBBERBAND "Enable the rubberband engine for pitch-bending" ON)
+if(RUBBERBAND)
+  find_package(rubberband REQUIRED)
+  target_link_libraries(mixxx-lib PRIVATE rubberband::rubberband)
+  target_compile_definitions(mixxx-lib PUBLIC __RUBBERBAND__)
+  target_sources(mixxx-lib PRIVATE
+    src/effects/backends/builtin/pitchshifteffect.cpp
+    src/engine/bufferscalers/enginebufferscalerubberband.cpp
+  )
+endif()
 
 # SndFile
 find_package(SndFile REQUIRED)

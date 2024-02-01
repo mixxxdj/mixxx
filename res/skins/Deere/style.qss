@@ -1658,6 +1658,12 @@ WPushButton[value="2"]:hover,
 #HotcueButton[light="true"] {
     color: #1f1e1e;
 }
+#HotcueButton[light="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_dark_48px.svg) no-repeat center center;
+}
+#HotcueButton[dark="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_light_48px.svg) no-repeat center center;
+}
 
 #PlayToggle {
   background-color: none;

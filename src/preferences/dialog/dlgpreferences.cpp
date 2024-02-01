@@ -7,6 +7,7 @@
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
+#include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
@@ -42,7 +43,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif // __MODPLUG__
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
 
@@ -572,7 +573,7 @@ QRect DlgPreferences::getDefaultGeometry() {
 }
 
 void DlgPreferences::fixSliderStyle() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // Only used on macOS where the default slider style has several issues:
     // - the handle is semi-transparent
     // - the slider is higher than the space we give it, which causes that:

@@ -38,7 +38,7 @@ EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
     return pEffectChainPreset;
 }
 
-EffectChainPresetPointer createEmptyChainPreset() {
+EffectChainPresetPointer createEmptyReadOnlyChainPreset() {
     EffectManifestPointer pEmptyManifest(new EffectManifest());
     pEmptyManifest->setName(kNoEffectString);
     // Center the Super knob, eliminates the colored (bipolar) knob ring
@@ -394,6 +394,20 @@ void EffectChainPresetManager::setPresetOrder(
                 m_effectChainPresets.value(chainPresetName));
     }
 
+    // After having changed the presets order in DlgPrefEffects, we received the
+    // new lists. The '---' was not displayed there, so it's not in the list.
+    // Make sure the empty preset '---' is the first item in the list.
+    const auto& pEmptyPreset = m_effectChainPresets.value(kNoEffectString);
+    VERIFY_OR_DEBUG_ASSERT(pEmptyPreset) {
+        return;
+    }
+    int index = m_effectChainPresetsSorted.indexOf(pEmptyPreset);
+    if (index == -1) { // not in list, re-add it
+        m_effectChainPresetsSorted.prepend(pEmptyPreset);
+    } else if (index != 0) { // not first item, move to top
+        m_effectChainPresetsSorted.move(index, 0);
+    }
+
     emit effectChainPresetListUpdated();
 }
 
@@ -409,7 +423,9 @@ void EffectChainPresetManager::setQuickEffectPresetOrder(
                 m_effectChainPresets.value(chainPresetName));
     }
 
-    // Ensure empty '---' preset is the first list item
+    // After having changed the presets order in DlgPrefEffects, we received the
+    // new lists. The '---' was not displayed there, so it's not in the list.
+    // Make sure the empty preset '---' is the first item in the list.
     const auto& pEmptyPreset = m_effectChainPresets.value(kNoEffectString);
     VERIFY_OR_DEBUG_ASSERT(pEmptyPreset) {
         return;
@@ -612,8 +628,9 @@ void EffectChainPresetManager::resetToDefaults() {
     prependRemainingPresetsToLists();
 
     // Re-add the empty chain preset
-    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyReadOnlyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
+    m_effectChainPresetsSorted.prepend(pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
 
     emit effectChainPresetListUpdated();
@@ -658,6 +675,13 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     }
     file.close();
     return success;
+}
+
+// static
+EffectChainPresetPointer EffectChainPresetManager::createEmptyNamelessChainPreset() {
+    auto pPreset = EffectChainPresetPointer::create(EffectChainPreset());
+    pPreset->setName("");
+    return pPreset;
 }
 
 EffectManifestPointer EffectChainPresetManager::getDefaultEqEffect() {
@@ -705,6 +729,10 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
             QDomElement chainElement = chainNode.toElement();
             EffectChainPresetPointer pPreset =
                     EffectChainPresetPointer::create(chainElement);
+            // Shouldn't happen, see EffectSlot::loadEffectInner
+            VERIFY_OR_DEBUG_ASSERT(pPreset->name() != kNoEffectString) {
+                pPreset->setName("");
+            }
             standardEffectChainPresets.append(pPreset);
         }
     }
@@ -782,8 +810,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // It will not be visible in the effects preferences.
     // Note: we also need to take care of this preset in resetToDefaults() and
     // setQuickEffectPresetOrder(), both called from DlgPrefEffects
-    EffectChainPresetPointer pEmptyChainPreset = createEmptyChainPreset();
+    EffectChainPresetPointer pEmptyChainPreset = createEmptyReadOnlyChainPreset();
     m_effectChainPresets.insert(pEmptyChainPreset->name(), pEmptyChainPreset);
+    m_effectChainPresetsSorted.prepend(pEmptyChainPreset);
     m_quickEffectChainPresetsSorted.prepend(pEmptyChainPreset);
 
     emit effectChainPresetListUpdated();
@@ -896,6 +925,17 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     QDomElement chainsElement = pDoc->createElement(EffectXml::kChainsRoot);
     rackElement.appendChild(chainsElement);
     for (const auto& pPreset : std::as_const(data.standardEffectChainPresets)) {
+        // Don't store the empty '---' preset.
+        if (pPreset->name() == kNoEffectString) {
+            // It must not have any effects loaded. If it has, clear the name.
+            // See readEffectsXml() for explanation.
+            VERIFY_OR_DEBUG_ASSERT(pPreset->isEmpty()) {
+                pPreset->setName("");
+            }
+            else {
+                continue;
+            }
+        }
         chainsElement.appendChild(pPreset->toXml(pDoc));
     }
 
@@ -909,6 +949,11 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     QDomElement chainPresetListElement =
             pDoc->createElement(EffectXml::kChainPresetList);
     for (const auto& pPreset : std::as_const(m_effectChainPresetsSorted)) {
+        // Don't store the empty '---' preset in the main preset list,
+        // it won't be exported anyway.
+        if (pPreset->name() == kNoEffectString) {
+            continue;
+        }
         XmlParse::addElement(*pDoc,
                 chainPresetListElement,
                 EffectXml::kChainPresetName,
@@ -920,7 +965,7 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
     QDomElement quickEffectChainPresetListElement =
             pDoc->createElement(EffectXml::kQuickEffectList);
     for (const auto& pPreset : std::as_const(m_quickEffectChainPresetsSorted)) {
-        // Don't store the empty '---' in the QuickEffect preset list
+        // Same here, don't store the empty '---' preset
         if (pPreset->name() == kNoEffectString) {
             continue;
         }

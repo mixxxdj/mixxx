@@ -33,6 +33,7 @@
                     <TooltipId>text</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
                     <Group><Variable name="group"/></Group>
+                    <Property>titleInfo</Property>
                     <Elide>right</Elide>
                   </TrackProperty>
 

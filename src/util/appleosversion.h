@@ -2,4 +2,4 @@
 
 #include <QString>
 
-QString getMacOsVersion();
+QString getAppleOsVersion();

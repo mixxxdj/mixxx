@@ -53,6 +53,7 @@
                               padding-top: 2px;}
                             </Style>
                             <Group>[PreviewDeck1]</Group>
+                            <Property>titleInfo</Property>
                             <SizePolicy>me,min</SizePolicy>
                             <Elide>right</Elide>
                           </TrackProperty>

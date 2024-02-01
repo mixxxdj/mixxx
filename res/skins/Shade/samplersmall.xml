@@ -65,6 +65,7 @@
                       padding-top: 2px;}
                   </Style>
                   <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                  <Property>titleInfo</Property>
                   <Elide>right</Elide>
                 </TrackProperty>
                 <!-- Alternative "TITLE ONLY" display
