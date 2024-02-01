@@ -1575,6 +1575,15 @@ if(APPLE)
       src/soundio/soundmanagerios.mm
       src/util/screensaverios.mm
     )
+
+    option(IOS_ITUNES_LIBRARY "Native iOS music library integration" ON)
+    if(IOS_ITUNES_LIBRARY)
+      target_sources(mixxx-lib PRIVATE
+        src/library/itunes/itunesiosimporter.mm
+      )
+      target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+      target_compile_definitions(mixxx-lib PUBLIC __IOS_ITUNES_LIBRARY__)
+    endif()
   else()
     target_sources(mixxx-lib PRIVATE
       src/util/darkappearance.mm
