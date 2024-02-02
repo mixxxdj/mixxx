@@ -41,6 +41,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     /// the dialog from all tracks. This discards pending changes.
     void slotTrackChanged(TrackId trackId);
 
+    // void focusField(const QString& property);
+
     void slotColorButtonClicked();
     void slotColorPicked(const mixxx::RgbColor::optional_t& newColor);
 
@@ -53,6 +55,7 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
 
     void slotReloadCoverArt();
+    // void slotKeyTextChanged();
 
   private:
     void init();
@@ -70,6 +73,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void updateCoverArtFromTracks();
     void trackColorDialogSetColorStyleButton(const mixxx::RgbColor::optional_t& color,
             bool variousColors = false);
+    // mixxx::UpdateResult updateKeyText();
+    // void displayKeyText();
 
     TrackPointer getTrackFromSetById(TrackId trackId) {
         DEBUG_ASSERT(!m_pLoadedTracks.isEmpty());
@@ -84,6 +89,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
 
     QHash<TrackId, TrackPointer> m_pLoadedTracks;
     QList<mixxx::TrackRecord> m_trackRecords;
+
+    // QHash<QString, QWidget*> m_propertyWidgets;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;

@@ -437,6 +437,16 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     } else {
         txtDuration->setText(mixxx::Duration::formatTime(durations.first()));
     }
+
+    // Key
+
+    // ReplayGain?
+
+    // Nice to have: display 'date added' range
+    // txtDateAdded->setText(
+    //        mixxx::displayLocalDateTime(
+    //                mixxx::localDateTimeFromUtc(
+    //                        m_trackRecord.getDateAdded())));
 }
 
 void DlgTrackInfoMulti::saveTracks() {
@@ -504,6 +514,12 @@ void DlgTrackInfoMulti::saveTracks() {
         // See https://github.com/mixxxdj/mixxx/issues/12963
         pTrack->replaceRecord(rec);
     }
+
+    // If the user is editing the key and hits enter to close the dialog,
+    // the editingFinished signal will not fire in time. Therefore, invoke the
+    // connectedhandlers manually to capture any changes.
+    // If the key was unchanged or invalid the change will be ignored/rejected.
+    // static_cast<void>(updateKeyText()); // discard result
 
     connectTracksChanged();
 
@@ -741,3 +757,28 @@ void DlgTrackInfoMulti::slotReloadCoverArt() {
     }
     updateCoverArtFromTracks();
 }
+
+// mixxx::UpdateResult DlgTrackInfoMulti::updateKeyText() {
+//     const auto keyText = txtKey->text().trimmed();
+//     const auto updateResult =
+//             m_trackRecord.updateGlobalKeyNormalizeText(
+//                     keyText,
+//                     mixxx::track::io::key::USER);
+//     if (updateResult == mixxx::UpdateResult::Rejected) {
+//         // Restore the current key text
+//         displayKeyText();
+//     }
+//     return updateResult;
+// }
+
+// void DlgTrackInfoMulti::displayKeyText() {
+//     const QString keyText = m_trackRecord.getMetadata().getTrackInfo().getKeyText();
+//     txtKey->setText(keyText);
+// }
+
+// void DlgTrackInfoMulti::slotKeyTextChanged() {
+//     if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
+//         // Ensure that the text field always reflects the actual value
+//         displayKeyText();
+//     }
+// }
