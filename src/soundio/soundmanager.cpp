@@ -4,6 +4,7 @@
 
 #include <QLibrary>
 #include <QThread>
+#include <QtGlobal>
 #include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
@@ -21,6 +22,10 @@
 #include "util/sample.h"
 #include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+
+#ifdef Q_OS_IOS
+#include "soundio/soundmanagerios.h"
+#endif
 
 typedef PaError (*SetJackClientName)(const char *name);
 
@@ -249,6 +254,9 @@ void SoundManager::queryDevicesPortaudio() {
     if (!m_paInitialized) {
 #ifdef Q_OS_LINUX
         setJACKName();
+#endif
+#ifdef Q_OS_IOS
+        mixxx::initializeAVAudioSession();
 #endif
         err = Pa_Initialize();
         m_paInitialized = true;
