@@ -187,6 +187,88 @@
 				</options>
 			</control>
 
+			<!--Mode buttons-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Hot cue mode</description>
+				<status>0x91</status>
+				<midino>0x0F</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Roll mode</description>
+				<status>0x91</status>
+				<midino>0x10</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer mode</description>
+				<status>0x91</status>
+				<midino>0x11</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Sampler mode</description>
+				<status>0x91</status>
+				<midino>0x12</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Toneplay mode</description>
+				<status>0x91</status>
+				<midino>0x13</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>FX mode</description>
+				<status>0x91</status>
+				<midino>0x14</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer loop mode</description>
+				<status>0x91</status>
+				<midino>0x15</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Beatjump mode</description>
+				<status>0x91</status>
+				<midino>0x16</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+
 			<!-- NN's MIDI Channel 3 (0x92 Deck B - Standard MODE)-->
 
 			<!--Play-->
@@ -276,6 +358,7 @@
 					<normal />
 				</options>
 			</control>
+
 			<!--Vinyl button-->
 			<control>
 				<group>[Channel2]</group>
@@ -287,6 +370,7 @@
 					<script-binding />
 				</options>
 			</control>
+			
 			<!--Jog Touch B -->
 			<control>
 				<group>[Channel2]</group>
@@ -298,6 +382,7 @@
 					<script-binding />
 				</options>
 			</control>
+			
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
@@ -319,8 +404,8 @@
 					<normal />
 				</options>
 			</control>
+			
 			<!--FX Section Button-->
-
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
 				<key>enabled</key>
@@ -329,6 +414,88 @@
 				<midino>0x00</midino>
 				<options>
 					<normal />
+				</options>
+			</control>
+			
+			<!--Mode buttons-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Hot cue mode</description>
+				<status>0x92</status>
+				<midino>0x0F</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Roll mode</description>
+				<status>0x92</status>
+				<midino>0x10</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer mode</description>
+				<status>0x92</status>
+				<midino>0x11</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Sampler mode</description>
+				<status>0x92</status>
+				<midino>0x12</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Toneplay mode</description>
+				<status>0x92</status>
+				<midino>0x13</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>FX mode</description>
+				<status>0x92</status>
+				<midino>0x14</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Slicer loop mode</description>
+				<status>0x92</status>
+				<midino>0x15</midino>
+				<options>
+					<script-binding />
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.changeMode</key>
+				<description>Beatjump mode</description>
+				<status>0x92</status>
+				<midino>0x16</midino>
+				<options>
+					<script-binding />
 				</options>
 			</control>
 
@@ -1073,12 +1240,91 @@
 					<normal />
 				</options>
 			</control>
-			<!--Slicer  Not assigned: 0x20 to 0x27-->
-
+			<!--Slicer-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x20</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x21</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x22</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x23</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x24</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x25</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x26</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x27</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Toneplay-->
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 1</description>
 				<status>0x96</status>
 				<midino>0x40</midino>
@@ -1088,7 +1334,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 2</description>
 				<status>0x96</status>
 				<midino>0x41</midino>
@@ -1098,7 +1344,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 3</description>
 				<status>0x96</status>
 				<midino>0x42</midino>
@@ -1108,7 +1354,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 4</description>
 				<status>0x96</status>
 				<midino>0x43</midino>
@@ -1118,7 +1364,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 5</description>
 				<status>0x96</status>
 				<midino>0x44</midino>
@@ -1128,7 +1374,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 6</description>
 				<status>0x96</status>
 				<midino>0x45</midino>
@@ -1138,7 +1384,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 7</description>
 				<status>0x96</status>
 				<midino>0x46</midino>
@@ -1148,7 +1394,7 @@
 			</control>
 			<control>
 				<group>[Channel1]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 8</description>
 				<status>0x96</status>
 				<midino>0x47</midino>
@@ -1156,8 +1402,87 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			<!--Slicer LOOP  Not assigned: 0x60 to 0x67-->
-
+			<!--Slicer LOOP-->
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 1</description>
+				<status>0x96</status>
+				<midino>0x60</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 2</description>
+				<status>0x96</status>
+				<midino>0x61</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 3</description>
+				<status>0x96</status>
+				<midino>0x62</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 4</description>
+				<status>0x96</status>
+				<midino>0x63</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 5</description>
+				<status>0x96</status>
+				<midino>0x64</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 6</description>
+				<status>0x96</status>
+				<midino>0x65</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 7</description>
+				<status>0x96</status>
+				<midino>0x66</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel1]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 8</description>
+				<status>0x96</status>
+				<midino>0x67</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Beatjump-->
 			<control>
 				<group>[Channel1]</group>
@@ -1810,12 +2135,91 @@
 					<normal />
 				</options>
 			</control>
-			<!--Slicer  Not assigned: 0x20 to 0x27-->
-
+			<!--Slicer-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x20</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x21</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x22</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x23</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x24</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x25</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x26</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x27</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Toneplay-->
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 1</description>
 				<status>0x97</status>
 				<midino>0x40</midino>
@@ -1825,7 +2229,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 2</description>
 				<status>0x97</status>
 				<midino>0x41</midino>
@@ -1835,7 +2239,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 3</description>
 				<status>0x97</status>
 				<midino>0x42</midino>
@@ -1845,7 +2249,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 4</description>
 				<status>0x97</status>
 				<midino>0x43</midino>
@@ -1855,7 +2259,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 5</description>
 				<status>0x97</status>
 				<midino>0x44</midino>
@@ -1865,7 +2269,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 6</description>
 				<status>0x97</status>
 				<midino>0x45</midino>
@@ -1875,7 +2279,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 7</description>
 				<status>0x97</status>
 				<midino>0x46</midino>
@@ -1885,7 +2289,7 @@
 			</control>
 			<control>
 				<group>[Channel2]</group>
-				<key>DJCi300.tonePlay</key>
+				<key>DJCi300.toneplay</key>
 				<description>PAD 8</description>
 				<status>0x97</status>
 				<midino>0x47</midino>
@@ -1893,8 +2297,87 @@
 					<Script-Binding/>
 				</options>
 			</control>
-			<!--Slicer LOOP  Not assigned : 0x60 to 0x67-->
-
+			<!--Slicer LOOP-->
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 1</description>
+				<status>0x97</status>
+				<midino>0x60</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 2</description>
+				<status>0x97</status>
+				<midino>0x61</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 3</description>
+				<status>0x97</status>
+				<midino>0x62</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 4</description>
+				<status>0x97</status>
+				<midino>0x63</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 5</description>
+				<status>0x97</status>
+				<midino>0x64</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 6</description>
+				<status>0x97</status>
+				<midino>0x65</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 7</description>
+				<status>0x97</status>
+				<midino>0x66</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
+			<control>
+				<group>[Channel2]</group>
+				<key>DJCi300.slicerButton</key>
+				<description>PAD 8</description>
+				<status>0x97</status>
+				<midino>0x67</midino>
+				<options>
+					<Script-Binding/>
+				</options>
+			</control>
 			<!--Beatjump-->
 			<control>
 				<group>[Channel2]</group>
