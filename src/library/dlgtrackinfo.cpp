@@ -599,14 +599,13 @@ void DlgTrackInfo::saveTrack() {
         }
     }
 
-    // First, disconnect the track changed signal. Otherwise we signal ourselves
-    // and repopulate all these fields.
-    const QSignalBlocker signalBlocker(this);
-
     // Special case handling for the comment field that is not
     // updated by the editingFinished signal.
     m_trackRecord.refMetadata().refTrackInfo().setComment(txtComment->toPlainText());
 
+    // First, disconnect the track changed signal. Otherwise we signal ourselves
+    // and repopulate all these fields.
+    const QSignalBlocker signalBlocker(this);
     // If the user is editing the bpm or key and hits enter to close DlgTrackInfo,
     // the editingFinished signal will not fire in time. Invoke the connected
     // handlers manually to capture any changes. If the bpm or key was unchanged
@@ -615,10 +614,8 @@ void DlgTrackInfo::saveTrack() {
     static_cast<void>(updateKeyText()); // discard result
 
     // Update the cached track
+    // The dialog is updated and repopulated by the Track::changed() signal.
     m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
-
-    // Repopulate the dialog and update the UI
-    updateFromTrack(*m_pLoadedTrack);
 }
 
 void DlgTrackInfo::clear() {
