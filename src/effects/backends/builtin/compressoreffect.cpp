@@ -159,8 +159,8 @@ void CompressorEffect::processChannel(
     }
 
     // Output gain
-    CSAMPLE gainParamDB = static_cast<CSAMPLE>(m_pGain->value());
-    SampleUtil::applyGain(pOutput, db2ratio(gainParamDB), numSamples);
+    CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(m_pGain->value()));
+    SampleUtil::applyGain(pOutput, gain, numSamples);
 
     // Clipping
     if (m_pClipping->toInt() == static_cast<int>(Clipping::ClippingOn)) {
@@ -171,21 +171,22 @@ void CompressorEffect::processChannel(
 void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
         CSAMPLE* pOutput,
         const SINT& numSamples) {
-    CSAMPLE makeUpStateDB = pState->previousMakeUpGain;
+    double makeUpStateDB = pState->previousMakeUpGain;
     CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
     if (maxSample > 0) {
-        CSAMPLE maxSampleDB = ratio2db(maxSample);
-        CSAMPLE minGainReductionDB = -maxSampleDB + kMakeUpTarget;
+        double maxSampleDB = ratio2db(maxSample);
+        double minGainReductionDB = -maxSampleDB + kMakeUpTarget;
         makeUpStateDB = kMakeUpAttackCoeff * minGainReductionDB +
                 (1 - kMakeUpAttackCoeff) * makeUpStateDB;
-        CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
+        double levelDB = makeUpStateDB + maxSampleDB;
         // logarithmic smoothing
         if (levelDB > -1.0) {
-            makeUpStateDB = log10f(levelDB + 2.0f) - 1.0f - maxSampleDB;
+            makeUpStateDB = log10(levelDB + 2.0) - 1.0 - maxSampleDB;
         }
 
         pState->previousMakeUpGain = makeUpStateDB;
-        SampleUtil::applyGain(pOutput, db2ratio(makeUpStateDB), numSamples);
+        CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(makeUpStateDB));
+        SampleUtil::applyGain(pOutput, gain, numSamples);
     }
 }
 
@@ -193,16 +194,14 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
         const mixxx::EngineParameters& engineParameters,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput) {
-    CSAMPLE thresholdParam = static_cast<CSAMPLE>(m_pThreshold->value());
-    CSAMPLE ratioParam = static_cast<CSAMPLE>(m_pRatio->value());
-    CSAMPLE kneeParam = static_cast<CSAMPLE>(m_pKnee->value());
-    CSAMPLE kneeHalf = kneeParam / 2.0f;
-    CSAMPLE attackCoeff = (float)exp(
-            -1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
-    CSAMPLE releaseCoeff = (float)exp(
-            -1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
+    double thresholdParam = m_pThreshold->value();
+    double ratioParam = m_pRatio->value();
+    double kneeParam = m_pKnee->value();
+    double kneeHalf = kneeParam / 2.0f;
+    double attackCoeff = exp(-1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
+    double releaseCoeff = exp(-1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
 
-    CSAMPLE stateDB = pState->previousStateDB;
+    double stateDB = pState->previousStateDB;
     SINT numSamples = engineParameters.samplesPerBuffer();
     int channelCount = engineParameters.channelCount();
     for (SINT i = 0; i < numSamples; i += channelCount) {
@@ -213,14 +212,14 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
             continue;
         }
 
-        CSAMPLE maxSampleDB = ratio2db(maxSample);
-        CSAMPLE overDB = maxSampleDB - thresholdParam;
+        double maxSampleDB = ratio2db(maxSample);
+        double overDB = maxSampleDB - thresholdParam;
         if (overDB <= -kneeHalf) {
-            overDB = 0.0f;
+            overDB = 0.0;
         } else if (overDB > -kneeHalf && overDB <= kneeHalf) {
-            overDB = 0.5f * (overDB + kneeHalf) * (overDB + kneeHalf) / kneeParam;
+            overDB = 0.5 * (overDB + kneeHalf) * (overDB + kneeHalf) / kneeParam;
         }
-        CSAMPLE compressedDB = overDB * (1.0f / ratioParam - 1.0f);
+        double compressedDB = overDB * (1.0 / ratioParam - 1.0);
 
         // attack/release
         if (compressedDB < stateDB) {
@@ -229,7 +228,7 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
             stateDB = compressedDB + releaseCoeff * (stateDB - compressedDB);
         }
 
-        CSAMPLE gain = db2ratio(stateDB);
+        CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(stateDB));
         pOutput[i] = pInput[i] * gain;
         pOutput[i + 1] = pInput[i + 1] * gain;
     }

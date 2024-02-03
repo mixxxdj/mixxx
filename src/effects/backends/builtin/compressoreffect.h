@@ -17,8 +17,8 @@ class CompressorGroupState : public EffectState {
   public:
     CompressorGroupState(const mixxx::EngineParameters& engineParameters);
 
-    CSAMPLE previousStateDB;
-    CSAMPLE previousMakeUpGain;
+    double previousStateDB;
+    double previousMakeUpGain;
 };
 
 class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
