@@ -1040,7 +1040,7 @@ void DlgPrefMixer::setUpMainEQ() {
     if (configuredIndex == -1) {
         comboBoxMainEq->setCurrentIndex(0);
     }
-    // Set index and create required sliders and labels
+    // Set index and show/hide required sliders and labels
     comboBoxMainEq->setCurrentIndex(configuredIndex);
 
     // Load parameters from preferences and set sliders
@@ -1075,7 +1075,7 @@ void DlgPrefMixer::updateMainEQ() {
     const EffectManifestPointer pLoadedManifest = pEffectSlot->getManifest();
     int loadedIndex = pLoadedManifest ? comboBoxMainEq->findData(pLoadedManifest->uniqueId()) : 0;
     if (loadedIndex != comboBoxMainEq->currentIndex()) {
-        // Set index and create required sliders and labels
+        // Set index and show/hide and update required sliders and labels
         comboBoxMainEq->setCurrentIndex(loadedIndex);
     }
 
