@@ -644,7 +644,7 @@ void DlgPrefMixer::slotMainEQParameterSliderChanged(int value) {
 
     // Update slider label
     int index = m_mainEQSliders.indexOf(pSlider);
-    QLabel* pValueLabel = m_mainEQValues[index];
+    QLabel* pValueLabel = m_mainEQValueLabels[index];
     VERIFY_OR_DEBUG_ASSERT(pValueLabel) {
         return;
     }
@@ -958,7 +958,7 @@ void DlgPrefMixer::setUpMainEQ() {
             slider_6,
             slider_7,
     };
-    m_mainEQValues = {
+    m_mainEQValueLabels = {
             label_b0,
             label_b1,
             label_b2,
@@ -1125,7 +1125,7 @@ void DlgPrefMixer::slotMainEqEffectChanged(int effectIndex) {
     for (int i = 0; i < m_mainEQSliders.count(); ++i) {
         QLabel* pCenterFreqLabel = m_mainEQLabels[i];
         QSlider* pSlider = m_mainEQSliders[i];
-        QLabel* pValueLabel = m_mainEQValues[i];
+        QLabel* pValueLabel = m_mainEQValueLabels[i];
 
         if (i >= params.count() ||
                 params[i]->parameterType() != EffectManifestParameter::ParameterType::Knob) {
