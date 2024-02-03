@@ -3231,51 +3231,6 @@
 				<on>0x7f</on>
 				<off>0x0</off>
 			</output>
-			<!-- LED Beat Align (Track end warning)-->
-			<output>
-				<group>[Channel1]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x91</status>
-				<midino>0x1C</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x91</status>
-				<midino>0x1D</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x92</status>
-				<midino>0x1C</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>end_of_track</key>
-				<description>Auto DJ On</description>
-				<minimum>0.5</minimum>
-				<maximum>1</maximum>
-				<status>0x92</status>
-				<midino>0x1D</midino>
-				<on>0x7f</on>
-				<off>0x0</off>
-			</output>
 			<!--LED HOT CUE (Normal Mode)-->
 			<output>
 				<group>[Channel1]</group>

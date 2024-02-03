@@ -32,11 +32,10 @@
 // * SLICER/SLICER LOOP
 //      - Make loop size changeable on the fly (perhaps using in/out loop?)
 //      - Update slicer to support scratching backwards when enabled
-// * SCRATCHING: Fix so that jogging is possible again (MEDIUM PRIORITY)
+// * SCRATCHING: Fix so that jogging is possible again (HIGH PRIORITY)
 //
-// * BEATMATCH GUIDE (MEDIUM PRIORITY)
-//
-// * TONEPLAY: Map shift buttons (LOW PRIORITY)
+// * BEATMATCH GUIDE
+//      - Make LEDS flash upon matching
 //
 // ****************************************************************************
 var DJCi300 = {};
@@ -69,8 +68,12 @@ DJCi300.padModeFX = 5;
 DJCi300.padModeSlicerloop = 6;
 DJCi300.padModeBeatjump = 7;
 
+// Beatmatch tolerances
+DJCi300.beatmatchTempoTolerance = .1;
+DJCi300.beatmatchAlignTolerance = .1;
+
 // Timer lengths
-DJCi300.wheelTimerLength = 25;
+DJCi300.wheelTimerLength = 50;
 
 // Determines how fast the wheel must be moving to be considered "slipping"
 DJCi300.slipThreshold = 0.01;
@@ -149,26 +152,97 @@ DJCi300.init = function() {
     engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
 
     // Connect the VUMeters
-    engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
-    engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
-	engine.getValue("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
-    engine.getValue("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
+    engine.makeConnection("[Channel1]", "VuMeter", DJCi300.vuMeterUpdateDeck);
+	engine.getValue("[Channel1]", "VuMeter", DJCi300.vuMeterUpdateDeck);
+    engine.makeConnection("[Channel2]", "VuMeter", DJCi300.vuMeterUpdateDeck);
+	engine.getValue("[Channel2]", "VuMeter", DJCi300.vuMeterUpdateDeck);
+    engine.makeConnection("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMaster);
+    engine.makeConnection("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMaster);
+	engine.getValue("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMaster);
+    engine.getValue("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMaster);
 
     // Connect the LED updates
-    engine.connectControl("[Channel1]", "pitch", "DJCi300.updateToneplayLED");
-    engine.connectControl("[Channel2]", "pitch", "DJCi300.updateToneplayLED");
+    engine.makeConnection("[Channel1]", "pitch", DJCi300.updateToneplayLED);
+    engine.makeConnection("[Channel2]", "pitch", DJCi300.updateToneplayLED);
 
     // Connect slicer timers
-    engine.connectControl("[Channel1]", "beat_distance", "DJCi300.updateSlicerBeat");
-    engine.connectControl("[Channel2]", "beat_distance", "DJCi300.updateSlicerBeat");
+    engine.makeConnection("[Channel1]", "beat_distance", DJCi300.updateSlicerBeat);
+    engine.makeConnection("[Channel2]", "beat_distance", DJCi300.updateSlicerBeat);
+
+    // Connect beatmatch functions
+    engine.makeConnection("[Channel1]", "bpm", DJCi300.updateBeatmatchTempoLED);
+    engine.makeConnection("[Channel2]", "bpm", DJCi300.updateBeatmatchTempoLED);
+    engine.makeConnection("[Channel1]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
+    engine.makeConnection("[Channel2]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
+};
+
+// Update beatmatch tempo LEDs
+DJCi300.updateBeatmatchTempoLED = function(_value, _group, _control) {
+    deck1tempo = engine.getValue("[Channel1]", "bpm");
+    deck2tempo = engine.getValue("[Channel2]", "bpm");
+    
+    // If successfully synced, turn all lights off
+    if (Math.abs(deck1tempo - deck2tempo) < DJCi300.beatmatchTempoTolerance) {
+        midi.sendShortMsg(0x91, 0x1E, 0x00);
+        midi.sendShortMsg(0x91, 0x1F, 0x00);
+        midi.sendShortMsg(0x92, 0x1E, 0x00);
+        midi.sendShortMsg(0x92, 0x1F, 0x00);
+    // If deck 1 is faster, slow down 1 and speed up 2
+    } else if (deck1tempo > deck2tempo) {
+        midi.sendShortMsg(0x91, 0x1E, 0x7F);
+        midi.sendShortMsg(0x91, 0x1F, 0x00);
+        midi.sendShortMsg(0x92, 0x1E, 0x00);
+        midi.sendShortMsg(0x92, 0x1F, 0x7F);
+    // If deck 2 is faster, slow down 2 and speed up 1
+    } else if (deck1tempo < deck2tempo) {
+        midi.sendShortMsg(0x91, 0x1E, 0x00);
+        midi.sendShortMsg(0x91, 0x1F, 0x7F);
+        midi.sendShortMsg(0x92, 0x1E, 0x7F);
+        midi.sendShortMsg(0x92, 0x1F, 0x00);
+    }
+};
+
+// Update beatmatch align LEDs
+DJCi300.updateBeatmatchAlignLED = function(_value, _group, _control) {
+    deck1Align = engine.getValue("[Channel1]", "beat_distance");
+    deck2Align = engine.getValue("[Channel2]", "beat_distance");
+
+    // Because beat_distance resets to 0 every new beat, it's possible for the two decks to have
+    // very different beat values and still be almost aligned. So we must adjust for this
+    if (Math.abs(deck1Align - deck2Align) > .5) {
+        // Add 1 to the smaller number to compensate for roll over
+        if (deck1Align < deck2Align) {
+            deck1Align += 1;
+        } else {
+            deck2Align += 1;
+        }
+    }
+
+    // If successfully synced, or if one of the songs are paused, turn all lights off
+    if ((Math.abs(deck1Align - deck2Align) < DJCi300.beatmatchAlignTolerance) ||
+        (engine.getValue("[Channel1]", "play") === 0) ||
+        (engine.getValue("[Channel2]", "play") === 0)) {
+        midi.sendShortMsg(0x91, 0x1C, 0x00);
+        midi.sendShortMsg(0x91, 0x1D, 0x00);
+        midi.sendShortMsg(0x92, 0x1C, 0x00);
+        midi.sendShortMsg(0x92, 0x1D, 0x00);
+    // If deck 1 is ahead, push 1 back and 2 ahead
+    } else if (deck1Align > deck2Align) {
+        midi.sendShortMsg(0x91, 0x1C, 0x7F);
+        midi.sendShortMsg(0x91, 0x1D, 0x00);
+        midi.sendShortMsg(0x92, 0x1C, 0x00);
+        midi.sendShortMsg(0x92, 0x1D, 0x7F);
+    // If deck 2 is ahead, push 2 back and 1 ahead
+    } else if (deck1Align < deck2Align) {
+        midi.sendShortMsg(0x91, 0x1C, 0x00);
+        midi.sendShortMsg(0x91, 0x1D, 0x7F);
+        midi.sendShortMsg(0x92, 0x1C, 0x7F);
+        midi.sendShortMsg(0x92, 0x1D, 0x00);
+    }
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
