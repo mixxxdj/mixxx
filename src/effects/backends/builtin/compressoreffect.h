@@ -11,6 +11,11 @@
 namespace {
 constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
 constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0f;
+
+double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
+    return exp(-1000.0 / (paramMs * engineParameters.sampleRate()));
+}
+
 } // anonymous namespace
 
 class CompressorGroupState : public EffectState {
@@ -18,6 +23,10 @@ class CompressorGroupState : public EffectState {
     CompressorGroupState(const mixxx::EngineParameters& engineParameters);
 
     double previousStateDB;
+    double previousAttackParamMs;
+    double previousAttackCoeff;
+    double previousReleaseParamMs;
+    double previousReleaseCoeff;
     double previousMakeUpGain;
 };
 

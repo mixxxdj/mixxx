@@ -123,6 +123,10 @@ CompressorGroupState::CompressorGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
           previousStateDB(0),
+          previousAttackParamMs(10),
+          previousAttackCoeff(calculateBallistics(10, engineParameters)),
+          previousReleaseParamMs(150),
+          previousReleaseCoeff(calculateBallistics(150, engineParameters)),
           previousMakeUpGain(0) {
 }
 
@@ -198,8 +202,22 @@ void CompressorEffect::applyCompression(CompressorGroupState* pState,
     double ratioParam = m_pRatio->value();
     double kneeParam = m_pKnee->value();
     double kneeHalf = kneeParam / 2.0f;
-    double attackCoeff = exp(-1000.0 / (m_pAttack->value() * engineParameters.sampleRate()));
-    double releaseCoeff = exp(-1000.0 / (m_pRelease->value() * engineParameters.sampleRate()));
+
+    double attackParamMs = m_pAttack->value();
+    double attackCoeff = pState->previousAttackCoeff;
+    if (attackParamMs != pState->previousAttackParamMs) {
+        attackCoeff = calculateBallistics(attackParamMs, engineParameters);
+        pState->previousAttackParamMs = attackParamMs;
+        pState->previousAttackCoeff = attackCoeff;
+    }
+
+    double releaseParamMs = m_pRelease->value();
+    double releaseCoeff = pState->previousReleaseCoeff;
+    if (releaseParamMs != pState->previousReleaseParamMs) {
+        releaseCoeff = calculateBallistics(releaseParamMs, engineParameters);
+        pState->previousReleaseParamMs = releaseParamMs;
+        pState->previousReleaseCoeff = releaseCoeff;
+    }
 
     double stateDB = pState->previousStateDB;
     SINT numSamples = engineParameters.samplesPerBuffer();
