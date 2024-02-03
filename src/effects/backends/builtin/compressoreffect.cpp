@@ -59,7 +59,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setDescription(
             QObject::tr("The Ratio knob determines how much the signal is "
                         "attenuated above the chosen threshold. "
-                        "For a ratio of 4:1, one dB remains for every 4dB of "
+                        "For a ratio of 4:1, one dB remains for every four dB of "
                         "input signal above the threshold. "
                         "At a ratio of 1:1 no compression is happening, as the "
                         "input is exactly the output"));
