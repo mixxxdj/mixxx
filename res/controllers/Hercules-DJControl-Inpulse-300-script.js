@@ -38,8 +38,6 @@
 //
 // * TONEPLAY: Map shift buttons (LOW PRIORITY)
 //
-// * BEATJUMP: Add LEDs (LOW PRIORITY)
-//
 // ****************************************************************************
 var DJCi300 = {};
 ///////////////////////////////////////////////////////////////
@@ -111,6 +109,12 @@ DJCi300.init = function() {
     DJCi300.padMode = {
         1: DJCi300.padModeHotcue,
         2: DJCi300.padModeHotcue
+    };
+
+    // Toneplay offset (shifts the toneplay keyboard)
+    DJCi300.toneplayOffset = {
+        1: 0,
+        2: 0
     };
 
     // Slicer storage (stores slicer button positions)
@@ -335,12 +339,6 @@ DJCi300.changeMode = function(channel, control, value, _status, group) {
     var deck = channel;
     DJCi300.padMode[deck] = control - 15;
 
-    print(deck)
-    print(deck)
-    print(deck)
-    print(deck)
-    print(deck)
-
     // We only need to trigger certain functions for slicer and slicerloop
     // But you could theoretically mod this to do cool stuff when entering other modes as well
     if (((DJCi300.padMode[deck] === DJCi300.padModeSlicer) ||
@@ -350,7 +348,7 @@ DJCi300.changeMode = function(channel, control, value, _status, group) {
 };
 
 // Toneplay
-DJCi300.toneplay = function(channel, control, value, status, _group) {
+DJCi300.toneplay = function(channel, control, value, _status, _group) {
     const deck = channel - 5;
     const button = control - 0x40 + 1;
 
@@ -368,14 +366,23 @@ DJCi300.toneplay = function(channel, control, value, status, _group) {
         }
 
         // Adjust pitch
-        // Buttons 1-4 are +0 to +3 semitones
-        // Buttons 5-8 are -4 to -1 semitones
-        // This mimics the original Inpulse 300's toneplay
         engine.setValue("[Channel" + deck + "]", "reset_key", 1);
+        // Apply offset
+        if (DJCi300.toneplayOffset[deck] >= 0) {
+            for (var i = 0; i < DJCi300.toneplayOffset[deck]; i++) {
+                engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
+            }
+        } else {
+            for (i = 0; i > DJCi300.toneplayOffset[deck]; i--) {
+                engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
+            }
+        }
         if (button <= 4) {
+            // Buttons 1-4 are +0 to +3 semitones
             for (var i = 1; i < button; i++) {
                 engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
             }
+            // Buttons 5-8 are -4 to -1 semitones
         } else {
             for (i = 8; i >= button; i--) {
                 engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
@@ -384,10 +391,34 @@ DJCi300.toneplay = function(channel, control, value, status, _group) {
     }
 };
 
+// Toneplay shift
+DJCi300.toneplayShift = function(channel, control, value, _status, group) {
+    const deck = channel - 5;
+    const direction = (control === 0x4B) ? 1 : 0;
+
+    if (value === 0x7F) {
+        // Shift the toneplay keyboard up or down (1 means up, 0 means down)
+        // Because the keyboard ranges from -4 to 3 semitones and Mixxx can only shift
+        // up to 6 semitones, the valid range of toneplayOffset is -2 to 3
+        if (direction === 1) {
+            DJCi300.toneplayOffset[deck] = Math.min(DJCi300.toneplayOffset[deck] + 1, 3);
+        } else {
+            DJCi300.toneplayOffset[deck] = Math.max(DJCi300.toneplayOffset[deck] - 1, -2);
+        }
+        // Update LEDs (because the keyboard has changed)
+        newValue = engine.getValue(group, "pitch");
+        DJCi300.updateToneplayLED(newValue, group);
+    }
+};
+
 // Update toneplay LEDs (will change depending on pitch, even if not caused by toneplay)
 DJCi300.updateToneplayLED = function(value, group, _control) {
     var status = (group === "[Channel1]") ? 0x96 : 0x97;
+    var deck = status - 0x95;
     var control = 0x40
+
+    // Apply offset
+    value -= DJCi300.toneplayOffset[deck]
 
     // Cut off the value at -4 and 3 semitones, then round
     value = Math.min(value, 3);
@@ -402,12 +433,15 @@ DJCi300.updateToneplayLED = function(value, group, _control) {
         control = control + 8 + value;
     }
 
+    // Do the following for normal LEDs and the shifted LEDs
     // Turn off all LEDs
     for (var i = 0; i < 8; i++) {
         midi.sendShortMsg(status, 0x40 + i, 0x00);
+        midi.sendShortMsg(status, 0x40 + i + 8, 0x00);
     }
     // Turn on current LED
     midi.sendShortMsg(status, control, 0x7F);
+    midi.sendShortMsg(status, control + 8, 0x7F);
 };
 
 DJCi300.slicerInit = function(deck) {
@@ -493,8 +527,6 @@ DJCi300.updateSlicerBeat = function(_value, group, _control) {
         DJCi300.slicerBeatCount[deck] = (currentPos >= DJCi300.slicerPoints[deck][i]) ? 
             (DJCi300.slicerBeatCount[deck] + 1) : DJCi300.slicerBeatCount[deck];
     }
-    print(engine.getValue(group, "beat_closest"))
-    print(engine.getValue(group, "beat_distance"))
 
     // Move the loop if in slicer mode (not slicer loop mode)
     if (DJCi300.padMode[deck] === DJCi300.padModeSlicer) {
@@ -520,7 +552,6 @@ DJCi300.updateSlicerLED = function(deck, status) {
     // If at least 1 button is held down, light that up
     // Or in the case of 2+ buttons, light up everything between the outer 2 buttons
     if (start !== -1) {
-        // needs led offset for control
         for (i = start; i < end; i++) {
             midi.sendShortMsg(status, control + i, 0x7F);
         }
