@@ -79,13 +79,13 @@ DJCi300.slipThreshold = 0.01;
 DJCi300.slicerLoopLength = 4;
 
 DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
-    value = (value * 122) + 5;
+    value = (value * 125);
     midi.sendShortMsg(0xB0, 0x40, value);
     midi.sendShortMsg(0xB0, 0x41, value);
 };
 
 DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
-    value = (value * 122) + 5;
+    value = (value * 125);
     var status = (group === "[Channel1]") ? 0xB1 : 0xB2;
     midi.sendShortMsg(status, 0x40, value);
 };
@@ -142,21 +142,21 @@ DJCi300.init = function() {
     //Turn On Browser button LED
     midi.sendShortMsg(0x90, 0x04, 0x05);
 
-   //Softtakeover for Pitch fader
-   engine.softTakeover("[Channel1]", "rate", true);
-   engine.softTakeover("[Channel2]", "rate", true);
-   engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
-   engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
+    //Softtakeover for Pitch fader
+    engine.softTakeover("[Channel1]", "rate", true);
+    engine.softTakeover("[Channel2]", "rate", true);
+    engine.softTakeoverIgnoreNextValue("[Channel1]", "rate");
+    engine.softTakeoverIgnoreNextValue("[Channel2]", "rate");
 
-   // Connect the VUMeters
-    engine.connectControl("[Channel1]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel1]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
-	engine.getValue("[Channel2]", "vu_meter", "DJCi300.vuMeterUpdateDeck");
-    engine.connectControl("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
-    engine.connectControl("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
-	engine.getValue("[Main]", "vu_meter_left", "DJCi300.vuMeterUpdateMaster");
-    engine.getValue("[Main]", "vu_meter_right", "DJCi300.vuMeterUpdateMaster");
+    // Connect the VUMeters
+    engine.connectControl("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel1]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+	engine.getValue("[Channel2]", "VuMeter", "DJCi300.vuMeterUpdateDeck");
+    engine.connectControl("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
+    engine.connectControl("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
+	engine.getValue("[Master]", "VuMeterL", "DJCi300.vuMeterUpdateMaster");
+    engine.getValue("[Master]", "VuMeterR", "DJCi300.vuMeterUpdateMaster");
 
     // Connect the LED updates
     engine.connectControl("[Channel1]", "pitch", "DJCi300.updateToneplayLED");
