@@ -17,16 +17,6 @@ EffectManifestPointer CompressorEffect::getManifest() {
     pManifest->setEffectRampsFromDry(true);
     pManifest->setMetaknobDefault(0.0);
 
-    EffectManifestParameterPointer clipping = pManifest->addParameter();
-    clipping->setId("clipping");
-    clipping->setName(QObject::tr("Clipping"));
-    clipping->setShortName(QObject::tr("Clipping"));
-    clipping->setDescription(QObject::tr("Hard limiter to full scale"));
-    clipping->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
-    clipping->setRange(0, 1, 1);
-    clipping->appendStep(qMakePair(QObject::tr("Off"), static_cast<int>(Clipping::ClippingOff)));
-    clipping->appendStep(qMakePair(QObject::tr("On"), static_cast<int>(Clipping::ClippingOn)));
-
     EffectManifestParameterPointer autoMakeUp = pManifest->addParameter();
     autoMakeUp->setId("automakeup");
     autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
@@ -139,7 +129,6 @@ void CompressorEffect::loadEngineEffectParameters(
     m_pRelease = parameters.value("release");
     m_pGain = parameters.value("gain");
     m_pAutoMakeUp = parameters.value("automakeup");
-    m_pClipping = parameters.value("clipping");
 }
 
 void CompressorEffect::processChannel(
@@ -165,11 +154,6 @@ void CompressorEffect::processChannel(
     // Output gain
     CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(m_pGain->value()));
     SampleUtil::applyGain(pOutput, gain, numSamples);
-
-    // Clipping
-    if (m_pClipping->toInt() == static_cast<int>(Clipping::ClippingOn)) {
-        SampleUtil::applyClamp(pOutput, numSamples);
-    }
 }
 
 void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
