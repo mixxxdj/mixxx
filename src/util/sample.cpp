@@ -482,7 +482,6 @@ void SampleUtil::copyClampBuffer(CSAMPLE* M_RESTRICT pDest,
 
 // static
 void SampleUtil::applyClamp(CSAMPLE* pBuffer, SINT iNumSamples) {
-    // note: LOOP VECTORIZED.
     for (SINT i = 0; i < iNumSamples; ++i) {
         pBuffer[i] = clampSample(pBuffer[i]);
     }

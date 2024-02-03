@@ -31,8 +31,9 @@ EffectManifestPointer CompressorEffect::getManifest() {
     autoMakeUp->setId("automakeup");
     autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
     autoMakeUp->setShortName(QObject::tr("Makeup"));
-    autoMakeUp->setDescription(QObject::tr(
-            "The AutoMakeup button enables automatic makeup gain to 0 db level"));
+    autoMakeUp->setDescription(
+            QObject::tr("The Auto Makeup button enables automatic gain "
+                        "adjustment to almost 0 dBFS volume level"));
     autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     autoMakeUp->setRange(0, 1, 1);
     autoMakeUp->appendStep(qMakePair(
@@ -180,7 +181,7 @@ void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
         CSAMPLE levelDB = makeUpStateDB + maxSampleDB;
         // logarithmic smoothing
         if (levelDB > -1.0) {
-            makeUpStateDB = log10(levelDB + 2.0f) - 1.0f - maxSampleDB;
+            makeUpStateDB = log10f(levelDB + 2.0f) - 1.0f - maxSampleDB;
         }
 
         pState->previousMakeUpGain = makeUpStateDB;
