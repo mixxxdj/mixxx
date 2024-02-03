@@ -54,16 +54,10 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
         AutoMakeUpOn = 1,
     };
 
-    enum class Clipping {
-        ClippingOff = 0,
-        ClippingOn = 1,
-    };
-
     QString debugString() const {
         return getId();
     }
 
-    EngineEffectParameterPointer m_pClipping;
     EngineEffectParameterPointer m_pAutoMakeUp;
     EngineEffectParameterPointer m_pThreshold;
     EngineEffectParameterPointer m_pRatio;

@@ -235,9 +235,6 @@ class SampleUtil {
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
 
-    // Limiting every value in pBuffer to the valid range of CSAMPLE
-    static void applyClamp(CSAMPLE* pBuffer, SINT iNumSamples);
-
     // Interleave the samples in pSrc1 and pSrc2 into pDest. iNumSamples must be
     // the number of samples in pSrc1 and pSrc2, and pDest must have at least
     // space for iNumSamples*2 samples. pDest must not be an alias of pSrc1 or
