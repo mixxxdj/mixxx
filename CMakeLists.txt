@@ -1544,6 +1544,7 @@ if(APPLE)
 
   if(IOS)
     target_sources(mixxx-lib PRIVATE
+      src/soundio/soundmanagerios.mm
       src/util/screensaverios.mm
     )
   else()
