@@ -59,7 +59,7 @@ KAOSSDJ.deck = function(deckNumber) {
     this.deckNumber = deckNumber;
     this.group = `[Channel${deckNumber}]`;
     this.jogWheelsInScratchMode = true;
-    this.fx = false;
+    this.isFx = false;
 };
 
 KAOSSDJ.decks = [];
@@ -190,13 +190,13 @@ KAOSSDJ.fxKnob = function(_channel, _control, _value, _status) {
 
 KAOSSDJ.fxTouchMoveVertical = function(_channel, _control, value, _status, _group) {
     Object.values(KAOSSDJ.decks)
-        .filter(deck => deck.fx)
+        .filter(deck => deck.isFx)
         .forEach(deck => engine.setValue(`[EffectRack1_EffectUnit${deck.deckNumber}]`, "mix", value / 127));
 };
 
 KAOSSDJ.fxTouchMoveHorizontal = function(_channel, _control, value, _status, _group) {
     Object.values(KAOSSDJ.decks)
-        .filter(deck => deck.fx)
+        .filter(deck => deck.isFx)
         .forEach(deck => engine.setValue(`[EffectRack1_EffectUnit${deck.deckNumber}]`, "super1", value / 127));
 };
 
@@ -309,7 +309,7 @@ KAOSSDJ.tapButtonCallback = function(_channel, _control, value, _status, _group)
 // <SHIFT> + <TOUCHPAD X> : control super knob of QuickEffectRack for deck 1
 KAOSSDJ.fxTouchMoveVerticalShift = function(_channel, _control, value, _status, _group) {
     const deck = KAOSSDJ.decks[0];
-    if (deck.fx) {
+    if (deck.isFx) {
         const val = script.absoluteLin(value, 0, 1, 0, 127);
         engine.setValue(`[QuickEffectRack1_${deck.group}]`, "super1", val);
     }
@@ -318,7 +318,7 @@ KAOSSDJ.fxTouchMoveVerticalShift = function(_channel, _control, value, _status, 
 // <SHIFT> + <TOUCHPAD Y> : control super knob of QuickEffectRack for deck 2
 KAOSSDJ.fxTouchMoveHorizontalShift = function(_channel, _control, value, _status, _group) {
     const deck = KAOSSDJ.decks[1];
-    if (deck.fx) {
+    if (deck.isFx) {
         const val = script.absoluteLin(value, 0, 1, 0, 127);
         engine.setValue(`[QuickEffectRack1_${deck.group}]`, "super1", val);
     }
