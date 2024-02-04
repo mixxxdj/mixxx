@@ -3014,7 +3014,7 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
     case Feature::SelectInLibrary:
         return m_pTrack != nullptr;
     default:
-        DEBUG_ASSERT(!"unreachable");
+        DEBUG_ASSERT_UNREACHABLE(!"unreachable");
         return false;
     }
 }

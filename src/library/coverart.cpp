@@ -167,7 +167,7 @@ CoverInfo::LoadedImage CoverInfo::loadImage(TrackPointer pTrack) const {
     } else if (type == CoverInfo::NONE) {
         loadedImage.result = LoadedImage::Result::NoImage;
     } else {
-        DEBUG_ASSERT(!"unhandled CoverInfo::Type");
+        DEBUG_ASSERT_UNREACHABLE(!"unhandled CoverInfo::Type");
     }
     return loadedImage;
 }
@@ -210,7 +210,7 @@ QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage::Result& result) {
     case CoverInfo::LoadedImage::Result::ErrorUnknown:
         return dbg << "ErrorUnknown";
     }
-    DEBUG_ASSERT(!"unreachable");
+    DEBUG_ASSERT_UNREACHABLE(!"unreachable");
     return dbg;
 }
 

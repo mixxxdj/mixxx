@@ -683,7 +683,7 @@ bool Library::requestRemoveDir(const QString& dir, LibraryRemovalType removalTyp
         m_pTrackCollectionManager->purgeAllTracks(dir);
         break;
     default:
-        DEBUG_ASSERT(!"unreachable");
+        DEBUG_ASSERT_UNREACHABLE(!"unreachable");
     }
 
     return true;
