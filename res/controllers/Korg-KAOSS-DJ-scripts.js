@@ -72,13 +72,13 @@ for (let i = 0; i < 4; i++) { // TODO: currently only 2 decks supported. is 4 po
 KAOSSDJ.sendAllKnobLeds = function(state) {
     Object.values(MIDI_MAIN_KNOB_LEDS)
         .forEach(led => midi.sendShortMsg(MIDI_CHANNELS.KNOB_MAIN, led, state));
-    Object.values([MIDI_CHANNELS.KNOB_LEFT, MIDI_CHANNELS.KNOB_RIGHT])
+    [MIDI_CHANNELS.KNOB_LEFT, MIDI_CHANNELS.KNOB_RIGHT]
         .forEach(channel => Object.values(MIDI_DECK_KNOB_LEDS).forEach(
             led => midi.sendShortMsg(channel, led, state)));
 };
 
 KAOSSDJ.sendAllButtonLeds = function(state) {
-    Object.values([MIDI_CHANNELS.BUTTON_LEFT, MIDI_CHANNELS.BUTTON_RIGHT])
+    [MIDI_CHANNELS.BUTTON_LEFT, MIDI_CHANNELS.BUTTON_RIGHT]
         .forEach(channel => Object.values(MIDI_DECK_BUTTON_LEDS).forEach(
             led => midi.sendShortMsg(channel, led, state)));
 
