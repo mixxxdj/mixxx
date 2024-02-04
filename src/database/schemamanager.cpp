@@ -35,12 +35,20 @@ std::optional<int> readSchemaVersion(
     }
     bool ok = false;
     int schemaVersion = settingsValue.toInt(&ok);
-    VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= INITIAL_VERSION)) {
+    VERIFY_OR_DEBUG_ASSERT(ok) {
         kLogger.critical()
                 << "Invalid database schema version"
                 << settingsValue;
         return std::nullopt;
     }
+
+    VERIFY_OR_DEBUG_ASSERT((schemaVersion >= INITIAL_VERSION)) {
+        kLogger.critical()
+                << "Invalid database schema version"
+                << settingsValue;
+        return std::nullopt;
+    }
+
     return schemaVersion;
 }
 
