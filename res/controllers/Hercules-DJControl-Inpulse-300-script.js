@@ -3,14 +3,18 @@
 // ***************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Inpulse 300.
 // * Author: DJ Phatso, contributions by Kerrick Staley and BoredGuy1
-// * Version 1.3 (Jan 2024)
+// * Version 1.3 (Feb 2024)
 // * Forum: https://www.mixxx.org/forums/viewtopic.php?f=7&t=12599
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_djcontrol_inpulse_300
 //
 // Changes to v1.3
 // - Added ability to stop samplers (shift + button)
 // - Added toneplay
-// - Changed scratching (wheels now have inertia, allowing backspins, etc)
+// - Added shift + toneplay controls
+// - Added slicer/slicer loop
+// - Replaced the song end warning with an actual beatmatch guide
+// - Changed the way scratching works (wheels have inertia, allowing backspins and other tricks)
+// - Updated VU meters (replaced vu_meter with VuMeter, connectControl with makeConnection, etc)
 //
 // Changes to v1.2
 // - Code cleanup.
@@ -32,10 +36,6 @@
 // * SLICER/SLICER LOOP
 //      - Make loop size changeable on the fly (perhaps using in/out loop?)
 //      - Update slicer to support scratching backwards when enabled
-// * SCRATCHING: Fix so that jogging is possible again (HIGH PRIORITY)
-//
-// * BEATMATCH GUIDE
-//      - Make LEDS flash upon matching
 //
 // ****************************************************************************
 var DJCi300 = {};
@@ -53,10 +53,9 @@ DJCi300.scratchShiftMultiplier = 4;
 DJCi300.bendScale = 1.0;
 
 // Other scratch related options
-DJCi300.kScratchActionNone = 0;
+DJCi300.kScratchActionBend = 0;
 DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
-DJCi300.kScratchActionBend = 3;
 
 // Pad modes
 DJCi300.padModeHotcue = 0;
@@ -70,13 +69,10 @@ DJCi300.padModeBeatjump = 7;
 
 // Beatmatch tolerances
 DJCi300.beatmatchTempoTolerance = .1;
-DJCi300.beatmatchAlignTolerance = .1;
-
-// Timer lengths
-DJCi300.wheelTimerLength = 50;
+DJCi300.beatmatchAlignTolerance = .01;
 
 // Determines how fast the wheel must be moving to be considered "slipping"
-DJCi300.slipThreshold = 0.01;
+DJCi300.slipThreshold = 0.1;
 
 // Slicer variables
 DJCi300.slicerLoopLength = 4;
@@ -95,17 +91,19 @@ DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
 
 DJCi300.init = function() {
     // Scratch button state
-    DJCi300.scratchButtonState = true;
+    DJCi300.scratchButtonState = {
+        1: true,
+        2: true
+    };
     // Scratch Action
     DJCi300.scratchAction = {
-    1: DJCi300.kScratchActionNone,
-    2: DJCi300.kScratchActionNone
+        1: DJCi300.kScratchActionBend,
+        2: DJCi300.kScratchActionBend
     };
-
-    // Jogwheel timer
-    DJCi300.wheelTimer = {
-        1: 0,
-        2: 0
+    // Platter state (whether the jog wheel is pressed or not)
+    DJCi300.wheelTouchState = {
+        1: false,
+        2: false
     };
 
     // Pad mode
@@ -142,8 +140,14 @@ DJCi300.init = function() {
     midi.sendShortMsg(0x91, 0x03, 0x7F);
     midi.sendShortMsg(0x92, 0x03, 0x7F);
 
-    //Turn On Browser button LED
+    // Turn On Browser button LED
     midi.sendShortMsg(0x90, 0x04, 0x05);
+
+    // Turn On Toneplay LED
+    midi.sendShortMsg(0x96, 0x40, 0x7F);
+    midi.sendShortMsg(0x96, 0x48, 0x7F);
+    midi.sendShortMsg(0x97, 0x40, 0x7F);
+    midi.sendShortMsg(0x97, 0x48, 0x7F);
 
     //Softtakeover for Pitch fader
     engine.softTakeover("[Channel1]", "rate", true);
@@ -174,6 +178,10 @@ DJCi300.init = function() {
     engine.makeConnection("[Channel2]", "bpm", DJCi300.updateBeatmatchTempoLED);
     engine.makeConnection("[Channel1]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
     engine.makeConnection("[Channel2]", "beat_distance", DJCi300.updateBeatmatchAlignLED);
+
+    // Connect jogwheel functions
+    engine.makeConnection("[Channel1]", "scratch2", DJCi300.updateScratchAction);
+    engine.makeConnection("[Channel2]", "scratch2", DJCi300.updateScratchAction);
 
     // Ask the controller to send all current knob/slider values over MIDI, which will update
     // the corresponding GUI controls in MIXXX.
@@ -232,28 +240,30 @@ DJCi300.updateBeatmatchAlignLED = function(_value, _group, _control) {
         midi.sendShortMsg(0x92, 0x1D, 0x00);
     // If deck 1 is ahead, push 1 back and 2 ahead
     } else if (deck1Align > deck2Align) {
-        midi.sendShortMsg(0x91, 0x1C, 0x7F);
-        midi.sendShortMsg(0x91, 0x1D, 0x00);
-        midi.sendShortMsg(0x92, 0x1C, 0x00);
-        midi.sendShortMsg(0x92, 0x1D, 0x7F);
-    // If deck 2 is ahead, push 2 back and 1 ahead
-    } else if (deck1Align < deck2Align) {
         midi.sendShortMsg(0x91, 0x1C, 0x00);
         midi.sendShortMsg(0x91, 0x1D, 0x7F);
         midi.sendShortMsg(0x92, 0x1C, 0x7F);
         midi.sendShortMsg(0x92, 0x1D, 0x00);
+    // If deck 2 is ahead, push 2 back and 1 ahead
+    } else if (deck1Align < deck2Align) {
+        midi.sendShortMsg(0x91, 0x1C, 0x7F);
+        midi.sendShortMsg(0x91, 0x1D, 0x00);
+        midi.sendShortMsg(0x92, 0x1C, 0x00);
+        midi.sendShortMsg(0x92, 0x1D, 0x7F);
     }
 };
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
-DJCi300.vinylButton = function(_channel, _control, value, status, _group) {
+DJCi300.vinylButton = function(channel, control, value, status, _group) {
+    var deck = channel;
+
     if (value) {
-        if (DJCi300.scratchButtonState) {
-            DJCi300.scratchButtonState = false;
-            midi.sendShortMsg(status, 0x03, 0x00);
+        if (DJCi300.scratchButtonState[deck]) {
+            DJCi300.scratchButtonState[deck] = false;
+            midi.sendShortMsg(status, control, 0x00);
         } else {
-            DJCi300.scratchButtonState = true;
-            midi.sendShortMsg(status, 0x03, 0x7F);
+            DJCi300.scratchButtonState[deck] = true;
+            midi.sendShortMsg(status, control, 0x7F);
         }
     }
 };
@@ -271,78 +281,57 @@ DJCi300._convertWheelRotation = function(value) {
     return value < 0x40 ? 1 : -1;
 };
 
-DJCi300._isSlipping = function(group) {
-    // Function that checks whether or not the jogwheel is "slipping"
-    // (IOW it was spun with touch action, but now it's still spinning
-    // due to inertia)
+// This is called immediately after the wheel is released and we want to switch between scratching and jogging gracefully.
+// It is also connected to controls and called regularly to see if the wheel has slowed down enough.
+DJCi300.updateScratchAction = function(value, group, _control) {
+    var deck = (group === "[Channel1]") ? 1 : 2;
 
-    // If the jogwheel is at a certain speed, it is considered slipping
-    // This allows us to do tricks like backspins
-    var scratchRate = engine.getValue(group, "scratch2");
-
-    if (Math.abs(scratchRate) > DJCi300.slipThreshold) {
-        return true;
-    } else {
-        return false;
+    // Stop scratching only if the jogwheel is slow enough and the wheels are not being touched
+    if (((Math.abs(value) < DJCi300.slipThreshold)) && (engine.isScratching(deck))
+        && !DJCi300.wheelTouchState[deck]) {
+        engine.scratchDisable(deck);
+        DJCi300.scratchAction[deck] = DJCi300.kScratchActionBend;
     }
-};
-
-DJCi300._wheelRelease = function(deck) {
-    // This is called after the wheel is released and we want to
-    // switch between scratching and jogging gracefully
-    // Create a timer that disables slipping after some time (switches from scratching to bending)
-    // Reset timer (if it exists)
-    if (DJCi300.wheelTimer !== 0) {
-        engine.stopTimer(DJCi300.wheelTimer);
-        DJCi300.wheelTimer = 0;
-    }
-    // Start timer
-    DJCi300.wheelTimer = engine.beginTimer(DJCi300.wheelTimerLength,
-        function() {
-            DJCi300.wheelTimer = 0;
-            engine.scratchDisable(deck);
-            DJCi300.scratchAction[deck] = DJCi300.kScratchActionBend;
-        },
-        true);
 }
 
 // The touch action on the jog wheel's top surface
-DJCi300.wheelTouch = function(channel, control, value, _status, group) {
+DJCi300.wheelTouch = function(channel, _control, value, _status, group) {
     var deck = channel;
     if (value > 0) {
-        //  Touching the wheel.
-        if (engine.getValue("[Channel" + deck + "]", "play") !== 1 || DJCi300.scratchButtonState) {
+        // Enable scratching in vinyl mode OR if the deck is not playing
+        if ((engine.getValue(group, "play") !== 1) || (DJCi300.scratchButtonState[deck])) {
             DJCi300._scratchEnable(deck);
+            DJCi300.wheelTouchState[deck] = true;
             DJCi300.scratchAction[deck] = DJCi300.kScratchActionScratch;
         } else {
             DJCi300.scratchAction[deck] = DJCi300.kScratchActionBend;
         }
     } else {
         // Released the wheel.
-        // Only disable scratching if the wheel is not spinning
-        if (!DJCi300._isSlipping(deck)) {
-            DJCi300._wheelRelease(deck);
-        }
-        
+        DJCi300.wheelTouchState[deck] = false;
+        scratchValue = engine.getValue(group, "scratch2");
+        DJCi300.updateScratchAction(scratchValue, group);
     }
 };
 
 // The touch action on the jog wheel's top surface while holding shift
-DJCi300.wheelTouchShift = function(channel, control, value, _status, _group) {
+DJCi300.wheelTouchShift = function(channel, _control, value, _status, group) {
     var deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
         DJCi300._scratchEnable(deck);
+        DJCi300.wheelTouchState[deck] = true;
         DJCi300.scratchAction[deck] = DJCi300.kScratchActionSeek;
+    // Released the wheel.
     } else {
-        // Released the wheel.
-        engine.scratchDisable(deck);
-        DJCi300.scratchAction[deck] = DJCi300.kScratchActionNone;
+        DJCi300.wheelTouchState[deck] = false;
+        scratchValue = engine.getValue(group, "scratch2");
+        DJCi300.updateScratchAction(scratchValue, group);
     }
 };
 
-// Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCi300.scratchWheel = function(channel, control, value, status, _group) {
+// Using the jog wheel (regardless of whether surface or shift is held)
+DJCi300.jogWheel = function(_channel, _control, value, status, _group) {
     var deck;
     switch (status) {
     case 0xB1:
@@ -365,24 +354,8 @@ DJCi300.scratchWheel = function(channel, control, value, status, _group) {
             interval *  DJCi300.scratchScale *
             DJCi300.scratchShiftMultiplier);
     } else {
-        DJCi300._wheelRelease(channel);
         engine.setValue(
             "[Channel" + deck + "]", "jog", interval * DJCi300.bendScale);
-    }
-};
-
-// Bending on the jog wheel (rotating using the edge)
-DJCi300.bendWheel = function(channel, control, value, _status, group) {
-    var interval = DJCi300._convertWheelRotation(value);
-
-    // Keep scratching if the wheel is already spinning (due to inertia)
-    if (DJCi300._isSlipping) {
-        engine.scratchTick(channel, interval * DJCi300.scratchScale);
-    } else {
-    // Otherwise, switch to bending
-        DJCi300._wheelRelease(channel);
-        engine.setValue(
-            "[Channel" + channel + "]", "jog", interval * DJCi300.bendScale);
     }
 };
 
@@ -409,7 +382,7 @@ DJCi300._currentPosition = function(deck) {
 }
 
 // Mode buttons
-DJCi300.changeMode = function(channel, control, value, _status, group) {
+DJCi300.changeMode = function(channel, control, value, _status, _group) {
     var deck = channel;
     DJCi300.padMode[deck] = control - 15;
 
@@ -468,7 +441,7 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
 // Toneplay shift
 DJCi300.toneplayShift = function(channel, control, value, _status, group) {
     const deck = channel - 5;
-    const direction = (control === 0x4B) ? 1 : 0;
+    const direction = (control === 0x4D) ? 1 : 0;
 
     if (value === 0x7F) {
         // Shift the toneplay keyboard up or down (1 means up, 0 means down)
@@ -610,7 +583,7 @@ DJCi300.updateSlicerBeat = function(_value, group, _control) {
     }
 
     DJCi300.updateSlicerLED(deck, status);
-}
+};
 
 // Slicer LED update
 DJCi300.updateSlicerLED = function(deck, status) {
@@ -633,7 +606,7 @@ DJCi300.updateSlicerLED = function(deck, status) {
     } else {
         midi.sendShortMsg(status, control + Math.min(DJCi300.slicerBeatCount[deck], 7), 0x7F);
     }
-}
+};
 
 DJCi300.shutdown = function() {
     midi.sendShortMsg(0xB0, 0x7F, 0x00);
