@@ -1148,7 +1148,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
             default:
-                DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
+                DEBUG_ASSERT_UNREACHABLE(!"m_toolTipsCfg value unknown");
                 return true;
             }
         }

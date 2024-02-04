@@ -47,7 +47,7 @@ bool IndexRange::isSubrangeOf(IndexRange outerIndexRange) const {
             return (outerIndexRange.start() <= start() &&
                     outerIndexRange.end() >= end());
         }
-        DEBUG_ASSERT(!"Cannot compare ranges with different orientations");
+        DEBUG_ASSERT_UNREACHABLE(!"Cannot compare ranges with different orientations");
         return false;
     }
 
@@ -56,7 +56,7 @@ bool IndexRange::isSubrangeOf(IndexRange outerIndexRange) const {
                 outerIndexRange.end() <= end());
     }
 
-    DEBUG_ASSERT(!"Cannot compare ranges with different orientations");
+    DEBUG_ASSERT_UNREACHABLE(!"Cannot compare ranges with different orientations");
     return false;
 }
 
@@ -69,7 +69,7 @@ std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
                 return IndexRange::between(start, end);
             }
         } else {
-            DEBUG_ASSERT(!"Cannot intersect index ranges with different orientations");
+            DEBUG_ASSERT_UNREACHABLE(!"Cannot intersect index ranges with different orientations");
             return std::nullopt;
         }
     } else if (lhs.start() > lhs.end()) {
@@ -80,7 +80,7 @@ std::optional<IndexRange> intersect2(IndexRange lhs, IndexRange rhs) {
                 return IndexRange::between(start, end);
             }
         } else {
-            DEBUG_ASSERT(!"Cannot intersect index ranges with different orientations");
+            DEBUG_ASSERT_UNREACHABLE(!"Cannot intersect index ranges with different orientations");
             return std::nullopt;
         }
     } else {

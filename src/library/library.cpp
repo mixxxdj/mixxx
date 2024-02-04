@@ -610,7 +610,7 @@ void Library::slotRequestRemoveDir(const QString& dir, LibraryRemovalType remova
         m_pTrackCollectionManager->purgeAllTracks(dir);
         break;
     default:
-        DEBUG_ASSERT(!"unreachable");
+        DEBUG_ASSERT_UNREACHABLE(!"unreachable");
     }
 
     // Also update the config file if necessary so that downgrading is still

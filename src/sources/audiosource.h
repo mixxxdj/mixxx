@@ -393,7 +393,7 @@ inline QDebug operator<<(QDebug dbg, AudioSource::OpenMode openMode) {
     case AudioSource::OpenMode::Permissive:
         return dbg << "Permissive";
     default:
-        DEBUG_ASSERT(!"Unknown OpenMode");
+        DEBUG_ASSERT_UNREACHABLE(!"Unknown OpenMode");
         return dbg << "Unknown";
     }
 }
@@ -407,7 +407,7 @@ inline QDebug operator<<(QDebug dbg, AudioSource::OpenResult openResult) {
     case AudioSource::OpenResult::Failed:
         return dbg << "Failed";
     default:
-        DEBUG_ASSERT(!"Unknown OpenResult");
+        DEBUG_ASSERT_UNREACHABLE(!"Unknown OpenResult");
         return dbg << "Unknown";
     }
 }
