@@ -2942,6 +2942,10 @@ find_package(TagLib 1.11 REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE TagLib::TagLib)
 if (NOT TagLib_VERSION VERSION_LESS 2.0.0)
     message(FATAL_ERROR "Installed Taglib ${TagLib_VERSION} is not supported. Use Version >= 1.11 and < 2.0 and its development headers.")
+    # Dear package maintainer: Do not patch away this fatal error
+    # using taglib 2.0.0 will put user data at risk!!
+    # Mixxx is a complex application that needs to be adapted and tested thoroughly
+    # https://github.com/mixxxdj/mixxx/issues/12708
 endif()
 
 # Threads
