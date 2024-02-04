@@ -73,6 +73,9 @@
 * Fix showing wrong Remove hotkey [#11171](https://github.com/mixxxdj/mixxx/pull/11171) [#10761](https://github.com/mixxxdj/mixxx/issues/10761)
 * Restore "Remove from playlist" in History [#11591](https://github.com/mixxxdj/mixxx/pull/11591) [#10974](https://github.com/mixxxdj/mixxx/issues/10974)
 * Enable Lock BPM action if any selected track BPM is unlocked [#12385](https://github.com/mixxxdj/mixxx/pull/12385)
+* Order BPM action by factor, show peview (for single track) [#12701](https://github.com/mixxxdj/mixxx/pull/12701) [#10128](https://github.com/mixxxdj/mixxx/issues/10128)
+* Provide the same features in all deck track menus [#12214](https://github.com/mixxxdj/mixxx/pull/12214)
+* Track table header: Keep menu open after toggling a checkbox [#12218](https://github.com/mixxxdj/mixxx/pull/12218)
 
 ### Music Library: Sidebar & Searchbar
 
@@ -345,10 +348,12 @@
   [#12537](https://github.com/mixxxdj/mixxx/pull/12537)
 * KeyControl: fix keylock/unlock bugs, reset pitch_adjust [4710](https://github.com/mixxxdj/mixxx/pull/4710)
 * Looping: fix asserts for loop move [#11735](https://github.com/mixxxdj/mixxx/pull/11735)
+* Looping: reset loop_end_pos on eject [#12224](https://github.com/mixxxdj/mixxx/pull/12224) [#12223](https://github.com/mixxxdj/mixxx/issues/12223)
+* Fix Loop_out not seeking back [#12739](https://github.com/mixxxdj/mixxx/pull/12739) [#12742](https://github.com/mixxxdj/mixxx/pull/12742)
 * ReadAheadManager: fix loop wraparound reader condition [#11717](https://github.com/mixxxdj/mixxx/pull/11717)
 * Slip mode: consider loop for background position only if it was enabled  before slip [#11848](https://github.com/mixxxdj/mixxx/pull/11848) [#11844](https://github.com/mixxxdj/mixxx/issues/11844)
-* Looping: reset loop_end_pos on eject [#12224](https://github.com/mixxxdj/mixxx/pull/12224) [#12223](https://github.com/mixxxdj/mixxx/issues/12223)
 * Make decks' xfader assignment persistent [#12074](https://github.com/mixxxdj/mixxx/pull/12074) [#10122](https://github.com/mixxxdj/mixxx/issues/10122)
+* Fix gain issue with cloned tracks [#12435](https://github.com/mixxxdj/mixxx/pull/12435) [#10550](https://github.com/mixxxdj/mixxx/issues/10550)
 
 ### Controller Mappings
 
@@ -378,6 +383,7 @@
   [#12409](https://github.com/mixxxdj/mixxx/pull/12409)
   [#12510](https://github.com/mixxxdj/mixxx/pull/12510)
 * Various mappings: Fix `waveform_zoom` ranges [#12393](https://github.com/mixxxdj/mixxx/pull/12393)
+* Various mappings: Ensure required samplers are created [#12769](https://github.com/mixxxdj/mixxx/pull/12769)
 
 ### Controller Backend
 
@@ -431,13 +437,15 @@
 * Remove deprecated ControlObjects from Skins [#12030](https://github.com/mixxxdj/mixxx/pull/12030)
 * Log warning if deprecated control is used [#11972](https://github.com/mixxxdj/mixxx/pull/11972)
 * ControlObject alias improvements [#11973](https://github.com/mixxxdj/mixxx/pull/11973)
-* Keyboard: Repeat certain control actions if key is held [#12474](https://github.com/mixxxdj/mixxx/pull/12474)
+* Keyboard mapping: Repeat certain control actions if key is held [#12474](https://github.com/mixxxdj/mixxx/pull/12474)
 * Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P [#12639](https://github.com/mixxxdj/mixxx/pull/12639)
+* Keyboard mapping: Various fixes [#12730](https://github.com/mixxxdj/mixxx/pull/12730)
 * Update keyboard sheet [#12578](https://github.com/mixxxdj/mixxx/pull/12578)
 * Logging: Add support for `QT_MESSAGE_PATTERN` environment variable
   [#3204](https://github.com/mixxxdj/mixxx/pull/3204)
   [#3518](https://github.com/mixxxdj/mixxx/pull/3518)
 * Avoid issue with `stars_up/_down` ControlObjects [#12591](https://github.com/mixxxdj/mixxx/pull/12591)
+* hotcue_X_color control: Fix color not stored in cue [#12733](https://github.com/mixxxdj/mixxx/pull/12733)
 
 ### Skins
 
@@ -470,11 +478,13 @@
 * LateNight: Remove blinking play indicator from mini samplers [#4807](https://github.com/mixxxdj/mixxx/pull/4807)
 * LateNight: Add buffer underflow indicator [#4906](https://github.com/mixxxdj/mixxx/pull/4906) [#10978](https://github.com/mixxxdj/mixxx/pull/10978)
 * LateNight: Fix xfader icons in samplers and aux units [#12477](https://github.com/mixxxdj/mixxx/pull/12477)
+* LateNight: use default RGB waveform colors [#12712](https://github.com/mixxxdj/mixxx/pull/12712)
 * Add LateNight (64 Samplers) [#11715](https://github.com/mixxxdj/mixxx/pull/11715)
 * Deere: fix skin/library layout (library missing in default view with Qt6) [#11912](https://github.com/mixxxdj/mixxx/pull/11912)
 * Deere: use decks' waveform colors for sliders (Vol + pitch) [#12129](https://github.com/mixxxdj/mixxx/pull/12129) [#10240](https://github.com/mixxxdj/mixxx/issues/10240)
 * Shade: Remove initial setting of now accessible effect controls [#4398](https://github.com/mixxxdj/mixxx/pull/4398) [#10557](https://github.com/mixxxdj/mixxx/issues/10557)
 * Shade: Audio Latency meter fix [#11601](https://github.com/mixxxdj/mixxx/pull/11601)
+* Tango: allow to toggle crossfader independently from mixer [#12703](https://github.com/mixxxdj/mixxx/pull/12703) [#12654](https://github.com/mixxxdj/mixxx/issues/12654)
 * Fix outdated tooltips
   [#11387](https://github.com/mixxxdj/mixxx/pull/11387)
   [#11384](https://github.com/mixxxdj/mixxx/issues/11384)
@@ -491,6 +501,9 @@
 * Add `skins:` path alias [#12463](https://github.com/mixxxdj/mixxx/pull/12463)
 * Remove `Text`, use `TrackProperty` or `Label` [#12004](https://github.com/mixxxdj/mixxx/pull/12004)
 * Beat spinBox/AutoDJ spinbox: Enter & Esc also move focus to library [#4617](https://github.com/mixxxdj/mixxx/pull/4617) [#4845](https://github.com/mixxxdj/mixxx/pull/4845)
+* Samplers: don't create extra empty players during startup [#12657](https://github.com/mixxxdj/mixxx/pull/12657)
+* Add effect chain menu button to Deere, polish in Tango [#12735](https://github.com/mixxxdj/mixxx/pull/12735)
+* Skins: reload default.qss when (re)loading a skin [#12219](https://github.com/mixxxdj/mixxx/pull/12219)
 
 ### Waveforms and GL Widgets
 
@@ -503,6 +516,8 @@
   [#10416](https://github.com/mixxxdj/mixxx/issues/10416)
   [#11734](https://github.com/mixxxdj/mixxx/issues/11734)
   [#12466](https://github.com/mixxxdj/mixxx/pull/12466)
+  [#12678](https://github.com/mixxxdj/mixxx/pull/12678)
+  [#12731](https://github.com/mixxxdj/mixxx/pull/12731)
 * Default to 60 Hz waveform refresh rate [#11918](https://github.com/mixxxdj/mixxx/pull/11918)
 * Introduce a VSsync mode driven by a phase locked loop [#12469](https://github.com/mixxxdj/mixxx/pull/12469)
 * Make VSync mode 0 refer to the default mode and make ST_PLL the default on macOS, ST_TIMER otherwise [#12489](https://github.com/mixxxdj/mixxx/pull/12489)
@@ -728,6 +743,7 @@
   [#12663](https://github.com/mixxxdj/mixxx/pull/12663)
   [#12661](https://github.com/mixxxdj/mixxx/pull/12661)
   [#12650](https://github.com/mixxxdj/mixxx/pull/12650)
+* Fail early in case Taglib 2.0 is found [#12709](https://github.com/mixxxdj/mixxx/pull/12709)
 
 ### Track properties
 
@@ -754,6 +770,7 @@
   [#12399](https://github.com/mixxxdj/mixxx/pull/12399)
   [#11663](https://github.com/mixxxdj/mixxx/pull/11663)
   [#11926](https://github.com/mixxxdj/mixxx/pull/11926)
+  [#12057](https://github.com/mixxxdj/mixxx/pull/12057)
 * macOS: set preferences dialog title to the selected page title [#11696](https://github.com/mixxxdj/mixxx/pull/11696)
 * macOS: fix the preferences menu and opening the settings directory [#11679](https://github.com/mixxxdj/mixxx/pull/11679)
 * macOS: fix slider styling in preferences dialog [#11647](https://github.com/mixxxdj/mixxx/pull/11647)
@@ -764,13 +781,14 @@
 * Library: Add link to settings files info in the manual [#4367](https://github.com/mixxxdj/mixxx/pull/4367)
 * Controllers: add search bars to mapping tables [#11165](https://github.com/mixxxdj/mixxx/pull/11165)
 * Add 13 new translation languages [#4785](https://github.com/mixxxdj/mixxx/pull/4785) [#9702](https://github.com/mixxxdj/mixxx/issues/9702)
+* Join Franch translations to "fr" and remove all untranslated English strings.  [#12699](https://github.com/mixxxdj/mixxx/pull/12699)
+* Apply changes from all pages when pressing Apply (like when pressing Okay) [#12194](https://github.com/mixxxdj/mixxx/pull/12194)
 
 ### Known issues
 
 * Volume / Loudness spikes on Windows with M4A/AAC files.
   Last known working version is Windows 10 build 17763.
   Affected versions are Windows 10 build 19041 and Windows 11 build 22000.
-  A fix is promised in 2024-02 with Windows 11 build 26016.
   [#12289](https://github.com/mixxxdj/mixxx/issues/12289)
   [#11094](https://github.com/mixxxdj/mixxx/issues/11094)
 * macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
