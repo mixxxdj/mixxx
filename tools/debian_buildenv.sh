@@ -99,7 +99,8 @@ case "$1" in
             portaudio19-dev \
             protobuf-compiler \
             qtkeychain-qt6-dev \
-            qt6-declarative-dev \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
             qt6-qpa-plugins \
             qml6-module-qt-labs-qmlmodels \
             qml6-module-qtqml-workerscript \
