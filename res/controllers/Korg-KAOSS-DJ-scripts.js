@@ -224,7 +224,7 @@ KAOSSDJ.toggleLoop = function(channel, _control, value, _status, _group) {
 
 
 // <LOAD A/B>           : load track
-// <SHIFT> + <LOAD A/B> : open/close folder in file-browser
+// <SHIFT> + <LOAD A/B> : Move library left/right
 KAOSSDJ.loadCallback = function(channel, _control, value, _status, _group) {
     const deck = KAOSSDJ.getDeckByChannel(channel);
     if (value === MIDI_ON) {
