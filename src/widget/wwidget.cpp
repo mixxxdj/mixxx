@@ -83,7 +83,7 @@ bool WWidget::event(QEvent* e) {
                 eventType = QEvent::MouseButtonRelease;
                 break;
             default:
-                DEBUG_ASSERT(false);
+                DEBUG_ASSERT_UNREACHABLE(false);
                 break;
             }
 

@@ -114,6 +114,6 @@ bool MixxxDb::initDatabaseSchema(
         return false; // abort
     }
     // Suppress compiler warning
-    DEBUG_ASSERT(!"unhandled switch/case");
+    DEBUG_ASSERT_UNREACHABLE(!"unhandled switch/case");
     return false;
 }
