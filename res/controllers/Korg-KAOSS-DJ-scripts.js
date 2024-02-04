@@ -211,10 +211,9 @@ KAOSSDJ.fxTouch = function(channel, _control, value, _status, _group) {
 // use loop-button to deactivate an active loop or initialize a beatloop at the current playback position
 KAOSSDJ.toggleLoop = function(channel, _control, value, _status, _group) {
     const deck = KAOSSDJ.getDeckByChannel(channel);
-    const loopEnabled = engine.getValue(deck.group, "loop_enabled");
 
     if (value === MIDI_ON) {
-        if (loopEnabled) {
+        if (engine.getValue(deck.group, "loop_enabled")) {
             engine.setValue(deck.group, "reloop_exit", true);
             engine.setValue(deck.group, "beatloop_activate", false);
         } else {
