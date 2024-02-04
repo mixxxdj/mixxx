@@ -1,14 +1,9 @@
 #pragma once
 
-#include <QAction>
-#include <QList>
 #include <QModelIndex>
-#include <QObject>
-#include <QPair>
 #include <QPointer>
 #include <QSet>
 #include <QString>
-#include <QUrl>
 
 #include "library/dao/playlistdao.h"
 #include "library/trackset/basetracksetfeature.h"
@@ -17,9 +12,10 @@
 class WLibrary;
 class KeyboardEventFilter;
 class PlaylistTableModel;
-class TrackCollectionManager;
 class TreeItem;
 class WLibrarySidebar;
+class QAction;
+class QUrl;
 
 class BasePlaylistFeature : public BaseTrackSetFeature {
     Q_OBJECT

@@ -11,6 +11,7 @@
 ////////////////////////////////
 
 class QPaintDevice;
+class QOpenGLWindow;
 class OpenGLWindow;
 class TrackDropTarget;
 
@@ -20,7 +21,6 @@ class WGLWidget : public QWidget {
     ~WGLWidget();
 
     bool isContextValid() const;
-    bool isContextSharing() const;
 
     bool shouldRender() const;
 
@@ -37,6 +37,8 @@ class WGLWidget : public QWidget {
 
     void setTrackDropTarget(TrackDropTarget* pTarget);
     TrackDropTarget* trackDropTarget() const;
+
+    QOpenGLWindow* getOpenGLWindow() const;
 
   protected:
     void showEvent(QShowEvent* event) override;

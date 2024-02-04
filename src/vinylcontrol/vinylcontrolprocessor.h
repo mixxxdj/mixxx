@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QMutex>
-#include <QObject>
 #include <QThread>
 #include <QVector>
 #include <QWaitCondition>
@@ -14,6 +12,7 @@
 
 class VinylControl;
 class ControlPushButton;
+class QObject;
 
 // VinylControlProcessor is a thread that is in charge of receiving samples from
 // the engine callback and feeding those samples to the VinylControl

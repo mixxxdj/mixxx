@@ -190,10 +190,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     this.inToggle();
                     this.isLongPressed = false;
-                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                    this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }.bind(this), true);
+                    }, true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -255,10 +255,10 @@
                 if (this.isPress(channel, control, value, status)) {
                     if (engine.getValue(this.group, "sync_enabled") === 0) {
                         engine.setValue(this.group, "beatsync", 1);
-                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, () => {
                             engine.setValue(this.group, "sync_enabled", 1);
                             this.longPressTimer = 0;
-                        }.bind(this), true);
+                        }, true);
                     } else {
                         engine.setValue(this.group, "sync_enabled", 0);
                     }
@@ -789,6 +789,13 @@
         input: function(_channel, control, _value, status, _group) {
             throw "Called wrong input handler for " + status + ": " + control + ".\n" +
                 "Please bind jogwheel-related messages to inputWheel and inputTouch!\n";
+        },
+        // this is needed for features such as "deck switching" that work
+        // by changing the component group. It is assumed they call `connect`
+        // afterwards.
+        connect: function() {
+            Component.prototype.connect.call(this);
+            this.deck = parseInt(script.channelRegEx.exec(this.group)[1]);
         }
     });
 

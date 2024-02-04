@@ -1,14 +1,11 @@
 #include "waveformrendererhsv.h"
 
-#include "track/track.h"
 #include "util/colorcomponents.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 WaveformRendererHSV::WaveformRendererHSV(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -45,7 +42,7 @@ void WaveformRendererHSV::draw(
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -76,7 +73,7 @@ void WaveformRendererHSV::draw(
             (double)m_waveformRenderer->getLength();
 
     float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     // Get base color of waveform in the HSV format (s and v isn't use)
     float h, s, v;

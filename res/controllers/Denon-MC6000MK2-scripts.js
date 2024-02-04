@@ -1333,25 +1333,25 @@ DenonMC6000MK2.getJogDeltaValue = function(value) {
 };
 
 DenonMC6000MK2.initValues = function() {
-    DenonMC6000MK2.backupSampleRate = engine.getValue(DenonMC6000MK2.group, "samplerate");
+    DenonMC6000MK2.backupSampleRate = engine.getValue("[App]", "samplerate");
     if (DenonMC6000MK2.backupSampleRate !== DenonMC6000MK2.SAMPLE_RATE) {
         DenonMC6000MK2.logInfo(
             "Adjusting sample rate: " +
             DenonMC6000MK2.backupSampleRate +
             " -> " +
             DenonMC6000MK2.SAMPLE_RATE);
-        DenonMC6000MK2.setValue("samplerate", DenonMC6000MK2.SAMPLE_RATE);
+        engine.setValue("[App]", "samplerate", DenonMC6000MK2.SAMPLE_RATE);
     }
-    DenonMC6000MK2.backupNumDecks = DenonMC6000MK2.getValue("num_decks");
+    DenonMC6000MK2.backupNumDecks = engine.getValue("[App]", "num_decks");
     if (DenonMC6000MK2.backupNumDecks !== DenonMC6000MK2.DECK_COUNT) {
         DenonMC6000MK2.logInfo(
             "Adjusting number of decks: " +
             DenonMC6000MK2.backupNumDecks +
             " -> " +
             DenonMC6000MK2.DECK_COUNT);
-        DenonMC6000MK2.setValue("num_decks", DenonMC6000MK2.DECK_COUNT);
+        engine.setValue("[App]", "num_decks", DenonMC6000MK2.DECK_COUNT);
     }
-    DenonMC6000MK2.backupNumSamplers = DenonMC6000MK2.getValue("num_samplers");
+    DenonMC6000MK2.backupNumSamplers = engine.getValue("[App]", "num_samplers");
     var numSamplers = DenonMC6000MK2.SIDE_COUNT * DenonMC6000MK2.SAMPLER_COUNT_PER_SIDE;
     if (DenonMC6000MK2.backupNumSamplers !== numSamplers) {
         DenonMC6000MK2.logInfo(
@@ -1359,7 +1359,7 @@ DenonMC6000MK2.initValues = function() {
             DenonMC6000MK2.backupNumSamplers +
             " -> " +
             numSamplers);
-        DenonMC6000MK2.setValue("num_samplers", numSamplers);
+        engine.setValue("[App]", "num_samplers", numSamplers);
     }
 };
 
@@ -1533,7 +1533,7 @@ DenonMC6000MK2.recvAreaButton = function(_channel, _control, value, _status, _gr
 
 DenonMC6000MK2.recvListButton = function(_channel, _control, value, _status, _group) {
     if (DenonMC6000MK2.isButtonPressed(value)) {
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 };
 

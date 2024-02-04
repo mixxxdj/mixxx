@@ -121,7 +121,18 @@ bool decodeFrameHeader(
         mad_stream* pMadStream,
         bool skipId3Tag) {
     DEBUG_ASSERT(!hasUnrecoverableError(pMadStream));
-    if (mad_header_decode(pMadHeader, pMadStream)) {
+    int ret = mad_header_decode(pMadHeader, pMadStream);
+    if (pMadHeader->flags & MAD_FLAG_FREEFORMAT) {
+        // perform missing sanity check for Layer I and II
+        // See libmad frame.c free_bitrate()
+        if ((pMadHeader->layer == MAD_LAYER_I && pMadHeader->bitrate > 896000) ||
+                (pMadHeader->layer == MAD_LAYER_II && pMadHeader->bitrate > 768000)) {
+            pMadStream->error = MAD_ERROR_LOSTSYNC;
+            pMadStream->sync = 0;
+            ret = -1;
+        }
+    }
+    if (ret) {
         // Something went wrong when decoding the frame header...
         DEBUG_ASSERT(pMadStream->error != MAD_ERROR_NONE);
         if (MAD_ERROR_BUFLEN == pMadStream->error) {
@@ -130,7 +141,8 @@ bool decodeFrameHeader(
         }
         if (isUnrecoverableError(pMadStream->error)) {
             kLogger.warning() << "Unrecoverable MP3 header decoding error:"
-                              << mad_stream_errorstr(pMadStream);
+                              << mad_stream_errorstr(pMadStream)
+                              << pMadStream->this_frame - pMadStream->buffer;
             return false;
         }
         if ((pMadStream->error == MAD_ERROR_LOSTSYNC) && skipId3Tag) {
@@ -148,7 +160,8 @@ bool decodeFrameHeader(
         // worry users when logged as a warning. The issue will become
         // obsolete once we switched to FFmpeg for MP3 decoding.
         kLogger.info() << "Recoverable MP3 header decoding error:"
-                       << mad_stream_errorstr(pMadStream);
+                       << mad_stream_errorstr(pMadStream)
+                       << pMadStream->this_frame - pMadStream->buffer;
         logFrameHeader(kLogger.info(), *pMadHeader);
         return false;
     }
@@ -161,12 +174,16 @@ bool decodeFrameHeader(
 } // anonymous namespace
 
 //static
-const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD");
 
 //static
 const QStringList SoundSourceProviderMp3::kSupportedFileTypes = {
         QStringLiteral("mp3"),
 };
+
+QString SoundSourceProviderMp3::getVersionString() const {
+    return QString(QString(mad_version) + QChar(' ') + QString(mad_build)).trimmed();
+}
 
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
         : SoundSource(url),
@@ -487,7 +504,8 @@ void SoundSourceMp3::close() {
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
     if (kLogger.debugEnabled()) {
-        kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
+        kLogger.info() << "restartDecoding for frame" << seekFrame.frameIndex << "@"
+                       << (seekFrame.pInputData - m_pFileData);
     }
 
     // Discard decoded output
@@ -680,6 +698,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                                     << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }
+                    } else if (m_madStream.error == MAD_ERROR_BADDATAPTR &&
+                            m_curFrameIndex == firstFrameIndex) {
+                        // This is expected after starting decoding with an offset
+                        if (kLogger.debugEnabled()) {
+                            kLogger.debug()
+                                    << "Recoverable MP3 frame decoding error:"
+                                    << mad_stream_errorstr(&m_madStream);
+                        }
                     } else {
                         kLogger.info() << "Recoverable MP3 frame decoding error:"
                                        << mad_stream_errorstr(&m_madStream);
@@ -718,7 +744,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
                                   << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
-                                  << " - aborting";
+                                  << " - aborting @" << m_madStream.this_frame - m_madStream.buffer;
                 abortReading = true;
             }
 #endif

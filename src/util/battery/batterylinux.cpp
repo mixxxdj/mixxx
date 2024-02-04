@@ -4,8 +4,6 @@
 #undef signals
 #include <upower.h>
 
-#include <QtDebug>
-
 #include "moc_batterylinux.cpp"
 
 BatteryLinux::BatteryLinux(QObject* pParent)

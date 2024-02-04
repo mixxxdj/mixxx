@@ -1,15 +1,8 @@
 #pragma once
 
-#include <QPainter>
-#include <QTime>
-#include <QVector>
-#include <QtDebug>
-
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
-#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveform.h"
 
@@ -18,6 +11,8 @@
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
+class QPainter;
+class WaveformRendererAbstract;
 
 class WaveformWidgetRenderer {
   public:
@@ -25,6 +20,11 @@ class WaveformWidgetRenderer {
     static const double s_waveformMaxZoom;
     static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
+
+    struct WaveformMarkOnScreen {
+        WaveformMarkPointer m_pMark;
+        int m_offsetOnScreen;
+    };
 
   public:
     explicit WaveformWidgetRenderer(const QString& group);
@@ -104,10 +104,23 @@ class WaveformWidgetRenderer {
     double getZoomFactor() const {
         return m_zoomFactor;
     }
-    double getGain() const {
-        return m_gain;
+    double getGain(bool applyCompensation) const {
+        // m_gain was always multiplied by 2.0, according to a comment:
+        //
+        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
+        //   EnginePregain. See the comment there."
+        //
+        // However, no comment there seems to explain this, and it resulted
+        // in renderers that use the filtered.all data for the amplitude, to
+        // be twice the expected value.
+        // But without this compensation, renderers that use the combined
+        // lo, mid, hi values became much lower than expected. By making this
+        // optional we move the decision to each renderer whether to apply the
+        // compensation or not, in order to have a more similar amplitude across
+        // waveform renderers
+        return applyCompensation ? m_gain * 2.f : m_gain;
     }
-    int getTrackSamples() const {
+    double getTrackSamples() const {
         return m_trackSamples;
     }
 
@@ -115,7 +128,8 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    void resize(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+
     int getHeight() const {
         return m_height;
     }
@@ -149,7 +163,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
+    void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
     }
 
@@ -201,7 +215,7 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
-    int m_trackSamples;
+    double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 
@@ -217,7 +231,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markPositions;
+    QList<WaveformMarkOnScreen> m_markPositions;
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,

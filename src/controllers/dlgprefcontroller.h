@@ -1,13 +1,9 @@
 #pragma once
 
-#include <QHash>
 #include <memory>
 
-#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllermappinginfo.h"
-#include "controllers/controlleroutputmappingtablemodel.h"
-#include "controllers/dlgcontrollerlearning.h"
-#include "controllers/legacycontrollermapping.h"
+#include "controllers/midi/midimessage.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
@@ -16,6 +12,12 @@
 class Controller;
 class ControllerManager;
 class MappingInfoEnumerator;
+class ControlPickerMenu;
+class DlgControllerLearning;
+class ControllerInputMappingTableModel;
+class ControllerMappingTableProxyModel;
+class ControllerOutputMappingTableModel;
+class ControllerMappingTableProxyModel;
 
 /// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {

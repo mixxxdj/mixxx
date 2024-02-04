@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/engineobject.h"
-#include "control/controlobject.h"
 #include "util/performancetimer.h"
 
 class ControlAudioTaperPot;

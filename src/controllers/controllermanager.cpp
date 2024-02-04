@@ -3,14 +3,16 @@
 #include <QSet>
 #include <QThread>
 
+#include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
+#include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidienumerator.h"
 #include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/compatibility/qmutex.h"
+#include "util/duration.h"
 #include "util/time.h"
-#include "util/trace.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif
@@ -357,7 +359,7 @@ void ControllerManager::pollDevices() {
     }
 
     mixxx::Duration start = mixxx::Time::elapsed();
-    for (Controller* pDevice : qAsConst(m_controllers)) {
+    for (Controller* pDevice : std::as_const(m_controllers)) {
         if (pDevice->isOpen() && pDevice->isPolling()) {
             pDevice->poll();
         }

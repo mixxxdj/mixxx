@@ -2,9 +2,11 @@
 
 #include <taglib/id3v2tag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class QImage;
 
 namespace mixxx {
+
+class TrackMetadata;
 
 namespace taglib {
 

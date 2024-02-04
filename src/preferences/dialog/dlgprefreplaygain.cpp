@@ -1,6 +1,5 @@
 #include "preferences/dialog/dlgprefreplaygain.h"
 
-#include "control/controlobject.h"
 #include "moc_dlgprefreplaygain.cpp"
 #include "util/math.h"
 

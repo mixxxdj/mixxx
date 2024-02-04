@@ -16,6 +16,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -50,7 +52,8 @@ WBeatSpinBox,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #222;
   }
 #MainMenu::item:selected,
@@ -70,12 +73,20 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
 #fadeModeCombobox::item:selected,
 #fadeModeCombobox::indicator:unchecked:selected {
   background-color: #d9c663;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-background-color: #d9c663;
   }
   WEffectSelector::indicator:unchecked:selected,
   #fadeModeCombobox::indicator:unchecked:selected {

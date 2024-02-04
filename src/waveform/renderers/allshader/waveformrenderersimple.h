@@ -12,7 +12,6 @@ class WaveformRendererSimple;
 class allshader::WaveformRendererSimple final : public allshader::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererSimple(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererSimple() override;
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;

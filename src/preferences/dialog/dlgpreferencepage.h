@@ -5,7 +5,6 @@
 #include <QWidget>
 
 #include "util/color/color.h"
-#include "util/string.h"
 
 /// Interface that all preference pages have to implement.
 class DlgPreferencePage : public QWidget {

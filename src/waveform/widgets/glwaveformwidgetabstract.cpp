@@ -1,6 +1,7 @@
 #include "waveform/widgets/glwaveformwidgetabstract.h"
 
 #include <QApplication>
+#include <QWheelEvent>
 
 GLWaveformWidgetAbstract::GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
         : WaveformWidgetAbstract(group),

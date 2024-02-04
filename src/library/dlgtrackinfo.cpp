@@ -1,8 +1,7 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QSignalBlocker>
-#include <QStringBuilder>
-#include <QTreeWidget>
+#include <QStyleFactory>
 #include <QtDebug>
 
 #include "defs_urls.h"
@@ -15,10 +14,8 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatutils.h"
-#include "track/keyfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
-#include "util/color/colorpalette.h"
+#include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/desktophelper.h"
 #include "util/duration.h"
@@ -48,7 +45,7 @@ DlgTrackInfo::DlgTrackInfo(
           m_tapFilter(this, kFilterLength, kMaxInterval),
           m_pWCoverArtMenu(make_parented<WCoverArtMenu>(this)),
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this, m_pWCoverArtMenu)),
-          m_pWStarRating(make_parented<WStarRating>(nullptr, this)),
+          m_pWStarRating(make_parented<WStarRating>(this)),
           m_pColorPicker(make_parented<WColorPickerAction>(
                   WColorPicker::Option::AllowNoColor |
                           // TODO(xxx) remove this once the preferences are themed via QSS
@@ -61,6 +58,23 @@ DlgTrackInfo::DlgTrackInfo(
 void DlgTrackInfo::init() {
     setupUi(this);
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
+
+    // Store tag edit widget pointers to allow focusing a specific widgets when
+    // this is opened by double-clicking a WTrackProperty label.
+    // Associate with property strings taken from library/dao/trackdao.h
+    m_propertyWidgets.insert("artist", txtArtist);
+    m_propertyWidgets.insert("title", txtTrackName);
+    m_propertyWidgets.insert("titleInfo", txtTrackName);
+    m_propertyWidgets.insert("album", txtAlbum);
+    m_propertyWidgets.insert("album_artist", txtAlbumArtist);
+    m_propertyWidgets.insert("composer", txtComposer);
+    m_propertyWidgets.insert("genre", txtGenre);
+    m_propertyWidgets.insert("year", txtYear);
+    m_propertyWidgets.insert("bpm", spinBpm);
+    m_propertyWidgets.insert("tracknumber", txtTrackNumber);
+    m_propertyWidgets.insert("key", txtKey);
+    m_propertyWidgets.insert("grouping", txtGrouping);
+    m_propertyWidgets.insert("comment", txtComment);
 
     coverLayout->setAlignment(Qt::AlignRight | Qt::AlignTop);
     coverLayout->setSpacing(0);
@@ -411,6 +425,13 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtReplayGain->setText(
             mixxx::ReplayGain::ratioToString(
                     m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
+
+    auto samplerate = m_trackRecord.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
+    if (samplerate.isValid()) {
+        txtSamplerate->setText(QString::number(samplerate.value()) + " Hz");
+    } else {
+        txtSamplerate->clear();
+    }
 }
 
 void DlgTrackInfo::updateSpinBpmFromBeats() {
@@ -484,15 +505,21 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     }
 }
 
+void DlgTrackInfo::focusField(const QString& property) {
+    if (property.isEmpty()) {
+        return;
+    }
+    auto it = m_propertyWidgets.constFind(property);
+    if (it != m_propertyWidgets.constEnd()) {
+        it.value()->setFocus();
+    }
+}
+
 void DlgTrackInfo::slotCoverFound(
-        const QObject* pRequestor,
+        const QObject* pRequester,
         const CoverInfo& coverInfo,
-        const QPixmap& pixmap,
-        mixxx::cache_key_t requestedCacheKey,
-        bool coverInfoUpdated) {
-    Q_UNUSED(requestedCacheKey);
-    Q_UNUSED(coverInfoUpdated);
-    if (pRequestor == this &&
+        const QPixmap& pixmap) {
+    if (pRequester == this &&
             m_pLoadedTrack &&
             m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
         m_trackRecord.setCoverInfo(coverInfo);
@@ -506,7 +533,7 @@ void DlgTrackInfo::slotReloadCoverArt() {
     }
     slotCoverInfoSelected(
             CoverInfoGuesser().guessCoverInfoForTrack(
-                    *m_pLoadedTrack));
+                    m_pLoadedTrack));
 }
 
 void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
@@ -744,9 +771,9 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
         return;
     }
-    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    const mixxx::FileInfo fileInfo = m_pLoadedTrack->getFileInfo();
     auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
-            fileAccess.info(),
+            fileInfo,
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
     trackRecord.replaceMetadataFromSource(
@@ -756,7 +783,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             std::move(guessedCoverInfo));
     replaceTrackRecord(
             std::move(trackRecord),
-            fileAccess.info().location());
+            fileInfo.location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

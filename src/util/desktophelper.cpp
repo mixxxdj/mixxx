@@ -8,8 +8,8 @@
 #include <QProcess>
 
 #ifdef Q_OS_LINUX
-#include <QtDBus/QtDBus>
 #include <QFileInfo>
+#include <QtDBus>
 #endif
 
 namespace {
@@ -90,12 +90,16 @@ bool selectInXfce(const QString& path) {
 #endif
 
 void selectViaCommand(const QString& path) {
+#ifdef Q_OS_IOS
+    qWarning() << "Starting process (" << path << ") is not supported on iOS!";
+#else
     QStringList arguments = sSelectInFileBrowserCommand.split(" ");
     // No escaping required because QProcess bypasses the shell
     arguments.append(QDir::toNativeSeparators(path));
     QString program = arguments.takeFirst();
     qDebug() << "Calling:" << program << arguments;
     QProcess::startDetached(program, arguments);
+#endif
 }
 
 } // anonymous namespace
@@ -147,7 +151,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 
         // We cannot select, just open the parent folder
         QDir dir = dirPath;
-        while (!dir.exists() && dirPath.size()) {
+        while (!dir.exists() && !dirPath.isEmpty()) {
             // Note: dir.cdUp() does not work for not existing dirs
             dirPath = removeChildDir(dirPath);
             dir.setPath(dirPath);

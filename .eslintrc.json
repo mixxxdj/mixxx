@@ -1,6 +1,7 @@
 {
   "extends": [ "eslint:recommended",
-               "plugin:jsdoc/recommended"],
+               "plugin:jsdoc/recommended",
+               "plugin:diff/diff"],
 
   "parser": "@typescript-eslint/parser",
   "parserOptions": {

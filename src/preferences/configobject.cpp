@@ -23,12 +23,24 @@ QString computeResourcePathImpl() {
 
     if (qResourcePath.isEmpty()) {
         QDir mixxxDir = QCoreApplication::applicationDirPath();
+
         // We used to support using the mixxx.cfg's [Config],Path setting but
         // this causes issues if you try and use two different versions of Mixxx
         // on the same computer.
-        auto cmakecache = QFile(mixxxDir.filePath(kCMakeCacheFile));
+
+        QDir potentialBuildDir = mixxxDir;
+#ifdef __APPLE__
+        if (potentialBuildDir.absolutePath().endsWith(".app/Contents/MacOS")) {
+            // We are in an app bundle (built with `-DMACOS_BUNDLE=ON`).
+            // If we are in a development build directory, we need to search three directories up.
+            potentialBuildDir.cd("../../..");
+        }
+#endif
+
+        // Check if there's a `CMakeCache.txt`, if so we are in a development build directory.
+        auto cmakecache = QFile(potentialBuildDir.filePath(kCMakeCacheFile));
         if (cmakecache.open(QFile::ReadOnly | QFile::Text)) {
-            // We are running form a build dir (CMAKE_CURRENT_BINARY_DIR),
+            // We are running from a build dir (CMAKE_CURRENT_BINARY_DIR),
             // Look up the source path from CMakeCache.txt (mixxx_SOURCE_DIR)
             QTextStream in(&cmakecache);
             QString line = in.readLine();
@@ -42,7 +54,7 @@ QString computeResourcePathImpl() {
             DEBUG_ASSERT(QDir(qResourcePath).exists());
         }
 #if defined(__UNIX__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
+        else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
 #elif defined(__WINDOWS__)
@@ -51,8 +63,13 @@ QString computeResourcePathImpl() {
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#elif defined(__APPLE__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
+#elif defined(Q_OS_IOS)
+        // On iOS the bundle contains the resources directly.
+        else {
+            qResourcePath = QCoreApplication::applicationDirPath();
+        }
+#elif defined(Q_OS_MACOS)
+        else if (mixxxDir.cd("../Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
@@ -64,7 +81,10 @@ QString computeResourcePathImpl() {
     }
 
     if (qResourcePath.isEmpty()) {
-        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+        reportCriticalErrorAndQuit(
+                "qResourcePath is empty, this should not happen -- did our "
+                "developers forget to define __UNIX__, __WINDOWS__ or "
+                "__APPLE__??");
     }
 
     // If the directory does not end with a "/", add one

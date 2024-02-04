@@ -7,9 +7,7 @@
 #include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -342,7 +340,7 @@ void CueControl::connectControls() {
             Qt::DirectConnection);
 
     // Hotcue controls
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         connect(pControl, &HotcueControl::hotcuePositionChanged,
                 this, &CueControl::hotcuePositionChanged,
                 Qt::DirectConnection);
@@ -428,7 +426,7 @@ void CueControl::disconnectControls() {
     disconnect(m_pHotcueFocusColorPrev.get(), nullptr, this, nullptr);
     disconnect(m_pHotcueFocusColorNext.get(), nullptr, this, nullptr);
 
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         disconnect(pControl, nullptr, this, nullptr);
     }
 }
@@ -484,7 +482,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
         updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
 
-        for (const auto& pControl : qAsConst(m_hotcueControls)) {
+        for (const auto& pControl : std::as_const(m_hotcueControls)) {
             detachCue(pControl);
         }
 
@@ -854,7 +852,25 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
-        mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
+        if (loopEnabled) {
+            // Don't create a hotcue at loop start if there is one already.
+            // This allows to set a hotuce inside an active, saved loop with
+            // 'hotcue_X_activate'.
+            auto* pSavedLoopControl = m_pCurrentSavedLoopControl.loadAcquire();
+            if (pSavedLoopControl &&
+                    pSavedLoopControl->getPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopStartPosition->get()) &&
+                    pSavedLoopControl->getEndPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopEndPosition->get())) {
+                mode = HotcueSetMode::Cue;
+            } else {
+                mode = HotcueSetMode::Loop;
+            }
+        } else {
+            mode = HotcueSetMode::Cue;
+        }
     }
 
     switch (mode) {
@@ -1254,7 +1270,7 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 
@@ -2450,8 +2466,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     m_pHotcueStatus->setReadOnly();
 
     // Add an alias for the legacy hotcue_X_enabled CO
-    ControlDoublePrivate::insertAlias(keyForControl(QStringLiteral("enabled")),
-            keyForControl(QStringLiteral("status")));
+    m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();

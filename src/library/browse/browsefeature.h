@@ -4,14 +4,10 @@
 #include <QSortFilterProxyModel>
 #include <QObject>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QPoint>
 #include <QString>
 
 #include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
-#include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 
@@ -21,6 +17,8 @@
 class Library;
 class TrackCollection;
 class WLibrarySidebar;
+class QModelIndex;
+class FolderTreeModel;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT

@@ -1,16 +1,12 @@
 #pragma once
 
-#include <QAbstractItemModel>
-#include <QDesktopServices>
 #include <QFileDialog>
 #include <QIcon>
 #include <QList>
-#include <QModelIndex>
 #include <QObject>
 #include <QString>
 #include <QUrl>
 #include <QVariant>
-#include <QtDebug>
 
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
@@ -19,9 +15,9 @@
 
 class KeyboardEventFilter;
 class Library;
-class TrackModel;
 class WLibrary;
 class WLibrarySidebar;
+class QAbstractItemModel;
 
 // pure virtual (abstract) class to provide an interface for libraryfeatures
 class LibraryFeature : public QObject {

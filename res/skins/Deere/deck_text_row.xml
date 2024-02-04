@@ -190,6 +190,10 @@
                                     <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_later_small</SetVariable>
                                   </Template>
                                 </Children>
+                                <Connection>
+                                  <ConfigKey>[Skin],timing_shift_buttons</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
                               </WidgetGroup>
 
                               <Template src="skin:left_right_1state_button.xml">

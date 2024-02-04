@@ -20,7 +20,7 @@
             <BackPath>style/style_bg_sampler_top.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>
-              <Text>
+              <TrackProperty>
                 <TooltipId>text</TooltipId>
                 <Style>QLabel {
                     font-size: 12px;
@@ -35,7 +35,8 @@
                 <Group><Variable name="group"/></Group>
                 <SizePolicy>me,max</SizePolicy>
                 <Elide>right</Elide>
-              </Text>
+                <Property>titleInfo</Property>
+              </TrackProperty>
               <!-- Alternative "TITLE ONLY" display
               <TrackProperty>
                 <TooltipId>track_title</TooltipId>
@@ -251,8 +252,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
-                      <Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
+                      <Pressed>skin:/btn/btn_orientation_sampler_main.png</Pressed>
+                      <Unpressed>skin:/btn/btn_orientation_sampler_main.png</Unpressed>
                     </State>
                     <State>
                       <Number>2</Number>
@@ -379,11 +380,11 @@
             <Pos>3,7</Pos>
             <Children>
               <StatusLight>
-                <TooltipId>sampler_PeakIndicator</TooltipId>
+                <TooltipId>sampler_peak_indicator</TooltipId>
                 <PathStatusLight>skin:/style/volume_clipping_sampler_over.png</PathStatusLight>
                 <PathBack>skin:/style/volume_clipping_sampler.png</PathBack>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,peak_indicator</ConfigKey>
                 </Connection>
               </StatusLight>
             </Children>
@@ -402,7 +403,7 @@
                 <PeakFallTime>50</PeakFallTime>
                 <PeakFallStep>2</PeakFallStep>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,vu_meter</ConfigKey>
                 </Connection>
               </VuMeter>
             </Children>

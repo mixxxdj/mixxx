@@ -1,7 +1,5 @@
 #include "engine/controls/quantizecontrol.h"
 
-#include <QtDebug>
-
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"

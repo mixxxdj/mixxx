@@ -11,6 +11,7 @@
 #include <taglib/uniquefileidentifierframe.h>
 #endif // __EXTRA_METADATA__
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 

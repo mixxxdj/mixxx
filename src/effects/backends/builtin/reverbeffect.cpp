@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/reverbeffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 // static

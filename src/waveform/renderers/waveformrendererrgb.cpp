@@ -2,10 +2,6 @@
 
 #include "waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "widget/wskincolor.h"
-#include "track/track.h"
-#include "widget/wwidget.h"
 #include "util/math.h"
 #include "util/painterscope.h"
 
@@ -43,7 +39,7 @@ void WaveformRendererRGB::draw(
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -75,7 +71,7 @@ void WaveformRendererRGB::draw(
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     QColor color;
 

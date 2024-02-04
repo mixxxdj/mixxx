@@ -132,12 +132,12 @@ TraktorS3.Controller = class {
         this.fxButtonState = {1: false, 2: false, 3: false, 4: false, 5: false};
 
         this.masterVuMeter = {
-            "VuMeterL": {
+            "vu_meter_left": {
                 connection: null,
                 updated: false,
                 value: 0
             },
-            "VuMeterR": {
+            "vu_meter_right": {
                 connection: null,
                 updated: false,
                 value: 0
@@ -281,9 +281,9 @@ TraktorS3.Controller = class {
             const chanob = this.Channels[ch];
             engine.makeConnection(ch, "playposition",
                 TraktorS3.Channel.prototype.playpositionChanged.bind(chanob));
-            engine.connectControl(ch, "track_loaded",
+            engine.makeConnection(ch, "track_loaded",
                 TraktorS3.Channel.prototype.trackLoadedHandler.bind(chanob));
-            engine.connectControl(ch, "end_of_track",
+            engine.makeConnection(ch, "end_of_track",
                 TraktorS3.Channel.prototype.endOfTrackHandler.bind(chanob));
         }
 
@@ -496,26 +496,26 @@ TraktorS3.Controller = class {
         };
         for (const ch in VuOffsets) {
             for (let i = 0; i < 14; i++) {
-                outputB.addOutput(ch, "!" + "VuMeter" + i, VuOffsets[ch] + i, "B");
+                outputB.addOutput(ch, "!" + "vu_meter" + i, VuOffsets[ch] + i, "B");
             }
         }
 
         const MasterVuOffsets = {
-            "VuMeterL": 0x3D,
-            "VuMeterR": 0x46
+            "vu_meter_left": 0x3D,
+            "vu_meter_right": 0x46
         };
         for (let i = 0; i < 8; i++) {
-            outputB.addOutput("[Master]", "!" + "VuMeterL" + i, MasterVuOffsets.VuMeterL + i, "B");
-            outputB.addOutput("[Master]", "!" + "VuMeterR" + i, MasterVuOffsets.VuMeterR + i, "B");
+            outputB.addOutput("[Main]", "!" + "vu_meter_left" + i, MasterVuOffsets.vu_meter_left + i, "B");
+            outputB.addOutput("[Main]", "!" + "vu_meter_right" + i, MasterVuOffsets.vu_meter_right + i, "B");
         }
 
-        outputB.addOutput("[Master]", "PeakIndicatorL", 0x45, "B");
-        outputB.addOutput("[Master]", "PeakIndicatorR", 0x4E, "B");
+        outputB.addOutput("[Main]", "peak_indicator_left", 0x45, "B");
+        outputB.addOutput("[Main]", "peak_indicator_right", 0x4E, "B");
 
-        outputB.addOutput("[Channel3]", "PeakIndicator", 0x0F, "B");
-        outputB.addOutput("[Channel1]", "PeakIndicator", 0x1E, "B");
-        outputB.addOutput("[Channel2]", "PeakIndicator", 0x2D, "B");
-        outputB.addOutput("[Channel4]", "PeakIndicator", 0x3C, "B");
+        outputB.addOutput("[Channel3]", "peak_indicator", 0x0F, "B");
+        outputB.addOutput("[Channel1]", "peak_indicator", 0x1E, "B");
+        outputB.addOutput("[Channel2]", "peak_indicator", 0x2D, "B");
+        outputB.addOutput("[Channel4]", "peak_indicator", 0x3C, "B");
 
         this.hid.registerOutputPacket(outputB);
 
@@ -527,16 +527,16 @@ TraktorS3.Controller = class {
             this.Channels[idx].linkOutputs();
         }
 
-        engine.connectControl("[Microphone]", "pfl", this.pflOutput);
+        engine.makeConnection("[Microphone]", "pfl", this.pflOutput.bind(this));
 
-        engine.connectControl("[Master]", "maximize_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
+        engine.makeConnection("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
         // Master VuMeters
-        this.masterVuMeter.VuMeterL.connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
-        this.masterVuMeter.VuMeterR.connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
-        this.linkChannelOutput("[Master]", "PeakIndicatorL", TraktorS3.Controller.prototype.peakOutput.bind(this));
-        this.linkChannelOutput("[Master]", "PeakIndicatorR", TraktorS3.Controller.prototype.peakOutput.bind(this));
-        this.guiTickConnection = engine.makeConnection("[Master]", "guiTick50ms", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
+        this.masterVuMeter.vu_meter_left.connection = engine.makeConnection("[Main]", "vu_meter_left", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+        this.masterVuMeter.vu_meter_right.connection = engine.makeConnection("[Main]", "vu_meter_right", TraktorS3.Controller.prototype.masterVuMeterHandler.bind(this));
+        this.linkChannelOutput("[Main]", "peak_indicator_left", TraktorS3.Controller.prototype.peakOutput.bind(this));
+        this.linkChannelOutput("[Main]", "peak_indicator_right", TraktorS3.Controller.prototype.peakOutput.bind(this));
+        this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
         for (let i = 1; i <= 8; ++i) {
@@ -764,7 +764,7 @@ TraktorS3.Controller = class {
 
         for (const vu in this.masterVuMeter) {
             if (this.masterVuMeter[vu].updated) {
-                this.vuMeterOutput(this.masterVuMeter[vu].value, "[Master]", vu, 8);
+                this.vuMeterOutput(this.masterVuMeter[vu].value, "[Main]", vu, 8);
                 this.masterVuMeter[vu].updated = false;
                 gotUpdate = true;
             }
@@ -772,7 +772,7 @@ TraktorS3.Controller = class {
         for (let ch = 1; ch <= 4; ch++) {
             const chan = this.Channels["[Channel" + ch + "]"];
             if (chan.vuMeterUpdated) {
-                this.vuMeterOutput(chan.vuMeterValue, chan.group, "VuMeter", 14);
+                this.vuMeterOutput(chan.vuMeterValue, chan.group, "vu_meter", 14);
                 chan.vuMeterUpdated = false;
                 gotUpdate = true;
             }
@@ -974,13 +974,13 @@ TraktorS3.Deck = class {
             if (engine.getValue(this.activeChannel, "sync_enabled") === 0) {
                 script.triggerControl(this.activeChannel, "beatsync");
                 // Start timer to measure how long button is pressed
-                this.syncPressedTimer = engine.beginTimer(300, function() {
+                this.syncPressedTimer = engine.beginTimer(300, () => {
                     engine.setValue(this.activeChannel, "sync_enabled", 1);
                     // Reset sync button timer state if active
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }.bind(this), this, true);
+                }, true);
 
                 // Light corresponding LED when button is pressed
                 this.colorOutput(1, "sync_enabled");
@@ -1145,7 +1145,7 @@ TraktorS3.Deck = class {
             return;
         }
 
-        script.toggleControl("[Master]", "maximize_library");
+        script.toggleControl("[Skin]", "show_maximized_library");
     }
 
     selectLoopHandler(field) {
@@ -1449,11 +1449,11 @@ TraktorS3.Deck = class {
         switch (this.deckNumber) {
         case 1:
             this.controller.hid.linkOutput("deck1", key, "[Channel1]", key, callback);
-            engine.connectControl("[Channel3]", key, callback);
+            engine.makeConnection("[Channel3]", key, callback);
             break;
         case 2:
             this.controller.hid.linkOutput("deck2", key, "[Channel2]", key, callback);
-            engine.connectControl("[Channel4]", key, callback);
+            engine.makeConnection("[Channel4]", key, callback);
             break;
         }
     }
@@ -1516,7 +1516,7 @@ TraktorS3.Deck = class {
     }
 
     lightHotcue(number) {
-        const loaded = engine.getValue(this.activeChannel, "hotcue_" + number + "_enabled");
+        const loaded = engine.getValue(this.activeChannel, "hotcue_" + number + "_status");
         const active = engine.getValue(this.activeChannel, "hotcue_" + number + "_activate");
         let ledValue = this.controller.hid.LEDColors.WHITE;
         if (loaded) {
@@ -1660,7 +1660,7 @@ TraktorS3.Channel = class {
             }
             return;
         }
-        this.endOfTrackTimer = engine.beginTimer(400, function() {
+        this.endOfTrackTimer = engine.beginTimer(400, () => {
             this.endOfTrackBlinkState = !this.endOfTrackBlinkState;
         }, false);
     }
@@ -1691,11 +1691,11 @@ TraktorS3.Channel = class {
     }
 
     linkOutputs() {
-        this.vuConnection = engine.makeConnection(this.group, "VuMeter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
-        this.clipConnection = engine.makeConnection(this.group, "PeakIndicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
+        this.vuConnection = engine.makeConnection(this.group, "vu_meter", TraktorS3.Channel.prototype.vuMeterHandler.bind(this));
+        this.clipConnection = engine.makeConnection(this.group, "peak_indicator", TraktorS3.Controller.prototype.peakOutput.bind(this.controller));
         this.controller.linkChannelOutput(this.group, "pfl", TraktorS3.Controller.prototype.pflOutput.bind(this.controller));
         for (let j = 1; j <= 8; j++) {
-            this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_enabled",
+            this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_status",
                 TraktorS3.Channel.prototype.hotcuesOutput.bind(this)));
             this.hotcueCallbacks.push(engine.makeConnection(this.group, "hotcue_" + j + "_activate",
                 TraktorS3.Channel.prototype.hotcuesOutput.bind(this)));
@@ -1956,7 +1956,7 @@ TraktorS3.FXControl = class {
         case this.STATE_EFFECT:
             break;
         case this.STATE_FOCUS:
-            this.focusBlinkTimer = engine.beginTimer(150, function() {
+            this.focusBlinkTimer = engine.beginTimer(150, () => {
                 TraktorS3.kontrol.fxController.focusBlinkState = !TraktorS3.kontrol.fxController.focusBlinkState;
                 TraktorS3.kontrol.fxController.lightFx();
             }, false);
@@ -2402,17 +2402,17 @@ TraktorS3.QuickFxControl = class {
 
         // This changes the lighting of the five FX Select buttons and maybe
         // also the FX Enable buttons
-        engine.connectControl("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
-        engine.connectControl("[QuickEffectRack1_[Channel2]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
-        engine.connectControl("[QuickEffectRack1_[Channel3]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
-        engine.connectControl("[QuickEffectRack1_[Channel4]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.makeConnection("[QuickEffectRack1_[Channel1]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.makeConnection("[QuickEffectRack1_[Channel2]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.makeConnection("[QuickEffectRack1_[Channel3]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
+        engine.makeConnection("[QuickEffectRack1_[Channel4]]", "loaded_chain_preset", this.quickEffectChainLoadHandler.bind(this));
 
         // The FX enable buttons can directly be bound to the quick effect chain
         // enabled status as their lighting doesn't depend on other factors
-        engine.connectControl("[QuickEffectRack1_[Channel1]]", "enabled", value => this.lightFxEnable(1, value === 1));
-        engine.connectControl("[QuickEffectRack1_[Channel2]]", "enabled", value => this.lightFxEnable(2, value === 1));
-        engine.connectControl("[QuickEffectRack1_[Channel3]]", "enabled", value => this.lightFxEnable(3, value === 1));
-        engine.connectControl("[QuickEffectRack1_[Channel4]]", "enabled", value => this.lightFxEnable(4, value === 1));
+        engine.makeConnection("[QuickEffectRack1_[Channel1]]", "enabled", value => this.lightFxEnable(1, value === 1));
+        engine.makeConnection("[QuickEffectRack1_[Channel2]]", "enabled", value => this.lightFxEnable(2, value === 1));
+        engine.makeConnection("[QuickEffectRack1_[Channel3]]", "enabled", value => this.lightFxEnable(3, value === 1));
+        engine.makeConnection("[QuickEffectRack1_[Channel4]]", "enabled", value => this.lightFxEnable(4, value === 1));
     }
 
     // Input handling

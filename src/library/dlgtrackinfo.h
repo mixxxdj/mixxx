@@ -1,14 +1,13 @@
 #pragma once
 
 #include <QDialog>
+#include <QHash>
 #include <QModelIndex>
 #include <memory>
 
-#include "library/coverart.h"
 #include "library/ui_dlgtrackinfo.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
-#include "track/keys.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
@@ -16,11 +15,11 @@
 #include "widget/wcolorpickeraction.h"
 
 class TrackModel;
-class DlgTagFetcher;
-class WCoverArtLabel;
-class WCoverArtMenu;
-class WStarRating;
 class WColorPickerAction;
+class WStarRating;
+class WCoverArtMenu;
+class WCoverArtLabel;
+class DlgTagFetcher;
 
 /// A dialog box to display and edit track properties.
 /// Use TrackPointer to load a track into the dialog or
@@ -40,6 +39,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // directly!
     void loadTrack(TrackPointer pTrack);
     void loadTrack(const QModelIndex& index);
+    void focusField(const QString& property);
 
   signals:
     void next();
@@ -70,11 +70,9 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotColorButtonClicked();
 
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& info,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
@@ -120,6 +118,8 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     TapFilter m_tapFilter;
     mixxx::Bpm m_lastTapedBpm;
+
+    QHash<QString, QWidget*> m_propertyWidgets;
 
     parented_ptr<WCoverArtMenu> m_pWCoverArtMenu;
     parented_ptr<WCoverArtLabel> m_pWCoverArtLabel;

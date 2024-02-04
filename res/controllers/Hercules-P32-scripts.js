@@ -47,8 +47,8 @@ P32.init = function() {
     components.Component.prototype.shiftChannel = true;
     components.Button.prototype.sendShifted = true;
 
-    if (engine.getValue("[Master]", "num_samplers") < 32) {
-        engine.setValue("[Master]", "num_samplers", 32);
+    if (engine.getValue("[App]", "num_samplers") < 32) {
+        engine.setValue("[App]", "num_samplers", 32);
     }
 
     P32.leftDeck = new P32.Deck([1, 3], 1);

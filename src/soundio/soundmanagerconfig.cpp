@@ -176,11 +176,11 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) {
+            if (out.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
-            for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
+            for (const AudioOutput& otherOut : std::as_const(m_outputs)) {
                 if (out == otherOut
                         && out.getChannelGroup() == otherOut.getChannelGroup()) {
                     dupe = true;
@@ -199,11 +199,11 @@ bool SoundManagerConfig::readFromDisk() {
                 continue;
             }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) {
+            if (in.getType() == AudioPathType::Invalid) {
                 continue;
             }
             bool dupe(false);
-            for (const AudioInput& otherIn : qAsConst(m_inputs)) {
+            for (const AudioInput& otherIn : std::as_const(m_inputs)) {
                 if (in == otherIn
                         && in.getChannelGroup() == otherIn.getChannelGroup()) {
                     dupe = true;
@@ -350,9 +350,9 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if ((type == AudioInput::DECK ||
-                        type == AudioInput::VINYLCONTROL ||
-                        type == AudioInput::AUXILIARY) &&
+            if ((type == AudioPathType::Deck ||
+                        type == AudioPathType::VinylControl ||
+                        type == AudioPathType::Auxiliary) &&
                     index + 1 > minimum_deck_count) {
                 qDebug() << "Found an input connection above current deck count";
                 minimum_deck_count = index + 1;
@@ -363,7 +363,7 @@ void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
                 ++it) {
             const int index = it.value().getIndex();
             const AudioPathType type = it.value().getType();
-            if (type == AudioOutput::DECK && index + 1 > minimum_deck_count) {
+            if (type == AudioPathType::Deck && index + 1 > minimum_deck_count) {
                 qDebug() << "Found an output connection above current deck count";
                 minimum_deck_count = index + 1;
             }
@@ -438,9 +438,9 @@ void SoundManagerConfig::addOutput(const SoundDeviceId &device, const AudioOutpu
 
 void SoundManagerConfig::addInput(const SoundDeviceId &device, const AudioInput &in) {
     m_inputs.insert(device, in);
-    if (in.getType() == AudioPath::MICROPHONE) {
+    if (in.getType() == AudioPathType::Microphone) {
         m_iNumMicInputs++;
-    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+    } else if (in.getType() == AudioPathType::RecordBroadcast) {
         m_bExternalRecordBroadcastConnected = true;
     }
 }
@@ -472,11 +472,11 @@ bool SoundManagerConfig::hasExternalRecordBroadcast() {
 }
 
 /**
- * Loads default values for API, master output, sample rate and/or latency.
+ * Loads default values for API, main output, sample rate and/or latency.
  * @param soundManager pointer to SoundManager instance to load data from
  * @param flags Bitfield to determine which defaults to load, use something
  *              like SoundManagerConfig::API | SoundManagerConfig::DEVICES to
- *              load default API and master device.
+ *              load default API and main device.
  */
 void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int flags) {
     if (flags & SoundManagerConfig::API) {
@@ -519,8 +519,8 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
-                AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(pDevice->getDeviceId(), masterOut);
+                auto mainOut = AudioOutput(AudioPathType::Main, 0, 2, 0);
+                addOutput(pDevice->getDeviceId(), mainOut);
                 defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }

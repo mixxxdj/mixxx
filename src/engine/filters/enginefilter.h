@@ -1,8 +1,10 @@
 // Wrapper for FidLib Filter Library
 #pragma once
 
-#include <cstdio>
+// clang-format off
+#include <cstdio> // for FILE in fidlib.h
 #include <fidlib.h>
+// clang-format on
 
 #include "engine/engineobject.h"
 #include "util/types.h"

@@ -1,26 +1,22 @@
 #pragma once
 
-#include <QEvent>
-#include <QHideEvent>
-#include <QShowEvent>
-
-#include "library/dlgcoverartfullsize.h"
-#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wglwidget.h"
-#include "widget/wwidget.h"
 
 class ConfigKey;
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
+class QDomNode;
+class SkinContext;
+class BaseTrackPlayer;
+class DlgCoverArtFullSize;
 
 class WSpinnyBase : public WGLWidget,
                     public WBaseWidget,
@@ -59,11 +55,9 @@ class WSpinnyBase : public WGLWidget,
 
   protected slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();

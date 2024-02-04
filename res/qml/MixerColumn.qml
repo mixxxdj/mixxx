@@ -43,7 +43,7 @@ Item {
             width: 4
             height: parent.height - 40
             group: root.group
-            key: "VuMeterL"
+            key: "vu_meter_left"
         }
 
         Skin.VuMeter {
@@ -52,7 +52,7 @@ Item {
             width: 4
             height: parent.height - 40
             group: root.group
-            key: "VuMeterR"
+            key: "vu_meter_right"
         }
 
         Skin.ControlSlider {

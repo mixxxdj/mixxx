@@ -1,15 +1,15 @@
 #pragma once
 
 #include "engine/engineobject.h"
-#include "preferences/usersettings.h"
 
+class ConfigKey;
 class ControlPotmeter;
 class ControlProxy;
 
 class EngineDelay : public EngineObject {
     Q_OBJECT
   public:
-    EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist = true);
+    EngineDelay(const ConfigKey& delayControl, bool bPersist = true);
     virtual ~EngineDelay();
 
     void process(CSAMPLE* pInOut, const int iBufferSize);

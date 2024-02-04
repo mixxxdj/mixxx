@@ -2,8 +2,8 @@
 
 #include <QApplication>
 #include <QFileDialog>
-#include <QPushButton>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -13,7 +13,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
 #include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -26,12 +26,12 @@
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
+#include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
-#include "util/screensaver.h"
 #include "util/screensavermanager.h"
 #include "util/statsmanager.h"
 #include "util/time.h"
@@ -60,6 +60,7 @@ namespace {
 const mixxx::Logger kLogger("CoreServices");
 constexpr int kMicrophoneCount = 4;
 constexpr int kAuxiliaryCount = 4;
+constexpr int kSamplerCount = 4;
 
 #define CLEAR_AND_CHECK_DELETED(x) clearHelper(x, #x);
 
@@ -178,7 +179,7 @@ CoreServices::~CoreServices() {
 }
 
 void CoreServices::initializeSettings() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash
@@ -258,7 +259,7 @@ void CoreServices::initialize(QApplication* pApp) {
     emit initializationProgressUpdate(20, tr("effects"));
     m_pEffectsManager = std::make_shared<EffectsManager>(pConfig, pChannelHandleFactory);
 
-    m_pEngine = std::make_shared<EngineMaster>(
+    m_pEngine = std::make_shared<EngineMixer>(
             pConfig,
             "[Master]",
             m_pEffectsManager.get(),
@@ -304,10 +305,11 @@ void CoreServices::initialize(QApplication* pApp) {
     }
 
     m_pPlayerManager->addConfiguredDecks();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
+
+    for (int i = 0; i < kSamplerCount; ++i) {
+        m_pPlayerManager->addSampler();
+    }
+
     m_pPlayerManager->addPreviewDeck();
 
     m_pEffectsManager->setup();
@@ -430,35 +432,9 @@ void CoreServices::initialize(QApplication* pApp) {
 
     m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
 
-    // The following UI controls must be created here so that controllers can bind to them
-    // on startup.
-    m_uiControls.clear();
-
-    struct UIControlConfig {
-        ConfigKey key;
-        bool persist;
-        bool defaultValue;
-    };
-    const std::vector<UIControlConfig> uiControls = {
-            {ConfigKey("[Master]", "skin_settings"), false, false},
-            {ConfigKey("[Microphone]", "show_microphone"), true, true},
-            {ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), true, false},
-            {ConfigKey("[PreviewDeck]", "show_previewdeck"), true, true},
-            {ConfigKey("[Library]", "show_coverart"), true, true},
-            {ConfigKey("[Master]", "maximize_library"), true, false},
-            {ConfigKey("[Samplers]", "show_samplers"), true, true},
-            {ConfigKey("[EffectRack1]", "show"), true, true},
-            {ConfigKey("[Skin]", "show_4effectunits"), true, false},
-            {ConfigKey("[Master]", "show_mixer"), true, true},
-            {ConfigKey("[Skin]", "show_spinnies"), true, true},
-            {ConfigKey("[Skin]", "show_coverart"), true, true},
-    };
-    m_uiControls.reserve(uiControls.size());
-    for (const auto& row : uiControls) {
-        m_uiControls.emplace_back(std::make_unique<ControlPushButton>(
-                row.key, row.persist, row.defaultValue));
-        m_uiControls.back()->setButtonMode(ControlPushButton::TOGGLE);
-    }
+    // The UI controls must be created here so that controllers can bind to
+    // them on startup.
+    m_pSkinControls = std::make_unique<SkinControls>();
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
@@ -594,11 +570,6 @@ void CoreServices::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
     CLEAR_AND_CHECK_DELETED(m_pPlayerManager);
 
-    // Destroy PlayerInfo explicitly to release the track
-    // pointers of tracks that were still loaded in decks
-    // or samplers when PlayerManager was destroyed!
-    PlayerInfo::destroy();
-
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
@@ -615,9 +586,16 @@ void CoreServices::finalize() {
     CLEAR_AND_CHECK_DELETED(m_pBroadcastManager);
 #endif
 
-    // EngineMaster depends on Config and m_pEffectsManager.
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMaster";
+    // EngineMixer depends on Config and m_pEffectsManager.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EngineMixer";
     CLEAR_AND_CHECK_DELETED(m_pEngine);
+
+    // Destroy PlayerInfo explicitly to release the track
+    // pointers of tracks that were still loaded in decks
+    // or samplers when PlayerManager was destroyed!
+    // Do this after deleting EngineMixer which makes use of
+    // PlayerInfo in EngineRecord.
+    PlayerInfo::destroy();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     CLEAR_AND_CHECK_DELETED(m_pEffectsManager);
@@ -634,7 +612,7 @@ void CoreServices::finalize() {
 
     m_pTouchShift.reset();
 
-    m_uiControls.clear();
+    m_pSkinControls.reset();
 
     m_pControlIndicatorTimer.reset();
 

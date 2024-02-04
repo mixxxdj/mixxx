@@ -1,6 +1,5 @@
 #include "controllers/midi/legacymidicontrollermapping.h"
 
-#include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 
 bool LegacyMidiControllerMapping::saveMapping(const QString& fileName) const {

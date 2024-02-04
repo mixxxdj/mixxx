@@ -7,13 +7,16 @@
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
+#include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
+#include "util/color/color.h"
+#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -42,13 +45,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif // __MODPLUG__
 
-#include "controllers/controllermanager.h"
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
-#include "util/color/color.h"
-#include "util/widgethelper.h"
-
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
 
@@ -301,7 +298,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         return;
     }
 
-    for (PreferencesPage page : qAsConst(m_allPages)) {
+    for (PreferencesPage page : std::as_const(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
             switchToPage(pCurrent->text(0), page.pDlg);
             break;
@@ -580,7 +577,7 @@ QRect DlgPreferences::getDefaultGeometry() {
 }
 
 void DlgPreferences::fixSliderStyle() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // Only used on macOS where the default slider style has several issues:
     // - the handle is semi-transparent
     // - the slider is higher than the space we give it, which causes that:

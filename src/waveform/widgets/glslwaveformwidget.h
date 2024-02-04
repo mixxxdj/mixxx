@@ -2,7 +2,6 @@
 
 #include "waveform/widgets/glwaveformwidgetabstract.h"
 
-class GLSLWaveformRendererSignal;
 
 class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
@@ -18,17 +17,14 @@ class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
             GlslType type);
     ~GLSLWaveformWidget() override = default;
 
-    void resize(int width, int height) override;
+    void resizeRenderer(int width, int height, float devicePixelRatio) override;
 
   protected:
     void castToQWidget() override;
     void paintEvent(QPaintEvent* event) override;
-    void mouseDoubleClickEvent(QMouseEvent *) override;
     mixxx::Duration render() override;
 
   private:
-    GLSLWaveformRendererSignal* m_signalRenderer;
-
     friend class WaveformWidgetFactory;
 };
 
@@ -44,7 +40,9 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 };
 
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
@@ -59,7 +57,9 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 };
 
 class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
@@ -84,7 +84,7 @@ class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGLShaders() {
         return true;
     }
-    static inline bool developerOnly() {
-        return false;
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
     }
 };

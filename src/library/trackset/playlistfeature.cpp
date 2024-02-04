@@ -1,10 +1,8 @@
 #include "library/trackset/playlistfeature.h"
 
-#include <QFile>
 #include <QMenu>
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/playlisttablemodel.h"
@@ -15,11 +13,8 @@
 #include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
-#include "util/dnd.h"
 #include "util/duration.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
@@ -108,7 +103,7 @@ bool PlaylistFeature::dropAcceptChild(
     // tracks already in the DB
     QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
                                       ->resolveTrackIdsFromUrls(urls, !pSource);
-    if (!trackIds.size()) {
+    if (trackIds.isEmpty()) {
         return false;
     }
 
@@ -309,7 +304,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
     // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
     QSet<int> idsToBeUpdated;
-    for (const auto playlistId : qAsConst(playlistIds)) {
+    for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
             idsToBeUpdated.insert(playlistId);
         }

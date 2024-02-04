@@ -1,8 +1,6 @@
 #pragma once
 
-#include <QHash>
 #include <QList>
-#include <QTableView>
 
 #include "library/coverart.h"
 #include "library/tableitemdelegate.h"
@@ -11,6 +9,7 @@
 
 class CoverArtCache;
 class TrackModel;
+class QTableView;
 
 class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
@@ -46,11 +45,9 @@ class CoverArtDelegate : public TableItemDelegate {
 
   private slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedImageHash,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
 
   protected:
     TrackModel* const m_pTrackModel;

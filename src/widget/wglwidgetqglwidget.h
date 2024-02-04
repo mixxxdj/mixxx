@@ -11,10 +11,7 @@ class WGLWidget : public QGLWidget {
     WGLWidget(QWidget* pParent);
 
     bool isContextValid() const;
-    bool isContextSharing() const;
-
     bool shouldRender() const;
-
     void makeCurrentIfNeeded();
 
   protected:

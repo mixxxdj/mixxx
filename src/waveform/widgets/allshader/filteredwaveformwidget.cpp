@@ -9,7 +9,7 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_filteredwaveformwidget.cpp"
 
-using namespace allshader;
+namespace allshader {
 
 FilteredWaveformWidget::FilteredWaveformWidget(const QString& group, QWidget* parent)
         : WaveformWidget(group, parent) {
@@ -24,9 +24,6 @@ FilteredWaveformWidget::FilteredWaveformWidget(const QString& group, QWidget* pa
     m_initSuccess = init();
 }
 
-FilteredWaveformWidget::~FilteredWaveformWidget() {
-}
-
 void FilteredWaveformWidget::castToQWidget() {
     m_widget = this;
 }
@@ -34,3 +31,5 @@ void FilteredWaveformWidget::castToQWidget() {
 void FilteredWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
+
+} // namespace allshader

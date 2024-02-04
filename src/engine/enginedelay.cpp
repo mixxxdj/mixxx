@@ -11,9 +11,10 @@ namespace {
 constexpr double kdMaxDelayPot = 500;
 const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
         mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
+const QString kAppGroup = QStringLiteral("[App]");
 } // anonymous namespace
 
-EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist)
+EngineDelay::EngineDelay(const ConfigKey& delayControl, bool bPersist)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
@@ -23,7 +24,7 @@ EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bo
     connect(m_pDelayPot, &ControlObject::valueChanged, this,
             &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 
-    m_pSampleRate = new ControlProxy(group, "samplerate", this);
+    m_pSampleRate = new ControlProxy(kAppGroup, QStringLiteral("samplerate"), this);
     m_pSampleRate->connectValueChanged(this, &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 }
 

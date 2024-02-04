@@ -1,5 +1,7 @@
 #include "engine/effects/engineeffect.h"
 
+#include "effects/backends/effectsbackendmanager.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -56,6 +58,7 @@ EngineEffect::~EngineEffect() {
 void EngineEffect::initalizeInputChannel(ChannelHandle inputChannel) {
     if (m_pProcessor->hasStatesForInputChannel(inputChannel)) {
         // already initialized for this input channel
+        return;
     }
 
     // At this point the SoundDevice is not set up so we use the kInitalSampleRate.

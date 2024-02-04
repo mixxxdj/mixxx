@@ -2,15 +2,13 @@
 
 #include <QMap>
 
-#include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
+
+class EngineFilterBiquad1LowShelving;
+class EngineFilterBiquad1Peaking;
+class EngineFilterBiquad1HighShelving;
 
 class GraphicEQEffectGroupState : public EffectState {
   public:

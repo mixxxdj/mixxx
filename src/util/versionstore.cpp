@@ -1,11 +1,8 @@
 #include "util/versionstore.h"
 
-#include <soundtouch/SoundTouch.h>
-
 #include <QCoreApplication>
+#include <QDebug>
 #include <QStandardPaths>
-#include <QStringList>
-#include <QtDebug>
 #include <QtGlobal>
 
 // shout.h checks for WIN32 to see if we are on Windows.
@@ -19,12 +16,16 @@
 #undef WIN32
 #endif
 
+#ifdef __RUBBERBAND__
+#include <rubberband/RubberBandStretcher.h>
+#endif
+
 #include <FLAC/format.h>
 #include <chromaprint.h>
 #include <lame/lame.h>
 #include <portaudio.h>
-#include <rubberband/RubberBandStretcher.h>
 #include <sndfile.h>
+#include <soundtouch/SoundTouch.h>
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 
@@ -71,7 +72,9 @@ QString VersionStore::applicationName() {
 
 // static
 QString VersionStore::platform() {
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+    QString base = QStringLiteral("iOS");
+#elif defined(Q_OS_MACOS)
     QString base = QStringLiteral("macOS");
 #elif defined(__LINUX__)
     QString base = QStringLiteral("Linux");
@@ -162,8 +165,10 @@ QStringList VersionStore::dependencyVersions() {
             << QString("PortAudio: %1 %2")
                        .arg(Pa_GetVersion())
                        .arg(Pa_GetVersionText())
+#ifdef __RUBBERBAND__
             // The version of the RubberBand headers Mixxx was compiled with.
             << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
+#endif
             // The version of the SoundTouch headers Mixxx was compiled with.
             << QString("SoundTouch: %1").arg(SOUNDTOUCH_VERSION)
             // The version of the TagLib headers Mixxx was compiled with.

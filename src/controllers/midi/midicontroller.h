@@ -1,13 +1,11 @@
 #pragma once
 
 #include "controllers/controller.h"
-#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
-#include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
-class DlgControllerLearning;
+class MidiOutputHandler;
 
 /// MIDI Controller base class
 ///

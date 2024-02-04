@@ -183,6 +183,28 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
+TEST_F(LoopingControlTest, LoopInSetAtLoopOutClearsLoopOut) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopStartPoint->set(100);
+    EXPECT_EQ(100, m_pLoopStartPoint->get());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, LoopOutSetAtLoopInIgnored) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopEndPoint->set(0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(-1);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(0);
+    EXPECT_FALSE(isLoopEnabled());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+}
+
 TEST_F(LoopingControlTest, LoopOutSetInsideLoopContinues) {
     m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
@@ -654,6 +676,14 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{250}, m_pLoopStartPoint);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{475}, m_pLoopEndPoint);
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
+}
+
+TEST_F(LoopingControlTest, EjectResetsLoopInOutPositions) {
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    m_pChannel1->getEngineBuffer()->ejectTrack();
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopEndPoint);
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {

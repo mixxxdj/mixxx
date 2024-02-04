@@ -9,7 +9,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzerwaveform.h"
 #include "analyzer/constants.h"
-#include "engine/engine.h"
 #include "library/dao/analysisdao.h"
 #include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
@@ -18,7 +17,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/logger.h"
-#include "util/timer.h"
 
 namespace {
 
@@ -130,7 +128,7 @@ void AnalyzerThread::doRun() {
         kLogger.debug() << "Analyzing" << m_currentTrack->getTrack()->getLocation();
 
         // Get the audio
-        const auto audioSource =
+        const mixxx::AudioSourcePointer audioSource =
                 SoundSourceProxy(m_currentTrack->getTrack()).openAudioSource(openParams);
         if (!audioSource) {
             kLogger.warning()
@@ -146,7 +144,7 @@ void AnalyzerThread::doRun() {
             if (analyzer.initialize(
                         *m_currentTrack,
                         audioSource->getSignalInfo().getSampleRate(),
-                        audioSource->frameLength() * mixxx::kAnalysisChannels)) {
+                        audioSource->frameLength())) {
                 processTrack = true;
             }
         }
@@ -310,8 +308,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 3rd step: Update & emit progress
         if (audioSource->frameLength() > 0) {
             const double frameProgress =
-                    double(audioSource->frameLength() - remainingFrameRange.length()) /
-                    double(audioSource->frameLength());
+                    static_cast<double>(audioSource->frameLength() - remainingFrameRange.length()) /
+                    audioSource->frameLength();
             // math_min is required to compensate rounding errors
             const AnalyzerProgress progress =
                     math_min(kAnalyzerProgressFinalizing,

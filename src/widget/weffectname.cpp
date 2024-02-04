@@ -1,8 +1,5 @@
 #include "widget/weffectname.h"
 
-#include <QtDebug>
-
-#include "effects/effectsmanager.h"
 #include "moc_weffectname.cpp"
 #include "widget/effectwidgetutils.h"
 
@@ -22,8 +19,10 @@ void WEffectName::setup(const QDomNode& node, const SkinContext& context) {
     if (pEffectSlot) {
         setEffectSlot(pEffectSlot);
     } else {
-        SKIN_WARNING(node, context)
-                << "EffectName node could not attach to effect slot.";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral(
+                        "EffectName node could not attach to effect slot."));
     }
 }
 

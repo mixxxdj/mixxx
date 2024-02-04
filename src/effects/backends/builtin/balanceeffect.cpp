@@ -1,5 +1,7 @@
 #include "balanceeffect.h"
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/defs.h"
 
 namespace {

@@ -1,5 +1,6 @@
 #include "effects/chains/equalizereffectchain.h"
 
+#include "control/controlobject.h"
 #include "effects/effectslot.h"
 #include "moc_equalizereffectchain.cpp"
 
@@ -28,7 +29,6 @@ EqualizerEffectChain::EqualizerEffectChain(
                 setFilterWaveform(
                         m_effectSlots.at(0)->getManifest()->isMixingEQ());
             });
-    // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(handleAndGroup.name());
 }

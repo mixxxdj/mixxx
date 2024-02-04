@@ -2,9 +2,9 @@
 
 #include <QtDebug>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/libraryview.h"
 #include "moc_wlibrary.cpp"
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "widget/wtracktableview.h"
 

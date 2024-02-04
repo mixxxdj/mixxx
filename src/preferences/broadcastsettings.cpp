@@ -2,14 +2,12 @@
 
 #include <QDir>
 #include <QFileInfo>
-#include <QFileInfoList>
 #include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
-#include "defs_urls.h"
 #include "moc_broadcastsettings.cpp"
+#include "preferences/broadcastsettingsmodel.h"
 #include "util/logger.h"
-#include "util/memory.h"
 
 namespace {
 const char* kProfilesSubfolder = "broadcast_profiles";
@@ -160,7 +158,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for (const auto& pProfile : qAsConst(m_profiles)) {
+    for (const auto& pProfile : std::as_const(m_profiles)) {
         DEBUG_ASSERT(pProfile);
         saveProfile(&*pProfile);
     }

@@ -8,7 +8,6 @@
 #include <list>
 
 #include "engine/cachingreader/cachingreaderworker.h"
-#include "engine/engineworker.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "util/fifo.h"
@@ -121,7 +120,7 @@ class CachingReader : public QObject {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
+    void trackLoaded(TrackPointer pTrack, int trackSampleRate, double trackNumSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

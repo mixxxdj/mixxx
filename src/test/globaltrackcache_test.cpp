@@ -29,7 +29,7 @@ class TrackTitleThread: public QThread {
             // same track twice
             m_recentTrackPtr.reset();
             // Try to resolve the next track by guessing the id
-            const TrackId trackId(loopCount % 2);
+            const TrackId trackId(QVariant(loopCount % 2));
             auto track = GlobalTrackCacheLocker().lookupTrackById(trackId);
             if (track) {
                 ASSERT_EQ(trackId, track->getId());
@@ -91,7 +91,7 @@ class GlobalTrackCacheTest: public MixxxTest, public virtual GlobalTrackCacheSav
 TEST_F(GlobalTrackCacheTest, resolveByFileInfo) {
     ASSERT_TRUE(GlobalTrackCacheLocker().isEmpty());
 
-    const TrackId trackId(1);
+    const TrackId trackId(QVariant(1));
 
     TrackPointer track;
     {
@@ -166,7 +166,7 @@ TEST_F(GlobalTrackCacheTest, concurrentDelete) {
             EXPECT_TRUE(static_cast<bool>(track));
             trackId = track->getId();
             if (!trackId.isValid()) {
-                trackId = TrackId(i % 2);
+                trackId = TrackId(QVariant(i % 2));
                 resolver.initTrackIdAndUnlockCache(trackId);
             }
         }

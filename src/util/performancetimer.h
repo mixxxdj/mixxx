@@ -48,7 +48,7 @@
 // Returns time in nanosecond resolution.
 //
 
-#include <QtCore/qglobal.h>
+#include <QtGlobal>
 
 #include "util/duration.h"
 

@@ -59,7 +59,8 @@ WTrackTableView::WTrackTableView(QWidget* parent,
     // Connect slots and signals to make the world go 'round.
     connect(this, &WTrackTableView::doubleClicked, this, &WTrackTableView::slotMouseDoubleClicked);
 
-    m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
+    m_pCOTGuiTick = new ControlProxy(
+            QStringLiteral("[App]"), QStringLiteral("gui_tick_50ms_period_s"), this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy(mixxx::library::prefs::kKeyNotationConfigKey, this);
@@ -214,7 +215,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // tableview is focused -- and would not restore the previous style when
     // it's unfocused. This can not be overwritten with qss, so it can screw up
     // the skin design. Also, due to selectionModel()->selectedRows() it is not
-    // even useful to highlight the focused column because all colmsn are highlighted.
+    // even useful to indicate the focused column because all columns are highlighted.
     header->setHighlightSections(false);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
@@ -356,6 +357,7 @@ void WTrackTableView::initTrackMenu() {
 // slot
 void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
     // Read the current TrackDoubleClickAction setting
+    // TODO simplify this casting madness
     int doubleClickActionConfigValue =
             m_pConfig->getValue(mixxx::library::prefs::kTrackDoubleClickActionConfigKey,
                     static_cast<int>(DlgPrefLibrary::TrackDoubleClickAction::LoadToDeck));
@@ -821,11 +823,17 @@ TrackModel* WTrackTableView::getTrackModel() const {
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case kPropertiesShortcutKey: {
+        // Return invokes the double-click action.
         // Ctrl+Return opens track properties dialog.
         // Ignore it if any cell editor is open.
-        // Note: the shortcut is displayed in the track context menu
-        if ((event->modifiers() & kPropertiesShortcutModifier) &&
-                state() != QTableView::EditingState) {
+        // Note: we use kPropertiesShortcutKey/~Mofifier here and in
+        // in WTrackMenu to display the shortcut.
+        if (state() == QTableView::EditingState) {
+            break;
+        }
+        if (event->modifiers().testFlag(Qt::NoModifier)) {
+            slotMouseDoubleClicked(currentIndex());
+        } else if ((event->modifiers() & kPropertiesShortcutModifier)) {
             QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.length() == 1) {
                 m_pTrackMenu->loadTrackModelIndices(indices);
@@ -841,6 +849,47 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     } break;
     default:
         QTableView::keyPressEvent(event);
+    }
+}
+
+void WTrackTableView::resizeEvent(QResizeEvent* event) {
+    // When the tracks view shrinks in height, e.g. when other skin regions expand,
+    // and if the row was visible before resizing, scroll to it afterwards.
+
+    // these heights are the actual inner region without header, scrollbars and padding
+    int oldHeight = event->oldSize().height();
+    int newHeight = event->size().height();
+
+    if (newHeight >= oldHeight) {
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    QModelIndex currIndex = currentIndex();
+    int currRow = currIndex.row();
+    int rHeight = rowHeight(currRow);
+
+    if (currRow < 0 || rHeight == 0) { // true if currIndex is invalid
+        QTableView::resizeEvent(event);
+        return;
+    }
+
+    // y-pos of the top edge, negative value means above viewport boundary
+    int posInView = rowViewportPosition(currRow);
+    // Check if the row is visible.
+    // Note: don't use viewport()->height() because that may already have changed
+    bool rowWasVisible = posInView > 0 && posInView - rHeight < oldHeight;
+
+    QTableView::resizeEvent(event);
+
+    if (!rowWasVisible) {
+        return;
+    }
+
+    // Check if the item is fully visible. If not, scroll to show it
+    posInView = rowViewportPosition(currRow);
+    if (posInView - rHeight < 0 || posInView + rHeight > newHeight) {
+        scrollTo(currIndex);
     }
 }
 

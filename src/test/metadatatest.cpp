@@ -1,11 +1,13 @@
 #include <gtest/gtest.h>
-
-#include "track/taglib/trackmetadata.h"
-#include "util/memory.h"
-
-#include <taglib/tstring.h>
 #include <taglib/textidentificationframe.h>
+#include <taglib/tstring.h>
+
 #include <QtDebug>
+
+#include "track/bpm.h"
+#include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_common.h"
+#include "util/memory.h"
 
 namespace {
 

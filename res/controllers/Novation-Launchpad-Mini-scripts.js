@@ -337,7 +337,8 @@ function ZoomKey(dir) {
     that.onPushOrig = that.onPush;
     that.onPush = function()
     {
-        if ( ZoomKey.zoom < 6 && this.dir == "+" ) {
+        // range is 1..10
+        if ( ZoomKey.zoom < 10 && this.dir == "+" ) {
             ZoomKey.zoom++;
         }
         if ( ZoomKey.zoom > 1 && this.dir == "-") {
@@ -400,7 +401,7 @@ NLM.init = function()
 {
         NLM.page = 0;
         NLM.shiftstate = false;
-        NLM.numofdecks = engine.getValue("[Master]", "num_decks");
+        NLM.numofdecks = engine.getValue("[App]", "num_decks");
         // For testing NLM.numofdecks = 4;
 
         //Init hw

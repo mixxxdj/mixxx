@@ -1,18 +1,13 @@
 #pragma once
 
-#include <QList>
 #include <QMap>
 #include <QSet>
 #include <QString>
 #include <QVector>
-#include <QtDebug>
 
 #include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
-#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "util/memory.h"
 #include "util/types.h"

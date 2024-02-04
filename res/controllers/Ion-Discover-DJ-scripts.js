@@ -52,7 +52,7 @@ IonDiscoverDJ.sendMidi = function(status, control, value, timeToWait) {
    if(timeToWait == 0) {
       midi.sendShortMsg(status, control, value);
    } else {
-      engine.beginTimer(timeToWait, "midi.sendShortMsg(" + status + ", " + control + ", " + value + ")", true);
+      engine.beginTimer(timeToWait, () => midi.sendShortMsg(status, control, value), true);
    }
 };
 

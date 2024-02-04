@@ -13,6 +13,10 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
     DEBUG_ASSERT(m_pTableView);
     auto* pTrackTableView = qobject_cast<WTrackTableView*>(m_pTableView);
     if (pTrackTableView) {
+        // This gets a color from the stylesheet:
+        // WTrackTableView {
+        //   qproperty-focusBorderColor: red;
+        // }
         m_pFocusBorderColor = pTrackTableView->getFocusBorderColor();
     }
 }
@@ -72,4 +76,31 @@ void TableItemDelegate::paintItemBackground(
     DEBUG_ASSERT(bgValue.canConvert<QBrush>());
     const auto bgBrush = qvariant_cast<QBrush>(bgValue);
     painter->fillRect(option.rect, bgBrush);
+}
+
+// static
+void TableItemDelegate::drawBorder(
+        QPainter* painter,
+        const QColor borderColor,
+        const QRect& rect) {
+    // Draws a border around the cell with official skin's default focus border width
+    QPen borderPen(
+            borderColor,
+            1,
+            Qt::SolidLine,
+            Qt::SquareCap);
+    painter->setPen(borderPen);
+    painter->setBrush(QBrush(Qt::transparent));
+    painter->drawRect(
+            rect.left(),
+            rect.top(),
+            rect.width() - 1,
+            rect.height() - 1);
+}
+
+void TableItemDelegate::paintItem(
+        QPainter* painter,
+        const QStyleOptionViewItem& option,
+        const QModelIndex& index) const {
+    QStyledItemDelegate::paint(painter, option, index);
 }

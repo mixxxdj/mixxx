@@ -2,9 +2,11 @@
 
 #include <taglib/mp4tag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class QImage;
 
 namespace mixxx {
+
+class TrackMetadata;
 
 namespace taglib {
 

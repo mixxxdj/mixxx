@@ -1,12 +1,12 @@
 #include "widget/wcolorpicker.h"
 
 #include <QColorDialog>
-#include <QMapIterator>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QStyle>
+#include <QStyleFactory>
 
 #include "moc_wcolorpicker.cpp"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 
 namespace {

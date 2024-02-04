@@ -1,6 +1,6 @@
 #include "qmlapplication.h"
 
-#include <QtQml/qqmlextensionplugin.h>
+#include <QQmlEngineExtensionPlugin>
 
 #include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"

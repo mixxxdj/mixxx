@@ -9,7 +9,6 @@ WNumber, WNumberPos,
 WPushButton,
 WKey,
 WTime,
-WTrackText,
 WTrackProperty,
 WRecordingDuration,
 QSpinBox,
@@ -487,17 +486,17 @@ WSpinny { /*
   }
 
 #VuMeterBox,
-#VuMeterBoxMasterSingle {
+#VuMeterBoxMainSingle {
   /* gap in between clipping and Vu level */
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster {
+#VuMeterBoxMain {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }
-#VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu
+#VuMeterBoxMain {
+  /* gap in between Main lft/right Vu
   qproperty-layoutSpacing: 1; */
   }
   #VuMeterBoxFull {
@@ -507,8 +506,8 @@ WSpinny { /*
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,
-  #VuMeterMaster_2Decks,
-  #VuMeterMaster_4Decks {
+  #VuMeterMain_2Decks,
+  #VuMeterMain_4Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
@@ -525,16 +524,16 @@ WSpinny { /*
       qproperty-layoutAlignment: 'AlignCenter';
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   }
-  #MasterControls,
+  #MainControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
     }
     #BoothLabelBox {
       qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
     }
-  #MasterHeadphoneSeparator {
+  #MainHeadphoneSeparator {
   }
 
 /************** Mixer  ********************************************************/
@@ -841,14 +840,15 @@ WEffectChainPresetButton::menu-indicator {
       min-width: 40px;
     }
 
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
+   Linux with Gnome */
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
   background: transparent;
 }
-
-/* Additional space for QRadionButtons */
-#LibraryFeatureControls QRadioButton {
-  margin: 2px 3px 2px 3px;
+#LibraryFeatureControls QRadioButton::indicator {
+  width: 18px;
+  height: 18px;
   }
   /* Push 'New' radio button away from corner */
   QRadioButton#radioButtonRecentlyAdded {

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "analyzer/analyzerscheduledtrack.h"
 #include "library/libraryfeature.h"
 #include "util/parented_ptr.h"
+
+class AnalyzerScheduledTrack;
 
 class BaseTrackSetFeature : public LibraryFeature {
     Q_OBJECT

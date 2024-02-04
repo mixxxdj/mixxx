@@ -24,7 +24,6 @@ WPushButton,
 #LibraryFeatureControls QRadioButton,
 WRecordingDuration,
 WTime,
-WTrackText,
 WTrackProperty,
 QSpinBox,
 WBeatSpinBox,
@@ -36,6 +35,7 @@ WLibrarySidebar QMenu,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QLabel,
@@ -109,6 +109,8 @@ WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button,
 WCueMenuPopup,
@@ -159,6 +161,7 @@ WTrackMenu QMenu QCheckBox:selected,
 WTrackMenu QMenu QCheckBox:focus,
 WTrackMenu QMenu QCheckBox:hover,
 QLineEdit QMenu::item:selected,
+QPlainTextEdit QMenu::item:selected,
 WCoverArtMenu::item:selected,
 WEffectSelector::item:selected,
 WEffectSelector::indicator:unchecked:selected,
@@ -168,6 +171,16 @@ WEffectSelector::indicator:unchecked:selected,
   color: #000;
   /* remove OS focus indicator */
   outline: none;
+  }
+  /* required on Windows since the QAbstractItemViews don't inherit styles from
+     the respective QComboBoxes */
+  WEffectSelector QAbstractItemView,
+  WEffectChainPresetSelector QAbstractItemView,
+  WSearchLineEdit QAbstractItemView {
+    selection-color: #000;
+    selection-background-color: lightgray;
+    border: 0px;
+    outline: none;
   }
   /* Remove 3D border from unchecked effects checkmark space */
   WEffectSelector::item:selected,
@@ -239,6 +252,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -354,7 +368,8 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu::item:disabled,
   WTrackMenu QMenu::item:disabled,
   WTrackMenu QMenu QCheckBox:disabled,
-  QLineEdit QMenu::item:disabled {
+  QLineEdit QMenu::item:disabled,
+  QPlainTextEdit QMenu::item:disabled {
     color: #666;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled {
@@ -367,7 +382,8 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
   WLibraryTextBrowser QMenu::separator,
-  QLineEdit QMenu::separator {
+  QLineEdit QMenu::separator,
+  QPlainTextEdit QMenu::separator {
     border-top: 1px solid #71777a;
   }
 
@@ -475,7 +491,6 @@ WLibrarySidebar {
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;
@@ -498,6 +513,7 @@ WTrackTableView {
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
+  WLibrary QPlainTextEdit,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
@@ -956,6 +972,10 @@ QPushButton#pushButtonRepeatPlaylist {
 
 #HotcueButton {
     background-color: #aab2b7;
+}
+#HotcueButton[displayValue="1"][type="loop"],
+#HotcueButton[displayValue="2"][type="loop"] {
+    image: url(skin:/btn/btn_hotcue_loop.png) no-repeat;
 }
 
 WRateRange {

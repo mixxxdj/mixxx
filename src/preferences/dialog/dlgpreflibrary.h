@@ -2,13 +2,14 @@
 
 #include <QFont>
 #include <QStandardItemModel>
-#include <QWidget>
 #include <memory>
 
 #include "library/library_decl.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
 #include "preferences/usersettings.h"
+
+class QWidget;
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
@@ -68,6 +69,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void initializeDirList();
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();
+    void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;

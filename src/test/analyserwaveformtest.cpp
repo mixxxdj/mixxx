@@ -4,6 +4,7 @@
 #include <QtDebug>
 #include <vector>
 
+#include "analyzer/analyzertrack.h"
 #include "analyzer/analyzerwaveform.h"
 #include "library/dao/analysisdao.h"
 #include "test/mixxxtest.h"
@@ -15,6 +16,7 @@ constexpr std::size_t kBigBufSize = 2 * 1920; // Matches the WaveformSummary
 constexpr std::size_t kCanarySize = 1024 * 4;
 constexpr float kMagicFloat = 1234.567890f;
 constexpr float kCanaryFloat = 0.0f;
+constexpr int kChannelCount = 2;
 const QString kReferenceBuffersPath = QStringLiteral("/src/test/reference_buffers/");
 
 class AnalyzerWaveformTest : public MixxxTest {
@@ -26,7 +28,7 @@ class AnalyzerWaveformTest : public MixxxTest {
     void SetUp() override {
         m_pTrack = Track::newTemporary();
         m_pTrack->setAudioProperties(
-                mixxx::audio::ChannelCount(2),
+                mixxx::audio::ChannelCount(kChannelCount),
                 mixxx::audio::SampleRate(44100),
                 mixxx::audio::Bitrate(),
                 mixxx::Duration::fromMillis(1000));
@@ -99,7 +101,9 @@ class AnalyzerWaveformTest : public MixxxTest {
 
 // Basic test to make sure we don't alter the input buffer and don't step out of bounds.
 TEST_F(AnalyzerWaveformTest, canary) {
-    m_aw.initialize(m_pTrack, m_pTrack->getSampleRate(), kBigBufSize);
+    m_aw.initialize(AnalyzerTrack(m_pTrack),
+            m_pTrack->getSampleRate(),
+            kBigBufSize / kChannelCount);
     m_aw.processSamples(&m_canaryBigBuf[kCanarySize], kBigBufSize);
     m_aw.storeResults(m_pTrack);
     m_aw.cleanup();

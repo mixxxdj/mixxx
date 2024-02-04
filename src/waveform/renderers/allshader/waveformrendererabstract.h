@@ -20,7 +20,7 @@ class allshader::WaveformRendererAbstract : public QOpenGLFunctions {
     virtual void initializeGL() {
         initializeOpenGLFunctions();
     }
-    virtual void resizeGL(int w, int h) {
+    virtual void resizeGL(int /* w */, int /* h */) {
     }
     virtual void paintGL() = 0;
 };

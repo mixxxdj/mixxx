@@ -1,6 +1,6 @@
 #include "widget/wtracktableviewheader.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
 
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"
@@ -280,7 +280,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
-    for (const auto& pAction : qAsConst(m_columnActions)) {
+    for (const auto& pAction : std::as_const(m_columnActions)) {
         if (!pAction->isChecked()) {
             count += 1;
         }

@@ -1,6 +1,8 @@
 #include "effects/backends/builtin/graphiceqeffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterbiquad1.h"
 
 #define Q 1.2247449
 
@@ -20,7 +22,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
             "An 8-band graphic equalizer based on biquad filters"));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setIsMasterEQ(true);
+    pManifest->setIsMainEQ(true);
 
     // Display rounded center frequencies for each filter
     float centerFrequencies[8] = {45, 100, 220, 500, 1100, 2500, 5500, 12000};

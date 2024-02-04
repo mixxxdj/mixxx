@@ -4,7 +4,6 @@
 
 #include "sources/audiosource.h"
 #include "sources/metadatasourcetaglib.h"
-#include "util/assert.h"
 
 namespace mixxx {
 

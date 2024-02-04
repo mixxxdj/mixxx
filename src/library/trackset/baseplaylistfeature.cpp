@@ -1,19 +1,15 @@
 #include "library/trackset/baseplaylistfeature.h"
 
-#include <qlist.h>
-
-#include <QFileDialog>
+#include <QAction>
 #include <QFileInfo>
 #include <QInputDialog>
+#include <QList>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
-#include "library/parserm3u.h"
-#include "library/parserpls.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -506,20 +502,12 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         const QFileInfo fileInfo(playlistFile);
         // Get a valid name
         const QString baseName = fileInfo.baseName();
-        QString name;
-
-        bool validNameGiven = false;
-        int i = 0;
-        while (!validNameGiven) {
-            name = baseName;
-            if (i != 0) {
-                name += QString::number(i);
-            }
-
-            // Check name
-            int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-            validNameGiven = (existingId == kInvalidPlaylistId);
+        QString name = baseName;
+        // Check if there already is a playlist by that name. If yes, add
+        // increasing suffix (1++) until we find an unused name.
+        int i = 1;
+        while (m_playlistDao.getPlaylistIdFromName(name) != kInvalidPlaylistId) {
+            name = baseName + QChar(' ') + QString::number(i);
             ++i;
         }
 

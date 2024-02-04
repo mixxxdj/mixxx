@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QStyledItemDelegate>
-#include <QTableView>
+
+class QTableView;
 
 class TableItemDelegate : public QStyledItemDelegate {
     Q_OBJECT
@@ -18,7 +19,12 @@ class TableItemDelegate : public QStyledItemDelegate {
     virtual void paintItem(
             QPainter* painter,
             const QStyleOptionViewItem& option,
-            const QModelIndex& index) const = 0;
+            const QModelIndex& index) const;
+
+    static void drawBorder(
+            QPainter* painter,
+            const QColor borderColor,
+            const QRect& rect);
 
   protected:
     static void paintItemBackground(
@@ -29,7 +35,5 @@ class TableItemDelegate : public QStyledItemDelegate {
     int columnWidth(const QModelIndex &index) const;
 
     QColor m_pFocusBorderColor;
-
-  private:
     QTableView* m_pTableView;
 };

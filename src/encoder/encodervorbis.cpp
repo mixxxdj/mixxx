@@ -1,8 +1,12 @@
+#include "encoder/encodervorbis.h"
+
 #include <stdlib.h> // needed for random num gen
-#include <time.h> // needed for random num gen
+#include <time.h>   // needed for random num gen
+#include <vorbis/vorbisenc.h>
+
 #include <QtDebug>
 
-#include "encoder/encodervorbis.h"
+#include "audio/types.h"
 #include "encoder/encodercallback.h"
 
 // Automatic thresholds for switching the encoder to mono

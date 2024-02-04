@@ -1,18 +1,13 @@
 #include "library/dlganalysis.h"
 
-#include <QSqlTableModel>
-
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerscheduledtrack.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
-#include "library/trackcollectionmanager.h"
 #include "moc_dlganalysis.cpp"
 #include "util/assert.h"
 #include "widget/wanalysislibrarytableview.h"
 #include "widget/wlibrary.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 DlgAnalysis::DlgAnalysis(WLibrary* parent,
                        UserSettingsPointer pConfig,

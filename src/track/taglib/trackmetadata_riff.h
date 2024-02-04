@@ -2,7 +2,7 @@
 
 #include <taglib/infotag.h>
 
-#include "track/taglib/trackmetadata_common.h"
+class TrackMetadata;
 
 namespace mixxx {
 

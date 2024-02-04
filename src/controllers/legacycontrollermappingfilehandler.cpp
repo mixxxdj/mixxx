@@ -1,9 +1,12 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
 
-#include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "util/xml.h"
+
+#ifdef __HID__
+#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
+#endif
 
 namespace {
 
@@ -33,6 +36,9 @@ QFileInfo findScriptFile(std::shared_ptr<LegacyControllerMapping> mapping,
 // static
 std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loadMapping(
         const QFileInfo& mappingFile, const QDir& systemMappingsPath) {
+    if (mappingFile.path().isEmpty()) {
+        return nullptr;
+    }
     if (!mappingFile.exists() || !mappingFile.isReadable()) {
         qDebug() << "Mapping" << mappingFile.absoluteFilePath()
                  << "does not exist or is unreadable.";
@@ -47,7 +53,9 @@ std::shared_ptr<LegacyControllerMapping> LegacyControllerMappingFileHandler::loa
                        HID_MAPPING_EXTENSION, Qt::CaseInsensitive) ||
             mappingFile.fileName().endsWith(
                     BULK_MAPPING_EXTENSION, Qt::CaseInsensitive)) {
+#ifdef __HID__
         pHandler = new LegacyHidControllerMappingFileHandler();
+#endif
     }
 
     if (pHandler == nullptr) {

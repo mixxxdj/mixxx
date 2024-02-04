@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstddef>
 #include <climits>
+#include <cstddef>
 
 #include "util/math.h"
 

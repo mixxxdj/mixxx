@@ -5,7 +5,7 @@
     <Pos><Variable name="pos"/></Pos>
     <Group><Variable name="group"/></Group>
     <Hotcue><Variable name="hotcue"/></Hotcue>
-    <NumberStates>2</NumberStates>
+    <NumberStates>3</NumberStates>
     <State>
       <Number>0</Number>
       <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>.png</Pressed>
@@ -13,6 +13,11 @@
     </State>
     <State>
       <Number>1</Number>
+      <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_overdown.png</Pressed>
+      <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_over.png</Unpressed>
+    </State>
+    <State>
+      <Number>2</Number>
       <Pressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_overdown.png</Pressed>
       <Unpressed>skin:/btn/btn_hotcue_<Variable name="hotcue"/>_over.png</Unpressed>
     </State>

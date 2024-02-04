@@ -1,5 +1,6 @@
 #include "library/trackset/basetracksetfeature.h"
 
+#include "analyzer/analyzerscheduledtrack.h"
 #include "moc_basetracksetfeature.cpp"
 
 BaseTrackSetFeature::BaseTrackSetFeature(

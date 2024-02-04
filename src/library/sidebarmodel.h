@@ -3,10 +3,10 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
-#include <QTimer>
 #include <QVariant>
 
 class LibraryFeature;
+class QTimer;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT

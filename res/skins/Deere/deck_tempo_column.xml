@@ -15,21 +15,31 @@
         <ObjectName>TempoControlButtons</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:left_right_2state_button.xml">
-            <SetVariable name="TooltipId">sync_enabled</SetVariable>
-            <SetVariable name="ObjectName">DeckSync</SetVariable>
-            <SetVariable name="MinimumSize">-1,18</SetVariable>
-            <SetVariable name="MaximumSize">-1,18</SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">Sync</SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="state_1_text">Sync</SetVariable>
-            <SetVariable name="state_1_pressed"></SetVariable>
-            <SetVariable name="state_1_unpressed"></SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
-            <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <ObjectName>RateTempButtons</ObjectName>
+            <Children>
+              <Template src="skin:left_right_2state_button.xml">
+                <SetVariable name="TooltipId">sync_enabled</SetVariable>
+                <SetVariable name="ObjectName">DeckSync</SetVariable>
+                <SetVariable name="MinimumSize">35,18</SetVariable>
+                <SetVariable name="MaximumSize">35,18</SetVariable>
+                <!-- <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable> -->
+                <SetVariable name="state_0_text">Sync</SetVariable>
+                <SetVariable name="state_1_text">Sync</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_enabled</SetVariable>
+                <SetVariable name="right_connection_control"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
+              <Template src="skin:left_3state_button.xml">
+                <SetVariable name="TooltipId">sync_leader</SetVariable>
+                <SetVariable name="ObjectName">SyncLeader</SetVariable>
+                <SetVariable name="MinimumSize">15,18</SetVariable>
+                <SetVariable name="MaximumSize">15,18</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,sync_leader</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>RateTempButtons</ObjectName>
@@ -93,7 +103,7 @@
                 <Size>50f,-1me</Size>
                 <MaximumSize>40,200</MaximumSize>
                 <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                <Handle scalemode="STRETCH_ASPECT">handle-vertical-blue.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,rate</ConfigKey>
                 </Connection>

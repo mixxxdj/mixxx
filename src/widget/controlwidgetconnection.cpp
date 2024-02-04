@@ -5,7 +5,6 @@
 #include "control/controlproxy.h"
 #include "moc_controlwidgetconnection.cpp"
 #include "util/assert.h"
-#include "util/debug.h"
 #include "util/valuetransformer.h"
 #include "widget/wbasewidget.h"
 

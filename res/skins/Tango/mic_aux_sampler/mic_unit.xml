@@ -37,7 +37,7 @@ Variables:
             <Alignment>right</Alignment>
           </Label>
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="TooltipId">microphone_talkover</SetVariable>
             <SetVariable name="ObjectName">MicTalkover</SetVariable>
             <SetVariable name="Size">20f,29f</SetVariable>
@@ -46,14 +46,14 @@ Variables:
 
           <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/mixer/vumeter_mini.xml">
+          <Template src="skins:Tango/mixer/vumeter_mini.xml">
             <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
             <SetVariable name="Size">4f,29f</SetVariable>
           </Template>
 
           <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/controls/knob_textless.xml">
+          <Template src="skins:Tango/controls/knob_textless.xml">
             <SetVariable name="TooltipId">microphone_pregain</SetVariable>
             <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
             <SetVariable name="Size">30f,30f</SetVariable>
@@ -69,8 +69,8 @@ Variables:
             <Layout>stacked</Layout>
             <Children>
               <!-- Greyed out if no headphone device is configured -->
-              <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">20f,20f</SetVariable>
@@ -95,12 +95,12 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">1</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">3</SetVariable>
                   </Template>
@@ -113,12 +113,12 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">2</SetVariable>
                   </Template>
                     <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                  <Template src="skin:../Tango/fx/assign_button.xml">
+                  <Template src="skins:Tango/fx/assign_button.xml">
                     <SetVariable name="Size">26f,16f</SetVariable>
                     <SetVariable name="FxUnit">4</SetVariable>
                   </Template>
@@ -132,7 +132,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey><Variable name="group"/>,enabled</ConfigKey>
+      <ConfigKey><Variable name="group"/>,input_configured</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

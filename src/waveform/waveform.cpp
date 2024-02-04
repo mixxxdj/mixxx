@@ -1,6 +1,8 @@
+#include "waveform/waveform.h"
+
 #include <QtDebug>
 
-#include "waveform/waveform.h"
+#include "analyzer/constants.h"
 #include "proto/waveform.pb.h"
 
 using namespace mixxx::track;
@@ -28,8 +30,11 @@ Waveform::Waveform(const QByteArray& data)
     readByteArray(data);
 }
 
-Waveform::Waveform(int audioSampleRate, int audioSamples,
-                   int desiredVisualSampleRate, int maxVisualSamples)
+Waveform::Waveform(
+        int audioSampleRate,
+        SINT frameLength,
+        int desiredVisualSampleRate,
+        int maxVisualSamples)
         : m_id(-1),
           m_saveState(SaveState::NotSaved),
           m_dataSize(0),
@@ -49,15 +54,18 @@ Waveform::Waveform(int audioSampleRate, int audioSamples,
             }
         } else {
             // Waveform Summary (Overview)
-            if (audioSamples > maxVisualSamples) {
-                m_visualSampleRate = (double)maxVisualSamples *
-                        (double)audioSampleRate / (double)audioSamples;
+            if (frameLength > maxVisualSamples / mixxx::kAnalysisChannels) {
+                m_visualSampleRate = static_cast<double>(audioSampleRate) *
+                        maxVisualSamples / mixxx::kAnalysisChannels / frameLength;
             } else {
                 m_visualSampleRate = audioSampleRate;
             }
         }
         m_audioVisualRatio = (double)audioSampleRate / (double)m_visualSampleRate;
-        numberOfVisualSamples = static_cast<int>(audioSamples / m_audioVisualRatio) + 1;
+        numberOfVisualSamples =
+                static_cast<int>(frameLength / m_audioVisualRatio *
+                        mixxx::kAnalysisChannels) +
+                1;
         numberOfVisualSamples += numberOfVisualSamples%2;
     }
     assign(numberOfVisualSamples, 0);

@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "effects/backends/effectmanifest.h"
-#include "effects/defs.h"
 
 /// Refer to EffectManifest for documentation
 class LV2Manifest : public EffectManifest {

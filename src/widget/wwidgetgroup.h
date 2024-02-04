@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QDomNode>
 #include <QFrame>
-#include <QPaintEvent>
 #include <QPixmap>
-#include <QResizeEvent>
 #include <QString>
 #include <QWidget>
-#include <QEvent>
 
 #include "widget/wbasewidget.h"
 #include "widget/wpixmapstore.h"
 
+class QDomNode;
 class SkinContext;
 
 class WWidgetGroup : public QFrame, public WBaseWidget {
@@ -60,7 +57,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     QRect layoutContentsMargins() const;
     void setLayoutContentsMargins(QRect rectMargins);
     Qt::Alignment layoutAlignment() const;
-    void setLayoutAlignment(int alignment);
+    void setLayoutAlignment(Qt::Alignment alignment);
     int getHighlight() const;
     void setHighlight(int highlight);
 

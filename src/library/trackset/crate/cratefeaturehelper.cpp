@@ -4,6 +4,8 @@
 #include <QLineEdit>
 
 #include "library/trackcollection.h"
+#include "library/trackset/crate/crate.h"
+#include "library/trackset/crate/cratesummary.h"
 #include "moc_cratefeaturehelper.cpp"
 
 CrateFeatureHelper::CrateFeatureHelper(

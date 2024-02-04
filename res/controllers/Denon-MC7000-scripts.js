@@ -204,10 +204,10 @@ MC7000.init = function() {
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 
     // VU meters
-    engine.makeUnbufferedConnection("[Channel1]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel2]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel3]", "VuMeter", MC7000.VuMeter);
-    engine.makeUnbufferedConnection("[Channel4]", "VuMeter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel1]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel2]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel3]", "vu_meter", MC7000.VuMeter);
+    engine.makeUnbufferedConnection("[Channel4]", "vu_meter", MC7000.VuMeter);
 
     // Switch to active decks
     midi.sendShortMsg(MC7000.topDeckActive[0] ? 0x90 : 0x92, 0x08, 0x7F);
@@ -249,7 +249,7 @@ MC7000.init = function() {
         engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.VelSampLED);
     }
     // send Softtakeover delayed to avoid conflicts with ControllerStatusSysex
-    engine.beginTimer(2000, function() {
+    engine.beginTimer(2000, () => {
         // Softtakeover for Pitch Faders only
         for (let chanIdx = 1; chanIdx <= 4; chanIdx++) {
             engine.softTakeover("[Channel" + chanIdx + "]", "rate", true);
@@ -430,9 +430,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 engine.setValue(group, "hotcue_" + cueIdx + "_activate", false);
                 if (engine.getValue(group, "slip_enabled")) {
                     engine.setValue(group, "slip_enabled", false);
-                    engine.beginTimer(50, function() {
-                        engine.setValue(group, "slip_enabled", true);
-                    }, true);
+                    engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
                 }
             } else if (control === 0x1C + cueIdx - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + cueIdx + "_clear", true);
@@ -589,9 +587,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                     // midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff); // switch to pitch off color
                     if (engine.getValue(group, "slip_enabled")) {
                         engine.setValue(group, "slip_enabled", false);
-                        engine.beginTimer(50, function() {
-                            engine.setValue(group, "slip_enabled", true);
-                        }, true);
+                        engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
                     }
                 } else if (isButtonPressed && isControlAddressShift) { //shifted buttons deselect hotcue for pitch
                     engine.setValue(group, "pitch", 0);
@@ -680,7 +676,7 @@ MC7000.loadButton = function(channel, control, value, status, group) {
 MC7000.wheelTouch = function(channel, control, value, status, group) {
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    const libraryMaximized = engine.getValue("[Master]", "maximize_library") > 0;
+    const libraryMaximized = engine.getValue("[Skin]", "show_maximized_library") > 0;
     if (MC7000.isVinylMode[deckIndex] && !libraryMaximized) {
         if (value === 0x7F) {
             engine.scratchEnable(deckNumber, MC7000.jogWheelTicksPerRevolution,
@@ -691,9 +687,7 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
             if (engine.getValue(group, "slip_enabled")) {
                 engine.scratchDisable(deckNumber, false); // stops scratching immediately
                 engine.setValue(group, "slip_enabled", false);
-                engine.beginTimer(50, function() {
-                    engine.setValue(group, "slip_enabled", true);
-                }, true);
+                engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
             } else {
                 engine.scratchDisable(deckNumber); // continues scratching e.g. for backspin
             }
@@ -711,7 +705,7 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     const adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     const deckNumber = script.deckFromGroup(group);
     const deckIndex = deckNumber - 1;
-    const libraryMaximized = engine.getValue("[Master]", "maximize_library");
+    const libraryMaximized = engine.getValue("[Skin]", "show_maximized_library");
     if (libraryMaximized === 1 && numTicks > 0) {
         engine.setValue("[Library]", "MoveDown", 1);
     } else if (libraryMaximized === 1 && numTicks < 0) {
@@ -909,9 +903,7 @@ MC7000.reverse = function(channel, control, value, status, group) {
             engine.brake(deckNumber, false); // disable brake effect
             engine.setValue(group, "play", 1);
             engine.setValue(group, "slip_enabled", false);
-            engine.beginTimer(50, function() {
-                engine.setValue(group, "slip_enabled", true);
-            }, true);
+            engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
         } else {
             engine.softStart(deckNumber, true, MC7000.spinbackFactor[deckIndex]);
         }
@@ -927,9 +919,7 @@ MC7000.censor = function(channel, control, value, status, group) {
         } else {
             engine.setValue(group, "reverseroll", 0);
         }
-        engine.beginTimer(50, function() {
-            engine.setValue(group, "slip_enabled", true);
-        }, true);
+        engine.beginTimer(50, () => engine.setValue(group, "slip_enabled", true), true);
     } else {
         // reverse play while button pressed
         if (value > 0) {
@@ -1027,8 +1017,8 @@ MC7000.sortLibrary = function(channel, control, value) {
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
     const deckIndex = script.deckFromGroup(group) - 1;
-    // sends either PeakIndicator or scales value (0..1) to (0..117) while truncating to each LED
-    const vuLevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.floor(Math.pow(value, 2.5) * 9) * 13;
+    // sends either peak_indicator or scales value (0..1) to (0..117) while truncating to each LED
+    const vuLevelOutValue = engine.getValue(group, "peak_indicator") ? MC7000.VuMeterLEDPeakValue : Math.floor(Math.pow(value, 2.5) * 9) * 13;
     // only send Midi signal when LED value has changed
     if (MC7000.prevVuLevel[deckIndex] !== vuLevelOutValue) {
         midi.sendShortMsg(0xB0 + deckIndex, 0x1F, vuLevelOutValue);

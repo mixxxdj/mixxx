@@ -1,9 +1,9 @@
 #include "engine/positionscratchcontroller.h"
 
-#include <QtDebug>
-
+#include "control/controlobject.h"
 #include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
 #include "moc_positionscratchcontroller.cpp"
+#include "preferences/configobject.h" // for ConfigKey
 #include "util/math.h"
 
 class VelocityController {
@@ -77,7 +77,8 @@ PositionScratchController::PositionScratchController(const QString& group)
           m_dMouseSampeTime(0) {
     m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
     m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
-    m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
+    m_pMainSampleRate = ControlObject::getControl(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("samplerate")));
     m_pVelocityController = new VelocityController();
     m_pRateIIFilter = new RateIIFilter;
 }
@@ -104,8 +105,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
     }
 
     // The latency or time difference between process calls.
-    const double dt = static_cast<double>(iBufferSize)
-            / m_pMasterSampleRate->get() / 2;
+    const double dt = static_cast<double>(iBufferSize) / m_pMainSampleRate->get() / 2;
 
     // Sample Mouse with fixed timing intervals to iron out significant jitters
     // that are added on the way from mouse to engine thread

@@ -41,10 +41,9 @@ SamplerBank::SamplerBank(UserSettingsPointer pConfig,
             this,
             &SamplerBank::slotSaveSamplerBank);
 
-    m_pCONumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"), this);
-}
-
-SamplerBank::~SamplerBank() {
+    m_pCONumSamplers = new ControlProxy(
+            ConfigKey(QStringLiteral("[App]"), QStringLiteral("num_samplers")),
+            this);
 }
 
 void SamplerBank::slotSaveSamplerBank(double v) {

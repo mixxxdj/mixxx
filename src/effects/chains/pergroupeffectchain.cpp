@@ -1,7 +1,9 @@
 #include "effects/chains/pergroupeffectchain.h"
 
-#include "effects/effectsmanager.h"
+#include "control/controlobject.h"
 #include "moc_pergroupeffectchain.cpp"
+
+class EffectsManager;
 
 PerGroupEffectChain::PerGroupEffectChain(
         const ChannelHandleAndGroup& handleAndGroup,

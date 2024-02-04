@@ -2,10 +2,8 @@
 
 #include <QEvent>
 #include <QKeyEvent>
-#include <QList>
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
@@ -37,15 +35,9 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 #else
         int keyId = ke->nativeScanCode();
 #endif
-        //qDebug() << "KeyPress event =" << ke->key() << "KeyId =" << keyId;
 
-        // Run through list of active keys to see if the pressed key is already active
-        // Just for returning true if we are consuming this key event
-
-        foreach (const KeyDownInformation& keyDownInfo, m_qActiveKeyList) {
-            if (keyDownInfo.keyId == keyId) {
-                return true;
-            }
+        if (shouldSkipHeldKey(keyId)) {
+            return true;
         }
 
         QKeySequence ks = getKeySeq(ke);
@@ -77,7 +69,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             }
             return result;
         }
-    } else if (e->type()==QEvent::KeyRelease) {
+    } else if (e->type() == QEvent::KeyRelease) {
         QKeyEvent* ke = (QKeyEvent*)e;
 
 #ifdef __APPLE__

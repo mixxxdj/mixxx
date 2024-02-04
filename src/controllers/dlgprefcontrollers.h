@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QTreeWidgetItem>
 #include <memory>
 
 #include "controllers/ui_dlgprefcontrollersdlg.h"
@@ -10,6 +9,7 @@
 class DlgPreferences;
 class DlgPrefController;
 class ControllerManager;
+class QTreeWidgetItem;
 
 /// Controllers Overview in the preferences
 ///

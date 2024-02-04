@@ -1,7 +1,5 @@
 #include "library/proxytrackmodel.h"
 
-#include <QVariant>
-
 #include "library/searchqueryparser.h"
 #include "moc_proxytrackmodel.cpp"
 #include "util/assert.h"

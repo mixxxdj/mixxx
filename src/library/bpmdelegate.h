@@ -1,11 +1,8 @@
 #pragma once
 
-#include <QCheckBox>
-#include <QModelIndex>
-#include <QStyleOptionViewItem>
-
 #include "library/tableitemdelegate.h"
 
+class QCheckBox;
 
 class BPMDelegate : public TableItemDelegate {
     Q_OBJECT
@@ -13,8 +10,9 @@ class BPMDelegate : public TableItemDelegate {
     explicit BPMDelegate(QTableView* pTableView);
     virtual ~BPMDelegate();
 
-    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
-               const QModelIndex& index) const;
+    void paintItem(QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
 
   private:
     QTableView* m_pTableView;

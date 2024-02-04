@@ -5,9 +5,7 @@
 #include "control/controllinpotmeter.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/sync/enginesync.h"
 #include "moc_internalclock.cpp"
-#include "preferences/usersettings.h"
 #include "util/logger.h"
 #include "util/math.h"
 
@@ -50,8 +48,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
     m_pSyncLeaderEnabled->setStates(3);
     m_pSyncLeaderEnabled->connectValueChangeRequest(
             this, &InternalClock::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
-    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "sync_master"),
-            ConfigKey(m_group, "sync_leader"));
+    m_pSyncLeaderEnabled->addAlias(ConfigKey(m_group, QStringLiteral("sync_master")));
 }
 
 InternalClock::~InternalClock() {

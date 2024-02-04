@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QButtonGroup>
-#include <QItemSelection>
 
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzerscheduledtrack.h"
@@ -10,10 +9,10 @@
 #include "library/ui_dlganalysis.h"
 #include "preferences/usersettings.h"
 
-class AnalysisLibraryTableModel;
 class WAnalysisLibraryTableView;
 class Library;
 class WLibrary;
+class QItemSelection;
 
 class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT

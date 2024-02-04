@@ -7,6 +7,7 @@
 #include <QString>
 #include <vector>
 
+#include "audio/signalinfo.h"
 #include "util/class.h"
 #include "util/compatibility/qmutex.h"
 
@@ -35,8 +36,11 @@ class Waveform {
     };
 
     explicit Waveform(const QByteArray& pData = QByteArray());
-    Waveform(int audioSampleRate, int audioSamples,
-             int desiredVisualSampleRate, int maxVisualSamples);
+    Waveform(
+            int audioSampleRate,
+            SINT frameLength,
+            int desiredVisualSampleRate,
+            int maxVisualSamples);
 
     virtual ~Waveform();
 

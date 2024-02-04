@@ -1,8 +1,6 @@
 #include "controllers/delegates/midioptionsdelegate.h"
 
 #include <QComboBox>
-#include <QTableView>
-#include <QtDebug>
 
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
@@ -28,7 +26,7 @@ const QList<MidiOption> kMidiOptions = {
         MidiOption::FourteenBitLSB,
 };
 
-}
+} // namespace
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {

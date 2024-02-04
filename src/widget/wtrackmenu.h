@@ -84,6 +84,7 @@ class WTrackMenu : public QMenu {
     // This has been done on purpose to ensure menu doesn't popup without loaded track(s).
     void popup(const QPoint& pos, QAction* at = nullptr);
     void slotShowDlgTrackInfo();
+    void showDlgTrackInfo(const QString& property = QString());
     // Library management
     void slotRemoveFromDisk();
 
@@ -200,7 +201,7 @@ class WTrackMenu : public QMenu {
     void loadSelectionToGroup(const QString& group, bool play = false);
     void clearTrackSelection();
 
-    bool isAnyTrackBpmLocked() const;
+    std::pair<bool, bool> getTrackBpmLockStates() const;
 
     /// Get the common track color of all tracks this menu is shown for, or
     /// return `nullopt` if there is no common color. Tracks may have no color
@@ -236,7 +237,9 @@ class WTrackMenu : public QMenu {
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
     parented_ptr<WFindOnWebMenu> m_pFindOnWebMenu;
+#if QT_VERSION < QT_VERSION_CHECK(5, 15, 0)
     QMenu* m_pRemoveFromDiskMenu{};
+#endif
 
     // Update ReplayGain from Track
     QAction* m_pUpdateReplayGainAct{};

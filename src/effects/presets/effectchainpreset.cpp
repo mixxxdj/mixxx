@@ -1,6 +1,8 @@
 #include "effects/presets/effectchainpreset.h"
 
+#include "effects/backends/effectmanifest.h"
 #include "effects/effectchain.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
@@ -38,7 +40,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
         QDomNode effectNode = effectList.at(i);
         if (effectNode.isElement()) {
             QDomElement effectElement = effectNode.toElement();
-            EffectPresetPointer pPreset(new EffectPreset(effectElement));
+            auto pPreset = EffectPresetPointer::create(effectElement);
             m_effectPresets.append(pPreset);
         }
     }
@@ -50,23 +52,26 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
 EffectChainPreset::EffectChainPreset(const EffectChain* chain)
         : m_name(chain->presetName()),
           m_mixMode(chain->mixMode()),
-          m_dSuper(chain->getSuperParameter()) {
+          m_dSuper(chain->getSuperParameter()),
+          m_readOnly(false) {
     for (const auto& pEffectSlot : chain->getEffectSlots()) {
-        m_effectPresets.append(EffectPresetPointer(new EffectPreset(pEffectSlot)));
+        m_effectPresets.append(EffectPresetPointer::create(pEffectSlot));
     }
 }
 
 EffectChainPreset::EffectChainPreset(EffectManifestPointer pManifest)
         : m_name(pManifest->displayName()),
           m_mixMode(EffectChainMixMode::DrySlashWet),
-          m_dSuper(pManifest->metaknobDefault()) {
-    m_effectPresets.append(EffectPresetPointer(new EffectPreset(pManifest)));
+          m_dSuper(pManifest->metaknobDefault()),
+          m_readOnly(false) {
+    m_effectPresets.append(EffectPresetPointer::create(pManifest));
 }
 
 EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset)
         : m_name(pEffectPreset->id()),
           m_mixMode(EffectChainMixMode::DrySlashWet),
-          m_dSuper(pEffectPreset->metaParameter()) {
+          m_dSuper(pEffectPreset->metaParameter()),
+          m_readOnly(false) {
     m_effectPresets.append(pEffectPreset);
 }
 

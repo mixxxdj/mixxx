@@ -1,7 +1,5 @@
 #include "util/db/fwdsqlquery.h"
 
-#include <QSqlRecord>
-
 #include "util/performancetimer.h"
 #include "util/logger.h"
 #include "util/assert.h"

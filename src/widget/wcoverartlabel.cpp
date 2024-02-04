@@ -1,11 +1,10 @@
 #include "widget/wcoverartlabel.h"
 
-#include <QtDebug>
+#include <QContextMenuEvent>
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
 #include "moc_wcoverartlabel.cpp"
-#include "track/track.h"
 #include "widget/wcoverartmenu.h"
 
 namespace {

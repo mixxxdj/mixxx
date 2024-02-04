@@ -1,14 +1,12 @@
-#include "widget/wpixmapstore.h"
-
-#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QString>
 #include <QtDebug>
-
-#include "skin/legacy/imgloader.h"
 
 #include "util/math.h"
 #include "util/memory.h"
 #include "util/painterscope.h"
+#include "widget/wpixmapstore.h"
 
 // static
 Paintable::DrawMode Paintable::DrawModeFromString(const QString& str) {

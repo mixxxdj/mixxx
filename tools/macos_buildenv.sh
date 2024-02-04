@@ -21,23 +21,27 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 
 if [ -n "${BUILDENV_ARM64}" ]; then
     if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100-release"
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-arm64-osx-min1100-8b09457"
-        BUILDENV_SHA256="4f11969c161de83685a164bdb720a4341f9b8d152f21f304976bf36b8f50ca2f"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-5940548"
+        BUILDENV_SHA256="ffd756acac4a9c83789b4f0babff0fb3609ca2344a9420ff12f30ffa96cf34d3"
     else
+        VCPKG_TARGET_TRIPLET="arm64-osx-min1100"
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-arm64-osx-min1100-61b0d50"
-        BUILDENV_SHA256="604c9abd8d5e669b24e98d7b40b296c7fead5167182af23024c01c8a0a74adee"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-24ad21f"
+        BUILDENV_SHA256="cefbb728f42367e722a4001502bfd5a5fed6fbdbdde85c7f08b90c21bafa4915"
     fi
 else
     if [ -n "${BUILDENV_RELEASE}" ]; then
+        VCPKG_TARGET_TRIPLET="x64-osx-min1012-release"
         BUILDENV_BRANCH="2.4-rel"
-        BUILDENV_NAME="mixxx-deps-rel-2.4-x64-osx-min1012-8b09457"
-        BUILDENV_SHA256="c38ead596098dfa4dfc42919de903629247b3bb75e20b384f69d4b1bc5b9df8d"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-5940548"
+        BUILDENV_SHA256="cafc88109d55363e6681b949bf3943396ab6f1a44da211f575bdb52db7933477"
     else
+        VCPKG_TARGET_TRIPLET="x64-osx-min1012"
         BUILDENV_BRANCH="2.4"
-        BUILDENV_NAME="mixxx-deps-2.4-x64-osx-min1012-61b0d50"
-        BUILDENV_SHA256="fda61cf347091884eca6e0bb76945cfed497442ba1a632bbcd1a703a8378efec"
+        BUILDENV_NAME="mixxx-deps-2.4-$VCPKG_TARGET_TRIPLET-24ad21f"
+        BUILDENV_SHA256="6f05f3094a142c92e0f1fa76631c046dd2f4e70bafb9e7f0380c2bb8d115a342"
     fi
 fi
 
@@ -59,7 +63,12 @@ case "$1" in
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
-                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
+                echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip"
+                http_code=$(curl -sI -w "%{http_code}" "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o /dev/null)
+                if [ "$http_code" -ne 200 ]; then
+                    echo "Downloading  failed with HTTP status code: $http_code"
+                    exit 1
+                fi
                 curl "https://downloads.mixxx.org/dependencies/${BUILDENV_BRANCH}/macOS/${BUILDENV_NAME}.zip" -o "${BUILDENV_PATH}.zip"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.zip"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
@@ -86,10 +95,12 @@ case "$1" in
 
         export MIXXX_VCPKG_ROOT="${BUILDENV_PATH}"
         export CMAKE_GENERATOR=Ninja
+        export VCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}"
 
         echo_exported_variables() {
             echo "MIXXX_VCPKG_ROOT=${MIXXX_VCPKG_ROOT}"
             echo "CMAKE_GENERATOR=${CMAKE_GENERATOR}"
+            echo "VCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
         }
 
         if [ -n "${GITHUB_ENV}" ]; then

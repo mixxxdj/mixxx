@@ -135,7 +135,7 @@ joyMIDI.syncButton = function(channel, control, value, status, group) {
                     }
                     joyMIDI[group].syncLongPress = 0;
                     joyMIDI[group].syncTimerID =
-                        engine.beginTimer(1000, function() { joyMIDI.syncTimerHandler(group); }, true);
+                        engine.beginTimer(1000, () => { joyMIDI.syncTimerHandler(group); }, true);
                 }
             } else {
                 engine.setValue(group, "rate", 0);
@@ -535,7 +535,7 @@ joyMIDI.wheelScratch = function(channel, control, value, status, group) {
     engine.scratchTick(deck, newValue);
 
     joyMIDI[group].scratchTimerID =
-        engine.beginTimer(scratchDisableTime, function() { joyMIDI.ScratchTimerHandler(deck, group); }, true);
+        engine.beginTimer(scratchDisableTime, () => { joyMIDI.ScratchTimerHandler(deck, group); }, true);
 };
 
 joyMIDI.ScratchTimerHandler = function(deck, group) {
@@ -649,7 +649,7 @@ joyMIDI.joystick = function(channel, control, _value, _status, _group) {
     if (joystickDelay === false) {
         /* Delay a while */
         joystickDelay = true;
-        engine.beginTimer(300, function() { joystickDelay = false; }, true);
+        engine.beginTimer(300, () => { joystickDelay = false; }, true);
 
         if (!joyMIDI["[Channel1]"].btnShift) {
             /* Joystick only */
@@ -678,7 +678,7 @@ joyMIDI.fsr = function(_channel, _control, _value, _status, _group) {
     if (fsrDelay === false) {
         /* Delay a while */
         fsrDelay = true;
-        engine.beginTimer(300, function() { fsrDelay = false; }, true);
+        engine.beginTimer(300, () => { fsrDelay = false; }, true);
 
         var isShift = joyMIDI["[Channel1]"].btnShift === true || joyMIDI["[Channel2]"].btnShift === true;
         if (! isShift) {

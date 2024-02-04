@@ -2,12 +2,10 @@
 
 #include <hidapi.h>
 
-#include "controllers/defs_controllers.h"
-#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "util/compatibility/qbytearray.h"
+#include "util/runtimeloggingcategory.h"
 #include "util/string.h"
 #include "util/time.h"
-#include "util/trace.h"
 
 namespace {
 constexpr int kReportIdSize = 1;
@@ -27,9 +25,7 @@ HidIoOutputReport::HidIoOutputReport(
 }
 
 void HidIoOutputReport::updateCachedData(const QByteArray& data,
-        const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput,
-        HidIoGlobalOutputReportFifo* pGlobalOutputReportFifo,
         bool useNonSkippingFIFO) {
     auto cacheLock = lockMutex(&m_cachedDataMutex);
 
@@ -76,7 +72,6 @@ void HidIoOutputReport::updateCachedData(const QByteArray& data,
 
 bool HidIoOutputReport::sendCachedData(QMutex* pHidDeviceAndPollMutex,
         hid_device* pHidDevice,
-        const mixxx::hid::DeviceInfo& deviceInfo,
         const RuntimeLoggingCategory& logOutput) {
     auto startOfHidWrite = mixxx::Time::elapsed();
 

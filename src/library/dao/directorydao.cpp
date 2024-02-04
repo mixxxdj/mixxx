@@ -184,7 +184,7 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const int oldSuffixLen = oldLocation.size() - oldDirectory.size();
         QString newLocation = newDirectory + oldLocation.right(oldSuffixLen);
         DEBUG_ASSERT(oldLocation.startsWith(oldDirectoryPrefix));
-        loc_ids.append(DbId(query.value(1).toInt()));
+        loc_ids.append(DbId(query.value(1)));
         const auto trackId = TrackId(query.value(0));
         auto missingTrackRef = TrackRef::fromFilePath(
                 oldLocation,
@@ -198,13 +198,16 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track.
-    const QString replacement = "UPDATE track_locations SET location=:newloc WHERE id=:id";
+    const QString replacement =
+            "UPDATE track_locations SET location=:newloc, directory=:newdir WHERE id=:id";
     query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
-        query.bindValue("newloc", relocatedTracks.at(i).updatedTrackRef().getLocation());
-        query.bindValue("id", loc_ids.at(i).toVariant());
+        query.bindValue(QStringLiteral(":newloc"),
+                relocatedTracks.at(i).updatedTrackRef().getLocation());
+        query.bindValue(QStringLiteral(":newdir"), newDirectory);
+        query.bindValue(QStringLiteral(":id"), loc_ids.at(i).toVariant());
         if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
+            LOG_FAILED_QUERY(query) << "could not relocate path of track";
             return {};
         }
     }

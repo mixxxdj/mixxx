@@ -1,5 +1,6 @@
 #include "engine/effects/engineeffectsdelay.h"
 
+#include "moc_engineeffectsdelay.cpp"
 #include "util/rampingvalue.h"
 #include "util/sample.h"
 

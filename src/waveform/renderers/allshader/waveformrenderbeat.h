@@ -17,7 +17,6 @@ class WaveformRenderBeat;
 class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
   public:
     explicit WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRenderBeat() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
     void paintGL() override;

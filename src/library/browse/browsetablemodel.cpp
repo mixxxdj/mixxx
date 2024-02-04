@@ -1,14 +1,9 @@
 #include "library/browse/browsetablemodel.h"
 
 #include <QMessageBox>
-#include <QMetaType>
 #include <QStringList>
-#include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
-#include <QtSql>
 
-#include "control/controlobject.h"
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
@@ -17,6 +12,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_browsetablemodel.cpp"
+#include "recording/recordingmanager.h"
 #include "track/track.h"
 #include "widget/wlibrarytableview.h"
 

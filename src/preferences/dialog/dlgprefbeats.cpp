@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgprefbeats.h"
 
 #include "analyzer/analyzerbeats.h"
-#include "control/controlobject.h"
 #include "defs_urls.h"
 #include "moc_dlgprefbeats.cpp"
 
@@ -16,7 +15,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
-    for (const auto& info : qAsConst(m_availablePlugins)) {
+    for (const auto& info : std::as_const(m_availablePlugins)) {
         comboBoxBeatPlugin->addItem(info.name(), info.id());
     }
 

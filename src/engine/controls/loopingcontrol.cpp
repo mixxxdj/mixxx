@@ -6,13 +6,13 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
 #include "util/math.h"
-#include "util/sample.h"
 
 namespace {
 constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
@@ -21,7 +21,7 @@ constexpr mixxx::audio::FrameDiff_t kMinimumAudibleLoopSizeFrames = 150;
 bool positionNear(mixxx::audio::FramePos a, mixxx::audio::FramePos target) {
     return a.isValid() && a > target - 1 && a < target + 1;
 }
-}
+} // namespace
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
@@ -49,6 +49,7 @@ LoopingControl::LoopingControl(const QString& group,
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
+          m_bLoopWasEnabledBeforeSlipEnable(false),
           m_bAdjustingLoopIn(false),
           m_bAdjustingLoopOut(false),
           m_bAdjustingLoopInOld(false),
@@ -95,8 +96,7 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
     m_pReloopToggleButton->set(0);
     // The old reloop_exit name was confusing. This CO does both entering and exiting.
-    ControlDoublePrivate::insertAlias(ConfigKey(group, "reloop_exit"),
-                                      ConfigKey(group, "reloop_toggle"));
+    m_pReloopToggleButton->addAlias(ConfigKey(group, QStringLiteral("reloop_exit")));
 
     m_pReloopAndStopButton = new ControlPushButton(ConfigKey(group, "reloop_andstop"));
     connect(m_pReloopAndStopButton, &ControlObject::valueChanged,
@@ -133,7 +133,7 @@ LoopingControl::LoopingControl(const QString& group,
             m_pCOBeatLoop,
             &ControlObject::valueChanged,
             this,
-            [=, this](double value) { slotBeatLoop(value); },
+            [this](double value) { slotBeatLoop(value); },
             Qt::DirectConnection);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
@@ -176,20 +176,24 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
+    m_pCOBeatJumpSizeHalve->setKbdRepeatable(true);
     connect(m_pCOBeatJumpSizeHalve,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeHalve);
     m_pCOBeatJumpSizeDouble = new ControlPushButton(ConfigKey(group, "beatjump_size_double"));
+    m_pCOBeatJumpSizeDouble->setKbdRepeatable(true);
     connect(m_pCOBeatJumpSizeDouble,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeDouble);
 
     m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
+    m_pCOBeatJumpForward->setKbdRepeatable(true);
     connect(m_pCOBeatJumpForward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpForward);
     m_pCOBeatJumpBackward = new ControlPushButton(ConfigKey(group, "beatjump_backward"));
+    m_pCOBeatJumpBackward->setKbdRepeatable(true);
     connect(m_pCOBeatJumpBackward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpBackward);
 
@@ -221,9 +225,11 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOLoopScale, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopScale);
     m_pLoopHalveButton = new ControlPushButton(ConfigKey(group, "loop_halve"));
+    m_pLoopHalveButton->setKbdRepeatable(true);
     connect(m_pLoopHalveButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopHalve);
     m_pLoopDoubleButton = new ControlPushButton(ConfigKey(group, "loop_double"));
+    m_pLoopDoubleButton->setKbdRepeatable(true);
     connect(m_pLoopDoubleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopDouble);
 
@@ -718,7 +724,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
 
     // Reset the loop out position if it is before the loop in so that loops
     // cannot be inverted.
-    if (loopInfo.endPosition.isValid() && loopInfo.endPosition < position) {
+    if (loopInfo.endPosition.isValid() && loopInfo.endPosition <= position) {
         loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         if (m_bLoopingEnabled) {
@@ -779,6 +785,21 @@ void LoopingControl::slotLoopRemove() {
     m_loopInfo.setValue(loopInfo);
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
+    // if the loop is valid, else it is removed.
+    // We remove it here right away so the loop is not restored
+    // when the track is loaded to another player in the meantime.
+    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pLoadedTrack) {
+        return;
+    }
+    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cuePoints) {
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            pLoadedTrack->removeCue(pCue);
+            return;
+        }
+    }
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -864,7 +885,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
 
     // If the user is trying to set a loop-out before the loop in or without
     // having a loop-in, then ignore it.
-    if (!loopInfo.startPosition.isValid() || position < loopInfo.startPosition) {
+    if (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition) {
         return;
     }
 
@@ -1107,8 +1128,8 @@ void LoopingControl::slotLoopEndPos(double positionSamples) {
 
     // Reject if the loop-in is not set, or if the new position is before the
     // start point (but not -1).
-    if (!loopInfo.startPosition.isValid() ||
-            (position.isValid() && position <= loopInfo.startPosition)) {
+    if (position.isValid() &&
+            (!loopInfo.startPosition.isValid() || position <= loopInfo.startPosition)) {
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
         return;
     }
@@ -1164,6 +1185,8 @@ void LoopingControl::notifySeek(mixxx::audio::FramePos newPosition) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
+    m_bLoopWasEnabledBeforeSlipEnable =
+            !m_pSlipEnabled->toBool() && enabled && !m_bLoopRollActive;
     if (m_bLoopingEnabled == enabled) {
         return;
     }
@@ -1180,14 +1203,6 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     }
 
     emit loopEnabledChanged(enabled);
-}
-
-bool LoopingControl::isLoopingEnabled() {
-    return m_bLoopingEnabled;
-}
-
-bool LoopingControl::isLoopRollActive() {
-    return m_bLoopRollActive;
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1320,7 +1335,7 @@ void LoopingControl::updateBeatLoopingControls() {
     // O(n) search, but there are only ~10-ish beatloop controls so this is
     // fine.
     double dBeatloopSize = m_pCOBeatLoopSize->get();
-    for (BeatLoopingControl* pBeatLoopControl: qAsConst(m_beatLoops)) {
+    for (BeatLoopingControl* pBeatLoopControl : std::as_const(m_beatLoops)) {
         if (pBeatLoopControl->getSize() == dBeatloopSize) {
             if (m_bLoopingEnabled) {
                 pBeatLoopControl->activate();
@@ -1781,11 +1796,13 @@ BeatJumpControl::BeatJumpControl(const QString& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_forward", size));
+    m_pJumpForward->setKbdRepeatable(true);
     connect(m_pJumpForward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpForward,
             Qt::DirectConnection);
     m_pJumpBackward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_backward", size));
+    m_pJumpBackward->setKbdRepeatable(true);
     connect(m_pJumpBackward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpBackward,
             Qt::DirectConnection);

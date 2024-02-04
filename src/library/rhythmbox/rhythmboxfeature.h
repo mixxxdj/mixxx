@@ -2,18 +2,14 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QStringListModel>
-#include <QXmlStreamReader>
-#include <QtConcurrentRun>
-#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
+class QXmlStreamReader;
+class BaseTrackCache;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT

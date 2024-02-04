@@ -48,7 +48,7 @@ VCI102.selectTimer = 0;
 VCI102.selectIter = function(select) {
     if (select) {
         select();
-        VCI102.selectTimer = engine.beginTimer(500, function() {
+        VCI102.selectTimer = engine.beginTimer(500, () => {
             VCI102.selectTimer = engine.beginTimer(40, select);
         }, true);
     } else {
@@ -98,7 +98,7 @@ VCI102.slip = function(value, group, key) {
     if (engine.getValue(group, "slip_enabled") && !VCI102.slipSrc[ch]) {
         VCI102.slipReady[ch] = false;
         engine.setValue(group, "slip_enabled", 0);
-        engine.beginTimer(60, function() {
+        engine.beginTimer(60, () => {
             engine.setValue(group, "slip_enabled", 1);
             VCI102.slipReady[ch] = true;
         }, true);
@@ -124,7 +124,7 @@ VCI102.scratchEnable = function(ch, midino, value, status, group) {
             VCI102.slip(value, group);
         }
     } else if (engine.isScratching(deck)) {
-        VCI102.scratchTimer[ch] = engine.beginTimer(20, function() {
+        VCI102.scratchTimer[ch] = engine.beginTimer(20, () => {
             var vel = Math.abs(engine.getValue(group, "scratch2"));
             if (vel < 1 && (vel < 1 / 64 || engine.getValue(group, "play"))) {
                 if (VCI102.scratchTimer[ch]) {

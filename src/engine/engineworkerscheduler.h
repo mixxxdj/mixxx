@@ -1,10 +1,8 @@
 #pragma once
 
 #include <QMutex>
-#include <QThreadPool>
+#include <QThread>
 #include <QWaitCondition>
-
-#include "util/fifo.h"
 
 // The max engine workers that can be expected to run within a callback
 // (e.g. the max that we will schedule). Must be a power of 2.

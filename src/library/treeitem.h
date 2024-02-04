@@ -1,13 +1,14 @@
 #pragma once
 
+#include <QIcon>
 #include <QList>
 #include <QString>
 #include <QVariant>
 
-#include "library/libraryfeature.h"
-
+#include "util/assert.h"
 #include "util/memory.h"
 
+class LibraryFeature;
 
 class TreeItem final {
     struct PrivateRootTag {};

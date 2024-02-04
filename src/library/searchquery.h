@@ -8,13 +8,20 @@
 #include <utility>
 #include <vector>
 
-#include "library/trackset/crate/cratestorage.h"
 #include "proto/keys.pb.h"
 #include "track/track_decl.h"
 #include "util/assert.h"
 #include "util/memory.h"
 
+class CrateStorage;
+class TrackId;
+
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
+
+enum class StringMatch {
+    Contains = 0,
+    Equals,
+};
 
 class QueryNode {
   public:
@@ -72,7 +79,8 @@ class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
             const QStringList& sqlColumns,
-            const QString& argument);
+            const QString& argument,
+            const StringMatch matchMode = StringMatch::Contains);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -81,6 +89,7 @@ class TextFilterNode : public QueryNode {
     QSqlDatabase m_database;
     QStringList m_sqlColumns;
     QString m_argument;
+    StringMatch m_matchMode;
 };
 
 class NullOrEmptyTextFilterNode : public QueryNode {

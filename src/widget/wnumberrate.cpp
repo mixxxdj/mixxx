@@ -1,18 +1,5 @@
-//
-// C++ Implementation: wnumberrate
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
-
 #include "widget/wnumberrate.h"
 
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "moc_wnumberrate.cpp"
 #include "util/math.h"

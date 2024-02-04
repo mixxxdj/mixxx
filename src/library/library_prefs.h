@@ -48,6 +48,10 @@ extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
 extern const ConfigKey kCoverArtFetcherQualityConfigKey;
 
+extern const ConfigKey kTagFetcherApplyTagsConfigKey;
+
+extern const ConfigKey kTagFetcherApplyCoverConfigKey;
+
 } // namespace prefs
 
 } // namespace library

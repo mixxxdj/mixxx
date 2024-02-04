@@ -1,9 +1,9 @@
 #include "library/export/libraryexporter.h"
 
 #include <QProgressDialog>
-#include <QThreadPool>
 
 #include "library/export/engineprimeexportjob.h"
+#include "library/export/engineprimeexportrequest.h"
 #include "moc_libraryexporter.cpp"
 #include "util/parented_ptr.h"
 

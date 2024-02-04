@@ -8,7 +8,6 @@
 
 #include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/analyzerthread.h"
-#include "analyzer/analyzertrack.h"
 #include "util/db/dbconnectionpool.h"
 
 /// Callbacks for triggering side-effects in the outer context of

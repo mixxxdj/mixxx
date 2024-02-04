@@ -1,21 +1,17 @@
 #pragma once
 
-#include <QIcon>
 #include <QList>
 #include <QObject>
-#include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
 
-#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
-#include "library/dlganalysis.h"
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
-class TrackCollection;
+class DlgAnalysis;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT

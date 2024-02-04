@@ -4,15 +4,10 @@
 #include <vector>
 
 #include "audio/types.h"
-#include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/defs.h"
 #include "util/memory.h"
-#include "util/sample.h"
 #include "util/types.h"
 
 // The ParametricEQEffect models the mid bands from a SSL Black EQ (242)

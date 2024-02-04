@@ -5,7 +5,7 @@
 
 namespace {
 const QString kUnknownControllerName = QStringLiteral("Unknown PortMidiController");
-}
+} // namespace
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,

@@ -1,7 +1,11 @@
 #include "effects/backends/builtin/pitchshifteffect.h"
 
+#include <rubberband/RubberBandStretcher.h>
+
 #include <QString>
 
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/sample.h"
 
 namespace {
@@ -66,6 +70,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
     pManifest->setVersion("2.0");
     pManifest->setDescription(QObject::tr(
             "Raises or lowers the original pitch of a sound."));
+    pManifest->setMetaknobDefault(0.5);
 
     EffectManifestParameterPointer pitch = pManifest->addParameter();
     pitch->setId(kPitchParameterId);

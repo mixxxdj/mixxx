@@ -5,7 +5,6 @@
 
 #include "track/track_decl.h"
 #include "util/memory.h"
-#include "waveform/renderers/glwaveformrenderersignal.h"
 
 #ifdef MIXXX_USE_QOPENGL
 class QOpenGLFramebufferObject;

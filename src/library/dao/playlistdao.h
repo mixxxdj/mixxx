@@ -2,7 +2,6 @@
 
 #include <QHash>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSet>
 
 #include "library/dao/dao.h"
@@ -27,6 +26,7 @@ const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = QStringLiteral("pl_datetime_ad
 #define AUTODJ_TABLE "Auto DJ"
 
 class AutoDJProcessor;
+class QSqlDatabase;
 
 constexpr int kInvalidPlaylistId = -1;
 
@@ -62,7 +62,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool deleteUnlockedPlaylists(QStringList&& idStringList);
     /// Delete Playlists with fewer entries then "minNumberOfTracks"
     /// Needs to be called inside a transaction.
-    /// @return true on success, flase on error
+    /// @return true on success, false on error
     bool deleteAllUnlockedPlaylistsWithFewerTracks(const PlaylistDAO::HiddenType type,
             int minNumberOfTracks);
     // Rename a playlist

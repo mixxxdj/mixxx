@@ -13,8 +13,8 @@
         </scriptfiles>
         <controls>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x90</status>
                 <midino>0x4F</midino>
@@ -336,8 +336,8 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>maximize_library</key>
+                <group>[Skin]</group>
+                <key>show_maximized_library</key>
                 <description>MIDI Learned from 2 messages.</description>
                 <status>0x80</status>
                 <midino>0x4F</midino>

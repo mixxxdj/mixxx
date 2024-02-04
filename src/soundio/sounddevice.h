@@ -8,10 +8,7 @@
 #include "soundio/soundmanagerutil.h"
 #include "util/types.h"
 
-class SoundDevice;
 class SoundManager;
-class AudioOutput;
-class AudioInput;
 class AudioOutputBuffer;
 class AudioInputBuffer;
 

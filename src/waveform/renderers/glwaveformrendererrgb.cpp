@@ -1,13 +1,9 @@
 #include "waveform/renderers/glwaveformrendererrgb.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
@@ -45,7 +41,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -71,7 +67,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);

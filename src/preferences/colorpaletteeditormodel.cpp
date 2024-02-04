@@ -1,8 +1,5 @@
 #include "preferences/colorpaletteeditormodel.h"
 
-#include <util/assert.h>
-#include <util/rangelist.h>
-
 #include <QList>
 #include <QMap>
 #include <QMultiMap>
@@ -10,6 +7,7 @@
 
 #include "engine/controls/cuecontrol.h"
 #include "moc_colorpaletteeditormodel.cpp"
+#include "util/rangelist.h"
 
 namespace {
 

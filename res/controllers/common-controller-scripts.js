@@ -243,9 +243,7 @@ script.triggerControl = function(group, control, delay) {
         delay = 200;
     }
     engine.setValue(group, control, 1);
-    engine.beginTimer(delay, function() {
-        engine.setValue(group, control, 0);
-    }, true);
+    engine.beginTimer(delay, () => engine.setValue(group, control, 0) , true);
 };
 
 /* -------- ------------------------------------------------------

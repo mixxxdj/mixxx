@@ -189,8 +189,8 @@ var DJCJV = {
         }
 
         // Connect the VUMeters
-        engine.connectControl("[Channel1]", "VuMeter", "DJCJV.vuMeterUpdate");
-        engine.connectControl("[Channel2]", "VuMeter", "DJCJV.vuMeterUpdate");
+        engine.connectControl("[Channel1]", "vu_meter", "DJCJV.vuMeterUpdate");
+        engine.connectControl("[Channel2]", "vu_meter", "DJCJV.vuMeterUpdate");
 
         // Set inner & outer jog leds to 0
         DJCJV.updateJogLeds(0, "[Channel1]");
@@ -208,7 +208,7 @@ var DJCJV = {
         }
 
         if (CFG.user.beatHelper === 1) {
-            DJCJV.other.beatHelpTimer = engine.beginTimer(100, "DJCJV.beatHelp");
+            DJCJV.other.beatHelpTimer = engine.beginTimer(100, DJCJV.beatHelp);
         }
 
         // Ask the controller to send all current knob/slider values over MIDI, which will update the corresponding GUI controls in MIXXX.

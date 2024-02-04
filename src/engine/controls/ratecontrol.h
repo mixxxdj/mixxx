@@ -13,7 +13,6 @@ class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
 class ControlProxy;
-class EngineChannel;
 class PositionScratchController;
 
 // RateControl is an EngineControl that is in charge of managing the rate of

@@ -1,7 +1,6 @@
 #include "widget/wwidget.h"
 
 #include <QTouchEvent>
-#include <QtDebug>
 
 #include "control/controlproxy.h"
 #include "moc_wwidget.cpp"

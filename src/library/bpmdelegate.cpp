@@ -1,14 +1,12 @@
 #include "library/bpmdelegate.h"
 
+#include <QCheckBox>
 #include <QDoubleSpinBox>
 #include <QItemEditorCreatorBase>
 #include <QItemEditorFactory>
 #include <QPainter>
-#include <QPalette>
-#include <QRect>
 #include <QTableView>
 
-#include "library/trackmodel.h"
 #include "moc_bpmdelegate.cpp"
 
 // We override the typical QDoubleSpinBox editor by registering this class with

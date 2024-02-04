@@ -9,10 +9,8 @@
 #include "library/dao/trackschema.h"
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
-#include "library/hiddentablemodel.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/parser.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -20,7 +18,6 @@
 #include "library/treeitem.h"
 #include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #ifdef __ENGINEPRIME__
 #include "widget/wlibrarysidebar.h"

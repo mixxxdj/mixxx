@@ -457,7 +457,7 @@ reapplying those migrations.
     <description>
       This was used in the development of 2.3 to track whether cues were placed
       manually or automatically. However, this turned out to be unnecessary.
-      This version is left as a placeholder so users who were using the master
+      This version is left as a placeholder so users who were using the main
       branch will have their database updated correctly for the subsequent
       schema change.
     </description>

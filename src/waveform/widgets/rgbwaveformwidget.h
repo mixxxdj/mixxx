@@ -1,8 +1,8 @@
 #pragma once
 
-#include <QWidget>
-
 #include "nonglwaveformwidgetabstract.h"
+
+class QWidget;
 
 class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
     Q_OBJECT
@@ -15,7 +15,9 @@ class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Software;
+    }
 
   protected:
     virtual void castToQWidget();

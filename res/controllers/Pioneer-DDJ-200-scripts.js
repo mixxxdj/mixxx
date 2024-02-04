@@ -56,7 +56,7 @@ DDJ200.init = function() {
     DDJ200.LEDsOff();
 
     // start with focus on library for selecting tracks (delay seems required)
-    engine.beginTimer(500, function() {
+    engine.beginTimer(500, () => {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
 
@@ -152,11 +152,11 @@ DDJ200.touch = function(channel, control, value, status, group) {
         var alpha = 1.0 / 8;
         engine.scratchEnable(vDeckNo, 128, 33 + 1 / 3, alpha, alpha / 32);
         // disable jog not to prevent track alignment
-        DDJ200.vDeck[vDeckNo]["jogEnabled"] = false;
+        DDJ200.vDeck[vDeckNo].jogEnabled = false;
     } else {
         // enable jog after 900 ms again
-        engine.beginTimer(900, function() {
-            DDJ200.vDeck[vDeckNo]["jogEnabled"] = true;
+        engine.beginTimer(900, () => {
+            DDJ200.vDeck[vDeckNo].jogEnabled = true;
         }, true);
         // disable scratch
         engine.scratchDisable(vDeckNo);

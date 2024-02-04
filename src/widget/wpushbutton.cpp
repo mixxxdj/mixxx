@@ -3,10 +3,8 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
-#include <QTouchEvent>
 #include <QtDebug>
 
 #include "control/controlbehavior.h"
@@ -14,6 +12,7 @@
 #include "control/controlpushbutton.h"
 #include "moc_wpushbutton.cpp"
 #include "util/debug.h"
+#include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget* pParent)
@@ -195,9 +194,13 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 if (m_rightButtonMode != ControlPushButton::PUSH &&
                         m_rightButtonMode != ControlPushButton::TOGGLE &&
                         m_rightButtonMode != ControlPushButton::TRIGGER) {
-                    SKIN_WARNING(node, context)
-                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH, TRIGGER or TOGGLE mode is not implemented\n"
-                            << "Please consider to set <RightClickIsPushButton>true</RightClickIsPushButton>";
+                    SKIN_WARNING(node,
+                            context,
+                            "WPushButton::setup: Connecting a Pushbutton not "
+                            "in PUSH, TRIGGER or TOGGLE mode is not "
+                            "implemented\n Please consider to set "
+                            "<RightClickIsPushButton>true</"
+                            "RightClickIsPushButton>");
                 }
             }
         }

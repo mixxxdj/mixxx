@@ -1,16 +1,15 @@
 #pragma once
 
-#include <QAtomicInteger>
 #include <QSemaphore>
 #include <QThread>
 #include <map>
 
-#include "controllers/controller.h"
 #include "controllers/hid/hiddevice.h"
 #include "controllers/hid/hidioglobaloutputreportfifo.h"
 #include "controllers/hid/hidiooutputreport.h"
 #include "util/compatibility/qmutex.h"
 #include "util/duration.h"
+#include "util/runtimeloggingcategory.h"
 
 enum class HidIoThreadState {
     Initialized,

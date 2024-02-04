@@ -1,10 +1,9 @@
 #include "widget/wtrackproperty.h"
 
 #include <QDebug>
-#include <QUrl>
 
-#include "control/controlobject.h"
 #include "moc_wtrackproperty.cpp"
+#include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -35,8 +34,7 @@ WTrackProperty::WTrackProperty(
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
-          m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
+          m_pLibrary(pLibrary) {
     setAcceptDrops(true);
 }
 
@@ -47,12 +45,17 @@ WTrackProperty::~WTrackProperty() {
 void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
 
-    m_property = context.selectString(node, "Property");
+    QString property = context.selectString(node, "Property");
+    if (property.isEmpty()) {
+        return;
+    }
 
     // Check if property with that name exists in Track class
-    if (Track::staticMetaObject.indexOfProperty(m_property.toUtf8().constData()) == -1) {
-        qWarning() << "WTrackProperty: Unknown track property:" << m_property;
+    if (Track::staticMetaObject.indexOfProperty(property.toUtf8().constData()) == -1) {
+        qWarning() << "WTrackProperty: Unknown track property:" << property;
+        return;
     }
+    m_property = property;
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
@@ -84,7 +87,11 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
+        if (m_property.isEmpty()) {
+            return;
+        }
+        QVariant property =
+                m_pCurrentTrack->property(m_property.toUtf8().constData());
         if (property.isValid() && property.canConvert<QString>()) {
             setText(property.toString());
             return;
@@ -101,10 +108,12 @@ void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
 
 void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     Q_UNUSED(event);
-    if (m_pCurrentTrack) {
-        m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-        m_pTrackMenu->slotShowDlgTrackInfo();
+    if (!m_pCurrentTrack) {
+        return;
     }
+    ensureTrackMenuIsCreated();
+    m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
+    m_pTrackMenu->showDlgTrackInfo(m_property);
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {
@@ -118,8 +127,16 @@ void WTrackProperty::dropEvent(QDropEvent* event) {
 void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
     event->accept();
     if (m_pCurrentTrack) {
+        ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
         m_pTrackMenu->popup(event->globalPos());
+    }
+}
+
+void WTrackProperty::ensureTrackMenuIsCreated() {
+    if (m_pTrackMenu.get() == nullptr) {
+        m_pTrackMenu = make_parented<WTrackMenu>(
+                this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
     }
 }
