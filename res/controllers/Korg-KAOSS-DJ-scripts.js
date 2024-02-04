@@ -200,11 +200,10 @@ KAOSSDJ.fxTouchMoveHorizontal = function(_channel, _control, value, _status, _gr
         .forEach(deck => engine.setValue(`[EffectRack1_EffectUnit${deck.deckNumber}]`, "super1", value / 127));
 };
 
-KAOSSDJ.fxTouch = function(channel, _control, value, _status, _group) {
+KAOSSDJ.fxTouch = function(channel, _control, value, _status, group) {
     if (value === MIDI_OFF) {
-        const fxGroup = `[EffectRack1_EffectUnit${deck.deckNumber}]`;
-        engine.setValue(fxGroup, "mix", 0);
-        engine.setValue(fxGroup, "super1", 0);
+        engine.setValue(group, "mix", 0);
+        engine.setValue(group, "super1", 0);
     }
 };
 
