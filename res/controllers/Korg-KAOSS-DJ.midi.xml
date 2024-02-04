@@ -631,6 +631,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>KAOSSDJ.fxTouch</key>
+                <group>[EffectRack1_EffectUnit1]</group>
                 <description>Fx Control</description>
                 <status>0x97</status>
                 <midino>0x20</midino>
@@ -641,6 +642,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>KAOSSDJ.fxTouch</key>
+                <group>[EffectRack1_EffectUnit2]</group>
                 <description>Fx Control</description>
                 <status>0x98</status>
                 <midino>0x20</midino>
