@@ -514,7 +514,7 @@ QByteArray SeratoMarkers2::dump(taglib::FileType fileType) const {
     case taglib::FileType::OggVorbis:
         return dumpCommon();
     default:
-        DEBUG_ASSERT(false);
+        DEBUG_ASSERT_UNREACHABLE(false);
         return {};
     }
 }
@@ -688,7 +688,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
             loopMap.insert(hotcueIndex, cueInfo);
             break;
         default:
-            DEBUG_ASSERT(!"Invalid cue type");
+            DEBUG_ASSERT_UNREACHABLE(!"Invalid cue type");
             continue;
         }
     }

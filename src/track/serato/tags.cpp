@@ -127,7 +127,7 @@ double SeratoTags::guessTimingOffsetMillis(
 #endif
 #if defined(__FFMPEG__)
         if (primaryDecoderName == mixxx::SoundSourceProviderFFmpeg::kDisplayName) {
-            DEBUG_ASSERT(!usingMadOrFFmpeg);
+            DEBUG_ASSERT_UNREACHABLE(!usingMadOrFFmpeg);
             usingMadOrFFmpeg = true;
         }
 #endif
