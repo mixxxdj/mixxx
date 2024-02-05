@@ -661,7 +661,7 @@ void Library::setRowHeight(int rowHeight) {
     emit setTrackTableRowHeight(rowHeight);
 }
 
-void Library::setEditMedatataSelectedClick(bool enabled) {
+void Library::setEditMetadataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
     emit setSelectedClick(enabled);
 }

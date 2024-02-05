@@ -92,7 +92,7 @@ class Library: public QObject {
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
-    void setEditMedatataSelectedClick(bool enable);
+    void setEditMetadataSelectedClick(bool enable);
 
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.

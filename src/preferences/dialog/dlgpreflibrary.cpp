@@ -294,7 +294,7 @@ void DlgPrefLibrary::slotUpdate() {
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
-    m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
+    m_pLibrary->setEditMetadataSelectedClick(editMetadataSelectedClick);
 
     checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
@@ -502,7 +502,7 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(kEditMetadataSelectedClickConfigKey,
             ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));
-    m_pLibrary->setEditMedatataSelectedClick(
+    m_pLibrary->setEditMetadataSelectedClick(
             checkBoxEditMetadataSelectedClicked->checkState());
 
     QFont font = m_pLibrary->getTrackTableFont();
