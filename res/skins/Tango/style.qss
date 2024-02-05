@@ -1546,9 +1546,23 @@ decks, samplers, mic, aux, fx */
 #SamplersMiniMaxi {
   background-position: top center;
 }
-#FxMiniMaxi {
-  background-position: bottom center;
+
+#FxUnitLeft #FxMiniMaxi {
+  background-position: bottom left;
+  margin-left: 10px;
 }
+#FxUnitRight #FxMiniMaxi {
+  background-position: bottom right;
+  margin-right: 10px;
+  }
+  #FxUnitMini #FxMiniMaxi {
+    background-position: bottom center;
+  }
+
+#FxUnitLeft #FxUnitLabel {
+  padding-left: 30px;
+}
+
 
 #FixedLoopSizesMiniMaxi[displayValue="0"],
 #FxMiniMaxi[displayValue="0"],
@@ -1787,34 +1801,24 @@ decks, samplers, mic, aux, fx */
 
   WEffectChainPresetButton {
     padding: 0px;
-    margin: 1px;
     border:  none;
-    /*border-color: #0f0f0f;
-    border-style: solid;
-    border-width: 0px 1px 1px 1px;
-    border-radius: 2px;*/
+    border-radius: 2px;
     background-color: #333;
+    image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
     }
-    /*WEffectChainPresetButton#EffectChainPresetButtonLeft {
-      border-width: 1px 0px 1px 1px;
-    }
-    WEffectChainPresetButton#EffectChainPresetButtonRight {
-      border-width: 1px 1px 1px 0px;
-    }*/
     WEffectChainPresetButton:hover {
       background-color: #151515;
+      image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     WEffectChainPresetButton::menu-indicator {
       subcontrol-position: center center;
       subcontrol-origin: margin;
-      margin: 0px 2px 0px 0px;
       padding: 0px;
       border: 0px;
       outline: none;
     }
 
   WEffectSelector::down-arrow,
-  WEffectChainPresetButton::menu-indicator,
   WSearchLineEdit::down-arrow,
   #fadeModeCombobox::down-arrow {
     /* With a fixed size and the skin being scaled
@@ -1826,7 +1830,6 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/../Tango/buttons/btn_arrow_down_fx.svg) no-repeat center center;
     }
     WEffectSelector::down-arrow:hover,
-    WEffectChainPresetButton::menu-indicator:hover,
     WSearchLineEdit::down-arrow:hover,
     #fadeModeCombobox::down-arrow:hover {
       image: url(skin:/../Tango/buttons/btn_arrow_down_fx_hover.svg) no-repeat center center;
