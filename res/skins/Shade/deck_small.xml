@@ -185,13 +185,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_play_deck_small.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_deck_small.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_deck_small.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_deck_small_over.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_deck_small_over.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_deck_small_over.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
@@ -206,8 +206,8 @@
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_deck_small_preview.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small_preview.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_deck_small_preview.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_deck_small_preview.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play</ConfigKey>
@@ -220,13 +220,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>skin:/btn/btn_play_deck_small_down.png</Pressed>
+                      <Pressed>skins:Shade/btn/btn_play_deck_small_down.png</Pressed>
                       <Unpressed></Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>skin:/btn/btn_play_deck_small_overdown.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                      <Pressed>skins:Shade/btn/btn_play_deck_small_overdown.png</Pressed>
+                      <Unpressed>skins:Shade/btn/btn_play_deck_small_over.png</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,play</ConfigKey>

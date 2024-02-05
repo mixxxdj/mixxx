@@ -38,7 +38,7 @@
                 <CustomFormat>hh:mm</CustomFormat>
               </Time>
 
-              <Template src="skin:vumeter_latency.xml">
+              <Template src="skins:Deere/vumeter_latency.xml">
                 <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
                 <SetVariable name="group">[App]</SetVariable>
                 <SetVariable name="control">audio_latency_usage</SetVariable>
@@ -51,7 +51,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:knob_toolbar.xml">
+              <Template src="skins:Deere/knob_toolbar.xml">
                 <SetVariable name="TooltipId">main_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
@@ -59,7 +59,7 @@
                 <SetVariable name="label">Main</SetVariable>
               </Template>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">26,22</SetVariable>
@@ -70,7 +70,7 @@
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
               </Template>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
@@ -81,7 +81,7 @@
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
               </Template>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
@@ -92,7 +92,7 @@
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
               </Template>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_main_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize">18,22</SetVariable>
@@ -103,7 +103,7 @@
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
               </Template>
 
-              <Template src="skin:knob_toolbar.xml">
+              <Template src="skins:Deere/knob_toolbar.xml">
                 <SetVariable name="TooltipId">balance</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">balance</SetVariable>
@@ -122,7 +122,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
-              <Template src="skin:knob_toolbar.xml">
+              <Template src="skins:Deere/knob_toolbar.xml">
                 <SetVariable name="TooltipId">booth_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">booth_gain</SetVariable>
@@ -144,7 +144,7 @@
             </Connection>
             <Children>
 
-              <Template src="skin:knob_toolbar.xml">
+              <Template src="skins:Deere/knob_toolbar.xml">
                 <SetVariable name="TooltipId">headphone_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">headGain</SetVariable>
@@ -189,7 +189,7 @@
 
               <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">headSplit</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize">38,22</SetVariable>
@@ -222,7 +222,7 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:statuslight_3state.xml">
+              <Template src="skins:Deere/statuslight_3state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
                 <SetVariable name="Tooltip">Vinyl Control 1 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
@@ -235,7 +235,7 @@
                 <SetVariable name="left_connection_control">[Channel1],vinylcontrol_status</SetVariable>
               </Template>
 
-              <Template src="skin:statuslight_3state.xml">
+              <Template src="skins:Deere/statuslight_3state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
                 <SetVariable name="Tooltip">Vinyl Control 2 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
@@ -248,7 +248,7 @@
                 <SetVariable name="left_connection_control">[Channel2],vinylcontrol_status</SetVariable>
               </Template>
 
-              <Template src="skin:statuslight_3state.xml">
+              <Template src="skins:Deere/statuslight_3state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
                 <SetVariable name="Tooltip">Vinyl Control 3 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
@@ -261,7 +261,7 @@
                 <SetVariable name="left_connection_control">[Channel3],vinylcontrol_status</SetVariable>
               </Template>
 
-              <Template src="skin:statuslight_3state.xml">
+              <Template src="skins:Deere/statuslight_3state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_status</SetVariable>
                 <SetVariable name="Tooltip">Vinyl Control 4 active</SetVariable>
                 <SetVariable name="ObjectName">VinylControlNotification</SetVariable>
@@ -280,7 +280,7 @@
                 against enabling AutoDj with an empty queue. You would throw off button states easily. So we stick with
                 just displaying the AutoDJ status here.
               -->
-              <Template src="skin:statuslight_3state.xml">
+              <Template src="skins:Deere/statuslight_3state.xml">
                 <SetVariable name="TooltipId">autodj_status</SetVariable>
                 <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -316,7 +316,7 @@
                 </Children>
               </WidgetGroup>
 
-              <Template src="skin:left_display_4state_button.xml">
+              <Template src="skins:Deere/left_display_4state_button.xml">
                 <SetVariable name="TooltipId">toggle_recording</SetVariable>
                 <SetVariable name="ObjectName">RecordingNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -332,7 +332,7 @@
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:left_display_4state_button.xml">
+          <Template src="skins:Deere/left_display_4state_button.xml">
             <SetVariable name="TooltipId">broadcast_enabled</SetVariable>
             <SetVariable name="ObjectName">LiveBroadcastingNotification</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -352,7 +352,7 @@
             <SizePolicy>me,min</SizePolicy>
             <Children>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">show_mixer</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize">55,22</SetVariable>
@@ -365,7 +365,7 @@
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">show_effects</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize">55,22</SetVariable>
@@ -378,7 +378,7 @@
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">show_samplers</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
@@ -391,7 +391,7 @@
 
               <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">show_microphone</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>

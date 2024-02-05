@@ -8,13 +8,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_plus.png</Pressed>
-          <Unpressed>skin:/btn/btn_plus.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_plus.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_plus.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_minus.png</Pressed>
-          <Unpressed>skin:/btn/btn_minus.png</Unpressed>
+          <Pressed>skins:Shade/btn/btn_minus.png</Pressed>
+          <Unpressed>skins:Shade/btn/btn_minus.png</Unpressed>
         </State>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
@@ -34,13 +34,13 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_down.png</Pressed>
-              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>.png</Unpressed>
+              <Pressed>skins:Shade/btn/btn_beatloop_<Variable name="effectnum"/>_down.png</Pressed>
+              <Unpressed>skins:Shade/btn/btn_beatloop_<Variable name="effectnum"/>.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_over.png</Unpressed>
+              <Pressed>skins:Shade/btn/btn_beatloop_<Variable name="effectnum"/>_overdown.png</Pressed>
+              <Unpressed>skins:Shade/btn/btn_beatloop_<Variable name="effectnum"/>_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
@@ -70,7 +70,7 @@
         <Pos>65,3</Pos>
         <Size>94f,22f</Size>
         <Children>
-          <Template src="skin:effect_selector_button.xml">
+          <Template src="skins:Shade/effect_selector_button.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum"><Variable name="effectnum"/></SetVariable>
           </Template>

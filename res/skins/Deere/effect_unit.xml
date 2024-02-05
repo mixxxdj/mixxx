@@ -17,8 +17,8 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,max</SizePolicy>
         <Children>
-          <Template src="skin:effect_unit_no_parameters.xml"/>
-          <Template src="skin:effect_unit_controls.xml"/>
+          <Template src="skins:Deere/effect_unit_no_parameters.xml"/>
+          <Template src="skins:Deere/effect_unit_controls.xml"/>
         </Children>
         <Connection>
           <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
@@ -31,8 +31,8 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:effect_unit_with_parameters.xml"/>
-          <Template src="skin:effect_unit_controls.xml"/>
+          <Template src="skins:Deere/effect_unit_with_parameters.xml"/>
+          <Template src="skins:Deere/effect_unit_controls.xml"/>
         </Children>
         <Connection>
           <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>

@@ -72,13 +72,13 @@ that's why we do it in another way here */
 WBeatSpinBox::up-button,
 #spinBoxTransition::up-button {
   border-left: 1px solid #060613;
-  image: url(skin:/btn/btn_spin_up.png) no-repeat;
+  image: url(skins:Shade/btn/btn_spin_up.png) no-repeat;
 }
 
 WBeatSpinBox::down-button,
 #spinBoxTransition::down-button {
   border-left: 1px solid #060613;
-  image: url(skin:/btn/btn_spin_down.png) no-repeat;
+  image: url(skins:Shade/btn/btn_spin_down.png) no-repeat;
 }
 WBeatSpinBox::up-button,
 WBeatSpinBox::down-button {
@@ -208,11 +208,11 @@ WEffectSelector::indicator:unchecked:selected,
   }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
-    image: url(skin:/btn/btn_mainmenu_checkbox_checked.svg);
+    image: url(skins:Shade/btn/btn_mainmenu_checkbox_checked.svg);
   }
   #MainMenu QMenu::indicator:unchecked,
   #MainMenu QMenu::indicator:unchecked:selected {
-    image: url(skin:/btn/btn_mainmenu_checkbox.svg);
+    image: url(skins:Shade/btn/btn_mainmenu_checkbox.svg);
   }
 
 #MainMenu QMenu {
@@ -226,7 +226,7 @@ WEffectSelector::indicator:unchecked:selected,
     width: 0.5em;
     height: 0.5em;
     margin-right: 0.2em;
-    image: url(skin:/style/menu_arrow.svg);
+    image: url(skins:Shade/style/menu_arrow.svg);
   }
 
 WEffectSelector,
@@ -291,10 +291,10 @@ WEffectSelector QAbstractScrollArea,
     #fadeModeCombobox::down-arrow {
       border-width: 0px 0px 0px 1px;
       margin: 0px;
-      image: url(skin:/btn/btn_spin_down.png) no-repeat;
+      image: url(skins:Shade/btn/btn_spin_down.png) no-repeat;
     }
     WSearchLineEdit::down-arrow {
-      image: url(skin:/btn/btn_search_down_grey.svg) no-repeat;
+      image: url(skins:Shade/btn/btn_search_down_grey.svg) no-repeat;
     }
 
 
@@ -342,16 +342,16 @@ WEffectSelector QAbstractScrollArea,
   #fadeModeCombobox::indicator:checked {
     border-color: #1a2025;
     background-color: #f90562;
-    image: url(skin:/btn/btn_lib_checkmark_black.svg);
+    image: url(skins:Shade/btn/btn_lib_checkmark_black.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
     border-color: #1a2025;
     background-color: #aa5f78;
-    image: url(skin:/btn/btn_lib_checkmark_dark_grey.svg);
+    image: url(skins:Shade/btn/btn_lib_checkmark_dark_grey.svg);
   }
   /* disabled checked box */
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
-    image: url(skin:/btn/btn_lib_checkmark_grey.svg);
+    image: url(skins:Shade/btn/btn_lib_checkmark_grey.svg);
   }
   /* unchecked menu checkbox */
   WLibrarySidebar QMenu::indicator:unchecked,
@@ -421,7 +421,7 @@ WCueMenuPopup QLabel {
   height: 43px;
   padding: 0px;
   background-color: #aab2b7;
-  qproperty-icon: url(skin:/btn/btn_delete.svg);
+  qproperty-icon: url(skins:Shade/btn/btn_delete.svg);
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
   outline: none;
@@ -524,10 +524,10 @@ WTrackTableView {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/btn/btn_lib_bpm_locked.svg);
+    image: url(skins:Shade/btn/btn_lib_bpm_locked.svg);
     }
     #LibraryBPMButton::indicator:unchecked {
-      image: url(skin:/btn/btn_lib_bpm_unlocked.svg);
+      image: url(skins:Shade/btn/btn_lib_bpm_unlocked.svg);
       }
   #LibraryBPMButton::item {
     color: #cfcfcf;
@@ -548,10 +548,10 @@ WTrackTableView {
       background-color: #656d75;
       }
       #LibraryBPMSpinBox::up-button {
-        image: url(skin:/btn/btn_lib_spinbox_up_white.svg) no-repeat;
+        image: url(skins:Shade/btn/btn_lib_spinbox_up_white.svg) no-repeat;
         }
       #LibraryBPMSpinBox::down-button {
-        image: url(skin:/btn/btn_lib_spinbox_down_white.svg) no-repeat;
+        image: url(skins:Shade/btn/btn_lib_spinbox_down_white.svg) no-repeat;
         }
 
   /* Button in library "Preview" column */
@@ -562,14 +562,14 @@ WTrackTableView {
     border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked{
-    image: url(skin:/btn/btn_lib_preview_play.svg);
+    image: url(skins:Shade/btn/btn_lib_preview_play.svg);
   }
   #LibraryPreviewButton:!checked:hover {
     border: 1px solid #666;
     background: #0f0f0f;
   }
   #LibraryPreviewButton:checked {
-    image: url(skin:/btn/btn_lib_preview_pause.svg);
+    image: url(skins:Shade/btn/btn_lib_preview_pause.svg);
     background-color: #0f0f0f;
     border: 1px solid #444;
   }
@@ -585,10 +585,10 @@ WTrackTableView {
     border: 0px;
     }
   WTrackTableView::indicator:unchecked {
-    image: url(skin:/btn/btn_lib_checkbox.svg);
+    image: url(skins:Shade/btn/btn_lib_checkbox.svg);
     }
   WTrackTableView::indicator:checked {
-    image: url(skin:/btn/btn_lib_checkbox_checked.svg);
+    image: url(skins:Shade/btn/btn_lib_checkbox_checked.svg);
     }
 
 /* explicitly remove icons from unchecked items otherwise
@@ -650,22 +650,22 @@ WLibrarySidebar {
 /*  Closed branch of tree 	*/
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  image: url(skin:/style/style_branch_closed.svg);
+  image: url(skins:Shade/style/style_branch_closed.svg);
   }
   WLibrarySidebar::branch:has-children:!has-siblings:closed:selected,
   WLibrarySidebar::branch:closed:has-children:has-siblings:selected {
-    image: url(skin:/style/style_branch_closed_selected.svg);
+    image: url(skins:Shade/style/style_branch_closed_selected.svg);
   }
 
 /*  Open branch of tree 	*/
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  image: url(skin:/style/style_branch_open.svg);
+  image: url(skins:Shade/style/style_branch_open.svg);
   }
   WLibrarySidebar::branch:open:has-children:!has-siblings:selected,
   WLibrarySidebar::branch:open:has-children:has-siblings:selected {
     border-image: none;
-    image: url(skin:/style/style_branch_open_selected.svg);
+    image: url(skins:Shade/style/style_branch_open_selected.svg);
   }
   /* space left of selected child item */
   WLibrarySidebar::branch:!has-children:!has-siblings:closed:selected,
@@ -715,10 +715,10 @@ WTrackTableViewHeader::down-arrow {
   background-color: rgba(98,111,135,255);
   }
   WTrackTableViewHeader::up-arrow {
-    image: url(skin:/btn/btn_lib_sort_up_black.png)
+    image: url(skins:Shade/btn/btn_lib_sort_up_black.png)
   }
   WTrackTableViewHeader::down-arrow {
-    image: url(skin:/btn/btn_lib_sort_down_black.png)
+    image: url(skins:Shade/btn/btn_lib_sort_down_black.png)
   }
 
 /* Scroll bars */
@@ -825,11 +825,11 @@ WCoverArt {
 
 /* splitter between treeview and library*/
 QSplitter::handle {
-  image: url(skin:/style/style_handle_unchecked.png);
+  image: url(skins:Shade/style/style_handle_unchecked.png);
   background: none;
 }
 QSplitter::handle:pressed {
-  image: url(skin:/style/style_handle_checked.png);
+  image: url(skins:Shade/style/style_handle_checked.png);
   background: none;
 }
 QSplitter::handle:horizontal {
@@ -859,11 +859,11 @@ WLibrary { margin: 2px 3px 0px 0px; }
 }
 
 #LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:/btn/btn_lib_radio_button_on_pink.svg) center center;
+  image: url(skins:Shade/btn/btn_lib_radio_button_on_pink.svg) center center;
 }
 
 #LibraryFeatureControls QRadioButton::indicator:unchecked {
-  image: url(skin:/btn/btn_lib_radio_button_off.svg) center center;
+  image: url(skins:Shade/btn/btn_lib_radio_button_off.svg) center center;
 }
 
 #LibraryFeatureControls QPushButton {
@@ -937,28 +937,28 @@ WLibrary { margin: 2px 3px 0px 0px; }
   }
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ {
-  image: url(skin:/btn/btn_autodj_enable.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_enable.svg) no-repeat center center;
 }
 QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/btn/btn_autodj_fade_disabled.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/btn/btn_autodj_fade.svg) no-repeat center center;
+    image: url(skins:Shade/btn/btn_autodj_fade.svg) no-repeat center center;
   }
 QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/btn/btn_autodj_skip_disabled.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/btn/btn_autodj_skip.svg) no-repeat center center;
+    image: url(skins:Shade/btn/btn_autodj_skip.svg) no-repeat center center;
   }
 QPushButton#pushButtonShuffle {
-  image: url(skin:/btn/btn_autodj_shuffle.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_shuffle.svg) no-repeat center center;
 }
 QPushButton#pushButtonAddRandomTrack {
-  image: url(skin:/btn/btn_autodj_addrandom.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {
-  image: url(skin:/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
+  image: url(skins:Shade/btn/btn_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
 

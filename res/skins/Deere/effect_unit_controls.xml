@@ -29,7 +29,7 @@
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
-              <Template src="skin:knob.xml">
+              <Template src="skins:Deere/knob.xml">
                 <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                 <SetVariable name="control">super1</SetVariable>
                 <SetVariable name="color">blue_gapless</SetVariable>
@@ -44,13 +44,13 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:knob.xml">
+              <Template src="skins:Deere/knob.xml">
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                 <SetVariable name="control">mix</SetVariable>
                 <SetVariable name="color">purple_gapless</SetVariable>
               </Template>
 
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
                 <SetVariable name="MinimumSize">40,20</SetVariable>
@@ -110,13 +110,13 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob.xml">
+                  <Template src="skins:Deere/knob.xml">
                     <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="control">mix</SetVariable>
                     <SetVariable name="color">purple_gapless</SetVariable>
                   </Template>
 
-                  <Template src="skin:left_2state_button.xml">
+                  <Template src="skins:Deere/left_2state_button.xml">
                     <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
                     <SetVariable name="MinimumSize">40,20</SetVariable>
@@ -139,7 +139,7 @@
                 </Connection>
                 <Children>
                   <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
-                  <Template src="skin:knob.xml">
+                  <Template src="skins:Deere/knob.xml">
                     <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="control">super1</SetVariable>
                     <SetVariable name="color">blue_gapless</SetVariable>
@@ -161,7 +161,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,max</SizePolicy>
             <Children>
-              <Template src="skin:left_2state_button.xml">
+              <Template src="skins:Deere/left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
                 <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>

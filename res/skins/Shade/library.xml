@@ -23,7 +23,7 @@
                 <SizePolicy>i,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:preview_deck.xml"/>
+                  <Template src="skins:Shade/preview_deck.xml"/>
 
                   <SearchBox></SearchBox>
 

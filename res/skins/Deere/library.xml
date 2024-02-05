@@ -29,12 +29,12 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:preview_deck.xml"/>
+                  <Template src="skins:Deere/preview_deck.xml"/>
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
                       <SearchBox></SearchBox>
-                      <Template src="skin:hide_show_button.xml">
+                      <Template src="skins:Deere/hide_show_button.xml">
                         <SetVariable name="TooltipId">maximize_library</SetVariable>
                         <SetVariable name="object_name">LibraryToggle</SetVariable>
                         <SetVariable name="control">[Skin],show_maximized_library</SetVariable>

@@ -274,10 +274,10 @@ WBeatSpinBox,
 
 /* checkbox in library "Played" column */
 WTrackTableView::indicator:unchecked {
-  image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
+  image: url(skins:Deere/icon/ic_library_checkbox.svg);
 }
 WTrackTableView::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
+  image: url(skins:Deere/icon/ic_library_checkbox_checked.svg);
 }
 
 /* focused BPM cell in the library "BPM" column */
@@ -287,11 +287,11 @@ WTrackTableView::indicator:checked {
 }
 /* BPM lock icon */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_library_bpm_locked.svg);
+  image: url(skins:Deere/icon/ic_library_bpm_locked.svg);
 }
 
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/../Deere/icon/ic_library_bpm_unlocked.svg);
+  image: url(skins:Deere/icon/ic_library_bpm_unlocked.svg);
 }
 
 #LibraryBPMSpinBox {
@@ -304,10 +304,10 @@ WTrackTableView::indicator:checked {
     background-color: #006596;
     }
     #LibraryBPMSpinBox::up-button {
-      image: url(skin:/../Deere/icon/ic_lib_spinbox_up_white.svg) no-repeat;
+      image: url(skins:Deere/icon/ic_lib_spinbox_up_white.svg) no-repeat;
       }
     #LibraryBPMSpinBox::down-button {
-      image: url(skin:/../Deere/icon/ic_lib_spinbox_down_white.svg) no-repeat;
+      image: url(skins:Deere/icon/ic_lib_spinbox_down_white.svg) no-repeat;
       }
 
 /* button in library "Preview" column */
@@ -320,7 +320,7 @@ QPushButton#LibraryPreviewButton {
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/../Deere/icon/ic_library_preview_play.svg);
+  image: url(skins:Deere/icon/ic_library_preview_play.svg);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -329,7 +329,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/../Deere/icon/ic_library_preview_pause.svg);
+  image: url(skins:Deere/icon/ic_library_preview_pause.svg);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
@@ -363,11 +363,11 @@ WTrackTableViewHeader::down-arrow {
   padding: 0px;
 }
 WTrackTableViewHeader::up-arrow {
-  image: url(skin:/../Deere/image/style_sort_up.svg);
+  image: url(skins:Deere/image/style_sort_up.svg);
 }
 
 WTrackTableViewHeader::down-arrow {
-  image: url(skin:/../Deere/image/style_sort_down.svg);
+  image: url(skins:Deere/image/style_sort_down.svg);
 }
 
 /* library search bar */
@@ -430,12 +430,12 @@ WLibrarySidebar {
 /* triangle for closed/opened branches in treeview */
 WLibrarySidebar::branch:has-children:!has-siblings:closed,
 WLibrarySidebar::branch:closed:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_closed.svg);
+  border-image: none; image: url(skins:Deere/image/style_branch_closed.svg);
 }
 
 WLibrarySidebar::branch:open:has-children:!has-siblings,
 WLibrarySidebar::branch:open:has-children:has-siblings {
-  border-image: none; image: url(skin:/../Deere/image/style_branch_open.svg);
+  border-image: none; image: url(skins:Deere/image/style_branch_open.svg);
 }
 
 /* space left of selected child item */
@@ -449,12 +449,12 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 
 /* QSplitter between WLibrarySidebar and WTrackTableView */
 #LibrarySplitter::handle {
-  image: url(skin:/../Deere/image/style_handle_horizontal_unchecked.svg);
+  image: url(skins:Deere/image/style_handle_horizontal_unchecked.svg);
   background: none;
 }
 
 #LibrarySplitter::handle:pressed {
-  image: url(skin:/../Deere/image/style_handle_horizontal_checked.svg);
+  image: url(skins:Deere/image/style_handle_horizontal_checked.svg);
   background: none;
 }
 
@@ -470,14 +470,14 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 #LibraryCoverArtSplitter::handle,
 #LibraryVerticalSplitter::handle,
 #WaveformSplitter::handle {
-  image: url(skin:/../Deere/image/style_handle_vertical_unchecked.svg);
+  image: url(skins:Deere/image/style_handle_vertical_unchecked.svg);
   background-color: #222;
 }
 
 #LibraryCoverArtSplitter::handle:pressed,
 #LibraryVerticalSplitter::handle:pressed,
 #WaveformSplitter::handle:pressed {
-  image: url(skin:/../Deere/image/style_handle_vertical_checked.svg);
+  image: url(skins:Deere/image/style_handle_vertical_checked.svg);
   background-color: #222;
 }
 
@@ -515,11 +515,11 @@ WLibrarySidebar::branch:open:!has-children:has-siblings:selected {
 }
 
 #LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_radio_button_on_18px.svg);
+  image: url(skins:Deere/icon/ic_radio_button_on_18px.svg);
 }
 
 #LibraryFeatureControls QRadioButton::indicator:unchecked {
-  image: url(skin:/../Deere/icon/ic_radio_button_off_18px.svg);
+  image: url(skins:Deere/icon/ic_radio_button_off_18px.svg);
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
@@ -602,28 +602,28 @@ QPushButton#pushButtonRecording:checked:hover {
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ {
-  image: url(skin:/../Deere/icon/ic_autodj_enable.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_enable.svg) no-repeat center center;
 }
 QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/../Deere/icon/ic_autodj_fade_disabled.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/../Deere/icon/ic_autodj_fade.svg) no-repeat center center;
+    image: url(skins:Deere/icon/ic_autodj_fade.svg) no-repeat center center;
   }
 QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/../Deere/icon/ic_autodj_skip_disabled.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/../Deere/icon/ic_autodj_skip.svg) no-repeat center center;
+    image: url(skins:Deere/icon/ic_autodj_skip.svg) no-repeat center center;
   }
 QPushButton#pushButtonShuffle {
-  image: url(skin:/../Deere/icon/ic_autodj_shuffle.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_shuffle.svg) no-repeat center center;
 }
 QPushButton#pushButtonAddRandomTrack {
-  image: url(skin:/../Deere/icon/ic_autodj_addrandom.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist {
-  image: url(skin:/../Deere/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_autodj_repeat_playlist.svg) no-repeat center center;
 }
 /* AutoDJ button icons */
 
@@ -980,11 +980,11 @@ WBeatSpinBox,
   #spinBoxTransition::down-arrow {
     width: 9px;
     height: 7px;
-    image: url(skin:/../Deere/icon/ic_chevron_down_selector.svg);
+    image: url(skins:Deere/icon/ic_chevron_down_selector.svg);
   }
   WBeatSpinBox::down-arrow:hover,
   #spinBoxTransition::down-arrow:hover {
-    image: url(skin:/../Deere/icon/ic_chevron_down_selector_hover.svg);
+    image: url(skins:Deere/icon/ic_chevron_down_selector_hover.svg);
   }
   WBeatSpinBox::up-button,
   #spinBoxTransition::up-button {
@@ -998,11 +998,11 @@ WBeatSpinBox,
   #spinBoxTransition::up-arrow {
     width: 9px;
     height: 7px;
-    image: url(skin:/../Deere/icon/ic_chevron_up_selector.svg);
+    image: url(skins:Deere/icon/ic_chevron_up_selector.svg);
   }
   WBeatSpinBox::up-arrow:hover,
   #spinBoxTransition::up-arrow:hover {
-    image: url(skin:/../Deere/icon/ic_chevron_up_selector_hover.svg);
+    image: url(skins:Deere/icon/ic_chevron_up_selector_hover.svg);
   }
 
 /* End spacing for Deck controls row */
@@ -1130,11 +1130,11 @@ WBeatSpinBox,
 }
 
 #BpmKeyInfoShow {
-  image: url(skin:/../Deere/icon/ic_chevron_left_24x48px.svg) center center;
+  image: url(skins:Deere/icon/ic_chevron_left_24x48px.svg) center center;
 }
 
 #BpmKeyInfoHide {
-  image: url(skin:/../Deere/icon/ic_chevron_right_24x48px.svg) center center;
+  image: url(skins:Deere/icon/ic_chevron_right_24x48px.svg) center center;
 }
 /* End editable widgets in decks */
 
@@ -1211,11 +1211,11 @@ WBeatSpinBox,
 }
 
 #EffectUnitToggle[value="0"] {
-  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+  image: url(skins:Deere/icon/ic_unfold_more_48px.svg) no-repeat top right;
 }
 
 #EffectUnitToggle[value="1"] {
-  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+  image: url(skins:Deere/icon/ic_unfold_less_48px.svg) no-repeat top right;
 }
 
 #EffectUnitFiller {
@@ -1275,7 +1275,7 @@ WBeatSpinBox,
 }
 
 #EffectEnableButton {
-  image: url(skin:/../Deere/icon/ic_power_48px.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_power_48px.svg) no-repeat center center;
 }
 
 #EffectKnob {
@@ -1329,7 +1329,7 @@ WBeatSpinBox,
 }
 
 #Crossfader[highlight="1"] {
-  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
+  border-image: url(skins:Deere/slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
 #MainControls {
@@ -1629,11 +1629,11 @@ WPushButton#SyncLeader[value="1"] {
     border: 1px solid #0092d9;
 }
 WPushButton#SyncLeader[value="0"] {
-  image: url(skin:/../Deere/icon/ic_sync_leader_off.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_sync_leader_off.svg) no-repeat center center;
 }
 WPushButton#SyncLeader[value="1"],
 WPushButton#SyncLeader[value="2"] {
-  image: url(skin:/../Deere/icon/ic_sync_leader_on.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_sync_leader_on.svg) no-repeat center center;
 }
 
 WPushButton[value="1"]:hover,
@@ -1664,12 +1664,12 @@ WPushButton[value="2"]:hover,
 }
 
 WPushButton#PlayToggle[value="0"] {
-  image: url(skin:/../Deere/icon/ic_play_48px.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_play_48px.svg) no-repeat center center;
   background-color: transparent;
 }
 
 WPushButton#PlayToggle[value="1"] {
-  image: url(skin:/../Deere/icon/ic_pause_48px.svg) no-repeat center center;
+  image: url(skins:Deere/icon/ic_pause_48px.svg) no-repeat center center;
 }
 WPushButton#PreviewIndicator {
   background-color: transparent;
@@ -2077,11 +2077,11 @@ WSearchLineEdit QAbstractScrollArea,
 }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
-    image: url(skin:/../Deere/icon/ic_mainmenu_checkbox_checked.svg);
+    image: url(skins:Deere/icon/ic_mainmenu_checkbox_checked.svg);
   }
   #MainMenu QMenu::indicator:unchecked,
   #MainMenu QMenu::indicator:unchecked:selected {
-    image: url(skin:/../Deere/icon/ic_mainmenu_checkbox.svg);
+    image: url(skins:Deere/icon/ic_mainmenu_checkbox.svg);
   }
 
 #MainMenu QMenu {
@@ -2094,7 +2094,7 @@ WSearchLineEdit QAbstractScrollArea,
   WTrackMenu QMenu::right-arrow {
     width: 0.7em;
     height: 0.7em;
-    image: url(skin:/../Deere/icon/ic_chevron_right_48px.svg);
+    image: url(skins:Deere/icon/ic_chevron_right_48px.svg);
   }
 
 
@@ -2157,7 +2157,7 @@ WEffectChainPresetSelector:!editable:on {
   WSearchLineEdit::down-arrow,
   WEffectChainPresetSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
-    image: url(skin:/../Deere/icon/ic_chevron_down_48px.svg);
+    image: url(skins:Deere/icon/ic_chevron_down_48px.svg);
   }
   /* currently loaded effect */
   WEffectSelector::checked,
@@ -2263,13 +2263,13 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
 }
 WLibrarySidebar QMenu::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
+  image: url(skins:Deere/icon/ic_library_checkmark_orange.svg);
 }
 WTrackTableViewHeader QMenu::indicator:checked,
 WEffectSelector::indicator:checked,
 WEffectChainPresetSelector::indicator:checked,
 #fadeModeCombobox::indicator:checked {
-  image: url(skin:/../Deere/icon/ic_library_checkmark_blue.svg);
+  image: url(skins:Deere/icon/ic_library_checkmark_blue.svg);
 }
 
 /* disabled menu item and checkbox */
@@ -2279,13 +2279,13 @@ WTrackMenu QMenu QCheckBox::indicator:indeterminate {
   background-color: #222;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
-  image: url(skin:/../Deere/icon/ic_library_checkmark_grey.svg);
+  image: url(skins:Deere/icon/ic_library_checkmark_grey.svg);
 }
 WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-  image: url(skin:/../Deere/icon/ic_library_checkmark_indeterminate_orange.svg);
+  image: url(skins:Deere/icon/ic_library_checkmark_indeterminate_orange.svg);
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
-  image: url(skin:/../Deere/icon/ic_library_checkmark_indeterminate_grey.svg);
+  image: url(skins:Deere/icon/ic_library_checkmark_indeterminate_grey.svg);
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
 WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
@@ -2324,7 +2324,7 @@ WEffectChainPresetSelector::indicator:unchecked:selected,
   height: 46px;
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
-  qproperty-icon: url(skin:/../Deere/icon/ic_delete.svg);
+  qproperty-icon: url(skins:Deere/icon/ic_delete.svg);
   background-color: #3B3B3B;
   border-radius: 2px;
   outline: none;

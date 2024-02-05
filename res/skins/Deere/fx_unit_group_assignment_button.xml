@@ -1,5 +1,5 @@
 <Template>
-  <Template src="skin:left_2state_button.xml">
+  <Template src="skins:Deere/left_2state_button.xml">
     <SetVariable name="TooltipId">EffectUnit_<Variable name="SourceType"/>_enabled</SetVariable>
     <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
     <SetVariable name="MinimumSize"><Variable name="FXAssignmentButtonMinimumSize"/></SetVariable>

@@ -34,7 +34,7 @@
         </Connection>
       </PushButton>
 
-      <Template src="skin:knob.xml"/>
+      <Template src="skins:Deere/knob.xml"/>
 
     </Children>
   </WidgetGroup>

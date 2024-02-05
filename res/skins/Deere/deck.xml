@@ -18,7 +18,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <Template src="skin:deck_text_row.xml"/>
+          <Template src="skins:Deere/deck_text_row.xml"/>
 
           <!-- Hides if the 'Parallel Waveforms' option is activated in the skin settings -->
           <WidgetGroup>
@@ -69,8 +69,8 @@
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:deck_overview_row.xml"/>
-          <Template src="skin:deck_controls_row.xml"/>
+          <Template src="skins:Deere/deck_overview_row.xml"/>
+          <Template src="skins:Deere/deck_controls_row.xml"/>
         </Children>
       </WidgetGroup>
 
@@ -79,7 +79,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:deck_tempo_column.xml"/>
+          <Template src="skins:Deere/deck_tempo_column.xml"/>
         </Children>
       </WidgetGroup>
     </Children>

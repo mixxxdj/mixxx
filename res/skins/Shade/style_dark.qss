@@ -131,11 +131,11 @@ WEffectSelector::indicator:unchecked:selected,
 
 #MainMenu QMenu::indicator:checked,
 #MainMenu QMenu::indicator:checked:selected {
-  image: url(skin:/btn/btn_mainmenu_dark_checkbox_checked.svg);
+  image: url(skins:Shade/btn/btn_mainmenu_dark_checkbox_checked.svg);
 }
 #MainMenu QMenu::indicator:unchecked,
 #MainMenu QMenu::indicator:unchecked:selected {
-  image: url(skin:/btn/btn_mainmenu_dark_checkbox.svg);
+  image: url(skins:Shade/btn/btn_mainmenu_dark_checkbox.svg);
 }
 
 #EffectSelectorGroup[highlight="1"]{
@@ -169,7 +169,7 @@ WSearchLineEdit:focus {
   border: 2px solid #78C70B;
 }
 WSearchLineEdit QToolButton:focus {
-  image: url(skin:/btn/btn_lib_clear_search_focus_green.svg);
+  image: url(skins:Shade/btn/btn_lib_clear_search_focus_green.svg);
 }
 
 WLibrarySidebar::item:selected,
@@ -246,10 +246,10 @@ WTrackTableViewHeader::down-arrow {
   background-color: rgba(63,48,65,200);
   }
   WTrackTableViewHeader::up-arrow {
-    image: url(skin:/btn/btn_lib_sort_up_green.png)
+    image: url(skins:Shade/btn/btn_lib_sort_up_green.png)
   }
   WTrackTableViewHeader::down-arrow {
-    image: url(skin:/btn/btn_lib_sort_down_green.png)
+    image: url(skins:Shade/btn/btn_lib_sort_down_green.png)
   }
 #LibraryFeatureControls QPushButton:enabled {
   background-color: #5C5B5D;
@@ -266,7 +266,7 @@ WTrackTableViewHeader::down-arrow {
   }
 
 #LibraryFeatureControls QRadioButton::indicator:checked {
-  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
+  image: url(skins:Shade/btn/btn_lib_radio_button_on_mustard.svg) center center;
 }
 
 WRateRange {

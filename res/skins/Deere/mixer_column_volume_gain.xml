@@ -16,7 +16,7 @@
         <MinimumSize>40,34</MinimumSize>
         <MaximumSize>40,46</MaximumSize>
         <Children>
-          <Template src="skin:knob.xml">
+          <Template src="skins:Deere/knob.xml">
             <SetVariable name="TooltipId">pregain</SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="color">green</SetVariable>

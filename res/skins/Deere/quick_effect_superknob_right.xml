@@ -14,7 +14,7 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
 
-      <Template src="skin:knob.xml">
+      <Template src="skins:Deere/knob.xml">
         <SetVariable name="group"><Variable name="QuickEffectUnitGroup"/></SetVariable>
         <SetVariable name="control">super1</SetVariable>
         <SetVariable name="color"><Variable name="color"/></SetVariable>

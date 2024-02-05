@@ -18,11 +18,11 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:special_cue_button.xml">
+          <Template src="skins:Deere/special_cue_button.xml">
             <SetVariable name="cue_type">intro_start</SetVariable>
             <SetVariable name="label">|&#9698;</SetVariable>
           </Template>
-          <Template src="skin:special_cue_button.xml">
+          <Template src="skins:Deere/special_cue_button.xml">
             <SetVariable name="cue_type">intro_end</SetVariable>
             <SetVariable name="label">&#9698;|</SetVariable>
           </Template>
@@ -33,11 +33,11 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <Template src="skin:special_cue_button.xml">
+          <Template src="skins:Deere/special_cue_button.xml">
             <SetVariable name="cue_type">outro_start</SetVariable>
             <SetVariable name="label">|&#9699;</SetVariable>
           </Template>
-          <Template src="skin:special_cue_button.xml">
+          <Template src="skins:Deere/special_cue_button.xml">
             <SetVariable name="cue_type">outro_end</SetVariable>
             <SetVariable name="label">&#9699;|</SetVariable>
           </Template>

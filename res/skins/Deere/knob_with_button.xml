@@ -11,7 +11,7 @@
   <WidgetGroup>
     <Layout>vertical</Layout>
     <Children>
-      <Template src="skin:knob.xml"/>
+      <Template src="skins:Deere/knob.xml"/>
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>

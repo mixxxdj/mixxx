@@ -19,7 +19,7 @@
 				<WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
-            <Template src="skin:srcmicrophoneaux.xml">
+            <Template src="skins:Shade/srcmicrophoneaux.xml">
               <SetVariable name="micnum"></SetVariable>
               <SetVariable name="miclabel">1</SetVariable>
               <SetVariable name="auxnum">1</SetVariable>
@@ -29,13 +29,13 @@
 				<WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
-            <Template src="skin:srcfx.xml"/>
+            <Template src="skins:Shade/srcfx.xml"/>
           </Children>
 				</WidgetGroup>
 				<WidgetGroup>
           <Layout>vertical</Layout>
           <Children>
-          <Template src="skin:srcmicrophoneaux.xml">
+          <Template src="skins:Shade/srcmicrophoneaux.xml">
             <SetVariable name="micnum">2</SetVariable>
             <SetVariable name="miclabel">2</SetVariable>
             <SetVariable name="auxnum">2</SetVariable>

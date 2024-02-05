@@ -168,7 +168,7 @@
           <Amount>-40</Amount>
         </Add>
       </Filters>
-      <Style src="skin:style_dark.qss"/>
+      <Style src="skins:Shade/style_dark.qss"/>
     </Scheme>
     <Scheme>
       <Name>Summer Sunset</Name>
@@ -187,7 +187,7 @@
           <VConst>-10</VConst>
         </HSVTweak>
       </Filters>
-      <Style src="skin:style_summer_sunset.qss"/>
+      <Style src="skins:Shade/style_summer_sunset.qss"/>
     </Scheme>
   </Schemes>
 
@@ -200,7 +200,7 @@
   ############################################################################################
   -->
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"
+  <Style src="skins:Shade/style.qss"
          src-linux="skins:default-menu-styles-linux.qss"
          src-windows="skins:default-menu-styles-windows.qss"/>
   <Size>1008e,500e</Size>
@@ -208,7 +208,7 @@
     <LaunchImageStyle>
       LaunchImage { background-color: #202020; }
         QLabel {
-          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          image: url(skins:Shade/style/mixxx-icon-logo-symbolic.png);
           padding:0;
           margin:0;
           border:none;
@@ -252,7 +252,7 @@
     <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skins:Shade/deck_overview.xml">
           <SetVariable name="channum">1</SetVariable>
         </Template>
       </Children>
@@ -261,7 +261,7 @@
     <SingletonDefinition>
       <ObjectName>Overview2</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
+        <Template src="skins:Shade/deck_overview.xml">
           <SetVariable name="channum">2</SetVariable>
         </Template>
       </Children>
@@ -270,7 +270,7 @@
     <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
-        <Template src="skin:library.xml"/>
+        <Template src="skins:Shade/library.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -313,7 +313,7 @@
               <Children>
                 <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
-                <Template src="skin:deck.xml">
+                <Template src="skins:Shade/deck.xml">
                   <SetVariable name="channum">1</SetVariable>
                   <SetVariable name="effectunitnum">1</SetVariable>
                   <SetVariable name="effectgroup">BusLeft</SetVariable>
@@ -327,11 +327,11 @@
 
                 <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
-                <Template src="skin:mixer_panel.xml"/>
+                <Template src="skins:Shade/mixer_panel.xml"/>
 
                 <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
 
-                <Template src="skin:deck.xml">
+                <Template src="skins:Shade/deck.xml">
                   <SetVariable name="channum">2</SetVariable>
                   <SetVariable name="effectunitnum">2</SetVariable>
                   <SetVariable name="effectgroup">BusRight</SetVariable>
@@ -357,10 +357,10 @@
                   <ObjectName>EffectLeftBorder</ObjectName>
                   <Size>3f,43f</Size>
                 </WidgetGroup>
-                <Template src="skin:looping.xml">
+                <Template src="skins:Shade/looping.xml">
                   <SetVariable name="channum">1</SetVariable>
                 </Template>
-                <Template src="skin:looping.xml">
+                <Template src="skins:Shade/looping.xml">
                   <SetVariable name="channum">2</SetVariable>
                 </Template>
               </Children>
@@ -369,16 +369,16 @@
                 <BindProperty>visible</BindProperty>
               </Connection>
             </WidgetGroup>
-            <Template src="skin:effectrow.xml"/>
-            <Template src="skin:srcrow.xml"/>
-            <Template src="skin:samplerrow.xml">
+            <Template src="skins:Shade/effectrow.xml"/>
+            <Template src="skins:Shade/srcrow.xml"/>
+            <Template src="skins:Shade/samplerrow.xml">
               <SetVariable name="row">1</SetVariable>
               <SetVariable name="samplernum1">1</SetVariable>
               <SetVariable name="samplernum2">2</SetVariable>
               <SetVariable name="samplernum3">5</SetVariable>
               <SetVariable name="samplernum4">6</SetVariable>
             </Template>
-            <Template src="skin:samplerrow.xml">
+            <Template src="skins:Shade/samplerrow.xml">
               <SetVariable name="row">2</SetVariable>
               <SetVariable name="samplernum1">3</SetVariable>
               <SetVariable name="samplernum2">4</SetVariable>
@@ -395,7 +395,7 @@
         </WidgetGroup>
 
         <!-- minimal decks, visible with maximized library -->
-        <Template src="skin:decks_row_small.xml"/>
+        <Template src="skins:Shade/decks_row_small.xml"/>
 
         <SingletonContainer>
           <ObjectName>Library</ObjectName>

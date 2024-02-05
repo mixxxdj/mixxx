@@ -16,7 +16,7 @@
           <WidgetGroup>
             <Size>0e,54f</Size>
           </WidgetGroup>
-          <Template src="skin:ducking.xml"/>
+          <Template src="skins:Shade/ducking.xml"/>
           <WidgetGroup>
             <Size>0e,54f</Size>
           </WidgetGroup>

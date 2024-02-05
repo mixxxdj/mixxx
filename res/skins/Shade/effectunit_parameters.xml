@@ -22,15 +22,15 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-          <Template src="skin:effect_parameters.xml">
+          <Template src="skins:Shade/effect_parameters.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">1</SetVariable>
           </Template>
-          <Template src="skin:effect_parameters.xml">
+          <Template src="skins:Shade/effect_parameters.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">2</SetVariable>
           </Template>
-          <Template src="skin:effect_parameters.xml">
+          <Template src="skins:Shade/effect_parameters.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">3</SetVariable>
           </Template>

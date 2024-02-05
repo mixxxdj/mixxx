@@ -7,35 +7,35 @@
         <Layout>horizontal</Layout>
         <Children>
             <WidgetGroup><Size>0e,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">1</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">2</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">3</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">4</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">5</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">6</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">7</SetVariable>
           </Template>
             <WidgetGroup><Size>1f,0e</Size></WidgetGroup>
-          <Template src="skin:hotcue_button.xml">
+          <Template src="skins:Shade/hotcue_button.xml">
             <SetVariable name="hotcue">8</SetVariable>
           </Template>
             <WidgetGroup><Size>5f,0e</Size></WidgetGroup>
