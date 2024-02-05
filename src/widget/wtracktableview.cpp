@@ -1029,7 +1029,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No selected tracks available";
         return trackIds;
     }
@@ -1052,7 +1052,7 @@ QList<TrackId> WTrackTableView::getSelectedTrackIds() const {
 
 TrackId WTrackTableView::getCurrentTrackId() const {
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No selected tracks available";
         return {};
     }
@@ -1076,7 +1076,7 @@ bool WTrackTableView::isTrackInCurrentView(const TrackId& trackId) {
     }
     //qDebug() << "WTrackTableView::isTrackInCurrentView" << trackId;
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return false;
     }
@@ -1093,7 +1093,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return;
     }
@@ -1120,7 +1120,7 @@ bool WTrackTableView::setCurrentTrackId(const TrackId& trackId, int column, bool
     }
 
     TrackModel* pTrackModel = getTrackModel();
-    VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(pTrackModel != nullptr) {
         qWarning() << "No track model";
         return false;
     }

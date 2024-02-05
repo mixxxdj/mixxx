@@ -618,7 +618,7 @@ QVariant BaseTrackTableModel::roleValue(
             double durationInSeconds;
             if (rawValue.canConvert<mixxx::Duration>()) {
                 const auto duration = rawValue.value<mixxx::Duration>();
-                VERIFY_OR_DEBUG_ASSERT(duration >= mixxx::Duration::empty()) {
+                RUNTIME_VERIFY_OR_DEBUG_ASSERT(duration >= mixxx::Duration::empty()) {
                     return QVariant();
                 }
                 durationInSeconds = duration.toDoubleSeconds();
@@ -628,7 +628,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
                 bool ok;
                 durationInSeconds = rawValue.toDouble(&ok);
-                VERIFY_OR_DEBUG_ASSERT(ok && durationInSeconds >= 0) {
+                RUNTIME_VERIFY_OR_DEBUG_ASSERT(ok && durationInSeconds >= 0) {
                     return QVariant();
                 }
             }
@@ -645,7 +645,7 @@ QVariant BaseTrackTableModel::roleValue(
             }
             bool ok;
             const auto starCount = rawValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && starCount >= StarRating::kMinStarCount) {
+            RUNTIME_VERIFY_OR_DEBUG_ASSERT(ok && starCount >= StarRating::kMinStarCount) {
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(starCount));
@@ -659,7 +659,7 @@ QVariant BaseTrackTableModel::roleValue(
             }
             bool ok;
             const auto timesPlayed = rawValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
+            RUNTIME_VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
                 return QVariant();
             }
             return QString::number(timesPlayed);
@@ -1032,7 +1032,7 @@ void BaseTrackTableModel::slotRefreshCoverRows(
         return;
     }
     const int column = fieldIndex(LIBRARYTABLE_COVERART);
-    VERIFY_OR_DEBUG_ASSERT(column >= 0) {
+    RUNTIME_VERIFY_OR_DEBUG_ASSERT(column >= 0) {
         return;
     }
     emitDataChangedForMultipleRowsInColumn(rows, column);
