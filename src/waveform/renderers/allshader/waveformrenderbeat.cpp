@@ -41,6 +41,8 @@ void WaveformRenderBeat::paintGL() {
         return;
     }
 
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -91,9 +93,7 @@ void WaveformRenderBeat::paintGL() {
         double xBeatPoint =
                 m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
-        xBeatPoint = std::floor(xBeatPoint);
-
-        xBeatPoint -= 0.5;
+        xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
