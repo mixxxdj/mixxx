@@ -783,6 +783,7 @@ void LoopingControl::slotLoopRemove() {
     loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
     loopInfo.seekMode = LoopSeekMode::None;
     m_loopInfo.setValue(loopInfo);
+    m_oldLoopInfo = loopInfo;
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
     // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
