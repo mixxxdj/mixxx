@@ -326,25 +326,41 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     const auto bpm = mixxx::Bpm{60};
     m_pTrack1->trySetBpm(bpm);
     m_pQuantizeEnabled->set(1);
+    // Move short after the first beat
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
     EXPECT_EQ(m_pClosestBeat->get(), m_pLoopStartPoint->get());
 
+    // Move short after the 5th beat
     m_pBeatJumpSize->set(4);
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ(kTrackEndPosition * m_pPlayPosition->get(),
-            mixxx::audio::FramePos{(44100 * 4) + 250});
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{(44100 * 4) + 250});
+    // This should make loop_out snap to 5th beat and queue
+    // a seek to first beat + initial offset.
+    // TODO It doesn't seek like when done manually, playpos is stuck where we jumped to
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer();
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
-    EXPECT_FRAMEPOS_EQ(kTrackEndPosition * m_pPlayPosition->get(),
-            mixxx::audio::FramePos{(44100 * 4) + 250});
-
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
+    // Should adopt the loop size and enable the correct loop control
     EXPECT_EQ(4, m_pBeatLoopSize->get());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+
+    // Repeat the procedure and verify a seek is triggered even though
+    // the loop is identical.
+    m_pLoopEnabled->set(0);
+    m_pButtonBeatJumpForward->set(1);
+    m_pButtonBeatJumpForward->set(0);
+    ProcessBuffer();
+    m_pButtonLoopOut->set(1);
+    m_pButtonLoopOut->set(0);
+    ProcessBuffer();
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
+    EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
     // Check that beatloop_4_enabled is reset to 0 when changing the loop size.
