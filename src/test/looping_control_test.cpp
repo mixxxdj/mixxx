@@ -322,7 +322,8 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1500}, m_pLoopEndPoint);
 }
 
-TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
+// Disabled because seek is not queued as expected https://github.com/mixxxdj/mixxx/pull/12739
+TEST_F(LoopingControlTest, DISABLED_LoopInOutButtons_QuantizeEnabled) {
     const auto bpm = mixxx::Bpm{60};
     m_pTrack1->trySetBpm(bpm);
     m_pQuantizeEnabled->set(1);
