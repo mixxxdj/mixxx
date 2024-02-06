@@ -2477,11 +2477,6 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             this,
             &HotcueControl::slotHotcueColorChangeRequest,
             Qt::DirectConnection);
-    connect(m_hotcueColor.get(),
-            &ControlObject::valueChanged,
-            this,
-            &HotcueControl::slotHotcueColorChanged,
-            Qt::DirectConnection);
 
     m_hotcueSet = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("set")));
     connect(m_hotcueSet.get(),
@@ -2649,16 +2644,12 @@ void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
 
-void HotcueControl::slotHotcueColorChangeRequest(double color) {
-    if (color < 0 || color > 0xFFFFFF) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+void HotcueControl::slotHotcueColorChangeRequest(double newColor) {
+    if (newColor < 0 || newColor > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChangeRequest got invalid value:" << newColor;
         return;
     }
-    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << color;
-    m_hotcueColor->setAndConfirm(color);
-}
-
-void HotcueControl::slotHotcueColorChanged(double newColor) {
+    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << newColor;
     if (!m_pCue) {
         return;
     }
@@ -2669,7 +2660,7 @@ void HotcueControl::slotHotcueColorChanged(double newColor) {
     }
 
     m_pCue->setColor(*color);
-    emit hotcueColorChanged(this, newColor);
+    m_hotcueColor->setAndConfirm(newColor);
 }
 
 mixxx::audio::FramePos HotcueControl::getPosition() const {
