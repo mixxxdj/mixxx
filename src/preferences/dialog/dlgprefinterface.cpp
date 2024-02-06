@@ -4,6 +4,7 @@
 #include <QList>
 #include <QLocale>
 #include <QScreen>
+#include <QtGlobal>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -302,8 +303,13 @@ void DlgPrefInterface::slotResetToDefaults() {
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
+#ifdef Q_OS_IOS
+    // Tooltips off everywhere.
+    radioButtonTooltipsOff->setChecked(true);
+#else
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+#endif
 }
 
 void DlgPrefInterface::slotSetTooltips() {
@@ -439,7 +445,11 @@ void DlgPrefInterface::slotApply() {
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
     const auto tooltipMode = static_cast<mixxx::TooltipsPreference>(
             m_pConfig->getValue(ConfigKey(kControlsGroup, kTooltipsKey),
+#ifdef Q_OS_IOS
+                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_OFF)));
+#else
                     static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+#endif
     switch (tooltipMode) {
     case mixxx::TooltipsPreference::TOOLTIPS_OFF:
         radioButtonTooltipsOff->setChecked(true);
