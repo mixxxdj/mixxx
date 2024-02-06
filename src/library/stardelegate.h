@@ -34,7 +34,6 @@ class StarDelegate : public TableItemDelegate {
     void cellEntered(const QModelIndex& index);
 
   private:
-    QTableView* m_pTableView;
     QPersistentModelIndex m_currentEditedCellIndex;
     bool m_isOneCellInEditMode;
 };

@@ -35,7 +35,6 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
 
 BPMDelegate::BPMDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
-          m_pTableView(pTableView),
           m_pCheckBox(new QCheckBox(m_pTableView)) {
     m_pCheckBox->setObjectName("LibraryBPMButton");
     // NOTE(rryan): Without ensurePolished the first render of the QTableView
@@ -82,11 +81,8 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
-    if (m_pTableView != nullptr) {
-        QStyle* style = m_pTableView->style();
-        if (style != nullptr) {
-            style->drawControl(QStyle::CE_ItemViewItem, &opt, painter,
-                               m_pCheckBox);
-        }
+    QStyle* style = m_pTableView->style();
+    if (style != nullptr) {
+        style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, m_pCheckBox);
     }
 }
