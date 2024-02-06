@@ -322,8 +322,7 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{1500}, m_pLoopEndPoint);
 }
 
-// Disabled because seek is not queued as expected https://github.com/mixxxdj/mixxx/pull/12739
-TEST_F(LoopingControlTest, DISABLED_LoopInOutButtons_QuantizeEnabled) {
+TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     const auto bpm = mixxx::Bpm{60};
     m_pTrack1->trySetBpm(bpm);
     m_pQuantizeEnabled->set(1);
@@ -341,10 +340,10 @@ TEST_F(LoopingControlTest, DISABLED_LoopInOutButtons_QuantizeEnabled) {
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{(44100 * 4) + 250});
     // This should make loop_out snap to 5th beat and queue
     // a seek to first beat + initial offset.
-    // TODO It doesn't seek like when done manually, playpos is stuck where we jumped to
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    ProcessBuffer();
+    ProcessBuffer(); // first process to schedule seek in a stopped deck
+    ProcessBuffer(); // them seek
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     // Should adopt the loop size and enable the correct loop control
@@ -359,7 +358,8 @@ TEST_F(LoopingControlTest, DISABLED_LoopInOutButtons_QuantizeEnabled) {
     ProcessBuffer();
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    ProcessBuffer();
+    ProcessBuffer(); // first process to schedule seek in a stopped deck
+    ProcessBuffer(); // them seek
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
