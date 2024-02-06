@@ -775,6 +775,10 @@
   [#11094](https://github.com/mixxxdj/mixxx/issues/11094)
 * macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
   [#12517](https://github.com/mixxxdj/mixxx/issues/12517)
+* macOS: Visual glitches with the main EQ sliders
+  [#12517](https://github.com/mixxxdj/mixxx/issues/12630)
+* Linux: possible crash when enabling a MIDI controller [#12001](https://github.com/mixxxdj/mixxx/issues/12001)
+  Introduce with Qt 5.15.5, fixed in Qt 5.15.17 and Qt 6.6.3
 
 ## [2.3.6](https://github.com/mixxxdj/mixxx/milestone/40) (2023-08-15)
 
