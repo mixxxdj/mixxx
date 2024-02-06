@@ -17,6 +17,15 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
         //   qproperty-focusBorderColor: red;
         // }
         m_focusBorderColor = pTrackTableView->getFocusBorderColor();
+        // For some reason the color is not initialized from the stylesheet for
+        // some WTrackTableViews (in DlgAutoDJ, DlgAnalysis, ...)
+        // Listen to the property changed signal.
+        connect(pTrackTableView,
+                &WTrackTableView::focusBorderColorChanged,
+                this,
+                [this](QColor col) {
+                    m_focusBorderColor = col;
+                });
     }
 }
 
