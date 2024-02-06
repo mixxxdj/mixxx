@@ -2,6 +2,7 @@
 
 #include <QDesktopServices>
 
+#include "control/controlproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -11,6 +12,10 @@
 #include "preferences/dialog/dlgpreferences.h"
 #include "util/string.h"
 
+namespace {
+const QString kAppGroup = QStringLiteral("[App]");
+} // namespace
+
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
         UserSettingsPointer pConfig,
         std::shared_ptr<ControllerManager> pControllerManager,
@@ -19,7 +24,11 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
           m_pControllerManager(pControllerManager),
-          m_pControllersRootItem(pControllersRootItem) {
+          m_pControllersRootItem(pControllersRootItem),
+          m_pNumDecks(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_decks"), this)),
+          m_pNumSamplers(make_parented<ControlProxy>(
+                  kAppGroup, QStringLiteral("num_samplers"), this)) {
     setupUi(this);
     // Create text color for the cue mode link "?" to the manual
     createLinkColor();
@@ -178,6 +187,11 @@ void DlgPrefControllers::setupControllerWidgets() {
                 &DlgPrefController::mappingEnded,
                 m_pDlgPreferences,
                 &DlgPreferences::show);
+        // Recreate the control picker menus when decks or samplers are added
+        m_pNumDecks->connectValueChanged(pControllerDlg,
+                &DlgPrefController::slotRecreateControlPickerMenu);
+        m_pNumSamplers->connectValueChanged(pControllerDlg,
+                &DlgPrefController::slotRecreateControlPickerMenu);
 
         m_controllerPages.append(pControllerDlg);
 
