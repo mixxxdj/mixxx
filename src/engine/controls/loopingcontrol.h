@@ -63,6 +63,13 @@ class LoopingControl : public EngineControl {
         None,
     };
 
+    enum class LoopAnchorPoint {
+        Start, // The loop has been defined by its start point. Adjusting the
+               // size will move the end point
+        End,   // The loop has been defined by its end point. Adjusting the size
+               // will move the end point
+    };
+
     struct LoopInfo {
         mixxx::audio::FramePos startPosition;
         mixxx::audio::FramePos endPosition;
@@ -114,7 +121,7 @@ class LoopingControl : public EngineControl {
 
     // Generate a loop of 'beats' length. It can also do fractions for a
     // beatslicing effect.
-    void slotBeatLoop(double loopSize, bool keepStartPoint=false, bool enable=true);
+    void slotBeatLoop(double loopSize, bool keepSetPoint = false, bool enable = true);
     void slotBeatLoopSizeChangeRequest(double beats);
     void slotBeatLoopToggle(double pressed);
     void slotBeatLoopRollActivate(double pressed);
@@ -174,6 +181,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopStartPosition;
     ControlObject* m_pCOLoopEndPosition;
     ControlObject* m_pCOLoopEnabled;
+    ControlPushButton* m_pCOLoopAnchor;
     ControlPushButton* m_pLoopInButton;
     ControlPushButton* m_pLoopInGotoButton;
     ControlPushButton* m_pLoopOutButton;

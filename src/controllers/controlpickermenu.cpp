@@ -671,6 +671,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                "enabled, move the loop backward by the selected number of "
                "beats"),
             pBeatJumpMenu);
+    addDeckControl("loop_anchor",
+            tr("Beat Jump"),
+            tr("Indicate which loop marker remain static when adjusting the "
+               "size or is inherited from the current position"),
+            pBeatJumpMenu);
     pBeatJumpMenu->addSeparator();
 
     QMenu* beatjumpFwdSubmenu = addSubmenu(tr("Beat Jump / Loop Move Forward"), pBeatJumpMenu);

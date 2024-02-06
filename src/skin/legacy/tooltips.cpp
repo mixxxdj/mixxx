@@ -741,6 +741,11 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
+    add("loop_anchor")
+            << tr("Beatloop")
+            << tr("Define whether the loop is defined and adjusted from its "
+                  "staring point or ending point.");
+
     add("beatjump_size")
             << tr("Beatjump/Loop Move Size")
             << tr("Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.");
