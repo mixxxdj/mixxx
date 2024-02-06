@@ -52,7 +52,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
-          m_pFocusBorderColor(kDefaultFocusBorderColor),
+          m_focusBorderColor(kDefaultFocusBorderColor),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {

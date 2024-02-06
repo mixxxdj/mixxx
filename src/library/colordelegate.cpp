@@ -28,6 +28,6 @@ void ColorDelegate::paintItem(
 
     // Draw a border if the color cell has focus
     if (option.state & QStyle::State_HasFocus) {
-        drawBorder(painter, m_pFocusBorderColor, option.rect);
+        drawBorder(painter, m_focusBorderColor, option.rect);
     }
 }

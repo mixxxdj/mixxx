@@ -16,7 +16,7 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
         // WTrackTableView {
         //   qproperty-focusBorderColor: red;
         // }
-        m_pFocusBorderColor = pTrackTableView->getFocusBorderColor();
+        m_focusBorderColor = pTrackTableView->getFocusBorderColor();
     }
 }
 

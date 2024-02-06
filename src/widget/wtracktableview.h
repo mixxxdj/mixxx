@@ -51,9 +51,9 @@ class WTrackTableView : public WLibraryTableView {
         return m_backgroundColorOpacity;
     }
 
-    Q_PROPERTY(QColor focusBorderColor MEMBER m_pFocusBorderColor DESIGNABLE true);
+    Q_PROPERTY(QColor focusBorderColor MEMBER m_focusBorderColor DESIGNABLE true);
     QColor getFocusBorderColor() const {
-        return m_pFocusBorderColor;
+        return m_focusBorderColor;
     }
 
   signals:
@@ -124,7 +124,7 @@ class WTrackTableView : public WLibraryTableView {
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
-    QColor m_pFocusBorderColor;
+    QColor m_focusBorderColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

@@ -36,6 +36,6 @@ class TableItemDelegate : public QStyledItemDelegate {
     // Having this here avoids including QTableView there.
     int columnWidth(const QModelIndex &index) const;
 
-    QColor m_pFocusBorderColor;
+    QColor m_focusBorderColor;
     QTableView* m_pTableView;
 };
