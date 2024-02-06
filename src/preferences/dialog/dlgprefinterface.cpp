@@ -303,8 +303,13 @@ void DlgPrefInterface::slotResetToDefaults() {
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
+#ifdef Q_OS_IOS
+    // Tooltips off everywhere.
+    radioButtonTooltipsOff->setChecked(true);
+#else
     // Tooltips on everywhere.
     radioButtonTooltipsLibraryAndSkin->setChecked(true);
+#endif
 }
 
 void DlgPrefInterface::slotSetTooltips() {
