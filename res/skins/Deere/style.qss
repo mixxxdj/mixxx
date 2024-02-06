@@ -1215,11 +1215,11 @@ WBeatSpinBox,
 }
 
 #EffectUnitToggle[value="0"] {
-  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_more_48px.svg) no-repeat top right;
 }
 
 #EffectUnitToggle[value="1"] {
-  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_less_48px.svg) no-repeat top right;
 }
 
 WEffectChainPresetButton {
@@ -1348,7 +1348,7 @@ WEffectChainPresetButton::menu-indicator {
 }
 
 #Crossfader[highlight="1"] {
-  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
+  border-image: url(skin:/../Deere/slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
 #MainControls {
