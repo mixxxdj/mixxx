@@ -73,7 +73,8 @@ void WaveformRendererSimple::paintGL() {
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
     // Effective visual frame for x, which we will increment for each pixel advanced
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
