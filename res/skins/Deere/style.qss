@@ -247,11 +247,14 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #D6D6D6;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
 WTrackTableView:focus,

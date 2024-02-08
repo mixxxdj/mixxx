@@ -59,9 +59,21 @@ class WTrackTableView : public WLibraryTableView {
         return m_focusBorderColor;
     }
 
+    // Default color for played tracks' text color. #555555, bit darker than Qt::darkgray.
+    // BaseTrackTableModel uses this for the ForegroundRole of played tracks.
+    static constexpr uint kDefaultPlayedInactiveColorHex = 555555;
+    Q_PROPERTY(QColor playedInactiveColor
+                    MEMBER m_playedInactiveColor
+                            NOTIFY playedInactiveColorChanged
+                                    DESIGNABLE true);
+    QColor getPlayedInactiveColor() const {
+        return m_playedInactiveColor;
+    }
+
   signals:
     void trackMenuVisible(bool visible);
     void focusBorderColorChanged(QColor col);
+    void playedInactiveColorChanged(QColor col);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
@@ -129,6 +141,7 @@ class WTrackTableView : public WLibraryTableView {
 
     const double m_backgroundColorOpacity;
     QColor m_focusBorderColor;
+    QColor m_playedInactiveColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

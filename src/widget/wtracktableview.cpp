@@ -51,6 +51,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_backgroundColorOpacity(backgroundColorOpacity),
           // Default color for the focus border of TableItemDelegates
           m_focusBorderColor(Qt::white),
+          m_playedInactiveColor(QColor::fromRgb(kDefaultPlayedInactiveColorHex)),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
