@@ -26,7 +26,7 @@
 #include <portaudio.h>
 #include <sndfile.h>
 #include <soundtouch/SoundTouch.h>
-#include <taglib/taglib.h>
+#include <taglib.h>
 #include <vorbis/codec.h>
 
 #include "util/gitinfostore.h"
