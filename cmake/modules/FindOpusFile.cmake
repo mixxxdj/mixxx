@@ -49,13 +49,13 @@ endif()
 find_path(OpusFile_INCLUDE_DIR
   NAMES opusfile.h
   PATH_SUFFIXES opus
-  PATHS ${PC_OpusFile_INCLUDE_DIRS}
+  HINTS ${PC_OpusFile_INCLUDE_DIRS}
   DOC "Opusfile include directory")
 mark_as_advanced(OpusFile_INCLUDE_DIR)
 
 find_library(OpusFile_LIBRARY
   NAMES opusfile
-  PATHS ${PC_OpusFile_LIBRARY_DIRS}
+  HINTS ${PC_OpusFile_LIBRARY_DIRS}
   DOC "Opusfile library"
 )
 mark_as_advanced(OpusFile_LIBRARY)
