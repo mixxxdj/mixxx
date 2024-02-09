@@ -739,7 +739,8 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="165"/>
         <source>Path the debug statistics time line is written to</source>
-        <translation>Pad waarnaar de tijdlijn voor foutopsporingsstatistieken wordt geschreven</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="189"/>
@@ -749,7 +750,8 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="202"/>
         <source>The controller mapping will issue more aggressive warnings and errors when detecting misuse of controller APIs. New Controller Mappings should be developed with this option enabled!</source>
-        <translation>De controller mapping zal agressievere waarschuwingen en fouten geven bij het detecteren van misbruik van controller-API's. Nieuwe controllertoewijzingen moeten worden ontwikkeld als deze optie is ingeschakeld!</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="212"/>
@@ -759,17 +761,20 @@
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="137"/>
         <source>Top-level directory where Mixxx should look for settings. Default is: </source>
-        <translation>Directory op het hoogste niveau waar Mixxx naar instellingen moet zoeken. Standaard is: </translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="177"/>
         <source>Use legacy vu meter</source>
-        <translation>Gebruik een oudere vu-meter</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="183"/>
         <source>Use legacy spinny</source>
-        <translation>Gebruik oude spinny/translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="220"/>
@@ -804,7 +809,8 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="261"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. &lt;level&gt; is one of the values defined at --log-level above.</source>
-        <translation>Stelt het logboekniveau in waarop de logboekbuffer wordt leeggemaakt naar mixxx.log. &lt;niveau&gt; is een van de waarden die hierboven op --log-niveau zijn gedefinieerd.</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/util/cmdlineargs.cpp" line="275"/>
@@ -2269,7 +2275,8 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
         <source>Button Parameter %1</source>
-        <translation>Knopparameter %1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="44"/>
@@ -2315,7 +2322,8 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="212"/>
         <source>Eject or un-eject track, i.e. reload the last-ejected track (of any deck)&lt;br&gt;Double-press to reload the last replaced track. In empty decks it reloads the second-last ejected track.</source>
-        <translation>Track uitwerpen of uitwerpen, d.w.z. het laatst uitgeworpen nummer opnieuw laden (van welk deck dan ook)&lt;br&gt;Druk dubbel om het laatst vervangen nummer opnieuw te laden. In lege decks wordt het op één na laatste uitgeworpen nummer opnieuw geladen.</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="221"/>
@@ -2340,68 +2348,81 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="269"/>
         <source>Internal Sync Leader</source>
-        <translation>Interne synchronisatieleider</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="270"/>
         <source>Toggle Internal Sync Leader</source>
-        <translation>Schakel Interne synchronisatieleider in</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="275"/>
         <source>Internal Leader BPM</source>
-        <translation>Interne Leider BPM</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
         <source>Internal Leader BPM +1</source>
-        <translation>Interne Leider BPM +1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Increase internal Leader BPM by 1</source>
-        <translation>Verhoog de interne Leader BPM met 1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="285"/>
         <source>Internal Leader BPM -1</source>
-        <translation>Interne Leider BPM -1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="286"/>
         <source>Decrease internal Leader BPM by 1</source>
-        <translation>Verlaag de interne Leader BPM met 1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="291"/>
         <source>Internal Leader BPM +0.1</source>
-        <translation>Interne Leider BPM +0.1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="292"/>
         <source>Increase internal Leader BPM by 0.1</source>
-        <translation>Verhoog de interne Leader BPM met 0.1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="296"/>
         <source>Internal Leader BPM -0.1</source>
-        <translation>Interne Leider BPM -0.1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="297"/>
         <source>Decrease internal Leader BPM by 0.1</source>
-        <translation>Verlaag de interne Leader BPM met 0.1</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="301"/>
         <source>Sync Leader</source>
-        <translation>Synchronisatieleider</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="302"/>
         <source>Sync mode 3-state toggle / indicator (Off, Soft Leader, Explicit Leader)</source>
-        <translation>Synchronisatiemodus Schakel-/indicator met 3 standen (Uit, Soft Leader, Explicit Leader)</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="307"/>
@@ -2632,17 +2653,20 @@ traceren - Boven + Profileringsberichten</translation>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="607"/>
         <source>Go to Loop In button</source>
-        <translation>Ga naar de knop Loop In</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>Go To Loop Out</source>
-        <translation>Ga naar Loop-Out</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>Go to Loop Out button</source>
-        <translation>Ga naar de knop Loop Out</translation>
+        <translation>FUCK YOU MOTHERFUCKERS
+fuck you</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="613"/>
