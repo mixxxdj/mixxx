@@ -194,7 +194,7 @@ DlgPrefInterface::DlgPrefInterface(
         mulitSamplingComboBox->addItem(tr("8x MSAA"), 8);
         mulitSamplingComboBox->addItem(tr("16x MSAA"), 16);
 
-        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 0);
+        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 4);
         int mulitSamplingIndex = mulitSamplingComboBox->findData(m_multiSampling);
         if (mulitSamplingIndex != -1) {
             mulitSamplingComboBox->setCurrentIndex(mulitSamplingIndex);
