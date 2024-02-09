@@ -2,10 +2,9 @@
 
 #include <QPainter>
 #include <QPushButton>
-#include <QTableView>
+#include <QStyleOptionButton>
 
 #include "control/controlproxy.h"
-#include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_previewbuttondelegate.cpp"
@@ -26,6 +25,23 @@ inline TrackModel* trackModel(QTableView* pTableView) {
 
 } // namespace
 
+LibraryPreviewButton::LibraryPreviewButton(QWidget* parent)
+        : QPushButton(parent) {
+    setObjectName("LibraryPreviewButton");
+}
+
+void LibraryPreviewButton::paint(QPainter* painter) {
+    // This matches the implementation of QPushButton::paintEvent, except it
+    // does not create a new QStylePainter, and it is simpler and more
+    // direct than QWidget::render(QPainter*, ...).
+    QStyleOptionButton option;
+    initStyleOption(&option);
+    auto* pStyle = style();
+    if (pStyle) {
+        pStyle->drawControl(QStyle::CE_PushButton, &option, painter, this);
+    }
+}
+
 PreviewButtonDelegate::PreviewButtonDelegate(
         WLibraryTableView* parent,
         int column)
@@ -42,7 +58,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(
             this,
             &PreviewButtonDelegate::previewDeckPlayChanged);
 
-    // This assumes that the parent is wtracktableview
+    // This assumes that the parent is/inherits WLibraryTableView
     connect(this,
             &PreviewButtonDelegate::loadTrackToPlayer,
             parent,
@@ -55,7 +71,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(
     // We need to hide the button that it is not painted by the QObject tree
     m_pButton->hide();
 
-    connect(parentTableView(),
+    connect(m_pTableView,
             &QTableView::entered,
             this,
             &PreviewButtonDelegate::cellEntered);
@@ -169,9 +185,6 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(parentTableView()) {
-        return;
-    }
     // Ignore signal if the edited cell index didn't change.
     // Receiving this signal for the same cell again could happen
     // if no other cell has been entered between those events.
@@ -181,7 +194,7 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     }
     // Close the editor when leaving the currently edited cell
     if (m_currentEditedCellIndex.isValid()) {
-        parentTableView()->closePersistentEditor(m_currentEditedCellIndex);
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QModelIndex();
     }
     // Only open a new editor for preview column cells, but not any
@@ -189,7 +202,7 @@ void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     if (index.column() != m_column) {
         return;
     }
-    parentTableView()->openPersistentEditor(index);
+    m_pTableView->openPersistentEditor(index);
     m_currentEditedCellIndex = index;
 }
 
@@ -197,7 +210,7 @@ void PreviewButtonDelegate::buttonClicked() {
     VERIFY_OR_DEBUG_ASSERT(m_currentEditedCellIndex.isValid()) {
         return;
     }
-    TrackModel* const pTrackModel = trackModel(parentTableView());
+    TrackModel* const pTrackModel = trackModel(m_pTableView);
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
@@ -217,11 +230,11 @@ void PreviewButtonDelegate::buttonClicked() {
 }
 
 void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
-    parentTableView()->update();
+    m_pTableView->update();
     if (!m_currentEditedCellIndex.isValid()) {
         return;
     }
-    TrackModel* const pTrackModel = trackModel(parentTableView());
+    TrackModel* const pTrackModel = trackModel(m_pTableView);
     VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }

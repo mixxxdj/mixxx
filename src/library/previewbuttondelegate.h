@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QPushButton>
-#include <QStyleOptionButton>
-#include <QTableView>
 
 #include "library/tableitemdelegate.h"
 #include "track/track_decl.h"
@@ -16,22 +14,9 @@ class WLibraryTableView;
 class LibraryPreviewButton : public QPushButton {
     Q_OBJECT
   public:
-    explicit LibraryPreviewButton(QWidget* parent)
-            : QPushButton(parent) {
-        setObjectName("LibraryPreviewButton");
-    }
+    explicit LibraryPreviewButton(QWidget* parent);
 
-    void paint(QPainter* painter) {
-        // This matches the implementation of QPushButton::paintEvent, except it
-        // does not create a new QStylePainter, and it is simpler and more
-        // direct than QWidget::render(QPainter*, ...).
-        QStyleOptionButton option;
-        initStyleOption(&option);
-        auto pStyle = style();
-        if (pStyle) {
-            pStyle->drawControl(QStyle::CE_PushButton, &option, painter, this);
-        }
-    }
+    void paint(QPainter* painter);
 };
 
 class PreviewButtonDelegate : public TableItemDelegate {
@@ -74,9 +59,6 @@ class PreviewButtonDelegate : public TableItemDelegate {
     void previewDeckPlayChanged(double v);
 
   private:
-    QTableView* parentTableView() const {
-        return qobject_cast<QTableView*>(parent());
-    }
     bool isPreviewDeckPlaying() const;
     bool isTrackLoadedInPreviewDeck(
             const QModelIndex& index) const;

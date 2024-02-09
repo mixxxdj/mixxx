@@ -55,7 +55,7 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
-    m_pControlPickerMenu = new ControlPickerMenu(this);
+    m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
@@ -167,6 +167,10 @@ DlgPrefController::DlgPrefController(
 }
 
 DlgPrefController::~DlgPrefController() {
+}
+
+void DlgPrefController::slotRecreateControlPickerMenu() {
+    m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 }
 
 void DlgPrefController::showLearningWizard() {

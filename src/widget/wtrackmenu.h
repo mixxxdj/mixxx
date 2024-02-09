@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "analyzer/analyzertrack.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
@@ -15,7 +16,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 
-class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 //class DlgDeleteFilesConfirmation;
@@ -219,10 +219,6 @@ class WTrackMenu : public QMenu {
     /// deck made the request.
     QString m_deckGroup;
 
-    const ControlProxy* m_pNumSamplers{};
-    const ControlProxy* m_pNumDecks{};
-    const ControlProxy* m_pNumPreviewDecks{};
-
     // Submenus
     QMenu* m_pLoadToMenu{};
     QMenu* m_pDeckMenu{};
@@ -315,6 +311,10 @@ class WTrackMenu : public QMenu {
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
+
+    PollingControlProxy m_pNumSamplers;
+    PollingControlProxy m_pNumDecks;
+    PollingControlProxy m_pNumPreviewDecks;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;

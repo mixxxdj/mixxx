@@ -9,7 +9,6 @@
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
-          m_pTableView(pTableView),
           m_isOneCellInEditMode(false) {
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
 }

@@ -39,7 +39,6 @@
             </State>
             <Connection>
               <ConfigKey>[Skin],show_settings</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
         </Children>

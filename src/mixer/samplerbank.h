@@ -19,7 +19,8 @@ class SamplerBank : public QObject {
             PlayerManager* pPlayerManager);
 
     bool saveSamplerBankToPath(const QString& samplerBankPath);
-    bool loadSamplerBankFromPath(const QString& samplerBankPath);
+    bool loadSamplerBankFromPath(const QString& samplerBankPath,
+            bool dontCreateEmptySamplers = false);
 
   private slots:
     void slotSaveSamplerBank(double v);

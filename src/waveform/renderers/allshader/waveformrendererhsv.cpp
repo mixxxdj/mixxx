@@ -71,7 +71,8 @@ void WaveformRendererHSV::paintGL() {
     const float heightFactor = allGain * halfBreadth / m_maxValue;
 
     // Effective visual frame for x
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 

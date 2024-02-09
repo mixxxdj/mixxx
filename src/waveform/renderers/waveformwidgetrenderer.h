@@ -71,11 +71,6 @@ class WaveformWidgetRenderer {
         return m_audioSamplePerPixel;
     }
 
-    // those function replace at its best sample position to an admissible
-    // sample position according to the current visual resampling
-    // this make mark and signal deterministic
-    void regulateVisualSample(int& sampleIndex) const;
-
     // this "regulate" against visual sampling to make the position in widget
     // stable and deterministic
     // Transform sample index to pixel in track.
@@ -87,12 +82,8 @@ class WaveformWidgetRenderer {
             // 1 pixel off.
             return m_playMarkerPosition * getLength();
         }
-        const double relativePosition = samplePosition / m_trackSamples;
-        return transformPositionInRendererWorld(relativePosition);
-    }
-    // Transform position (percentage of track) to pixel in track.
-    inline double transformPositionInRendererWorld(double position) const {
-        return m_trackPixelCount * (position - m_firstDisplayedPosition);
+        return (samplePosition - m_firstDisplayedPosition * m_trackSamples) /
+                2 / m_audioSamplePerPixel;
     }
 
     int getPlayPosVSample() const {

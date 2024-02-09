@@ -12,7 +12,6 @@
 #include "analyzer/analyzersilence.h"
 #include "analyzer/analyzertrack.h"
 #include "control/controlobject.h"
-#include "control/controlproxy.h"
 #include "library/coverartutils.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -49,6 +48,43 @@
 
 namespace {
 const QString kAppGroup = QStringLiteral("[App]");
+
+const QString samplerTrString(int i) {
+    return QObject::tr("Sampler %1").arg(i);
+}
+
+const char* kOrigTrTextProperty = "origTrText";
+const char* kBpmScaleProperty = "bpmScale";
+
+void appendBpmPreviewtoBpmAction(QAction* pAction, const double bpm) {
+    QString text = pAction->property(kOrigTrTextProperty).toString();
+    bool ok = false;
+    const double scale = pAction->property(kBpmScaleProperty).toDouble(&ok);
+    if (ok && !text.isEmpty()) {
+        QString scaledBpm = QString::number(bpm * scale, 'f', 2);
+        // This is claimed to be the most performant way to get
+        // * 2 decimals for floating point values and
+        // * no trailing zero or dot for even numbers
+        // https://stackoverflow.com/a/65789182
+        while (scaledBpm.back() == '0') {
+            scaledBpm.chop(1);
+        }
+        if (scaledBpm.back() == '.') {
+            scaledBpm.chop(1);
+        }
+        text.append(QStringLiteral(" | %1 BPM").arg(scaledBpm));
+        pAction->setText(text);
+    }
+}
+
+void storeActionTextAndScaleInProperties(QAction* pAction, const double scale) {
+    VERIFY_OR_DEBUG_ASSERT(pAction && scale != 0.0) {
+        return;
+    }
+    pAction->setProperty(kOrigTrTextProperty, QVariant::fromValue(pAction->text()));
+    pAction->setProperty(kBpmScaleProperty, QVariant(scale));
+}
+
 } // namespace
 
 WTrackMenu::WTrackMenu(
@@ -61,14 +97,13 @@ WTrackMenu::WTrackMenu(
           m_pTrackModel(trackModel),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
+          m_pNumSamplers(kAppGroup, QStringLiteral("num_samplers")),
+          m_pNumDecks(kAppGroup, QStringLiteral("num_decks")),
+          m_pNumPreviewDecks(kAppGroup, QStringLiteral("num_preview_decks")),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
           m_eTrackModelFeatures(Feature::TrackModelFeatures) {
-    m_pNumSamplers = new ControlProxy(kAppGroup, QStringLiteral("num_samplers"), this);
-    m_pNumDecks = new ControlProxy(kAppGroup, QStringLiteral("num_decks"), this);
-    m_pNumPreviewDecks = new ControlProxy(kAppGroup, QStringLiteral("num_preview_decks"), this);
-
     // Warn if any of the chosen features depend on a TrackModel
     VERIFY_OR_DEBUG_ASSERT(trackModel || (m_eTrackModelFeatures & flags) == 0) {
         // Remove unsupported features
@@ -412,11 +447,17 @@ void WTrackMenu::createActions() {
 
         //BPM edit actions
         m_pBpmDoubleAction = new QAction(tr("Double BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmDoubleAction, 2.0);
         m_pBpmHalveAction = new QAction(tr("Halve BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmHalveAction, 0.5);
         m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmTwoThirdsAction, 2.0 / 3.0);
         m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmThreeFourthsAction, 3.0 / 4.0);
         m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmFourThirdsAction, 4.0 / 3.0);
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
+        storeActionTextAndScaleInProperties(m_pBpmThreeHalvesAction, 3.0 / 2.0);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::BpmScale::Double);
@@ -515,7 +556,7 @@ void WTrackMenu::setupActions() {
 
         m_pLoadToMenu->addMenu(m_pSamplerMenu);
 
-        if (m_pNumPreviewDecks->get() > 0.0) {
+        if (m_pNumPreviewDecks.get() > 0.0) {
             m_pLoadToMenu->addAction(m_pAddToPreviewDeck);
         }
 
@@ -546,12 +587,12 @@ void WTrackMenu::setupActions() {
     addSeparator();
 
     if (featureIsEnabled(Feature::BPM)) {
-        m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
+        m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -791,7 +832,7 @@ void WTrackMenu::updateMenus() {
     const bool singleTrackSelected = getTrackCount() == 1;
 
     if (featureIsEnabled(Feature::LoadTo)) {
-        int iNumDecks = static_cast<int>(m_pNumDecks->get());
+        int iNumDecks = static_cast<int>(m_pNumDecks.get());
         m_pDeckMenu->clear();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
@@ -826,19 +867,35 @@ void WTrackMenu::updateMenus() {
             }
         }
 
-        int iNumSamplers = static_cast<int>(m_pNumSamplers->get());
+        int iNumSamplers = static_cast<int>(m_pNumSamplers.get());
+        const int maxSamplersPerMenu = 16;
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
+            QMenu* pMenu = m_pSamplerMenu;
+            int samplersInMenu = 0;
             for (int i = 1; i <= iNumSamplers; ++i) {
+                if (samplersInMenu == maxSamplersPerMenu) {
+                    samplersInMenu = 0;
+                    int limit = iNumSamplers > i + 15 ? i + 15 : iNumSamplers;
+                    const QString label = samplerTrString(i) + QStringLiteral("- %1").arg(limit);
+                    pMenu = new QMenu(label, m_pSamplerMenu);
+                    m_pSamplerMenu->addMenu(pMenu);
+                }
+                samplersInMenu++;
                 // PlayerManager::groupForSampler is 0-indexed.
                 QString samplerGroup = PlayerManager::groupForSampler(i - 1);
                 bool samplerPlaying = ControlObject::get(
                                               ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && singleTrackSelected;
-                QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
+                QAction* pAction = new QAction(samplerTrString(i), pMenu);
                 pAction->setEnabled(samplerEnabled);
-                m_pSamplerMenu->addAction(pAction);
-                connect(pAction, &QAction::triggered, this, [this, samplerGroup] { loadSelectionToGroup(samplerGroup); });
+                pMenu->addAction(pAction);
+                connect(pAction,
+                        &QAction::triggered,
+                        this,
+                        [this, samplerGroup] {
+                            loadSelectionToGroup(samplerGroup);
+                        });
             }
         }
     }
@@ -905,6 +962,23 @@ void WTrackMenu::updateMenus() {
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
+
+            // Append scaled BPM preview for single selection
+            if (singleTrackSelected) {
+                TrackPointer pTrack;
+                if (m_pTrackModel) {
+                    pTrack = getFirstTrackPointer();
+                } else if (m_pTrack) {
+                    pTrack = m_pTrack;
+                }
+                const double bpm = pTrack->getBpm();
+                appendBpmPreviewtoBpmAction(m_pBpmDoubleAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmHalveAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmTwoThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeFourthsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmFourThirdsAction, bpm);
+                appendBpmPreviewtoBpmAction(m_pBpmThreeHalvesAction, bpm);
+            }
         }
     }
 

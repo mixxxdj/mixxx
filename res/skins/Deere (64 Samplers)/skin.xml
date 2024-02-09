@@ -244,6 +244,17 @@
 
       </Children>
     </WidgetGroup>
-    <Template src="skins:Deere/skin_settings.xml"/>
+
+    <WidgetGroup>
+      <Layout>vertical</Layout>
+      <SizePolicy>min,me</SizePolicy>
+      <Connection>
+        <ConfigKey>[Skin],show_settings</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Template src="skins:Deere/skin_settings.xml"/>
+      </Children>
+    </WidgetGroup>
   </Children>
 </skin>

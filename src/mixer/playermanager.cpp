@@ -458,7 +458,12 @@ void PlayerManager::addDeckInner() {
 }
 
 void PlayerManager::loadSamplers() {
-    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
+    // This is only called by CoreServices during startup to restore
+    // samplers from the previous session.
+    // We don't want it to create more players than necessary.
+    bool dontCreateEmptySamplers = true;
+    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig),
+            dontCreateEmptySamplers);
 }
 
 void PlayerManager::addSampler() {

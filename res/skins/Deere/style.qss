@@ -167,6 +167,10 @@
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
 
+#AlignCenterCenter {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
@@ -1218,11 +1222,26 @@ WBeatSpinBox,
 }
 
 #EffectUnitToggle[value="0"] {
-  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_more_48px.svg) no-repeat top right;
 }
 
 #EffectUnitToggle[value="1"] {
-  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_less_48px.svg) no-repeat top right;
+}
+
+WEffectChainPresetButton {
+  padding: 0px;
+  border:  none;
+  border-radius: 2px;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-position: center center;
+  subcontrol-origin: margin;
+  padding: 0px;
+  border: 0px;
+  outline: none;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
 }
 
 #EffectUnitFiller {
@@ -1261,7 +1280,7 @@ WBeatSpinBox,
   border: 1px solid #222222;
   border-width: 0px 0px 0px 1px;
   qproperty-layoutSpacing: 2;
-  padding: 0px 0px 3px 0px;
+  padding: 0px 0px 1px 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #333; /*
   background-color: #664971;  */
@@ -1336,7 +1355,7 @@ WBeatSpinBox,
 }
 
 #Crossfader[highlight="1"] {
-  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
+  border-image: url(skin:/../Deere/slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
 #MainControls {
@@ -1608,7 +1627,8 @@ WWidgetGroup {
  ** Buttons  *******************************************************************
  *******************************************************************************/
 
-WPushButton {
+WPushButton,
+WEffectChainPresetButton {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1617,7 +1637,8 @@ WPushButton {
 }
 
 WPushButton:hover,
-#PlayToggle:hover {
+#PlayToggle:hover,
+WEffectChainPresetButton:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;

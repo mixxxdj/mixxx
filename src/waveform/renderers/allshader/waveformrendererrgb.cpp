@@ -84,7 +84,8 @@ void WaveformRendererRGB::paintGL() {
     const float high_b = static_cast<float>(m_rgbHighColor_b);
 
     // Effective visual frame for x
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
