@@ -11,6 +11,10 @@ QVariantList paletteToQColorList(const ColorPalette& palette) {
     }
     return colors;
 }
+
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
+
 } // namespace
 
 namespace mixxx {
@@ -29,6 +33,10 @@ QVariantList QmlConfigProxy::getHotcueColorPalette() {
 QVariantList QmlConfigProxy::getTrackColorPalette() {
     ColorPaletteSettings colorPaletteSettings(m_pConfig);
     return paletteToQColorList(colorPaletteSettings.getTrackColorPalette());
+}
+
+int QmlConfigProxy::getMultiSamplingLevel() {
+    return m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 0);
 }
 
 // static
