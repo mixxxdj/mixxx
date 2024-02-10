@@ -298,7 +298,7 @@
             this.colorKey = "hotcue_" + options.number + "_color";
         }
         this.number = options.number;
-        this.outKey = "hotcue_" + this.number + "_enabled";
+        this.outKey = "hotcue_" + this.number + "_status";
         Button.call(this, options);
     };
     HotcueButton.prototype = new Button({
