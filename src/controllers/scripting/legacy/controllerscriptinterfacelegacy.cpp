@@ -459,7 +459,11 @@ void ControllerScriptInterfaceLegacy::log(const QString& message) {
     qCDebug(m_logger) << message;
 }
 int ControllerScriptInterfaceLegacy::beginTimer(
-        int intervalMillis, QJSValue timerCallback, bool oneShot) {
+        int intervalMillis, QJSValue timerCallback, bool oneShot, const QJSValue& previousTimerId) {
+    if (previousTimerId.isNumber() && m_timers.contains(previousTimerId.toInt())) {
+        this->stopTimer(previousTimerId.toInt());
+    }
+
     if (timerCallback.isString()) {
         m_pScriptEngineLegacy->logOrThrowError(
                 QStringLiteral("passed a string to `engine.beginTimer`, please "

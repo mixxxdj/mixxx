@@ -167,10 +167,14 @@ declare namespace engine {
      *                   function() { print("Executed Timer") }
      * @param oneShot If true the function is only once,
      *                if false the function is executed repeatedly  [default = false]
+     * @param previousTimerId The ID a previous timer to cancel prior to start this one.
+     *                        If this is parameter is defined and a timer exists with
+     *                        this ID, it will be canceled before scheduling the new
+     *                        script code. [default = undefined]
      * @returns timerId which is needed to stop a timer.
      *          In case of an error, 0 is returned.
      */
-    function beginTimer(interval: number, scriptCode: () => any, oneShot?: boolean): TimerID;
+    function beginTimer(interval: number, scriptCode: () => any, oneShot?: boolean, previousTimerId?: number): TimerID;
 
     /**
      * Stops the specified timer
