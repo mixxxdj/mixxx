@@ -2267,8 +2267,6 @@ WTrackMenu QMenu QCheckBox::indicator {
   outline: none;
 }
 
-QLineEdit QMenu::icon:selected,
-QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
 WTrackTableViewHeader QMenu::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
@@ -2278,6 +2276,7 @@ WTrackMenu QMenu QCheckBox::indicator:selected {
 #MainMenu::item:disabled,
 #MainMenu QMenu::item:disabled,
 WLibrarySidebar QMenu::item:disabled,
+WLibraryTextBrowser::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
