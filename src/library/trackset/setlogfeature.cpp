@@ -1,6 +1,5 @@
 #include "library/trackset/setlogfeature.h"
 
-#include <QDateTime>
 #include <QMenu>
 
 #include "library/library.h"
@@ -229,6 +228,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int nameColumn = record.indexOf("name");
     int idColumn = record.indexOf("id");
     int createdColumn = record.indexOf("date_created");
+    int currentYear = QDate::currentDate().year();
 
     // Nice to have: restore previous expanded/collapsed state of YEAR items
     clearChildModel();
@@ -236,6 +236,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     std::vector<std::unique_ptr<TreeItem>> itemList;
     // Generous estimate (number of years the db is used ;))
     itemList.reserve(kNumToplevelHistoryEntries + 15);
+
+    bool skipTopLevel = false;
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id =
@@ -246,18 +248,27 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 playlistTableModel
                         .data(playlistTableModel.index(row, nameColumn))
                         .toString();
-        QDateTime dateCreated =
+        int yearCreated =
                 playlistTableModel
                         .data(playlistTableModel.index(row, createdColumn))
-                        .toDateTime();
+                        .toDateTime()
+                        .date()
+                        .year();
 
-        // Create the TreeItem whose parent is the invisible root item
-        // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
+        // Show [kNumToplevelHistoryEntries] recent playlists at the top level
         // before grouping them by year.
-        if (row >= kNumToplevelHistoryEntries) {
-            // group by year
-            int yearCreated = dateCreated.date().year();
+        // Only add playlists of current year to the top level
+        if (!skipTopLevel && yearCreated < currentYear) {
+            skipTopLevel = true;
+        }
+        if (!skipTopLevel && (row < kNumToplevelHistoryEntries)) {
+            auto pItem = std::make_unique<TreeItem>(name, id);
+            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
+            decorateChild(pItem.get(), id);
 
+            itemList.push_back(std::move(pItem));
+        } else {
+            // group by year
             auto i = groups.find(yearCreated);
             TreeItem* pGroupItem;
             if (i != groups.end() && i.key() == yearCreated) {
@@ -276,13 +287,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             TreeItem* pItem = pGroupItem->appendChild(name, id);
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem, id);
-        } else {
-            // add most recent top-level playlist
-            auto pItem = std::make_unique<TreeItem>(name, id);
-            pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
-            decorateChild(pItem.get(), id);
-
-            itemList.push_back(std::move(pItem));
         }
     }
 
