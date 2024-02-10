@@ -242,6 +242,9 @@ MC7000.init = function() {
         }
     }
     // Sampler Mode LEDs and Velocity Sampler Mode LEDs
+    if (engine.getValue("[App]", "num_samplers") < MC7000.SamplerQty) {
+        engine.setValue("[App]", "num_samplers", MC7000.SamplerQty);
+    }
     for (let samplerIdx = 1; samplerIdx <= MC7000.SamplerQty; samplerIdx++) {
         engine.makeConnection("[Sampler"+samplerIdx+"]", "track_loaded", MC7000.SamplerLED);
         engine.makeConnection("[Sampler"+samplerIdx+"]", "play", MC7000.SamplerLED);
