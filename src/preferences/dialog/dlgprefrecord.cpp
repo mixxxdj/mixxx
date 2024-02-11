@@ -240,30 +240,22 @@ void DlgPrefRecord::setupEncoderUI() {
             EncoderFactory::getFactory().getEncoderRecordingSettings(
                     m_selFormat, m_pConfig);
     if (settings->usesQualitySlider()) {
-        LabelQuality->setVisible(true);
-        SliderQuality->setVisible(true);
-        TextQuality->setVisible(true);
+        qualityGroup->setVisible(true);
         SliderQuality->setMinimum(0);
         SliderQuality->setMaximum(settings->getQualityValues().size()-1);
         SliderQuality->setValue(settings->getQualityIndex());
         updateTextQuality();
     } else {
-        LabelQuality->setVisible(false);
-        SliderQuality->setVisible(false);
-        TextQuality->setVisible(false);
+        qualityGroup->setVisible(false);
     }
     if (settings->usesCompressionSlider()) {
-        LabelCompression->setVisible(true);
-        SliderCompression->setVisible(true);
-        TextCompression->setVisible(true);
+        compressionGroup->setVisible(true);
         SliderCompression->setMinimum(0);
         SliderCompression->setMaximum(settings->getCompressionValues().size()-1);
         SliderCompression->setValue(settings->getCompression());
         updateTextCompression();
     } else {
-        LabelCompression->setVisible(false);
-        SliderCompression->setVisible(false);
-        TextCompression->setVisible(false);
+        compressionGroup->setVisible(false);
     }
 
     for (QAbstractButton* widget : std::as_const(m_optionWidgets)) {

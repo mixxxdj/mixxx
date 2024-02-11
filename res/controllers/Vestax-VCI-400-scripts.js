@@ -37,23 +37,26 @@ VestaxVCI400.ModeEnum = {
  * Called when the MIDI device is opened for set up
  */
 VestaxVCI400.init = function (id) {
-   engine.setValue("[App]", "num_decks", 4);
-   //Initialize controls and their default values here
-   VestaxVCI400.Decks.A.init();
-   VestaxVCI400.Decks.B.init();
-   VestaxVCI400.Decks.C.init();
-   VestaxVCI400.Decks.D.init();
+    engine.setValue("[App]", "num_decks", 4);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+    //Initialize controls and their default values here
+    VestaxVCI400.Decks.A.init();
+    VestaxVCI400.Decks.B.init();
+    VestaxVCI400.Decks.C.init();
+    VestaxVCI400.Decks.D.init();
 
-   //Connect vu meters
-   // No need if using the sound card
-   engine.connectControl("[Master]","vu_meter_left", "VestaxVCI400.onMasterVuMeterLChanged");
-   engine.connectControl("[Master]","vu_meter_right", "VestaxVCI400.onMasterVuMeterRChanged");
+    //Connect vu meters
+    // No need if using the sound card
+    engine.connectControl("[Main]", "vu_meter_left", "VestaxVCI400.onMasterVuMeterLChanged");
+    engine.connectControl("[Main]", "vu_meter_right", "VestaxVCI400.onMasterVuMeterRChanged");
 
-   //Reset VU meters
-   if (VestaxVCI400.enableMasterVu) {
-       midi.sendShortMsg("0xbe", 43, 0);
-       midi.sendShortMsg("0xbe", 44, 0);
-   }
+    //Reset VU meters
+    if (VestaxVCI400.enableMasterVu) {
+        midi.sendShortMsg("0xbe", 43, 0);
+        midi.sendShortMsg("0xbe", 44, 0);
+    }
 };
 
 /*

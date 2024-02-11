@@ -348,7 +348,7 @@ KANE_QuNeo.init = function (id) { // called when the device is opened & set up
   engine.connectControl("[Channel2]","visual_playposition","KANE_QuNeo.time2Keeper");
 
   // led controls for the master / flanger channels
-  engine.connectControl("[Master]","vu_meter","KANE_QuNeo.masterVuMeter");
+    engine.connectControl("[Main]", "vu_meter", "KANE_QuNeo.masterVuMeter");
   //engine.softTakeover("[Master]","volume",true);
   engine.connectControl("[Master]","headVolume","KANE_QuNeo.headVol");
   engine.connectControl("[Flanger]","lfoPeriod","KANE_QuNeo.flangerPeriod");

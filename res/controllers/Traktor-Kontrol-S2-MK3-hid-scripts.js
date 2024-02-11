@@ -42,6 +42,7 @@ var TraktorS2MK3 = new function() {
     this.vuMeterThresholds = {"vu-18": (1 / 6), "vu-12": (2 / 6), "vu-6": (3 / 6), "vu0": (4 / 6), "vu6": (5 / 6)};
 
     // Sampler callbacks
+    this.samplerCount = 16;
     this.samplerCallbacks = [];
     this.samplerHotcuesRelation = {
         "[Channel1]": {
@@ -53,6 +54,9 @@ var TraktorS2MK3 = new function() {
 };
 
 TraktorS2MK3.init = function(_id) {
+    if (engine.getValue("[App]", "num_samplers") < TraktorS2MK3.samplerCount) {
+        engine.setValue("[App]", "num_samplers", TraktorS2MK3.samplerCount);
+    }
     TraktorS2MK3.registerInputPackets();
     TraktorS2MK3.registerOutputPackets();
     HIDDebug("TraktorS2MK3: Init done!");
@@ -219,8 +223,7 @@ TraktorS2MK3.registerInputPackets = function() {
     //engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
-
-    for (let i = 1; i <= 16; ++i) {
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         engine.softTakeover("[Sampler" + i + "]", "pregain", true);
     }
 
@@ -605,7 +608,7 @@ TraktorS2MK3.parameterHandler = function(field) {
 TraktorS2MK3.samplerPregainHandler = function(field) {
     // Map sampler gain knob of all sampler together.
     // Dirty hack, but the best we can do for now.
-    for (let i = 1; i <= 16; ++i) {
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         engine.setParameter("[Sampler" + i + "]", field.name, field.value / 4095);
     }
 };
@@ -904,7 +907,7 @@ TraktorS2MK3.registerOutputPackets = function() {
     this.clipRightConnection = engine.makeConnection("[Channel2]", "peak_indicator", this.peakOutputHandler.bind(this));
 
     // Sampler callbacks
-    for (let i = 1; i <= 16; ++i) {
+    for (let i = 1; i <= TraktorS2MK3.samplerCount; ++i) {
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", this.samplesOutputHandler.bind(this)));
         this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play", this.samplesOutputHandler.bind(this)));
     }

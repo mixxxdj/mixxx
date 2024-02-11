@@ -23,8 +23,8 @@ MIXER1.shutdown = function shutdown() {
 MIXER1.volumeLEDs = function volumeLEDs(value, group, control){
 
     value=(value*127);
-    if (group=="[Master]" && control=="vu_meter_left"){ch=0xB5;midino=0x1f;midi.sendShortMsg(ch, midino, value);ch=0xB7;midino=0x1f;midi.sendShortMsg(ch, midino, value);}
-    if (group=="[Master]" && control=="vu_meter_right"){ch=0xB5;midino=0x20;midi.sendShortMsg(ch, midino, value);ch=0xB7;midino=0x20;midi.sendShortMsg(ch, midino, value);}
+    if (group=="[Main]" && control=="vu_meter_left") { ch=0xB5; midino=0x1f; midi.sendShortMsg(ch, midino, value); ch=0xB7; midino=0x1f; midi.sendShortMsg(ch, midino, value); }
+    if (group=="[Main]" && control=="vu_meter_right") { ch=0xB5; midino=0x20; midi.sendShortMsg(ch, midino, value); ch=0xB7; midino=0x20; midi.sendShortMsg(ch, midino, value); }
     if (group=="[Channel1]" && control=="vu_meter"){ch=0xB5;midino=0x22;midi.sendShortMsg(ch, midino, value);}
     if (group=="[Channel2]" && control=="vu_meter"){ch=0xB6;midino=0x23;midi.sendShortMsg(ch, midino, value);}
     if (group=="[Channel3]" && control=="vu_meter"){ch=0xB7;midino=0x22;midi.sendShortMsg(ch, midino, value);}

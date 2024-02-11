@@ -1494,6 +1494,10 @@ MiniMixxx.Controller = class {
 };
 
 MiniMixxx.init = function(_id) {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     this.kontrol = new MiniMixxx.Controller();
 
     console.log("MiniMixxx: Init done!");

@@ -84,18 +84,22 @@ TerminalMix.init = function (id,debug) {
 
     // Enable four decks in v1.11.x
     engine.setValue("[App]", "num_decks", 4);
+    const samplerCount = 8;
+    if (engine.getValue("[App]", "num_samplers") < samplerCount) {
+        engine.setValue("[App]", "num_samplers", samplerCount);
+    }
 
     // Set soft-takeover for all Sampler volumes
-    for (var i=engine.getValue("[App]", "num_samplers"); i>=1; i--) {
+    for (let i=samplerCount; i>=1; i--) {
         engine.softTakeover("[Sampler"+i+"]","pregain",true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (var i=engine.getValue("[App]", "num_decks"); i>=1; i--) {
-        engine.softTakeover("[Channel"+i+"]","volume",true);
-        engine.softTakeover("[Channel"+i+"]","filterHigh",true);
-        engine.softTakeover("[Channel"+i+"]","filterMid",true);
-        engine.softTakeover("[Channel"+i+"]","filterLow",true);
-        engine.softTakeover("[Channel"+i+"]","rate",true);
+    for (let j=engine.getValue("[App]", "num_decks"); j>=1; j--) {
+        engine.softTakeover("[Channel"+j+"]", "volume", true);
+        engine.softTakeover("[Channel"+j+"]", "filterHigh", true);
+        engine.softTakeover("[Channel"+j+"]", "filterMid", true);
+        engine.softTakeover("[Channel"+j+"]", "filterLow", true);
+        engine.softTakeover("[Channel"+j+"]", "rate", true);
     }
 
     engine.softTakeover("[Master]","crossfader",true);

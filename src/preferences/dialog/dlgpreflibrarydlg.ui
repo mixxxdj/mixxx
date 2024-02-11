@@ -469,12 +469,18 @@
         <property name="topMargin">
          <number>10</number>
         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="7" column="0">
        <widget class="QLabel" name="label_11">
         <property name="text">
          <string>You will need to restart Mixxx for these settings to take effect.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -493,6 +499,9 @@
         <property name="text">
          <string>Fetch cover art from coverartarchive.com by using Import Metadata From Musicbrainz.</string>
         </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="1" column="0">
@@ -500,6 +509,9 @@
         <property name="text">
          <string>Note: ">1200 px" can fetch up to very large cover arts.</string>
         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
        </widget>
       </item>
       <item row="2" column="0">

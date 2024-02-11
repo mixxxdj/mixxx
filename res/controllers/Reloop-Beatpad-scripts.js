@@ -1634,6 +1634,10 @@ ReloopBeatpad.init = function(id, debug) {
     print("============================");
     TurnLEDsOff();
 
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
+
     ReloopBeatpad.initButtonsObjects();
     ReloopBeatpad.initobjects();
 
