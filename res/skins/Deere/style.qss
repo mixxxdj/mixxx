@@ -1986,7 +1986,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2041,8 +2041,9 @@ WSearchLineEdit QAbstractScrollArea,
   #MainMenu QMenu::indicator:unchecked:selected,
   WLibrarySidebar QMenu::item:selected,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
-  WTrackTableViewHeader QMenu::item:selected,
-  WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu QCheckBox:selected,
+  WTrackTableViewHeader QMenu QCheckBox:focus,
+  WTrackTableViewHeader QMenu QCheckBox:hover,
   WLibraryTextBrowser QMenu::item:selected,
   WTrackMenu::item:selected,
   WTrackMenu QMenu::item:selected,
@@ -2251,7 +2252,7 @@ QPlainTextEdit QMenu::separator {
 }
 
 WLibrarySidebar QMenu::indicator,
-WTrackTableViewHeader QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #555;
   border-radius: 1px;
@@ -2263,7 +2264,7 @@ WTrackMenu QMenu QCheckBox::indicator {
 QLineEdit QMenu::icon:selected,
 QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
-WTrackTableViewHeader QMenu::indicator:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
   border: 1px solid #999;
 }
@@ -2283,6 +2284,7 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
   background-color: #333;
 }
 WLibrarySidebar QMenu::indicator:checked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
 }
