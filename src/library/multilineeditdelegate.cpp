@@ -12,7 +12,8 @@ MultiLineEditor::MultiLineEditor(QWidget* pParent,
         const QModelIndex& index)
         : QPlainTextEdit(pParent),
           m_pTableView(pTableView),
-          m_index(index) {
+          m_index(index),
+          m_fontHeight(m_pTableView->fontMetrics().height()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     // Disable line wrap for a predictable view (like QLineEdit). Horizontal
     // scrollbars will show up automatically.
@@ -84,6 +85,9 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     // Compared to QTextEdit, size.height() is the paragraph/line count (Qt speak: blocks)
     int lines = static_cast<int>(size.height());
     int docW = static_cast<int>(std::ceil(size.width()));
+    // Note: frameWidth() doesn't return the actual frame width set by qss.
+    // Assume 1px like in official skins
+    int frameW = 1;
     const QRect indexRect = m_pTableView->visualRect(m_index);
     const QRect tableRect = m_pTableView->viewport()->rect();
 
@@ -100,14 +104,21 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
 
     // Height
     // Don't let the editor shrink smaller than the height of the table index.
-    int optH = lines * QFontMetrics(document()->defaultFont()).height() + frameWidth() * 2;
+    int optH = lines * m_fontHeight + frameW * 2;
     int newH = std::max(optH, indexRect.height());
     // If it's just one line center the text vertically like in QLineEdit.
-    int vMargin = (indexRect.height() - optH) / 2;
-    if (lines == 1 && vMargin > 0) {
-        setContentsMargins(0, vMargin, 0, vMargin); // left/right > 0 are not applied
-    } else {                                        // Reset if lines were added
-        setContentsMargins(0, 0, 0, 0);
+    int vOffset = (indexRect.height() - optH) / 2;
+    if (lines == 1 && vOffset > 0) {
+        setStyleSheet(QStringLiteral(
+                "QPlainTextEdit {"
+                "padding-top: %1px;"
+                "}")
+                              .arg(vOffset));
+    } else { // Reset if lines were added
+        setStyleSheet(QStringLiteral(
+                "QPlainTextEdit {"
+                "padding-top: 0px;"
+                "}"));
     }
     // Avoid clipping if the editor overflows the table view at the bottom
     int newY = indexRect.y();
@@ -137,7 +148,7 @@ void MultiLineEditor::adjustSize(const QSizeF size) {
     // TODO For some reason the width isn't enough for all content, h-scrollbars show up
     // BUT after v- or h-scroll, the document is suddenly 8px wider, no idea where those
     // are coming from. Adding these magic 8px fixes it.
-    int optW = docW + frameWidth() * 2 + 8 + vScrollW;
+    int optW = docW + frameW * 2 + 8 + vScrollW;
     int newW = std::max(indexRect.width(), optW);
     int tableW = tableRect.width();
     if (indexRect.x() + newW > tableW) {
