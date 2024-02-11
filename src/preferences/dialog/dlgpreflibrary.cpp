@@ -180,7 +180,13 @@ void DlgPrefLibrary::initializeDirList() {
                                   ->internalCollection()
                                   ->loadRootDirs();
     for (const mixxx::FileInfo& rootDir : rootDirs) {
-        m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
+        // mark missing/invalid dirs with a warning icon, add a tooltip
+        auto* pDirItem = new QStandardItem(rootDir.location());
+        if (!rootDir.exists() || !rootDir.isDir()) {
+            pDirItem->setIcon(QIcon(kWarningIconPath));
+            pDirItem->setToolTip(tr("Item is not a directory or directory is missing"));
+        }
+        m_dirListModel.appendRow(pDirItem);
     }
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
