@@ -217,15 +217,23 @@ void PreviewButtonDelegate::buttonClicked() {
 
     TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
 
+    bool startedPlaying = false;
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
+        // Load to preview deck and start playing
         emit loadTrackToPlayer(pTrack, kPreviewDeckGroup, true);
+        startedPlaying = true;
     } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
-        // Since the Preview deck might be hidden
-        // Starting at cue is a predictable behavior
+        // Since the Preview deck might be hidden, starting at the main cue
+        // is a predictable behavior.
         m_pCueGotoAndPlay->set(1.0);
+        startedPlaying = true;
     } else {
         m_pPreviewDeckPlay->set(0.0);
+    }
+    // If we start previewing also select the track (the table view didn't receive the click)
+    if (startedPlaying) {
+        m_pTableView->selectRow(m_currentEditedCellIndex.row());
     }
 }
 
