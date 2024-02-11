@@ -2787,25 +2787,25 @@ else()
       # install qml6-module-qtquick-controls
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Controls"
-        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQuick"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
         COMPONENT applocal)
 
       # install qml6-module-qtquick-shapes
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQuick/Shapes"
-        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQuick"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQuick"
         COMPONENT applocal)
 
       # install qml6-module-qt-labs-qmlmodels
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/Qt/labs/qmlmodels"
-        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/Qt/labs"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/Qt/labs"
         COMPONENT applocal)
 
       # qml6-module-qtqml-workerscript
       install(
         DIRECTORY "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}$<$<CONFIG:Debug>:/debug>/Qt6/qml/QtQml/WorkerScript"
-        DESTINATION "${MIXXX_INSTALL_DATADIR}/qml/QtQml"
+        DESTINATION "${MIXXX_INSTALL_DATADIR}/Qt6/qml/QtQml"
         COMPONENT applocal)
 
     endif()
