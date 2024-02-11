@@ -163,7 +163,13 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
     std::unique_ptr<ControlObject> m_pFileBPM;
+    std::unique_ptr<ControlObject> m_pVisualBpm;
     parented_ptr<ControlProxy> m_pKey;
+    std::unique_ptr<ControlObject> m_pVisualKey;
+
+    std::unique_ptr<ControlObject> m_pTimeElapsed;
+    std::unique_ptr<ControlObject> m_pTimeRemaining;
+    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     std::unique_ptr<ControlPushButton> m_pShiftCuesEarlier;
     std::unique_ptr<ControlPushButton> m_pShiftCuesEarlierSmall;
