@@ -1012,6 +1012,9 @@ class EffectParameter {
 class TraktorS2MK1Class {
     constructor() {
         this.controller = new HIDController();
+        if (engine.getValue("[App]", "num_samplers") < 8) {
+            engine.setValue("[App]", "num_samplers", 8);
+        }
 
         // When true, packets will not be sent to the controller.
         // Used when updating multiple LEDs simultaneously.

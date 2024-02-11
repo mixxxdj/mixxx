@@ -192,6 +192,9 @@ ReloopBeatmix24.connectControls = function() {
 ReloopBeatmix24.init = function(id, _debug) {
     ReloopBeatmix24.id = id;
     ReloopBeatmix24.TurnLEDsOff(); // Turn off all LEDs
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     ReloopBeatmix24.connectControls(false);
 
     for (let i = 1; i <= 4; i++) {
