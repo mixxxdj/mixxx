@@ -77,7 +77,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   signals:
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void tooltipModeChanged(mixxx::preferences::constants::Tooltips tooltipMode);
 
   protected:
     bool eventFilter(QObject*, QEvent*);

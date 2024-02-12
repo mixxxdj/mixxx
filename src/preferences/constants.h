@@ -2,19 +2,25 @@
 
 namespace mixxx {
 
+namespace preferences {
+
+namespace constants {
+
 // Don't change these constants since they are stored in user configuration
 // files.
-enum class TooltipsPreference {
-    TOOLTIPS_OFF = 0,
-    TOOLTIPS_ON = 1,
-    TOOLTIPS_ONLY_IN_LIBRARY = 2,
+enum class Tooltips {
+    Off = 0,
+    On = 1,
+    OnlyInLibrary = 2,
 };
 
 // Settings to enable or disable the prevention to run the screensaver.
-enum class ScreenSaverPreference {
-    PREVENT_OFF = 0,
-    PREVENT_ON = 1,
-    PREVENT_ON_PLAY = 2
+enum class ScreenSaver {
+    Off = 0,
+    On = 1,
+    OnPlay = 2
 };
 
-}  // namespace mixxx
+} // namespace constants
+} // namespace preferences
+} // namespace mixxx
