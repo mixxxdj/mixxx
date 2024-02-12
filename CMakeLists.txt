@@ -2671,6 +2671,14 @@ if(QML)
   # qt_finalize_target takes care that the resources :/mixxx.org/imports/Mixxx/
   # and :/mixxx.org/imports/Mixxx/Controls are placed into beginning of the binary
   qt_finalize_target(mixxx)
+
+  install(
+    DIRECTORY
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/qml"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+  )
+
 endif()
 
 option(DEBUG_ASSERTIONS_FATAL "Fail if debug become true assertions" OFF)
