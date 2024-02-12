@@ -2553,6 +2553,13 @@ if(NOT ANDROID)
     BUNDLE DESTINATION .
   )
 
+  # Script for cpu pinning of the engine thread
+  install(
+    FILES tools/mixxx-isolate.py
+    DESTINATION "${MIXXX_INSTALL_BINDIR}"
+    RENAME "mixxx-isolate"
+  )
+
   # Skins
   install(
     DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/res/skins"
