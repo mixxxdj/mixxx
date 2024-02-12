@@ -76,7 +76,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void resetToDefaults();
 
     void reloadUserInterface();
-    void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
+    void tooltipModeChanged(mixxx::preferences::constants::Tooltips tooltipMode);
     void menuBarAutoHideChanged();
 
   protected:
