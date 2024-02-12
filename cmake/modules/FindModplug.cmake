@@ -50,13 +50,13 @@ endif()
 
 find_path(Modplug_INCLUDE_DIR
   NAMES libmodplug/modplug.h
-  PATHS ${PC_Modplug_INCLUDE_DIRS}
+  HINTS ${PC_Modplug_INCLUDE_DIRS}
   DOC "Modplug include directory")
 mark_as_advanced(Modplug_INCLUDE_DIR)
 
 find_library(Modplug_LIBRARY
   NAMES modplug
-  PATHS ${PC_Modplug_LIBRARY_DIRS}
+  HINTS ${PC_Modplug_LIBRARY_DIRS}
   DOC "Modplug library"
 )
 mark_as_advanced(Modplug_LIBRARY)

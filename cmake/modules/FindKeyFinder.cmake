@@ -52,13 +52,13 @@ endif()
 
 find_path(KeyFinder_INCLUDE_DIR
   NAMES keyfinder/keyfinder.h
-  PATHS ${PC_KeyFinder_INCLUDE_DIRS}
+  HINTS ${PC_KeyFinder_INCLUDE_DIRS}
   DOC "KeyFinder include directory")
 mark_as_advanced(KeyFinder_INCLUDE_DIR)
 
 find_library(KeyFinder_LIBRARY
   NAMES keyfinder
-  PATHS ${PC_KeyFinder_LIBRARY_DIRS}
+  HINTS ${PC_KeyFinder_LIBRARY_DIRS}
   DOC "KeyFinder library"
 )
 mark_as_advanced(KeyFinder_LIBRARY)

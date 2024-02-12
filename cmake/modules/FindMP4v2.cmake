@@ -50,13 +50,13 @@ endif()
 
 find_path(MP4v2_INCLUDE_DIR
   NAMES mp4v2/mp4v2.h
-  PATHS ${PC_MP4v2_INCLUDE_DIRS}
+  HINTS ${PC_MP4v2_INCLUDE_DIRS}
   DOC "MP4v2 include directory")
 mark_as_advanced(MP4v2_INCLUDE_DIR)
 
 find_library(MP4v2_LIBRARY
   NAMES mp4v2
-  PATHS ${PC_MP4v2_LIBRARY_DIRS}
+  HINTS ${PC_MP4v2_LIBRARY_DIRS}
   DOC "MP4v2 library"
 )
 mark_as_advanced(MP4v2_LIBRARY)

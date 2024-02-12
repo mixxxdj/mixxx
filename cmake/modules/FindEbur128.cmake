@@ -50,14 +50,14 @@ endif()
 
 find_path(Ebur128_INCLUDE_DIR
   NAMES ebur128.h
-  PATHS ${PC_Ebur128_INCLUDE_DIRS}
+  HINTS ${PC_Ebur128_INCLUDE_DIRS}
   PATH_SUFFIXES ebur128
   DOC "Ebur128 include directory")
 mark_as_advanced(Ebur128_INCLUDE_DIR)
 
 find_library(Ebur128_LIBRARY
   NAMES ebur128
-  PATHS ${PC_Ebur128_LIBRARY_DIRS}
+  HINTS ${PC_Ebur128_LIBRARY_DIRS}
   DOC "Ebur128 library"
 )
 mark_as_advanced(Ebur128_LIBRARY)

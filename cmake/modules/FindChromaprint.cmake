@@ -52,14 +52,14 @@ endif()
 
 find_path(Chromaprint_INCLUDE_DIR
   NAMES chromaprint.h
-  PATHS ${PC_Chromaprint_INCLUDE_DIRS}
+  HINTS ${PC_Chromaprint_INCLUDE_DIRS}
   PATH_SUFFIXES chromaprint
   DOC "Chromaprint include directory")
 mark_as_advanced(Chromaprint_INCLUDE_DIR)
 
 find_library(Chromaprint_LIBRARY
   NAMES chromaprint chromaprint_p
-  PATHS ${PC_Chromaprint_LIBRARY_DIRS}
+  HINTS ${PC_Chromaprint_LIBRARY_DIRS}
   DOC "Chromaprint library"
 )
 mark_as_advanced(Chromaprint_LIBRARY)
