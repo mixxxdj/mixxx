@@ -148,7 +148,7 @@ jobs:
         run: git fetch origin --force --tags
 
       - name: "[macOS] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v1.14
+        uses: jwlawson/actions-setup-cmake@v2.0
         # Ubuntu 22.04 should use the CMake version from the repos.
         if: runner.os == 'macOS'
         with:
@@ -157,7 +157,7 @@ jobs:
           cmake-version: "3.21.x"
 
       - name: "[Windows] Set up cmake"
-        uses: jwlawson/actions-setup-cmake@v1.14
+        uses: jwlawson/actions-setup-cmake@v2.0
         # Ubuntu 22.04 should use the CMake version from the repos.
         if: runner.os == 'Windows'
         with:
