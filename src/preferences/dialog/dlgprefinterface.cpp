@@ -182,26 +182,26 @@ DlgPrefInterface::DlgPrefInterface(
     // Multi-Sampling
 #ifdef MIXXX_USE_QML
     if (CmdlineArgs::Instance().isQml()) {
-        mulitSamplingComboBox->clear();
-        mulitSamplingComboBox->addItem(tr("Disabled"), 0);
-        mulitSamplingComboBox->addItem(tr("2x MSAA"), 2);
-        mulitSamplingComboBox->addItem(tr("4x MSAA"), 4);
-        mulitSamplingComboBox->addItem(tr("8x MSAA"), 8);
-        mulitSamplingComboBox->addItem(tr("16x MSAA"), 16);
+        multiSamplingComboBox->clear();
+        multiSamplingComboBox->addItem(tr("Disabled"), 0);
+        multiSamplingComboBox->addItem(tr("2x MSAA"), 2);
+        multiSamplingComboBox->addItem(tr("4x MSAA"), 4);
+        multiSamplingComboBox->addItem(tr("8x MSAA"), 8);
+        multiSamplingComboBox->addItem(tr("16x MSAA"), 16);
 
         m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 4);
-        int mulitSamplingIndex = mulitSamplingComboBox->findData(m_multiSampling);
-        if (mulitSamplingIndex != -1) {
-            mulitSamplingComboBox->setCurrentIndex(mulitSamplingIndex);
+        int multiSamplingIndex = multiSamplingComboBox->findData(m_multiSampling);
+        if (multiSamplingIndex != -1) {
+            multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
         } else {
-            mulitSamplingComboBox->setCurrentIndex(0);
+            multiSamplingComboBox->setCurrentIndex(0);
             m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(0));
         }
     } else
 #endif
     {
-        mulitSamplingLabel->hide();
-        mulitSamplingComboBox->hide();
+        multiSamplingLabel->hide();
+        multiSamplingComboBox->hide();
     }
 
     // Tooltip configuration
@@ -326,7 +326,7 @@ void DlgPrefInterface::slotResetToDefaults() {
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
 #ifdef MIXXX_USE_QML
-    mulitSamplingComboBox->setCurrentIndex(4); // 4x MSAA
+    multiSamplingComboBox->setCurrentIndex(4); // 4x MSAA
 #endif
 
 #ifdef Q_OS_IOS
@@ -451,8 +451,8 @@ void DlgPrefInterface::slotApply() {
     }
 
 #ifdef MIXXX_USE_QML
-    int multiSampling = mulitSamplingComboBox->itemData(
-                                                     mulitSamplingComboBox->currentIndex())
+    int multiSampling = multiSamplingComboBox->itemData(
+                                                     multiSamplingComboBox->currentIndex())
                                 .toInt();
     m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
 #endif
