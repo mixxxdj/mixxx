@@ -325,6 +325,10 @@ void DlgPrefInterface::slotResetToDefaults() {
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
+#ifdef MIXXX_USE_QML
+    mulitSamplingComboBox->setCurrentIndex(4); // 4x MSAA
+#endif
+
 #ifdef Q_OS_IOS
     // Tooltips off everywhere.
     radioButtonTooltipsOff->setChecked(true);
@@ -446,18 +450,25 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
+#ifdef MIXXX_USE_QML
     int multiSampling = mulitSamplingComboBox->itemData(
                                                      mulitSamplingComboBox->currentIndex())
                                 .toInt();
     m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
+#endif
 
-    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor ||
-            multiSampling != m_multiSampling) {
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
+#ifdef MIXXX_USE_QML
+            || multiSampling != m_multiSampling
+#endif
+    ) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
         m_dScaleFactor = scaleFactor;
+#ifdef MIXXX_USE_QML
         m_multiSampling = multiSampling;
+#endif
     }
 
     // load skin/scheme if necessary
