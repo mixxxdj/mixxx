@@ -1,10 +1,17 @@
 #pragma once
 
+// required for Qt-Macros
+#include <qobjectdefs.h>
+
 namespace mixxx {
 
 namespace preferences {
 
 namespace constants {
+Q_NAMESPACE
+
+// In order for this Q_NAMESPACE to work, all members of the namespace must
+// be declared here. see QTBUG-68611
 
 // Don't change these constants since they are stored in user configuration
 // files.
@@ -13,6 +20,7 @@ enum class Tooltips {
     On = 1,
     OnlyInLibrary = 2,
 };
+Q_ENUM_NS(Tooltips);
 
 // Settings to enable or disable the prevention to run the screensaver.
 enum class ScreenSaver {
@@ -20,6 +28,7 @@ enum class ScreenSaver {
     On = 1,
     OnPlay = 2
 };
+Q_ENUM_NS(ScreenSaver);
 
 enum class MultiSamplingMode {
     Disabled = 0,
@@ -28,6 +37,7 @@ enum class MultiSamplingMode {
     Eight = 8,
     Sixteen = 16
 };
+Q_ENUM_NS(MultiSamplingMode);
 
 } // namespace constants
 } // namespace preferences

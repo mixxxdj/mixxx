@@ -11,6 +11,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefinterface.cpp"
+#include "preferences/constants.h"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
 #include "skin/skin.h"
@@ -180,14 +181,14 @@ DlgPrefInterface::DlgPrefInterface(
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
-            static_cast<int>(constants::ScreenSaver::Off));
+            QVariant::fromValue(constants::ScreenSaver::Off));
     comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
-            static_cast<int>(constants::ScreenSaver::On));
+            QVariant::fromValue((constants::ScreenSaver::On)));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
-            static_cast<int>(constants::ScreenSaver::OnPlay));
+            QVariant::fromValue(constants::ScreenSaver::OnPlay));
 
-    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
 
     // Multi-Sampling
 #ifdef MIXXX_USE_QML
@@ -208,7 +209,7 @@ DlgPrefInterface::DlgPrefInterface(
                 ConfigKey(kPreferencesGroup, kMultiSamplingKey),
                 constants::MultiSamplingMode::Four);
         int multiSamplingIndex = multiSamplingComboBox->findData(
-                static_cast<int>(m_multiSampling));
+                QVariant::fromValue((m_multiSampling)));
         if (multiSamplingIndex != -1) {
             multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
         } else {
@@ -325,8 +326,8 @@ void DlgPrefInterface::slotUpdate() {
 
     loadTooltipPreferenceFromConfig();
 
-    int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
-    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+    comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
+            QVariant::fromValue(m_pScreensaverManager->status())));
 }
 
 void DlgPrefInterface::slotResetToDefaults() {
@@ -353,11 +354,12 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-            static_cast<int>(constants::ScreenSaver::On)));
+            QVariant::fromValue(constants::ScreenSaver::On)));
 
 #ifdef MIXXX_USE_QML
-    multiSamplingComboBox->setCurrentIndex(multiSamplingComboBox->findData(
-            static_cast<int>(constants::MultiSamplingMode::Four))); // 4x MSAA
+    multiSamplingComboBox->setCurrentIndex(
+            multiSamplingComboBox->findData(QVariant::fromValue(
+                    constants::MultiSamplingMode::Four))); // 4x MSAA
 #endif
 
 #ifdef Q_OS_IOS
@@ -471,16 +473,16 @@ void DlgPrefInterface::slotApply() {
             ConfigValue(checkBoxHideMenuBar->isChecked()));
     emit menuBarAutoHideChanged();
 
-    m_pConfig->set(ConfigKey(kControlsGroup, kTooltipsKey),
-            ConfigValue(static_cast<int>(m_tooltipMode)));
+    m_pConfig->setValue(ConfigKey(kControlsGroup, kTooltipsKey),
+            m_tooltipMode);
     emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
-    int screensaverComboBoxState = comboBoxScreensaver->currentData().toInt();
-    int screensaverConfiguredState = static_cast<int>(m_pScreensaverManager->status());
+    const auto screensaverComboBoxState =
+            comboBoxScreensaver->currentData().value<constants::ScreenSaver>();
+    const auto screensaverConfiguredState = m_pScreensaverManager->status();
     if (screensaverComboBoxState != screensaverConfiguredState) {
-        m_pScreensaverManager->setStatus(
-                static_cast<constants::ScreenSaver>(screensaverComboBoxState));
+        m_pScreensaverManager->setStatus(screensaverComboBoxState);
     }
 
 #ifdef MIXXX_USE_QML
