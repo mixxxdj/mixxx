@@ -183,19 +183,28 @@ DlgPrefInterface::DlgPrefInterface(
 #ifdef MIXXX_USE_QML
     if (CmdlineArgs::Instance().isQml()) {
         multiSamplingComboBox->clear();
-        multiSamplingComboBox->addItem(tr("Disabled"), 0);
-        multiSamplingComboBox->addItem(tr("2x MSAA"), 2);
-        multiSamplingComboBox->addItem(tr("4x MSAA"), 4);
-        multiSamplingComboBox->addItem(tr("8x MSAA"), 8);
-        multiSamplingComboBox->addItem(tr("16x MSAA"), 16);
+        multiSamplingComboBox->addItem(tr("Disabled"),
+                QVariant::fromValue(mixxx::MultiSamplingMode::Disabled));
+        multiSamplingComboBox->addItem(tr("2x MSAA"),
+                QVariant::fromValue(mixxx::MultiSamplingMode::Two));
+        multiSamplingComboBox->addItem(tr("4x MSAA"),
+                QVariant::fromValue(mixxx::MultiSamplingMode::Four));
+        multiSamplingComboBox->addItem(tr("8x MSAA"),
+                QVariant::fromValue(mixxx::MultiSamplingMode::Eight));
+        multiSamplingComboBox->addItem(tr("16x MSAA"),
+                QVariant::fromValue(mixxx::MultiSamplingMode::Sixteen));
 
-        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 4);
-        int multiSamplingIndex = multiSamplingComboBox->findData(m_multiSampling);
+        m_multiSampling = m_pConfig->getValue<mixxx::MultiSamplingMode>(
+                ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                mixxx::MultiSamplingMode::Four);
+        int multiSamplingIndex = multiSamplingComboBox->findData(
+                static_cast<int>(m_multiSampling));
         if (multiSamplingIndex != -1) {
             multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
         } else {
-            multiSamplingComboBox->setCurrentIndex(0);
-            m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(0));
+            multiSamplingComboBox->setCurrentIndex(0); // Disabled
+            m_pConfig->setValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey),
+                    mixxx::MultiSamplingMode::Disabled);
         }
     } else
 #endif
@@ -326,7 +335,8 @@ void DlgPrefInterface::slotResetToDefaults() {
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
 #ifdef MIXXX_USE_QML
-    multiSamplingComboBox->setCurrentIndex(4); // 4x MSAA
+    multiSamplingComboBox->setCurrentIndex(multiSamplingComboBox->findData(
+            static_cast<int>(mixxx::MultiSamplingMode::Four))); // 4x MSAA
 #endif
 
 #ifdef Q_OS_IOS
@@ -427,8 +437,7 @@ void DlgPrefInterface::slotApply() {
         m_pConfig->set(ConfigKey(kConfigGroup, kSchemeKey), m_colorScheme);
     }
 
-    QString locale = ComboBoxLocale->itemData(
-            ComboBoxLocale->currentIndex()).toString();
+    QString locale = ComboBoxLocale->currentData().toString();
     m_pConfig->set(ConfigKey(kConfigGroup, kLocaleKey), locale);
 
     double scaleFactor = spinBoxScaleFactor->value() / 100;
@@ -442,8 +451,7 @@ void DlgPrefInterface::slotApply() {
     emit tooltipModeChanged(m_tooltipMode);
 
     // screensaver mode update
-    int screensaverComboBoxState = comboBoxScreensaver->itemData(
-            comboBoxScreensaver->currentIndex()).toInt();
+    int screensaverComboBoxState = comboBoxScreensaver->currentData().toInt();
     int screensaverConfiguredState = static_cast<int>(m_pScreensaverManager->status());
     if (screensaverComboBoxState != screensaverConfiguredState) {
         m_pScreensaverManager->setStatus(
@@ -451,10 +459,13 @@ void DlgPrefInterface::slotApply() {
     }
 
 #ifdef MIXXX_USE_QML
-    int multiSampling = multiSamplingComboBox->itemData(
-                                                     multiSamplingComboBox->currentIndex())
-                                .toInt();
-    m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
+    mixxx::MultiSamplingMode multiSampling =
+            multiSamplingComboBox->currentData()
+                    .value<mixxx::MultiSamplingMode>();
+    // m_pConfig->setValue<mixxx::MultiSamplingMode>(ConfigKey(kPreferencesGroup,
+    // kMultiSamplingKey), ConfigValue(multiSampling));
+    m_pConfig->setValue<mixxx::MultiSamplingMode>(
+            ConfigKey(kPreferencesGroup, kMultiSamplingKey), multiSampling);
 #endif
 
     if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
