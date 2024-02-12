@@ -26,7 +26,6 @@
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
 #include "moc_mixxxmainwindow.cpp"
-#include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
