@@ -42,6 +42,8 @@ const bool kHideMenuBarDefault = true;
 
 } // namespace
 
+using namespace mixxx::preferences;
+
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -177,11 +179,11 @@ DlgPrefInterface::DlgPrefInterface(
     // Screensaver mode
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
-            static_cast<int>(mixxx::preferences::constants::ScreenSaver::Off));
+            static_cast<int>(constants::ScreenSaver::Off));
     comboBoxScreensaver->addItem(tr("Prevent screensaver from running"),
-            static_cast<int>(mixxx::preferences::constants::ScreenSaver::On));
+            static_cast<int>(constants::ScreenSaver::On));
     comboBoxScreensaver->addItem(tr("Prevent screensaver while playing"),
-            static_cast<int>(mixxx::preferences::constants::ScreenSaver::OnPlay));
+            static_cast<int>(constants::ScreenSaver::OnPlay));
 
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
@@ -341,7 +343,7 @@ void DlgPrefInterface::slotResetToDefaults() {
 
     // Inhibit the screensaver
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
-            static_cast<int>(mixxx::preferences::constants::ScreenSaver::On)));
+            static_cast<int>(constants::ScreenSaver::On)));
 
 #ifdef MIXXX_USE_QML
     multiSamplingComboBox->setCurrentIndex(4); // 4x MSAA
@@ -357,11 +359,11 @@ void DlgPrefInterface::slotResetToDefaults() {
 }
 
 void DlgPrefInterface::slotSetTooltips() {
-    m_tooltipMode = mixxx::preferences::constants::Tooltips::On;
+    m_tooltipMode = constants::Tooltips::On;
     if (radioButtonTooltipsOff->isChecked()) {
-        m_tooltipMode = mixxx::preferences::constants::Tooltips::Off;
+        m_tooltipMode = constants::Tooltips::Off;
     } else if (radioButtonTooltipsLibrary->isChecked()) {
-        m_tooltipMode = mixxx::preferences::constants::Tooltips::OnlyInLibrary;
+        m_tooltipMode = constants::Tooltips::OnlyInLibrary;
     }
 }
 
@@ -469,7 +471,7 @@ void DlgPrefInterface::slotApply() {
     int screensaverConfiguredState = static_cast<int>(m_pScreensaverManager->status());
     if (screensaverComboBoxState != screensaverConfiguredState) {
         m_pScreensaverManager->setStatus(
-                static_cast<mixxx::preferences::constants::ScreenSaver>(screensaverComboBoxState));
+                static_cast<constants::ScreenSaver>(screensaverComboBoxState));
     }
 
 #ifdef MIXXX_USE_QML
@@ -505,21 +507,21 @@ void DlgPrefInterface::slotApply() {
 }
 
 void DlgPrefInterface::loadTooltipPreferenceFromConfig() {
-    const auto tooltipMode = static_cast<mixxx::preferences::constants::Tooltips>(
-            m_pConfig->getValue(ConfigKey(kControlsGroup, kTooltipsKey),
+    const auto tooltipMode =
+            m_pConfig->getValue<constants::Tooltips>(ConfigKey(kControlsGroup, kTooltipsKey),
 #ifdef Q_OS_IOS
-                    static_cast<int>(mixxx::preferences::constants::Tooltips::Off)));
+                    constants::Tooltips::Off);
 #else
-                    static_cast<int>(mixxx::preferences::constants::Tooltips::On)));
+                    constants::Tooltips::On);
 #endif
     switch (tooltipMode) {
-    case mixxx::preferences::constants::Tooltips::Off:
+    case constants::Tooltips::Off:
         radioButtonTooltipsOff->setChecked(true);
         break;
-    case mixxx::preferences::constants::Tooltips::OnlyInLibrary:
+    case constants::Tooltips::OnlyInLibrary:
         radioButtonTooltipsLibrary->setChecked(true);
         break;
-    case mixxx::preferences::constants::Tooltips::On:
+    case constants::Tooltips::On:
     default:
         radioButtonTooltipsLibraryAndSkin->setChecked(true);
         break;
