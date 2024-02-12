@@ -23,6 +23,7 @@
 #include "moc_enginemixer.cpp"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+#include "util/cpupinning.h"
 #include "util/defs.h"
 #include "util/parented_ptr.h"
 #include "util/sample.h"
@@ -146,7 +147,9 @@ EngineMixer::EngineMixer(UserSettingsPointer pConfig,
           m_pMainMonoMixdown(std::make_unique<ControlObject>(
                   ConfigKey(group, "mono_mixdown"), true, false, true)),
           m_pMicMonitorMode(std::make_unique<ControlObject>(
-                  ConfigKey(group, "talkover_mix"), true, false, true)) {
+                  ConfigKey(group, "talkover_mix"), true, false, true)),
+          m_cpuId(CmdlineArgs::Instance().getEngineCpuId()),
+          m_cpuSet(CmdlineArgs::Instance().getEngineCpuSet()) {
     pEffectsManager->registerInputChannel(m_mainHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_mainHandle);
@@ -227,6 +230,18 @@ std::span<const CSAMPLE> EngineMixer::getHeadphoneBuffer() const {
 
 std::span<const CSAMPLE> EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.span();
+}
+
+void EngineMixer::finishStartup() {
+    QThread::currentThread()->setObjectName("Engine");
+#ifdef __LINUX__
+    if (!m_cpuSet.isNull() && !m_cpuSet.isEmpty()) {
+        mixxx::CpuPinning::moveThreadToCpuset(m_cpuSet);
+    }
+#endif
+    if (m_cpuId != -1) {
+        mixxx::CpuPinning::pinThreadToCpu(m_cpuId);
+    }
 }
 
 void EngineMixer::processChannels(int iBufferSize) {

@@ -1155,6 +1155,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/color/predefinedcolorpalettes.cpp
   src/util/colorcomponents.cpp
   src/util/console.cpp
+  src/util/cpupinning.cpp
   src/util/db/dbconnection.cpp
   src/util/db/dbconnectionpool.cpp
   src/util/db/dbconnectionpooled.cpp
