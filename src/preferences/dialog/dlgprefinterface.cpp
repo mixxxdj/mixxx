@@ -125,7 +125,9 @@ DlgPrefInterface::DlgPrefInterface(
 
     if (pSkinLoader) {
         // Skin configurations
-        warningLabel->setText(kWarningIconHtmlString);
+        warningLabel->setText(kWarningIconHtmlString +
+                tr("The minimum size of the selected skin is bigger than your "
+                   "screen resolution."));
 
         ComboBoxSkinconf->clear();
         skinPreviewLabel->setText("");
