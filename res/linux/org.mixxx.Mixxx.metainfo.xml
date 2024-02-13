@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-02-06" timestamp="1707204625">
+    <release version="2.4.0" type="development" date="2024-02-12" timestamp="1707749791">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -142,7 +142,9 @@
    #10537
    #11239
    #4577
-   #1947992
+   #10577
+   #11171
+   #10761
   </li>
   <li>
    Fix Recording table refresh issues
@@ -205,7 +207,7 @@
    #10931
   </li>
   <li>
-   Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   Add menu for looking up track metadata at Discogs, SoundCloud and LastFM
    #4772
    #4836
   </li>
@@ -233,13 +235,9 @@
    #12521
   </li>
   <li>
-   Show 'Update ReplayGain' only in decks' menus
+   Add 'Update ReplayGain' decks' to track menus
+   #4031
    #4719
-  </li>
-  <li>
-   Fix showing wrong Remove hotkey
-   #11171
-   #10761
   </li>
   <li>
    Restore "Remove from playlist" in History
@@ -800,7 +798,7 @@
    #10497
   </li>
   <li>
-   Fix: possible cash when ejecting track from a controller
+   Fix possible crash when ejecting track from a controller
    #11884
    #11819
   </li>
