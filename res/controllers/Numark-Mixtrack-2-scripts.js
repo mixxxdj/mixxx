@@ -104,6 +104,10 @@ NumarkMixTrackII.init = function(id) {   // called when the MIDI device is opene
 
     NumarkMixTrackII.turnOffAllLeds();
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
+
     NumarkMixTrackII.updateDirectoryAndFileLeds();
 }
 
