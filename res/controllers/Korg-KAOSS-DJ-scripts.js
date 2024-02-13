@@ -181,7 +181,7 @@ KAOSSDJ.scratchMode = function(channel, _control, value, _status, _group) {
 };
 
 KAOSSDJ.fxToggleButton = function(channel, _control, value, _status, _group) {
-    KAOSSDJ.updateDeckByChannel(channel, "fx", value === MIDI_ON);
+    KAOSSDJ.updateDeckByChannel(channel, "isFx", value === MIDI_ON);
 };
 
 KAOSSDJ.fxKnob = function (_channel, _control, value, _status, _group) {  
