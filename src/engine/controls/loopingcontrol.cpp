@@ -1270,8 +1270,8 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
         m_trueTrackBeats = false;
     }
     double loaded_loop_size = -1;
-    LoopInfo loopInfo = m_loopInfo.getValue();
-    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+    if (playposInsideLoop()) {
+        LoopInfo loopInfo = getLoopInfo();
         loaded_loop_size = findBeatloopSizeForLoop(
                 loopInfo.startPosition, loopInfo.endPosition);
         if (loaded_loop_size != -1) {
@@ -1704,7 +1704,15 @@ void LoopingControl::slotBeatLoopSizeChangeRequest(double beats) {
         return;
     }
 
-    slotBeatLoop(beats, true, false);
+    // Change the current loop only if it's active or the playpos is inside it.
+    // Else, set the new value.
+    if (playposAfterLoop() || m_bLoopingEnabled) {
+        qWarning() << "     size change" << beats << "active loop / inside";
+        slotBeatLoop(beats, true, false);
+    } else {
+        qWarning() << "     size change" << beats << "just CO";
+        m_pCOBeatLoopSize->setAndConfirm(beats);
+    }
 }
 
 void LoopingControl::slotBeatLoopToggle(double pressed) {
