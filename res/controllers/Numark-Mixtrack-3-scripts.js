@@ -889,6 +889,9 @@ NumarkMixtrack3.init = function(id, debug) {
         NumarkMixtrack3.decks["D" + i] = new NumarkMixtrack3.deck(i);
     }
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     // initialize 8 samplers
     for (var i = 1; i <= 8; i++) {
         NumarkMixtrack3.samplers["S" + i] = new NumarkMixtrack3.sampler(i);

@@ -47,6 +47,9 @@ NumarkPartyMix.init = function(_id, _debugging) {
     midi.sendShortMsg(0xb0, 0x43, 0x00);
 
     // initialize component containers
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     NumarkPartyMix.deck = new components.ComponentContainer();
     for (var i = 0; i < 2; i++) {
         NumarkPartyMix.deck[i] = new NumarkPartyMix.Deck(i + 1);
@@ -259,6 +262,8 @@ NumarkPartyMix.ModeLoop.prototype = Object.create(components.ComponentContainer.
 // this device doesn't have a shift button,
 // therefore we do not want it to depend on
 // a shift switch to stop a sample
+// Deck1: samplers 1-4
+// Deck2: samplers 5-8
 NumarkPartyMix.ModeSampler = function(deckNumber) {
     components.ComponentContainer.call(this);
     this.control = NumarkPartyMix.PadModeControls.SAMPLER;
