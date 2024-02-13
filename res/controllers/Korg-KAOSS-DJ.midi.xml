@@ -625,7 +625,7 @@
                 <status>0xB6</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
