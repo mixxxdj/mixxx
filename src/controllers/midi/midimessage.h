@@ -1,11 +1,14 @@
 #pragma once
 
 #include <QFlags>
+#include <QJSValue>
 #include <QList>
 #include <QMetaType>
 #include <QPair>
+#include <QUuid>
 #include <QtDebug>
 #include <cstdint>
+#include <variant>
 
 #include "preferences/usersettings.h"
 #include "util/compatibility/qhash.h"
@@ -178,6 +181,9 @@ struct MidiKey {
     };
 };
 
+template<class>
+inline constexpr bool always_false_v = false;
+
 struct MidiInputMapping {
     MidiInputMapping() {
     }
@@ -187,7 +193,9 @@ struct MidiInputMapping {
               options(options) {
     }
 
-    MidiInputMapping(MidiKey key, MidiOptions options, const ConfigKey& control)
+    MidiInputMapping(MidiKey key,
+            MidiOptions options,
+            const std::variant<ConfigKey, QJSValue>& control)
             : key(key),
               options(options),
               control(control) {
@@ -195,7 +203,7 @@ struct MidiInputMapping {
 
     MidiInputMapping(MidiKey key,
             MidiOptions options,
-            const ConfigKey& control,
+            const std::variant<ConfigKey, QJSValue>& control,
             const QString& description)
             : key(key),
               options(options),
@@ -204,13 +212,32 @@ struct MidiInputMapping {
     }
 
     bool operator==(const MidiInputMapping& other) const {
-        return key == other.key && options == other.options &&
-                control == other.control && description == other.description;
+        return std::visit([&](auto first, auto second) {
+            using T = std::decay_t<decltype(first)>;
+            using U = std::decay_t<decltype(second)>;
+
+            if constexpr (!std::is_same_v<T, U>) {
+                return false;
+            } else if constexpr (std::is_same_v<T, ConfigKey>) {
+                return key == other.key &&
+                        options == other.options &&
+                        std::get<ConfigKey>(control) == std::get<ConfigKey>(other.control) &&
+                        description == other.description;
+            } else if constexpr (std::is_same_v<T, QJSValue>) {
+                return key == other.key && options == other.options &&
+                        std::get<QJSValue>(control).strictlyEquals(
+                                std::get<QJSValue>(other.control)) &&
+                        description == other.description;
+            } else
+                static_assert(always_false_v<T>, "non-exhaustive visitor");
+        },
+                control,
+                other.control);
     }
 
     MidiKey key;
     MidiOptions options;
-    ConfigKey control;
+    std::variant<ConfigKey, QJSValue> control;
     QString description;
 };
 typedef QList<MidiInputMapping> MidiInputMappings;

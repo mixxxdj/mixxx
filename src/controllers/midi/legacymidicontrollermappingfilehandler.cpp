@@ -271,10 +271,15 @@ QDomElement LegacyMidiControllerMappingFileHandler::makeTextElement(QDomDocument
 
 QDomElement LegacyMidiControllerMappingFileHandler::inputMappingToXML(
         QDomDocument* doc, const MidiInputMapping& mapping) const {
+    if (std::holds_alternative<QJSValue>(mapping.control)) {
+        return QDomElement();
+    }
+
     QDomElement controlNode = doc->createElement("control");
 
-    controlNode.appendChild(makeTextElement(doc, "group", mapping.control.group));
-    controlNode.appendChild(makeTextElement(doc, "key", mapping.control.item));
+    controlNode.appendChild(makeTextElement(
+            doc, "group", std::get<ConfigKey>(mapping.control).group));
+    controlNode.appendChild(makeTextElement(doc, "key", std::get<ConfigKey>(mapping.control).item));
     if (!mapping.description.isEmpty()) {
         controlNode.appendChild(
                 makeTextElement(doc, "description", mapping.description));
