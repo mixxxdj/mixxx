@@ -184,7 +184,7 @@ KAOSSDJ.fxToggleButton = function(channel, _control, value, _status, _group) {
     KAOSSDJ.updateDeckByChannel(channel, "isFx", value === MIDI_ON);
 };
 
-KAOSSDJ.fxKnob = function(_channel, _control, value, _status, _group) { 
+KAOSSDJ.fxKnob = function(_channel, _control, value, _status, _group) {
     if (KAOSSDJ.shiftLeftPressed) {
         // If Left Shift is pressed, cycle the effects chains on EffectUnit1
         if (value === MIDI_UP) {
