@@ -184,7 +184,7 @@ KAOSSDJ.fxToggleButton = function(channel, _control, value, _status, _group) {
     KAOSSDJ.updateDeckByChannel(channel, "isFx", value === MIDI_ON);
 };
 
-KAOSSDJ.fxKnob = function(_channel, _control, value, _status, _group) {  
+KAOSSDJ.fxKnob = function(_channel, _control, value, _status, _group) { 
     if (KAOSSDJ.shiftLeftPressed) {
         // If Left Shift is pressed, cycle the effects chains on EffectUnit1
         if (value === MIDI_UP) {
@@ -195,9 +195,9 @@ KAOSSDJ.fxKnob = function(_channel, _control, value, _status, _group) {
     } else if (KAOSSDJ.shiftRightPressed) {
         // If Right Shift is not pressed, cycle the effects chains on EffectUnit2
         if (value === MIDI_UP) {
-            engine.setValue(`[EffectRack1_EffectUnit2]`, "next_chain", 1);
+            engine.setValue("[EffectRack1_EffectUnit2]", "next_chain", 1);
         } else if (value === MIDI_DOWN) {
-            engine.setValue(`[EffectRack1_EffectUnit2]`, "prev_chain", 1);
+            engine.setValue("[EffectRack1_EffectUnit2]", "prev_chain", 1);
         }
     } else {
         // If no shift is pressed, cycle through both QuickEffectRack filters
