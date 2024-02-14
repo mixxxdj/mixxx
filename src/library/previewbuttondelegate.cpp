@@ -49,8 +49,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(
           m_column(column),
           m_pPreviewDeckPlay(make_parented<ControlProxy>(
                   kPreviewDeckGroup, QStringLiteral("play"), this)),
-          m_pCueGotoAndPlay(make_parented<ControlProxy>(
-                  kPreviewDeckGroup, QStringLiteral("cue_gotoandplay"), this)),
+          m_pCueGotoAndPlay(kPreviewDeckGroup, QStringLiteral("cue_gotoandplay")),
           m_pButton(make_parented<LibraryPreviewButton>(parent)) {
     DEBUG_ASSERT(m_column >= 0);
 
@@ -226,7 +225,7 @@ void PreviewButtonDelegate::buttonClicked() {
     } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
         // Since the Preview deck might be hidden, starting at the main cue
         // is a predictable behavior.
-        m_pCueGotoAndPlay->set(1.0);
+        m_pCueGotoAndPlay.set(1.0);
         startedPlaying = true;
     } else {
         m_pPreviewDeckPlay->set(0.0);
