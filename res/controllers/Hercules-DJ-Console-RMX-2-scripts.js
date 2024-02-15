@@ -47,8 +47,8 @@ var DJCRMX2 = {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-DJCRMX2.jogwheelSensivity = 1;
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+DJCRMX2.jogwheelSensitivity = 1;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift (default: 10).
@@ -839,7 +839,7 @@ DJCRMX2.Deck.prototype.wheelTurn = function(value) {
     if (engine.isScratching(deck)) {
         engine.scratchTick(deck, newValue);
     } else {
-        engine.setValue(this.currentDeck, "jog", newValue * DJCRMX2.jogwheelSensivity);
+        engine.setValue(this.currentDeck, "jog", newValue * DJCRMX2.jogwheelSensitivity);
     }
 };
 
