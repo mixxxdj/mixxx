@@ -1,55 +1,47 @@
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global midi                                                        */
-/* global components                                                  */
-////////////////////////////////////////////////////////////////////////
-var DJCRMX2 = {};
-
 /*
 	Author: 		DJMaxergy
 	Version: 		1.00, 02/15/2024
 	Description: 	Hercules DJ Console RMX 2 Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/herculesDJConsoleRMX2mapping_overhaul
-    
+
     Copyright (c) 2024 DJMaxergy, licensed under GPL version 2 or later
     Copyright (c) 2016 Circuitfry, base for this mapping
-    
+
     Contributors:
     - Circuitfry: initial Hercules DJ Console RMX 2 mapping
-      
+
     GPL license notice for current version:
     This program is free software; you can redistribute it and/or modify it under the terms of the
     GNU General Public License as published by the Free Software Foundation; either version 2
     of the License, or (at your option) any later version.
-    
+
     This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
     without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
     the GNU General Public License for more details.
-    
+
     You should have received a copy of the GNU General Public License along with this program; if
     not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-    
-    
+
+
     MIT License for earlier versions:
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software
     and associated documentation files (the "Software"), to deal in the Software without
     restriction, including without limitation the rights to use, copy, modify, merge, publish,
     distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
     Software is furnished to do so, subject to the following conditions:
-    
+
     The above copyright notice and this permission notice shall be included in all copies or
     substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
     BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
     DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
+var DJCRMX2 = {};
 
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
@@ -72,7 +64,7 @@ DJCRMX2.autoPFL = true;
 // If false, deck vu meter shows deck output (mono) (default: false).
 DJCRMX2.vuMeterOutputMaster = false;
 
-// If true, Samplers and EffectRack get shown or hidden in dependance of Pad-Mode (default: false).
+// If true, Samplers and EffectRack get shown or hidden in dependence of Pad-Mode (default: false).
 DJCRMX2.showHideSamplersEffectsOnPadMode = false;
 
 
@@ -178,7 +170,7 @@ DJCRMX2.init = function(id) {
     // init microphone section:
     DJCRMX2.micOnOffButton = new components.Button({
         group: "[Microphone]",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (engine.getValue(this.group, "input_configured")) {
                 if (value) {
                     engine.setValue(this.group, "talkover", 1);
@@ -197,7 +189,7 @@ DJCRMX2.init = function(id) {
     midi.sendShortMsg(0xB0, 0x7F, 0x7F); // B0 7F xx -> any value
 };
 
-DJCRMX2.shutdown = function(id) {
+DJCRMX2.shutdown = function(_id) {
     engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0);
     engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0);
 
@@ -205,38 +197,28 @@ DJCRMX2.shutdown = function(id) {
 };
 
 DJCRMX2.resetLeds = function() {
-    var deckOffset = 0,
+    let deckOffset = 0,
         led = 0,
         i = 0;
 
     // non-pad deck Leds:
     for (deckOffset in DJCRMX2.channelGroupsNonPad) {
-        if (DJCRMX2.channelGroupsNonPad.hasOwnProperty(deckOffset)) {
-            for (led in DJCRMX2.nonPadDeckLeds) {
-                if (DJCRMX2.nonPadDeckLeds.hasOwnProperty(led)) {
-                    midi.sendShortMsg(0x90, DJCRMX2.nonPadDeckLeds[led] + DJCRMX2.channelGroupsNonPad[deckOffset], 0);
-                }
-            }
+        for (led in DJCRMX2.nonPadDeckLeds) {
+            midi.sendShortMsg(0x90, DJCRMX2.nonPadDeckLeds[led] + DJCRMX2.channelGroupsNonPad[deckOffset], 0);
         }
     }
     // pad deck Leds:
     for (deckOffset in DJCRMX2.channelGroupsPad) {
-        if (DJCRMX2.channelGroupsPad.hasOwnProperty(deckOffset)) {
-            for (led in DJCRMX2.padLedGroups) {
-                if (DJCRMX2.padLedGroups.hasOwnProperty(led)) {
-                    for (i = 0; i < 4; i++) {
-                        midi.sendShortMsg(0x90, DJCRMX2.padLedGroups[led] + DJCRMX2.channelGroupsPad[deckOffset] + i, 0);
-                        midi.sendShortMsg(0xB0, DJCRMX2.padLedGroups[led] + DJCRMX2.channelGroupsPad[deckOffset] + i, 0);
-                    }
-                }
+        for (led in DJCRMX2.padLedGroups) {
+            for (i = 0; i < 4; i++) {
+                midi.sendShortMsg(0x90, DJCRMX2.padLedGroups[led] + DJCRMX2.channelGroupsPad[deckOffset] + i, 0);
+                midi.sendShortMsg(0xB0, DJCRMX2.padLedGroups[led] + DJCRMX2.channelGroupsPad[deckOffset] + i, 0);
             }
         }
     }
     // general Leds:
     for (led in DJCRMX2.generalLeds) {
-        if (DJCRMX2.generalLeds.hasOwnProperty(led)) {
-            midi.sendShortMsg(0x90, DJCRMX2.generalLeds[led], 0);
-        }
+        midi.sendShortMsg(0x90, DJCRMX2.generalLeds[led], 0);
     }
     //VU meter Leds:
     for (i = 0; i < 12; i++) {
@@ -260,9 +242,9 @@ DJCRMX2.incomingData = function(data, length) {
     //[F0 00 01 4E 0E 06 02 00 00 00 00 00 00 00 F7] Channel 1 Shift release
     //[F0 00 01 4E 0E 06 02 00 01 00 01 00 00 00 F7] Channel 2 Shift press
     //[F0 00 01 4E 0E 06 02 00 01 00 00 00 00 00 F7] Channel 2 Shift release
-    var typeIndex = data[6], //Mode = 0x0E, Shift = 0x02
-        deckIndex = data[8], //Deck 1 = 0x00, Deck 2 = 0x01
-        padModeIndex = data[10]; //Effect = 0x00, Sampler = 0x01, Cue = 0x03, Loop = 0x02
+    const typeIndex = data[6], //Mode = 0x0E, Shift = 0x02
+          deckIndex = data[8], //Deck 1 = 0x00, Deck 2 = 0x01
+          padModeIndex = data[10]; //Effect = 0x00, Sampler = 0x01, Cue = 0x03, Loop = 0x02
 
     if (length > 10 && typeIndex === 0x0E) {
         if (deckIndex < 0x02 && deckIndex >= 0x00) {
@@ -275,7 +257,7 @@ DJCRMX2.incomingData = function(data, length) {
 };
 
 DJCRMX2.onPadModeChanged = function(index) {
-    var nonActiveIndex = index ? 0 : 1,
+    let nonActiveIndex = index ? 0 : 1,
         showSamplers = true,
         showEffectRack = true;
 
@@ -314,7 +296,7 @@ DJCRMX2.doNavigate = function(direction) {
 };
 
 DJCRMX2.getRotaryDelta = function(value) {
-    var delta = 0x40 - Math.abs(0x40 - value),
+    let delta = 0x40 - Math.abs(0x40 - value),
         isCounterClockwise = value > 0x40;
 
     if (isCounterClockwise) {
@@ -329,7 +311,7 @@ DJCRMX2.getRotaryDelta = function(value) {
 ///////////////////////////////////////////////////////////////
 DJCRMX2.flashLEDState = false;
 DJCRMX2.flashLEDHandler = function(channelGroup, padGroup, index) {
-    var midiChannel = DJCRMX2.channelGroupsPad[channelGroup] + DJCRMX2.padLedGroups[padGroup] + index;
+    const midiChannel = DJCRMX2.channelGroupsPad[channelGroup] + DJCRMX2.padLedGroups[padGroup] + index;
 
     DJCRMX2.flashLEDState = !DJCRMX2.flashLEDState;
     midi.sendShortMsg(0x90, midiChannel, DJCRMX2.flashLEDState ? 0x7F : 0x00);
@@ -348,7 +330,7 @@ DJCRMX2.vuMeterTwinkle = function() {
 };
 
 DJCRMX2.vuMeterLeds = function(value, group, control) {
-    var midiOut = 0,
+    let midiOut = 0,
         stepSize = 1 / 5,
         deckOffset = [0x49, 0x4F],
         deck = 0,
@@ -365,7 +347,7 @@ DJCRMX2.vuMeterLeds = function(value, group, control) {
         deck = group.match(/\d+/)[0];
     }
 
-    for (var i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
         if (value > ((i + 0.1) * stepSize)) {
             midiOut = 0x7F;
         } else {
@@ -386,16 +368,16 @@ DJCRMX2.vuMeterLeds = function(value, group, control) {
 //                             DECKS                                  //
 ////////////////////////////////////////////////////////////////////////
 
-DJCRMX2.Deck = function(deckNumbers, channel) {
+DJCRMX2.Deck = function(deckNumbers, _channel) {
     components.Deck.call(this, deckNumbers);
 
-    var theDeck = this;
+    const theDeck = this;
     theDeck.samplerBankIndex = 0;
 
     // save set up speed slider range from the Mixxx settings:
     theDeck.setUpSpeedSliderRange = engine.getValue(this.currentDeck, "rateRange");
 
-    this.shiftButton = function(channel, control, value, status, group) {
+    this.shiftButton = function(channel, control, value, _status, _group) {
         if (value === 0x7F) {
             this.shift();
         } else {
@@ -434,7 +416,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
 
     this.loadButton = new components.Button({
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value === 0x7F) {
                     engine.setValue(this.group, "LoadSelectedTrack", true);
                     if (DJCRMX2.autoPFL) {
@@ -449,7 +431,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.setValue(this.group, "eject", value ? 1 : 0);
                 if (value === 0x7F && DJCRMX2.autoPFL) {
                     engine.setValue(this.group, "pfl", false);
@@ -461,12 +443,12 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.ffButton = new components.Button({
         number: deckNumbers,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.setValue(this.group, "fwd", value);
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value === 0x7F) {
                     engine.brake(this.number, 1);
                 }
@@ -477,12 +459,12 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.rwButton = new components.Button({
         number: deckNumbers,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.setValue(this.group, "back", value);
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.spinback(this.number, value > 0);
             };
         },
@@ -491,13 +473,13 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.pitchBendIncrButton = new components.Button({
         number: deckNumbers,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.setValue(this.group, "rate_temp_up", value);
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, status, group) {
-                var range = engine.getValue(this.group, "rateRange");
+            this.input = function(channel, control, value, _status, _group) {
+                let range = engine.getValue(this.group, "rateRange");
 
                 if ((range * 2) > 0.90) {
                     range = 0.90;
@@ -515,13 +497,13 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.pitchBendDecrButton = new components.Button({
         number: deckNumbers,
         unshift: function() {
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 engine.setValue(this.group, "rate_temp_down", value);
             };
         },
         shift: function() {
-            this.input = function(channel, control, value, status, group) {
-                var range = engine.getValue(this.group, "rateRange");
+            this.input = function(channel, control, value, _status, _group) {
+                let range = engine.getValue(this.group, "rateRange");
 
                 if ((range / 2) < theDeck.setUpSpeedSliderRange) {
                     range = theDeck.setUpSpeedSliderRange;
@@ -539,13 +521,13 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.loopButtons = [];
     this.samplerButtons = [];
     this.hotcueButtons = [];
-    for (var i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 4; i++) {
         this.loopButtons[i] = new components.Button({
             group: this.currentDeck,
             number: i,
             unshift: function() {
                 if (this.number === 1) {
-                    this.input = function(channel, control, value, status, group) {
+                    this.input = function(channel, control, value, _status, _group) {
                         if (value === 0x7F) {
                             if (engine.getValue(this.group, "loop_enabled")) {
                                 engine.setValue(this.group, "reloop_toggle", true);
@@ -567,7 +549,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
             },
             shift: function() {
                 if (this.number === 1) {
-                    this.input = function(channel, control, value, status, group) {
+                    this.input = function(channel, control, value, _status, _group) {
                         engine.setValue(this.group, "beatlooproll_" + DJCRMX2.looprollIntervals[this.number - 1] + "_activate", value);
                     };
                     this.outKey = "beatlooproll_" + DJCRMX2.looprollIntervals[this.number - 1] + "_activate";
@@ -588,7 +570,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
             loaded: 0x7F,
             empty: 0x00,
             unshift: function() {
-                this.input = function(channel, control, value, status, group) {
+                this.input = function(channel, control, value, status, _group) {
                     if (this.isPress(channel, control, value, status)) {
                         if (engine.getValue(this.group, "track_loaded") === 0) {
                             engine.setValue(this.group, "LoadSelectedTrack", 1);
@@ -601,7 +583,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
             },
             shift: function() {
                 this.blockSamplerPad = false;
-                this.input = function(channel, control, value, status, group) {
+                this.input = function(channel, control, value, status, _group) {
                     if (value === 0x00) {
                         this.blockSamplerPad = false;
                     }
@@ -634,7 +616,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.effectUnit.enableButtons[2].midi = [0x90, DJCRMX2.padLedGroups.effect + DJCRMX2.channelGroupsPad[this.currentDeck] + 0x01];
     this.effectUnit.enableButtons[3].midi = [0x90, DJCRMX2.padLedGroups.effect + DJCRMX2.channelGroupsPad[this.currentDeck] + 0x02];
     this.effectUnit.effectFocusButton.midi = [0x90, DJCRMX2.padLedGroups.effect + DJCRMX2.channelGroupsPad[this.currentDeck] + 0x03];
-    this.effectUnit.dryWetKnob.input = function(channel, control, value, status, group) {
+    this.effectUnit.dryWetKnob.input = function(channel, control, value, _status, _group) {
         this.inSetParameter(this.inGetParameter() + DJCRMX2.getRotaryDelta(value) / 40);
     };
     this.effectUnit.init();
@@ -642,7 +624,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
     this.loopModeKnob = new components.Encoder({
         unshift: function() {
             this.inKey = "beatloop_size";
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 if (value === 0x01) {
                     this.inSetParameter(this.inGetParameter() * 2);
                 } else if (value === 0x7F) {
@@ -652,7 +634,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
         },
         shift: function() {
             this.inKey = "loop_move";
-            this.input = function(channel, control, value, status, group) {
+            this.input = function(channel, control, value, _status, _group) {
                 this.inSetParameter(DJCRMX2.getRotaryDelta(value));
             };
         },
@@ -660,9 +642,9 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
 
     this.samplerModeKnob = new components.Encoder({
         number: deckNumbers,
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             // Disconnect samplerButtons:
-            for (var i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 4; i++) {
                 if (theDeck.samplerButtons[i] !== undefined) {
                     theDeck.samplerButtons[i].disconnect();
                     theDeck.samplerButtons[i].send(this.off);
@@ -704,7 +686,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
             }
 
             // Reconnect samplerButtons according samplerBankIndex:
-            for (var i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 4; i++) {
                 if (theDeck.samplerButtons[i] !== undefined) {
                     theDeck.samplerButtons[i].number = i + (4 * theDeck.samplerBankIndex);
                     theDeck.samplerButtons[i].group = "[Sampler" + (i + (4 * theDeck.samplerBankIndex)) + "]";
@@ -717,7 +699,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
 
     this.cueModeKnob = new components.Encoder({
         inKey: "key",
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value === 0x01) {
                 this.inSetParameter(this.inGetParameter() + 1);
             } else if (value === 0x7F) {
@@ -736,7 +718,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
 
     this.eqKnob = [];
     this.eqKillButton = [];
-    for (var k = 1; k <= 3; k++) {
+    for (let k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
             deck: this.currentDeck,
             number: k,
@@ -783,7 +765,7 @@ DJCRMX2.Deck = function(deckNumbers, channel) {
 DJCRMX2.Deck.prototype = new components.Deck();
 
 DJCRMX2.Deck.prototype.wheelPress = function(value) {
-    var deck = this.currentDeck.match(/\d+/)[0];
+    const deck = this.currentDeck.match(/\d+/)[0];
     if (this.scratchTimer !== 0) {
         // The wheel was touched again, reset the timer.
         engine.stopTimer(this.scratchTimer);
@@ -815,7 +797,7 @@ DJCRMX2.Deck.prototype.wheelPress = function(value) {
 };
 
 DJCRMX2.Deck.prototype.finishWheelPress = function() {
-    var deck = this.currentDeck.match(/\d+/)[0];
+    const deck = this.currentDeck.match(/\d+/)[0];
     this.scratchTimer = 0;
     var play = engine.getValue(this.group, "play");
     if (play !== 0) {
@@ -840,7 +822,7 @@ DJCRMX2.Deck.prototype.finishWheelPress = function() {
 };
 
 DJCRMX2.Deck.prototype.wheelTurn = function(value) {
-    var deck = this.currentDeck.match(/\d+/)[0];
+    const deck = this.currentDeck.match(/\d+/)[0];
     var newValue = 0;
     // Spinning backwards = 127 or less (less meaning faster)
     // Spinning forwards  = 1 or more (more meaning faster)
@@ -862,21 +844,21 @@ DJCRMX2.Deck.prototype.wheelTurn = function(value) {
 };
 
 DJCRMX2.wheelPress = function(channel, control, value, status, group) {
-    var deck = group.match(/\d+/)[0];
+    const deck = group.match(/\d+/)[0];
     DJCRMX2.decks[deck].wheelPress(value);
 };
 
 DJCRMX2.wheelTurn = function(channel, control, value, status, group) {
-    var deck = group.match(/\d+/)[0];
+    const deck = group.match(/\d+/)[0];
     DJCRMX2.decks[deck].wheelTurn(value);
 };
 
 DJCRMX2.Master = function() {
-    var ma = this;
+    const ma = this;
     ma.group = "[Master]";
     this.group = ma.group;
 
-    this.shiftButton = function(channel, control, value, status, group) {
+    this.shiftButton = function(channel, control, value, _status, _group) {
         if (value === 0x7F) {
             this.shift();
         } else {
@@ -929,11 +911,11 @@ DJCRMX2.Master = function() {
 DJCRMX2.Master.prototype = new components.ComponentContainer();
 
 DJCRMX2.Library = function() {
-    var lib = this;
+    const lib = this;
     lib.group = "[Library]";
     this.group = lib.group;
 
-    this.shiftButton = function(channel, control, value, status, group) {
+    this.shiftButton = function(channel, control, value, _status, _group) {
         if (value === 0x7F) {
             this.shift();
         } else {
@@ -980,7 +962,7 @@ DJCRMX2.Library = function() {
     });
 
     this.navigateUpButton = new components.Button({
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 DJCRMX2.doNavigate(-1);
                 this.navBtnTimer = engine.beginTimer(125, () => DJCRMX2.doNavigate(-1));
@@ -997,7 +979,7 @@ DJCRMX2.Library = function() {
     });
 
     this.navigateDownButton = new components.Button({
-        input: function(channel, control, value, status, group) {
+        input: function(channel, control, value, _status, _group) {
             if (value) {
                 DJCRMX2.doNavigate(1);
                 this.navBtnTimer = engine.beginTimer(125, () => DJCRMX2.doNavigate(1));
