@@ -243,8 +243,8 @@ DJCRMX2.incomingData = function(data, length) {
     //[F0 00 01 4E 0E 06 02 00 01 00 01 00 00 00 F7] Channel 2 Shift press
     //[F0 00 01 4E 0E 06 02 00 01 00 00 00 00 00 F7] Channel 2 Shift release
     const typeIndex = data[6], //Mode = 0x0E, Shift = 0x02
-          deckIndex = data[8], //Deck 1 = 0x00, Deck 2 = 0x01
-          padModeIndex = data[10]; //Effect = 0x00, Sampler = 0x01, Cue = 0x03, Loop = 0x02
+        deckIndex = data[8], //Deck 1 = 0x00, Deck 2 = 0x01
+        padModeIndex = data[10]; //Effect = 0x00, Sampler = 0x01, Cue = 0x03, Loop = 0x02
 
     if (length > 10 && typeIndex === 0x0E) {
         if (deckIndex < 0x02 && deckIndex >= 0x00) {
@@ -257,8 +257,8 @@ DJCRMX2.incomingData = function(data, length) {
 };
 
 DJCRMX2.onPadModeChanged = function(index) {
-    let nonActiveIndex = index ? 0 : 1,
-        showSamplers = true,
+    const nonActiveIndex = index ? 0 : 1;
+    let showSamplers = true,
         showEffectRack = true;
 
     if (DJCRMX2.activePadMode[index] === DJCRMX2.padModes.effect) {
@@ -296,8 +296,8 @@ DJCRMX2.doNavigate = function(direction) {
 };
 
 DJCRMX2.getRotaryDelta = function(value) {
-    let delta = 0x40 - Math.abs(0x40 - value),
-        isCounterClockwise = value > 0x40;
+    let delta = 0x40 - Math.abs(0x40 - value);
+    const isCounterClockwise = value > 0x40;
 
     if (isCounterClockwise) {
         delta *= -1;
@@ -330,11 +330,11 @@ DJCRMX2.vuMeterTwinkle = function() {
 };
 
 DJCRMX2.vuMeterLeds = function(value, group, control) {
-    let midiOut = 0,
-        stepSize = 1 / 5,
+    let deck = 0,
+        midiOut = 0;
+    const stepSize = 1 / 5,
         deckOffset = [0x49, 0x4F],
-        deck = 0,
-        peakMidiOut = engine.getValue(group, "PeakIndicator") ? 0x7F : 0x00;
+        peakMidiOut = engine.getValue(group, "PeakIndicator") ? 0x7F : 0x00;   
 
     if (DJCRMX2.vuMeterOutputMaster) {
         if (control === "VuMeterL") {
