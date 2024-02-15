@@ -334,7 +334,7 @@ DJCRMX2.vuMeterLeds = function(value, group, control) {
         midiOut = 0;
     const stepSize = 1 / 5,
         deckOffset = [0x49, 0x4F],
-        peakMidiOut = engine.getValue(group, "PeakIndicator") ? 0x7F : 0x00;   
+        peakMidiOut = engine.getValue(group, "PeakIndicator") ? 0x7F : 0x00;
 
     if (DJCRMX2.vuMeterOutputMaster) {
         if (control === "VuMeterL") {
