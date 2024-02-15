@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.0" type="development" date="2024-02-12" timestamp="1707749791">
+    <release version="2.4.0" type="stable" date="2024-02-16" timestamp="1708041600">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -1422,10 +1422,6 @@
    #4845
   </li>
   <li>
-   Samplers: don't create extra empty players during startup
-   #12657
-  </li>
-  <li>
    Add effect chain menu button to Deere, polish in Tango
    #12735
   </li>
@@ -2025,6 +2021,11 @@
    Linux: possible crash when enabling a MIDI controller
    #12001
    Introduce with Qt 5.15.5, fixed in Qt 5.15.17 and Qt 6.6.3
+  </li>
+  <li>
+   Extra Samplers are created during startup, when found in a saved Sampler Bank
+   #12657
+   #12809
   </li>
  </ul>
 </description>
