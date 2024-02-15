@@ -165,8 +165,7 @@ void SamplerBank::slotLoadSamplerBank(double v) {
     }
 }
 
-bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath,
-        bool dontCreateEmptySamplers) {
+bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not
@@ -196,47 +195,31 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath,
         return false;
     }
 
-    const auto samplerNodes = root.childNodes();
-    if (samplerNodes.isEmpty()) {
-        return true;
-    }
-    for (int i = 0; i < samplerNodes.size(); i++) {
-        QDomNode n = samplerNodes.at(i);
+    QDomNode n = root.firstChild();
+
+    while (!n.isNull()) {
         QDomElement e = n.toElement();
-        if (e.isNull() || e.tagName() != "sampler") {
-            continue;
-        }
 
-        const QString group = e.attribute("group", "");
-        const QString location = e.attribute("location", "");
-        int samplerNum;
+        if (!e.isNull()) {
+            if (e.tagName() == "sampler") {
+                QString group = e.attribute("group", "");
+                QString location = e.attribute("location", "");
+                int samplerNum;
 
-        if (group.isEmpty() || !m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-            continue;
-        }
+                if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
+                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
+                        m_pCONumSamplers->set(samplerNum);
+                    }
 
-        // During startup we only increase the sampler count if there is
-        // a track to be loaded. This avoids
-        // * creating more sampler players than strictly necessary
-        // * an unnecessary large Load To > Sampler N submenu in the track menu
-        if (dontCreateEmptySamplers && location.isEmpty()) {
-            continue;
+                    if (location.isEmpty()) {
+                        m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
+                    } else {
+                        m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
+                    }
+                }
+            }
         }
-
-        // Later on, when the user loads a samplers file manually, we
-        // want to eject loaded tracks if the file's sample slot is empty.
-        // We also create new players even if they are not present in the
-        // GUI to not drop tracks loaded to invisible samplers when saving
-        // the samplers file.
-        if (static_cast<int>(m_pPlayerManager->numSamplers()) < samplerNum) {
-            m_pCONumSamplers->set(samplerNum);
-        }
-
-        if (location.isEmpty()) {
-            m_pPlayerManager->slotLoadTrackToPlayer(TrackPointer(), group, false);
-        } else {
-            m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
-        }
+        n = n.nextSibling();
     }
 
     file.close();
