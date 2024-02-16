@@ -85,8 +85,8 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     slotLoadTrack(pTrack);
 }
 
-void DlgCoverArtFullSize::initFetchedCoverArt(const QByteArray& fetchedCoverArtBytes) {
-    m_pixmap.loadFromData(fetchedCoverArtBytes);
+void DlgCoverArtFullSize::initFetchedCoverArt(QPixmap pixmap) {
+    m_pixmap = std::move(pixmap);
 
     // The real size will be calculated later by adjustImageAndDialogSize().
     resize(100, 100);

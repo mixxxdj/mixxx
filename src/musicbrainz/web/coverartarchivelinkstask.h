@@ -20,7 +20,7 @@ class CoverArtArchiveLinksTask : public network::JsonWebTask {
     ~CoverArtArchiveLinksTask() override = default;
 
   signals:
-    void succeeded(
+    void succeeded(const QUuid& albumReleaseId,
             const QList<QString>& allUrls);
 
   private:
