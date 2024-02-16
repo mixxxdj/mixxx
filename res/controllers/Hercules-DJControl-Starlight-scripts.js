@@ -73,6 +73,9 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
 
 
 DJCStarlight.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     DJCStarlight.scratchButtonState = true;
     DJCStarlight.scratchAction = {
         1: DJCStarlight.kScratchActionNone,

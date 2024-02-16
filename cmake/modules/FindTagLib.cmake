@@ -47,19 +47,23 @@ include(IsStaticLibrary)
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
+  if(UNIX AND NOT APPLE)
+    # priorize the taglib1 package introduced in https://aur.archlinux.org/packages/taglib1
+    set(ENV{PKG_CONFIG_PATH} "/usr/lib/taglib1/lib/pkgconfig/:$ENV{PKG_CONFIG_PATH}")
+  endif()
   pkg_check_modules(PC_TagLib QUIET taglib)
 endif()
 
 find_path(TagLib_INCLUDE_DIR
   NAMES tag.h
-  PATHS ${PC_TagLib_INCLUDE_DIRS}
+  HINTS ${PC_TagLib_INCLUDE_DIRS}
   PATH_SUFFIXES taglib
   DOC "TagLib include directory")
 mark_as_advanced(TagLib_INCLUDE_DIR)
 
 find_library(TagLib_LIBRARY
   NAMES tag
-  PATHS ${PC_TagLib_LIBRARY_DIRS}
+  HINTS ${PC_TagLib_LIBRARY_DIRS}
   DOC "TagLib library"
 )
 mark_as_advanced(TagLib_LIBRARY)

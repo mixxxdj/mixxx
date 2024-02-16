@@ -96,11 +96,11 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-01-29" timestamp="1706563668">
+    <release version="2.5.0" type="development" date="2024-02-15" timestamp="1708017985">
       <description>
 </description>
     </release>
-    <release version="2.4.0" type="development" date="2024-01-29" timestamp="1706563668">
+    <release version="2.4.0" type="stable" date="2024-02-16" timestamp="1708041600">
       <description>
  <p>
   Music Library: Tracks Table &amp; Track Menu
@@ -146,7 +146,9 @@
    #10537
    #11239
    #4577
-   #1947992
+   #10577
+   #11171
+   #10761
   </li>
   <li>
    Fix Recording table refresh issues
@@ -209,7 +211,7 @@
    #10931
   </li>
   <li>
-   Add menu for looking up track metadata at Discogs, Soundcoud and LastFM
+   Add menu for looking up track metadata at Discogs, SoundCloud and LastFM
    #4772
    #4836
   </li>
@@ -237,13 +239,9 @@
    #12521
   </li>
   <li>
-   Show 'Update ReplayGain' only in decks' menus
+   Add 'Update ReplayGain' decks' to track menus
+   #4031
    #4719
-  </li>
-  <li>
-   Fix showing wrong Remove hotkey
-   #11171
-   #10761
   </li>
   <li>
    Restore "Remove from playlist" in History
@@ -253,6 +251,19 @@
   <li>
    Enable Lock BPM action if any selected track BPM is unlocked
    #12385
+  </li>
+  <li>
+   Order BPM action by factor, show peview (for single track)
+   #12701
+   #10128
+  </li>
+  <li>
+   Provide the same features in all deck track menus
+   #12214
+  </li>
+  <li>
+   Track table header: Keep menu open after toggling a checkbox
+   #12218
   </li>
  </ul>
  <p>
@@ -791,7 +802,7 @@
    #10497
   </li>
   <li>
-   Fix: possible cash when ejecting track from a controller
+   Fix possible crash when ejecting track from a controller
    #11884
    #11819
   </li>
@@ -857,6 +868,16 @@
    #11735
   </li>
   <li>
+   Looping: reset loop_end_pos on eject
+   #12224
+   #12223
+  </li>
+  <li>
+   Fix Loop_out not seeking back
+   #12739
+   #12742
+  </li>
+  <li>
    ReadAheadManager: fix loop wraparound reader condition
    #11717
   </li>
@@ -866,14 +887,14 @@
    #11844
   </li>
   <li>
-   Looping: reset loop_end_pos on eject
-   #12224
-   #12223
-  </li>
-  <li>
    Make decks' xfader assignment persistent
    #12074
    #10122
+  </li>
+  <li>
+   Fix gain issue with cloned tracks
+   #12435
+   #10550
   </li>
  </ul>
  <p>
@@ -976,6 +997,10 @@
    waveform_zoom
    ranges
    #12393
+  </li>
+  <li>
+   Various mappings: Ensure required samplers are created
+   #12769
   </li>
  </ul>
  <p>
@@ -1174,12 +1199,16 @@
    #11973
   </li>
   <li>
-   Keyboard: Repeat certain control actions if key is held
+   Keyboard mapping: Repeat certain control actions if key is held
    #12474
   </li>
   <li>
    Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P
    #12639
+  </li>
+  <li>
+   Keyboard mapping: Various fixes
+   #12730
   </li>
   <li>
    Update keyboard sheet
@@ -1197,6 +1226,10 @@
    stars_up/_down
    ControlObjects
    #12591
+  </li>
+  <li>
+   hotcue_X_color control: Fix color not stored in cue
+   #12733
   </li>
  </ul>
  <p>
@@ -1300,6 +1333,10 @@
    #12477
   </li>
   <li>
+   LateNight: use default RGB waveform colors
+   #12712
+  </li>
+  <li>
    Add LateNight (64 Samplers)
    #11715
   </li>
@@ -1320,6 +1357,11 @@
   <li>
    Shade: Audio Latency meter fix
    #11601
+  </li>
+  <li>
+   Tango: allow to toggle crossfader independently from mixer
+   #12703
+   #12654
   </li>
   <li>
    Fix outdated tooltips
@@ -1383,6 +1425,14 @@
    #4617
    #4845
   </li>
+  <li>
+   Add effect chain menu button to Deere, polish in Tango
+   #12735
+  </li>
+  <li>
+   Skins: reload default.qss when (re)loading a skin
+   #12219
+  </li>
  </ul>
  <p>
   Waveforms and GL Widgets
@@ -1398,6 +1448,8 @@
    #10416
    #11734
    #12466
+   #12678
+   #12731
   </li>
   <li>
    Default to 60 Hz waveform refresh rate
@@ -1818,6 +1870,10 @@
    #12661
    #12650
   </li>
+  <li>
+   Fail early in case Taglib 2.0 is found
+   #12709
+  </li>
  </ul>
  <p>
   Track properties
@@ -1893,6 +1949,7 @@
    #12399
    #11663
    #11926
+   #12057
   </li>
   <li>
    macOS: set preferences dialog title to the selected page title
@@ -1936,6 +1993,14 @@
    #4785
    #9702
   </li>
+  <li>
+   Join Franch translations to "fr" and remove all untranslated English strings.
+   #12699
+  </li>
+  <li>
+   Apply changes from all pages when pressing Apply (like when pressing Okay)
+   #12194
+  </li>
  </ul>
  <p>
   Known issues
@@ -1945,13 +2010,26 @@
    Volume / Loudness spikes on Windows with M4A/AAC files.
   Last known working version is Windows 10 build 17763.
   Affected versions are Windows 10 build 19041 and Windows 11 build 22000.
-  A fix is promised in 2024-02 with Windows 11 build 26016.
    #12289
    #11094
   </li>
   <li>
    macOS: Library entries are now sorted using the language depending Unicode Collation Algorithm (UCA).
    #12517
+  </li>
+  <li>
+   macOS: Visual glitches with the main EQ sliders
+   #12517
+  </li>
+  <li>
+   Linux: possible crash when enabling a MIDI controller
+   #12001
+   Introduce with Qt 5.15.5, fixed in Qt 5.15.17 and Qt 6.6.3
+  </li>
+  <li>
+   Extra Samplers are created during startup, when found in a saved Sampler Bank
+   #12657
+   #12809
   </li>
  </ul>
 </description>

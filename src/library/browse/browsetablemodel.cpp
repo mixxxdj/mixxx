@@ -200,12 +200,14 @@ const QList<int>& BrowseTableModel::searchColumns() const {
 }
 
 void BrowseTableModel::setPath(mixxx::FileAccess path) {
-    if (m_pBrowseThread) {
-        if (path.info().hasLocation() && path.info().isDir()) {
-            m_currentDirectory = path.info().location();
-        } else {
-            m_currentDirectory = QString();
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_pBrowseThread) {
+        return;
+    }
+
+    if (path.info().hasLocation() && path.info().isDir()) {
+        m_currentDirectory = path.info().location();
+    } else {
+        m_currentDirectory = QString();
     }
     m_pBrowseThread->executePopulation(std::move(path), this);
 }

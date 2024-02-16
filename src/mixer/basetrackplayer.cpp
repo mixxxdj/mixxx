@@ -204,9 +204,15 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             this,
             &BaseTrackPlayerImpl::slotShiftCuesMillis);
 
-    // BPM of the current song
+    // BPM and key of the current song
     m_pFileBPM = std::make_unique<ControlObject>(ConfigKey(getGroup(), "file_bpm"));
+    m_pVisualBpm = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_bpm"));
     m_pKey = make_parented<ControlProxy>(getGroup(), "file_key", this);
+    m_pVisualKey = std::make_unique<ControlObject>(ConfigKey(getGroup(), "visual_key"));
+
+    m_pTimeElapsed = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_elapsed"));
+    m_pTimeRemaining = std::make_unique<ControlObject>(ConfigKey(getGroup(), "time_remaining"));
+    m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(getGroup(), "end_of_track"));
 
     m_pReplayGain = make_parented<ControlProxy>(getGroup(), "replaygain", this);
     m_pPlay = make_parented<ControlProxy>(getGroup(), "play", this);

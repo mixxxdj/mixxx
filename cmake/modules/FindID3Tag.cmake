@@ -50,14 +50,14 @@ endif()
 
 find_path(ID3Tag_INCLUDE_DIR
   NAMES id3tag.h
-  PATHS ${PC_ID3Tag_INCLUDE_DIRS}
+  HINTS ${PC_ID3Tag_INCLUDE_DIRS}
   PATH_SUFFIXES id3tag
   DOC "ID3Tag include directory")
 mark_as_advanced(ID3Tag_INCLUDE_DIR)
 
 find_library(ID3Tag_LIBRARY
   NAMES id3tag
-  PATHS ${PC_ID3Tag_LIBRARY_DIRS}
+  HINTS ${PC_ID3Tag_LIBRARY_DIRS}
   DOC "ID3Tag library"
 )
 mark_as_advanced(ID3Tag_LIBRARY)

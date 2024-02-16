@@ -539,7 +539,11 @@ TraktorS3.Controller = class {
         this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
-        for (let i = 1; i <= 8; ++i) {
+        const samNum = TraktorS3.SixteenSamplers ? 16 : 8;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        for (let i = 1; i <= samNum; ++i) {
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
         }

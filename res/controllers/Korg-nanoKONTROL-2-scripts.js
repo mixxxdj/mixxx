@@ -60,6 +60,12 @@ NK2.beatloopLengths=new Array(0.03125,0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 
 NK2.init = function init() { // called when the device is opened & set up
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     engine.setValue("[App]", "num_decks", NK2.numDecks);
+
+    const numSam = NK2.numDecks === 2 ? 6 : 4;
+    if (engine.getValue("[App]", "num_samplers") < numSam) {
+        engine.setValue("[App]", "num_samplers", numSam);
+    }
+
     NK2.setup()
 
     NK2.updateLEDs();

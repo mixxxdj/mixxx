@@ -53,14 +53,14 @@ endif()
 find_path(LibUSB_INCLUDE_DIR
   NAMES libusb.h
   PATH_SUFFIXES libusb libusb-1.0
-  PATHS ${PC_LibUSB_INCLUDE_DIRS}
+  HINTS ${PC_LibUSB_INCLUDE_DIRS}
   DOC "LibUSB include directory"
 )
 mark_as_advanced(LibUSB_INCLUDE_DIR)
 
 find_library(LibUSB_LIBRARY
   NAMES usb-1.0 usb
-  PATHS ${PC_LibUSB_LIBRARY_DIRS}
+  HINTS ${PC_LibUSB_LIBRARY_DIRS}
   DOC "LibUSB library"
 )
 mark_as_advanced(LibUSB_LIBRARY)

@@ -50,13 +50,13 @@ endif()
 
 find_path(rubberband_INCLUDE_DIR
   NAMES rubberband/RubberBandStretcher.h
-  PATHS ${PC_rubberband_INCLUDE_DIRS}
+  HINTS ${PC_rubberband_INCLUDE_DIRS}
   DOC "rubberband include directory")
 mark_as_advanced(rubberband_INCLUDE_DIR)
 
 find_library(rubberband_LIBRARY
   NAMES rubberband rubberband-library rubberband-dll
-  PATHS ${PC_rubberband_LIBRARY_DIRS}
+  HINTS ${PC_rubberband_LIBRARY_DIRS}
   DOC "rubberband library"
 )
 mark_as_advanced(rubberband_LIBRARY)

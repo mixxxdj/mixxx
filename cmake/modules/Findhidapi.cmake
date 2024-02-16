@@ -52,14 +52,14 @@ endif()
 
 find_path(hidapi_INCLUDE_DIR
   NAMES hidapi.h
-  PATHS ${PC_hidapi_INCLUDE_DIRS}
+  HINTS ${PC_hidapi_INCLUDE_DIRS}
   PATH_SUFFIXES hidapi
   DOC "hidapi include directory")
 mark_as_advanced(hidapi_INCLUDE_DIR)
 
 find_library(hidapi_LIBRARY
   NAMES hidapi-libusb hidapi
-  PATHS ${PC_hidapi_LIBRARY_DIRS}
+  HINTS ${PC_hidapi_LIBRARY_DIRS}
   DOC "hidapi library"
 )
 mark_as_advanced(hidapi_LIBRARY)
@@ -67,7 +67,7 @@ mark_as_advanced(hidapi_LIBRARY)
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
   find_library(hidapi-hidraw_LIBRARY
     NAMES hidapi-hidraw
-    PATHS ${PC_hidapi_LIBRARY_DIRS}
+    HINTS ${PC_hidapi_LIBRARY_DIRS}
     DOC "hidap-hidraw library"
   )
   mark_as_advanced(hidapi-hidraw_LIBRARY)

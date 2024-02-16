@@ -2690,9 +2690,10 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
-        m_hotcueColor->set(*newColor);
+        m_hotcueColor->setAndConfirm(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code
