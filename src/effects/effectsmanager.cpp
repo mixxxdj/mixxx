@@ -198,6 +198,10 @@ bool EffectsManager::isAdoptMetaknobSettingEnabled() const {
     return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }
 
+bool EffectsManager::isAdoptSuperknobSettingEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptSuperknobValue"), false);
+}
+
 void EffectsManager::readEffectsXml() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath(kEffectsXmlFile));
