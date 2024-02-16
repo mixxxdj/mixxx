@@ -516,9 +516,9 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
-    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
-    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
-        processInputMapping(it.value(), data, timestamp);
+    const auto inputMappings = m_pMapping->getInputMappings().values(mappingKey.key);
+    for (const auto& inputMapping : inputMappings) {
+        processInputMapping(inputMapping, data, timestamp);
     }
 }
 
