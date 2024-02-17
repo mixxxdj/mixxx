@@ -41,43 +41,43 @@ ShaderEffect {
     Mixxx.ControlProxy {
         id: filterHighControl
 
-        group: root.group
-        key: "filterHigh"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter3"
     }
 
     Mixxx.ControlProxy {
         id: filterHighKillControl
 
-        group: root.group
-        key: "filterHighKill"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "button_parameter3"
     }
 
     Mixxx.ControlProxy {
         id: filterMidControl
 
-        group: root.group
-        key: "filterMid"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter2"
     }
 
     Mixxx.ControlProxy {
         id: filterMidKillControl
 
-        group: root.group
-        key: "filterMidKill"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "button_parameter2"
     }
 
     Mixxx.ControlProxy {
         id: filterLowControl
 
-        group: root.group
-        key: "filterLow"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter1"
     }
 
     Mixxx.ControlProxy {
         id: filterLowKillControl
 
-        group: root.group
-        key: "filterLowKill"
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "button_parameter1"
     }
 
     waveformTexture: Image {
