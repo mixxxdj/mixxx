@@ -151,7 +151,12 @@ Item {
                         paths: {
                             let p = [];
                             for (let i = 0; i < preroll.numTriangles; i++) {
-                                p.push([Qt.point(preroll.width - i * preroll.triangleWidth, preroll.triangleHeight / 2), Qt.point(preroll.width - (i + 1) * preroll.triangleWidth, 0), Qt.point(preroll.width - (i + 1) * preroll.triangleWidth, preroll.triangleHeight), Qt.point(preroll.width - i * preroll.triangleWidth, preroll.triangleHeight / 2)]);
+                                p.push([
+                                        Qt.point(preroll.width - i * preroll.triangleWidth, preroll.triangleHeight / 2),
+                                        Qt.point(preroll.width - (i + 1) * preroll.triangleWidth, 0),
+                                        Qt.point(preroll.width - (i + 1) * preroll.triangleWidth, preroll.triangleHeight),
+                                        Qt.point(preroll.width - i * preroll.triangleWidth, preroll.triangleHeight / 2),
+                                ]);
                             }
                             return p;
                         }
@@ -180,7 +185,12 @@ Item {
                         paths: {
                             let p = [];
                             for (let i = 0; i < postroll.numTriangles; i++) {
-                                p.push([Qt.point(i * postroll.triangleWidth, postroll.triangleHeight / 2), Qt.point((i + 1) * postroll.triangleWidth, 0), Qt.point((i + 1) * postroll.triangleWidth, postroll.triangleHeight), Qt.point(i * postroll.triangleWidth, postroll.triangleHeight / 2)]);
+                                p.push([
+                                        Qt.point(i * postroll.triangleWidth, postroll.triangleHeight / 2),
+                                        Qt.point((i + 1) * postroll.triangleWidth, 0),
+                                        Qt.point((i + 1) * postroll.triangleWidth, postroll.triangleHeight),
+                                        Qt.point(i * postroll.triangleWidth, postroll.triangleHeight / 2),
+                                ]);
                             }
                             return p;
                         }
