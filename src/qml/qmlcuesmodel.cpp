@@ -39,10 +39,14 @@ QVariant QmlCuesModel::data(const QModelIndex& index, int role) const {
     }
 
     switch (role) {
-    case QmlCuesModel::StartPositionRole:
-        return pCue->getPosition().value();
-    case QmlCuesModel::EndPositionRole:
-        return pCue->getEndPosition().value();
+    case QmlCuesModel::StartPositionRole: {
+        const auto position = pCue->getPosition();
+        return position.isValid() ? position.value() : QVariant();
+    }
+    case QmlCuesModel::EndPositionRole: {
+        const auto position = pCue->getEndPosition();
+        return position.isValid() ? position.value() : QVariant();
+    }
     case QmlCuesModel::LabelRole:
         return pCue->getLabel();
     case QmlCuesModel::IsLoopRole:
