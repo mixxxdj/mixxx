@@ -2688,6 +2688,7 @@ if(QML)
   target_sources(mixxx-qml-lib PRIVATE
     src/qml/asyncimageprovider.cpp
     src/qml/qmlapplication.cpp
+    src/qml/qmlautoreload.cpp
     src/qml/qmlcontrolproxy.cpp
     src/qml/qmlconfigproxy.cpp
     src/qml/qmldlgpreferencesproxy.cpp
