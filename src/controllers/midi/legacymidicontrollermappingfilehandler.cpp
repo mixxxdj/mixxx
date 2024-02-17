@@ -271,7 +271,7 @@ QDomElement LegacyMidiControllerMappingFileHandler::makeTextElement(QDomDocument
 
 QDomElement LegacyMidiControllerMappingFileHandler::inputMappingToXML(
         QDomDocument* doc, const MidiInputMapping& mapping) const {
-    if (std::holds_alternative<QJSValue>(mapping.control)) {
+    if (std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
         return QDomElement();
     }
 

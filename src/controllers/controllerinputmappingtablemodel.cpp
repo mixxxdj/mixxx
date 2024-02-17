@@ -198,7 +198,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
 
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
 
-        if (std::holds_alternative<QJSValue>(mapping.control)) {
+        if (std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
             return QVariant();
         }
 
@@ -223,7 +223,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                             QStringLiteral(",") +
                             std::get<ConfigKey>(mapping.control).item);
                 }
-                return QVariant::fromStdVariant(mapping.control);
+                return QVariant::fromValue(&std::get<ConfigKey>(mapping.control));
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:

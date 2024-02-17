@@ -208,7 +208,7 @@ void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappin
                             qDebug() << "Set mapping for" << message << "to"
                                      << control.group << control.item;
                         },
-                        [message](const QJSValue& control) {
+                        [message](const std::shared_ptr<QJSValue>& control) {
                             Q_UNUSED(control);
                             qDebug() << "Set mapping for" << message << "to lambda";
                         }},
@@ -328,14 +328,14 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                             return;
                         },
                         [this, pEngine, channel, control, value, status](
-                                QJSValue function) {
+                                const std::shared_ptr<QJSValue>& function) {
                             const auto args = QJSValueList{
                                     channel,
                                     control,
                                     value,
                                     status,
                             };
-                            if (!pEngine->executeFunction(&function, args)) {
+                            if (!pEngine->executeFunction(function.get(), args)) {
                                 qCWarning(m_logBase)
                                         << "MidiController: Invalid "
                                            "anonymous script function";
@@ -633,7 +633,7 @@ QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue
     MidiInputMapping inputMapping(
             MidiKey(status, midino),
             MidiOption::Script,
-            scriptCode);
+            std::make_shared<QJSValue>(scriptCode));
 
     m_pMapping->addInputMapping(inputMapping.key.key, inputMapping);
     return pJsEngine->newQObject(new MidiInputHandleJSProxy(m_pMapping, inputMapping));

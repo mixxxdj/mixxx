@@ -149,15 +149,14 @@ struct MidiOutput {
 
     double min;
     double max;
-    union
-    {
-        uint32_t    message;
+    union {
+        uint32_t message;
         struct
         {
-            unsigned char    status  : 8;
-            unsigned char    control : 8;
-            unsigned char    on      : 8;
-            unsigned char    off     : 8;
+            unsigned char status : 8;
+            unsigned char control : 8;
+            unsigned char on : 8;
+            unsigned char off : 8;
         };
     };
 };
@@ -170,13 +169,12 @@ struct MidiKey {
         return key == other.key;
     }
 
-    union
-    {
-        uint16_t    key;
+    union {
+        uint16_t key;
         struct
         {
-            unsigned char    status  : 8;
-            unsigned char    control : 8;
+            unsigned char status : 8;
+            unsigned char control : 8;
         };
     };
 };
@@ -195,7 +193,7 @@ struct MidiInputMapping {
 
     MidiInputMapping(MidiKey key,
             MidiOptions options,
-            const std::variant<ConfigKey, QJSValue>& control)
+            const std::variant<ConfigKey, std::shared_ptr<QJSValue>>& control)
             : key(key),
               options(options),
               control(control) {
@@ -203,7 +201,7 @@ struct MidiInputMapping {
 
     MidiInputMapping(MidiKey key,
             MidiOptions options,
-            const std::variant<ConfigKey, QJSValue>& control,
+            const std::variant<ConfigKey, std::shared_ptr<QJSValue>>& control,
             const QString& description)
             : key(key),
               options(options),
@@ -223,10 +221,13 @@ struct MidiInputMapping {
                         options == other.options &&
                         std::get<ConfigKey>(control) == std::get<ConfigKey>(other.control) &&
                         description == other.description;
-            } else if constexpr (std::is_same_v<T, QJSValue>) {
+            } else if constexpr (std::is_same_v<T, std::shared_ptr<QJSValue>>) {
+                const std::shared_ptr<QJSValue> otherControl =
+                        std::get<std::shared_ptr<QJSValue>>(other.control);
+                const std::shared_ptr<QJSValue> thisControl =
+                        std::get<std::shared_ptr<QJSValue>>(control);
                 return key == other.key && options == other.options &&
-                        std::get<QJSValue>(control).strictlyEquals(
-                                std::get<QJSValue>(other.control)) &&
+                        otherControl->strictlyEquals(*thisControl) &&
                         description == other.description;
             } else
                 static_assert(always_false_v<T>, "non-exhaustive visitor");
@@ -237,7 +238,7 @@ struct MidiInputMapping {
 
     MidiKey key;
     MidiOptions options;
-    std::variant<ConfigKey, QJSValue> control;
+    std::variant<ConfigKey, std::shared_ptr<QJSValue>> control;
     QString description;
 };
 typedef QList<MidiInputMapping> MidiInputMappings;
