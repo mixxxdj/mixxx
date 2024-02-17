@@ -192,7 +192,7 @@ Item {
                 model: root.deckPlayer.beatsModel
 
                 Rectangle {
-                    property real alpha: Mixxx.Config.getInt("[Waveform]", "beatGridAlpha", 90) / 100
+                    property real alpha: 0.9 // TODO: Make this configurable (i.e., "[Waveform],beatGridAlpha" config option)
 
                     width: 1
                     height: waveform.height
