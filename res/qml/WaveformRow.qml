@@ -122,7 +122,7 @@ Item {
 
             width: waveformContainer.duration * effectiveZoomFactor
             height: parent.height
-            x: 0.5 * waveformContainer.width - playPositionControl.value * width
+            x: playMarker.screenPosition * waveformContainer.width - playPositionControl.value * width
             visible: root.deckPlayer.isLoaded
 
             WaveformShader {
@@ -273,9 +273,11 @@ Item {
         anchors.fill: parent
 
         ShapePath {
-            id: playMarkerPath
+            id: playMarker
 
-            startX: parent.width / 2
+            property real screenPosition: 0.5
+
+            startX: playMarkerShape.width * playMarker.screenPosition
             startY: 0
             strokeColor: Theme.waveformCursorColor
             strokeWidth: 1
@@ -283,7 +285,7 @@ Item {
             PathLine {
                 id: marker
 
-                x: playMarkerShape.width * playMarkerPath.screenPos
+                x: playMarkerShape.width * playMarker.screenPosition
                 y: playMarkerShape.height
             }
         }
