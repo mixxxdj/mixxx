@@ -1679,7 +1679,7 @@ class HIDController {
      */
     processIncomingPacket(packet, delta) {
 
-        HIDController.fastForIn(delta, (field_name) => {
+        HIDController.fastForIn(delta, (function(field_name) {
             // @ts-ignore ignoredControlChanges should be defined in the users mapping
             // see EKS-Otus.js for an example
             if (this.ignoredControlChanges !== undefined &&
@@ -1697,8 +1697,7 @@ class HIDController {
             } else {
                 console.warn(`HIDController.processIncomingPacket - Unknown field ${field.name} type ${field.type}`);
             }
-        }
-        );
+        }).bind(this)); // Qt < 6.2.4 : .bind(this) needed because of QTBUG-95677
     }
     /**
      * Get active group for this field
