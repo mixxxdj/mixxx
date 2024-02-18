@@ -930,27 +930,6 @@
                     <fourteen-bit-msb/>
                 </options>
             </control>
-
-            <control>
-                <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
-                <key>headGain</key>
-                <status>0xB6</status>
-                <midino>0x2D</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <description>HEADPHONES LEVEL - rotate - Headphone gain</description>
-                <group>[Master]</group>
-                <key>headGain</key>
-                <status>0xB6</status>
-                <midino>0x0D</midino>
-                <options>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
             <!-- MIXER Section END -->
 
             <!-- EFFECT Section START -->
