@@ -309,7 +309,8 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
         return;
     }
 
-    connection.executeCallback(coScript->get());
+        connection.executeCallback(coScript->get());
+    
 }
 
 // This function is a legacy version of makeConnection with several alternate
