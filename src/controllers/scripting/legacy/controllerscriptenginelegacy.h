@@ -58,7 +58,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
     QList<LegacyControllerMapping::ScriptFileInfo> m_scriptFiles;
-    QList<Setting> m_settings;
+    QHash<QString, QJSValue> m_settings;
 
     QFileSystemWatcher m_fileWatcher;
 

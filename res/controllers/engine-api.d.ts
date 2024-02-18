@@ -25,6 +25,15 @@ declare interface ScriptConnection {
 
 declare namespace engine {
     /**
+     * Gets the value of a controller setting
+     * The value is either set in the preferences dialog,
+     * or got restored from file.
+     * @param name Name of the setting (as specified in the XML file of the mapping)
+     * @returns Value of the setting, or undefined in failure case
+     */
+    function getControllerSetting(name: string): any;
+
+    /**
      * Gets the control value
      *
      * @param group Group of the control e.g. "[Channel1]"
