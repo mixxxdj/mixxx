@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QApplication>
-#include <QFileSystemWatcher>
 #include <QQmlApplicationEngine>
 
 #include "coreservices.h"
