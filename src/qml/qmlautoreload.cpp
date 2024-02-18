@@ -36,7 +36,10 @@ void QmlAutoReload::slotFileChanged(const QString& changedFile) {
 }
 
 void QmlAutoReload::clear() {
-    m_fileWatcher.removePaths(m_fileWatcher.files());
+    const auto files = m_fileWatcher.files();
+    if (!files.isEmpty()) {
+        m_fileWatcher.removePaths(files);
+    }
 }
 
 } // namespace qml
