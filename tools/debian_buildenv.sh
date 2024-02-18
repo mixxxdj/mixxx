@@ -109,6 +109,7 @@ case "$1" in
             qml6-module-qtquick-nativestyle \
             qml6-module-qtquick-shapes \
             qml6-module-qtquick-templates \
+            qml6-module-qtquick-window \
             qml6-module-qt-labs-qmlmodels \
             "${PACKAGES_EXTRA[@]}"
         ;;
