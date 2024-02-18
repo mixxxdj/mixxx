@@ -696,14 +696,14 @@ class HIDPacket {
         field.auto_repeat = undefined;
         field.auto_repeat_interval = undefined;
 
-        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8);
+        const packet_max_value = Math.pow(2, this.packSizes[field.pack] * 8) - 1;
         const signed = this.signedPackFormats.includes(field.pack);
         if (signed) {
-            field.min = 0 - (packet_max_value / 2) + 1;
-            field.max = (packet_max_value / 2) - 1;
+            field.min = 0 - ((packet_max_value + 1) / 2) + 1;
+            field.max = ((packet_max_value + 1) / 2) - 1;
         } else {
             field.min = 0;
-            field.max = packet_max_value - 1;
+            field.max = packet_max_value;
         }
 
         if (bitmask === undefined || bitmask === packet_max_value) {
