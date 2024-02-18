@@ -2575,6 +2575,7 @@ if(QML)
   list(APPEND QT_EXTRA_COMPONENTS "QuickTemplates2")
   list(APPEND QT_EXTRA_COMPONENTS "QuickWidgets")
   list(APPEND QT_EXTRA_COMPONENTS "QmlWorkerScript")
+  list(APPEND QT_EXTRA_COMPONENTS "ShaderTools")
 endif()
 find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
@@ -2789,6 +2790,11 @@ else()
 
       install(IMPORTED_RUNTIME_ARTIFACTS
         Qt${QT_VERSION_MAJOR}::QmlWorkerScript
+        DESTINATION "${MIXXX_INSTALL_DATADIR}"
+        COMPONENT applocal)
+
+      install(IMPORTED_RUNTIME_ARTIFACTS
+        Qt${QT_VERSION_MAJOR}::ShaderTools
         DESTINATION "${MIXXX_INSTALL_DATADIR}"
         COMPONENT applocal)
 
