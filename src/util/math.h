@@ -75,7 +75,7 @@ roundToFraction(double value, int denominator) {
 template<typename T>
         CMATH_CONSTEXPR T ratio2db(T a) {
     static_assert(std::is_floating_point_v<T>);
-    return log10(a) * 20;
+    return static_cast<T>(log10(a) * 20);
 }
 
 template<typename T>
