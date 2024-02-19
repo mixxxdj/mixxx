@@ -62,11 +62,11 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setShortName(QObject::tr("Ratio"));
     ratio->setDescription(
             QObject::tr("The Ratio knob determines how much the signal is "
-                        "attenuated above the chosen threshold. "
+                        "attenuated above the chosen threshold.\n"
                         "For a ratio of 4:1, one dB remains for every four dB of "
-                        "input signal above the threshold. "
+                        "input signal above the threshold.\n"
                         "At a ratio of 1:1 no compression is happening, as the "
-                        "input is exactly the output"));
+                        "input is exactly the output."));
     ratio->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     ratio->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     ratio->setNeutralPointOnScale(0);
@@ -89,7 +89,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     attack->setShortName(QObject::tr("Attack"));
     attack->setDescription(QObject::tr(
             "The Attack knob sets the time that determines how fast the "
-            "compression will set in once the signal exceeds the threshold"));
+            "compression \nwill set in once the signal exceeds the threshold"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     attack->setRange(0, defaultAttackMs, 250);
@@ -100,10 +100,10 @@ EffectManifestPointer CompressorEffect::getManifest() {
     release->setShortName(QObject::tr("Release"));
     release->setDescription(
             QObject::tr("The Release knob sets the time that determines how "
-                        "fast the compressor will recover from the gain "
+                        "fast the compressor will recover from the gain\n"
                         "reduction once the signal falls under the threshold. "
-                        "Depending on the input signal, short release times "
-                        "may introduce a 'pumping' effect and/or distortion"));
+                        "Depending on the input signal, short release times\n"
+                        "may introduce a 'pumping' effect and/or distortion."));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     release->setRange(0, defaultReleaseMs, 1500);
