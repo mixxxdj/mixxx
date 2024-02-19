@@ -1,10 +1,15 @@
 #include "widget/wsearchrelatedtracksmenu.h"
 
+#include <QCheckBox>
+#include <QMouseEvent>
 #include <QScreen>
+#include <QStyleOptionButton>
+#include <QWidgetAction>
 
 #include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
+#include "util/parented_ptr.h"
 #include "util/qt.h"
 #include "util/widgethelper.h"
 
@@ -78,12 +83,29 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
             elideActionText(
                     actionTextPrefix,
                     elidableTextSuffix);
-    addAction(
+
+    auto pCheckBox = make_parented<QCheckBox>(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
+            this);
+    pCheckBox->setProperty("query", searchQuery);
+    connect(pCheckBox.get(),
+            &QCheckBox::toggled,
+            this,
+            &WSearchRelatedTracksMenu::updateSearchButton);
+    // Use the event filter to capture clicks on the checkbox label
+    pCheckBox.get()->installEventFilter(this);
+
+    auto pAction = make_parented<QWidgetAction>(this);
+    pAction->setDefaultWidget(pCheckBox.get());
+    // While the checkbox is selected (via keyboard, not hovered by pointer)
+    // pressing Space will toggle it whereas pressing Return triggers the action.
+    connect(pAction.get(),
+            &QAction::triggered,
             this,
             [this, searchQuery]() {
                 emit triggerSearch(searchQuery);
             });
+    addAction(pAction.get());
 }
 
 QString WSearchRelatedTracksMenu::elideActionText(
@@ -331,5 +353,84 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
                     tr("Directory"),
                     locationPathWithTerminator);
         }
+    }
+
+    addSeparator();
+
+    m_pSearchAction = make_parented<QAction>(tr("&Search selected"), this);
+    addAction(m_pSearchAction.get());
+    m_pSearchAction.get()->setDisabled(true);
+    connect(m_pSearchAction.get(),
+            &QAction::triggered,
+            this,
+            &WSearchRelatedTracksMenu::combineQueriesTriggerSearch);
+}
+
+bool WSearchRelatedTracksMenu::eventFilter(QObject* obj, QEvent* e) {
+    if (e->type() == QEvent::MouseButtonPress) {
+        // Clicking any spot in the checkbox that is not inside the indicator's
+        // 'click' rectangle triggers the search, ignoring other checked boxes.
+        // Clicks on the indicator are passed on to the event filter, hence
+        // toggling the checkbox happens as usual.
+        QCheckBox* box = qobject_cast<QCheckBox*>(obj);
+        if (box) {
+            QMouseEvent* me = static_cast<QMouseEvent*>(e);
+            VERIFY_OR_DEBUG_ASSERT(me) {
+                return true;
+            }
+            QStyleOptionButton option;
+            option.initFrom(box);
+            auto pStyle = box->style();
+            if (!pStyle) {
+                return true;
+            }
+            const QRect indicatorClickRect = pStyle->subElementRect(QStyle::SE_CheckBoxClickRect,
+                    &option,
+                    box);
+            if (!indicatorClickRect.contains(me->pos())) {
+                // Text ('border' ractangle) was clicked, trigger the search.
+                const QString query = box->property("query").toString();
+                emit triggerSearch(query);
+                // Note that this click will not emit QAction::triggered like
+                // when pressing Return on a selected action, hence we need to
+                // make sure WTrackMenu closes when receiving triggerSearch().
+            }
+        }
+    }
+    return QObject::eventFilter(obj, e);
+}
+
+void WSearchRelatedTracksMenu::updateSearchButton() {
+    // Enable the Search button if at least one box is checked.
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchAction) {
+        return;
+    }
+    m_pSearchAction->setDisabled(true);
+    for (const auto* child : std::as_const(children())) {
+        const auto* box = qobject_cast<const QCheckBox*>(child);
+        if (box && box->isChecked()) {
+            m_pSearchAction->setEnabled(true);
+            return;
+        }
+    }
+}
+
+void WSearchRelatedTracksMenu::combineQueriesTriggerSearch() {
+    // collect queries of all checked checkboxes
+    QStringList queries;
+    for (const auto* child : std::as_const(children())) {
+        const auto* box = qobject_cast<const QCheckBox*>(child);
+        if (box && box->isChecked()) {
+            QString query = box->property("query").toString();
+            if (!query.isEmpty()) {
+                queries.append(query);
+            }
+        }
+    }
+    if (queries.isEmpty()) {
+        return;
+    } else {
+        QString queryCombo = queries.join(QStringLiteral(" "));
+        emit triggerSearch(queryCombo);
     }
 }

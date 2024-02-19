@@ -2,6 +2,8 @@
 
 #include <QMenu>
 
+#include "util/parented_ptr.h"
+
 class Track;
 
 class WSearchRelatedTracksMenu : public QMenu {
@@ -13,10 +15,15 @@ class WSearchRelatedTracksMenu : public QMenu {
 
     void addActionsForTrack(
             const Track& track);
+    bool eventFilter(QObject* obj, QEvent* e) override;
 
   signals:
     void triggerSearch(
             const QString& searchQuery);
+
+  private slots:
+    void updateSearchButton();
+    void combineQueriesTriggerSearch();
 
   private:
     void addTriggerSearchAction(
@@ -27,4 +34,6 @@ class WSearchRelatedTracksMenu : public QMenu {
     QString elideActionText(
             const QString& actionTextPrefix,
             const QString& elidableTextSuffix) const;
+
+    parented_ptr<QAction> m_pSearchAction;
 };
