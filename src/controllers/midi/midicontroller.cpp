@@ -34,8 +34,8 @@ MidiController::MidiController(const QString& deviceName)
     setDeviceCategory(tr("MIDI Controller"));
 }
 
-void MidiController::onBeforeEngineShutdown() {
-    Controller::onBeforeEngineShutdown();
+void MidiController::slotBeforeEngineShutdown() {
+    Controller::slotBeforeEngineShutdown();
     m_pMapping->removeInputHandlerMappings();
 }
 
@@ -275,26 +275,26 @@ void MidiController::receivedShortMessage(unsigned char status,
     if (isLearning()) {
         emit messageReceived(status, control, value);
 
-        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
-        if (it != m_temporaryInputMappings.constEnd()) {
-            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.find(mappingKey.key);
+        if (it != m_temporaryInputMappings.end()) {
+            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
         }
     }
 
-    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
-    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().find(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().end() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
 
-void MidiController::processInputMapping(const MidiInputMapping& mapping,
-                                         unsigned char status,
-                                         unsigned char control,
-                                         unsigned char value,
-                                         mixxx::Duration timestamp) {
+void MidiController::processInputMapping(MidiInputMapping& mapping,
+        unsigned char status,
+        unsigned char control,
+        unsigned char value,
+        mixxx::Duration timestamp) {
     Q_UNUSED(timestamp)
     unsigned char channel = MidiUtils::channelFromStatus(status);
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
@@ -305,47 +305,31 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        return std::visit(
-                MidiUtils::overloaded{
-                        [this, pEngine, channel, control, value, status](
-                                const ConfigKey& configKey) {
-                            QJSValue function =
-                                    pEngine->wrapFunctionCode(
-                                            configKey.item, 5);
-                            const auto args = QJSValueList{
-                                    channel,
-                                    control,
-                                    value,
-                                    status,
-                                    configKey.group,
-                            };
-                            if (!pEngine->executeFunction(&function, args)) {
-                                qCWarning(m_logBase)
-                                        << "MidiController: Invalid "
-                                           "script function"
-                                        << configKey.item;
-                            }
-                            return;
-                        },
-                        [this, pEngine, channel, control, value, status](
-                                const std::shared_ptr<QJSValue>& function) {
-                            const auto args = QJSValueList{
-                                    channel,
-                                    control,
-                                    value,
-                                    status,
-                            };
-                            if (!pEngine->executeFunction(function.get(), args)) {
-                                qCWarning(m_logBase)
-                                        << "MidiController: Invalid "
-                                           "anonymous script function";
-                            }
-                            return;
-                        }},
-                mapping.control);
+        if (std::holds_alternative<ConfigKey>(mapping.control)) {
+            // Lazily compute the QJSValue
+            QJSValue function = pEngine->wrapFunctionCode(
+                    std::get<ConfigKey>(mapping.control).item, 5);
+            mapping.control = std::make_shared<QJSValue>(function);
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+            return;
+        }
+
+        const auto args = QJSValueList{
+                channel,
+                control,
+                value,
+                status,
+        };
+        const auto& fun = std::get<std::shared_ptr<QJSValue>>(mapping.control);
+        if (!pEngine->executeFunction(fun.get(), args)) {
+            qCWarning(m_logBase) << "MidiController: Invalid script function";
+        }
+        return;
     }
 
-    if (!std::holds_alternative<ConfigKey>(mapping.control)) {
+    VERIFY_OR_DEBUG_ASSERT(std::holds_alternative<ConfigKey>(mapping.control)) {
         return;
     }
 

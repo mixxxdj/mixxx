@@ -222,12 +222,10 @@ struct MidiInputMapping {
                         std::get<ConfigKey>(control) == std::get<ConfigKey>(other.control) &&
                         description == other.description;
             } else if constexpr (std::is_same_v<T, std::shared_ptr<QJSValue>>) {
-                const std::shared_ptr<QJSValue> otherControl =
-                        std::get<std::shared_ptr<QJSValue>>(other.control);
-                const std::shared_ptr<QJSValue> thisControl =
-                        std::get<std::shared_ptr<QJSValue>>(control);
+                const auto& otherControl = std::get<std::shared_ptr<QJSValue>>(other.control);
+                const auto& thisControl = std::get<std::shared_ptr<QJSValue>>(control);
                 return key == other.key && options == other.options &&
-                        otherControl->strictlyEquals(*thisControl) &&
+                        thisControl->strictlyEquals(*otherControl) &&
                         description == other.description;
             } else
                 static_assert(always_false_v<T>, "non-exhaustive visitor");

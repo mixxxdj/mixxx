@@ -47,7 +47,7 @@ void Controller::startEngine()
     QObject::connect(m_pScriptEngineLegacy,
             &ControllerScriptEngineBase::beforeShutdown,
             this,
-            &Controller::onBeforeEngineShutdown);
+            &Controller::slotBeforeEngineShutdown);
 }
 
 void Controller::stopEngine() {
@@ -56,11 +56,6 @@ void Controller::stopEngine() {
         qCWarning(m_logBase) << "Controller::stopEngine(): No engine exists!";
         return;
     }
-
-    QObject::disconnect(m_pScriptEngineLegacy,
-            &ControllerScriptEngineBase::beforeShutdown,
-            this,
-            &Controller::onBeforeEngineShutdown);
 
     delete m_pScriptEngineLegacy;
     m_pScriptEngineLegacy = nullptr;
@@ -157,7 +152,7 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
 
     m_pScriptEngineLegacy->handleIncomingData(data);
 }
-void Controller::onBeforeEngineShutdown() {
+void Controller::slotBeforeEngineShutdown() {
     /* Override this to get called before the JS engine shuts down */
     qCDebug(m_logInput) << "Engine shutdown";
 }

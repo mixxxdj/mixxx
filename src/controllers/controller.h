@@ -71,7 +71,7 @@ class Controller : public QObject {
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     virtual bool applyMapping();
-    virtual void onBeforeEngineShutdown();
+    virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
     void startLearning();

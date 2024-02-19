@@ -78,7 +78,7 @@ class MidiController : public Controller {
     // For receiving System Exclusive messages
     void receive(const QByteArray& data, mixxx::Duration timestamp) override;
     int close() override;
-    void onBeforeEngineShutdown() override;
+    void slotBeforeEngineShutdown() override;
 
   private slots:
     bool applyMapping() override;
@@ -89,7 +89,7 @@ class MidiController : public Controller {
 
   private:
     void processInputMapping(
-            const MidiInputMapping& mapping,
+            MidiInputMapping& mapping,
             unsigned char status,
             unsigned char control,
             unsigned char value,

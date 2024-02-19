@@ -202,6 +202,12 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             return QVariant();
         }
 
+        const auto* const control = std::get_if<ConfigKey>(&mapping.control);
+
+        VERIFY_OR_DEBUG_ASSERT(control != nullptr) {
+            return QVariant();
+        }
+
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
@@ -218,12 +224,9 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return QVariant(
-                            std::get<ConfigKey>(mapping.control).group +
-                            QStringLiteral(",") +
-                            std::get<ConfigKey>(mapping.control).item);
+                    return QVariant(control->group + QStringLiteral(",") + control->item);
                 }
-                return QVariant::fromValue(&std::get<ConfigKey>(mapping.control));
+                return QVariant::fromValue(control);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
