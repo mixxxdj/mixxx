@@ -117,7 +117,10 @@ CompressorGroupState::CompressorGroupState(
           previousAttackCoeff(calculateBallistics(10, engineParameters)),
           previousReleaseParamMs(150),
           previousReleaseCoeff(calculateBallistics(150, engineParameters)),
-          previousMakeUpGain(0) {
+          previousMakeUpGain(1),
+          previousThresholdParam(-20),
+          previousThresholdParamRatio(db2ratio(-20.0f * 2)),
+          kMakeUpTargetRatio(db2ratio(kMakeUpTarget)) {
 }
 
 void CompressorEffect::loadEngineEffectParameters(
@@ -159,22 +162,30 @@ void CompressorEffect::processChannel(
 void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
         CSAMPLE* pOutput,
         const SINT& numSamples) {
-    double makeUpStateDB = pState->previousMakeUpGain;
+    double thresholdParam = m_pThreshold->value();
+    double thresholdRatio = pState->previousThresholdParamRatio;
+    if (thresholdParam != pState->previousThresholdParam) {
+        thresholdRatio = db2ratio(thresholdParam * 2);
+        pState->previousThresholdParam = thresholdParam;
+        pState->previousThresholdParamRatio = thresholdRatio;
+    }
+
     CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
-    if (maxSample > 0) {
-        double maxSampleDB = ratio2db(maxSample);
-        double minGainReductionDB = -maxSampleDB + kMakeUpTarget;
-        makeUpStateDB = kMakeUpAttackCoeff * minGainReductionDB +
-                (1 - kMakeUpAttackCoeff) * makeUpStateDB;
-        double levelDB = makeUpStateDB + maxSampleDB;
-        // logarithmic smoothing
-        if (levelDB > -1.0) {
-            makeUpStateDB = log10(levelDB + 2.0) - 1.0 - maxSampleDB;
+    if (maxSample > thresholdRatio) {
+        CSAMPLE_GAIN makeUpGainState = pState->previousMakeUpGain;
+        CSAMPLE_GAIN makeUpTargetRatio = pState->kMakeUpTargetRatio;
+        CSAMPLE_GAIN makeUp = makeUpTargetRatio / maxSample;
+        makeUpGainState = kMakeUpAttackCoeff * makeUp + (1 - kMakeUpAttackCoeff) * makeUpGainState;
+
+        // smoothing
+        if (makeUpGainState * maxSample > makeUpTargetRatio) {
+            CSAMPLE_GAIN k = (1 - makeUpTargetRatio * makeUpTargetRatio) /
+                    (makeUpGainState * maxSample + 1);
+            makeUpGainState = (1 - k) / maxSample;
         }
 
-        pState->previousMakeUpGain = makeUpStateDB;
-        CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(makeUpStateDB));
-        SampleUtil::applyGain(pOutput, gain, numSamples);
+        pState->previousMakeUpGain = makeUpGainState;
+        SampleUtil::applyGain(pOutput, makeUpGainState, numSamples);
     }
 }
 
