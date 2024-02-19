@@ -27,7 +27,10 @@ class CompressorGroupState : public EffectState {
     double previousAttackCoeff;
     double previousReleaseParamMs;
     double previousReleaseCoeff;
-    double previousMakeUpGain;
+    double previousThresholdParam;
+    double previousThresholdParamRatio;
+    CSAMPLE_GAIN previousMakeUpGain;
+    CSAMPLE_GAIN kMakeUpTargetRatio;
 };
 
 class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
