@@ -96,8 +96,470 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-02-15" timestamp="1708017985">
+    <release version="2.5.0" type="development" date="2024-01-15" timestamp="1705300139">
       <description>
+ <p>
+  Features
+ </p>
+ <ul>
+  <li>
+   Sync Lock: End of track checking is not needed
+   #11035
+  </li>
+  <li>
+   BaseExternalLibraryFeature: Add ability to import external playlists as crates
+   #11852
+  </li>
+  <li>
+   Logging: Include timestamps in messages by default
+   #11861
+  </li>
+  <li>
+   DlgPrefSound: Fix fetching of sample rate
+   #11951
+   11949
+  </li>
+  <li>
+   SearchQueryParser: Add "OR" search operator
+   #12061
+  </li>
+  <li>
+   MixxxMainWindow: Set window file path to the playing track
+   #12116
+  </li>
+  <li>
+   add beats_translate_move ControlEncoder
+   #12376
+  </li>
+  <li>
+   Playlist feature: add 'Shuffle playlist' sidebar action
+   #12498
+  </li>
+  <li>
+   New built-in effect: Glitch
+   #11329
+  </li>
+  <li>
+   Fullscreen toggle rework
+   #11566
+  </li>
+ </ul>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Traktor Kontrol S2 MK3: Add colored hotcues
+   #4637
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: mapping improvements
+   #12842
+  </li>
+ </ul>
+ <p>
+  Controller Backend
+ </p>
+ <ul>
+  <li>
+   Send sysex to all handlers
+   #12827
+  </li>
+  <li>
+   Add control for showing a deck's track menu
+   #10825
+  </li>
+ </ul>
+ <p>
+  Experimental QML Skin
+ </p>
+ <ul>
+  <li>
+   Fix type error in
+   Slider.qml
+   #11423
+  </li>
+  <li>
+   Allow switching between legacy and new QML UI with command arg
+   #12139
+  </li>
+  <li>
+   Add PlayerProxy missing current track when created after loading
+   #12559
+  </li>
+  <li>
+   add
+   qt6-qpa-plugins
+   to dependencies
+   #12549
+  </li>
+  <li>
+   fix(qml): Improve knobs by applying selective 4xMSAA on the Arc shape
+   #12541
+  </li>
+  <li>
+   Add QML interceptor to auto reload on file change
+   #12795
+  </li>
+  <li>
+   Add multi-sampling settings for QML
+   #12546
+   #12794
+   #12536
+  </li>
+ </ul>
+ <p>
+  Update to Qt6
+ </p>
+ <ul>
+  <li>
+   Qt6 switch
+   #11892
+  </li>
+  <li>
+   CMakeLists: Default
+   QT6
+   to
+   ON
+   #11934
+  </li>
+  <li>
+   Don't include X11Info on QT6
+   #5
+  </li>
+  <li>
+   Build with Qt6 and optionally with QML
+   #11608
+  </li>
+  <li>
+   Qt6: Use constInsert() template
+   #11847
+  </li>
+  <li>
+   Qt6 prepare
+   #11863
+  </li>
+  <li>
+   DlgAbout: Add Qt version to the dialog
+   #11862
+  </li>
+  <li>
+   CMakeLists: Fix
+   QT_TRANSLATION_FILE
+   path for Qt 6
+   #11880
+  </li>
+  <li>
+   LibraryControl: Enable control inputs for Qt 6
+   #11877
+  </li>
+  <li>
+   Disable broken tests and skip ANGLE DLL install on Windows
+   #93
+  </li>
+  <li>
+   Fix wrong Windows buildenv name and missing Qt6 switch for non CI builds
+   #11895
+  </li>
+  <li>
+   WWidget: Disable touch events on macOS (fixing trackpad issues on Qt 6)
+   #11870
+  </li>
+  <li>
+   Install libjpeg-turbo::jpeg to fix cover display with Qt6
+   #11922
+  </li>
+  <li>
+   Skins: Remove
+   border: 0px
+   from sidebar item styling
+   #11970
+   #11957
+  </li>
+  <li>
+   Introduce wrapper for non const iterators for erase and insert
+   #12201
+  </li>
+  <li>
+   Skins: Fix checkbox styling on Qt 6
+   #12050
+  </li>
+  <li>
+   Fix Qt6/QML build
+   #12255
+  </li>
+  <li>
+   Fix track color background with Qt6
+   #12380
+  </li>
+  <li>
+   multi-line delegate: fix bg color, Qt6 on Linux
+   #12478
+  </li>
+  <li>
+   Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
+   #12342
+  </li>
+ </ul>
+ <p>
+  Experimental iOs support
+ </p>
+ <ul>
+  <li>
+   CMakeLists: Support building for iOS
+   #12672
+  </li>
+  <li>
+   ConfigObject: Find resource path on iOS
+   #12687
+  </li>
+  <li>
+   DlgPrefInterface: Disable tooltips on iOS by default
+   #12689
+  </li>
+  <li>
+   SoundManager: Set up
+   AVAudioSession
+   on iOS
+   #12714
+  </li>
+  <li>
+   SoundManager: Use correct PortAudio backend on iOS
+   #12716
+  </li>
+  <li>
+   DesktopHelper: Add openUrl abstraction to support iOS
+   #12698
+  </li>
+  <li>
+   iOS packaging: Add Info.plist, launch screen and app icon
+   #12676
+  </li>
+  <li>
+   CmdlineArgs: Move config directory to a user-accessible location on iOS
+   #12688
+  </li>
+  <li>
+   ScreenSaverHelper: Implement screen lock suspension for iOS
+   #12673
+  </li>
+  <li>
+   DesktopHelper: Cond-compile out process creation on iOS
+   #12674
+  </li>
+  <li>
+   Sandbox: Add basic iOS support
+   #12675
+  </li>
+  <li>
+   VersionStore: Make iOS a recognized platform
+   #12665
+  </li>
+  <li>
+   MixxxApplication: Use QIOSIntegrationPlugin on iOS
+   #12666
+  </li>
+  <li>
+   MacOsVersion: Rename to AppleOsVersion
+   #12662
+  </li>
+  <li>
+   macOS: Add more
+   Q_OS_MACOS
+   cond-compiles where appropriate
+   #12663
+  </li>
+ </ul>
+ <p>
+  Misc Refactorings
+ </p>
+ <ul>
+  <li>
+   Add missing
+   &lt;Qt&gt;
+   include in
+   defs.h
+   #11348
+  </li>
+  <li>
+   engine: Minor refactor to prefer simplified ranged-for-loop
+   #11234
+  </li>
+  <li>
+   Delete unused EngineFilter
+   #11559
+  </li>
+  <li>
+   AnalyzerWaveform: Fix commented out code
+   #11561
+  </li>
+  <li>
+   Silence some float conversion warnings by making conversion explicit
+   #6
+  </li>
+  <li>
+   Remove usage of ControlObject::getControl
+   #11643
+  </li>
+  <li>
+   Fixed unnecessary transfer of the ownership before release which returns the pointer itself
+   #11726
+  </li>
+  <li>
+   add
+   ConfigObject::get-/setValue&lt;EnumType&gt;
+   #11883
+  </li>
+  <li>
+   ci: Enable
+   WARNINGS_FATAL
+   on macOS, too
+   #11905
+  </li>
+  <li>
+   Refactor timers (
+   #11807
+   ) 2nd try
+   #11850
+  </li>
+  <li>
+   Use
+   mixxx::audio::ChannelCount
+   type instead of
+   int
+   /
+   unsigned char
+   /etc.
+   #11941
+  </li>
+  <li>
+   refactor(util/timer): cleanup includes
+   #11937
+  </li>
+  <li>
+   Use
+   SampleRate
+   type consistently
+   #11904
+  </li>
+  <li>
+   CMakeLists: Match arbitrary
+   arm64-osx
+   triplets
+   #11933
+  </li>
+  <li>
+   Alex/reduce sample buffer memory usage
+   #11988
+  </li>
+  <li>
+   Fix clazy issues on
+   main
+   #12028
+  </li>
+  <li>
+   Tidy and modernize SampleBuffer
+   #11987
+  </li>
+  <li>
+   Refactor(parented_ptr): make trivially destructible in release mode, delete move operations
+   #11981
+  </li>
+  <li>
+   Labeler: Add more labels to the auto-labeler
+   #12106
+  </li>
+  <li>
+   macOS packaging: Enable app sandbox in ad-hoc-packaged (i.e. non-notarized) bundles too
+   #12101
+  </li>
+  <li>
+   FindPortMidi: Link ALSA in static builds on Linux
+   #12292
+   #12291
+  </li>
+  <li>
+   privat generated ui headers
+   #12060
+   #11407
+  </li>
+  <li>
+   ci: workaround runner-image issue
+   #12233
+  </li>
+  <li>
+   FindLibudev: Link hidapi and libusb with libudev in static builds on Linux
+   #12294
+  </li>
+  <li>
+   FindVorbis: Link ogg in static builds
+   #12297
+  </li>
+  <li>
+   MixxxApplication: Support linking Qt statically on Linux
+   #12284
+  </li>
+  <li>
+   FindSleef: Use OpenMP in static builds
+   #12295
+  </li>
+  <li>
+   Happy New Year 2024!
+   #12486
+  </li>
+  <li>
+   fix/History: remove obsolete placeholder playlists
+   #12494
+  </li>
+  <li>
+   Add missing Taglib dependency
+   #12830
+  </li>
+  <li>
+   fix: typo ;)
+   #12726
+  </li>
+  <li>
+   Update to latest vcpkg dependencies
+   #11649
+   #12512
+   #12067
+  </li>
+  <li>
+   GitHub actions updates
+   #11544
+   #11508
+   #11487
+   #11438
+   #11410
+   #11560
+   #11578
+   #11610
+   #11631
+   #11710
+   #11736
+   #11920
+   #11961
+   #12241
+   #12394
+   #12447
+   #12425
+   #12421
+   #12799
+   #12801
+   #12800
+   #12736
+   #12692
+   #12694
+   #12695
+   #12691
+   #12693
+   #12625
+   #12627
+   #12626
+   #12577
+  </li>
+ </ul>
 </description>
     </release>
     <release version="2.4.0" type="stable" date="2024-02-16" timestamp="1708041600">
@@ -1614,7 +2076,6 @@
    #12300
    #12543
    #12532
-   #12543
   </li>
   <li>
    CoverArtCache refactoring + Fix scrolling lag after updating Mixxx
