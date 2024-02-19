@@ -1,5 +1,18 @@
 #include "effects/backends/builtin/compressoreffect.h"
 
+namespace {
+constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
+constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0f;
+constexpr double defaultAttackMs = 10;
+constexpr double defaultReleaseMs = 150;
+constexpr CSAMPLE_GAIN defaultThresholdDB = -20;
+
+double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
+    return exp(-1000.0 / (paramMs * engineParameters.sampleRate()));
+}
+
+} // anonymous namespace
+
 // static
 QString CompressorEffect::getId() {
     return "org.mixxx.effects.compressor";
@@ -41,7 +54,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     threshold->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     threshold->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
     threshold->setNeutralPointOnScale(0);
-    threshold->setRange(-50, -20, 0);
+    threshold->setRange(-50, defaultThresholdDB, 0);
 
     EffectManifestParameterPointer ratio = pManifest->addParameter();
     ratio->setId("ratio");
@@ -79,7 +92,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
             "compression will set in once the signal exceeds the threshold"));
     attack->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     attack->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    attack->setRange(0, 10, 250);
+    attack->setRange(0, defaultAttackMs, 250);
 
     EffectManifestParameterPointer release = pManifest->addParameter();
     release->setId("release");
@@ -93,7 +106,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
                         "may introduce a 'pumping' effect and/or distortion"));
     release->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
-    release->setRange(0, 150, 1500);
+    release->setRange(0, defaultReleaseMs, 1500);
 
     EffectManifestParameterPointer gain = pManifest->addParameter();
     gain->setId("gain");
@@ -113,13 +126,13 @@ CompressorGroupState::CompressorGroupState(
         const mixxx::EngineParameters& engineParameters)
         : EffectState(engineParameters),
           previousStateDB(0),
-          previousAttackParamMs(10),
-          previousAttackCoeff(calculateBallistics(10, engineParameters)),
-          previousReleaseParamMs(150),
-          previousReleaseCoeff(calculateBallistics(150, engineParameters)),
+          previousAttackParamMs(defaultAttackMs),
+          previousAttackCoeff(calculateBallistics(defaultAttackMs, engineParameters)),
+          previousReleaseParamMs(defaultReleaseMs),
+          previousReleaseCoeff(calculateBallistics(defaultReleaseMs, engineParameters)),
           previousMakeUpGain(1),
-          previousThresholdParam(-20),
-          previousThresholdParamRatio(db2ratio(-20.0f * 2)),
+          previousThresholdParam(defaultThresholdDB),
+          previousThresholdParamRatio(db2ratio(defaultThresholdDB * 2)),
           kMakeUpTargetRatio(db2ratio(kMakeUpTarget)) {
 }
 
