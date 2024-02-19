@@ -3,8 +3,8 @@
 namespace {
 constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
 constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0f;
-constexpr double defaultAttackMs = 10;
-constexpr double defaultReleaseMs = 150;
+constexpr double defaultAttackMs = 1;
+constexpr double defaultReleaseMs = 300;
 constexpr CSAMPLE_GAIN defaultThresholdDB = -20;
 
 double calculateBallistics(double paramMs, const mixxx::EngineParameters& engineParameters) {
@@ -70,7 +70,7 @@ EffectManifestPointer CompressorEffect::getManifest() {
     ratio->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
     ratio->setUnitsHint(EffectManifestParameter::UnitsHint::Coefficient);
     ratio->setNeutralPointOnScale(0);
-    ratio->setRange(1.0, 4.0, 1000);
+    ratio->setRange(1.0, 6.0, 1000);
 
     EffectManifestParameterPointer knee = pManifest->addParameter();
     knee->setId("knee");
