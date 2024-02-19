@@ -81,6 +81,7 @@ case "$1" in
             libprotobuf-dev \
             libqt6core5compat6-dev\
             libqt6opengl6-dev \
+            libqt6shadertools6-dev \
             libqt6sql6-sqlite \
             libqt6svg6-dev \
             librubberband-dev \
@@ -99,11 +100,18 @@ case "$1" in
             portaudio19-dev \
             protobuf-compiler \
             qtkeychain-qt6-dev \
-            qt6-declarative-dev \
-            qml-module-qtquick-controls \
-            qml-module-qtquick-controls2 \
-            qml-module-qt-labs-qmlmodels \
-            qml-module-qtquick-shapes \
+            qt6-declarative-private-dev \
+            qt6-base-private-dev \
+            qt6-qpa-plugins \
+            qml6-module-qt5compat-graphicaleffects \
+            qml6-module-qtqml-workerscript \
+            qml6-module-qtquick-controls \
+            qml6-module-qtquick-layouts \
+            qml6-module-qtquick-nativestyle \
+            qml6-module-qtquick-shapes \
+            qml6-module-qtquick-templates \
+            qml6-module-qtquick-window \
+            qml6-module-qt-labs-qmlmodels \
             "${PACKAGES_EXTRA[@]}"
         ;;
     *)
