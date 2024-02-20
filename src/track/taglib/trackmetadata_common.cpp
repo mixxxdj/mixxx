@@ -268,8 +268,12 @@ void importTrackMetadataFromTag(
     }
 }
 
-bool isMultiValueTagEqual(const TagLib::String& taglibVal, const QString& mixxxVal) {
-    return toQString(taglibVal) == mixxxVal;
+bool isMultiValueTagEqual(const TagLib::String& taglibVal, QString mixxxVal) {
+    // Taglib 2 uses " / " instead of " " as a multi value separator.
+    // We may have read or write with either TagLib 1 or 2.
+    QString taglibValStripped = toQString(taglibVal).remove(" /");
+    QString mixxxValStripped = mixxxVal.remove(" /");
+    return taglibValStripped == mixxxValStripped;
 }
 
 void exportTrackMetadataIntoTag(
