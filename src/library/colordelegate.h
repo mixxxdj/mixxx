@@ -15,4 +15,11 @@ class ColorDelegate : public TableItemDelegate {
             QPainter* painter,
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
+
+    // returns an item's preferred size
+    QSize sizeHint(const QStyleOptionViewItem&,
+            const QModelIndex&) const;
+
+  private:
+    int m_preferredWidth;
 };

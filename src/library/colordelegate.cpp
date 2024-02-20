@@ -6,9 +6,15 @@
 
 #include "moc_colordelegate.cpp"
 #include "util/color/rgbcolor.h"
+#include "widget/wtracktableview.h"
 
 ColorDelegate::ColorDelegate(QTableView* pTableView)
-        : TableItemDelegate(pTableView) {
+        : TableItemDelegate(pTableView),
+          m_preferredWidth(static_cast<int>(WTrackTableView::kDefaultColumnWidth / 2)) {
+}
+
+QSize ColorDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const {
+    return QSize(m_preferredWidth, 0);
 }
 
 void ColorDelegate::paintItem(

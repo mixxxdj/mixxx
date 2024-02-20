@@ -102,9 +102,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static void setBpmColumnPrecision(int precision);
 
   protected:
-    static constexpr int defaultColumnWidth() {
-        return 50;
-    }
     static QStringList defaultTableColumns();
 
     // Build a map from the column names to their indices
@@ -284,4 +281,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     mutable QModelIndex m_toolTipIndex;
 
     static int s_bpmColumnPrecision;
+
+    const int m_defaultColumnWidth;
 };

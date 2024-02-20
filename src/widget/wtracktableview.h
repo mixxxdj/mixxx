@@ -56,6 +56,8 @@ class WTrackTableView : public WLibraryTableView {
         return m_pFocusBorderColor;
     }
 
+    static constexpr int kDefaultColumnWidth = 50;
+
   signals:
     void trackMenuVisible(bool visible);
 

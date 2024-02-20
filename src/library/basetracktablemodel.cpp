@@ -124,7 +124,8 @@ BaseTrackTableModel::BaseTrackTableModel(
           TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-          m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {
+          m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity),
+          m_defaultColumnWidth(static_cast<int>(WTrackTableView::kDefaultColumnWidth)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
@@ -155,107 +156,108 @@ void BaseTrackTableModel::initHeaderProperties() {
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_ALBUM,
             tr("Album"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST,
             tr("Album Artist"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_ARTIST,
             tr("Artist"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_BITRATE,
             tr("Bitrate"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_BPM,
             tr("BPM"),
-            defaultColumnWidth() * 2);
+            m_defaultColumnWidth * 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS,
             tr("Channels"),
-            defaultColumnWidth() / 2);
+            m_defaultColumnWidth / 2);
+    // Note that this is also set in ColorDelegate to be used for its sizeHint()
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_COLOR,
             tr("Color"),
-            defaultColumnWidth() / 2);
+            m_defaultColumnWidth / 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_COMMENT,
             tr("Comment"),
-            defaultColumnWidth() * 6);
+            m_defaultColumnWidth * 6);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER,
             tr("Composer"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_COVERART,
             tr("Cover Art"),
-            defaultColumnWidth() / 2);
+            m_defaultColumnWidth / 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
             tr("Date Added"),
-            defaultColumnWidth() * 3);
+            m_defaultColumnWidth * 3);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
             tr("Last Played"),
-            defaultColumnWidth() * 3);
+            m_defaultColumnWidth * 3);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
             tr("Duration"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE,
             tr("Type"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_GENRE,
             tr("Genre"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_GROUPING,
             tr("Grouping"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_KEY,
             tr("Key"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
             tr("Location"),
-            defaultColumnWidth() * 6);
+            m_defaultColumnWidth * 6);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW,
             tr("Preview"),
-            defaultColumnWidth() / 2);
+            m_defaultColumnWidth / 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_RATING,
             tr("Rating"),
-            defaultColumnWidth() * 2);
+            m_defaultColumnWidth * 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN,
             tr("ReplayGain"),
-            defaultColumnWidth() * 2);
+            m_defaultColumnWidth * 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE,
             tr("Samplerate"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED,
             tr("Played"),
-            defaultColumnWidth() * 2);
+            m_defaultColumnWidth * 2);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_TITLE,
             tr("Title"),
-            defaultColumnWidth() * 4);
+            m_defaultColumnWidth * 4);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER,
             tr("Track #"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_YEAR,
             tr("Year"),
-            defaultColumnWidth());
+            m_defaultColumnWidth);
 }
 
 void BaseTrackTableModel::setHeaderProperties(
@@ -332,7 +334,7 @@ QVariant BaseTrackTableModel::headerData(
             if (widthValue.isValid()) {
                 return widthValue;
             } else {
-                return defaultColumnWidth();
+                return m_defaultColumnWidth;
             }
         }
         case TrackModel::kHeaderNameRole: {
