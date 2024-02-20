@@ -268,6 +268,10 @@ void importTrackMetadataFromTag(
     }
 }
 
+bool isMultiValueTagEqual(const TagLib::String& taglibVal, const QString& mixxxVal) {
+    return toQString(taglibVal) == mixxxVal;
+}
+
 void exportTrackMetadataIntoTag(
         TagLib::Tag* pTag,
         const TrackMetadata& trackMetadata,
@@ -279,22 +283,17 @@ void exportTrackMetadataIntoTag(
     // field has not been modified in Mixxx.
     //
     // See also: <https://github.com/mixxxdj/mixxx/issues/12587>
-
-    const TagLib::String title = toTString(trackMetadata.getTrackInfo().getTitle());
-    if (title != pTag->title()) {
-        pTag->setTitle(title);
+    if (!isMultiValueTagEqual(pTag->title(), trackMetadata.getTrackInfo().getTitle())) {
+        pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
     }
-    const TagLib::String album = toTString(trackMetadata.getAlbumInfo().getTitle());
-    if (album != pTag->album()) {
-        pTag->setAlbum(album);
+    if (!isMultiValueTagEqual(pTag->album(), trackMetadata.getAlbumInfo().getTitle())) {
+        pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
     }
-    const TagLib::String artist = toTString(trackMetadata.getTrackInfo().getArtist());
-    if (artist != pTag->artist()) {
-        pTag->setArtist(artist);
+    if (!isMultiValueTagEqual(pTag->artist(), trackMetadata.getTrackInfo().getArtist())) {
+        pTag->setArtist(toTString(trackMetadata.getTrackInfo().getArtist()));
     }
-    const TagLib::String genre = toTString(trackMetadata.getTrackInfo().getGenre());
-    if (genre != pTag->genre()) {
-        pTag->setGenre(genre);
+    if (!isMultiValueTagEqual(pTag->genre(), trackMetadata.getTrackInfo().getGenre())) {
+        pTag->setGenre(toTString(trackMetadata.getTrackInfo().getGenre()));
     }
 
     // Using setComment() from TagLib::Tag might have undesirable
@@ -302,9 +301,8 @@ void exportTrackMetadataIntoTag(
     // different purposes, e.g. ID3v2. In this case setting the
     // comment here should be omitted.
     if (0 == (writeMask & WriteTagFlag::OmitComment)) {
-        const TagLib::String comment = toTString(trackMetadata.getTrackInfo().getComment());
-        if (comment != pTag->comment()) {
-            pTag->setComment(comment);
+        if (!isMultiValueTagEqual(pTag->comment(), trackMetadata.getTrackInfo().getComment())) {
+            pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
         }
     }
 
