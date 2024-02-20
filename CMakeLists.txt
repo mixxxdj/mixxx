@@ -2411,7 +2411,7 @@ string(REPLACE ";" "|" CMAKE_PREFIX_PATH_ALT_SEP "${CMAKE_PREFIX_PATH}")
 option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
   set(MIN_LIBKEYFINDER_VERSION 2.2.4)
-  set(FETCH_LIBKEYFINDER_VERSION 2.2.6)
+  set(FETCH_LIBKEYFINDER_VERSION 2.2.8)
   find_package(KeyFinder ${MIN_LIBKEYFINDER_VERSION})
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PRIVATE KeyFinder::KeyFinder)
@@ -2429,8 +2429,8 @@ if(KEYFINDER)
     # copy it into DOWNLOAD_DIR under DOWNLOAD_NAME prior to starting
     # the configuration.
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/v${FETCH_LIBKEYFINDER_VERSION}.zip"
-      URL_HASH SHA256=f15deb56c2dcaa6b10dc3717a7d2f42a8407c04ad550f694de42118be998d256
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/refs/tags/${FETCH_LIBKEYFINDER_VERSION}.zip"
+      URL_HASH SHA256=4f10e9e5673d948776e47e78273fa4d61408155cb0e210af1538c83222f285d4
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/downloads"
       DOWNLOAD_NAME "libkeyfinder-${FETCH_LIBKEYFINDER_VERSION}.zip"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
