@@ -274,20 +274,25 @@ void exportTrackMetadataIntoTag(
         WriteTagMask writeMask) {
     DEBUG_ASSERT(pTag); // already validated before
 
-    pTag->setTitle(toTString(trackMetadata.getTrackInfo().getTitle()));
-    pTag->setAlbum(toTString(trackMetadata.getAlbumInfo().getTitle()));
-
     // The mapping of multi-valued fields in TagLib is not bijective.
     // We don't want to overwrite existing values if the corresponding
-    // field has not been modified in Mixxx. This workaround only covers
-    // the most common multi-valued fields.
+    // field has not been modified in Mixxx.
     //
     // See also: <https://github.com/mixxxdj/mixxx/issues/12587>
-    const auto artist = toTString(trackMetadata.getTrackInfo().getArtist());
+
+    const TagLib::String title = toTString(trackMetadata.getTrackInfo().getTitle());
+    if (title != pTag->title()) {
+        pTag->setTitle(title);
+    }
+    const TagLib::String album = toTString(trackMetadata.getAlbumInfo().getTitle());
+    if (album != pTag->album()) {
+        pTag->setAlbum(album);
+    }
+    const TagLib::String artist = toTString(trackMetadata.getTrackInfo().getArtist());
     if (artist != pTag->artist()) {
         pTag->setArtist(artist);
     }
-    const auto genre = toTString(trackMetadata.getTrackInfo().getGenre());
+    const TagLib::String genre = toTString(trackMetadata.getTrackInfo().getGenre());
     if (genre != pTag->genre()) {
         pTag->setGenre(genre);
     }
@@ -297,7 +302,10 @@ void exportTrackMetadataIntoTag(
     // different purposes, e.g. ID3v2. In this case setting the
     // comment here should be omitted.
     if (0 == (writeMask & WriteTagFlag::OmitComment)) {
-        pTag->setComment(toTString(trackMetadata.getTrackInfo().getComment()));
+        const TagLib::String comment = toTString(trackMetadata.getTrackInfo().getComment());
+        if (comment != pTag->comment()) {
+            pTag->setComment(comment);
+        }
     }
 
     // Specialized write functions for tags derived from Taglib::Tag might
