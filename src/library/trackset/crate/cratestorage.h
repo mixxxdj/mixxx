@@ -28,6 +28,9 @@ class CrateQueryFields {
     bool isLocked(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iLocked);
     }
+    bool isArchived(const FwdSqlQuery& query) const {
+        return query.fieldValueBoolean(m_iArchived);
+    }
     bool isAutoDjSource(const FwdSqlQuery& query) const {
         return query.fieldValueBoolean(m_iAutoDjSource);
     }
@@ -40,6 +43,7 @@ class CrateQueryFields {
     DbFieldIndex m_iId;
     DbFieldIndex m_iName;
     DbFieldIndex m_iLocked;
+    DbFieldIndex m_iArchived;
     DbFieldIndex m_iAutoDjSource;
 };
 
@@ -266,7 +270,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     // Crate read operations (read-only, const)
     /////////////////////////////////////////////////////////////////////////
 
-    uint countCrates() const;
+    uint countCrates(bool excludeArchived = true) const;
 
     // Omit the pCrate parameter for checking if the corresponding crate exists.
     bool readCrateById(
@@ -312,6 +316,7 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
             CrateId crateId) const;
     CrateTrackSelectResult selectTrackCratesSorted(
             TrackId trackId) const;
+    // Returns crates for the given trackids that are not archived.
     CrateSummarySelectResult selectCratesWithTrackCount(
             const QList<TrackId>& trackIds) const;
     CrateTrackSelectResult selectTracksSortedByCrateNameLike(
