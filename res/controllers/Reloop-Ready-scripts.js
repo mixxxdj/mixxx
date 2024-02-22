@@ -136,7 +136,7 @@ class ReloopReady {
             return;
         }
         console.warn(`unregonized incoming sysex data: ${data}`);
-    };
+    }
 
     shutdown() {
         this.components.shutdown();
