@@ -96,8 +96,32 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-02-22" timestamp="1708584177">
+    <release version="2.4.1" type="development" date="2024-02-22" timestamp="1708584325">
       <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Pioneer DDJ-FLX4 mapping improvements
+   #12842
+  </li>
+  <li>
+   Traktor S3: Fix mapping crash on macOS
+   #12840
+  </li>
+ </ul>
+ <p>
+  Target Support
+ </p>
+ <ul>
+  <li>
+   Fix various minor build issues
+   #12853
+   #12847
+   #12822
+  </li>
+ </ul>
 </description>
     </release>
     <release version="2.4.0" type="stable" date="2024-02-16" timestamp="1708041600">

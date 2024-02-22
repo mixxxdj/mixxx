@@ -2,6 +2,18 @@
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (unreleased)
 
+### Controller Mappings
+
+* Pioneer DDJ-FLX4 mapping improvements [#12842](https://github.com/mixxxdj/mixxx/pull/12842)
+* Traktor S3: Fix mapping crash on macOS [#12840](https://github.com/mixxxdj/mixxx/pull/12840)
+
+### Target Support
+
+* Fix various minor build issues
+  [#12853](https://github.com/mixxxdj/mixxx/pull/12853)
+  [#12847](https://github.com/mixxxdj/mixxx/pull/12847)
+  [#12822](https://github.com/mixxxdj/mixxx/pull/12822)
+
 ## [2.4.0](https://github.com/mixxxdj/mixxx/milestone/15?closed=1) (2024-02-16)
 
 ### Music Library: Tracks Table & Track Menu
