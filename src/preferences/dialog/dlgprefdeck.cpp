@@ -702,13 +702,16 @@ void DlgPrefDeck::slotApply() {
             m_bCloneDeckOnLoadDoubleTap);
 
     // Set rate range
-    setRateRangeForAllDecks(m_iRateRangePercent);
+    // Set the config value before setting the CO values in setRateRangeForAllDecks()
+    // because a proxy in DlgPrefLibrary listens to [Channe1],rate_range changes
+    // in order to update the fuzzy BPM range with the new value of "RateRangePercent".
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
+    setRateRangeForAllDecks(m_iRateRangePercent);
 
-    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
             m_bRateDownIncreasesSpeed);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
 
     BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 

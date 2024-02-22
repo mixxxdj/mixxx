@@ -9,6 +9,7 @@
 #include <QStandardPaths>
 #include <QUrl>
 
+#include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "library/basetracktablemodel.h"
 #include "library/dlgtrackmetadataexport.h"
@@ -36,7 +37,9 @@ DlgPrefLibrary::DlgPrefLibrary(
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_bAddedDirectory(false),
-          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx) {
+          m_iOriginalTrackTableRowHeight(Library::kDefaultRowHeightPx),
+          m_pRateRangeDeck1(make_parented<ControlProxy>(
+                  QStringLiteral("[Channel1]"), QStringLiteral("rateRange"), this)) {
     setupUi(this);
 
     connect(this,
@@ -105,6 +108,13 @@ DlgPrefLibrary::DlgPrefLibrary(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefLibrary::slotBpmRangeSelected);
+    // Also listen to rate range changes (e.g. made in DlgPrefDecks) and
+    // adjust the fuzzy range accordingly
+    m_pRateRangeDeck1->connectValueChanged(
+            this,
+            [this]() {
+                slotBpmRangeSelected(comboBox_search_bpm_fuzzy_range->currentIndex());
+            });
 
     updateSearchLineEditHistoryOptions();
 
