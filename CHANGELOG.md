@@ -1,5 +1,7 @@
 # Changelog
 
+## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (unreleased)
+
 ## [2.4.0](https://github.com/mixxxdj/mixxx/milestone/15?closed=1) (2024-02-16)
 
 ### Music Library: Tracks Table & Track Menu
