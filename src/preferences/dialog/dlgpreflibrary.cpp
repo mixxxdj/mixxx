@@ -142,10 +142,11 @@ DlgPrefLibrary::~DlgPrefLibrary() = default;
 
 void DlgPrefLibrary::slotShow() {
     m_bAddedDirectory = false;
+    m_bRelocatedDir = false;
 }
 
 void DlgPrefLibrary::slotHide() {
-    if (!m_bAddedDirectory) {
+    if (!m_bAddedDirectory && !m_bRelocatedDir) {
         return;
     }
 
@@ -325,6 +326,11 @@ void DlgPrefLibrary::slotUpdate() {
                     kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     spinbox_bpm_precision->setValue(bpmColumnPrecision);
+
+    // Rescan Library if a directory is relocated
+    if (m_bRelocatedDir) {
+        emit scanLibrary();
+    }
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -420,6 +426,7 @@ void DlgPrefLibrary::slotRelocateDir() {
 
     if (!fd.isEmpty()) {
         emit requestRelocateDir(currentFd, fd);
+        m_bRelocatedDir = true;
         slotUpdate();
     }
 }

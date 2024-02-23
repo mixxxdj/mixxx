@@ -75,6 +75,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
+    // Flag if a directory is relocated
+    bool m_bRelocatedDir;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };
