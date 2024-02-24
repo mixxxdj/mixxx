@@ -16,21 +16,6 @@
 #include "util/duration.h"
 #include "widget/wlibrarysidebar.h"
 
-namespace {
-
-QString createPlaylistLabel(
-        const QString& name,
-        int count,
-        int duration) {
-    return QStringLiteral("%1 (%2) %3")
-            .arg(name,
-                    QString::number(count),
-                    mixxx::Duration::formatTime(
-                            duration, mixxx::Duration::Precision::SECONDS));
-}
-
-} // anonymous namespace
-
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -140,7 +125,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = 0 "
+            "  WHERE Playlists.hidden = 0 " // PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN
             "  GROUP BY Playlists.id");
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
