@@ -521,7 +521,7 @@ int PlaylistDAO::getPlaylistId(const int index) const {
 PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     // qDebug() << "PlaylistDAO::getHiddenType"
     //          << QThread::currentThread() << m_database.connectionName();
-    if (playlistId != kInvalidPlaylistId) { // type is known, save a query
+    if (playlistId == kInvalidPlaylistId) { // type is known, save a query
         return PlaylistDAO::PLHT_UNKNOWN;
     }
 
