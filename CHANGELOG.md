@@ -453,7 +453,7 @@
 * Log warning if deprecated control is used [#11972](https://github.com/mixxxdj/mixxx/pull/11972)
 * ControlObject alias improvements [#11973](https://github.com/mixxxdj/mixxx/pull/11973)
 * Keyboard mapping: Repeat certain control actions if key is held [#12474](https://github.com/mixxxdj/mixxx/pull/12474)
-* Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P [#12639](https://github.com/mixxxdj/mixxx/pull/12639)
+* Keyboard mapping: Return triggers double-click, move Preview functions to P / Shift+P [#12639](https://github.com/mixxxdj/mixxx/pull/12639)
 * Keyboard mapping: Various fixes [#12730](https://github.com/mixxxdj/mixxx/pull/12730)
 * Update keyboard sheet [#12578](https://github.com/mixxxdj/mixxx/pull/12578)
 * Logging: Add support for `QT_MESSAGE_PATTERN` environment variable

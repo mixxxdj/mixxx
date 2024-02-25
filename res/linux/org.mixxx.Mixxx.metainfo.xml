@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-02-22" timestamp="1708584325">
+    <release version="2.4.1" type="development" date="2024-02-23" timestamp="1708721847">
       <description>
  <p>
   Controller Mappings
@@ -1227,7 +1227,7 @@
    #12474
   </li>
   <li>
-   Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P
+   Keyboard mapping: Return triggers double-click, move Preview functions to P / Shift+P
    #12639
   </li>
   <li>
