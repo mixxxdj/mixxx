@@ -5,6 +5,7 @@
 
 #include <QMutex>
 #include <QtGlobal>
+#include <algorithm>
 
 #include "effects/backends/audiounit/audiouniteffectprocessor.h"
 #include "engine/effects/engineeffectparameter.h"
@@ -54,50 +55,89 @@ OSStatus AudioUnitEffectGroupState::renderCallback(AudioUnitRenderActionFlags*,
 }
 
 void AudioUnitEffectGroupState::render(AudioUnit _Nonnull audioUnit,
-        SINT sampleCount,
+        const mixxx::EngineParameters& engineParameters,
         const CSAMPLE* _Nonnull pInput,
         CSAMPLE* _Nonnull pOutput) {
-    // Fill the input and output buffers.
-    // TODO: Assert the size
-    SINT size = sizeof(CSAMPLE) * sampleCount;
-    m_inputBuffers.mBuffers[0].mData = const_cast<CSAMPLE*>(pInput);
-    m_inputBuffers.mBuffers[0].mDataByteSize = size;
-    m_outputBuffers.mBuffers[0].mData = pOutput;
-    m_outputBuffers.mBuffers[0].mDataByteSize = size;
-
-    // Set the render callback
-    AURenderCallbackStruct callback;
-    callback.inputProc = AudioUnitEffectGroupState::renderCallbackUntyped;
-    callback.inputProcRefCon = this;
-
-    OSStatus setCallbackStatus = AudioUnitSetProperty(audioUnit,
-            kAudioUnitProperty_SetRenderCallback,
-            kAudioUnitScope_Input,
+    // Find the max number of samples per buffer that the Audio Unit can handle.
+    //
+    // Note that (confusingly) the Apple API refers to this count as "frames"
+    // even though empirical tests show that this has to be interpreted as a
+    // sample count, otherwise rendering the Audio Unit will fail with status
+    // -10874 = kAudioUnitErr_TooManyFramesToProcess.
+    //
+    // For documentation on this property, see
+    // https://developer.apple.com/documentation/audiotoolbox/kaudiounitproperty_maximumframesperslice
+    //
+    // TODO: Should we cache this?
+    UInt32 maxSamplesPerChunk = 0;
+    UInt32 maxSamplesPerChunkSize = sizeof(UInt32);
+    OSStatus maxSamplesPerSliceStatus = AudioUnitGetProperty(audioUnit,
+            kAudioUnitProperty_MaximumFramesPerSlice,
+            kAudioUnitScope_Global,
             0,
-            &callback,
-            sizeof(AURenderCallbackStruct));
-    if (setCallbackStatus != noErr) {
-        qWarning() << "Setting Audio Unit render callback failed with status"
-                   << setCallbackStatus;
+            &maxSamplesPerChunk,
+            &maxSamplesPerChunkSize);
+    if (maxSamplesPerSliceStatus != noErr) {
+        qWarning() << "Fetching the maximum samples per slice for Audio Unit "
+                      "failed "
+                      "with status"
+                   << maxSamplesPerSliceStatus;
         return;
     }
 
-    // Apply the actual effect to the sample.
-    AudioUnitRenderActionFlags flags = 0;
-    NSInteger outputBusNumber = 0;
-    OSStatus renderStatus = AudioUnitRender(audioUnit,
-            &flags,
-            &m_timestamp,
-            outputBusNumber,
-            sampleCount,
-            &m_outputBuffers);
-    if (renderStatus != noErr) {
-        qWarning() << "Rendering Audio Unit failed with status" << renderStatus;
-        return;
-    }
+    UInt32 totalSamples = engineParameters.samplesPerBuffer();
 
-    // Increment the timestamp
-    m_timestamp.mSampleTime += sampleCount;
+    // Process the buffer in chunks
+    for (UInt32 offset = 0; offset < totalSamples;
+            offset += maxSamplesPerChunk) {
+        // Compute the size of the current slice.
+        UInt32 remainingSamples = totalSamples - offset;
+        UInt32 chunkSamples = std::min(remainingSamples, maxSamplesPerChunk);
+        UInt32 chunkSize = sizeof(CSAMPLE) * chunkSamples;
+
+        // Fill the input and output buffers.
+        m_inputBuffers.mBuffers[0].mData =
+                const_cast<CSAMPLE*>(pInput) + offset;
+        m_inputBuffers.mBuffers[0].mDataByteSize = chunkSize;
+        m_outputBuffers.mBuffers[0].mData = pOutput + offset;
+        m_outputBuffers.mBuffers[0].mDataByteSize = chunkSize;
+
+        // Set the render callback
+        AURenderCallbackStruct callback;
+        callback.inputProc = AudioUnitEffectGroupState::renderCallbackUntyped;
+        callback.inputProcRefCon = this;
+
+        OSStatus setCallbackStatus = AudioUnitSetProperty(audioUnit,
+                kAudioUnitProperty_SetRenderCallback,
+                kAudioUnitScope_Input,
+                0,
+                &callback,
+                sizeof(AURenderCallbackStruct));
+        if (setCallbackStatus != noErr) {
+            qWarning()
+                    << "Setting Audio Unit render callback failed with status"
+                    << setCallbackStatus;
+            return;
+        }
+
+        // Apply the actual effect to the sample.
+        AudioUnitRenderActionFlags flags = 0;
+        NSInteger outputBusNumber = 0;
+        OSStatus renderStatus = AudioUnitRender(audioUnit,
+                &flags,
+                &m_timestamp,
+                outputBusNumber,
+                chunkSamples,
+                &m_outputBuffers);
+        if (renderStatus != noErr) {
+            qWarning() << "Rendering Audio Unit failed with status"
+                       << renderStatus;
+            return;
+        }
+
+        // Increment the timestamp
+        m_timestamp.mSampleTime += chunkSamples;
+    }
 }
 
 AudioUnitEffectProcessor::AudioUnitEffectProcessor(
@@ -131,8 +171,7 @@ void AudioUnitEffectProcessor::processChannel(
     syncParameters();
 
     // Render the effect into the output buffer
-    channelState->render(
-            audioUnit, engineParameters.samplesPerBuffer(), pInput, pOutput);
+    channelState->render(audioUnit, engineParameters, pInput, pOutput);
 }
 
 void AudioUnitEffectProcessor::syncParameters() {
