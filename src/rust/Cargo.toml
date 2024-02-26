@@ -1,0 +1,22 @@
+[package]
+name = "mixxx-rustlib"
+version = "0.0.1"
+edition = "2021"
+
+# This will instruct Cargo to create a static
+# library which CMake can link against
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+cxx = "1.0.95"
+cxx-qt = "0.6"
+cxx-qt-lib = "0.6"
+rekordcrate = "0.2.1"
+
+[build-dependencies]
+cxx-qt-build = "0.6"
+
+[features]
+# This feature must be enabled for `cargo test` when linking Qt 6 statically.
+link_qt_object_files = ["cxx-qt-build/link_qt_object_files"]

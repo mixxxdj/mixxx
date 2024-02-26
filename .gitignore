@@ -59,6 +59,11 @@ lib/hidapi/**/.gitignore
 lib/hidapi/**/CMakeLists.txt
 lib/hidapi/**/Makefile*
 
+# rust
+src/rust/target
+# CMake Corrosion module
+_deps
+
 # Legacy compilation artifacts that are obsolete starting with 2.3
 # TODO: Delete after 2.2 with SCons has been abandoned. Developers
 # are supposed to clean their project directory!

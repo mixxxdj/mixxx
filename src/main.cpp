@@ -22,6 +22,7 @@
 #if defined(__WINDOWS__)
 #include "nativeeventhandlerwin.h"
 #endif
+#include "cxx-qt-gen/rekordbox.cxxqt.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"

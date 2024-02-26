@@ -62,6 +62,8 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
+#include "cxx-qt-gen/rekordbox.cxxqt.h"
+
 namespace {
 #ifdef __LINUX__
 // Detect if the desktop supports a global menu to decide whether we need to rebuild

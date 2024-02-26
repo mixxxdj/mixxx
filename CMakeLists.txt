@@ -3780,3 +3780,45 @@ if(APPLE AND MACOS_BUNDLE)
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+
+# Rust
+
+# Rust always links against non-debug Windows runtime on *-msvc targets
+# Note it is best to set this on the command line to ensure all targets are consistent
+# https://github.com/corrosion-rs/corrosion/blob/master/doc/src/common_issues.md#linking-debug-cc-libraries-into-rust-fails-on-windows-msvc-targets
+# https://github.com/rust-lang/rust/issues/39016
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+endif()
+
+find_package(Corrosion QUIET)
+if(NOT Corrosion_FOUND)
+  include(FetchContent)
+  FetchContent_Declare(
+          Corrosion
+          GIT_REPOSITORY https://github.com/corrosion-rs/corrosion.git
+          GIT_TAG v0.4.7
+  )
+
+  FetchContent_MakeAvailable(Corrosion)
+endif()
+
+get_target_property(QMAKE Qt::qmake IMPORTED_LOCATION)
+set(CRATE mixxx-rustlib)
+corrosion_import_crate(MANIFEST_PATH src/rust/Cargo.toml CRATES ${CRATE})
+
+set(CXXQT_EXPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/cxxqt")
+corrosion_set_env_vars(${CRATE}
+        "CXXQT_EXPORT_DIR=${CXXQT_EXPORT_DIR}"
+        "QMAKE=${QMAKE}"
+)
+
+add_library(${PROJECT_NAME}_rustlib INTERFACE)
+target_include_directories(${PROJECT_NAME}_rustlib INTERFACE "${CXXQT_EXPORT_DIR}/${CRATE}")
+target_link_libraries(${PROJECT_NAME}_rustlib INTERFACE
+        # WHOLE_ARCHIVE is needed for the generated QML plugin to register on startup,
+        # otherwise the linker will discard the static variables that initialize it.
+        "$<LINK_LIBRARY:WHOLE_ARCHIVE,${CRATE}-static>"
+        Qt::Core
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_rustlib)
