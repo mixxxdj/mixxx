@@ -593,7 +593,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MixtrackPlatinumFX.deck[0].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[0].playButtonbeatgrid</key>
                 <status>0x80</status>
                 <midino>0x04</midino>
                 <options>
@@ -602,7 +602,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MixtrackPlatinumFX.deck[1].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[1].playButtonbeatgrid</key>
                 <status>0x81</status>
                 <midino>0x04</midino>
                 <options>
@@ -611,7 +611,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MixtrackPlatinumFX.deck[2].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[2].playButtonbeatgrid</key>
                 <status>0x82</status>
                 <midino>0x04</midino>
                 <options>
@@ -620,7 +620,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MixtrackPlatinumFX.deck[3].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[3].playButtonbeatgrid</key>
                 <status>0x83</status>
                 <midino>0x04</midino>
                 <options>
@@ -647,7 +647,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>MixtrackPlatinumFX.deck[0].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[0].playButtonbeatgrid</key>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
@@ -656,7 +656,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>MixtrackPlatinumFX.deck[1].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[1].playButtonbeatgrid</key>
                 <status>0x91</status>
                 <midino>0x04</midino>
                 <options>
@@ -665,7 +665,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>MixtrackPlatinumFX.deck[2].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[2].playButtonbeatgrid</key>
                 <status>0x92</status>
                 <midino>0x04</midino>
                 <options>
@@ -674,7 +674,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>MixtrackPlatinumFX.deck[3].playButton_beatgrid</key>
+                <key>MixtrackPlatinumFX.deck[3].playButtonbeatgrid</key>
                 <status>0x93</status>
                 <midino>0x04</midino>
                 <options>
