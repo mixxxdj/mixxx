@@ -632,8 +632,11 @@ void Tooltips::addStandardTooltips() {
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
                              tr("If hotcue is set, jumps to the hotcue."))
-                  << tr("If hotcue is a loop cue, toggles the loop and jumps to "
-                        "if the loop is behind the play position.")
+                  << tr("If hotcue is a loop cue, either toggles the loop and "
+                        "jumps to if the loop is behind the play position, "
+                        "or always jumps and activates the loop.")
+                  << tr("Hint: select the loop cue activation mode in "
+                        "Preferences -> Decks.")
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
                   << quantizeSnap
