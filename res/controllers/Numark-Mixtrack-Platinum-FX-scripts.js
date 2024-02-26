@@ -147,7 +147,7 @@ MixtrackPlatinumFX.BlinkFunc = function() {
 MixtrackPlatinumFX.init = function(id, debug) {     
     MixtrackPlatinumFX.id = id;
     MixtrackPlatinumFX.debug = debug;
-    print("init MixtrackPlatinumFX " + id + " debug: " + debug);
+    // print("init MixtrackPlatinumFX " + id + " debug: " + debug);
     
     // disable demo lightshow
     var exitDemoSysex = [0xF0, 0x7E, 0x00, 0x06, 0x01, 0xF7];
@@ -564,7 +564,7 @@ MixtrackPlatinumFX.Deck = function(number) {
             midi.sendShortMsg(0xB0 | channel, 0x3F, pos);
 
             // get the current duration
-            duration = deck.duration.outGetValue();
+            var duration = deck.duration.outGetValue();
 
             // update the time display
             var time = MixtrackPlatinumFX.timeMs(number, playposition, duration);
@@ -595,7 +595,7 @@ MixtrackPlatinumFX.Deck = function(number) {
         shiftOffset: 0x04,
     });
     
-    this.playButton_beatgrid = function(channel, control, value, status, group) {
+    this.playButtonbeatgrid = function(channel, control, value, status, group) {
         engine.setValue(group, "beats_translate_curpos", value?1:0);
     };
         
@@ -1114,7 +1114,7 @@ MixtrackPlatinumFX.ModeHotcue = function(deckNumber, secondaryMode) {
 
     this.name = MixtrackPlatinumFX.PadModeControls.HOTCUE;
 	var offset=0;
-	if (secondaryMode==1) {
+	if (secondaryMode===1) {
 		this.name = MixtrackPlatinumFX.PadModeControls.HOTCUE2;
 		this.control = MixtrackPlatinumFX.PadModeControls.HOTCUE2;
 		offset=8;
@@ -1689,23 +1689,23 @@ MixtrackPlatinumFX.timeElapsedCallback = function(value, _group, _control) {
     // 0 = elapsed
     // 1 = remaining
     // 2 = both (we ignore this as the controller can't show both)
-    var on_off;
+    var onoff;
     if (value === 0) {
         // show elapsed
-        on_off = 0x00;
+        onoff = 0x00;
     } else if (value === 1) {
         // show remaining
-        on_off = 0x7F;
+        onoff = 0x7F;
     } else {
         // both, ignore the event
         return;
     }
 
     // update all 4 decks on the controller
-    midi.sendShortMsg(0x90, 0x46, on_off);
-    midi.sendShortMsg(0x91, 0x46, on_off);
-    midi.sendShortMsg(0x92, 0x46, on_off);
-    midi.sendShortMsg(0x93, 0x46, on_off);
+    midi.sendShortMsg(0x90, 0x46, onoff);
+    midi.sendShortMsg(0x91, 0x46, onoff);
+    midi.sendShortMsg(0x92, 0x46, onoff);
+    midi.sendShortMsg(0x93, 0x46, onoff);
 };
 
 MixtrackPlatinumFX.timeMs = function(deck, position, duration) {
@@ -1713,7 +1713,7 @@ MixtrackPlatinumFX.timeMs = function(deck, position, duration) {
 };
 
 MixtrackPlatinumFX.encodeNumToArray = function(number, drop, unsigned) {
-    var number_array = [
+    var numberarray = [
         (number >> 28) & 0x0F,
         (number >> 24) & 0x0F,
         (number >> 20) & 0x0F,
@@ -1725,20 +1725,20 @@ MixtrackPlatinumFX.encodeNumToArray = function(number, drop, unsigned) {
     ];
 
     if (drop !== undefined) {
-        number_array.splice(0, drop);
+        numberarray.splice(0, drop);
     }
 
-    if (number < 0) number_array[0] = 0x07;
-    else if (!unsigned) number_array[0] = 0x08;
+    if (number < 0) numberarray[0] = 0x07;
+    else if (!unsigned) numberarray[0] = 0x08;
 
-    return number_array;
+    return numberarray;
 };
 
 MixtrackPlatinumFX.sendScreenDurationMidi = function(deck, duration) {
     if (duration < 1) {
         duration = 1;
     }
-    durationArray = MixtrackPlatinumFX.encodeNumToArray(duration - 1);
+    var durationArray = MixtrackPlatinumFX.encodeNumToArray(duration - 1);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x03];
     var bytePostfix = [0xF7];
@@ -1756,7 +1756,7 @@ MixtrackPlatinumFX.sendScreenTimeMidi = function(deck, time) {
 };
 
 MixtrackPlatinumFX.sendScreenBpmMidi = function(deck, bpm) {
-    bpmArray = MixtrackPlatinumFX.encodeNumToArray(bpm);
+    var bpmArray = MixtrackPlatinumFX.encodeNumToArray(bpm);
     bpmArray.shift();
     bpmArray.shift();
 
@@ -1808,7 +1808,7 @@ var sendSysex = function(buffer) {
 }
 
 MixtrackPlatinumFX.sendScreenRateMidi = function(deck, rate) {
-    rateArray = MixtrackPlatinumFX.encodeNumToArray(rate, 2);
+    var rateArray = MixtrackPlatinumFX.encodeNumToArray(rate, 2);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x02];
     var bytePostfix = [0xF7];
