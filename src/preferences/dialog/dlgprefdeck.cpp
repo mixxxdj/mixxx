@@ -65,8 +65,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     ComboBoxCueMode->addItem(tr("CUP mode"), static_cast<int>(CueMode::CueAndPlay));
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
-    slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
+    slotCueModeCombobox(cueModeIndex); // sets m_cueMode
+    for (ControlProxy* pControl : qAsConst(m_cueModeControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
@@ -413,7 +413,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefDeck::~DlgPrefDeck() {
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
-    qDeleteAll(m_cueControls);
+    qDeleteAll(m_cueModeControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
     qDeleteAll(m_keyunlockModeControls);
@@ -439,7 +439,7 @@ void DlgPrefDeck::slotUpdate() {
     double rateDirection = m_rateDirectionControls[0]->get();
     checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double cueMode = m_cueControls[0]->get();
+    double cueMode = m_cueModeControls[0]->get();
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
 
@@ -686,7 +686,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
+    for (ControlProxy* pControl : qAsConst(m_cueModeControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
@@ -773,7 +773,7 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueModeControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
@@ -806,7 +806,7 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueModeControls.push_back(new ControlProxy(
                 group, "cue_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));

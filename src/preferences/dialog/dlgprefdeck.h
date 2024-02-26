@@ -113,7 +113,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     const parented_ptr<ControlProxy> m_pNumDecks;
     const parented_ptr<ControlProxy> m_pNumSamplers;
 
-    QList<ControlProxy*> m_cueControls;
+    QList<ControlProxy*> m_cueModeControls;
     QList<ControlProxy*> m_rateControls;
     QList<ControlProxy*> m_rateDirectionControls;
     QList<ControlProxy*> m_rateRangeControls;
