@@ -529,8 +529,11 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
             m_isRangeQuery = true;
         } else if (!opMatch.hasMatch() && !m_negate) {
             // Simple 'bpm:NNN' search.
+            // Also searches for half/double matches.
+            // If decimals are provided, extend the core range, else search for
+            // exact matches.
+            ifDecimalsSetRange(argument, bpm);
             // Include half/double BPM (rounded to int)
-            m_bpm = bpm;
             m_bpmHalfLower = floor(bpm / 2);
             m_bpmHalfUpper = ceil(bpm / 2);
             m_bpmDoubleLower = floor(bpm * 2);
@@ -538,11 +541,15 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
             m_isHalfDoubleQuery = true;
         } else {
             // Operator query
-            // Either explicitly with = or other operators or implicitly (simple
-            // 'bpm:NNN' query) if no operator was found, half/double is disabled
-            // and fuzzy was not requested (m_operator is still the initial '=').
-            m_bpm = bpm;
-            m_isOperatorQuery = true;
+            if (m_operator == '=') {
+                // If doing an exact search with '=' we round up/down to include
+                // decimals hidden in the tracks table / BPM widget.
+                ifDecimalsSetRange(argument, bpm);
+                m_isRangeQuery = true;
+            } else {
+                m_bpm = bpm;
+                m_isOperatorQuery = true;
+            }
         }
         return;
     } else if (m_fuzzy) {
@@ -565,6 +572,28 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     }
 }
 
+void BpmFilterNode::ifDecimalsSetRange(const QString& argument, double bpm) {
+    // Set up a range if we have decimals. This will include matches
+    // for which we show rounded values in the library. For example
+    // 124.92 finds 124.915 - 124.925
+    // 124.1  finds 124.05 - 124.15
+    QStringList parts = argument.split('.');
+    QString decimals = parts[1];
+    // Chop trailing 0
+    while (decimals.back() == '0') {
+        decimals.chop(1);
+    }
+    if (!decimals.isEmpty()) {
+        int numDecimals = decimals.length();
+        double roundRange = 5 / pow(10, numDecimals + 1);
+        m_rangeLower = bpm - roundRange;
+        m_rangeUpper = bpm + roundRange;
+    } else {
+        m_rangeLower = bpm;
+        m_rangeUpper = bpm;
+    }
+}
+
 bool BpmFilterNode::match(const TrackPointer& pTrack) const {
     double value = pTrack->getBpm();
     if (m_isNullQuery && value == mixxx::Bpm::kValueUndefined) {
@@ -583,7 +612,7 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
             return true;
         }
     } else if (m_isHalfDoubleQuery) {
-        if (value == m_bpm ||
+        if ((value >= m_rangeLower && value <= m_rangeUpper) ||
                 (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
                 (value >= m_bpmDoubleLower && value <= m_bpmDoubleUpper)) {
             return true;
@@ -602,16 +631,24 @@ QString BpmFilterNode::toSql() const {
     }
 
     if (m_isOperatorQuery) {
+        qWarning() << "     #op/exact/negate";
         if (m_fuzzy) {
+            qWarning() << "     #also fuzzy, return ()";
             return QString();
         }
+        qWarning() << "      #op:" << m_operator;
+        qWarning() << "      #toSql:"
+                   << QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
         return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
     }
 
     if (m_isHalfDoubleQuery) {
+        qWarning() << "     #half/double";
         QStringList searchClauses;
-        searchClauses << QString("bpm = %1").arg(QString::number(m_bpm));
-        // 'BETWEEN' returns true if lower <= value <= upper
+        //  'BETWEEN' returns true if lower <= value <= upper
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_rangeLower),
+                                         QString::number(m_rangeUpper));
         searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
                                  .arg(QString::number(m_bpmHalfLower),
                                          QString::number(m_bpmHalfUpper));
