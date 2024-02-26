@@ -224,6 +224,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             QString field = specialFilterMatch.captured(1);
             auto [argument, matchMode] = getTextArgument(
                     specialFilterMatch.captured(2), &tokens);
+            qWarning() << "    #special:" << argument;
 
             if (!argument.isEmpty()) {
                 if (field == "key") {

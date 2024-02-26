@@ -505,6 +505,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         m_isNullQuery = true;
         return;
     }
+    qWarning() << "     .BpmFilter:" << argument;
 
     QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
     if (opMatch.hasMatch()) {
@@ -514,6 +515,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         }
         m_operator = opMatch.captured(1);
         argument = opMatch.captured(2);
+        qWarning() << "     .opMatch:" << m_operator;
     }
 
     // Replace the locale's decimal separator with .
@@ -521,13 +523,16 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     argument.replace(',', '.');
     bool isDouble = false;
     const double bpm = argument.toDouble(&isDouble);
+    qWarning() << "     .isDouble:" << isDouble;
     if (isDouble) {
         if (m_fuzzy) {
+            qWarning() << "     .fuzzy";
             // fuzzy search +- n%
             m_rangeLower = floor((1 - s_relativeRange) * bpm);
             m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
             m_isRangeQuery = true;
         } else if (!opMatch.hasMatch() && !m_negate) {
+            qWarning() << "     .halfDouble";
             // Simple 'bpm:NNN' search.
             // Also searches for half/double matches.
             // If decimals are provided, extend the core range, else search for
@@ -540,6 +545,8 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
             m_bpmDoubleUpper = ceil(bpm * 2);
             m_isHalfDoubleQuery = true;
         } else {
+            qWarning() << "     .op/exact/negate";
+            qWarning() << "      op:" << m_operator;
             // Operator query
             if (m_operator == '=') {
                 // If doing an exact search with '=' we round up/down to include
@@ -584,10 +591,15 @@ void BpmFilterNode::ifDecimalsSetRange(const QString& argument, double bpm) {
         decimals.chop(1);
     }
     if (!decimals.isEmpty()) {
+        qWarning() << "       decimals, maybe extend range";
+        qWarning() << "       decimals:" << decimals;
         int numDecimals = decimals.length();
         double roundRange = 5 / pow(10, numDecimals + 1);
         m_rangeLower = bpm - roundRange;
         m_rangeUpper = bpm + roundRange;
+        qWarning() << "       decimals:" << numDecimals;
+        qWarning() << "       range low:   " << m_rangeLower;
+        qWarning() << "       range upper: " << m_rangeUpper;
     } else {
         m_rangeLower = bpm;
         m_rangeUpper = bpm;
@@ -655,10 +667,17 @@ QString BpmFilterNode::toSql() const {
         searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
                                  .arg(QString::number(m_bpmDoubleLower),
                                          QString::number(m_bpmDoubleUpper));
+        qWarning() << "      #toSql:"
+                   << concatSqlClauses(searchClauses, "OR");
         return concatSqlClauses(searchClauses, "OR");
     }
 
     if (m_isRangeQuery) {
+        qWarning() << "      #range";
+        qWarning() << "      #toSql:"
+                   << QStringLiteral("bpm BETWEEN %1 AND %2")
+                              .arg(QString::number(m_rangeLower),
+                                      QString::number(m_rangeUpper));
         return QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
                 .arg(QString::number(m_rangeLower),
                         QString::number(m_rangeUpper));
