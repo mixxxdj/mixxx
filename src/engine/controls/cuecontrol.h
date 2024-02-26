@@ -307,7 +307,6 @@ class CueControl : public EngineControl {
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
-    ControlObject* m_pCueMode;
     std::unique_ptr<ControlPushButton> m_pCueSet;
     std::unique_ptr<ControlPushButton> m_pCueClear;
     std::unique_ptr<ControlPushButton> m_pCueCDJ;
@@ -321,6 +320,8 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pCuePlay;
     std::unique_ptr<ControlPushButton> m_pCueGotoAndStop;
     std::unique_ptr<ControlPushButton> m_pCuePreview;
+
+    std::unique_ptr<ControlObject> m_pCueMode;
 
     std::unique_ptr<ControlObject> m_pIntroStartPosition;
     std::unique_ptr<ControlObject> m_pIntroStartEnabled;

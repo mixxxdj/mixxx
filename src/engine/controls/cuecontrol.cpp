@@ -122,8 +122,6 @@ CueControl::CueControl(const QString& group,
     m_pCuePoint = new ControlObject(ConfigKey(group, "cue_point"));
     m_pCuePoint->set(Cue::kNoPosition);
 
-    m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
-
     m_pPassthrough = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthrough->connectValueChanged(this,
             &CueControl::passthroughChanged,
@@ -132,7 +130,6 @@ CueControl::CueControl(const QString& group,
 
 CueControl::~CueControl() {
     delete m_pCuePoint;
-    delete m_pCueMode;
     qDeleteAll(m_hotcueControls);
 }
 
@@ -155,6 +152,8 @@ void CueControl::createControls() {
 
     m_pCueIndicator = std::make_unique<ControlIndicator>(ConfigKey(m_group, "cue_indicator"));
     m_pPlayIndicator = std::make_unique<ControlIndicator>(ConfigKey(m_group, "play_indicator"));
+
+    m_pCueMode = std::make_unique<ControlObject>(ConfigKey(m_group, "cue_mode"));
 
     m_pIntroStartPosition = std::make_unique<ControlObject>(
             ConfigKey(m_group, "intro_start_position"));
