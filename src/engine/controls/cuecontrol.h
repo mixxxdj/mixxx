@@ -46,6 +46,14 @@ enum class HotcueSetMode {
     Loop = 2,
 };
 
+/// Describes how loop cues are activated
+enum class LoopCueActivationMode {
+    /// Activate loop, jump to loop start if loop is behind play position (default)
+    Reloop = 0,
+    /// Jump to loop start and loop
+    JumpOrToggle = 1,
+};
+
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     return static_cast<SeekOnLoadMode>(int(value));
 }
@@ -131,6 +139,7 @@ class HotcueControl : public QObject {
     void slotHotcueGotoAndLoop(double v);
     void slotHotcueCueLoop(double v);
     void slotHotcueActivate(double v);
+    void slotHotcueActivateSecondary(double v);
     void slotHotcueActivateCue(double v);
     void slotHotcueActivateLoop(double v);
     void slotHotcueActivatePreview(double v);
@@ -147,6 +156,7 @@ class HotcueControl : public QObject {
     void hotcueGotoAndLoop(HotcueControl* pHotcue, double v);
     void hotcueCueLoop(HotcueControl* pHotcue, double v);
     void hotcueActivate(HotcueControl* pHotcue, double v, HotcueSetMode mode);
+    void hotcueActivateSecondary(HotcueControl* pHotcue, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pHotcue, double v);
     void hotcueClear(HotcueControl* pHotcue, double v);
     void hotcuePositionChanged(HotcueControl* pHotcue, double newPosition);
@@ -176,6 +186,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueGotoAndLoop;
     std::unique_ptr<ControlPushButton> m_hotcueCueLoop;
     std::unique_ptr<ControlPushButton> m_hotcueActivate;
+    std::unique_ptr<ControlPushButton> m_hotcueActivateSecondary;
     std::unique_ptr<ControlPushButton> m_hotcueActivateCue;
     std::unique_ptr<ControlPushButton> m_hotcueActivateLoop;
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
@@ -224,7 +235,9 @@ class CueControl : public EngineControl {
     void hotcueGotoAndLoop(HotcueControl* pControl, double v);
     void hotcueCueLoop(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v, HotcueSetMode mode);
+    void hotcueActivateSecondary(HotcueControl* pControl, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
+    void loopCueReloop(HotcueControl* pControl, const CuePointer& pCue);
     void updateCurrentlyPreviewingIndex(int hotcueIndex);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
@@ -322,6 +335,7 @@ class CueControl : public EngineControl {
     std::unique_ptr<ControlPushButton> m_pCuePreview;
 
     std::unique_ptr<ControlObject> m_pCueMode;
+    std::unique_ptr<ControlObject> m_pLoopCueActivationMode;
 
     std::unique_ptr<ControlObject> m_pIntroStartPosition;
     std::unique_ptr<ControlObject> m_pIntroStartEnabled;

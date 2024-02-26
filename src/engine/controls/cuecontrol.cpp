@@ -154,6 +154,9 @@ void CueControl::createControls() {
     m_pPlayIndicator = std::make_unique<ControlIndicator>(ConfigKey(m_group, "play_indicator"));
 
     m_pCueMode = std::make_unique<ControlObject>(ConfigKey(m_group, "cue_mode"));
+    m_pLoopCueActivationMode = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "loop_cue_activation_mode"));
+    // Initialised with 0.0, so it defaults to LoopCueActivationMode::Reloop
 
     m_pIntroStartPosition = std::make_unique<ControlObject>(
             ConfigKey(m_group, "intro_start_position"));
@@ -382,6 +385,11 @@ void CueControl::connectControls() {
                 &HotcueControl::hotcueActivate,
                 this,
                 &CueControl::hotcueActivate,
+                Qt::DirectConnection);
+        connect(pControl,
+                &HotcueControl::hotcueActivateSecondary,
+                this,
+                &CueControl::hotcueActivateSecondary,
                 Qt::DirectConnection);
         connect(pControl,
                 &HotcueControl::hotcueActivatePreview,
@@ -1111,13 +1119,12 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
                     hotcueGoto(pControl, value);
                     break;
                 case mixxx::CueType::Loop:
-                    if (m_pCurrentSavedLoopControl != pControl) {
-                        setCurrentSavedLoopControlAndActivate(pControl);
+                    if (m_pLoopCueActivationMode->get() ==
+                            static_cast<double>(
+                                    LoopCueActivationMode::Reloop)) {
+                        loopCueReloop(pControl, pCue);
                     } else {
-                        bool loopActive = pControl->getStatus() ==
-                                HotcueControl::Status::Active;
-                        Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
-                        setLoop(pos.startPosition, pos.endPosition, !loopActive);
+                        hotcueGotoAndLoop(pControl, value);
                     }
                     break;
                 default:
@@ -1134,6 +1141,33 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double value, HotcueSet
     } else {
         // released
         hotcueActivatePreview(pControl, value);
+    }
+
+    setHotcueFocusIndex(pControl->getHotcueIndex());
+}
+
+void CueControl::hotcueActivateSecondary(
+        HotcueControl* pControl, double value, HotcueSetMode mode) {
+    // qDebug() << "CueControl::hotcueActivateSecondary" << value;
+    Q_UNUSED(mode);
+    if (value > 0) {
+        // pressed
+        CuePointer pCue = pControl->getCue();
+        if (pCue && pCue->getPosition().isValid() &&
+                pCue->getType() == mixxx::CueType::Loop &&
+                m_currentlyPreviewingIndex == Cue::kNoHotCue) {
+            if (m_pLoopCueActivationMode->get() ==
+                    static_cast<double>(LoopCueActivationMode::Reloop)) {
+                hotcueGotoAndLoop(pControl, value);
+            } else {
+                loopCueReloop(pControl, pCue);
+            }
+        }
+    }
+
+    if (!m_pPlay->toBool()) {
+        hotcueActivatePreview(pControl, value);
+        return;
     }
 
     setHotcueFocusIndex(pControl->getHotcueIndex());
@@ -1170,6 +1204,21 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
     }
 
     setHotcueFocusIndex(pControl->getHotcueIndex());
+}
+
+void CueControl::loopCueReloop(HotcueControl* pControl, const CuePointer& pCue) {
+    if (pCue->getType() != mixxx::CueType::Loop) {
+        return;
+    }
+
+    if (m_pCurrentSavedLoopControl != pControl) {
+        setCurrentSavedLoopControlAndActivate(pControl);
+    } else {
+        bool loopActive = pControl->getStatus() ==
+                HotcueControl::Status::Active;
+        Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+        setLoop(pos.startPosition, pos.endPosition, !loopActive);
+    }
 }
 
 void CueControl::updateCurrentlyPreviewingIndex(int hotcueIndex) {
@@ -2543,6 +2592,15 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
             &HotcueControl::slotHotcueActivate,
             Qt::DirectConnection);
 
+    m_hotcueActivateSecondary = std::make_unique<ControlPushButton>(
+            keyForControl(QStringLiteral("activate_secondary")));
+    m_hotcueActivateSecondary->setButtonMode(ControlPushButton::PUSH);
+    connect(m_hotcueActivateSecondary.get(),
+            &ControlObject::valueChanged,
+            this,
+            &HotcueControl::slotHotcueActivateSecondary,
+            Qt::DirectConnection);
+
     m_hotcueActivateCue = std::make_unique<ControlPushButton>(
             keyForControl(QStringLiteral("activatecue")));
     connect(m_hotcueActivateCue.get(),
@@ -2616,6 +2674,10 @@ void HotcueControl::slotHotcueActivate(double v) {
     emit hotcueActivate(this, v, HotcueSetMode::Auto);
 }
 
+void HotcueControl::slotHotcueActivateSecondary(double v) {
+    emit hotcueActivateSecondary(this, v, HotcueSetMode::Auto);
+}
+
 void HotcueControl::slotHotcueActivateCue(double v) {
     emit hotcueActivate(this, v, HotcueSetMode::Cue);
 }
@@ -2682,6 +2744,7 @@ void HotcueControl::setCue(const CuePointer& pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
+
 mixxx::RgbColor::optional_t HotcueControl::getColor() const {
     return doubleToRgbColor(m_hotcueColor->get());
 }
