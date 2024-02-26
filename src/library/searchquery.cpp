@@ -516,6 +516,9 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         argument = opMatch.captured(2);
     }
 
+    // Replace the locale's decimal separator with .
+    // This is handy if numbers are typed with the numpad.
+    argument.replace(',', '.');
     bool isDouble = false;
     const double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
