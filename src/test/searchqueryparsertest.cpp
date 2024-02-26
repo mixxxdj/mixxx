@@ -506,7 +506,8 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-            qPrintable(QString("(bpm = 127.12) OR (bpm BETWEEN 63 AND 64) OR "
+            qPrintable(QString("(bpm BETWEEN 127.115 AND 127.125) OR "
+                               "(bpm BETWEEN 63 AND 64) OR "
                                "(bpm BETWEEN 254 AND 255)")),
             qPrintable(pQuery->toSql()));
 
@@ -517,7 +518,7 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
-            qPrintable(QString("bpm = 127.12")),
+            qPrintable(QString("bpm BETWEEN 127.115 AND 127.125")),
             qPrintable(pQuery->toSql()));
 
     // Test BPM range
@@ -534,7 +535,7 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
             qPrintable(pQuery->toSql()));
 
     // Test fuzzy BPM match
-    // Should be enabled by default and default range is 6% (= 75% 0f default
+    // Should be enabled by default and default range is 6% (= 75% of default
     // pitch slider range)
     pQuery = m_parser.parseQuery("~bpm:100", QString());
     EXPECT_FALSE(pQuery->match(pTrack));

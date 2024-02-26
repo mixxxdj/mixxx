@@ -208,6 +208,7 @@ class BpmFilterNode : public QueryNode {
     QString toSql() const override;
 
   private:
+    void ifDecimalsSetRange(const QString& argument, double bpm);
     bool match(const TrackPointer& pTrack) const override;
 
     bool m_fuzzy;
