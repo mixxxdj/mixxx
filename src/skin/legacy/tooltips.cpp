@@ -642,6 +642,8 @@ void Tooltips::addStandardTooltips() {
                   << quantizeSnap
                   << tr("If the play position is inside an active loop, "
                         "stores the loop as loop cue.")
+                  << QString("%1 + %2: %3").arg(leftClick, shift,
+                             tr("Triggers alternative loop cue activation."))
                   << " " // add linebreak, '\n' would result in two linebreaks
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
