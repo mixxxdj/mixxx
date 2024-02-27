@@ -110,7 +110,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     // if the user is stopped in the same row for more than 0.1 s,
     // we load un-cached cover arts as well.
     mixxx::Duration timeDelta = mixxx::Time::elapsed() - m_lastUserAction;
-    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(100)) {
+    if (m_loadCachedOnly && timeDelta > mixxx::Duration::fromMillis(300)) {
         // Show the currently selected track in the large cover art view and
         // highlights crate and playlists. Doing this in selectionChanged
         // slows down scrolling performance so we wait until the user has
