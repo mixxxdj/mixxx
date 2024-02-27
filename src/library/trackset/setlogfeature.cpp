@@ -686,7 +686,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "slotPlaylistContentOrLockChanged() for"
+    // qDebug() << "SetlogFeature::slotPlaylistContentOrLockChanged() for"
     //          << playlistIds.count() << "playlist(s)";
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
@@ -699,7 +699,7 @@ void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistId
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    // qDebug() << "SetlogFeature::slotPlaylistTableRenamed() Id:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
         updateChildModel(QSet<int>{playlistId});
     }

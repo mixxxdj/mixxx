@@ -227,6 +227,7 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
+    // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
@@ -269,7 +270,7 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
@@ -302,7 +303,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() playlistId:" << playlistIds;
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
@@ -312,11 +313,12 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
     updateChildModel(idsToBeUpdated);
 }
 
-void PlaylistFeature::slotPlaylistTableRenamed(
-        int playlistId, const QString& newName) {
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    // qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+        // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
+        // in order to rebuild the model, not just updateChildModel()
         slotPlaylistTableChanged(playlistId);
     }
 }
