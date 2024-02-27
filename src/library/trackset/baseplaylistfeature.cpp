@@ -738,6 +738,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
             }
         }
     }
+    m_pSidebarModel->triggerRepaint();
 }
 
 /// Clears the child model dynamically, but the invisible root item remains
