@@ -178,9 +178,6 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
 
     m_propertyValue = vParameter;
 
-    // According to http://stackoverflow.com/a/3822243 this is the least
-    // expensive way to restyle just this widget.
-    pWidget->style()->unpolish(pWidget);
     pWidget->style()->polish(pWidget);
 
     // These calls don't always trigger the repaint, so call it explicitly.
