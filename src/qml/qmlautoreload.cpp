@@ -24,12 +24,6 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
         return url;
     }
 
-    // Do not add path if it's already watched. See note in the
-    // `QFileSystemWatcher::fileChanged()` documentation.
-    if (m_fileWatcher.files().contains(path)) {
-        return url;
-    }
-
     m_fileWatcher.addPath(path);
     return url;
 }
@@ -37,10 +31,6 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
 void QmlAutoReload::slotFileChanged(const QString& changedFile) {
     qDebug() << "File" << changedFile << "used in QML interface has been changed.";
 
-    // This is to prevent double-reload when a file is updated twice
-    // in a row as part of the normal saving process. See note in the
-    // `QFileSystemWatcher::fileChanged()` documentation.
-    //
     // Unfortunately we cannot be sure that `QFileSystemWatcher::removePath()`
     // actually returns true, so we need to emit the signal anyway.
     m_fileWatcher.removePath(changedFile);
