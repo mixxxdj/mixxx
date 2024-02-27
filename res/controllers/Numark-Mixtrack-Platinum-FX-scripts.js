@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-var
 var MixtrackPlatinumFX = {};
 
 // FX toggles
@@ -477,6 +478,7 @@ MixtrackPlatinumFX.activeForTap = function (value) {
 	for (i=0; i<4 ; i++) {
 		if (engine.getValue("[Channel" + (i+1) + "]","track_loaded")) {
 			if (MixtrackPlatinumFX.deck[i].active) {
+				// eslint-disable-next-line no-var
 				var localscore=0;
 				if (engine.getValue("[Channel" + (i+1) + "]","pfl")) {
 					if (engine.getValue("[Channel" + (i+1) + "]","play")) {
@@ -663,7 +665,7 @@ MixtrackPlatinumFX.Deck = function(number) {
 					this.input = function(channel, control, value, _status, _group) {
 						var tapch=MixtrackPlatinumFX.activeForTap(value)+1;
 						if (tapch) {
-							// This doesn't work, it doesn't set the bpm, it sets the rate to achive this bpm
+							// This doesn't work, it doesn't set the bpm, it sets the rate to achieve this bpm
 							if (value>0 && MixtrackPlatinumFX.bpms[tapch-1]) {
 								engine.setValue("[Channel" + tapch + "]", "bpm", MixtrackPlatinumFX.bpms[tapch-1]);
 							}
@@ -1786,6 +1788,7 @@ MixtrackPlatinumFX.deckSwitch = function (channel, control, value, _status, _gro
 	// called both when actually releasing the button and for the alt deck when switching
 	if (value)
 	{
+		// eslint-disable-next-line no-var
 		var deck = channel;
 		MixtrackPlatinumFX.deck[deck].setActive(value === 0x7F); 
 		// turn "off" the other deck
