@@ -103,7 +103,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   protected:
     static constexpr int defaultColumnWidth() {
-        return 50;
+        return 100;
     }
     static QStringList defaultTableColumns();
 

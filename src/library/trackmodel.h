@@ -180,6 +180,11 @@ class TrackModel {
     }
 
     virtual bool setModelSetting(const QString& name, const QVariant& value) {
+        if (name == "header_state_pb") {
+            qWarning() << "     .";
+            qWarning() << "     TrackModel::setModelSetting: save header state";
+            qWarning() << "     > namespace:" << m_settingsNamespace;
+        }
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);

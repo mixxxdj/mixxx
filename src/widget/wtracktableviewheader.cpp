@@ -12,6 +12,8 @@
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
 HeaderViewState::HeaderViewState(const QHeaderView& headers) {
+    qWarning() << "     .";
+    qWarning() << "     HeaderState from QHEader";
     QAbstractItemModel* model = headers.model();
     for (int vi = 0; vi < headers.count(); ++vi) {
         int li = headers.logicalIndex(vi);
@@ -23,6 +25,12 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers) {
         header_state->set_visual_index(vi);
         QString column_name = model->headerData(
                 li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString();
+        if (headers.sectionSize(li) > 0) {
+            qWarning().noquote() << "       "
+                                 << column_name
+                                 << li
+                                 << headers.sectionSize(li);
+        }
         // If there was some sort of error getting the column id,
         // we have to skip this one. (Happens with non-displayed columns)
         if (column_name.isEmpty()) {
@@ -30,6 +38,7 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers) {
         }
         header_state->set_column_name(column_name.toStdString());
     }
+    qWarning() << "     .";
     m_view_state.set_sort_indicator_shown(headers.isSortIndicatorShown());
     if (m_view_state.sort_indicator_shown()) {
         m_view_state.set_sort_indicator_section(headers.sortIndicatorSection());
@@ -39,6 +48,9 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers) {
 }
 
 HeaderViewState::HeaderViewState(const QString& base64serialized) {
+    qWarning() << "     .";
+    qWarning() << "     HeaderState from string";
+    qWarning() << "     " << base64serialized;
     // First decode the array from Base64, then initialize the protobuf from it.
     QByteArray array = QByteArray::fromBase64(base64serialized.toLatin1());
     if (!m_view_state.ParseFromArray(array.constData(), array.size())) {
@@ -57,10 +69,15 @@ QString HeaderViewState::saveState() const {
 #endif
     QByteArray array(size, '\0');
     m_view_state.SerializeToArray(array.data(), size);
+    qWarning() << "     .";
+    qWarning() << "     HeaderState::saveState";
+    qWarning() << "     " << QString(array.toBase64());
     return QString(array.toBase64());
 }
 
 void HeaderViewState::restoreState(QHeaderView* headers) {
+    qWarning() << "     .";
+    qWarning() << "     HeaderState::restoreState";
     const int max_columns =
             math_min(headers->count(), m_view_state.header_state_size());
 
@@ -83,12 +100,25 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     }
 
     // Now restore
+    qWarning() << "     > restore";
     for (int vi = 0; vi < max_columns; ++vi) {
         const mixxx::library::HeaderViewState::HeaderState& header =
                 m_view_state.header_state(vi);
         const int li = header.logical_index();
+        if (header.size() > 0) {
+            qWarning().noquote() << "    "
+                                 << QString::fromStdString(header.column_name())
+                                 << li;
+        }
         headers->setSectionHidden(li, header.hidden());
         headers->resizeSection(li, header.size());
+        if (header.size() > 0) {
+            qWarning().noquote() << "       > new width:"
+                                 << headers->sectionSize(li)
+                                 << "(should be"
+                                 << header.size()
+                                 << ")";
+        }
         headers->moveSection(headers->visualIndex(li), vi);
     }
     if (m_view_state.sort_indicator_shown()) {
@@ -96,6 +126,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
                 m_view_state.sort_indicator_section(),
                 static_cast<Qt::SortOrder>(m_view_state.sort_order()));
     }
+    qWarning() << "     .";
 }
 
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
@@ -214,17 +245,23 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
+    qWarning() << "     .";
+    qWarning() << "     WTrackTableViewHeader::saveHeaderState";
     TrackModel* track_model = getTrackModel();
     if (!track_model) {
+        qWarning() << "     > no model!";
         return;
     }
+    qWarning() << "     .";
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
+    qWarning() << "     > saving header state";
     track_model->setModelSetting("header_state_pb", view_state.saveState());
-    //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
+    qWarning() << "     .";
+    qWarning() << "     WTrackTableViewHeader::restoreHeaderState";
     TrackModel* track_model = getTrackModel();
 
     if (!track_model) {
@@ -233,6 +270,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
 
     QString headerStateString = track_model->getModelSetting("header_state_pb");
     if (headerStateString.isNull()) {
+        qWarning() << "     > headerStateString.isNull(), load default state";
         loadDefaultHeaderState();
     } else {
         // Load the previous header state (stored as serialized protobuf).
@@ -240,8 +278,10 @@ void WTrackTableViewHeader::restoreHeaderState() {
         //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
+            qWarning() << "     > headerState not healthy, load default state";
             loadDefaultHeaderState();
         } else {
+            qWarning() << "     > headerState healthy, restore";
             view_state.restoreState(this);
         }
     }

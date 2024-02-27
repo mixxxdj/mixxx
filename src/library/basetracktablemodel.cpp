@@ -303,6 +303,10 @@ bool BaseTrackTableModel::setHeaderData(
         // We only care about horizontal headers.
         return false;
     }
+    bool ok = false;
+    int val = value.toInt(&ok);
+    QString valStr = ok ? QString::number(val) : "invalid";
+    qWarning() << "          BTTM setHeaderData:" << valStr;
     m_columnHeaders[section].header[role] = value;
     emit headerDataChanged(orientation, section, section);
     return true;
@@ -329,6 +333,11 @@ QVariant BaseTrackTableModel::headerData(
         }
         case TrackModel::kHeaderWidthRole: {
             QVariant widthValue = m_columnHeaders.value(section).header.value(role);
+            QString state = widthValue.isValid()
+                    ? QString::number(widthValue.toInt())
+                    : QString("invalid, return default %1").arg(defaultColumnWidth());
+            qWarning() << "          BTTM headerData widthRole:"
+                       << state;
             if (widthValue.isValid()) {
                 return widthValue;
             } else {
