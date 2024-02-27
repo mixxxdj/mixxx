@@ -20,7 +20,6 @@
    <string>Crossfader Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -189,7 +188,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="DeckEqualizerOptions">
      <property name="title">
@@ -201,7 +199,7 @@
         <property name="text">
          <string>Only allow EQ knobs to control EQ-specific effects</string>
         </property>
-         <property name="checked">
+        <property name="checked">
          <bool>true</bool>
         </property>
         <property name="toolTip">
@@ -276,7 +274,6 @@
         </layout>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxBypass">
         <property name="text">
@@ -287,7 +284,6 @@
         </property>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxEqAutoReset">
         <property name="toolTip">
@@ -298,7 +294,6 @@
         </property>
        </widget>
       </item>
-
       <item>
        <widget class="QCheckBox" name="CheckBoxGainAutoReset">
         <property name="toolTip">
@@ -309,22 +304,18 @@
         </property>
        </widget>
       </item>
-
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="GroupEQSliders">
      <property name="title">
       <string>Equalizer frequency Shelves</string>
      </property>
      <layout class="QVBoxLayout" name="vBoxLayout_1">
-
       <item>
        <widget class="QWidget" name="GroupHiEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_2">
-
          <item>
           <widget class="QLabel" name="label_highshelf">
            <property name="text">
@@ -341,7 +332,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <widget class="QSlider" name="SliderHiEQ">
            <property name="minimum">
@@ -364,7 +354,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <layout class="QHBoxLayout" name="sliderHiEQ_labels">
            <item>
@@ -428,15 +417,12 @@
            </item>
           </layout>
          </item>
-
         </layout>
        </widget>
       </item>
-
       <item>
        <widget class="QWidget" name="GroupLoEQ" native="true">
         <layout class="QVBoxLayout" name="vBoxLayout_3">
-
          <item>
           <widget class="QLabel" name="label_lowshelf">
            <property name="text">
@@ -453,7 +439,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <widget class="QSlider" name="SliderLoEQ">
            <property name="minimum">
@@ -476,7 +461,6 @@
            </property>
           </widget>
          </item>
-
          <item>
           <layout class="QHBoxLayout" name="sliderLoEQ_labels">
            <item>
@@ -540,22 +524,18 @@
            </item>
           </layout>
          </item>
-
         </layout>
        </widget>
       </item>
-
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="MainMainEQ">
      <property name="title">
       <string>Main EQ</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
-
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -586,7 +566,248 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <layout class="QGridLayout" name="slidersGridLayout"/>
+         <layout class="QGridLayout" name="slidersGridLayout">
+          <item row="0" column="0" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t0">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_0">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b0">
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t1">
+            <property name="text">
+             <string>1</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_1">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b1">
+            <property name="text">
+             <string>1</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t2">
+            <property name="text">
+             <string>2</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_2">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b2">
+            <property name="text">
+             <string>2</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t3">
+            <property name="text">
+             <string>3</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_3">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b3">
+            <property name="text">
+             <string>3</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t4">
+            <property name="text">
+             <string>4</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_4">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b4">
+            <property name="text">
+             <string>4</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="5" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t5">
+            <property name="text">
+             <string>5</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_5">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="5" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b5">
+            <property name="text">
+             <string>5</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t6">
+            <property name="text">
+             <string>5</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="6" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_6">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="6" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b6">
+            <property name="text">
+             <string>6</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_t7">
+            <property name="text">
+             <string>7</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="7" alignment="Qt::AlignHCenter">
+           <widget class="QSlider" name="slider_7">
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>90</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="7" alignment="Qt::AlignHCenter">
+           <widget class="QLabel" name="label_b7">
+            <property name="text">
+             <string>7</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <spacer name="horizontalSpacer_3">
@@ -606,7 +827,6 @@
      </layout>
     </widget>
    </item>
-
    <item>
     <spacer>
      <property name="orientation">
@@ -620,7 +840,6 @@
      </property>
     </spacer>
    </item>
-
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -647,5 +866,4 @@
  <buttongroups>
   <buttongroup name="buttonGroupCrossfaderModes"/>
  </buttongroups>
- <connections/>
 </ui>

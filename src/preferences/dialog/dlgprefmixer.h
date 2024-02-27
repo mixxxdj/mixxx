@@ -103,7 +103,7 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
 
     // Members needed for the Main EQ
     QList<QSlider*> m_mainEQSliders;
-    QList<QLabel*> m_mainEQValues;
+    QList<QLabel*> m_mainEQValueLabels;
     QList<QLabel*> m_mainEQLabels;
     QWeakPointer<EffectSlot> m_pEffectMainEQ;
 
@@ -114,7 +114,6 @@ class DlgPrefMixer : public DlgPreferencePage, public Ui::DlgPrefMixerDlg {
     bool m_eqBypass;
 
     bool m_initializing;
-    bool m_updatingMainEQ;
 
     QList<int> m_eqIndiciesOnUpdate;
     QList<int> m_quickEffectIndiciesOnUpdate;
