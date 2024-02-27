@@ -118,7 +118,7 @@ Item {
         Item {
             id: waveform
 
-            property real effectiveZoomFactor: rateRatioControl.value * zoomControl.value * 100
+            property real effectiveZoomFactor: (1 / rateRatioControl.value) * (100 / zoomControl.value)
 
             width: waveformContainer.duration * effectiveZoomFactor
             height: parent.height
