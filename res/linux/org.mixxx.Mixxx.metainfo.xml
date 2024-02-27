@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-01-15" timestamp="1705300139">
+    <release version="2.5.0" type="development" date="2024-02-23" timestamp="1708721847">
       <description>
  <p>
   Features
@@ -558,6 +558,34 @@
    #12627
    #12626
    #12577
+  </li>
+ </ul>
+</description>
+    </release>
+    <release version="2.4.1" type="development" date="2024-02-23" timestamp="1708721847">
+      <description>
+ <p>
+  Controller Mappings
+ </p>
+ <ul>
+  <li>
+   Pioneer DDJ-FLX4 mapping improvements
+   #12842
+  </li>
+  <li>
+   Traktor S3: Fix mapping crash on macOS
+   #12840
+  </li>
+ </ul>
+ <p>
+  Target Support
+ </p>
+ <ul>
+  <li>
+   Fix various minor build issues
+   #12853
+   #12847
+   #12822
   </li>
  </ul>
 </description>
@@ -1665,7 +1693,7 @@
    #12474
   </li>
   <li>
-   Keyboard mapping: Return triggers doubleclick, move Preview functions to P / Shift+P
+   Keyboard mapping: Return triggers double-click, move Preview functions to P / Shift+P
    #12639
   </li>
   <li>
