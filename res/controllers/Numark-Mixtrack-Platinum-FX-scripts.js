@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-var
 var MixtrackPlatinumFX = {};
 
+// FX
 // FX toggles
 MixtrackPlatinumFX.toggleFXControlEnable = true;
 MixtrackPlatinumFX.toggleFXControlSuper = false;
