@@ -1540,7 +1540,7 @@ MixtrackPlatinumFX.Browse = function() {
         shiftOffset: 0x01,
         input: function(channel, control, value) {
             var direction;
-            if (MixtrackPlatinumFX.shifted && MixtrackPlatinumFX.shifBrowseIsZoom) {
+            if (MixtrackPlatinumFX.shifted && MixtrackPlatinumFX.shiftBrowseIsZoom) {
 				direction = (value > 0x40) ? "up" : "down";
 				engine.setParameter("[Channel1]", "waveform_zoom_" + direction, 1);
 
