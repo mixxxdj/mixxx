@@ -336,7 +336,7 @@ MixtrackPlatinumFX.EffectUnit = function(deckNumber) {
     this.updateEffects = function() {
         if (MixtrackPlatinumFX.toggleFXControlEnable) {
             for (var i = 1; i <= this.effects.length; i++) {            
-                engine.setValue("[EffectRack1_EffectUnit" + deckNumber + "_Effect"+i+"]", "enabled", this.effects[i-1]); 
+                engine.setValue("[EffectRack1_EffectUnit${deckNumber}_Effect"+i+"]", "enabled", this.effects[i-1]); 
             }
         }
     }
@@ -366,7 +366,7 @@ MixtrackPlatinumFX.EffectUnit = function(deckNumber) {
     }
 
     this.dryWetKnob = new components.Pot({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "]",
+        group: '[EffectRack1_EffectUnit${deckNumber}]',
         inKey: "mix"
     });
     
@@ -427,7 +427,7 @@ MixtrackPlatinumFX.EffectUnit = function(deckNumber) {
         }
     });
     this.effectParam2 = new components.Encoder({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect2]",
+        group: '[EffectRack1_EffectUnit${deckNumber}_Effect2]',
         shift: function() {
             this.inKey = "meta";
         },
@@ -442,7 +442,7 @@ MixtrackPlatinumFX.EffectUnit = function(deckNumber) {
         }
     });
     this.effectParam3 = new components.Encoder({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect3]",
+        group: '[EffectRack1_EffectUnit${deckNumber}_Effect3]',
         shift: function() {
             this.inKey = "meta";
         },
@@ -1124,7 +1124,7 @@ MixtrackPlatinumFX.ModeHotcue = function(deckNumber, secondaryMode) {
     this.pads = new components.ComponentContainer();
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.HotcueButton({
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
             number: i + 1 + offset,
             shiftControl: true,
@@ -1151,7 +1151,7 @@ MixtrackPlatinumFX.ModeAutoLoop = function(deckNumber, secondaryMode) {
     this.pads = new components.ComponentContainer();
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
             size: MixtrackPlatinumFX.autoLoopSizes[i],
             shiftControl: true,
@@ -1196,7 +1196,7 @@ MixtrackPlatinumFX.ModeCueLoop = function(deckNumber, secondaryMode) {
     this.pads = new components.ComponentContainer();
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
             size: MixtrackPlatinumFX.autoLoopSizes[i],
             shiftControl: true,
@@ -1264,7 +1264,7 @@ MixtrackPlatinumFX.ModeKeyPlay = function(deckNumber, secondaryMode) {
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
 			parentPads: parentPads_,
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
             shiftOffset: 0x08,
 			keynum: i,
@@ -1344,7 +1344,7 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
 	var i;
     for (i = 0; i < numFader; i++) {
         this.pads[i] = new components.Button({
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
 			input: function(channel, control, value, _status, _group) {
 				this.output(value);
@@ -1363,28 +1363,28 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
 	if (secondaryMode===false) {
 		i=4;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "play_stutter",
 			outConnect: false,
 		});
 		i++;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "start",
 			outConnect: false,
 		});
 		i++;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "back",
 			outConnect: false,
 		});
 		i++;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "fwd",
 			outConnect: false,
@@ -1393,7 +1393,7 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
 	if (secondaryMode===2) {
 		i=4;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "reverseroll",
 			outConnect: false,
@@ -1401,14 +1401,14 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
 		i++;
 		this.pads[i] = new components.Button({
 			type: 2,
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			key: "reverse",
 			outConnect: false,
 		});
 		i++;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			shift: function() {
 				this.disconnect();
@@ -1424,7 +1424,7 @@ MixtrackPlatinumFX.ModeFaderCuts = function(deckNumber, secondaryMode) {
 		});
 		i++;
 		this.pads[i] = new components.Button({
-			group: "[Channel" + deckNumber + "]",
+			group: '[Channel${deckNumber}]',
 			midi: [0x93 + deckNumber, 0x14 + i],
 			outConnect: false,
 			unshift: function() {
@@ -1506,7 +1506,7 @@ MixtrackPlatinumFX.ModeBeatjump = function(deckNumber, secondaryMode) {
     this.pads = new components.ComponentContainer();
     for (var i = 0; i < 8; i++) {
         this.pads[i] = new components.Button({
-            group: "[Channel" + deckNumber + "]",
+            group: '[Channel${deckNumber}]',
             midi: [0x93 + deckNumber, 0x14 + i],
             size: MixtrackPlatinumFX.beatJumpValues[i],
             shiftControl: true,
