@@ -20,20 +20,18 @@ FolderTreeModel::FolderTreeModel(QObject *parent)
 FolderTreeModel::~FolderTreeModel() {
 }
 
-/* A tree model of the filesystem should be initialized lazy.
- * It will take the universe to iterate over all files over filesystem
- * hasChildren() returns true if a folder has subfolders although
- * we do not know the precise number of subfolders.
- *
- * Note that BrowseFeature inserts folder trees dynamically and rowCount()
- * is only called if necessary.
- */
+// A tree model of the filesystem should be initialized lazy.
+// It will take the universe to iterate over all files over filesystem
+// hasChildren() returns true if a folder has subfolders although
+// we do not know the precise number of subfolders.
+//
+// Note that BrowseFeature inserts folder trees dynamically and rowCount()
+// is only called if necessary.
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
     TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
-    /* Usually the child count is 0 because we do lazy initialization
-     * However, for, buid-in items such as 'Quick Links' there exist
-     * child items at init time
-     */
+    // Usually the child count is 0 because we do lazy initialization
+    // However, for, buid-in items such as 'Quick Links' there exist
+    // child items at init time
     if (item->getData().toString() == QUICK_LINK_NODE) {
         return true;
     }
@@ -56,18 +54,15 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // Acquire a security token for the path.
     const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-    /*
-     *  The following code is too expensive, general and SLOW since
-     *  QDIR::EntryInfoList returns a full QFileInfolist
-     *
-     *
-     *  QDir dir(item->getData().toString());
-     *  QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-     *  return (all.count() > 0);
-     *
-     *  We can benefit from low-level filesystem APIs, i.e.,
-     *  Windows API or SystemCalls
-     */
+    // The following code is too expensive, general and SLOW since
+    // QDIR::EntryInfoList returns a full QFileInfolist
+    //
+    // QDir dir(item->getData().toString());
+    // QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+    // return (all.count() > 0);
+    //
+    // We can benefit from low-level filesystem APIs, i.e.,
+    // Windows API or SystemCalls
 
     bool has_children = false;
 
