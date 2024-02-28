@@ -377,6 +377,20 @@ void WMainMenuBar::initialize() {
 
     pViewMenu->addSeparator();
 
+    QString autoDJTitle = tr("Show Auto DJ");
+    QString autoDJText = tr("Switch to the Auto DJ view.");
+    auto* pViewAutoDJ = new QAction(autoDJTitle, this);
+    // pViewAutoDJ->setShortcut(QKeySequence(m_pKbdConfig->getValue(
+    //         ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowAutoDJ"),
+    //         tr("Ctrl+9", "Menubar|View|Show Auto DJ"))));
+    pViewAutoDJ->setStatusTip(autoDJText);
+    pViewAutoDJ->setWhatsThis(buildWhatsThis(autoDJTitle, autoDJText));
+    pViewAutoDJ->setCheckable(false);
+    connect(pViewAutoDJ, &QAction::triggered, this, &WMainMenuBar::showAutoDJ);
+    pViewMenu->addAction(pViewAutoDJ);
+
+    pViewMenu->addSeparator();
+
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
     auto* pViewFullScreen = new QAction(fullScreenTitle, this);

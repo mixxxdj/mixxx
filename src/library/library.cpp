@@ -51,7 +51,9 @@ using namespace mixxx::library::prefs;
 
 // This is the name which we use to register the WTrackTableView with the
 // WLibrary
-const QString Library::m_sTrackViewName = QString("WTrackTableView");
+const QString Library::m_sTrackViewName = QStringLiteral("WTrackTableView");
+
+const QString Library::kAutoDJViewName = QStringLiteral("Auto DJ");
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
@@ -71,6 +73,7 @@ Library::Library(
           m_pLibraryControl(make_parented<LibraryControl>(this)),
           m_pLibraryWidget(nullptr),
           m_pMixxxLibraryFeature(nullptr),
+          m_pAutoDJFeature(nullptr),
           m_pPlaylistFeature(nullptr),
           m_pCrateFeature(nullptr),
           m_pAnalysisFeature(nullptr) {
@@ -98,7 +101,8 @@ Library::Library(
             Qt::DirectConnection /* signal-to-signal */);
 #endif
 
-    addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
+    m_pAutoDJFeature = new AutoDJFeature(this, m_pConfig, pPlayerManager);
+    addFeature(m_pAutoDJFeature);
 
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
@@ -754,6 +758,12 @@ void Library::searchTracksInCollection(const QString& query) {
         return;
     }
     m_pMixxxLibraryFeature->searchAndActivate(query);
+}
+
+void Library::showAutoDJ() {
+    m_pAutoDJFeature->activate();
+    emit switchToView(kAutoDJViewName);
+    m_pSidebarModel->slotFeatureSelect(m_pAutoDJFeature);
 }
 
 #ifdef __ENGINEPRIME__

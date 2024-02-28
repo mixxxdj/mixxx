@@ -976,6 +976,11 @@ void MixxxMainWindow::connectMenuBar() {
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist,
                 Qt::UniqueConnection);
+        connect(m_pMenuBar,
+                &WMainMenuBar::showAutoDJ,
+                m_pCoreServices->getLibrary().get(),
+                &Library::showAutoDJ,
+                Qt::UniqueConnection);
     }
 
 #ifdef __ENGINEPRIME__
