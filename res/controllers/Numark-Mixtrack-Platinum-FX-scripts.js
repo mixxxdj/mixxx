@@ -412,7 +412,7 @@ MixtrackPlatinumFX.EffectUnit = function(deckNumber) {
     
 	// copy paste since I'm not sure if we want to handle it like this or not
     this.effectParam = new components.Encoder({
-        group: "[EffectRack1_EffectUnit" + deckNumber + "_Effect1]",
+        group: `[EffectRack1_EffectUnit${deckNumber}_Effect1]`,
         shift: function() {
             this.inKey = "meta";
         },
