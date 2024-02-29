@@ -92,6 +92,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 
 void WHotcueButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
+    const bool leftClick = e->button() == Qt::LeftButton;
     if (rightClick) {
         if (isPressed()) {
             // Discard right clicks when already left clicked.
@@ -125,6 +126,9 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
             // use the bottom left corner as starting point for popup
             m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }
+        return;
+    } else if (leftClick && e->modifiers().testFlag(Qt::ShiftModifier)) {
+        ControlObject::set(createConfigKey(QStringLiteral("activate_secondary")), 1.0);
         return;
     }
 

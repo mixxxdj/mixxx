@@ -65,14 +65,27 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     ComboBoxCueMode->addItem(tr("CUP mode"), static_cast<int>(CueMode::CueAndPlay));
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
-    slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
+    slotCueModeCombobox(cueModeIndex); // sets m_cueMode
+    for (ControlProxy* pControl : qAsConst(m_cueModeControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotCueModeCombobox);
+
+    // Loop cue activation mode
+    m_loopCueActivationMode = m_pConfig->getValue<LoopCueActivationMode>(
+            ConfigKey("[Controls]", "loop_cue_activation_mode"),
+            LoopCueActivationMode::Reloop);
+    for (ControlProxy* pControl : qAsConst(m_loopCueActivationModeControls)) {
+        pControl->set(static_cast<int>(m_loopCueActivationMode));
+    }
+    connect(buttonGroupLoopCueMode,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            QOverload<QAbstractButton*>::of(
+                    &DlgPrefDeck::slotLoopCueActivationModeSelected));
 
     // Track time display configuration
     connect(m_pControlTrackTimeDisplay.get(),
@@ -413,7 +426,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefDeck::~DlgPrefDeck() {
     qDeleteAll(m_rateControls);
     qDeleteAll(m_rateDirectionControls);
-    qDeleteAll(m_cueControls);
+    qDeleteAll(m_cueModeControls);
+    qDeleteAll(m_loopCueActivationModeControls);
     qDeleteAll(m_rateRangeControls);
     qDeleteAll(m_keylockModeControls);
     qDeleteAll(m_keyunlockModeControls);
@@ -439,9 +453,18 @@ void DlgPrefDeck::slotUpdate() {
     double rateDirection = m_rateDirectionControls[0]->get();
     checkBoxInvertSpeedSlider->setChecked(rateDirection == kRateDirectionInverted);
 
-    double cueMode = m_cueControls[0]->get();
+    double cueMode = m_cueModeControls[0]->get();
     index = ComboBoxCueMode->findData(static_cast<int>(cueMode));
     ComboBoxCueMode->setCurrentIndex(index);
+
+    m_loopCueActivationMode =
+            static_cast<LoopCueActivationMode>(static_cast<int>(
+                    m_loopCueActivationModeControls[0]->get()));
+    if (m_loopCueActivationMode == LoopCueActivationMode::Reloop) {
+        radioButtonLoopCueReloop->setChecked(true);
+    } else {
+        radioButtonLoopCueJumpOrToggle->setChecked(true);
+    }
 
     const EngineSync::SyncLockAlgorithm syncLockAlgorithm =
             static_cast<EngineSync::SyncLockAlgorithm>(m_pConfig->getValue<int>(
@@ -504,6 +527,9 @@ void DlgPrefDeck::slotUpdate() {
 void DlgPrefDeck::slotResetToDefaults() {
     // Track time display mode
     radioButtonRemaining->setChecked(true);
+
+    // Loop cue activation mode
+    radioButtonLoopCueReloop->setChecked(true);
 
     // Up increases speed.
     checkBoxInvertSpeedSlider->setChecked(false);
@@ -601,6 +627,14 @@ void DlgPrefDeck::slotCueModeCombobox(int index) {
     m_cueMode = static_cast<CueMode>(ComboBoxCueMode->itemData(index).toInt());
 }
 
+void DlgPrefDeck::slotLoopCueActivationModeSelected(QAbstractButton* pressedButton) {
+    if (pressedButton == radioButtonLoopCueReloop) {
+        m_loopCueActivationMode = LoopCueActivationMode::Reloop;
+    } else {
+        m_loopCueActivationMode = LoopCueActivationMode::JumpOrToggle;
+    }
+}
+
 void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
     m_bCloneDeckOnLoadDoubleTap = checked;
 }
@@ -685,8 +719,8 @@ void DlgPrefDeck::slotApply() {
     m_pControlTrackTimeFormat->set(timeFormat);
     m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
-    // Set cue mode for every deck
-    for (ControlProxy* pControl : std::as_const(m_cueControls)) {
+    // Set cue mode for each deck and sampler
+    for (ControlProxy* pControl : qAsConst(m_cueModeControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
@@ -696,6 +730,13 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
+
+    // Set loop cue activation mode for each deck and sampler
+    for (ControlProxy* pControl : qAsConst(m_loopCueActivationModeControls)) {
+        pControl->set(static_cast<int>(m_loopCueActivationMode));
+    }
+    m_pConfig->setValue(ConfigKey("[Controls]", "loop_cue_activation_mode"),
+            static_cast<int>(m_loopCueActivationMode));
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
@@ -773,8 +814,10 @@ void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueModeControls.push_back(new ControlProxy(
                 group, "cue_mode"));
+        m_loopCueActivationModeControls.push_back(new ControlProxy(
+                group, "loop_cue_activation_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
@@ -806,8 +849,10 @@ void DlgPrefDeck::slotNumSamplersChanged(double new_count, bool initializing) {
                 group, "rateRange"));
         m_rateDirectionControls.push_back(new ControlProxy(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlProxy(
+        m_cueModeControls.push_back(new ControlProxy(
                 group, "cue_mode"));
+        m_loopCueActivationModeControls.push_back(new ControlProxy(
+                group, "loop_cue_activation_mode"));
         m_keylockModeControls.push_back(new ControlProxy(
                 group, "keylockMode"));
         m_keylockModeControls.last()->set(static_cast<double>(m_keylockMode));
