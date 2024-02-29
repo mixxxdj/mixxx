@@ -1,139 +1,157 @@
 import Mixxx 1.0 as Mixxx
 import QtQuick 2.12
+import QtQuick.Controls
 import "Theme"
 
 Item {
-    Rectangle {
-        color: Theme.deckBackgroundColor
+    LibraryControl {
+        id: libraryControl
+
+        onMoveVertical: (offset) => {
+            listView.moveSelectionVertical(offset);
+        }
+        onLoadSelectedTrack: (group, play) => {
+            listView.loadSelectedTrack(group, play);
+        }
+        onLoadSelectedTrackIntoNextAvailableDeck: (play) => {
+            listView.loadSelectedTrackIntoNextAvailableDeck(play);
+        }
+        onFocusWidgetChanged: {
+            switch (focusWidget) {
+                case FocusedWidgetControl.WidgetKind.LibraryView:
+                    listView.forceActiveFocus();
+                    break;
+            }
+        }
+    }
+
+    SplitView {
         anchors.fill: parent
 
-        LibraryControl {
-            id: libraryControl
+        Rectangle {
+            id: sidebarBox
 
-            onMoveVertical: (offset) => {
-                listView.moveSelectionVertical(offset);
-            }
-            onLoadSelectedTrack: (group, play) => {
-                listView.loadSelectedTrack(group, play);
-            }
-            onLoadSelectedTrackIntoNextAvailableDeck: (play) => {
-                listView.loadSelectedTrackIntoNextAvailableDeck(play);
-            }
-            onFocusWidgetChanged: {
-                switch (focusWidget) {
-                    case FocusedWidgetControl.WidgetKind.LibraryView:
-                        listView.forceActiveFocus();
-                        break;
-                }
+            color: Theme.deckBackgroundColor
+
+            SplitView.preferredWidth: 200
+
+            LibrarySidebar {
+                model: Mixxx.Library.sidebarModel
             }
         }
 
-        ListView {
-            id: listView
+        Rectangle {
+            id: tableBox
 
-            function moveSelectionVertical(value) {
-                if (value == 0)
-                    return ;
+            color: Theme.deckBackgroundColor
 
-                const rowCount = model.rowCount();
-                if (rowCount == 0)
-                    return ;
+            ListView {
+                id: listView
 
-                currentIndex = Mixxx.MathUtils.positiveModulo(currentIndex + value, rowCount);
-            }
+                function moveSelectionVertical(value) {
+                    if (value == 0)
+                        return ;
 
-            function loadSelectedTrackIntoNextAvailableDeck(play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
-                    return ;
+                    const rowCount = model.rowCount();
+                    if (rowCount == 0)
+                        return ;
 
-                Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(url, play);
-            }
-
-            function loadSelectedTrack(group, play) {
-                const url = model.get(currentIndex).fileUrl;
-                if (!url)
-                    return ;
-
-                const player = Mixxx.PlayerManager.getPlayer(group);
-                if (!player)
-                    return ;
-
-                player.loadTrackFromLocationUrl(url, play);
-            }
-
-            anchors.fill: parent
-            anchors.margins: 10
-            clip: true
-            keyNavigationWraps: true
-            highlightMoveDuration: 250
-            highlightResizeDuration: 50
-            model: Mixxx.Library.model
-            Keys.onPressed: (event) => {
-                switch (event.key) {
-                    case Qt.Key_Enter:
-                        case Qt.Key_Return:
-                            listView.loadSelectedTrackIntoNextAvailableDeck(false);
-                        break;
+                    currentIndex = Mixxx.MathUtils.positiveModulo(currentIndex + value, rowCount);
                 }
-            }
 
-            delegate: Item {
-                id: itemDlgt
+                function loadSelectedTrackIntoNextAvailableDeck(play) {
+                    const url = model.get(currentIndex).fileUrl;
+                    if (!url)
+                        return ;
 
-                required property int index
-                required property url fileUrl
-                required property string artist
-                required property string title
+                    Mixxx.PlayerManager.loadLocationUrlIntoNextAvailableDeck(url, play);
+                }
 
-                implicitWidth: listView.width
-                implicitHeight: 30
+                function loadSelectedTrack(group, play) {
+                    const url = model.get(currentIndex).fileUrl;
+                    if (!url)
+                        return ;
 
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: itemDlgt.artist + " - " + itemDlgt.title
-                    color: (listView.currentIndex == itemDlgt.index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
+                    const player = Mixxx.PlayerManager.getPlayer(group);
+                    if (!player)
+                        return ;
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: listView.highlightMoveDuration
+                    player.loadTrackFromLocationUrl(url, play);
+                }
+
+                anchors.fill: parent
+                anchors.margins: 10
+                clip: true
+                keyNavigationWraps: true
+                highlightMoveDuration: 250
+                highlightResizeDuration: 50
+                model: Mixxx.Library.model
+                Keys.onPressed: (event) => {
+                    switch (event.key) {
+                        case Qt.Key_Enter:
+                            case Qt.Key_Return:
+                                listView.loadSelectedTrackIntoNextAvailableDeck(false);
+                            break;
+                    }
+                }
+
+                delegate: Item {
+                    id: itemDlgt
+
+                    required property int index
+                    required property url fileUrl
+                    required property string artist
+                    required property string title
+
+                    implicitWidth: listView.width
+                    implicitHeight: 30
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: itemDlgt.artist + " - " + itemDlgt.title
+                        color: (listView.currentIndex == itemDlgt.index && listView.activeFocus) ? Theme.blue : Theme.deckTextColor
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: listView.highlightMoveDuration
+                            }
                         }
                     }
-                }
 
-                Image {
-                    id: dragItem
+                    Image {
+                        id: dragItem
 
-                    Drag.active: dragArea.drag.active
-                    Drag.dragType: Drag.Automatic
-                    Drag.supportedActions: Qt.CopyAction
-                    Drag.mimeData: {
-                        "text/uri-list": itemDlgt.fileUrl,
-                        "text/plain": itemDlgt.fileUrl
+                        Drag.active: dragArea.drag.active
+                        Drag.dragType: Drag.Automatic
+                        Drag.supportedActions: Qt.CopyAction
+                        Drag.mimeData: {
+                            "text/uri-list": itemDlgt.fileUrl,
+                            "text/plain": itemDlgt.fileUrl
+                        }
+                        anchors.fill: parent
                     }
-                    anchors.fill: parent
-                }
 
-                MouseArea {
-                    id: dragArea
+                    MouseArea {
+                        id: dragArea
 
-                    anchors.fill: parent
-                    drag.target: dragItem
-                    onPressed: {
-                        listView.forceActiveFocus();
-                        listView.currentIndex = itemDlgt.index;
-                        parent.grabToImage((result) => {
-                                dragItem.Drag.imageSource = result.url;
-                        });
+                        anchors.fill: parent
+                        drag.target: dragItem
+                        onPressed: {
+                            listView.forceActiveFocus();
+                            listView.currentIndex = itemDlgt.index;
+                            parent.grabToImage((result) => {
+                                    dragItem.Drag.imageSource = result.url;
+                            });
+                        }
+                        onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
                     }
-                    onDoubleClicked: listView.loadSelectedTrackIntoNextAvailableDeck(false)
                 }
-            }
 
-            highlight: Rectangle {
-                border.color: listView.activeFocus ? Theme.blue : Theme.deckTextColor
-                border.width: 1
-                color: "transparent"
+                highlight: Rectangle {
+                    border.color: listView.activeFocus ? Theme.blue : Theme.deckTextColor
+                    border.width: 1
+                    color: "transparent"
+                }
             }
         }
     }

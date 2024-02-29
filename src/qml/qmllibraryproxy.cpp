@@ -3,7 +3,9 @@
 #include <QAbstractItemModel>
 
 #include "library/library.h"
+#include "library/sidebarmodel.h"
 #include "moc_qmllibraryproxy.cpp"
+#include "qmllibraryproxy.h"
 
 namespace mixxx {
 namespace qml {
@@ -11,7 +13,8 @@ namespace qml {
 QmlLibraryProxy::QmlLibraryProxy(std::shared_ptr<Library> pLibrary, QObject* parent)
         : QObject(parent),
           m_pLibrary(pLibrary),
-          m_pModelProperty(new QmlLibraryTrackListModel(m_pLibrary->trackTableModel(), this)) {
+          m_pModelProperty(new QmlLibraryTrackListModel(m_pLibrary->trackTableModel(), this)),
+          m_pSidebarModelProperty(m_pLibrary->sidebarModel()) {
 }
 
 // static
