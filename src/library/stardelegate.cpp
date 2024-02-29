@@ -44,7 +44,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     initStyleOption(&newOption, index);
 
     StarEditor* editor =
-            new StarEditor(parent, m_pTableView, index, newOption, m_pFocusBorderColor);
+            new StarEditor(parent, m_pTableView, index, newOption, m_focusBorderColor);
     connect(editor,
             &StarEditor::editingFinished,
             this,

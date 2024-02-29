@@ -16,7 +16,16 @@ TableItemDelegate::TableItemDelegate(QTableView* pTableView)
         // WTrackTableView {
         //   qproperty-focusBorderColor: red;
         // }
-        m_pFocusBorderColor = pTrackTableView->getFocusBorderColor();
+        m_focusBorderColor = pTrackTableView->getFocusBorderColor();
+        // For some reason the color is not initialized from the stylesheet for
+        // some WTrackTableViews (in DlgAutoDJ, DlgAnalysis, ...)
+        // Listen to the property changed signal.
+        connect(pTrackTableView,
+                &WTrackTableView::focusBorderColorChanged,
+                this,
+                [this](QColor col) {
+                    m_focusBorderColor = col;
+                });
     }
 }
 
@@ -39,7 +48,20 @@ void TableItemDelegate::paint(
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));
     } else {
-        painter->setBrush(option.palette.color(cg, QPalette::Text));
+        // This gets the custom 'played' text color from BaseTrackTableModel
+        // depending on check state of the 'played' column.
+        // Note that we need to do this again in BPMDelegate which uses the
+        // style of the TableView.
+        auto playedColorData = index.data(Qt::ForegroundRole);
+        if (playedColorData.canConvert<QColor>()) {
+            QColor playedColor = playedColorData.value<QColor>();
+            // for the star rating polygons
+            painter->setBrush(playedColor);
+            // for the 'location' text
+            painter->setPen(playedColor);
+        } else {
+            painter->setBrush(option.palette.color(cg, QPalette::Text));
+        }
     }
 
     QStyle* style = m_pTableView->style();

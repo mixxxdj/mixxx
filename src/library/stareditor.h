@@ -46,7 +46,7 @@ class StarEditor : public QWidget {
     QTableView* m_pTableView;
     QModelIndex m_index;
     QStyleOptionViewItem m_styleOption;
-    QColor m_pFocusBorderColor;
+    QColor m_focusBorderColor;
     StarRating m_starRating;
     int m_starCount;
 };

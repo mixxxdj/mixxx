@@ -92,6 +92,28 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
+    // The checkbox uses the QTableView's qss style, therefore it's not picking
+    //  up the 'played' text color via ForegroundRole from BaseTrackTableModel::data().
+    // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
+    // we need to reset it to normal/highlighted.
+    QColor textColor;
+    auto dat = index.data(Qt::ForegroundRole);
+    if (dat.canConvert<QColor>()) {
+        textColor = dat.value<QColor>();
+    } else {
+        if (option.state & QStyle::State_Selected) {
+            textColor = option.palette.color(QPalette::Normal, QPalette::HighlightedText);
+        } else {
+            textColor = option.palette.color(QPalette::Normal, QPalette::Text);
+            // qWarning() << "     !! BPM col:" << textColor.name(QColor::HexRgb);
+        }
+    }
+    if (textColor.isValid()) {
+        m_pCheckBox->setStyleSheet(QStringLiteral(
+                "#LibraryBPMButton::item { color: %1; }")
+                                           .arg(textColor.name(QColor::HexRgb)));
+    }
+
     QStyle* style = m_pTableView->style();
     if (style != nullptr) {
         style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, m_pCheckBox);

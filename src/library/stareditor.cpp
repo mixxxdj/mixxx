@@ -28,7 +28,7 @@ StarEditor::StarEditor(QWidget* parent,
           m_pTableView(pTableView),
           m_index(index),
           m_styleOption(option),
-          m_pFocusBorderColor(focusBorderColor),
+          m_focusBorderColor(focusBorderColor),
           m_starCount(StarRating::kMinStarCount) {
     DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
@@ -93,7 +93,7 @@ void StarEditor::paintEvent(QPaintEvent*) {
 
     // Draw a border if the color cell is selected
     if (m_styleOption.state & QStyle::State_HasFocus) {
-        TableItemDelegate::drawBorder(&painter, m_pFocusBorderColor, m_styleOption.rect);
+        TableItemDelegate::drawBorder(&painter, m_focusBorderColor, m_styleOption.rect);
     }
 }
 
