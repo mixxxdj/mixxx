@@ -76,11 +76,22 @@ class WTrackTableView : public WLibraryTableView {
     QColor getTrackPlayedColor() const {
         return m_trackPlayedColor;
     }
+    // Default color for missing tracks' text color. #ee0000, bit darker than Qt::red.
+    // BaseTrackTableModel uses this for the ForegroundRole of missing tracks.
+    static constexpr const char* kDefaultTrackMissingColor = "#ff0000";
+    Q_PROPERTY(QColor trackMissingColor
+                    MEMBER m_trackMissingColor
+                            NOTIFY trackMissingColorChanged
+                                    DESIGNABLE true);
+    QColor getTrackMissingColor() const {
+        return m_trackMissingColor;
+    }
 
   signals:
     void trackMenuVisible(bool visible);
     void focusBorderColorChanged(QColor col);
     void trackPlayedColorChanged(QColor col);
+    void trackMissingColorChanged(QColor col);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
@@ -153,6 +164,7 @@ class WTrackTableView : public WLibraryTableView {
     const double m_backgroundColorOpacity;
     QColor m_focusBorderColor;
     QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

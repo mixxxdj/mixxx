@@ -276,6 +276,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     double m_backgroundColorOpacity;
     QColor m_trackPlayedColor;
+    QColor m_trackMissingColor;
 
     ColumnCache m_columnCache;
 

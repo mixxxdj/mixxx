@@ -93,7 +93,8 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     initStyleOption(&opt, index);
 
     // The checkbox uses the QTableView's qss style, therefore it's not picking
-    //  up the 'played' text color via ForegroundRole from BaseTrackTableModel::data().
+    // up the 'missing' or 'played' text color via ForegroundRole from
+    // BaseTrackTableModel::data().
     // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
     // we need to reset it to normal/highlighted.
     QColor textColor;
