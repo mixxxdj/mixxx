@@ -135,7 +135,7 @@ BaseTrackTableModel::BaseTrackTableModel(
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
           m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity),
-          m_playedInactiveColor(QColor::fromRgb(WTrackTableView::kDefaultPlayedInactiveColorHex)) {
+          m_trackPlayedColor(QColor(WTrackTableView::kDefaultTrackPlayedColor)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
@@ -461,12 +461,12 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     m_backgroundColorOpacity = pTableView->getBackgroundColorOpacity();
     // This is the color used for the text of played tracks.
     // data() uses this to compose the ForegroundRole QBrush if 'played' is checked.
-    m_playedInactiveColor = pTableView->getPlayedInactiveColor();
+    m_trackPlayedColor = pTableView->getTrackPlayedColor();
     connect(pTableView,
-            &WTrackTableView::playedInactiveColorChanged,
+            &WTrackTableView::trackPlayedColorChanged,
             this,
             [this](QColor col) {
-                m_playedInactiveColor = col;
+                m_trackPlayedColor = col;
             });
     if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pTableView);
@@ -530,7 +530,7 @@ QVariant BaseTrackTableModel::data(
         if (!playedRaw.isNull() &&
                 playedRaw.canConvert<bool>() &&
                 playedRaw.toBool()) {
-            return QVariant::fromValue(m_playedInactiveColor);
+            return QVariant::fromValue(m_trackPlayedColor);
         }
     }
 
