@@ -184,6 +184,53 @@ class DurationFilterNode : public NumericFilterNode {
     double parse(const QString& arg, bool* ok) override;
 };
 
+// BPM filter that supports fuzzy matching via ~ prefix.
+// If no operator is provided (bpm:123) it also finds half & double BPM matches.
+// Half/double values aren't integers, int ranges are used. E.g. bpm:123.1 finds
+// 61-61, 123.1 and 246-247 BPM
+class BpmFilterNode : public QueryNode {
+  public:
+    static constexpr double kRelativeRangeDefault = 0.06;
+    static void setBpmRelativeRange(double range);
+
+    BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
+
+    // Allows WSearchRelatedTracksMenu to construct the QAction title
+    bool isRangeQuery(double* low, double* high) const {
+        if (m_isRangeQuery) {
+            *low = m_rangeLower;
+            *high = m_rangeUpper;
+            return true;
+        }
+        return false;
+    }
+
+    QString toSql() const override;
+
+  private:
+    void ifDecimalsSetRange(const QString& argument, double bpm);
+    bool match(const TrackPointer& pTrack) const override;
+
+    bool m_fuzzy;
+    bool m_negate;
+
+    bool m_isNullQuery;
+    bool m_isOperatorQuery;
+    bool m_isRangeQuery;
+    bool m_isHalfDoubleQuery;
+    QString m_operator;
+
+    double m_bpm;
+    double m_rangeLower;
+    double m_rangeUpper;
+    double m_bpmHalfLower;
+    double m_bpmHalfUpper;
+    double m_bpmDoubleLower;
+    double m_bpmDoubleUpper;
+
+    static double s_relativeRange;
+};
+
 class KeyFilterNode : public QueryNode {
   public:
     KeyFilterNode(mixxx::track::io::key::ChromaticKey key, bool fuzzy);

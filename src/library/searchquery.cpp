@@ -471,6 +471,221 @@ double DurationFilterNode::parse(const QString& arg, bool* ok) {
     return 60 * m + s;
 }
 
+// static
+constexpr double BpmFilterNode::kRelativeRangeDefault;
+
+// static
+double BpmFilterNode::s_relativeRange = kRelativeRangeDefault;
+
+// static
+void BpmFilterNode::setBpmRelativeRange(double range) {
+    // range < 0 would yield zero results because m_dRangeLow > m_dRangeHigh
+    VERIFY_OR_DEBUG_ASSERT(range >= 0) {
+        return;
+    }
+    s_relativeRange = range;
+}
+
+BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
+        : m_fuzzy(fuzzy),
+          m_negate(negate),
+          m_isNullQuery(false),
+          m_isOperatorQuery(false),
+          m_isRangeQuery(false),
+          m_isHalfDoubleQuery(false),
+          m_operator("="),
+          m_bpm(0.0),
+          m_rangeLower(0.0),
+          m_rangeUpper(0.0),
+          m_bpmHalfLower(0.0),
+          m_bpmHalfUpper(0.0),
+          m_bpmDoubleLower(0.0),
+          m_bpmDoubleUpper(0.0) {
+    if (argument == kMissingFieldSearchTerm) {
+        m_isNullQuery = true;
+        return;
+    }
+    qWarning() << "     .BpmFilter:" << argument;
+
+    QRegularExpressionMatch opMatch = kNumericOperatorRegex.match(argument);
+    if (opMatch.hasMatch()) {
+        if (m_fuzzy) {
+            // fuzzy can't be combined with operators
+            return;
+        }
+        m_operator = opMatch.captured(1);
+        argument = opMatch.captured(2);
+        qWarning() << "     .opMatch:" << m_operator;
+    }
+
+    // Replace the locale's decimal separator with .
+    // This is handy if numbers are typed with the numpad.
+    argument.replace(',', '.');
+    bool isDouble = false;
+    const double bpm = argument.toDouble(&isDouble);
+    qWarning() << "     .isDouble:" << isDouble;
+    if (isDouble) {
+        if (m_fuzzy) {
+            qWarning() << "     .fuzzy";
+            // fuzzy search +- n%
+            m_rangeLower = floor((1 - s_relativeRange) * bpm);
+            m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
+            m_isRangeQuery = true;
+        } else if (!opMatch.hasMatch() && !m_negate) {
+            qWarning() << "     .halfDouble";
+            // Simple 'bpm:NNN' search.
+            // Also searches for half/double matches.
+            // If decimals are provided, extend the core range, else search for
+            // exact matches.
+            ifDecimalsSetRange(argument, bpm);
+            // Include half/double BPM (rounded to int)
+            m_bpmHalfLower = floor(bpm / 2);
+            m_bpmHalfUpper = ceil(bpm / 2);
+            m_bpmDoubleLower = floor(bpm * 2);
+            m_bpmDoubleUpper = ceil(bpm * 2);
+            m_isHalfDoubleQuery = true;
+        } else {
+            qWarning() << "     .op/exact/negate";
+            qWarning() << "      op:" << m_operator;
+            // Operator query
+            if (m_operator == '=') {
+                // If doing an exact search with '=' we round up/down to include
+                // decimals hidden in the tracks table / BPM widget.
+                ifDecimalsSetRange(argument, bpm);
+                m_isRangeQuery = true;
+            } else {
+                m_bpm = bpm;
+                m_isOperatorQuery = true;
+            }
+        }
+        return;
+    } else if (m_fuzzy) {
+        // Invalid combination. Fuzzy was requested but argument is not a single
+        // number. Maybe it's a range query, wrong operator order (e.g. =>) or
+        // simply invalid characters.t the BPM fuzzy range)
+        return;
+    }
+    // else test if this is a valid range query
+    QStringList rangeArgs = argument.split("-");
+    if (rangeArgs.length() == 2) {
+        bool lowOk = false;
+        m_rangeLower = rangeArgs[0].toDouble(&lowOk);
+        bool highOk = false;
+        m_rangeUpper = rangeArgs[1].toDouble(&highOk);
+
+        if (lowOk && highOk && m_rangeLower <= m_rangeUpper) {
+            m_isRangeQuery = true;
+        }
+    }
+}
+
+void BpmFilterNode::ifDecimalsSetRange(const QString& argument, double bpm) {
+    // Set up a range if we have decimals. This will include matches
+    // for which we show rounded values in the library. For example
+    // 124.92 finds 124.915 - 124.925
+    // 124.1  finds 124.05 - 124.15
+    QStringList parts = argument.split('.');
+    QString decimals = parts[1];
+    // Chop trailing 0
+    while (decimals.back() == '0') {
+        decimals.chop(1);
+    }
+    if (!decimals.isEmpty()) {
+        qWarning() << "       decimals, maybe extend range";
+        qWarning() << "       decimals:" << decimals;
+        int numDecimals = decimals.length();
+        double roundRange = 5 / pow(10, numDecimals + 1);
+        m_rangeLower = bpm - roundRange;
+        m_rangeUpper = bpm + roundRange;
+        qWarning() << "       decimals:" << numDecimals;
+        qWarning() << "       range low:   " << m_rangeLower;
+        qWarning() << "       range upper: " << m_rangeUpper;
+    } else {
+        m_rangeLower = bpm;
+        m_rangeUpper = bpm;
+    }
+}
+
+bool BpmFilterNode::match(const TrackPointer& pTrack) const {
+    double value = pTrack->getBpm();
+    if (m_isNullQuery && value == mixxx::Bpm::kValueUndefined) {
+        return true;
+    }
+
+    if (m_isOperatorQuery) {
+        if (m_fuzzy) {
+            return false;
+        }
+        if ((m_operator == "=" && value == m_bpm) ||
+                (m_operator == "<" && value < m_bpm) ||
+                (m_operator == ">" && value > m_bpm) ||
+                (m_operator == "<=" && value <= m_bpm) ||
+                (m_operator == ">=" && value >= m_bpm)) {
+            return true;
+        }
+    } else if (m_isHalfDoubleQuery) {
+        if ((value >= m_rangeLower && value <= m_rangeUpper) ||
+                (value >= m_bpmHalfLower && value <= m_bpmHalfUpper) ||
+                (value >= m_bpmDoubleLower && value <= m_bpmDoubleUpper)) {
+            return true;
+        }
+    } else if (m_isRangeQuery && value >= m_rangeLower && value <= m_rangeUpper) {
+        return true;
+    } else if (value == m_bpm) {
+        return true;
+    }
+    return false;
+}
+
+QString BpmFilterNode::toSql() const {
+    if (m_isNullQuery) {
+        return QString("bpm IS NULL");
+    }
+
+    if (m_isOperatorQuery) {
+        qWarning() << "     #op/exact/negate";
+        if (m_fuzzy) {
+            qWarning() << "     #also fuzzy, return ()";
+            return QString();
+        }
+        qWarning() << "      #op:" << m_operator;
+        qWarning() << "      #toSql:"
+                   << QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+        return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
+    }
+
+    if (m_isHalfDoubleQuery) {
+        qWarning() << "     #half/double";
+        QStringList searchClauses;
+        //  'BETWEEN' returns true if lower <= value <= upper
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_rangeLower),
+                                         QString::number(m_rangeUpper));
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_bpmHalfLower),
+                                         QString::number(m_bpmHalfUpper));
+        searchClauses << QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                                 .arg(QString::number(m_bpmDoubleLower),
+                                         QString::number(m_bpmDoubleUpper));
+        qWarning() << "      #toSql:"
+                   << concatSqlClauses(searchClauses, "OR");
+        return concatSqlClauses(searchClauses, "OR");
+    }
+
+    if (m_isRangeQuery) {
+        qWarning() << "      #range";
+        qWarning() << "      #toSql:"
+                   << QStringLiteral("bpm BETWEEN %1 AND %2")
+                              .arg(QString::number(m_rangeLower),
+                                      QString::number(m_rangeUpper));
+        return QString(QStringLiteral("bpm BETWEEN %1 AND %2"))
+                .arg(QString::number(m_rangeLower),
+                        QString::number(m_rangeUpper));
+    }
+
+    return QString();
+}
+
 KeyFilterNode::KeyFilterNode(mixxx::track::io::key::ChromaticKey key,
         bool fuzzy) {
     if (fuzzy) {
