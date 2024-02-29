@@ -532,7 +532,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #c9c9c9;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */
