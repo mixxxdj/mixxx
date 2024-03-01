@@ -51,4 +51,8 @@ class DragAndDropHelper final {
             TrackDropTarget& target,
             const QString& group,
             UserSettingsPointer pConfig);
+
+    static void mousePressed(QMouseEvent* pEvent);
+
+    static bool mouseMoveInitiatesDrag(QMouseEvent* pEvent);
 };
