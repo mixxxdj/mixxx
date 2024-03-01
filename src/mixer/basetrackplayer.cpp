@@ -2,6 +2,7 @@
 
 #include <QMessageBox>
 #include <QMetaMethod>
+#include <QString>
 
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
@@ -626,7 +627,36 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
+    QString trackInfo = pNewTrack->getInfo();
+    QString trackInfoArtist = pNewTrack->getArtist();
+    QString trackInfoTitle = pNewTrack->getTitle();
+    QString trackInfoDeck = getGroup();
+    trackInfoDeck.replace("[Channel", "");
+    trackInfoDeck.replace("]", "");
+    // how to call m_settingsPath;
+    QString DeckStatusFilePath = "c:/Users/Evelynne/AppData/Local/Mixxx/controllers/";
+    QString DeckStatusFileLocation = DeckStatusFilePath + "Status" + getGroup() + ".js";
+    
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+//    QMessageBox::information(nullptr /*or parent*/, "Title", QString("This is an information %1 - %2").arg(getGroup()).arg(trackInfo));
+//    QMessageBox::information(nullptr /*or parent*/, "Title", QString("This is an information %1 - %2").arg(getGroup()).arg(trackInfoPath)); //
+    //  Different file for each Deck / Sampler
+        //QMessageBox::information(nullptr /*or parent*/, "Title", QString("EveStatusFileLocation2: %1").arg(EveStatusFileLocation2)); //
+    QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
+    QString DeckStatusTxtLine2 = "Artist : \"" + trackInfoArtist + "\",";
+    QString DeckStatusTxtLine3 = "Title : \"" + trackInfoTitle + "\",";
+    QString DeckStatusTxtLine4 = "};";
+       
+    QFile DeckStatusFile(DeckStatusFileLocation);
+    DeckStatusFile.remove();
+    DeckStatusFile.open(QIODevice::ReadWrite | QIODevice::Append);
+    QTextStream DeckStatusTxt(&DeckStatusFile);
+    DeckStatusTxt << DeckStatusTxtLine1 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine2 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine3 << "\n";
+    DeckStatusTxt << DeckStatusTxtLine4 << "\n";
+    DeckStatusFile.close();
+    
 }
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
