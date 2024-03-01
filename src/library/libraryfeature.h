@@ -70,30 +70,11 @@ class LibraryFeature : public QObject {
 
     virtual void clear() {
     }
-    virtual void clearChild(const QModelIndex& index) {
-        Q_UNUSED(index);
-    }
-    virtual void cut() {
-    }
-    virtual void cutChild(const QModelIndex& index) {
-        Q_UNUSED(index);
-    }
-    virtual void copy() const {
-    }
-    virtual void copyChild(const QModelIndex& index) const {
-        Q_UNUSED(index);
-    }
     virtual void paste() {
     }
     virtual void pasteChild(const QModelIndex& index) {
         Q_UNUSED(index);
     }
-    virtual void selectAll() {
-    }
-    virtual void selectAllChild(const QModelIndex& index) {
-        Q_UNUSED(index);
-    }
-
     // Reimplement this to register custom views with the library widget.
     virtual void bindLibraryWidget(WLibrary* /* libraryWidget */,
                             KeyboardEventFilter* /* keyboard */) {}

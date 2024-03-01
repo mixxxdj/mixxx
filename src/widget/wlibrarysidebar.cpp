@@ -247,20 +247,8 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             sidebarModel->clear(index);
             return;
         }
-        if (event->matches(QKeySequence::Cut)) {
-            sidebarModel->cut(index);
-            return;
-        }
-        if (event->matches(QKeySequence::Copy)) {
-            sidebarModel->copy(index);
-            return;
-        }
         if (event->matches(QKeySequence::Paste)) {
             sidebarModel->paste(index);
-            return;
-        }
-        if (event->matches(QKeySequence::SelectAll)) {
-            sidebarModel->selectAll(index);
             return;
         }
     }
