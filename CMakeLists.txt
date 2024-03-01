@@ -1280,6 +1280,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wsplitter.cpp
   src/widget/wstarrating.cpp
   src/widget/wstatuslight.cpp
+  src/widget/wstrobe.cpp
   src/widget/wtime.cpp
   src/widget/wtrackmenu.cpp
   src/widget/wtrackproperty.cpp
