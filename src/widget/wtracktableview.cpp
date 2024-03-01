@@ -865,10 +865,6 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
     if (rows.empty()) {
         return;
     }
-    for (const auto row : rows) {
-        selectionModel()->select(model()->index(row, 0),
-                QItemSelectionModel::Select | QItemSelectionModel::Rows);
-    }
 
     updateGeometries();
 
@@ -881,6 +877,12 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
         selectRow(rows.back());
     } else {
         selectRow(rows.front());
+    }
+
+    // Select all the rows that we pasted
+    for (const auto row : rows) {
+        selectionModel()->select(model()->index(row, 0),
+                QItemSelectionModel::Select | QItemSelectionModel::Rows);
     }
 }
 
