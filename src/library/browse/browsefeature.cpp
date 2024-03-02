@@ -23,6 +23,17 @@ const QString kViewName = QStringLiteral("BROWSEHOME");
 
 const QString kQuickLinksSeparator = QStringLiteral("-+-");
 
+#if defined(__LINUX__)
+const QStringList removableDriveRootPaths() {
+    QStringList paths;
+    const QString user = QString::fromLocal8Bit(qgetenv("USER"));
+    paths.append("/media");
+    paths.append(QStringLiteral("/media/") + user);
+    paths.append(QStringLiteral("/run/media/") + user);
+    return paths;
+}
+#endif
+
 } // anonymous namespace
 
 BrowseFeature::BrowseFeature(
@@ -342,21 +353,19 @@ std::vector<std::unique_ptr<TreeItem>> createRemovableDevices() {
                 drive.filePath())); // Displays C:/
     }
 #elif defined(__LINUX__)
-    // To get devices on Linux, we look for directories under /media and
-    // /run/media/$USER.
     QFileInfoList devices;
-
-    // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
-    devices += run_media_user_dir.entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
+    for (const QString& path : removableDriveRootPaths()) {
+        devices += QDir(path).entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    }
 
     // Convert devices into a QList<TreeItem*> for display.
     for (const QFileInfo& device : std::as_const(devices)) {
+        // On Linux, devices can be mounted in /media and /media/user and /run/media/[user]
+        // but there's no benefit of displaying the [user] dir in Devices.
+        // Show its children but skip the dir itself.
+        if (removableDriveRootPaths().contains(device.absoluteFilePath())) {
+            continue;
+        }
         ret.push_back(std::make_unique<TreeItem>(
                 device.fileName(),
                 QVariant(device.filePath() + QStringLiteral("/"))));
