@@ -111,3 +111,38 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     m_directoryCache[path] = has_children;
     return has_children;
 }
+
+void FolderTreeModel::removeChildDirsFromCache(const QStringList& rootPaths) {
+    // PerformanceTimer time;
+    // const auto start = time.elapsed();
+    if (rootPaths.isEmpty()) {
+        return;
+    }
+
+    // Just a quick check that prevents iterating the cache pointlessly
+    for (const auto& rootPath : rootPaths) {
+        VERIFY_OR_DEBUG_ASSERT(!rootPath.isEmpty()) {
+            // List contains at least one non-empty path
+            break;
+        }
+    }
+
+    // int checked = 0;
+    // int removed = 0;
+    QHashIterator<QString, bool> it(m_directoryCache);
+    while (it.hasNext()) {
+        it.next();
+        // checked++;
+        const QString cachedPath = it.key();
+        for (const auto& rootPath : rootPaths) {
+            if (!rootPath.isEmpty() && cachedPath.startsWith(rootPath)) {
+                m_directoryCache.remove(cachedPath);
+                // removed++;
+            }
+        }
+    }
+
+    // qWarning() << "     checked:" << checked << "| removed:" << removed;
+    // qWarning() << "     elapsed:" << mixxx::Duration(time.elapsed() -
+    // start).debugMicrosWithUnit();
+}

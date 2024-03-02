@@ -23,5 +23,6 @@ class FolderTreeModel : public TreeItemModel {
     // Note: this means we won't see directory tree changes after the initial
     // tree population after first expansion. I.e. newly added directories won't
     // be displayed and removed dirs will remain in the sidebar tree.
+    // removeChildDirsFromCache() can be used to reset selected directories.
     mutable QHash<QString, bool> m_directoryCache;
 };
