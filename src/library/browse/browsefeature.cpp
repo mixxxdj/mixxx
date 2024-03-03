@@ -277,10 +277,6 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    // Make sure that this is reset when the related TreeItem is deleted.
-    m_pLastRightClickedItem = item;
-
     if (!item) {
         return;
     }
@@ -290,6 +286,9 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
         return;
     }
+
+    // Make sure that this is reset when TreeItems are deleted in onLazyChildExpandation()
+    m_pLastRightClickedItem = item;
 
     QMenu menu(m_pSidebarWidget);
 
