@@ -147,7 +147,17 @@ if(QML)
   add_compile_definitions(MIXXX_USE_QML)
 endif()
 
-if(APPLE)
+if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
+  message(STATUS "Targeting Emscripten (${VCPKG_TARGET_TRIPLET})")
+  if(DEFINED ENV{EMSDK})
+    message(STATUS "Found EMSDK at $ENV{EMSDK}")
+  else()
+    message(FATAL_ERROR "Please make sure emsdk is installed and the environment variable EMSDK is set (see https://emscripten.org/docs/getting_started/downloads.html)")
+  endif()
+  if(NOT DEFINED VCPKG_CHAINLOAD_TOOLCHAIN_FILE)
+    set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE STRING "")
+  endif()
+elseif(APPLE)
   # Check if xcode-select is installed
   execute_process(COMMAND xcode-select -v
     RESULT_VARIABLE XCODE_SELECT_RESULT
