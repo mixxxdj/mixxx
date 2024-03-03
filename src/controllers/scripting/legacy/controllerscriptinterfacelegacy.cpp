@@ -108,13 +108,13 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
     return coScript;
 }
 
-QJSValue ControllerScriptInterfaceLegacy::getControllerSetting(const QString& name) {
+QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy) {
         return QJSValue::UndefinedValue;
     }
     if (name.isEmpty()) {
         m_pScriptEngineLegacy->logOrThrowError(
-                QStringLiteral("getControllerSetting called with empty name "
+                QStringLiteral("getSetting called with empty name "
                                "string, returning undefined")
                         .arg(name));
         return QJSValue::UndefinedValue;
