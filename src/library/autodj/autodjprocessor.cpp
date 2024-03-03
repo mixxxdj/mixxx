@@ -534,6 +534,10 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 &DeckAttributes::rateChanged,
                 this,
                 &AutoDJProcessor::playerRateChanged);
+        connect(m_pAutoDJTableModel,
+                &PlaylistTableModel::firstTrackChanged,
+                this,
+                &AutoDJProcessor::playlistFirstTrackChanged);
 
         if (!leftDeckPlaying && !rightDeckPlaying) {
             // Both decks are stopped. Load a track into deck 1 and start it
@@ -1663,6 +1667,11 @@ void AutoDJProcessor::playerRateChanged(DeckAttributes* pAttributes) {
         return;
     }
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
+}
+
+void AutoDJProcessor::playlistFirstTrackChanged() {
+    qDebug() << this << "playlistFirstTrackChanged";
+    skipNext();
 }
 
 void AutoDJProcessor::setTransitionTime(int time) {
