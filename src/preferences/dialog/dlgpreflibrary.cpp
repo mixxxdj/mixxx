@@ -211,6 +211,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    checkbox_played_track_color->setChecked(
+            BaseTrackTableModel::kApplyPlayedTrackColorDefault);
 
     radioButton_cover_art_fetcher_medium->setChecked(true);
 
@@ -325,6 +327,12 @@ void DlgPrefLibrary::slotUpdate() {
                     kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     spinbox_bpm_precision->setValue(bpmColumnPrecision);
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    checkbox_played_track_color->setChecked(applyPlayedTrackColor);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -522,6 +530,12 @@ void DlgPrefLibrary::slotApply() {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
+
+    BaseTrackTableModel::setApplyPlayedTrackColor(
+            checkbox_played_track_color->isChecked());
+    m_pConfig->set(
+            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            ConfigValue(checkbox_played_track_color->isChecked()));
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

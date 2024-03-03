@@ -112,6 +112,14 @@ void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
     }
     s_bpmColumnPrecision = precision;
 }
+
+bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
+        kApplyPlayedTrackColorDefault;
+
+void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
+    s_bApplyPlayedTrackColor = apply;
+}
+
 //static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
@@ -460,7 +468,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
         bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
-    } else if (role == Qt::ForegroundRole) {
+    } else if (role == Qt::ForegroundRole && s_bApplyPlayedTrackColor) {
         // Custom text color for played tracks
         auto playedRaw = rawSiblingValue(
                 index,
