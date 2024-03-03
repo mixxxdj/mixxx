@@ -73,6 +73,12 @@ BrowseFeature::BrowseFeature(
             this,
             &BrowseFeature::slotAddToLibrary);
 
+    m_pRefreshDirTreeAction = new QAction(tr("Refresh directory tree"), this);
+    connect(m_pRefreshDirTreeAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRefreshDirectoryTree);
+
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
     // BrowseThread sets the Qt::UserRole of every QStandardItem to the sort key
@@ -226,6 +232,24 @@ void BrowseFeature::slotRemoveQuickLink() {
     saveQuickLinks();
 }
 
+void BrowseFeature::slotRefreshDirectoryTree() {
+    if (!m_pLastRightClickedItem) {
+        return;
+    }
+
+    const auto* pItem = m_pLastRightClickedItem;
+    if (!pItem->getData().isValid()) {
+        return;
+    }
+
+    const QString path = pItem->getData().toString();
+    m_pSidebarModel->removeChildDirsFromCache(QStringList{path});
+
+    // Update child items
+    const QModelIndex index = m_pSidebarModel->index(pItem->parentRow(), 0);
+    onLazyChildExpandation(index);
+}
+
 TreeItemModel* BrowseFeature::sidebarModel() const {
     return m_pSidebarModel;
 }
@@ -323,6 +347,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
      menu.addAction(m_pAddQuickLinkAction);
      menu.addAction(m_pAddtoLibraryAction);
+     menu.addAction(m_pRefreshDirTreeAction);
      menu.exec(globalPos);
      onLazyChildExpandation(index);
 }
@@ -423,34 +448,44 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #endif
         folders = createRemovableDevices();
     } else {
-        // we assume that the path refers to a folder in the file system
-        // populate children
-        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-
-        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-                QDir::Dirs | QDir::NoDotAndDotDot);
-
-        // loop through all the item and construct the children
-        foreach (QFileInfo one, all) {
-            // Skip folders that end with .app on OS X
-#if defined(__APPLE__)
-            if (one.isDir() && one.fileName().endsWith(".app"))
-                continue;
-#endif
-            // We here create new items for the sidebar models
-            // Once the items are added to the TreeItemModel,
-            // the models takes ownership of them and ensures their deletion
-            folders.push_back(std::make_unique<TreeItem>(
-                    one.fileName(),
-                    QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
-        }
+        folders = getChildDirectoryItems(path);
     }
-    // we need to check here if subfolders are found
-    // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
-    // has no subfolders
+
     if (!folders.empty()) {
         m_pSidebarModel->insertTreeItemRows(std::move(folders), 0, index);
     }
+}
+
+std::vector<std::unique_ptr<TreeItem>> BrowseFeature::getChildDirectoryItems(
+        const QString& path) const {
+    std::vector<std::unique_ptr<TreeItem>> items;
+
+    if (path.isEmpty()) {
+        return items;
+    }
+    // we assume that the path refers to a folder in the file system
+    // populate children
+    const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+
+    QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+            QDir::Dirs | QDir::NoDotAndDotDot);
+
+    // loop through all the item and construct the children
+    foreach (QFileInfo one, all) {
+        // Skip folders that end with .app on OS X
+#if defined(__APPLE__)
+        if (one.isDir() && one.fileName().endsWith(".app"))
+            continue;
+#endif
+        // We here create new items for the sidebar models
+        // Once the items are added to the TreeItemModel,
+        // the models takes ownership of them and ensures their deletion
+        items.push_back(std::make_unique<TreeItem>(
+                one.fileName(),
+                QVariant(one.absoluteFilePath() + QStringLiteral("/"))));
+    }
+
+    return items;
 }
 
 QString BrowseFeature::getRootViewHtml() const {
