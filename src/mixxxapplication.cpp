@@ -38,8 +38,10 @@ Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #else
 #error "Q_IMPORT_PLUGIN() for the current patform is missing"
 #endif
+#if !defined(Q_OS_WASM)
 Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+#endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
