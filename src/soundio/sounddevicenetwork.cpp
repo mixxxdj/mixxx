@@ -445,7 +445,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
-#ifdef __SSE__
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
             _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);

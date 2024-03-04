@@ -906,7 +906,7 @@ int SoundDevicePortAudio::callbackProcessClkRef(
 #endif
         m_bSetThreadPriority = true;
 
-#ifdef __SSE__
+#if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
