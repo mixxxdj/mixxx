@@ -2770,10 +2770,6 @@ if(Qt_IS_STATIC)
   # into Qt .libs by default.
 
   target_link_libraries(mixxx-lib PRIVATE
-    # platform plugins
-    Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
-    Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
-
     # imageformats plugins
     Qt${QT_VERSION_MAJOR}::QGifPlugin
     Qt${QT_VERSION_MAJOR}::QICOPlugin
@@ -2783,6 +2779,18 @@ if(Qt_IS_STATIC)
     # sqldrivers
     Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
   )
+
+  if(EMSCRIPTEN)
+    target_link_libraries(mixxx-lib PRIVATE
+      Qt${QT_VERSION_MAJOR}::QWasmIntegrationPlugin
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE
+      # platform plugins
+      Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
+    )
+  endif()
 
   if(WIN32)
     target_link_libraries(mixxx-lib PRIVATE
