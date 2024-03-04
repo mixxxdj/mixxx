@@ -157,6 +157,11 @@ if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
   if(NOT DEFINED VCPKG_CHAINLOAD_TOOLCHAIN_FILE)
     set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE STRING "")
   endif()
+  # Enabling this causes Qt's FindWrapRt C++ compile check to fail as it tries
+  # to run `clang-scan-deps` (because we set the C++ standard to 20). Emscripten
+  # does not ship this binary yet, though. Potentially relevant upstream bug:
+  # https://github.com/emscripten-core/emscripten/issues/21042
+  set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 elseif(APPLE)
   # Check if xcode-select is installed
   execute_process(COMMAND xcode-select -v
