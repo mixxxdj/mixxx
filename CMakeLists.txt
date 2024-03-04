@@ -151,7 +151,22 @@ if(QML)
   add_compile_definitions(MIXXX_USE_QML)
 endif()
 
-if(APPLE)
+if(VCPKG_TARGET_TRIPLET MATCHES "^wasm(32|64)-emscripten")
+  message(STATUS "Targeting Emscripten (${VCPKG_TARGET_TRIPLET})")
+  if(DEFINED ENV{EMSDK})
+    message(STATUS "Found EMSDK at $ENV{EMSDK}")
+  else()
+    message(FATAL_ERROR "Please make sure emsdk is installed and the environment variable EMSDK is set (see https://emscripten.org/docs/getting_started/downloads.html)")
+  endif()
+  if(NOT DEFINED VCPKG_CHAINLOAD_TOOLCHAIN_FILE)
+    set(VCPKG_CHAINLOAD_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE STRING "")
+  endif()
+  # Enabling this causes Qt's FindWrapRt C++ compile check to fail as it tries
+  # to run `clang-scan-deps` (because we set the C++ standard to 20). Emscripten
+  # does not ship this binary yet, though. Potentially relevant upstream bug:
+  # https://github.com/emscripten-core/emscripten/issues/21042
+  set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+elseif(APPLE)
   # Check if xcode-select is installed
   execute_process(COMMAND xcode-select -v
     RESULT_VARIABLE XCODE_SELECT_RESULT
@@ -463,15 +478,20 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
-        add_compile_options(-mtune=generic)
+        if(NOT EMSCRIPTEN)
+          add_compile_options(-mtune=generic)
+        endif()
         # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
           # the sse flags are not set by default on 32 bit builds
           # but are not supported on arm builds
-          add_compile_options(
-            -msse2
-            -mfpmath=sse)
+          add_compile_options(-msse2)
+          if(EMSCRIPTEN)
+            add_compile_options(-msimd128)
+          else()
+            add_compile_options(-mfpmath=sse)
+          endif()
         endif()
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
@@ -2553,7 +2573,13 @@ if(IOS)
 else()
   set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  if(EMSCRIPTEN)
+    # Emscripten's FindOpenGL.cmake does not create OpenGL::GL
+    target_link_libraries(mixxx-lib PRIVATE ${OPENGL_gl_LIBRARY})
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+  else()
+    target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
 endif()
 
 # Ogg
@@ -2765,10 +2791,6 @@ if(Qt_IS_STATIC)
   # into Qt .libs by default.
 
   target_link_libraries(mixxx-lib PRIVATE
-    # platform plugins
-    Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
-    Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
-
     # imageformats plugins
     Qt${QT_VERSION_MAJOR}::QGifPlugin
     Qt${QT_VERSION_MAJOR}::QICOPlugin
@@ -2778,6 +2800,18 @@ if(Qt_IS_STATIC)
     # sqldrivers
     Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
   )
+
+  if(EMSCRIPTEN)
+    target_link_libraries(mixxx-lib PRIVATE
+      Qt${QT_VERSION_MAJOR}::QWasmIntegrationPlugin
+    )
+  else()
+    target_link_libraries(mixxx-lib PRIVATE
+      # platform plugins
+      Qt${QT_VERSION_MAJOR}::QOffscreenIntegrationPlugin
+      Qt${QT_VERSION_MAJOR}::QMinimalIntegrationPlugin
+    )
+  endif()
 
   if(WIN32)
     target_link_libraries(mixxx-lib PRIVATE
@@ -2979,7 +3013,7 @@ if(APPLE)
         "-weak_framework IOKit"
     )
   endif()
-elseif(UNIX AND NOT APPLE)
+elseif(UNIX AND NOT APPLE AND NOT EMSCRIPTEN)
   if(QT6)
     find_package(X11)
   else()
@@ -3210,6 +3244,9 @@ if(BATTERY)
       target_sources(mixxx-lib PRIVATE src/util/battery/batterymac.cpp)
     endif()
   elseif(UNIX)
+    if(EMSCRIPTEN)
+      message(FATAL_ERROR "Battery support is not implemented for Emscripten (WebAssembly)")
+    endif()
     find_package(Upower REQUIRED)
     find_package(GLIB COMPONENTS gobject REQUIRED)
     target_include_directories(mixxx-lib SYSTEM PUBLIC ${GLIB_INCLUDE_DIRS})
