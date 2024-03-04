@@ -7,7 +7,9 @@
 #include "defs_urls.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#ifdef __MUSICBRAINZ__
 #include "library/dlgtagfetcher.h"
+#endif
 #include "library/library_prefs.h"
 #include "library/trackmodel.h"
 #include "moc_dlgtrackinfo.cpp"
@@ -237,10 +239,12 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotImportMetadataFromFile);
 
+#ifdef __MUSICBRAINZ__
     connect(btnImportMetadataFromMusicBrainz,
             &QPushButton::clicked,
             this,
             &DlgTrackInfo::slotImportMetadataFromMusicBrainz);
+#endif
 
     connect(btnOpenFileBrowser,
             &QPushButton::clicked,
@@ -315,6 +319,7 @@ void DlgTrackInfo::slotPrevButton() {
     loadPrevTrack();
 }
 
+#ifdef __MUSICBRAINZ__
 void DlgTrackInfo::slotNextDlgTagFetcher() {
     loadNextTrack();
     // Do not load track back into DlgTagFetcher since
@@ -324,6 +329,7 @@ void DlgTrackInfo::slotNextDlgTagFetcher() {
 void DlgTrackInfo::slotPrevDlgTagFetcher() {
     loadPrevTrack();
 }
+#endif
 
 void DlgTrackInfo::loadNextTrack() {
     auto nextRow = m_currentTrackIndex.sibling(
@@ -488,9 +494,11 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
         return;
     }
     loadTrackInternal(pTrack);
+#ifdef __MUSICBRAINZ__
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_pLoadedTrack);
     }
+#endif
 }
 
 void DlgTrackInfo::loadTrack(const QModelIndex& index) {
@@ -500,9 +508,11 @@ void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     TrackPointer pTrack = m_pTrackModel->getTrack(index);
     m_currentTrackIndex = index;
     loadTrackInternal(pTrack);
+#ifdef __MUSICBRAINZ__
     if (m_pDlgTagFetcher && m_pDlgTagFetcher->isVisible()) {
         m_pDlgTagFetcher->loadTrack(m_currentTrackIndex);
     }
+#endif
 }
 
 void DlgTrackInfo::focusField(const QString& property) {
@@ -789,6 +799,7 @@ void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     }
 }
 
+#ifdef __MUSICBRAINZ__
 void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     if (!m_pDlgTagFetcher) {
         m_pDlgTagFetcher = std::make_unique<DlgTagFetcher>(
@@ -822,3 +833,4 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
     }
     m_pDlgTagFetcher->show();
 }
+#endif
