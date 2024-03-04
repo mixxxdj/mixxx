@@ -696,6 +696,16 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
             // so clone another playing deck instead of loading the selected track
             clone = true;
         }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
+        }
     }
 
     if (clone) {
