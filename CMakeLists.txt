@@ -2566,7 +2566,12 @@ if(IOS)
 else()
   set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
-  target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  if(EMSCRIPTEN)
+    # Emscripten's FindOpenGL.cmake does not create OpenGL::GL
+    target_link_libraries(mixxx-lib PRIVATE ${OPENGL_gl_LIBRARY})
+  else()
+    target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
 endif()
 
 # Ogg
