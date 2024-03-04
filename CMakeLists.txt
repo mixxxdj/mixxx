@@ -729,8 +729,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
   src/controllers/midi/midiutils.cpp
-  src/controllers/midi/portmidicontroller.cpp
-  src/controllers/midi/portmidienumerator.cpp
   src/controllers/scripting/colormapper.cpp
   src/controllers/scripting/colormapperjsproxy.cpp
   src/controllers/scripting/controllerscriptenginebase.cpp
@@ -2578,9 +2576,17 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC lib/portaudio)
 target_link_libraries(mixxx-lib PRIVATE PortAudioRingBuffer)
 
 # PortMidi
-find_package(PortMidi REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
+option(PORTMIDI "Enable the PortMidi backend for MIDI controllers" ON)
+if(PORTMIDI)
+  target_compile_definitions(mixxx-lib PUBLIC __PORTMIDI__)
+  find_package(PortMidi REQUIRED)
+  target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
+  target_link_libraries(mixxx-lib PRIVATE ${PortMidi_LIBRARIES})
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/midi/portmidicontroller.cpp
+    src/controllers/midi/portmidienumerator.cpp
+  )
+endif()
 
 # Protobuf
 add_subdirectory(src/proto)
