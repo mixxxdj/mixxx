@@ -2574,6 +2574,7 @@ else()
   if(EMSCRIPTEN)
     # Emscripten's FindOpenGL.cmake does not create OpenGL::GL
     target_link_libraries(mixxx-lib PRIVATE ${OPENGL_gl_LIBRARY})
+    target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
   endif()
