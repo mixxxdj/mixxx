@@ -13,8 +13,11 @@
 #include <rubberband/RubberBandStretcher.h>
 #endif
 
-#include <FLAC/format.h>
+#ifdef __MUSICBRAINZ__
 #include <chromaprint.h>
+#endif
+
+#include <FLAC/format.h>
 #include <lame/lame.h>
 #include <portaudio.h>
 #include <sndfile.h>
@@ -180,11 +183,13 @@ QStringList VersionStore::dependencyVersions() {
                        .arg(QString::number(TAGLIB_MAJOR_VERSION),
                                QString::number(TAGLIB_MINOR_VERSION),
                                QString::number(TAGLIB_PATCH_VERSION))
+#ifdef __MUSICBRAINZ__
             // The version of the ChromaPrint headers Mixxx was compiled with.
             << QString("ChromaPrint: %1.%2.%3")
                        .arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
                                QString::number(CHROMAPRINT_VERSION_MINOR),
                                QString::number(CHROMAPRINT_VERSION_PATCH))
+#endif
             // Should be accurate.
             << QString("Vorbis: %1").arg(vorbis_version_string())
             // Should be accurate.
