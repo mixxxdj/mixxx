@@ -474,15 +474,20 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SSE2 CPU optimizations (>= Pentium 4)")
-        add_compile_options(-mtune=generic)
+        if(NOT EMSCRIPTEN)
+          add_compile_options(-mtune=generic)
+        endif()
         # -mtune=generic picks the most common, but compatible options.
         # on arm platforms equivalent to -march=arch
         if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
           # the sse flags are not set by default on 32 bit builds
           # but are not supported on arm builds
-          add_compile_options(
-            -msse2
-            -mfpmath=sse)
+          add_compile_options(-msse2)
+          if(EMSCRIPTEN)
+            add_compile_options(-msimd128)
+          else()
+            add_compile_options(-mfpmath=sse)
+          endif()
         endif()
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
