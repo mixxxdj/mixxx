@@ -219,6 +219,14 @@
        </widget>
       </item>
 
+      <item row="8" column="0" colspan="3">
+       <widget class="QCheckBox" name="checkbox_played_track_color">
+        <property name="text">
+         <string>Grey out played tracks</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item><!-- Track Table View -->
@@ -636,6 +644,7 @@
   <tabstop>radioButton_dbclick_top</tabstop>
   <tabstop>radioButton_dbclick_ignore</tabstop>
   <tabstop>spinbox_bpm_precision</tabstop>
+  <tabstop>checkbox_played_track_color</tabstop>
   <tabstop>spinbox_history_track_duplicate_distance</tabstop>
   <tabstop>spinbox_history_min_tracks_to_keep</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>

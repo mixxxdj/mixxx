@@ -1565,6 +1565,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
 
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    BaseTrackTableModel::setApplyPlayedTrackColor(applyPlayedTrackColor);
+
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,
             &Library::search,
