@@ -225,6 +225,11 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #006596;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #d2d2d2;
+}
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryPlayedCheckbox::item,

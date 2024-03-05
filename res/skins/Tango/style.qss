@@ -2594,6 +2594,11 @@ WLibrarySidebar,
 #LibraryPlayedCheckbox::item {
   color: #9e9e9e;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
+}
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryPlayedCheckbox::item,
