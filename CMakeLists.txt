@@ -1585,6 +1585,13 @@ if(APPLE)
   endif()
 endif()
 
+if(EMSCRIPTEN)
+  # We need asyncify to support asynchronous calls (e.g. QDialog::exec)
+  # when targeting Emscripten/WebAssembly.
+  # See https://doc.qt.io/qt-6/wasm.html#asyncify
+  target_link_options(mixxx-lib PUBLIC -sASYNCIFY -Os)
+endif()
+
 # QML Debugging
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(mixxx-lib PUBLIC QT_QML_DEBUG)
