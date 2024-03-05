@@ -277,6 +277,18 @@ PioneerDDJFLX4.init = function() {
 };
 
 //
+// Waveform zoom
+//
+
+PioneerDDJFLX4.waveformZoom = function(midichan, control, value, status, group) {
+    if (value === 0x7f) {
+        script.triggerControl(group, "waveform_zoom_up", 100);
+    } else {
+        script.triggerControl(group, "waveform_zoom_down", 100);
+    }
+};
+
+//
 // Channel level lights
 //
 
