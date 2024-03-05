@@ -2599,6 +2599,10 @@ else()
     # Emscripten's FindOpenGL.cmake does not create OpenGL::GL
     target_link_libraries(mixxx-lib PRIVATE ${OPENGL_gl_LIBRARY})
     target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
+    # Require WebGL 2.0 (for a WebGL-friendly subset of OpenGL ES 3.0) and
+    # enable full OpenGL ES 2.0 emulation as per
+    # https://emscripten.org/docs/porting/multimedia_and_graphics/OpenGL-support.html
+    target_link_options(mixxx-lib PUBLIC -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES2=1)
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
   endif()
