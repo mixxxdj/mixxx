@@ -449,6 +449,16 @@ QVariant BaseTrackTableModel::data(
         return QBrush(bgColor);
     }
 
+    // Return the preferred (default) width of the Color column.
+    // This works around inconsistencies when the width is determined by
+    // color values. See https://github.com/mixxxdj/mixxx/issues/12850
+    if (role == Qt::SizeHintRole) {
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_COLOR) {
+            return QSize(defaultColumnWidth() / 2, 0);
+        }
+    }
+
     // Only retrieve a value for supported roles
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
