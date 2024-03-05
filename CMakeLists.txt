@@ -462,10 +462,17 @@ elseif(GNU_GCC OR LLVM_CLANG)
     # The following optimisation flags makes the engine code ~3 times
     # faster, measured on a Atom CPU.
     add_compile_options(
-      -O3
       -ffast-math
       -funroll-loops
     )
+    if(EMSCRIPTEN)
+      # Optimize for size + speed when targeting Emscripten/WebAssembly
+      # This is recommended as we use asyncify:
+      # See https://doc.qt.io/qt-6/wasm.html#asyncify
+      add_compile_options(-Os)
+    else()
+      add_compile_options(-O3)
+    endif()
     # set -fomit-frame-pointer when we don't profile and are not using
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
@@ -1583,6 +1590,13 @@ if(APPLE)
       target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
     endif()
   endif()
+endif()
+
+if(EMSCRIPTEN)
+  # We need asyncify to support asynchronous calls (e.g. QDialog::exec)
+  # when targeting Emscripten/WebAssembly.
+  # See https://doc.qt.io/qt-6/wasm.html#asyncify
+  target_link_options(mixxx-lib PUBLIC -sASYNCIFY)
 endif()
 
 # QML Debugging
