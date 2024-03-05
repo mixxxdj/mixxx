@@ -802,6 +802,16 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
     }
 }
 
+QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
+        int count,
+        int duration) const {
+    return QStringLiteral("%1 (%2) %3")
+            .arg(name,
+                    QString::number(count),
+                    mixxx::Duration::formatTime(
+                            duration, mixxx::Duration::Precision::SECONDS));
+}
+
 void BasePlaylistFeature::slotResetSelectedTrack() {
     slotTrackSelected(TrackId{});
 }
