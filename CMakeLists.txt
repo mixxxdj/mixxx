@@ -1811,6 +1811,14 @@ if (APPLE)
   endif()
 endif()
 
+if(EMSCRIPTEN)
+  # Package resources for the web using preloading.
+  # This will generate a mixxx.data file containing all the resources.
+  # See https://emscripten.org/docs/porting/files/packaging_files.html
+  # TODO: Strip this down by only including what we need (i.e. no macOS/Linux packaging, ...)
+  target_link_options(mixxx-lib PUBLIC --preload-file "${CMAKE_CURRENT_SOURCE_DIR}/res@/res")
+endif()
+
 if(WIN32)
   set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
   if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
