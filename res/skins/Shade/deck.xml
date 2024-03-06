@@ -79,6 +79,24 @@
                                 <Size>0e,23f</Size>
                                 <Elide>right</Elide>
                               </TrackProperty>
+                              <WidgetGroup>
+                               <Size>100f,15f</Size>
+                               <Children>
+                                 <Strobe>
+                                   <Size>100f,15f</Size>
+                                   <TooltipId>Strobe</TooltipId>
+                                   <Channel><Variable name="channum"/></Channel>
+                                   <PathDot60Pos>Dot60Pos.svg</PathDot60Pos>
+                                   <PathDot33Pos>Dot33Pos.svg</PathDot33Pos>
+                                   <PathDotUnity>DotUnity.svg</PathDotUnity>
+                                   <PathDot33Neg>Dot33Neg.svg</PathDot33Neg>
+                                 </Strobe>
+                               </Children>
+                               <Connection>
+                                 <ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+                                 <BindProperty>visible</BindProperty>
+                               </Connection>
+                              </WidgetGroup>
                               <PushButton>
                                 <TooltipId>eject</TooltipId>
                                 <NumberStates>1</NumberStates>
@@ -212,6 +230,15 @@
                                       <BindProperty>visible</BindProperty>
                                     </Connection>
                                   </WidgetGroup>
+                                  <Strobe>
+			                        <Size>160f,81f</Size>
+                                    <TooltipId>Strobe</TooltipId>
+                                    <Channel><Variable name="channum"/></Channel>
+                                    <PathDot60Pos>Dot60Pos.svg</PathDot60Pos>
+                                    <PathDot33Pos>Dot33Pos.svg</PathDot33Pos>
+                                    <PathDotUnity>DotUnity.svg</PathDotUnity>
+                                    <PathDot33Neg>Dot33Neg.svg</PathDot33Neg>
+                                  </Strobe>
                                   <Template src="skin:vinylcontrol.xml"/>
                                 </Children>
                               </WidgetGroup>

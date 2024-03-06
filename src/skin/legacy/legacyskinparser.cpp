@@ -75,6 +75,7 @@
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
+#include "widget/wstrobe.h"
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
 #include "widget/wtrackwidgetgroup.h"
@@ -598,6 +599,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseEffectButtonParameterName(node));
     } else if (nodeName == "Spinny") {
         result = wrapWidget(parseSpinny(node));
+    } else if (nodeName == "Strobe") {
+        result = wrapWidget(parseStrobe(node));
     } else if (nodeName == "Time") {
         result = wrapWidget(parseLabelWidget<WTime>(node));
     } else if (nodeName == "RecordingDuration") {
@@ -1438,6 +1441,70 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     pVuMeterWidget->Init();
 
     return pVuMeterWidget;
+}
+
+QWidget* LegacySkinParser::parseStrobe(const QDomElement& node) {
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
+    if (CmdlineArgs::Instance().getSafeMode()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Mixxx is running in safe mode.
+        dummy->setText(tr("Safe Mode Enabled"));
+        return dummy;
+    }
+
+    auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    if (!pWaveformWidgetFactory->isOpenGlAvailable() &&
+            !pWaveformWidgetFactory->isOpenGlesAvailable()) {
+        WLabel* dummy = new WLabel(m_pParent);
+        //: Shown when Spinny can not be displayed. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
+
+    QString group = lookupNodeGroup(node);
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
+    if (!pPlayer) {
+        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group: %1").arg(group));
+        return nullptr;
+    }
+    // Note: For some reasons on X11 we need to create the widget without a parent to avoid to
+    // create two platform windows (QXcbWindow) in QWidget::create() for this widget.
+    // This happens, because the QWidget::create() of a parent() will populate all children
+    // with platform windows q_createNativeChildrenAndSetParent() while another window is already
+    // under construction. The ID for the first window is not cleared and leads to a segfault
+    // during on shutdown. This has been tested with Qt 5.12.8 and 5.15.3
+    QWidget* pParent = (qApp->platformName() == QLatin1String("xcb")) ? nullptr : m_pParent;
+    WStrobe* pStrobe = new WStrobe(pParent, group, m_pConfig, pPlayer);
+    if (!pParent) {
+        // Widget was created without parent (see comment above), set it now
+        pStrobe->setParent(m_pParent);
+    }
+    commonWidgetSetup(node, pStrobe);
+
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::renderSpinnies,
+            pStrobe,
+            &WStrobe::render);
+    connect(pWaveformWidgetFactory,
+            &WaveformWidgetFactory::swapSpinnies,
+            pStrobe,
+            &WStrobe::swap);
+    connect(pStrobe,
+            &WStrobe::trackDropped,
+            m_pPlayerManager,
+            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
+    connect(pStrobe, &WStrobe::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
+
+    pStrobe->setup(node, *m_pContext);
+    pStrobe->installEventFilter(m_pKeyboard);
+    pStrobe->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    pStrobe->Init();
+    return pStrobe;
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
