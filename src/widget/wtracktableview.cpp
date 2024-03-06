@@ -861,7 +861,12 @@ void WTrackTableView::copySelectedTracks() {
 }
 
 void WTrackTableView::pasteTracks(const QModelIndex& index) {
-    const QList<int> rows = getTrackModel()->pasteTracks(index);
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+
+    const QList<int> rows = trackModel->pasteTracks(index);
     if (rows.empty()) {
         return;
     }

@@ -397,6 +397,11 @@ void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
 }
 
 QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
+    // Don't paste into locked playlists and crates or into into History
+    if (isLocked() || !hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        return QList<int>{};
+    }
+
     int insertionPos = 0;
     const QList<QUrl> urls = Clipboard::urls();
     const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, false);
