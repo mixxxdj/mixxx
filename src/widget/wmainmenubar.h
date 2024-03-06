@@ -60,6 +60,7 @@ class WMainMenuBar : public QMenuBar {
 #ifdef __ENGINEPRIME__
     void exportLibrary();
 #endif
+    void showAutoDJ();
     void showAbout();
     void showKeywheel(bool visible);
     void showPreferences();

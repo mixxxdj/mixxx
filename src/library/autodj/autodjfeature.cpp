@@ -18,12 +18,6 @@
 #include "widget/wlibrarysidebar.h"
 
 namespace {
-
-const QString kViewName = QStringLiteral("Auto DJ");
-
-} // namespace
-
-namespace {
 constexpr int kMaxRetrieveAttempts = 3;
 
     int findOrCrateAutoDjPlaylistId(PlaylistDAO& playlistDAO) {
@@ -50,55 +44,56 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_pAutoDJProcessor(nullptr),
           m_pSidebarModel(make_parented<TreeItemModel>(this)),
           m_pAutoDJView(nullptr),
+          m_viewName(Library::kAutoDJViewName),
           m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig) {
-    qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
-    m_pAutoDJProcessor = new AutoDJProcessor(this,
-            m_pConfig,
-            pPlayerManager,
-            pLibrary->trackCollectionManager(),
-            m_iAutoDJPlaylistId);
+        qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
+        m_pAutoDJProcessor = new AutoDJProcessor(this,
+                m_pConfig,
+                pPlayerManager,
+                pLibrary->trackCollectionManager(),
+                m_iAutoDJPlaylistId);
 
-    // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
-    // previous load attempt have been called #10504.
-    connect(m_pAutoDJProcessor,
-            &AutoDJProcessor::loadTrackToPlayer,
-            this,
-            &LibraryFeature::loadTrackToPlayer,
-            Qt::QueuedConnection);
+        // Connect loadTrackToPlayer signal as a queued connection to make sure all callbacks of a
+        // previous load attempt have been called #10504.
+        connect(m_pAutoDJProcessor,
+                &AutoDJProcessor::loadTrackToPlayer,
+                this,
+                &LibraryFeature::loadTrackToPlayer,
+                Qt::QueuedConnection);
 
-    m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
+        m_playlistDao.setAutoDJProcessor(m_pAutoDJProcessor);
 
-    // Create the "Crates" tree-item under the root item.
-    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
-    m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
-    m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
+        // Create the "Crates" tree-item under the root item.
+        std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
+        m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
+        m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
 
-    // Create tree-items under "Crates".
-    constructCrateChildModel();
+        // Create tree-items under "Crates".
+        constructCrateChildModel();
 
-    m_pSidebarModel->setRootItem(std::move(pRootItem));
+        m_pSidebarModel->setRootItem(std::move(pRootItem));
 
-    // Be notified when the status of crates changes.
-    connect(m_pTrackCollection,
-            &TrackCollection::crateInserted,
-            this,
-            &AutoDJFeature::slotCrateChanged);
-    connect(m_pTrackCollection,
-            &TrackCollection::crateUpdated,
-            this,
-            &AutoDJFeature::slotCrateChanged);
-    connect(m_pTrackCollection,
-            &TrackCollection::crateDeleted,
-            this,
-            &AutoDJFeature::slotCrateChanged);
+        // Be notified when the status of crates changes.
+        connect(m_pTrackCollection,
+                &TrackCollection::crateInserted,
+                this,
+                &AutoDJFeature::slotCrateChanged);
+        connect(m_pTrackCollection,
+                &TrackCollection::crateUpdated,
+                this,
+                &AutoDJFeature::slotCrateChanged);
+        connect(m_pTrackCollection,
+                &TrackCollection::crateDeleted,
+                this,
+                &AutoDJFeature::slotCrateChanged);
 
-    // Create context-menu items to allow crates to be added to, and removed
-    // from, the auto-DJ queue.
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
-    connect(m_pRemoveCrateFromAutoDj,
-            &QAction::triggered,
-            this,
-            &AutoDJFeature::slotRemoveCrateFromAutoDj);
+        // Create context-menu items to allow crates to be added to, and removed
+        // from, the auto-DJ queue.
+        m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate as Track Source"), this);
+        connect(m_pRemoveCrateFromAutoDj,
+                &QAction::triggered,
+                this,
+                &AutoDJFeature::slotRemoveCrateFromAutoDj);
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -119,7 +114,7 @@ void AutoDJFeature::bindLibraryWidget(
             m_pLibrary,
             m_pAutoDJProcessor,
             keyboard);
-    libraryWidget->registerView(kViewName, m_pAutoDJView);
+    libraryWidget->registerView(m_viewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
             this,
@@ -156,7 +151,7 @@ TreeItemModel* AutoDJFeature::sidebarModel() const {
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    emit switchToView(kViewName);
+    emit switchToView(m_viewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);
 }
