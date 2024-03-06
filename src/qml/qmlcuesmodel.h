@@ -19,9 +19,9 @@ class QmlCuesModel : public QAbstractListModel {
     };
     Q_ENUM(Roles)
 
-    explicit QmlCuesModel(QObject* parent = nullptr);
+    explicit QmlCuesModel(QObject* pParent = nullptr);
 
-    void setCues(const QList<CuePointer> pCues);
+    void setCues(QList<CuePointer> cues);
 
     QVariant data(const QModelIndex& index, int role) const override;
     int rowCount(const QModelIndex& parent) const override;
@@ -29,7 +29,7 @@ class QmlCuesModel : public QAbstractListModel {
     Q_INVOKABLE QVariant get(int row) const;
 
   private:
-    QList<CuePointer> m_pCues;
+    QList<CuePointer> m_cues;
 };
 
 } // namespace qml

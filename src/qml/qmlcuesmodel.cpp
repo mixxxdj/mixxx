@@ -18,22 +18,22 @@ const QHash<int, QByteArray> kRoleNames = {
 }
 
 QmlCuesModel::QmlCuesModel(
-        QObject* parent)
-        : QAbstractListModel(parent), m_pCues() {
+        QObject* pParent)
+        : QAbstractListModel(pParent) {
 }
 
-void QmlCuesModel::setCues(const QList<CuePointer> pCues) {
+void QmlCuesModel::setCues(QList<CuePointer> cues) {
     beginResetModel();
-    m_pCues = QList<CuePointer>(pCues);
+    m_cues = QList<CuePointer>(std::move(cues));
     endResetModel();
 }
 
 QVariant QmlCuesModel::data(const QModelIndex& index, int role) const {
-    if (index.row() < 0 || index.row() >= m_pCues.size()) {
+    if (index.row() < 0 || index.row() >= m_cues.size()) {
         return QVariant();
     }
 
-    const CuePointer& pCue = m_pCues.at(index.row());
+    const CuePointer& pCue = m_cues.at(index.row());
     VERIFY_OR_DEBUG_ASSERT(pCue.get()) {
         return QVariant();
     }
@@ -63,7 +63,7 @@ int QmlCuesModel::rowCount(const QModelIndex& parent) const {
         return 0;
     }
 
-    return m_pCues.size();
+    return m_cues.size();
 }
 
 QHash<int, QByteArray> QmlCuesModel::roleNames() const {
