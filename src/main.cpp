@@ -53,9 +53,9 @@ const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 constexpr int kPixmapCacheLimitAt100PercentZoom = 32 * 1024; // 32 MByte
 
 int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
-    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
-
     CmdlineArgs::Instance().parseForUserFeedback();
+
+    const auto pCoreServices = std::make_shared<mixxx::CoreServices>(args, pApp);
 
     int exitCode;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
