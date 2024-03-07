@@ -2802,6 +2802,13 @@ if(DEBUG_ASSERTIONS_FATAL)
   endif()
 endif()
 
+if(EMSCRIPTEN)
+  cmake_dependent_option(WASM_ASSERTIONS "Enable additional checks when targeting Emscripten/WebAssembly" ON "DEBUG_ASSERTIONS_FATAL OR CMAKE_BUILD_TYPE STREQUAL Debug" OFF)
+  if(WASM_ASSERTIONS)
+    target_link_options(mixxx-lib PUBLIC -sASSERTIONS)
+  endif()
+endif()
+
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 is_static_library(Qt_IS_STATIC Qt${QT_VERSION_MAJOR}::Core)
 if(Qt_IS_STATIC)
