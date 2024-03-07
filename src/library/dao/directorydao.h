@@ -12,6 +12,9 @@ class DirectoryDAO : public DAO {
 
     QList<mixxx::FileInfo> loadAllDirectories(
             bool skipInvalidOrMissing = false) const;
+    /// Same as loadAllDirectories() just with paths as QString.
+    /// See DlgPrefLibrary::populateDirList() for info.
+    QStringList getRootDirStrings() const;
 
     enum class AddResult {
         Ok,

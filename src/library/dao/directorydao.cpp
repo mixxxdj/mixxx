@@ -49,6 +49,30 @@ QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
     return allDirs;
 }
 
+QStringList DirectoryDAO::getRootDirStrings() const {
+    DEBUG_ASSERT(m_database.isOpen());
+    const auto statement =
+            QStringLiteral("SELECT %1 FROM %2")
+                    .arg(
+                            kLocationColumn,
+                            kTable);
+    FwdSqlQuery query(
+            m_database,
+            statement);
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return {};
+    }
+
+    QStringList allDirs;
+    const auto locationIndex = query.fieldIndex(kLocationColumn);
+    while (query.next()) {
+        const auto locationValue =
+                query.fieldValue(locationIndex).toString();
+        allDirs.append(locationValue);
+    }
+    return allDirs;
+}
+
 DirectoryDAO::AddResult DirectoryDAO::addDirectory(
         const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT(m_database.isOpen());
@@ -144,7 +168,12 @@ DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const QString& oldDirectory,
         const QString& newDirectory) const {
-    DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
+    // Don't verify the old directory with
+    // DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
+    // The path may have been set on another OS and therefore it will not have a
+    //  valid location.
+    // Just work with the QString; in case of an invalid path track relocation
+    // will simply fail if the database query yields no results.
     DEBUG_ASSERT(newDirectory == mixxx::FileInfo(newDirectory).location());
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldDirectory also has a zombie
