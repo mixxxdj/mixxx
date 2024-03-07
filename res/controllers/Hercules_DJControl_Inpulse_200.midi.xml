@@ -1107,6 +1107,18 @@
                     <script-binding />
                 </options>
             </control>
+            <!-- CC's MIDI Channel 4 (0xB3  SHIFT mode)-->
+            <!--Browser encoder-->
+	    <control>
+                <group>[Library]</group>
+                <key>ScrollVertical</key>
+                <description>Scroll Vertical (SHIFT + Browser Knob)</description>
+                <status>0xB3</status>
+                <midino>0x01</midino>
+                <options>
+                    <selectknob />
+                </options>
+            </control>
             <!-- CC's MIDI Channel 5 (0xB4  Deck B - SHIFT mode)-->
             <!--Jog wheel-->
             <control>
