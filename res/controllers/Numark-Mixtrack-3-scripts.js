@@ -24,6 +24,9 @@ var ShiftFilterFX4 = true;
 // allow pitch bend with wheel when wheel is not active
 var PitchBendOnWheelOff = true;
 
+// use mixxx softtakeover implementation instead of the script implemented method
+// suggestion: true
+var UseEngineSoftTakeOver = true;
 /**************************
  *  scriptpause
  * ---------------
@@ -231,6 +234,14 @@ function parameterSoftTakeOver(group, control, value) {
 // Reusable Objects (special buttons handling, LEDs, iCUT and Jog wheels)
 // =====================================================================
 
+// Knob state object to keep shift press to trigger engine's softtakeoverignore properly
+var KnobState = function(group, control, state) {
+    this.group = group;
+    this.control = control;
+    this.state = state;
+
+    if (UseEngineSoftTakeOver) { engine.softTakeover(group, control, UseEngineSoftTakeOver); }
+};
 // LED class object
 var LED = function(control, midino) {
     this.control = control;
@@ -729,6 +740,16 @@ NumarkMixtrack3.deck = function(decknum) {
     this.Jog = new Jogger(this.group, this.decknum);
     this.duration = 0;
 
+    // Knob State Objects to store shift presses and trigger softtakeoverignore properly on certain knobs
+    // Knob State Objects automatically sets engine's softtakeover true if @UseEngineSoftTakeOver is true
+    this.KnobState = [];
+    this.KnobState.pregain = new KnobState(this.group, "pregain", false);
+    this.KnobState.EQLow = new KnobState("[EqualizerRack1_" + this.group + "_Effect1]", "parameter1", false);
+    this.KnobState.EQMid = new KnobState("[EqualizerRack1_" + this.group + "_Effect1]", "parameter2", false);
+    this.KnobState.EQHigh = new KnobState("[EqualizerRack1_" + this.group + "_Effect1]", "parameter3", false);
+    this.KnobState.QuickFilter = new KnobState("[QuickEffectRack1_" + this.group + "]", "super1", false);
+
+    //[ChannelI]_Effect1]
     engine.setValue("[EffectRack1_EffectUnit" + decknum + "]", "show_focus", true);
 
     // buttons
@@ -1082,15 +1103,15 @@ NumarkMixtrack3.BrowseButton = function(channel, control, value, status, group) 
         D2.shiftKey || NumarkMixtrack3.decks.D3.shiftKey || NumarkMixtrack3.decks.D4.shiftKey);
 
     if (value === ON) {
-	    if (shifted) {
-	        // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
-	        engine.setValue("[Library]", "GoToItem", true);
-	    } else {
-	        // Browse push : maximize/minimize library view
-	        if (value === ON) {
-	            script.toggleControl("[Skin]", "show_maximized_library");
-	        }
-	    }
+        if (shifted) {
+            // SHIFT + BROWSE push : directory mode -- > Open/Close selected side bar item
+            engine.setValue("[Library]", "GoToItem", true);
+        } else {
+            // Browse push : maximize/minimize library view
+            if (value === ON) {
+                script.toggleControl("[Skin]", "show_maximized_library");
+            }
+        }
     }
 };
 
@@ -1834,15 +1855,41 @@ NumarkMixtrack3.EQKnob = function(channel, control, value, status, group) {
     var focusedEffect = deck.getFocusedEffect();
     var EQp = 4 - control; // convert control number to parameter number in mixxx
     var FXp = control; // control number matches effect param order
+    let knobStateOBJ;
+    switch (EQp) {
+    case 1:
+        knobStateOBJ = deck.KnobState.EQLow;
+        break;
+    case 2:
+        knobStateOBJ = deck.KnobState.EQMid;
+        break;
+    case 3:
+        knobStateOBJ = deck.KnobState.EQHigh;
+        break;
+    }
 
     // default behavior is to control EQ
     // when shifted, change parameters of focused effect
     if (deck.shiftKey && focusedEffect) {
-        parameterSoftTakeOver(
+        // enable softtakeover since effect parameter changed dynamically
+        if (UseEngineSoftTakeOver) { engine.softTakeover("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, true); }
+        deck.handleSoftTakeOver(
             "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp, value
         );
+
+        // set takeover ignore if using engine's softtakeover instead of scripted one
+        if (UseEngineSoftTakeOver && knobStateOBJ.state === false) {
+            knobStateOBJ.state = true;
+            engine.softTakeoverIgnoreNextValue(knobStateOBJ.group, knobStateOBJ.control);
+        }
     } else {
-        parameterSoftTakeOver("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, value);
+        deck.handleSoftTakeOver("[EqualizerRack1_[Channel" + decknum + "]_Effect1]", "parameter" + EQp, value);
+
+        // set takeover ignore if using engine's softtakeover instead of scripted one
+        if (UseEngineSoftTakeOver && knobStateOBJ.state === true) {
+            knobStateOBJ.state = false;
+            engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect +"]", "parameter" + FXp);
+        }
     }
 };
 
@@ -1857,15 +1904,32 @@ NumarkMixtrack3.FilterKnob = function(channel, control, value, status, group) {
         // Default behavior for Shift+Filter is to change FX4
         // for the currently focused effect
         if (focusedEffect && ShiftFilterFX4) {
-            parameterSoftTakeOver(
-                "[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value
-            );
+            deck.handleSoftTakeOver("[EffectRack1_EffectUnit" + decknum + "_Effect" + focusedEffect + "]", "parameter4", value);
         } else {
             // Shift+Filter is mapped to channel gain otherwise
-            parameterSoftTakeOver("[Channel" + decknum + "]", "pregain", value);
+            deck.handleSoftTakeOver("[Channel" + decknum + "]", "pregain", value);
+            // set takeover ignore if using engine's softtakeover instead of scripted one
+            if (UseEngineSoftTakeOver && deck.KnobState.pregain.state === false) {
+                deck.KnobState.pregain.state = true;
+                engine.softTakeoverIgnoreNextValue(deck.KnobState.QuickFilter.group, deck.KnobState.QuickFilter.control);
+            }
         }
     } else {
-        parameterSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
+        deck.handleSoftTakeOver("[QuickEffectRack1_[Channel" + decknum + "]]", "super1", value);
+        // set takeover ignore if using engine's softtakeover instead of scripted one
+        if (UseEngineSoftTakeOver && deck.KnobState.pregain.state === true) {
+            deck.KnobState.pregain.state = false;
+            engine.softTakeoverIgnoreNextValue(deck.KnobState.pregain.group, deck.KnobState.pregain.control);
+        }
+    }
+};
+
+// handle softovertake method automatically deciding between mixxx engine's default or implemented via this script
+NumarkMixtrack3.deck.prototype.handleSoftTakeOver = function(group, control, value) {
+    if (UseEngineSoftTakeOver) {
+        engine.setParameter(group, control, value / 127);
+    } else {
+        parameterSoftTakeOver(group, control, value);
     }
 };
 
@@ -1936,6 +2000,7 @@ NumarkMixtrack3.volume = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
     engine.setValue(deck.group, "volume", value / 127);
 };
+
 
 NumarkMixtrack3.OnVolumeChange = function(value, group, control) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
