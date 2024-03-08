@@ -66,7 +66,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotSeratoMetadataExportClicked(bool);
 
   private:
-    void initializeDirList();
+    void updateDirList();
     void setLibraryFont(const QFont& font);
     void updateSearchLineEditHistoryOptions();
     void setSeratoMetadataEnabled(bool shouldSyncTrackMetadata);

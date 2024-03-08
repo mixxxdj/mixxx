@@ -98,6 +98,10 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
 
+    bool requestAddDir(const QString& directory);
+    bool requestRemoveDir(const QString& directory, LibraryRemovalType removalType);
+    bool requestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
+
 #ifdef __ENGINEPRIME__
     std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
 #endif
@@ -111,9 +115,6 @@ class Library: public QObject {
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(const QString& directory);
-    void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
-    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
 
   signals:

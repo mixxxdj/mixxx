@@ -339,19 +339,21 @@ ExportTrackMetadataResult TrackCollectionManager::exportTrackMetadataBeforeSavin
     return ExportTrackMetadataResult::Skipped;
 }
 
-bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
+DirectoryDAO::AddResult TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const mixxx::FileInfo& oldDir) const {
+DirectoryDAO::RemoveResult TrackCollectionManager::removeDirectory(
+        const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     return m_pInternalCollection->removeDirectory(oldDir);
 }
 
-void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {
+DirectoryDAO::RelocateResult TrackCollectionManager::relocateDirectory(
+        const QString& oldDir, const QString& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.debug()
@@ -359,21 +361,24 @@ void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QStr
             << oldDir
             << "->"
             << newDir;
-    // TODO(XXX): Add error handling in TrackCollection::relocateDirectory()
-    m_pInternalCollection->relocateDirectory(oldDir, newDir);
-    if (m_externalCollections.isEmpty()) {
-        return;
+    DirectoryDAO::RelocateResult result =
+            m_pInternalCollection->relocateDirectory(oldDir, newDir);
+
+    if (result == DirectoryDAO::RelocateResult::Ok &&
+            !m_externalCollections.isEmpty()) {
+        kLogger.debug()
+                << "Relocating directory in"
+                << m_externalCollections.size()
+                << "external track collection(s):"
+                << oldDir
+                << "->"
+                << newDir;
+        // NOTE(ronso0) What are external track collections?
+        for (const auto& externalTrackCollection : m_externalCollections) {
+            externalTrackCollection->relocateDirectory(oldDir, newDir);
+        }
     }
-    kLogger.debug()
-            << "Relocating directory in"
-            << m_externalCollections.size()
-            << "external track collection(s):"
-            << oldDir
-            << "->"
-            << newDir;
-    for (const auto& externalTrackCollection : m_externalCollections) {
-        externalTrackCollection->relocateDirectory(oldDir, newDir);
-    }
+    return result;
 }
 
 bool TrackCollectionManager::hideTracks(const QList<TrackId>& trackIds) const {
