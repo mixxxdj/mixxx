@@ -2803,7 +2803,7 @@ if(DEBUG_ASSERTIONS_FATAL)
 endif()
 
 if(EMSCRIPTEN)
-  cmake_dependent_option(WASM_ASSERTIONS "Enable additional checks when targeting Emscripten/WebAssembly" ON "DEBUG_ASSERTIONS_FATAL OR CMAKE_BUILD_TYPE STREQUAL Debug" OFF)
+  option(WASM_ASSERTIONS "Enable additional checks when targeting Emscripten/WebAssembly" OFF)
   if(WASM_ASSERTIONS)
     target_link_options(mixxx-lib PUBLIC -sASSERTIONS)
   endif()
