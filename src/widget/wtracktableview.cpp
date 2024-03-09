@@ -861,7 +861,12 @@ void WTrackTableView::copySelectedTracks() {
 }
 
 void WTrackTableView::pasteTracks(const QModelIndex& index) {
-    const QList<int> rows = getTrackModel()->pasteTracks(index);
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+
+    const QList<int> rows = trackModel->pasteTracks(index);
     if (rows.empty()) {
         return;
     }
@@ -996,9 +1001,13 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 
     TrackModel::Capability cap;
+    // Hide is the primary action if allowed. Else we test for remove capability
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
         cap = TrackModel::Capability::Hide;
-    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
+    } else if (pTrackModel->isLocked()) { // Locked playlists and crates
+        return;
+    }
+    if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
         cap = TrackModel::Capability::Remove;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
         cap = TrackModel::Capability::RemoveCrate;

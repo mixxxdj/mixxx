@@ -22,6 +22,7 @@ class CrateTableModel final : public TrackSetTableModel {
     int addTracksWithTrackIds(const QModelIndex& index,
             const QList<TrackId>& tracks,
             int* pOutInsertionPos) final;
+    bool isLocked() final;
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;
