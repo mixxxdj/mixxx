@@ -2802,6 +2802,13 @@ if(DEBUG_ASSERTIONS_FATAL)
   endif()
 endif()
 
+if(EMSCRIPTEN)
+  option(WASM_ASSERTIONS "Enable additional checks when targeting Emscripten/WebAssembly" OFF)
+  if(WASM_ASSERTIONS)
+    target_link_options(mixxx-lib PUBLIC -sASSERTIONS)
+  endif()
+endif()
+
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 is_static_library(Qt_IS_STATIC Qt${QT_VERSION_MAJOR}::Core)
 if(Qt_IS_STATIC)
