@@ -92,6 +92,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     QModelIndex indexFromPlaylistId(int playlistId);
     bool isChildIndexSelectedInSidebar(const QModelIndex& index);
 
+    QString createPlaylistLabel(const QString& name, int count, int duration) const;
+
     PlaylistDAO& m_playlistDao;
     QModelIndex m_lastClickedIndex;
     QModelIndex m_lastRightClickedIndex;
