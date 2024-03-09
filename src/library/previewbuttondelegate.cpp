@@ -49,8 +49,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(
           m_column(column),
           m_pPreviewDeckPlay(make_parented<ControlProxy>(
                   kPreviewDeckGroup, QStringLiteral("play"), this)),
-          m_pCueGotoAndPlay(make_parented<ControlProxy>(
-                  kPreviewDeckGroup, QStringLiteral("cue_gotoandplay"), this)),
+          m_pCueGotoAndPlay(kPreviewDeckGroup, QStringLiteral("cue_gotoandplay")),
           m_pButton(make_parented<LibraryPreviewButton>(parent)) {
     DEBUG_ASSERT(m_column >= 0);
 
@@ -217,15 +216,23 @@ void PreviewButtonDelegate::buttonClicked() {
 
     TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
 
+    bool startedPlaying = false;
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
+        // Load to preview deck and start playing
         emit loadTrackToPlayer(pTrack, kPreviewDeckGroup, true);
+        startedPlaying = true;
     } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
-        // Since the Preview deck might be hidden
-        // Starting at cue is a predictable behavior
-        m_pCueGotoAndPlay->set(1.0);
+        // Since the Preview deck might be hidden, starting at the main cue
+        // is a predictable behavior.
+        m_pCueGotoAndPlay.set(1.0);
+        startedPlaying = true;
     } else {
         m_pPreviewDeckPlay->set(0.0);
+    }
+    // If we start previewing also select the track (the table view didn't receive the click)
+    if (startedPlaying) {
+        m_pTableView->selectRow(m_currentEditedCellIndex.row());
     }
 }
 

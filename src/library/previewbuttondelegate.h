@@ -2,6 +2,7 @@
 
 #include <QPushButton>
 
+#include "control/pollingcontrolproxy.h"
 #include "library/tableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
@@ -31,9 +32,12 @@ class PreviewButtonDelegate : public TableItemDelegate {
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
+    // Apparently this no-op override is required to trigger a paint
+    // event after row has been painted with the 'selected' style. (Qt 5)
     void setEditorData(
             QWidget* editor,
             const QModelIndex& index) const override;
+    // Seems this is not required
     void setModelData(
             QWidget* editor,
             QAbstractItemModel* model,
@@ -74,7 +78,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
     const int m_column;
 
     const parented_ptr<ControlProxy> m_pPreviewDeckPlay;
-    const parented_ptr<ControlProxy> m_pCueGotoAndPlay;
+    PollingControlProxy m_pCueGotoAndPlay;
 
     const parented_ptr<LibraryPreviewButton> m_pButton;
 
