@@ -20,6 +20,7 @@ class CrateTableModel final : public TrackSetTableModel {
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of unsuccessful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    bool isLocked() final;
 
     Capabilities getCapabilities() const final;
     QString modelKey(bool noSearch) const override;

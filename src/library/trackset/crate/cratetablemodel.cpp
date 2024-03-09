@@ -168,6 +168,17 @@ int CrateTableModel::addTracks(
     return trackIds.size();
 }
 
+bool CrateTableModel::isLocked() {
+    Crate crate;
+    if (!m_pTrackCollectionManager->internalCollection()
+                    ->crates()
+                    .readCrateById(m_selectedCrate, &crate)) {
+        qWarning() << "Failed to read create" << m_selectedCrate;
+        return false;
+    }
+    return crate.isLocked();
+}
+
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     VERIFY_OR_DEBUG_ASSERT(m_selectedCrate.isValid()) {
         return;
