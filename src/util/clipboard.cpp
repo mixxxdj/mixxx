@@ -11,8 +11,9 @@ QByteArray urlsToUtf8(const QList<QUrl>& urls) {
     for (const QUrl& url : urls) {
         result += url.toEncoded() + '\n';
     }
-    if (!result.isEmpty())
+    if (!result.isEmpty()) {
         result.chop(1);
+    }
     return result;
 }
 
