@@ -146,7 +146,6 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeatsMove;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
-    delete m_pTranslateBeatsMove;
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
