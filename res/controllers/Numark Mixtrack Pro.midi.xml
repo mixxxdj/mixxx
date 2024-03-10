@@ -16,7 +16,7 @@ Modify by Darío José Freije 06/27/2012-->
 <!-- GENERAL -->
 
         <controls>
-        	<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0xc</midino>
                 <group>[Master]</group>
@@ -81,7 +81,7 @@ Modify by Darío José Freije 06/27/2012-->
             </control>
 
 <!-- CHANNEL 1 -->
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
                 <status>0x90</status>
@@ -90,7 +90,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>effect_selector</key>
                 <status>0xB0</status>
@@ -108,7 +108,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <diff/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>clear</key>
                 <status>0x90</status>
@@ -126,7 +126,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>mix</key>
                 <description>MIDI Learned from 569 messages.</description>
@@ -360,7 +360,7 @@ Modify by Darío José Freije 06/27/2012-->
 
 
 <!-- CHANNEL 2 -->
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
                 <status>0x90</status>
@@ -369,7 +369,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>effect_selector</key>
                 <status>0xB0</status>
@@ -378,7 +378,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <selectknob/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>meta</key>
                 <status>0xB0</status>
@@ -387,7 +387,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <diff/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>clear</key>
                 <status>0x90</status>
@@ -396,7 +396,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[Channel2]</group>
                 <key>rate</key>
                 <status>0xB0</status>
@@ -405,7 +405,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>mix</key>
                 <description>MIDI Learned from 653 messages.</description>
@@ -561,7 +561,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <status>0x90</status>
                 <midino>0x34</midino>
                 <group>[Channel2]</group>
@@ -626,7 +626,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <script-binding/>
                 </options>
             </control>
-	    <control>
+        <control>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <group>[Channel2]</group>
@@ -649,12 +649,12 @@ Modify by Darío José Freije 06/27/2012-->
                 </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
-				<status>0x90</status>
+                <status>0x90</status>
                 <midino>0x63</midino>
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
-			<output>
+            <output>
                 <group>[Channel1]</group>
                 <key>play</key>
                 <options>
@@ -751,7 +751,7 @@ Modify by Darío José Freije 06/27/2012-->
             </output>
 
 <!-- OUTPUTS Channel2  -->
-			<output>
+            <output>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
                 <options>
@@ -759,7 +759,7 @@ Modify by Darío José Freije 06/27/2012-->
                 </options>
                 <minimum>0</minimum>
                 <maximum>0.1</maximum>
-				<status>0x90</status>
+                <status>0x90</status>
                 <midino>0x64</midino>
                 <on>0x0</on>
                 <off>0x64</off>
@@ -846,7 +846,7 @@ Modify by Darío José Freije 06/27/2012-->
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
-			<output>
+            <output>
                 <group>[Channel2]</group>
                 <key>rate</key>
                 <options>
