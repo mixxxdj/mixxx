@@ -179,7 +179,7 @@ Mixage.init = function(_id, _debugging) {
         Mixage.connectControlsToFunctions(channel);
         const effectUnit = `[EffectRack1_EffectUnit${deck}]`;
 
-        // set soft takeovers for effectslot amount
+        // set soft takeovers for effect slot Meta knobs
         for (let effectSlot = 1; effectSlot <= Mixage.numEffectSlots; effectSlot++) {
             const groupString = `[EffectRack1_EffectUnit${deck}_Effect${effectSlot}]`;
             engine.softTakeover(groupString, "meta", true);
