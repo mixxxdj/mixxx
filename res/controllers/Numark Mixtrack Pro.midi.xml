@@ -29,7 +29,7 @@ Modify by Darío José Freije 06/27/2012-->
                 <status>0xb0</status>
                 <midino>0x17</midino>
                 <group>[Master]</group>
-                <key>volume</key>
+                <key>gain</key>
                 <options>
                     <normal/>
                 </options>
@@ -63,7 +63,7 @@ Modify by Darío José Freije 06/27/2012-->
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x69</midino>
+                <midino>0x4f</midino>
                 <group>[Playlist]</group>
                 <key>NumarkMixTrackPro.toggleDirectoryMode</key>
                 <options>
@@ -81,30 +81,57 @@ Modify by Darío José Freije 06/27/2012-->
             </control>
 
 <!-- CHANNEL 1 -->
-
-           <control>
-                <status>0xb0</status>
-                <midino>0x1b</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
+			<control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x63</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>effect_selector</key>
+                <status>0xB0</status>
+                <midino>0x1B</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>meta</key>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
                 <options>
                     <diff/>
                 </options>
             </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x1c</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
+			<control>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>clear</key>
+                <status>0x90</status>
+                <midino>0x68</midino>
                 <options>
-                    <diff/>
+                    <normal/>
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0x1d</midino>
                 <group>[Channel1]</group>
-                <key>pregain</key>
+                <key>rate</key>
+                <status>0xB0</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>mix</key>
+                <description>MIDI Learned from 569 messages.</description>
+                <status>0xB0</status>
+                <midino>0x1D</midino>
                 <options>
                     <diff/>
                 </options>
@@ -275,15 +302,6 @@ Modify by Darío José Freije 06/27/2012-->
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xd</midino>
-                <group>[Channel1]</group>
-                <key>NumarkMixTrackPro.pitch</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <status>0x90</status>
                 <midino>0x44</midino>
                 <group>[Channel1]</group>
@@ -339,41 +357,60 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x63</midino>
-                <group>[Channel1]</group>
-                <key>NumarkMixTrackPro.flanger</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
 
 
 <!-- CHANNEL 2 -->
-           <control>
-                <status>0xb0</status>
-                <midino>0x1e</midino>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
+			<control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <status>0x90</status>
+                <midino>0x64</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>effect_selector</key>
+                <status>0xB0</status>
+                <midino>0x1E</midino>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>meta</key>
+                <status>0xB0</status>
+                <midino>0x1F</midino>
                 <options>
                     <diff/>
                 </options>
             </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x1f</midino>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
+			<control>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>clear</key>
+                <status>0x90</status>
+                <midino>0x67</midino>
                 <options>
-                    <diff/>
+                    <normal/>
                 </options>
             </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x20</midino>
+			<control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
+                <key>rate</key>
+                <status>0xB0</status>
+                <midino>0x0E</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+			<control>
+                <group>[EffectRack1_EffectUnit2]</group>
+                <key>mix</key>
+                <description>MIDI Learned from 653 messages.</description>
+                <status>0xB0</status>
+                <midino>0x20</midino>
                 <options>
                     <diff/>
                 </options>
@@ -543,15 +580,6 @@ Modify by Darío José Freije 06/27/2012-->
                 </options>
             </control>
             <control>
-                <status>0xb0</status>
-                <midino>0xe</midino>
-                <group>[Channel2]</group>
-                <key>NumarkMixTrackPro.pitch</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <status>0x90</status>
                 <midino>0x46</midino>
                 <group>[Channel2]</group>
@@ -607,15 +635,6 @@ Modify by Darío José Freije 06/27/2012-->
                     <normal/>
                 </options>
             </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x64</midino>
-                <group>[Channel2]</group>
-                <key>NumarkMixTrackPro.flanger</key>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
         </controls>
 
 
@@ -623,6 +642,19 @@ Modify by Darío José Freije 06/27/2012-->
 
         <outputs>
             <output>
+                <group>[EffectRack1_EffectUnit1_Effect1]</group>
+                <key>enabled</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+				<status>0x90</status>
+                <midino>0x63</midino>
+                <on>0x0</on>
+                <off>0x64</off>
+            </output>
+			<output>
                 <group>[Channel1]</group>
                 <key>play</key>
                 <options>
@@ -706,19 +738,6 @@ Modify by Darío José Freije 06/27/2012-->
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x63</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-            <output>
-                <group>[Channel1]</group>
                 <key>rate</key>
                 <options>
                     <normal/>
@@ -732,7 +751,19 @@ Modify by Darío José Freije 06/27/2012-->
             </output>
 
 <!-- OUTPUTS Channel2  -->
-
+			<output>
+                <group>[EffectRack1_EffectUnit2_Effect1]</group>
+                <key>enabled</key>
+                <options>
+                    <normal/>
+                </options>
+                <minimum>0</minimum>
+                <maximum>0.1</maximum>
+				<status>0x90</status>
+                <midino>0x64</midino>
+                <on>0x0</on>
+                <off>0x64</off>
+            </output>
             <output>
                 <group>[Channel2]</group>
                 <key>play</key>
@@ -815,20 +846,7 @@ Modify by Darío José Freije 06/27/2012-->
                 <on>0x0</on>
                 <off>0x64</off>
             </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>flanger</key>
-                <options>
-                    <normal/>
-                </options>
-                <minimum>0</minimum>
-                <maximum>0.1</maximum>
-                <status>0x90</status>
-                <midino>0x64</midino>
-                <on>0x0</on>
-                <off>0x64</off>
-            </output>
-	    <output>
+			<output>
                 <group>[Channel2]</group>
                 <key>rate</key>
                 <options>
