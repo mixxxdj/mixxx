@@ -164,9 +164,11 @@ NumarkMixTrackPro.Stutter2Beat = function (value) {
 }
 
 NumarkMixTrackPro.clipLED = function (value, note) {
-
-	if (value>0) NumarkMixTrackPro.flashLED(note, 1);
-
+	if (value>0) {
+		NumarkMixTrackPro.flashLED(note, 1);
+	} else {
+		NumarkMixTrackPro.setLED(note, value)
+	}
 }
 
 NumarkMixTrackPro.shutdown = function(id) {	// called when the MIDI device is closed
