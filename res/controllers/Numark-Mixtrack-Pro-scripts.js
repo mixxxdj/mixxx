@@ -215,7 +215,7 @@ NumarkMixTrackPro.setLED = function(value, status) {
 
 NumarkMixTrackPro.flashLED = function (led, veces){
 	var ndx = Math.random();
-	var id = engine.beginTimer(120, NumarkMixTrackPro.doFlash(ndx, veces), true);
+	var id = engine.beginTimer(120, () => {NumarkMixTrackPro.doFlash(ndx, veces);}, true);
 	NumarkMixTrackPro.ledTimers[ndx] =  new NumarkMixTrackPro.LedTimer(id, led, 0, false);
 }
 
