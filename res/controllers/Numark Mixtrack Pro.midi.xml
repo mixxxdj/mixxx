@@ -99,7 +99,7 @@ Modify by Darío José Freije 06/27/2012-->
                     <selectknob/>
                 </options>
             </control>
-			<control>
+            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>meta</key>
                 <status>0xB0</status>
