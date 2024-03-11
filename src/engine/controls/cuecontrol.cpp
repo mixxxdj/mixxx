@@ -500,6 +500,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
+        m_prevPosition.setValue(mixxx::audio::kStartFramePos);
     }
 
     if (!pNewTrack) {
@@ -2168,11 +2169,44 @@ void CueControl::updateIndicators() {
             m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
         }
     }
+
+    // Update hotcue indicators: activate the indicator if we are at the cue pos
+    // or if we passed it since the last update, else deactivate.
+    const auto prevPos = m_prevPosition.getValue();
+    const auto currPos = frameInfo().currentPosition;
+    VERIFY_OR_DEBUG_ASSERT(prevPos.isValid()) {
+        m_prevPosition.setValue(currPos);
+        return;
+    }
+
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        const auto cuePos = pControl->getPosition();
+        if (!cuePos.isValid()) {
+            continue;
+        }
+        if ((cuePos >= prevPos && cuePos <= currPos) ||     // forward
+                (cuePos <= prevPos && cuePos >= currPos)) { // reverse
+            pControl->setIndicator(1.0);
+        } else {
+            pControl->setIndicator(0.0);
+        }
+    }
+    m_prevPosition.setValue(currPos);
 }
 
 void CueControl::resetIndicators() {
     m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        pControl->setIndicator(0.0);
+    }
+}
+
+/// Store the position so we can do a correct range check when updating the
+/// hotcue indicators. Otherwise m_prevPosition would be the position from before
+/// the seek and we'd falsely activate indicators.
+void CueControl::notifySeek(mixxx::audio::FramePos position) {
+    m_prevPosition.setValue(position);
 }
 
 CueControl::TrackAt CueControl::getTrackAt() const {
@@ -2461,9 +2495,12 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_pHotcueStatus = std::make_unique<ControlObject>(keyForControl(QStringLiteral("status")));
     m_pHotcueStatus->setReadOnly();
-
     // Add an alias for the legacy hotcue_X_enabled CO
     m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
+
+    m_pHotcueIndicator = std::make_unique<ControlObject>(
+            keyForControl(QStringLiteral("indicator")));
+    m_pHotcueIndicator->setReadOnly();
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();
@@ -2702,6 +2739,7 @@ void HotcueControl::resetCue() {
     setEndPosition(mixxx::audio::kInvalidFramePos);
     setType(mixxx::CueType::Invalid);
     setStatus(Status::Empty);
+    setIndicator(0.0);
 }
 
 void HotcueControl::setPosition(mixxx::audio::FramePos position) {
@@ -2718,6 +2756,12 @@ void HotcueControl::setType(mixxx::CueType type) {
 
 void HotcueControl::setStatus(HotcueControl::Status status) {
     m_pHotcueStatus->forceSet(static_cast<double>(status));
+}
+
+void HotcueControl::setIndicator(double on) {
+    m_pHotcueIndicator->forceSet(on);
+    // TODO: check if we can squeez this into hotcue_N_status without too much effort.
+    // IINM that would require reading e.g. m_pCurrentSavedLoopControl.
 }
 
 HotcueControl::Status HotcueControl::getStatus() const {
