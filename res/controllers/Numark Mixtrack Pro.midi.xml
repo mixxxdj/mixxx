@@ -129,7 +129,6 @@ Modify by Darío José Freije 06/27/2012-->
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>mix</key>
-                <description>MIDI Learned from 569 messages.</description>
                 <status>0xB0</status>
                 <midino>0x1D</midino>
                 <options>
@@ -408,7 +407,6 @@ Modify by Darío José Freije 06/27/2012-->
             <control>
                 <group>[EffectRack1_EffectUnit2]</group>
                 <key>mix</key>
-                <description>MIDI Learned from 653 messages.</description>
                 <status>0xB0</status>
                 <midino>0x20</midino>
                 <options>
