@@ -14,7 +14,9 @@
 #include "control/controlobject.h"
 #include "library/coverartutils.h"
 #include "library/dao/trackschema.h"
+#ifdef __MUSICBRAINZ__
 #include "library/dlgtagfetcher.h"
+#endif
 #include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "library/externaltrackcollection.h"
@@ -366,12 +368,14 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotImportMetadataFromFileTags);
 
+#ifdef __MUSICBRAINZ__
         m_pImportMetadataFromMusicBrainzAct =
                 new QAction(tr("Import From MusicBrainz"), m_pMetadataMenu);
         connect(m_pImportMetadataFromMusicBrainzAct,
                 &QAction::triggered,
                 this,
                 &WTrackMenu::slotShowDlgTagFetcher);
+#endif
 
         m_pExportMetadataAct =
                 new QAction(tr("Export To File Tags"), m_pMetadataMenu);
@@ -613,7 +617,9 @@ void WTrackMenu::setupActions() {
 
     if (featureIsEnabled(Feature::Metadata)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
+#ifdef __MUSICBRAINZ__
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
+#endif
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
 
         for (const auto& updateInExternalTrackCollection :
@@ -929,7 +935,9 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
+#ifdef __MUSICBRAINZ__
         m_pImportMetadataFromMusicBrainzAct->setEnabled(singleTrackSelected);
+#endif
 
         // We use the last selected track for the cover art context to be
         // consistent with selectionChanged above.
@@ -2346,6 +2354,7 @@ void WTrackMenu::showDlgTrackInfo(const QString& property) {
     }
 }
 
+#ifdef __MUSICBRAINZ__
 void WTrackMenu::slotShowDlgTagFetcher() {
     if (isEmpty()) {
         return;
@@ -2369,6 +2378,7 @@ void WTrackMenu::slotShowDlgTagFetcher() {
     }
     m_pDlgTagFetcher->show();
 }
+#endif
 
 void WTrackMenu::slotAddToAutoDJBottom() {
     // append to auto DJ

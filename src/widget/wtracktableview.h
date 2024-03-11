@@ -13,7 +13,9 @@
 #include "widget/wlibrarytableview.h"
 
 class ControlProxy;
+#ifdef __MUSICBRAINZ__
 class DlgTagFetcher;
+#endif
 class DlgTrackInfo;
 class ExternalTrackCollection;
 class Library;
