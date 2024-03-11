@@ -9,7 +9,8 @@ namespace {
 QByteArray urlsToUtf8(const QList<QUrl>& urls) {
     QByteArray result;
     for (const QUrl& url : urls) {
-        result += url.toEncoded() + '\n';
+        result += url.toEncoded();
+        result += '\n';
     }
     if (!result.isEmpty()) {
         result.chop(1);
@@ -28,12 +29,13 @@ void Clipboard::add(const QUrl& url) {
 }
 
 void Clipboard::finish() {
-    QMimeData* data = new QMimeData;
-    data->setUrls(instance()->m_urls);
+    QMimeData* pData = new QMimeData;
+    pData->setUrls(instance()->m_urls);
     // "x-special/gnome-copied-files" is used for many file managers
     // https://indigo.re/posts/2021-12-21-clipboard-data.html
-    data->setData("x-special/gnome-copied-files", "copy\n" + urlsToUtf8(instance()->m_urls));
-    QApplication::clipboard()->setMimeData(data);
+    pData->setData(QStringLiteral("x-special/gnome-copied-files"),
+            "copy\n" + urlsToUtf8(instance()->m_urls));
+    QApplication::clipboard()->setMimeData(pData);
 }
 
 QList<QUrl> Clipboard::urls() {
