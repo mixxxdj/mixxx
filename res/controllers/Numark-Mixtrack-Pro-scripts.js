@@ -528,15 +528,15 @@ NumarkMixTrackPro.jogWheel = function(channel, control, value, status, group) {
 
 	if (engine.getValue(group, "play")) {
 
-		if (NumarkMixTrackPro.scratchMode[deck-1] && posNeg == -1 && !NumarkMixTrackPro.touch[deck-1]) {
-			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) {
+		if (NumarkMixTrackPro.scratchMode[deck-1] && posNeg === -1 && !NumarkMixTrackPro.touch[deck-1]) {
+			if (NumarkMixTrackPro.scratchTimer[deck-1] !== -1) {
 				engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 			}
 			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => {NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
 		}
 	} else { // stop scratching
 		if (!NumarkMixTrackPro.touch[deck-1]){
-			if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) {
+			if (NumarkMixTrackPro.scratchTimer[deck-1] !== -1) {
 				engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 			}
 			NumarkMixTrackPro.scratchTimer[deck-1] = engine.beginTimer(20, () => { NumarkMixTrackPro.jogWheelStopScratch(deck); }, true);
@@ -572,7 +572,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 
 // 	paro el timer (si no existe da error mmmm) y arranco un nuevo timer.
 // 	Si en 20 milisegundos no se mueve el plato, desactiva el scratch
-		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) {
+		if (NumarkMixTrackPro.scratchTimer[deck-1] !== -1) {
 			engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 		}
 
@@ -583,7 +583,7 @@ NumarkMixTrackPro.wheelTouch = function(channel, control, value, status, group){
 		// if playing and scratch mode is disabled, do nothing on press
 		if (!NumarkMixTrackPro.scratchMode[deck-1] && engine.getValue(group, "play")) return;
 
-		if (NumarkMixTrackPro.scratchTimer[deck-1] != -1) {
+		if (NumarkMixTrackPro.scratchTimer[deck-1] !== -1) {
 			engine.stopTimer(NumarkMixTrackPro.scratchTimer[deck-1]);
 		}
 
