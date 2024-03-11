@@ -404,7 +404,7 @@ QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
 
     int insertionPos = 0;
     const QList<QUrl> urls = Clipboard::urls();
-    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, false);
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, true);
     if (!trackIds.isEmpty()) {
         addTracksWithTrackIds(insertionIndex, trackIds, &insertionPos);
     }
