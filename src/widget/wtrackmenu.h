@@ -145,6 +145,7 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
+    void slotUndoBeatsChange();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -221,6 +222,7 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
+    bool canUndoBeatsChange() const;
 
     /// Get the common track color of all tracks this menu is shown for, or
     /// return `nullopt` if there is no common color. Tracks may have no color
@@ -302,6 +304,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
+    QAction* m_pBpmUndoAction{};
 
     // Track color
     WColorPickerAction* m_pColorPickerAction{};

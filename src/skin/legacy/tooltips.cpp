@@ -435,6 +435,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Adjust Beatgrid")
             << tr("Adjust beatgrid to match another playing deck.");
 
+    add("beats_undo_adjustment")
+            << tr("Revert last BPM/Beatgrid Change")
+            << tr("Revert last BPM/Beatgrid Change of the loaded track.");
+
     //this is a special case, in some skins we might display a transparent png for bpm_tap on top of visual_bpm
     add("bpm_tap_visual_bpm")
             << tr("Tempo and BPM Tap")
