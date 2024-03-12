@@ -205,7 +205,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = new QMenu(this);
         //: Reset metadata in right click track context menu in library
-        m_pClearMetadataMenu->setTitle(tr("Reset"));
+        m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
