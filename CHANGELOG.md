@@ -521,7 +521,7 @@
   [#11975](https://github.com/mixxxdj/mixxx/pull/11975)
   [#11957](https://github.com/mixxxdj/mixxx/issues/11957)
 * Fix 500ms blocking of the whole event loop, when holding mouse down on title bar on Windows [#12359](https://github.com/mixxxdj/mixxx/pull/12359) [#12358](https://github.com/mixxxdj/mixxx/issues/12358) [#12433](https://github.com/mixxxdj/mixxx/pull/12433) [#12458](https://github.com/mixxxdj/mixxx/pull/12458)
-* change SKIN_WARNING to show the skin file:line first, then c++ context [#12253](https://github.com/mixxxdj/mixxx/pull/12253)
+* change SKIN_WARNING to show the skin file and line first, then c++ context [#12253](https://github.com/mixxxdj/mixxx/pull/12253)
 * Fix style of selected QComboBox items on Windows [#12339](https://github.com/mixxxdj/mixxx/pull/12339) [#12323](https://github.com/mixxxdj/mixxx/issues/12323)
 * Fix reading the Spinny cover on Windows  [#12103](https://github.com/mixxxdj/mixxx/pull/12103) [#11131](https://github.com/mixxxdj/mixxx/issues/11131)
 * Fix inconsistent/wrong musical keys in the UI [#12051](https://github.com/mixxxdj/mixxx/pull/12051) [#12044](https://github.com/mixxxdj/mixxx/issues/12044)

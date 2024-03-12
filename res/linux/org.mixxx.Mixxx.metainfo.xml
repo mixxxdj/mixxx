@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-03-09" timestamp="1710011629">
+    <release version="2.4.1" type="development" date="2024-03-12" timestamp="1710283944">
       <description>
  <p>
   Controller Mappings
@@ -1442,7 +1442,7 @@
    #12458
   </li>
   <li>
-   change SKIN_WARNING to show the skin file:line first, then c++ context
+   change SKIN_WARNING to show the skin file and line first, then c++ context
    #12253
   </li>
   <li>
