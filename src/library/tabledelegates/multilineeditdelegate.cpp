@@ -1,4 +1,4 @@
-#include "library/multilineeditdelegate.h"
+#include "library/tabledelegates/multilineeditdelegate.h"
 
 #include <QAbstractTextDocumentLayout>
 #include <QScrollBar>

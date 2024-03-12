@@ -1,4 +1,4 @@
-#include "library/previewbuttondelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
 
 #include <QPainter>
 #include <QPushButton>

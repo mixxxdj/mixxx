@@ -1,4 +1,4 @@
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 
 #include <QPainter>
 

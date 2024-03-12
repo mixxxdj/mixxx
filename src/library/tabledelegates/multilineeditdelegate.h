@@ -2,7 +2,7 @@
 
 #include <QPlainTextEdit>
 
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 
 /// A QPlainTextEdit to show all content lines in a scrollable view.
 /// * finish editing with Return key, like QLineEdit used for other text columns

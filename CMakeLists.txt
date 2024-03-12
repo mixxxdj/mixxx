@@ -905,16 +905,13 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/basesqltablemodel.cpp
   src/library/basetrackcache.cpp
   src/library/basetracktablemodel.cpp
-  src/library/bpmdelegate.cpp
   src/library/browse/browsefeature.cpp
   src/library/browse/browsetablemodel.cpp
   src/library/browse/browsethread.cpp
   src/library/browse/foldertreemodel.cpp
-  src/library/colordelegate.cpp
   src/library/columncache.cpp
   src/library/coverart.cpp
   src/library/coverartcache.cpp
-  src/library/coverartdelegate.cpp
   src/library/coverartutils.cpp
   src/library/dao/analysisdao.cpp
   src/library/dao/autodjcratesdao.cpp
@@ -948,7 +945,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/librarycontrol.cpp
   src/library/libraryfeature.cpp
   src/library/librarytablemodel.cpp
-  src/library/locationdelegate.cpp
   src/library/missing_hidden/dlghidden.cpp
   src/library/missing_hidden/dlghidden.ui
   src/library/missing_hidden/dlgmissing.cpp
@@ -956,14 +952,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/missing_hidden/hiddentablemodel.cpp
   src/library/missing_hidden/missingtablemodel.cpp
   src/library/mixxxlibraryfeature.cpp
-  src/library/multilineeditdelegate.cpp
   src/library/parser.cpp
   src/library/parsercsv.cpp
   src/library/parserm3u.cpp
   src/library/parserpls.cpp
-  src/library/playcountdelegate.cpp
   src/library/playlisttablemodel.cpp
-  src/library/previewbuttondelegate.cpp
   src/library/proxytrackmodel.cpp
   src/library/recording/dlgrecording.cpp
   src/library/recording/dlgrecording.ui
@@ -982,10 +975,17 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/serato/seratofeature.cpp
   src/library/serato/seratoplaylistmodel.cpp
   src/library/sidebarmodel.cpp
-  src/library/stardelegate.cpp
-  src/library/stareditor.cpp
   src/library/starrating.cpp
-  src/library/tableitemdelegate.cpp
+  src/library/tabledelegates/bpmdelegate.cpp
+  src/library/tabledelegates/colordelegate.cpp
+  src/library/tabledelegates/coverartdelegate.cpp
+  src/library/tabledelegates/locationdelegate.cpp
+  src/library/tabledelegates/multilineeditdelegate.cpp
+  src/library/tabledelegates/playcountdelegate.cpp
+  src/library/tabledelegates/previewbuttondelegate.cpp
+  src/library/tabledelegates/stardelegate.cpp
+  src/library/tabledelegates/stareditor.cpp
+  src/library/tabledelegates/tableitemdelegate.cpp
   src/library/trackcollection.cpp
   src/library/trackcollectioniterator.cpp
   src/library/trackcollectionmanager.cpp

@@ -1,4 +1,4 @@
-#include "library/coverartdelegate.h"
+#include "library/tabledelegates/coverartdelegate.h"
 
 #include <QPainter>
 #include <QTableView>
