@@ -326,26 +326,40 @@ void Tooltips::addStandardTooltips() {
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
     add("rate_perm_up_rate_perm_up_small")
             << tr("Speed Up")
-            << QString("%1: %2").arg(leftClick, tr("Raises the track playback speed (tempo). If keylock is disabled, pitch is also affected."))
-            << QString("%1: %2").arg(rightClick, tr("Raises playback speed in small steps."))
+            << QString("%1: %2").arg(leftClick,
+                       tr("Raises the track playback speed (tempo). If keylock "
+                          "is disabled, pitch is also affected."))
+            << QString("%1: %2").arg(
+                       rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
 
     add("rate_perm_down_rate_perm_down_small")
             << tr("Slow Down")
-            << QString("%1: %2").arg(leftClick, tr("Lowers the track playback speed (tempo). If keylock is disabled, pitch is also affected."))
-            << QString("%1: %2").arg(rightClick, tr("Lowers playback speed in small steps."))
+            << QString("%1: %2").arg(leftClick,
+                       tr("Lowers the track playback speed (tempo). If keylock "
+                          "is disabled, pitch is also affected."))
+            << QString("%1: %2").arg(
+                       rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
 
     add("rate_temp_up_rate_temp_up_small")
             << tr("Speed Up Temporarily (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds playback speed higher while active (tempo). If keylock is disabled, pitch is also affected."))
-            << QString("%1: %2").arg(rightClick, tr("Holds playback speed higher (small amount) while active."))
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed higher while active (tempo). "
+                          "If keylock is disabled, pitch is also affected."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
             << tr("Slow Down Temporarily (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds playback speed lower while active (tempo). If keylock is disabled, pitch is also affected."))
-            << QString("%1: %2").arg(rightClick, tr("Holds playback speed lower (small amount) while active."))
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed lower while active (tempo). "
+                          "If keylock is disabled, pitch is also affected."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed lower (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("filterLow")
