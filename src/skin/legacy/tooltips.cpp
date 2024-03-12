@@ -324,28 +324,44 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
+    QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
+
     add("rate_perm_up_rate_perm_up_small")
-            << tr("Raise Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch higher in small steps."))
+            << tr("Speed Up")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Raises the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
 
     add("rate_perm_down_rate_perm_down_small")
-            << tr("Lower Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch lower."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch lower in small steps."))
+            << tr("Slow Down")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Lowers the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
 
     add("rate_temp_up_rate_temp_up_small")
-            << tr("Raise Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch higher while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch higher (small amount) while active."))
+            << tr("Speed Up Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed higher while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
-            << tr("Lower Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch lower while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch lower (small amount) while active."))
+            << tr("Slow Down Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed lower while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed lower (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("filterLow")
