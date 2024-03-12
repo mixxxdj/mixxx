@@ -481,7 +481,7 @@ void WTrackMenu::createActions() {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
         });
 
-        m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
+        m_pBpmResetAction = new QAction(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
         connect(m_pBpmResetAction,
                 &QAction::triggered,
                 this,
