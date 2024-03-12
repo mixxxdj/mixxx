@@ -324,11 +324,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
+    QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
+
     add("rate_perm_up_rate_perm_up_small")
             << tr("Speed Up")
             << QString("%1: %2").arg(leftClick,
-                       tr("Raises the track playback speed (tempo). If keylock "
-                          "is disabled, pitch is also affected."))
+                       tr("Raises the track playback speed (tempo)."))
+            << pitchAffected
             << QString("%1: %2").arg(
                        rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
@@ -336,8 +338,8 @@ void Tooltips::addStandardTooltips() {
     add("rate_perm_down_rate_perm_down_small")
             << tr("Slow Down")
             << QString("%1: %2").arg(leftClick,
-                       tr("Lowers the track playback speed (tempo). If keylock "
-                          "is disabled, pitch is also affected."))
+                       tr("Lowers the track playback speed (tempo)."))
+            << pitchAffected
             << QString("%1: %2").arg(
                        rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
@@ -345,8 +347,8 @@ void Tooltips::addStandardTooltips() {
     add("rate_temp_up_rate_temp_up_small")
             << tr("Speed Up Temporarily (Nudge)")
             << QString("%1: %2").arg(leftClick,
-                       tr("Holds playback speed higher while active (tempo). "
-                          "If keylock is disabled, pitch is also affected."))
+                       tr("Holds playback speed higher while active (tempo)."))
+            << pitchAffected
             << QString("%1: %2").arg(rightClick,
                        tr("Holds playback speed higher (small amount) while "
                           "active."))
@@ -355,8 +357,8 @@ void Tooltips::addStandardTooltips() {
     add("rate_temp_down_rate_temp_down_small")
             << tr("Slow Down Temporarily (Nudge)")
             << QString("%1: %2").arg(leftClick,
-                       tr("Holds playback speed lower while active (tempo). "
-                          "If keylock is disabled, pitch is also affected."))
+                       tr("Holds playback speed lower while active (tempo)."))
+            << pitchAffected
             << QString("%1: %2").arg(rightClick,
                        tr("Holds playback speed lower (small amount) while "
                           "active."))
