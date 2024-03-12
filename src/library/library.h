@@ -124,6 +124,7 @@ class Library: public QObject {
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
+    void pasteFromSidebar();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void selectTrack(const TrackId&);

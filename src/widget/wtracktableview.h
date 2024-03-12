@@ -34,6 +34,7 @@ class WTrackTableView : public WLibraryTableView {
     void onShow() override;
     bool hasFocus() const override;
     void setFocus() override;
+    void pasteFromSidebar() override;
     void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
     void activateSelectedTrack() override;
@@ -46,6 +47,12 @@ class WTrackTableView : public WLibraryTableView {
     void setSelectedTracks(const QList<TrackId>& tracks);
     TrackId getCurrentTrackId() const;
     bool setCurrentTrackId(const TrackId& trackId, int column = 0, bool scrollToTrack = false);
+
+    void removeSelectedTracks();
+    void cutSelectedTracks();
+    void copySelectedTracks();
+    void pasteTracks(const QModelIndex& index);
+    void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -125,6 +132,9 @@ class WTrackTableView : public WLibraryTableView {
     // Mouse move event, implemented to hide the text and show an icon instead
     // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent) override;
+
+    // Returns the list of selected rows, or an empty list if none are selected.
+    QModelIndexList getSelectedRows() const;
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;

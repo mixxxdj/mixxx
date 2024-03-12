@@ -14,6 +14,7 @@
 #include "moc_browsetablemodel.cpp"
 #include "recording/recordingmanager.h"
 #include "track/track.h"
+#include "util/clipboard.h"
 #include "widget/wlibrarytableview.h"
 
 namespace {
@@ -312,6 +313,20 @@ bool BrowseTableModel::isColumnHiddenByDefault(int column) {
 }
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
+}
+
+void BrowseTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+
+    // TODO Investigate if we can also implement cut and paste (via QFile
+    // operations) so mixxx could manage files in the filesystem, rather than
+    // having to go switch between mixxx and the system file browser.
 }
 
 void BrowseTableModel::removeTracks(const QModelIndexList&) {
