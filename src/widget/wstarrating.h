@@ -16,10 +16,9 @@ class WStarRating : public WWidget {
 
   public slots:
     void slotSetRating(int starCount);
-    void slotRatingUpDownRequest(int change);
 
   signals:
-    void ratingChanged(int starCount);
+    void ratingChangeRequest(int starCount);
 
   protected:
     void paintEvent(QPaintEvent* e) override;

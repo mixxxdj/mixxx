@@ -12,7 +12,7 @@ class QWidgets;
 WStarRating::WStarRating(QWidget* pParent)
         : WWidget(pParent),
           m_starCount(0),
-          m_visualStarRating(m_starCount, 5) {
+          m_visualStarRating(m_starCount) {
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
@@ -39,11 +39,7 @@ void WStarRating::slotSetRating(int starCount) {
     }
     m_starCount = starCount;
     updateVisualRating(starCount);
-    emit ratingChanged(m_starCount);
-}
-
-void WStarRating::slotRatingUpDownRequest(int change) {
-    slotSetRating(m_starCount + change);
+    emit ratingChangeRequest(starCount);
 }
 
 void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
@@ -86,7 +82,7 @@ void WStarRating::updateVisualRating(int starCount) {
 
 void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {
     int starCount = m_visualStarRating.starCount();
-    emit ratingChanged(starCount);
+    emit ratingChangeRequest(starCount);
 }
 
 void WStarRating::fillDebugTooltip(QStringList* debug) {
