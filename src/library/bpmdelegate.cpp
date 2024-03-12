@@ -93,19 +93,19 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     initStyleOption(&opt, index);
 
     // The checkbox uses the QTableView's qss style, therefore it's not picking
-    //  up the 'played' text color via ForegroundRole from BaseTrackTableModel::data().
+    // up the 'missing' or 'played' text color via ForegroundRole from
+    // BaseTrackTableModel::data().
     // Enforce it with an explicit stylesheet. Note: the stylesheet persists so
     // we need to reset it to normal/highlighted.
     QColor textColor;
-    auto dat = index.data(Qt::ForegroundRole);
-    if (dat.canConvert<QColor>()) {
-        textColor = dat.value<QColor>();
+    if (option.state & QStyle::State_Selected) {
+        textColor = option.palette.color(QPalette::Normal, QPalette::HighlightedText);
     } else {
-        if (option.state & QStyle::State_Selected) {
-            textColor = option.palette.color(QPalette::Normal, QPalette::HighlightedText);
+        auto colorData = index.data(Qt::ForegroundRole);
+        if (colorData.canConvert<QColor>()) {
+            textColor = colorData.value<QColor>();
         } else {
             textColor = option.palette.color(QPalette::Normal, QPalette::Text);
-            // qWarning() << "     !! BPM col:" << textColor.name(QColor::HexRgb);
         }
     }
     if (textColor.isValid()) {
