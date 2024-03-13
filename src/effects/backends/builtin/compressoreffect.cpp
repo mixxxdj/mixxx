@@ -130,9 +130,9 @@ CompressorGroupState::CompressorGroupState(
           previousAttackCoeff(calculateBallistics(defaultAttackMs, engineParameters)),
           previousReleaseParamMs(defaultReleaseMs),
           previousReleaseCoeff(calculateBallistics(defaultReleaseMs, engineParameters)),
-          previousMakeUpGain(1),
           previousThresholdParam(defaultThresholdDB),
           previousThresholdParamRatio(db2ratio(defaultThresholdDB * 2)),
+          previousMakeUpGain(1),
           kMakeUpTargetRatio(db2ratio(kMakeUpTarget)) {
 }
 
