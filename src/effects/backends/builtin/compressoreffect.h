@@ -8,7 +8,6 @@
 #include "util/sample.h"
 #include "util/types.h"
 
-
 class CompressorGroupState : public EffectState {
   public:
     CompressorGroupState(const mixxx::EngineParameters& engineParameters);
