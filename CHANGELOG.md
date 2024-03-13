@@ -4,7 +4,6 @@
 
 ### Features
 
-* Sync Lock: End of track checking is not needed [#11035](https://github.com/mixxxdj/mixxx/pull/11035)
 * BaseExternalLibraryFeature: Add ability to import external playlists as crates [#11852](https://github.com/mixxxdj/mixxx/pull/11852)
 * Logging: Include timestamps in messages by default [#11861](https://github.com/mixxxdj/mixxx/pull/11861)
 * DlgPrefSound: Fix fetching of sample rate [#11951](https://github.com/mixxxdj/mixxx/pull/11951) [11949](https://github.com/mixxxdj/mixxx/issues/11949)
@@ -14,10 +13,15 @@
 * Playlist feature: add 'Shuffle playlist' sidebar action [#12498](https://github.com/mixxxdj/mixxx/pull/12498)
 * New built-in effect: Glitch [#11329](https://github.com/mixxxdj/mixxx/pull/11329)
 * Fullscreen toggle rework [#11566](https://github.com/mixxxdj/mixxx/pull/11566)
+* Playlists: Uupdate of playlist labels after adding tracks [#12866](https://github.com/mixxxdj/mixxx/pull/12866) [#12761](https://github.com/mixxxdj/mixxx/issues/12761)
+* Tracks: custom text color for played tracks (qss) [#12744](https://github.com/mixxxdj/mixxx/pull/12744) [#5911](https://github.com/mixxxdj/mixxx/issues/5911) [#12912](https://github.com/mixxxdj/mixxx/pull/12912)
+* History: show track count and duration in sidebar [#12811](https://github.com/mixxxdj/mixxx/pull/12811) [#12788](https://github.com/mixxxdj/mixxx/issues/12788)
+* fixes around cratetablemodel, remove tracks + don't allow pasting tracks into locked playlists/crates or History [#12926](https://github.com/mixxxdj/mixxx/pull/12926)
+* Tootips: Improve `rate_up/down` tooltips, pitch vs. speed [#12590](https://github.com/mixxxdj/mixxx/pull/12590)
+* Shortkeys for track list management [#12020](https://github.com/mixxxdj/mixxx/pull/12020)
 
 ### Controller Mappings
 
-* Traktor Kontrol S2 MK3: Add colored hotcues [#4637](https://github.com/mixxxdj/mixxx/pull/4637)
 * Pioneer DDJ-FLX4: mapping improvements [#12842](https://github.com/mixxxdj/mixxx/pull/12842)
 
 ### Controller Backend
@@ -34,6 +38,8 @@
 * fix(qml): Improve knobs by applying selective 4xMSAA on the Arc shape [#12541](https://github.com/mixxxdj/mixxx/pull/12541)
 * Add QML interceptor to auto reload on file change [#12795](https://github.com/mixxxdj/mixxx/pull/12795)
 * Add multi-sampling settings for QML [#12546](https://github.com/mixxxdj/mixxx/pull/12546) [#12794](https://github.com/mixxxdj/mixxx/pull/12794) [#12536](https://github.com/mixxxdj/mixxx/issues/12536)
+* Install qml module on Windows [#12604](https://github.com/mixxxdj/mixxx/pull/12604)
+* Add scrolling waveforms [#3967](https://github.com/mixxxdj/mixxx/pull/3967)
 
 ### Update to Qt6
 
@@ -59,6 +65,7 @@
 * Fix track color background with Qt6 [#12380](https://github.com/mixxxdj/mixxx/pull/12380)
 * multi-line delegate: fix bg color, Qt6 on Linux [#12478](https://github.com/mixxxdj/mixxx/pull/12478)
 * Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6" [#12342](https://github.com/mixxxdj/mixxx/pull/12342)
+* Fix Tango waveform splitter [#12939](https://github.com/mixxxdj/mixxx/pull/12939)
 
 ### Experimental iOs support
 
@@ -77,6 +84,20 @@
 * MixxxApplication: Use QIOSIntegrationPlugin on iOS [#12666](https://github.com/mixxxdj/mixxx/pull/12666)
 * MacOsVersion: Rename to AppleOsVersion [#12662](https://github.com/mixxxdj/mixxx/pull/12662)
 * macOS: Add more `Q_OS_MACOS` cond-compiles where appropriate [#12663](https://github.com/mixxxdj/mixxx/pull/12663)
+
+### Experimental WebAssembly support
+
+* CMakeLists: Add support for targeting Emscripten/WebAssembly [#12918](https://github.com/mixxxdj/mixxx/pull/12918)
+* CMakeLists: Emit better errors for exotic target platforms [#12910](https://github.com/mixxxdj/mixxx/pull/12910)
+* Build: Add `PORTMIDI` flag for compiling with(out) PortMidi [#12913](https://github.com/mixxxdj/mixxx/pull/12913)
+* DesktopHelper: Compile out process-spawning on WASM too [#12916](https://github.com/mixxxdj/mixxx/pull/12916)
+* MixxxApplication: Use `QWasmIntegrationPlugin` when targeting WebAssembly [#12915](https://github.com/mixxxdj/mixxx/pull/12915)
+* CMakeLists: Enable asyncify when targeting WASM [#12921](https://github.com/mixxxdj/mixxx/pull/12921)
+* Resources: Bundle resources for preloading when targeting Emscripten/WASM [#12922](https://github.com/mixxxdj/mixxx/pull/12922)
+* CMakeLists: Add `WASM_ASSERTIONS` option [#12931](https://github.com/mixxxdj/mixxx/pull/12931)
+* VersionStore: Recognize Emscripten/WebAssembly [#12940](https://github.com/mixxxdj/mixxx/pull/12940)
+* OpenGLWindow: Fix sizing on Wasm by setting `Qt::FramelessWindowHint` [#12945](https://github.com/mixxxdj/mixxx/pull/12945)
+* CMakeLists: Require WebGL 2.0 when building for Wasm [#12952](https://github.com/mixxxdj/mixxx/pull/12952)
 
 ### Misc Refactorings
 
@@ -111,10 +132,18 @@
 * fix/History: remove obsolete placeholder playlists [#12494](https://github.com/mixxxdj/mixxx/pull/12494)
 * Add missing Taglib dependency [#12830](https://github.com/mixxxdj/mixxx/pull/12830)
 * fix: typo ;) [#12726](https://github.com/mixxxdj/mixxx/pull/12726)
+* refactor: avoid temporary qlist allocation on midi sysex receive [#12843](https://github.com/mixxxdj/mixxx/pull/12843)
+* SoundSourceMP3: fix unused function warning [#12847](https://github.com/mixxxdj/mixxx/pull/12847)
+* update libkeyfinder to 2.2.8 [#12853](https://github.com/mixxxdj/mixxx/pull/12853)
+* feat(ci): add eslint rule prefer-template [#12889](https://github.com/mixxxdj/mixxx/pull/12889)
+* Labeler: Add `qml` to labeler config [#12911](https://github.com/mixxxdj/mixxx/pull/12911)
+* WTrackMenu: Add missing wcoverartlabel.h include [#12924](https://github.com/mixxxdj/mixxx/pull/12924)
+* Fix clazy complains and naming [#12935](https://github.com/mixxxdj/mixxx/pull/12935)
 * Update to latest vcpkg dependencies
   [#11649](https://github.com/mixxxdj/mixxx/pull/11649)
   [#12512](https://github.com/mixxxdj/mixxx/pull/12512)
   [#12067](https://github.com/mixxxdj/mixxx/pull/12067)
+  [#12898](https://github.com/mixxxdj/mixxx/pull/12898)
 * GitHub actions updates
   [#11544](https://github.com/mixxxdj/mixxx/pull/11544)
   [#11508](https://github.com/mixxxdj/mixxx/pull/11508)
