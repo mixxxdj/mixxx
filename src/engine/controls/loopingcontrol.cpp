@@ -1228,15 +1228,18 @@ void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
 
 void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     clearActiveBeatLoop();
-    m_pBeats = pBeats;
-    if (m_pBeats) {
-        LoopInfo loopInfo = m_loopInfo.getValue();
-        if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
-            double loaded_loop_size = findBeatloopSizeForLoop(
-                    loopInfo.startPosition, loopInfo.endPosition);
-            if (loaded_loop_size != -1) {
-                m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
-            }
+    if (pBeats) {
+        m_pBeats = pBeats;
+    } else {
+        m_pBeats = getFake60BpmBeats();
+    }
+    // TODO All "if (m_pBeats)" checks are now obsolete actually...
+    LoopInfo loopInfo = m_loopInfo.getValue();
+    if (loopInfo.startPosition.isValid() && loopInfo.endPosition.isValid()) {
+        double loaded_loop_size = findBeatloopSizeForLoop(
+                loopInfo.startPosition, loopInfo.endPosition);
+        if (loaded_loop_size != -1) {
+            m_pCOBeatLoopSize->setAndConfirm(loaded_loop_size);
         }
     }
 }

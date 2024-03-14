@@ -246,16 +246,6 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeDisabled) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
 }
 
-TEST_F(LoopingControlTest, LoopInButton_QuantizeEnabledNoBeats) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
-    setCurrentPosition(mixxx::audio::FramePos{50});
-    m_pButtonLoopIn->set(1);
-    m_pButtonLoopIn->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{50}, m_pLoopStartPoint);
-}
-
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
@@ -282,17 +272,6 @@ TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
     m_pQuantizeEnabled->set(0);
     m_pClosestBeat->set(1000);
     m_pNextBeat->set(1000);
-    setCurrentPosition(mixxx::audio::FramePos{500});
-    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
-    m_pButtonLoopOut->set(1);
-    m_pButtonLoopOut->set(0);
-    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{500}, m_pLoopEndPoint);
-}
-
-TEST_F(LoopingControlTest, LoopOutButton_QuantizeEnabledNoBeats) {
-    m_pQuantizeEnabled->set(1);
-    m_pClosestBeat->set(-1);
-    m_pNextBeat->set(-1);
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
     m_pButtonLoopOut->set(1);
