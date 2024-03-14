@@ -247,6 +247,7 @@ TEST_F(LoopingControlTest, LoopInButton_QuantizeDisabled) {
 }
 
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -258,6 +259,7 @@ TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointOutsideLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopInButton_AdjustLoopInPointInsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -280,6 +282,7 @@ TEST_F(LoopingControlTest, LoopOutButton_QuantizeDisabled) {
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{1000}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -291,6 +294,7 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointOutsideLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
+    m_pQuantizeEnabled->set(0);
     m_pLoopStartPoint->set(mixxx::audio::FramePos{100}.toEngineSamplePos());
     m_pLoopEndPoint->set(mixxx::audio::FramePos{2000}.toEngineSamplePos());
     m_pButtonReloopToggle->set(1);
@@ -322,7 +326,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer(); // first process to schedule seek in a stopped deck
-    ProcessBuffer(); // them seek
+    ProcessBuffer(); // then seek
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     // Should adopt the loop size and enable the correct loop control
@@ -338,7 +342,7 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
     ProcessBuffer(); // first process to schedule seek in a stopped deck
-    ProcessBuffer(); // them seek
+    ProcessBuffer(); // then seek
     EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
@@ -410,6 +414,7 @@ TEST_F(LoopingControlTest, ReloopAndStopButton) {
 }
 
 TEST_F(LoopingControlTest, LoopScale_DoublesLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::kStartFramePos);
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
@@ -484,6 +489,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
@@ -535,6 +541,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
+    m_pQuantizeEnabled->set(0);
     setCurrentPosition(mixxx::audio::FramePos{500});
     m_pButtonLoopIn->set(1.0);
     m_pButtonLoopIn->set(0.0);
