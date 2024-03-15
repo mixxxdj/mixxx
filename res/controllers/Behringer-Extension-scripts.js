@@ -239,11 +239,12 @@
         isEnabled: function() { return this.id !== 0; },
         start: function() {
             this.reset();
+            var timer = this;
             this.id = engine.beginTimer(this.timeout, () => {
-                if (this.oneShot) {
-                    this.disable();
+                if (timer.oneShot) {
+                    timer.disable();
                 }
-                this.action.call(this.owner);
+                timer.action.call(timer.owner);
             }, this.oneShot);
         },
         reset: function() {
