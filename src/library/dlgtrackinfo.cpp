@@ -614,8 +614,13 @@ void DlgTrackInfo::saveTrack() {
     static_cast<void>(updateKeyText()); // discard result
 
     // Update the cached track
-    // The dialog is updated and repopulated by the Track::changed() signal.
-    m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
+    //
+    // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
+    // will be updated by the subsequent Track::changed() signal to keep them
+    // synchronized with the track. Otherwise the track has not been modified and
+    // both members must remain valid. Do not use std::move() for passing arguments!
+    // Else triggering apply twice in quick succession might clear the metadata.
+    m_pLoadedTrack->replaceRecord(m_trackRecord, m_pBeatsClone);
 }
 
 void DlgTrackInfo::clear() {
