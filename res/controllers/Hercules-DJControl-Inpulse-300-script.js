@@ -441,7 +441,7 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
 // Toneplay shift
 DJCi300.toneplayShift = function(channel, control, value, _status, group) {
     const deck = channel - 5;
-    const direction = (control === 0x4D) ? 1 : 0;
+    const direction = (control === 0x4B) ? 1 : 0;
 
     if (value === 0x7F) {
         // Shift the toneplay keyboard up or down (1 means up, 0 means down)
