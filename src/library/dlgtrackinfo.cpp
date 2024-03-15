@@ -452,8 +452,8 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     updateSpinBpmFromBeats();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
+    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot turn a BeatGrid to a BeatMap
+    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tap them
     bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
     if (track.isBpmLocked()) {
@@ -698,28 +698,28 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         return;
     }
 
-    if (!m_pBeatsClone) {
-        mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-        // This should never happen, but we cannot be sure
-        VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
-            cuePosition = mixxx::audio::kStartFramePos;
+    if (m_pLoadedTrack) {
+        if (m_pBeatsClone) {
+            const auto trackEndPosition = mixxx::audio::FramePos{
+                    m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+            const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
+                    mixxx::audio::kStartFramePos, trackEndPosition);
+            if (oldBpm == bpm) {
+                return;
+            }
+            m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
+        } else {
+            mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+            // This should never happen, but we cannot be sure
+            VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
+                cuePosition = mixxx::audio::kStartFramePos;
+            }
+            m_pBeatsClone = mixxx::Beats::fromConstTempo(
+                    m_pLoadedTrack->getSampleRate(),
+                    // Cue positions might be fractional, i.e. not on frame boundaries!
+                    cuePosition.toNearestFrameBoundary(),
+                    bpm);
         }
-        m_pBeatsClone = mixxx::Beats::fromConstTempo(
-                m_pLoadedTrack->getSampleRate(),
-                // Cue positions might be fractional, i.e. not on frame boundaries!
-                cuePosition.toNearestFrameBoundary(),
-                bpm);
-    }
-
-    if (m_pLoadedTrack && m_pBeatsClone) {
-        const auto trackEndPosition = mixxx::audio::FramePos{
-                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
-        const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
-                mixxx::audio::kStartFramePos, trackEndPosition);
-        if (oldBpm == bpm) {
-            return;
-        }
-        m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
     }
 
     updateSpinBpmFromBeats();
