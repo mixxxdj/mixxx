@@ -239,7 +239,7 @@
         isEnabled: function() { return this.id !== 0; },
         start: function() {
             this.reset();
-            var timer = this;
+            const timer = this;
             this.id = engine.beginTimer(this.timeout, () => {
                 if (timer.oneShot) {
                     timer.disable();
