@@ -7,7 +7,7 @@
 #include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
+#include "waveform/renderers/allshader/vectordata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 // On the use of QPainter:
@@ -118,7 +118,7 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 
     getRgbF(color, &r, &g, &b, &a);
 
-    VertexData vertices;
+    VectorData vertices;
     vertices.reserve(12); // 4 triangles
     vertices.addRectangle(posx1, posy1, posx2, posy2);
     vertices.addRectangle(posx1, posy4, posx2, posy3);

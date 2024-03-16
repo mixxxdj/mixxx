@@ -4,10 +4,10 @@
 #include <QVector>
 
 namespace allshader {
-class VertexData;
+class VectorData;
 }
 
-class allshader::VertexData {
+class allshader::VectorData {
     QVector<QVector2D> mData;
 
   public:

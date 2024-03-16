@@ -6,7 +6,6 @@
 
 #include "shaders/patternshader.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
 class QDomNode;
