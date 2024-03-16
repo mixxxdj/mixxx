@@ -58,6 +58,7 @@ DJCi300.kScratchActionScratch = 1;
 DJCi300.kScratchActionSeek = 2;
 
 // Pad modes
+DJCi300.padModeNone = -1;
 DJCi300.padModeHotcue = 0;
 DJCi300.padModeRoll = 1;
 DJCi300.padModeSlicer = 2;
@@ -107,9 +108,10 @@ DJCi300.init = function() {
     };
 
     // Pad mode
+    // Initialize to padModeNone
     DJCi300.padMode = {
-        1: DJCi300.padModeHotcue,
-        2: DJCi300.padModeHotcue
+        1: DJCi300.padModeNone,
+        2: DJCi300.padModeNone
     };
 
     // Toneplay offset (shifts the toneplay keyboard)
@@ -165,7 +167,7 @@ DJCi300.init = function() {
 	engine.getValue("[Master]", "VuMeterL", DJCi300.vuMeterUpdateMaster);
     engine.getValue("[Master]", "VuMeterR", DJCi300.vuMeterUpdateMaster);
 
-    // Connect the LED updates
+    // Connect the toneplay LED updates
     engine.makeConnection("[Channel1]", "pitch", DJCi300.updateToneplayLED);
     engine.makeConnection("[Channel2]", "pitch", DJCi300.updateToneplayLED);
 
