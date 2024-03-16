@@ -1831,7 +1831,7 @@ if(EMSCRIPTEN)
   # This will generate a mixxx.data file containing all the resources.
   # See https://emscripten.org/docs/porting/files/packaging_files.html
   # TODO: Strip this down by only including what we need (i.e. no macOS/Linux packaging, ...)
-  target_link_options(mixxx-lib PUBLIC --preload-file "${CMAKE_CURRENT_SOURCE_DIR}/res@/res")
+  target_link_options(mixxx-lib PUBLIC "--preload-file=${CMAKE_CURRENT_SOURCE_DIR}/res@/res")
 endif()
 
 if(WIN32)
