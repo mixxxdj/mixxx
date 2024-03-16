@@ -6,7 +6,7 @@
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
-#include "library/previewbuttondelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"

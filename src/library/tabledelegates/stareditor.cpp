@@ -1,4 +1,4 @@
-#include "library/stareditor.h"
+#include "library/tabledelegates/stareditor.h"
 
 #include <QItemSelectionModel>
 #include <QMouseEvent>
@@ -6,7 +6,7 @@
 #include <QTableView>
 
 #include "library/starrating.h"
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 #include "moc_stareditor.cpp"
 
 // We enable mouse tracking on the widget so we can follow the cursor even

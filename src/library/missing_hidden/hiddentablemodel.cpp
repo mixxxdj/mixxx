@@ -1,4 +1,4 @@
-#include "library/hiddentablemodel.h"
+#include "library/missing_hidden/hiddentablemodel.h"
 
 #include "library/dao/trackschema.h"
 #include "library/trackcollection.h"

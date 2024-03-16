@@ -1,10 +1,10 @@
-#include "library/stardelegate.h"
+#include "library/tabledelegates/stardelegate.h"
 
 #include <QTableView>
 
-#include "library/stareditor.h"
 #include "library/starrating.h"
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/stareditor.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 #include "moc_stardelegate.cpp"
 
 StarDelegate::StarDelegate(QTableView* pTableView)

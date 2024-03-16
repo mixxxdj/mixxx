@@ -3,7 +3,7 @@
 #include <QList>
 
 #include "library/coverart.h"
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/cache.h"
 

@@ -1,10 +1,10 @@
-#include "library/dlgmissing.h"
+#include "library/missing_hidden/dlgmissing.h"
 
 #include <QItemSelection>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
-#include "library/missingtablemodel.h"
+#include "library/missing_hidden/missingtablemodel.h"
 #include "moc_dlgmissing.cpp"
 #include "util/assert.h"
 #include "widget/wlibrary.h"

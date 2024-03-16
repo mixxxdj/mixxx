@@ -1,7 +1,6 @@
 #pragma once
 
-#include "library/tableitemdelegate.h"
-
+#include "library/tabledelegates/tableitemdelegate.h"
 
 class LocationDelegate : public TableItemDelegate {
     Q_OBJECT

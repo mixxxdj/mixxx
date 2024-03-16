@@ -1,4 +1,4 @@
-#include "library/colordelegate.h"
+#include "library/tabledelegates/colordelegate.h"
 
 #include <QPainter>
 #include <QStyle>

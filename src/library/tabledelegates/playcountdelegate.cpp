@@ -1,4 +1,4 @@
-#include "library/playcountdelegate.h"
+#include "library/tabledelegates/playcountdelegate.h"
 
 #include <QCheckBox>
 #include <QPainter>

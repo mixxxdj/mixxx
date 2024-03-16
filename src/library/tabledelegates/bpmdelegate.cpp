@@ -1,4 +1,4 @@
-#include "library/bpmdelegate.h"
+#include "library/tabledelegates/bpmdelegate.h"
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>

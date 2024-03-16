@@ -2,7 +2,7 @@
 
 #include <QPushButton>
 
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 

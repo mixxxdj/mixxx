@@ -1,6 +1,6 @@
 #pragma once
 
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 
 class QModelIndex;
 class QPainter;

@@ -1,4 +1,4 @@
-#include "library/locationdelegate.h"
+#include "library/tabledelegates/locationdelegate.h"
 
 #include <QPainter>
 

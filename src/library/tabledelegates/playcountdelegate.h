@@ -1,20 +1,19 @@
 #pragma once
 
-#include "library/tableitemdelegate.h"
+#include "library/tabledelegates/tableitemdelegate.h"
 
 class QCheckBox;
 
-class BPMDelegate : public TableItemDelegate {
+class PlayCountDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit BPMDelegate(QTableView* pTableView);
-    virtual ~BPMDelegate();
+    explicit PlayCountDelegate(QTableView* pTableView);
 
     void paintItem(QPainter* painter,
             const QStyleOptionViewItem& option,
             const QModelIndex& index) const override;
 
   private:
+    QTableView* m_pTableView;
     QCheckBox* m_pCheckBox;
-    QItemEditorFactory* m_pFactory;
 };
