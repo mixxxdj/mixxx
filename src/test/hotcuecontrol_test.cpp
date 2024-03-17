@@ -40,6 +40,8 @@ class HotcueControlTest : public BaseSignalPathTest {
         m_pHotcue2Enabled = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_enabled");
         m_pHotcue2Position = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_position");
         m_pHotcue2EndPosition = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_endposition");
+        m_pHotcue2Indicator = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_2_indicator");
+        m_pHotcue3Activate = std::make_unique<ControlProxy>(m_sGroup1, "hotcue_3_activate");
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
     }
 
@@ -118,6 +120,8 @@ class HotcueControlTest : public BaseSignalPathTest {
     std::unique_ptr<ControlProxy> m_pHotcue2Enabled;
     std::unique_ptr<ControlProxy> m_pHotcue2Position;
     std::unique_ptr<ControlProxy> m_pHotcue2EndPosition;
+    std::unique_ptr<ControlProxy> m_pHotcue2Indicator;
+    std::unique_ptr<ControlProxy> m_pHotcue3Activate;
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
 };
 
@@ -1542,4 +1546,65 @@ TEST_F(HotcueControlTest, SavedLoopUseLoopInOutWhileActive) {
     EXPECT_DOUBLE_EQ(static_cast<double>(HotcueControl::Status::Active), m_pHotcue1Enabled->get());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kStartFramePos, m_pHotcue1Position);
     EXPECT_FRAMEPOS_EQ_CONTROL(loopEndPosition, m_pHotcue1EndPosition);
+}
+
+TEST_F(HotcueControlTest, HotcueIndicatorTest) {
+    // Indicator should be activated only if
+    // * we jump to the hotcue (playing or stopped)
+    // * we cross the hotcue position while playing
+    // should not be activated if we jump over the hotcue
+    // Setup fake track with 120 bpm
+    createAndLoadFakeTrack();
+
+    constexpr mixxx::audio::FramePos hotcue1Pos(100);
+    constexpr mixxx::audio::FramePos hotcue2Pos(200);
+    constexpr mixxx::audio::FramePos hotcue3Pos(10000);
+
+    m_pQuantizeEnabled->set(0);
+
+    setCurrentFramePosition(hotcue2Pos);
+    ProcessBuffer();
+    m_pHotcue2Activate->set(1);
+    m_pHotcue2Activate->set(0);
+
+    setCurrentFramePosition(hotcue3Pos);
+    ProcessBuffer();
+    m_pHotcue3Activate->set(1);
+    m_pHotcue3Activate->set(0);
+
+    setCurrentFramePosition(hotcue1Pos);
+    ProcessBuffer();
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
+
+    // Start playing. we will cross hotcue2 and the indicator should be activated
+    m_pPlay->set(1);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(1.0, m_pHotcue2Indicator->get());
+    ProcessBuffer();
+    // Indicator should be reset in the next buffer process
+    EXPECT_DOUBLE_EQ(0.0, m_pHotcue2Indicator->get());
+
+    // Now go to hotcue1 and seek to hotcue3.
+    // Indicator should not be activated.
+    m_pPlay->set(0);
+    ProcessBuffer();
+    m_pHotcue3Activate->set(1);
+    m_pHotcue3Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, m_pHotcue2Indicator->get());
+
+    // Now jump backwards over hotcue2.
+    // Indicator should not be activated
+    ProcessBuffer();
+    m_pHotcue1Activate->set(1);
+    m_pHotcue1Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(0.0, m_pHotcue2Indicator->get());
+
+    // Jump to hotcue2, indicator should be activated
+    m_pHotcue2Activate->set(1);
+    m_pHotcue2Activate->set(0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(1.0, m_pHotcue2Indicator->get());
 }
