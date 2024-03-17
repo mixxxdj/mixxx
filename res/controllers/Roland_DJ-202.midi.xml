@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.1.0+">
+<MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
     <info>
         <name>Roland DJ-202</name>
         <author>Silvio Ankermann (Lykos153), Sebastian Reuße (eigengrau) and René Kraus (upCASE), Jhade Williamson (evoixmr), Sébastien Guyot (BSDguy389)</author>
@@ -1117,6 +1117,16 @@
                 </options>
             </control>
             <control>
+                <group>[Master]</group>
+                <key>headGain</key>
+                <description>MIDI Learned from 111 messages.</description>
+                <status>0xBF</status>
+                <midino>0x0C</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>DJ202.leftDeck.keylock.input</key>
                 <status>0x90</status>
@@ -1204,6 +1214,16 @@
                 <midino>0x0D</midino>
                 <options>
                     <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>headMix</key>
+                <description>MIDI Learned from 110 messages.</description>
+                <status>0xBF</status>
+                <midino>0x0D</midino>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
