@@ -143,7 +143,7 @@ function PioneerCDJController() {
         // bytes to get it working. Need to add a response packet
         // to input packets as well, if we receive acknowledgement
         packet = new HIDPacket("request_hid_mode", 0x1);
-        packet.addControl("hid","mode",0,"B",1);
+        packet.addOutput("hid","mode",0,"B",1);
         this.controller.registerOutputPacket(packet);
 
         // Control packet for screen text control
@@ -159,7 +159,7 @@ function PioneerCDJController() {
         for (var i=0;i<textlines;i++) {
             for (var c=0;c<chars;c++) {
                 var name = "line_"+(i+1)+"letter_"+(c+1);
-                packet.addControl("hid",name,offset++,"H");
+                packet.addOutput("hid",name,offset++,"H");
             }
         }
         //this.controller.registerOutputPacket(packet);
@@ -172,7 +172,7 @@ function PioneerCDJController() {
         var waveform_packet_datalen = 400;
         packet = new HIDPacket("waveform", 0x1, undefined, [0x2]);;
         for (var i=0;i<waveform_packet_datalen;i++)
-            packet.addControl("hid","byte_"+i,i,"B");
+            packet.addOutput("hid","byte_"+i,i,"B");
         //this.controller.registerOutputPacket(packet);
 
     }
