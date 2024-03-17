@@ -359,24 +359,24 @@ function WiimoteController() {
 
     this.registerOutputPackets = function() {
         packet = new HIDPacket("feedback", 0x11);
-        packet.addControl("state","rumble",1,"B",0x1);
-        packet.addControl("state","led_1",1,"B",0x10);
-        packet.addControl("state","led_2",1,"B",0x20);
-        packet.addControl("state","led_3",1,"B",0x40);
-        packet.addControl("state","led_4",1,"B",0x80);
+        packet.addOutput("state","rumble",1,"B",0x1);
+        packet.addOutput("state","led_1",1,"B",0x10);
+        packet.addOutput("state","led_2",1,"B",0x20);
+        packet.addOutput("state","led_3",1,"B",0x40);
+        packet.addOutput("state","led_4",1,"B",0x80);
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("setreportmode", 0x12);
-        packet.addControl("reportmode","continuous",1,"B",0x4);
-        packet.addControl("reportmode","code",2,"B");
+        packet.addOutput("reportmode","continuous",1,"B",0x4);
+        packet.addOutput("reportmode","code",2,"B");
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("ircamera", 0x13);
-        packet.addControl("ircontrol","enabled",1,"B",0x4);
+        packet.addOutput("ircontrol","enabled",1,"B",0x4);
         this.controller.registerOutputPacket(packet);
 
         packet = new HIDPacket("ircamerastate", 0x1a);
-        packet.addControl("irstate","enabled",1,"B",0x4);
+        packet.addOutput("irstate","enabled",1,"B",0x4);
         this.controller.registerOutputPacket(packet);
     }
 
