@@ -403,6 +403,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         for (int i = 2; i < m_decks.length(); ++i) {
             if (m_decks[i] && m_decks[i]->isPlaying()) {
                 // Keep the current state.
+                emitAutoDJStateChanged(m_eState);
                 emit autoDJError(ADJ_DECKS_3_4_PLAYING);
                 return ADJ_DECKS_3_4_PLAYING;
             }
