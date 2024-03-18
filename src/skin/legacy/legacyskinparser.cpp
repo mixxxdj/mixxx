@@ -1081,17 +1081,20 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
         return nullptr;
     }
 
+    bool isMainDeck = PlayerManager::isDeckGroup(group);
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
             m_pLibrary,
-            group);
+            group,
+            isMainDeck);
     setupLabelWidget(node, pTrackProperty);
 
     // Ensure 'show_track_menu' control is created for each main deck and
     // valueChangeRequest hook is set up.
-    // Only the first WTrackProperty that is created connects the signals.
-    if (PlayerManager::isDeckGroup(group)) {
+    if (isMainDeck) {
+        // Only the first WTrackProperty that is created connects the signals,
+        // for later attempts this returns false.
         if (pPlayer->isTrackMenuControlAvailable()) {
             connect(pPlayer,
                     &BaseTrackPlayer::trackMenuChangeRequest,
@@ -1143,7 +1146,8 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
             m_pParent,
             m_pConfig,
             m_pLibrary,
-            group);
+            group,
+            PlayerManager::isDeckGroup(group));
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);
     pGroup->Init();

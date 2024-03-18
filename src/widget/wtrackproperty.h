@@ -18,7 +18,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
             QWidget* pParent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
-            const QString& group);
+            const QString& group,
+            bool isMainDeck);
     ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
@@ -48,6 +49,7 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     const QString m_group;
     const UserSettingsPointer m_pConfig;
     Library* m_pLibrary;
+    const bool m_isMainDeck;
     TrackPointer m_pCurrentTrack;
     QString m_property;
 
