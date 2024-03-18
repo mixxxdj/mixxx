@@ -19,6 +19,7 @@
 * fixes around cratetablemodel, remove tracks + don't allow pasting tracks into locked playlists/crates or History [#12926](https://github.com/mixxxdj/mixxx/pull/12926)
 * Tootips: Improve `rate_up/down` tooltips, pitch vs. speed [#12590](https://github.com/mixxxdj/mixxx/pull/12590)
 * Shortkeys for track list management [#12020](https://github.com/mixxxdj/mixxx/pull/12020)
+* Track menu: rephrase "Reset" to "Clear" [#12955](https://github.com/mixxxdj/mixxx/pull/12955)
 
 ### Controller Mappings
 
@@ -28,6 +29,7 @@
 
 * Send sysex to all handlers [#12827](https://github.com/mixxxdj/mixxx/pull/12827)
 * Add control for showing a deck's track menu [#10825](https://github.com/mixxxdj/mixxx/pull/10825)
+* Removed old examples HID keyboard and HID trackpad [#12977](https://github.com/mixxxdj/mixxx/pull/12977)
 
 ### Experimental QML Skin
 
@@ -139,6 +141,9 @@
 * Labeler: Add `qml` to labeler config [#12911](https://github.com/mixxxdj/mixxx/pull/12911)
 * WTrackMenu: Add missing wcoverartlabel.h include [#12924](https://github.com/mixxxdj/mixxx/pull/12924)
 * Fix clazy complains and naming [#12935](https://github.com/mixxxdj/mixxx/pull/12935)
+* src/library: sort files into sub-directories [#12956](https://github.com/mixxxdj/mixxx/pull/12956)
+* CMakeLists: Fix deduplication trap with `--preload-file` [#12944](https://github.com/mixxxdj/mixxx/pull/12944)
+* Add CI runner that allows cleaning up the download server [#12957](https://github.com/mixxxdj/mixxx/pull/12957)
 * Update to latest vcpkg dependencies
   [#11649](https://github.com/mixxxdj/mixxx/pull/11649)
   [#12512](https://github.com/mixxxdj/mixxx/pull/12512)

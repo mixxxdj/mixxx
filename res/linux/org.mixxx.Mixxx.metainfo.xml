@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-03-12" timestamp="1710276479">
+    <release version="2.5.0" type="development" date="2024-03-13" timestamp="1710302656">
       <description>
  <p>
   Features
@@ -169,6 +169,10 @@
    Shortkeys for track list management
    #12020
   </li>
+  <li>
+   Track menu: rephrase "Reset" to "Clear"
+   #12955
+  </li>
  </ul>
  <p>
   Controller Mappings
@@ -190,6 +194,10 @@
   <li>
    Add control for showing a deck's track menu
    #10825
+  </li>
+  <li>
+   Removed old examples HID keyboard and HID trackpad
+   #12977
   </li>
  </ul>
  <p>
@@ -640,6 +648,19 @@
    #12935
   </li>
   <li>
+   src/library: sort files into sub-directories
+   #12956
+  </li>
+  <li>
+   CMakeLists: Fix deduplication trap with
+   --preload-file
+   #12944
+  </li>
+  <li>
+   Add CI runner that allows cleaning up the download server
+   #12957
+  </li>
+  <li>
    Update to latest vcpkg dependencies
    #11649
    #12512
@@ -683,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-03-12" timestamp="1710276479">
+    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710302656">
       <description>
  <p>
   Controller Mappings
