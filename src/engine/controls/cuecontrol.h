@@ -368,6 +368,7 @@ class CueControl : public EngineControl {
 
     // Position used to update hotcue indicators in updateIndicators()
     ControlValueAtomic<mixxx::audio::FramePos> m_prevPosition;
+    LoopInfo m_loopInfo; // clazy:exclude=fully-qualified-moc-types
 
     // Must be locked when using the m_pLoadedTrack and it's properties
     QT_RECURSIVE_MUTEX m_trackMutex;

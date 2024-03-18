@@ -2428,9 +2428,13 @@ void CueControl::slotLoopUpdated(const LoopInfo& loopInfo) {
     const auto endPosition = loopInfo.endPosition;
     const auto startPosition = loopInfo.startPosition;
     bool validLoop = false;
+    // Store LoopInfo, used for updating hotcue indicators in updateindicators().
     if (startPosition.isValid() && endPosition.isValid() &&
             startPosition < endPosition) {
         validLoop = true;
+        m_loopInfo = loopInfo;
+    } else {
+        m_loopInfo = LoopInfo();
     }
 
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
