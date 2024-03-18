@@ -101,6 +101,20 @@ class EngineControl : public QObject {
     FrameInfo frameInfo() const {
         return m_frameInfo.getValue();
     }
+
+    // Both Loopingcontrol and Cuecontrol need LoopInfo
+    enum class LoopSeekMode {
+        Changed, // force the playposition to be inside the loop after adjusting it.
+        MovedOut,
+        None,
+    };
+
+    struct LoopInfo {
+        mixxx::audio::FramePos startPosition;
+        mixxx::audio::FramePos endPosition;
+        LoopSeekMode seekMode;
+    };
+
     void seek(double fractionalPosition);
     void seekAbs(mixxx::audio::FramePos position);
     // Seek to an exact sample and don't allow quantizing adjustment.

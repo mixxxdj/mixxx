@@ -2420,8 +2420,15 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
     }
 }
 
-void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
-        mixxx::audio::FramePos endPosition) {
+void CueControl::slotLoopUpdated(const LoopInfo& loopInfo) {
+    const auto endPosition = loopInfo.endPosition;
+    const auto startPosition = loopInfo.startPosition;
+    bool validLoop = false;
+    if (startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
+        validLoop = true;
+    }
+
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2443,8 +2450,7 @@ void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
-            startPosition < endPosition) {
+    if (!validLoop) {
         return;
     }
 

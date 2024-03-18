@@ -213,7 +213,7 @@ class CueControl : public EngineControl {
   public slots:
     void slotLoopReset();
     void slotLoopEnabledChanged(bool enabled);
-    void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
+    void slotLoopUpdated(const LoopInfo& loopInfo); // clazy:exclude=fully-qualified-moc-types
 
   private slots:
     void quantizeChanged(double v);
