@@ -202,6 +202,8 @@ void CueControl::createControls() {
     m_pVinylControlEnabled = std::make_unique<ControlProxy>(m_group, "vinylcontrol_enabled");
     m_pVinylControlMode = std::make_unique<ControlProxy>(m_group, "vinylcontrol_mode");
 
+    m_pReverse = std::make_unique<ControlProxy>(m_group, "reverse");
+
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
     m_pHotcueFocusColorPrev = std::make_unique<ControlObject>(
@@ -2175,11 +2177,33 @@ void CueControl::updateIndicators() {
 
     // Update hotcue indicators: activate the indicator if we are at the cue pos
     // or if we passed it since the last update, else deactivate.
-    const auto prevPos = m_prevPosition.getValue();
+    auto prevPos = m_prevPosition.getValue();
     const auto currPos = frameInfo().currentPosition;
     VERIFY_OR_DEBUG_ASSERT(prevPos.isValid()) {
         m_prevPosition.setValue(currPos);
         return;
+    }
+
+    // If we're looping check if we just wrapped around.
+    // Since explicit seeks are reported in notifiySeek(), this is safe
+    // to detect the true loop wrap-around.
+    LoopInfo loopInfo = m_loopInfo;
+    bool loopingWrapAround = false;
+    bool loopingWrapAroundReverse = false;
+    // This covers both `reverse` and scratching backwards
+    bool reverse = getEngineBuffer()->getSpeed() < 0.0;
+    if (m_pLoopEnabled->toBool() &&
+            loopInfo.startPosition.isValid() &&
+            loopInfo.endPosition.isValid() &&
+            // Are we inside the current loop?
+            posInsideLoop(prevPos, loopInfo) &&
+            posInsideLoop(currPos, loopInfo)) {
+        // Check if we wrapped around
+        if (!reverse && prevPos > currPos) {
+            loopingWrapAround = true;
+        } else if (reverse && prevPos < currPos) {
+            loopingWrapAroundReverse = true;
+        }
     }
 
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
@@ -2187,13 +2211,29 @@ void CueControl::updateIndicators() {
         if (!cuePos.isValid()) {
             continue;
         }
-        if ((cuePos >= prevPos && cuePos <= currPos) ||     // forward
-                (cuePos <= prevPos && cuePos >= currPos)) { // reverse
-            pControl->setIndicator(1.0);
-        } else {
-            pControl->setIndicator(0.0);
+        double active = 0.0;
+        // If we just wrapped around, check if the cue is inside the
+        // processed frame ranges.
+        // Note: loop_end is considered outside the loop.
+        if (loopingWrapAround &&
+                // Hotcue inside loop?
+                posInsideLoop(cuePos, loopInfo) &&
+                (cuePos > prevPos || cuePos <= currPos)) {
+            active = 1.0;
+        } else if (loopingWrapAroundReverse &&
+                // Hotcue inside loop?
+                posInsideLoop(cuePos, loopInfo) &&
+                (cuePos < prevPos || cuePos >= currPos)) {
+            active = 1.0;
+        } else if (reverse && cuePos <= prevPos && cuePos >= currPos) {
+            active = 1.0;
+        } else if (!reverse && cuePos >= prevPos && cuePos <= currPos) {
+            active = 1.0;
         }
+
+        pControl->setIndicator(active);
     }
+
     m_prevPosition.setValue(currPos);
 }
 
@@ -2773,6 +2813,9 @@ void HotcueControl::setStatus(HotcueControl::Status status) {
 }
 
 void HotcueControl::setIndicator(double on) {
+    if (on == m_pHotcueIndicator->get()) {
+        return;
+    }
     m_pHotcueIndicator->forceSet(on);
     // TODO: check if we can squeez this into hotcue_N_status without too much effort.
     // IINM that would require reading e.g. m_pCurrentSavedLoopControl.
