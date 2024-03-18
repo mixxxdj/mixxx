@@ -9,6 +9,7 @@
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
+          m_defaultAngle(-1),
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
@@ -182,7 +183,12 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     arcPen.setCapStyle(m_arcPenCap);
 
     pPainter->setPen(arcPen);
-    if (m_arcUnipolar) {
+    if (defaultAngleIsValid()) {
+        // draw arc from default angle to current angle
+        pPainter->drawArc(rect,
+                static_cast<int>((90 - m_defaultAngle) * 16),
+                static_cast<int>((m_dCurrentAngle - m_defaultAngle) * -16));
+    } else if (m_arcUnipolar) {
         if (m_arcReversed) {
            // draw arc from maxAngle to current position
            pPainter->drawArc(rect,

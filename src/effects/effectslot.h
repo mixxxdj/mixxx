@@ -62,6 +62,8 @@ class EffectSlot : public QObject {
             EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
+    static constexpr double kDefaultMetaParameter = 0.5;
+
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
     }
