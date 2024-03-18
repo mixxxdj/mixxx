@@ -1171,11 +1171,6 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
         return nullptr;
     }
 
-    // Ensure stars_up/down controls are created and slots available.
-    // If they have already been created, existing connections were
-    // removed when the previous star widget was destroyed.
-    pPlayer->ensureStarControlsArePrepared();
-
     WStarRating* pStarRating = new WStarRating(m_pParent);
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
@@ -1184,14 +1179,10 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
             &BaseTrackPlayer::trackRatingChanged,
             pStarRating,
             &WStarRating::slotSetRating);
-    connect(pPlayer,
-            &BaseTrackPlayer::trackRatingChangeRequest,
-            pStarRating,
-            &WStarRating::slotRatingUpDownRequest);
     connect(pStarRating,
-            &WStarRating::ratingChanged,
+            &WStarRating::ratingChangeRequest,
             pPlayer,
-            &BaseTrackPlayer::slotSetTrackRating);
+            &BaseTrackPlayer::slotTrackRatingChangeRequest);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
