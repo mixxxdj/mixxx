@@ -25,10 +25,10 @@ jobs:
         if: env.SSH_AUTH_SOCK != null
         run: |
           mkdir empty_folder
-          echo snapshots/build-checks-fix/* >> include_file.txt
-          echo snapshots/build-checks-fix >> include_file.txt
-          rsync --verbose --times --recursive --include-from=include_file.txt --exclude=* --delete "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+          echo build-checks-fix/ >> include_file.txt
+          echo build-checks-fix/* >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
-          DESTDIR: public_html/downloads
+          DESTDIR: public_html/downloads/snapshots
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
