@@ -1214,8 +1214,6 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
             pActiveBeatLoop->deactivate();
         }
     }
-
-    emit loopEnabledChanged(enabled);
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {

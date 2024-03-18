@@ -116,6 +116,9 @@ CueControl::CueControl(const QString& group,
     m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
+    m_pLoopEnabled->connectValueChanged(this,
+            &CueControl::slotLoopEnabledChanged,
+            Qt::DirectConnection);
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
     m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
 
@@ -2397,7 +2400,8 @@ void CueControl::slotLoopReset() {
     setCurrentSavedLoopControlAndActivate(nullptr);
 }
 
-void CueControl::slotLoopEnabledChanged(bool enabled) {
+/// Check if we just toggled current saved loop and change its status accordingly
+void CueControl::slotLoopEnabledChanged(double value) {
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2413,7 +2417,7 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
                     mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                             m_pLoopEndPosition->get()));
 
-    if (enabled) {
+    if (value > 0.0) {
         pSavedLoopControl->setStatus(HotcueControl::Status::Active);
     } else {
         pSavedLoopControl->setStatus(HotcueControl::Status::Set);

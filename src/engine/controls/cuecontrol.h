@@ -212,7 +212,7 @@ class CueControl : public EngineControl {
 
   public slots:
     void slotLoopReset();
-    void slotLoopEnabledChanged(bool enabled);
+    void slotLoopEnabledChanged(double value);
     void slotLoopUpdated(const LoopInfo& loopInfo); // clazy:exclude=fully-qualified-moc-types
 
   private slots:
