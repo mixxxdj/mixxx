@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: "Set up SSH Agent"
-        if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+        if: env.SSH_PRIVATE_KEY != null
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
