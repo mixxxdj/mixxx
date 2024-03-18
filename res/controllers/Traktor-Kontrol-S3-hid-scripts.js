@@ -286,21 +286,16 @@ TraktorS3.Controller = class {
             engine.makeConnection(ch, "end_of_track",
                 TraktorS3.Channel.prototype.endOfTrackHandler.bind(chanob));
         }
+        // Set each InputReport to the bitwise inverted state first,
+        // and than apply the non-inverted initial state.
+        // This is done, because the common-hid-packet-parser only triggers
+        // the callback functions in case of a delta to the previous data.
+        for (let inputReportIdx = 0x01; inputReportIdx <= 0x02; ++inputReportIdx) {
+            const reportData = new Uint8Array(controller.getInputReport(inputReportIdx));
 
-        // Query the current values from the controller and set them. The packet
-        // parser ignores the first time a value is set, so we'll need to set it
-        // with different values once. Report 2 contains the state of the mixer
-        // controls.
-        const report2Values = new Uint8Array(controller.getInputReport(2));
-        TraktorS3.incomingData(new Uint8Array([2, ...Uint8Array.from(report2Values.map(x => ~x))]));
-        TraktorS3.incomingData(new Uint8Array([2, ...Uint8Array.from(report2Values)]));
-
-        // Report 1 is the state of the deck controls. These shouldn't have any
-        // initial effect, and most of these values will be 0 anyways. We'll
-        // just tell the packet parser the current values so it won't ignore the
-        // next input.
-        const report1Values = new Uint8Array(controller.getInputReport(1));
-        TraktorS3.incomingData(new Uint8Array([1, ...Uint8Array.from(report1Values)]));
+            TraktorS3.incomingData([inputReportIdx, ...reportData.map(x => ~x)]);
+            TraktorS3.incomingData([inputReportIdx, ...reportData]);
+        }
 
         // NOTE: Soft takeovers must only be enabled after setting the initial
         //       value, or the above line won't have any effect
@@ -527,7 +522,7 @@ TraktorS3.Controller = class {
             this.Channels[idx].linkOutputs();
         }
 
-        engine.makeConnection("[Microphone]", "pfl", this.pflOutput);
+        engine.makeConnection("[Microphone]", "pfl", this.pflOutput.bind(this));
 
         engine.makeConnection("[Skin]", "show_maximized_library", TraktorS3.Controller.prototype.maximizeLibraryOutput.bind(this));
 
@@ -539,7 +534,11 @@ TraktorS3.Controller = class {
         this.guiTickConnection = engine.makeConnection("[App]", "gui_tick_50ms_period_s", TraktorS3.Controller.prototype.guiTickHandler.bind(this));
 
         // Sampler callbacks
-        for (let i = 1; i <= 8; ++i) {
+        const samNum = TraktorS3.SixteenSamplers ? 16 : 8;
+        if (engine.getValue("[App]", "num_samplers") < samNum) {
+            engine.setValue("[App]", "num_samplers", samNum);
+        }
+        for (let i = 1; i <= samNum; ++i) {
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "track_loaded", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
             this.samplerCallbacks.push(engine.makeConnection("[Sampler" + i + "]", "play_indicator", TraktorS3.Controller.prototype.samplesOutput.bind(this)));
         }
@@ -980,7 +979,7 @@ TraktorS3.Deck = class {
                     if (this.syncPressedTimer !== 0) {
                         this.syncPressedTimer = 0;
                     }
-                }, this, true);
+                }, true);
 
                 // Light corresponding LED when button is pressed
                 this.colorOutput(1, "sync_enabled");

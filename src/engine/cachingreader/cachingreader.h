@@ -120,7 +120,9 @@ class CachingReader : public QObject {
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
-    void trackLoaded(TrackPointer pTrack, int trackSampleRate, double trackNumSamples);
+    void trackLoaded(TrackPointer pTrack,
+            mixxx::audio::SampleRate trackSampleRate,
+            double trackNumSamples);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:

@@ -15,6 +15,7 @@
 #include "preferences/broadcastprofile.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "util/fifo.h"
 
 // Forward declare libshout structures to prevent leaking shout.h definitions
 // beyond where they are needed.
@@ -22,8 +23,6 @@ typedef struct shout shout_t;
 typedef struct _util_dict shout_metadata_t;
 
 class QTextCodec;
-template<class DataType>
-class FIFO;
 
 class ShoutConnection
         : public QThread, public EncoderCallback, public NetworkOutputStreamWorker {

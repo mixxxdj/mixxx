@@ -23,7 +23,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-            "An gentle 2-band parametric equalizer based on biquad filters.\n"
+            "A gentle 2-band parametric equalizer based on biquad filters.\n"
             "It is designed as a complement to the steep mixing equalizers."));
     pManifest->setEffectRampsFromDry(true);
     pManifest->setIsMainEQ(true);
@@ -120,7 +120,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     }
 }
 
-void ParametricEQEffectGroupState::setFilters(int sampleRate) {
+void ParametricEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     for (int i = 0; i < kBandCount; i++) {
         m_bands[i]->setFrequencyCorners(
                 sampleRate, m_oldCenter[i], m_oldQ[i], m_oldGain[i]);

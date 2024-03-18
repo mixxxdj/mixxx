@@ -17,27 +17,41 @@
       <!-- Super/Mix knobs when parameters are hidden -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <Connection>
-              <ConfigKey>[Skin],show_superknobs</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
             <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                <SetVariable name="control">super1</SetVariable>
-                <SetVariable name="color">blue_gapless</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Connection>
+                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                    <SetVariable name="control">super1</SetVariable>
+                    <SetVariable name="color">blue_gapless</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
-              <!-- Spacer to vertically align with mix knob because of the mix mode button.-->
-              <WidgetGroup><Size>-1,20f</Size></WidgetGroup>
-
+              <WidgetGroup>
+                <ObjectName>AlignCenterCenter</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <EffectChainPresetButton>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                    <Size>22f,22f</Size>
+                    <ObjectName>EffectChainSelector</ObjectName>
+                  </EffectChainPresetButton>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
 
@@ -101,21 +115,16 @@
 
           <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
 
+          <!-- Super/Mix knobs when parameters are visible -->
           <WidgetGroup>
             <Layout>vertical</Layout>
-            <SizePolicy>min,me</SizePolicy>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
 
               <WidgetGroup>
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                    <SetVariable name="control">mix</SetVariable>
-                    <SetVariable name="color">purple_gapless</SetVariable>
-                  </Template>
-
                   <Template src="skin:left_2state_button.xml">
                     <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
                     <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
@@ -127,24 +136,46 @@
                     <SetVariable name="state_1_pressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
                     <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
                   </Template>
+
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="control">mix</SetVariable>
+                    <SetVariable name="color">purple_gapless</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
+
               <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
-                  <Template src="skin:knob.xml">
-                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                    <SetVariable name="control">super1</SetVariable>
-                    <SetVariable name="color">blue_gapless</SetVariable>
-                  </Template>
-                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+                  <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
+                  <EffectChainPresetButton>
+                    <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
+                    <Size>24f,24f</Size>
+                  </EffectChainPresetButton>
+
+                  <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Connection>
+                      <ConfigKey>[Skin],show_superknobs</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+                      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+                      <Template src="skin:knob.xml">
+                        <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
+                        <SetVariable name="control">super1</SetVariable>
+                        <SetVariable name="color">blue_gapless</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+
                 </Children>
               </WidgetGroup>
             </Children>

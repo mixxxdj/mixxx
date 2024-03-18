@@ -13,6 +13,7 @@
 #include "mixer/playerinfo.h"
 #include "moc_setlogfeature.cpp"
 #include "track/track.h"
+#include "util/make_const_iterator.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
@@ -43,8 +44,18 @@ SetlogFeature::SetlogFeature(
     // remove unneeded entries
     deleteAllUnlockedPlaylistsWithFewerTracks();
 
-    // Create empty placeholder playlist for YEAR items
     QString placeholderName = "historyPlaceholder";
+    // remove previously created placeholder playlists
+    const QList<QPair<int, QString>> pls = m_playlistDao.getPlaylists(PlaylistDAO::PLHT_UNKNOWN);
+    QStringList plsToDelete;
+    for (const QPair<int, QString>& pl : pls) {
+        if (pl.second.startsWith(placeholderName)) {
+            plsToDelete.append(QString::number(pl.first));
+        }
+    }
+    m_playlistDao.deletePlaylists(plsToDelete);
+
+    // Create empty placeholder playlist for YEAR items
     m_yearNodeId = m_playlistDao.createUniquePlaylist(&placeholderName,
             PlaylistDAO::PLHT_UNKNOWN);
     DEBUG_ASSERT(m_yearNodeId != kInvalidPlaylistId);
@@ -61,7 +72,7 @@ SetlogFeature::SetlogFeature(
             this,
             &SetlogFeature::slotJoinWithPrevious);
 
-    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played)"), this);
+    m_pMarkTracksPlayedAction = new QAction(tr("Mark all tracks played"), this);
     connect(m_pMarkTracksPlayedAction,
             &QAction::triggered,
             this,
@@ -97,8 +108,10 @@ SetlogFeature::SetlogFeature(
 
 SetlogFeature::~SetlogFeature() {
     // Clean up history when shutting down in case the track threshold changed,
-    // incl. the empty placeholder playlist and potentially empty current playlist
+    // incl. potentially empty current playlist
     deleteAllUnlockedPlaylistsWithFewerTracks();
+    // Delete the placeholder
+    m_playlistDao.deletePlaylist(m_yearNodeId);
 }
 
 QVariant SetlogFeature::title() {
@@ -106,13 +119,13 @@ QVariant SetlogFeature::title() {
 }
 
 void SetlogFeature::bindLibraryWidget(
-        WLibrary* libraryWidget, KeyboardEventFilter* keyboard) {
-    BasePlaylistFeature::bindLibraryWidget(libraryWidget, keyboard);
+        WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    BasePlaylistFeature::bindLibraryWidget(pLibraryWidget, pKeyboard);
     connect(&PlayerInfo::instance(),
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &SetlogFeature::slotPlayingTrackChanged);
-    m_libraryWidget = QPointer(libraryWidget);
+    m_pLibraryWidget = QPointer(pLibraryWidget);
 }
 
 void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
@@ -213,14 +226,42 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 /// Use a custom model in the history for grouping by year
 /// @param selectedId row which should be selected
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
-    // qDebug() << "SetlogFeature::constructChildModel() id:" << selectedId;
+    // qDebug() << "SetlogFeature::constructChildModel() selected:" << selectedId;
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollectionManager()->internalCollection()->database());
-    playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=" + QString::number(PlaylistDAO::PLHT_SET_LOG));
-    playlistTableModel.setSort(
-            playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
+    QSqlDatabase database =
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
+
+    QString queryString = QStringLiteral(
+            "CREATE TEMPORARY VIEW IF NOT EXISTS SetlogCountsDurations "
+            "AS SELECT "
+            "  Playlists.id AS id, "
+            "  Playlists.name AS name, "
+            "  Playlists.date_created AS date_created, "
+            "  LOWER(Playlists.name) AS sort_name, "
+            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+            "    AS count, "
+            "  SUM(case library.mixxx_deleted "
+            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "FROM Playlists "
+            "LEFT JOIN PlaylistTracks "
+            "  ON PlaylistTracks.playlist_id = Playlists.id "
+            "LEFT JOIN library "
+            "  ON PlaylistTracks.track_id = library.id "
+            "  WHERE Playlists.hidden = %1 "
+            "  GROUP BY Playlists.id")
+                                  .arg(QString::number(PlaylistDAO::HiddenType::PLHT_SET_LOG));
+    queryString.append(
+            mixxx::DbConnection::collateLexicographically(
+                    " ORDER BY sort_name"));
+    QSqlQuery query(database);
+    if (!query.exec(queryString)) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, database);
+    playlistTableModel.setTable("SetlogCountsDurations");
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -229,6 +270,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     int nameColumn = record.indexOf("name");
     int idColumn = record.indexOf("id");
     int createdColumn = record.indexOf("date_created");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
 
     // Nice to have: restore previous expanded/collapsed state of YEAR items
     clearChildModel();
@@ -250,8 +293,16 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 playlistTableModel
                         .data(playlistTableModel.index(row, createdColumn))
                         .toDateTime();
+        int count = playlistTableModel
+                            .data(playlistTableModel.index(row, countColumn))
+                            .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(row, durationColumn))
+                        .toInt();
+        QString label = createPlaylistLabel(name, count, duration);
 
-        // Create the TreeItem whose parent is the invisible root item
+        // Create the TreeItem whose parent is the invisible root item.
         // Show only [kNumToplevelHistoryEntries] recent playlists at the top level
         // before grouping them by year.
         if (row >= kNumToplevelHistoryEntries) {
@@ -273,12 +324,12 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
                 itemList.push_back(std::move(pNewGroupItem));
             }
 
-            TreeItem* pItem = pGroupItem->appendChild(name, id);
+            TreeItem* pItem = pGroupItem->appendChild(label, id);
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem, id);
         } else {
             // add most recent top-level playlist
-            auto pItem = std::make_unique<TreeItem>(name, id);
+            auto pItem = std::make_unique<TreeItem>(label, id);
             pItem->setBold(m_playlistIdsOfSelectedTrack.contains(id));
             decorateChild(pItem.get(), id);
 
@@ -389,10 +440,10 @@ void SetlogFeature::slotJoinWithPrevious() {
 
     // Right-clicked playlist may not be loaded. Use a temporary model to
     // keep sidebar selection and table view in sync
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(previousPlaylistId);
 
     if (clickedPlaylistId == m_currentPlaylistId) {
@@ -437,10 +488,10 @@ void SetlogFeature::slotMarkAllTracksPlayed() {
 
     // Right-clicked playlist may not be loaded. Use a temporary model to
     // keep sidebar selection and table view in sync
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-            new PlaylistTableModel(this,
+    std::unique_ptr<PlaylistTableModel> pPlaylistTableModel =
+            std::make_unique<PlaylistTableModel>(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export");
     pPlaylistTableModel->selectPlaylist(clickedPlaylistId);
     // mark all the Tracks in the previous Playlist as played
     pPlaylistTableModel->select();
@@ -558,14 +609,15 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
     if (currentPlayingTrackId.isValid()) {
         // Remove the track from the recent tracks list if it's present and put
         // at the front of the list.
-        auto it = std::find(std::begin(m_recentTracks),
-                std::end(m_recentTracks),
+        const auto it = std::find(
+                m_recentTracks.cbegin(),
+                m_recentTracks.cend(),
                 currentPlayingTrackId);
-        if (it == std::end(m_recentTracks)) {
+        if (it == m_recentTracks.cend()) {
             track_played_recently = false;
         } else {
             track_played_recently = true;
-            m_recentTracks.erase(it);
+            constErase(&m_recentTracks, it);
         }
         m_recentTracks.push_front(currentPlayingTrackId);
 
@@ -598,9 +650,9 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
         // View needs a refresh
 
         bool hasActiveView = false;
-        if (m_libraryWidget) {
+        if (m_pLibraryWidget) {
             WTrackTableView* view = dynamic_cast<WTrackTableView*>(
-                    m_libraryWidget->getActiveView());
+                    m_pLibraryWidget->getActiveView());
             if (view != nullptr) {
                 // We have a active view on the history. The user may have some
                 // important active selection. For example putting track into crates

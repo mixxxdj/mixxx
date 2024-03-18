@@ -457,6 +457,9 @@ TraktorS2MK2.lightDeck = function(group) {
 };
 
 TraktorS2MK2.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     if (!(ShiftCueButtonAction === "REWIND" || ShiftCueButtonAction === "REVERSEROLL")) {
         throw new Error("ShiftCueButtonAction must be either \"REWIND\" or \"REVERSEROLL\"\n" +
             "ShiftCueButtonAction is: " + ShiftCueButtonAction);

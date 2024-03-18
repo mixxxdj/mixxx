@@ -7,12 +7,10 @@ namespace mixxx {
 
 ScreensaverManager::ScreensaverManager(UserSettingsPointer pConfig, QObject* pParent)
         : QObject(pParent), m_pConfig(pConfig) {
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);
-    if (inhibit == -1) {
-        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
-        pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit);
-    }
-    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
+    m_inhibitScreensaver =
+            pConfig->getValue(ConfigKey("[Config]", "InhibitScreensaver"),
+                    mixxx::ScreenSaverPreference::PREVENT_ON);
+    pConfig->setValue(ConfigKey("[Config]", "InhibitScreensaver"), m_inhibitScreensaver);
     if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
         mixxx::ScreenSaverHelper::inhibit();
     }
@@ -29,15 +27,12 @@ void ScreensaverManager::setStatus(mixxx::ScreenSaverPreference newInhibit) {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
-    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    } else if (newInhibit ==
-                    mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
-            PlayerInfo::instance().getCurrentPlayingDeck() != -1) {
+    if (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON ||
+            (newInhibit == mixxx::ScreenSaverPreference::PREVENT_ON_PLAY &&
+                    PlayerInfo::instance().getCurrentPlayingDeck() != -1)) {
         mixxx::ScreenSaverHelper::inhibit();
     }
-    int inhibit_int = static_cast<int>(newInhibit);
-    m_pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit_int);
+    m_pConfig->setValue(ConfigKey("[Config]", "InhibitScreensaver"), newInhibit);
     m_inhibitScreensaver = newInhibit;
 }
 

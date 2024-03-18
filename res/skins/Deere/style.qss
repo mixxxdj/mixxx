@@ -167,6 +167,10 @@
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
 
+#AlignCenterCenter {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
@@ -222,10 +226,17 @@ WLibrarySidebar {
   selection-background-color: #006596;
 }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
+
 /* Selected rows in Tree and Tracks table */
 WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #D6D6D6;
   background-color: #006596;
 }
@@ -243,11 +254,14 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #D6D6D6;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
 WTrackTableView:focus,
@@ -273,10 +287,10 @@ WBeatSpinBox,
 }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked {
+#LibraryPlayedCheckbox::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
 }
-WTrackTableView::indicator:checked {
+#LibraryPlayedCheckbox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
@@ -828,7 +842,6 @@ WNumber, WNumberPos,
 WPushButton,
 WKey,
 WTime,
-WTrackText,
 WTrackProperty,
 WRecordingDuration,
 QSpinBox,
@@ -1212,11 +1225,26 @@ WBeatSpinBox,
 }
 
 #EffectUnitToggle[value="0"] {
-  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_more_48px.svg) no-repeat top right;
 }
 
 #EffectUnitToggle[value="1"] {
-  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_less_48px.svg) no-repeat top right;
+}
+
+WEffectChainPresetButton {
+  padding: 0px;
+  border:  none;
+  border-radius: 2px;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-position: center center;
+  subcontrol-origin: margin;
+  padding: 0px;
+  border: 0px;
+  outline: none;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
 }
 
 #EffectUnitFiller {
@@ -1255,7 +1283,7 @@ WBeatSpinBox,
   border: 1px solid #222222;
   border-width: 0px 0px 0px 1px;
   qproperty-layoutSpacing: 2;
-  padding: 0px 0px 3px 0px;
+  padding: 0px 0px 1px 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #333; /*
   background-color: #664971;  */
@@ -1330,7 +1358,7 @@ WBeatSpinBox,
 }
 
 #Crossfader[highlight="1"] {
-  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
+  border-image: url(skin:/../Deere/slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
 #MainControls {
@@ -1602,7 +1630,8 @@ WWidgetGroup {
  ** Buttons  *******************************************************************
  *******************************************************************************/
 
-WPushButton {
+WPushButton,
+WEffectChainPresetButton {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1611,7 +1640,8 @@ WPushButton {
 }
 
 WPushButton:hover,
-#PlayToggle:hover {
+#PlayToggle:hover,
+WEffectChainPresetButton:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;
@@ -1651,6 +1681,12 @@ WPushButton[value="2"]:hover,
 
 #HotcueButton[light="true"] {
     color: #1f1e1e;
+}
+#HotcueButton[light="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_dark_48px.svg) no-repeat center center;
+}
+#HotcueButton[dark="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_light_48px.svg) no-repeat center center;
 }
 
 #PlayToggle {
@@ -1960,7 +1996,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2015,8 +2051,9 @@ WSearchLineEdit QAbstractScrollArea,
   #MainMenu QMenu::indicator:unchecked:selected,
   WLibrarySidebar QMenu::item:selected,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
-  WTrackTableViewHeader QMenu::item:selected,
-  WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu QCheckBox:selected,
+  WTrackTableViewHeader QMenu QCheckBox:focus,
+  WTrackTableViewHeader QMenu QCheckBox:hover,
   WLibraryTextBrowser QMenu::item:selected,
   WTrackMenu::item:selected,
   WTrackMenu QMenu::item:selected,
@@ -2225,7 +2262,7 @@ QPlainTextEdit QMenu::separator {
 }
 
 WLibrarySidebar QMenu::indicator,
-WTrackTableViewHeader QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #555;
   border-radius: 1px;
@@ -2237,7 +2274,7 @@ WTrackMenu QMenu QCheckBox::indicator {
 QLineEdit QMenu::icon:selected,
 QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
-WTrackTableViewHeader QMenu::indicator:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
   border: 1px solid #999;
 }
@@ -2257,6 +2294,7 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
   background-color: #333;
 }
 WLibrarySidebar QMenu::indicator:checked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
 }

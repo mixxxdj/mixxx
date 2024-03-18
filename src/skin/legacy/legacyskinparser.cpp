@@ -27,9 +27,7 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "waveform/vsyncthread.h"
-#endif
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -72,22 +70,17 @@
 #include "widget/wsizeawarestack.h"
 #include "widget/wskincolor.h"
 #include "widget/wslidercomposed.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wspinny.h"
 #include "widget/wspinnyglsl.h"
-#endif
 #include "widget/wsplitter.h"
 #include "widget/wstarrating.h"
 #include "widget/wstatuslight.h"
 #include "widget/wtime.h"
 #include "widget/wtrackproperty.h"
-#include "widget/wtracktext.h"
 #include "widget/wtrackwidgetgroup.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "widget/wvumeter.h"
 #include "widget/wvumeterglsl.h"
 #include "widget/wvumeterlegacy.h"
-#endif
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
 #include "widget/wwidgetgroup.h"
@@ -325,7 +318,7 @@ Qt::MouseButton LegacySkinParser::parseButtonState(const QDomNode& node,
 }
 
 QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) {
-    ScopedTimer timer("SkinLoader::parseSkin");
+    ScopedTimer timer(u"SkinLoader::parseSkin");
     qDebug() << "LegacySkinParser loading skin:" << skinPath;
 
     m_pContext = std::make_unique<SkinContext>(m_pConfig, skinPath + "/skin.xml");
@@ -397,6 +390,17 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
             }
         }
     }
+
+    // This enables file paths like 'skins:Deere/some_template.xml',
+    // in addition to relative paths like 'skins:Deere/some_template.xml'
+    // Note: Here we assume this path exists. If it doesn't SkinLoader::getSkinSearchPaths()
+    // would have already triggered an error message.
+    // Note: we may also add the user skins path, in case there are custom skins
+    // that use the same template inheritance scheme like official skins, but we
+    // don't because unfortunately there is no reliable way to apply equivalent
+    // path replacement in stylesheetAbsIconPaths().
+    QString systemSkinsPath(m_pConfig->getResourcePath() + "skins/");
+    QDir::setSearchPaths("skins", QStringList{systemSkinsPath});
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style, m_pContext.get());
 
@@ -965,11 +969,11 @@ void LegacySkinParser::setupLabelWidget(const QDomElement& element, WLabel* pLab
 }
 
 QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1007,15 +1011,14 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
     connect(pPlayer, &BaseTrackPlayer::loadingTrack, overviewWidget, &WOverview::slotLoadingTrack);
 
     return overviewWidget;
-#endif
 }
 
 QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     QString group = lookupNodeGroup(node);
     BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
     if (!pPlayer) {
@@ -1057,37 +1060,17 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
 
     return viewer;
-#endif
 }
 
 QWidget* LegacySkinParser::parseText(const QDomElement& node) {
     QString group = lookupNodeGroup(node);
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(group);
-    if (!pPlayer) {
-        SKIN_WARNING(node, *m_pContext, QStringLiteral("No player found for group:").arg(group));
-        return nullptr;
+    if (group.isEmpty()) {
+        // use WLabel, try to parse 'Text' node
+        return parseLabelWidget<WLabel>(node);
+    } else {
+        // use WTrackProperty to show a track tag / file name
+        return parseTrackProperty(node);
     }
-
-    WTrackText* pTrackText = new WTrackText(m_pParent,
-            m_pConfig,
-            m_pLibrary,
-            group);
-    setupLabelWidget(node, pTrackText);
-
-    connect(pPlayer, &BaseTrackPlayer::newTrackLoaded, pTrackText, &WTrackText::slotTrackLoaded);
-    connect(pPlayer, &BaseTrackPlayer::loadingTrack, pTrackText, &WTrackText::slotLoadingTrack);
-    connect(pTrackText,
-            &WTrackText::trackDropped,
-            m_pPlayerManager,
-            &PlayerManager::slotLoadLocationToPlayerMaybePlay);
-    connect(pTrackText, &WTrackText::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
-
-    TrackPointer pTrack = pPlayer->getLoadedTrack();
-    if (pTrack) {
-        pTrackText->slotTrackLoaded(pTrack);
-    }
-
-    return pTrackText;
 }
 
 QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
@@ -1104,6 +1087,24 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
             m_pLibrary,
             group);
     setupLabelWidget(node, pTrackProperty);
+
+    // Ensure 'show_track_menu' control is created for each main deck and
+    // valueChangeRequest hook is set up.
+    // Only the first WTrackProperty that is created connects the signals.
+    if (PlayerManager::isDeckGroup(group)) {
+        if (pPlayer->isTrackMenuControlAvailable()) {
+            connect(pPlayer,
+                    &BaseTrackPlayer::trackMenuChangeRequest,
+                    pTrackProperty,
+                    &WTrackProperty::slotShowTrackMenuChangeRequest,
+                    Qt::DirectConnection);
+            connect(pTrackProperty,
+                    &WTrackProperty::setAndConfirmTrackMenuControl,
+                    pPlayer,
+                    &BaseTrackPlayer::slotSetAndConfirmTrackMenuControl,
+                    Qt::DirectConnection);
+        }
+    }
 
     connect(pPlayer,
             &BaseTrackPlayer::newTrackLoaded,
@@ -1180,7 +1181,12 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
         return nullptr;
     }
 
-    WStarRating* pStarRating = new WStarRating(group, m_pParent);
+    // Ensure stars_up/down controls are created and slots available.
+    // If they have already been created, existing connections were
+    // removed when the previous star widget was destroyed.
+    pPlayer->ensureStarControlsArePrepared();
+
+    WStarRating* pStarRating = new WStarRating(m_pParent);
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
 
@@ -1188,6 +1194,10 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
             &BaseTrackPlayer::trackRatingChanged,
             pStarRating,
             &WStarRating::slotSetRating);
+    connect(pPlayer,
+            &BaseTrackPlayer::trackRatingChangeRequest,
+            pStarRating,
+            &WStarRating::slotRatingUpDownRequest);
     connect(pStarRating,
             &WStarRating::ratingChanged,
             pPlayer,
@@ -1288,11 +1298,11 @@ QWidget* LegacySkinParser::parseRecordingDuration(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     if (CmdlineArgs::Instance().getSafeMode()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Mixxx is running in safe mode.
@@ -1363,15 +1373,14 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     pSpinny->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
     pSpinny->Init();
     return pSpinny;
-#endif
 }
 
 QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    Q_UNUSED(node);
-
-    return nullptr;
-#else
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        return nullptr;
+    }
+#endif
     auto* pWaveformWidgetFactory = WaveformWidgetFactory::instance();
     if (CmdlineArgs::Instance().getUseLegacyVuMeter() ||
             (!pWaveformWidgetFactory->isOpenGlAvailable() &&
@@ -1429,7 +1438,6 @@ QWidget* LegacySkinParser::parseVuMeter(const QDomElement& node) {
     pVuMeterWidget->Init();
 
     return pVuMeterWidget;
-#endif
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
@@ -1556,6 +1564,12 @@ QWidget* LegacySkinParser::parseLibrary(const QDomElement& node) {
                     mixxx::library::prefs::kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     BaseTrackTableModel::setBpmColumnPrecision(bpmColumnPrecision);
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    BaseTrackTableModel::setApplyPlayedTrackColor(applyPlayedTrackColor);
 
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary,
@@ -2486,11 +2500,13 @@ QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
 }
 
 QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
-    // Workaround for https://bugs.kde.org/show_bug.cgi?id=434451 which renders
-    // relative SVG icon paths in external stylesheets unusable:
+    // Initially, this was a Workaround for https://bugs.kde.org/show_bug.cgi?id=434451
+    // which renders relative SVG icon paths in external stylesheets unusable:
     // Replaces relative icon urls in stylesheets (external qss or inline
     // <Style> nodes) with absolute file paths.
-    // TODO Can be removed/disabled as soon as all target distros have the fixed
-    // package in their repo.
+    // Now this also replaces the 'skins:' alias which allows skin mods in the
+    // user skins directory to use image urls referencing files in the system
+    // skins directory for the launch image style.
+    style.replace("url(skins:", "url(" + m_pConfig->getResourcePath() + "skins/");
     return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
 }

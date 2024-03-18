@@ -422,7 +422,7 @@ SingleDoubleBtn.prototype.buttonDown = function(channel, control, value, status,
     this.group = group;
 
     if (this.buttonTimer === 0) { // first press
-        this.buttonTimer = engine.beginTimer(this.doublePressTimeOut, this.buttonDecide, true);
+        this.buttonTimer = engine.beginTimer(this.doublePressTimeOut, this.buttonDecide.bind(this), true);
         this.buttonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.buttonTimer);
@@ -486,7 +486,7 @@ LongShortBtn.prototype.buttonDown = function(channel, control, value, status, gr
     this.status = status;
     this.group = group;
     this.buttonLongPress = false;
-    this.buttonLongPressTimer = engine.beginTimer(this.longPressThreshold, this.buttonAssertLongPress, true);
+    this.buttonLongPressTimer = engine.beginTimer(this.longPressThreshold, this.buttonAssertLongPress.bind(this), true);
 };
 
 LongShortBtn.prototype.buttonUp = function() {
@@ -576,11 +576,11 @@ LongShortDoubleBtn.prototype.buttonDown = function(channel, control, value, stat
         this.buttonLongPress = false;
 
         this.buttonLongPressTimer = engine.beginTimer(
-            this.longPressThreshold, this.buttonAssertLongPress, true
+            this.longPressThreshold, this.buttonAssertLongPress.bind(this), true
         );
 
         this.buttonTimer = engine.beginTimer(
-            this.doublePressTimeOut, this.buttonAssert1Press, true
+            this.doublePressTimeOut, this.buttonAssert1Press.bind(this), true
         );
 
     } else if (this.buttonCount === 1) { // 2nd press (before short timer's out)
@@ -889,6 +889,9 @@ NumarkMixtrack3.init = function(id, debug) {
         NumarkMixtrack3.decks["D" + i] = new NumarkMixtrack3.deck(i);
     }
 
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     // initialize 8 samplers
     for (var i = 1; i <= 8; i++) {
         NumarkMixtrack3.samplers["S" + i] = new NumarkMixtrack3.sampler(i);

@@ -26,6 +26,16 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     } else {
         return std::pow(invalue, 2.0f * 0.316f);
     }
+
+    // According to this discussion
+    // https://github.com/mixxxdj/mixxx/issues/6352
+    // it looks like this scaling is done to accentuate
+    // low level information.
+
+    // This scaling can be undone with a function in
+    //  waveform/renderers/waveformrenderersignalbase.h
+    // but arguable it would be better not to do this scaling here at all
+    // and do it (or not) at the waveform renderer side.
 }
 
 struct WaveformStride {

@@ -1,5 +1,6 @@
 #include "mixer/microphone.h"
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "engine/channels/enginemicrophone.h"
 #include "engine/enginemixer.h"
@@ -18,7 +19,10 @@ Microphone::Microphone(PlayerManager* pParent,
     EngineMicrophone* pMicrophone =
             new EngineMicrophone(channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
-    AudioInput micInput = AudioInput(AudioPathType::Microphone, 0, 2, index);
+    AudioInput micInput = AudioInput(AudioPathType::Microphone,
+            0,
+            mixxx::audio::ChannelCount::stereo(),
+            index);
     pSoundManager->registerInput(micInput, pMicrophone);
 
     m_pInputConfigured = make_parented<ControlProxy>(group, "input_configured", this);

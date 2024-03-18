@@ -102,6 +102,7 @@ class MixxxMainWindow : public QMainWindow {
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();
+    void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
@@ -115,6 +116,9 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+#ifndef __APPLE__
+    Qt::WindowStates m_prevState;
+#endif
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;

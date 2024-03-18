@@ -26,6 +26,8 @@ extern const ConfigKey kEnableSearchHistoryShortcutsConfigKey;
 
 extern const ConfigKey kBpmColumnPrecisionConfigKey;
 
+extern const ConfigKey kApplyPlayedTrackColorConfigKey;
+
 extern const ConfigKey kEditMetadataSelectedClickConfigKey;
 
 extern const ConfigKey kHistoryMinTracksToKeepConfigKey;
@@ -47,6 +49,10 @@ extern const ConfigKey kSyncSeratoMetadataConfigKey;
 extern const ConfigKey kUseRelativePathOnExportConfigKey;
 
 extern const ConfigKey kCoverArtFetcherQualityConfigKey;
+
+extern const ConfigKey kTagFetcherApplyTagsConfigKey;
+
+extern const ConfigKey kTagFetcherApplyCoverConfigKey;
 
 } // namespace prefs
 

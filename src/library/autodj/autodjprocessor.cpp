@@ -176,10 +176,8 @@ AutoDJProcessor::AutoDJProcessor(
         m_transitionTime = str_autoDjTransition.toDouble();
     }
 
-    int configuredTransitionMode = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kTransitionModePreferenceName),
-            static_cast<int>(TransitionMode::FullIntroOutro));
-    m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
+    m_transitionMode = m_pConfig->getValue(
+            ConfigKey(kConfigKey, kTransitionModePreferenceName), TransitionMode::FullIntroOutro);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {

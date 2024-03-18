@@ -1,0 +1,34 @@
+name: Clean up downloads
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: "Set up SSH Agent"
+        if: env.SSH_PRIVATE_KEY != null
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+          SSH_HOST: downloads-hostgator.mixxx.org
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-add - <<< "${SSH_PRIVATE_KEY}"
+          mkdir -p "${HOME}/.ssh"
+          ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+          echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+      - name: Delete obsolete files
+        if: env.SSH_AUTH_SOCK != null
+        run: |
+          mkdir empty_folder
+          echo build-checks-fix/ >> include_file.txt
+          echo build-checks-fix/* >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+        env:
+          DESTDIR: public_html/downloads/snapshots
+          SSH_HOST: downloads-hostgator.mixxx.org
+          SSH_USER: mixxx

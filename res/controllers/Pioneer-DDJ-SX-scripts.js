@@ -392,7 +392,9 @@ PioneerDDJSX.init = function(id) {
     };
 
     // set 32 Samplers as default:
-    engine.setValue("[Master]", "num_samplers", 32);
+    if (engine.getValue("[App]", "num_samplers") < 32) {
+        engine.setValue("[App]", "num_samplers", 32);
+    }
 
     // activate vu meter timer for Auto DJ:
     if (PioneerDDJSX.twinkleVumeterAutodjOn) {

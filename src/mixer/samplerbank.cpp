@@ -206,9 +206,8 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                 QString location = e.attribute("location", "");
                 int samplerNum;
 
-                if (!group.isEmpty()
-                        && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
-                    if (m_pPlayerManager->numSamplers() < (unsigned) samplerNum) {
+                if (!group.isEmpty() && m_pPlayerManager->isSamplerGroup(group, &samplerNum)) {
+                    if (m_pPlayerManager->numSamplers() < (unsigned)samplerNum) {
                         m_pCONumSamplers->set(samplerNum);
                     }
 
@@ -218,7 +217,6 @@ bool SamplerBank::loadSamplerBankFromPath(const QString& samplerBankPath) {
                         m_pPlayerManager->slotLoadLocationToPlayer(location, group, false);
                     }
                 }
-
             }
         }
         n = n.nextSibling();

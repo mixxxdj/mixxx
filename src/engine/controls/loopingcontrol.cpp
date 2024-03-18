@@ -12,6 +12,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/compatibility/qatomic.h"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 
 namespace {
@@ -176,20 +177,24 @@ LoopingControl::LoopingControl(const QString& group,
             Qt::DirectConnection);
 
     m_pCOBeatJumpSizeHalve = new ControlPushButton(ConfigKey(group, "beatjump_size_halve"));
+    m_pCOBeatJumpSizeHalve->setKbdRepeatable(true);
     connect(m_pCOBeatJumpSizeHalve,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeHalve);
     m_pCOBeatJumpSizeDouble = new ControlPushButton(ConfigKey(group, "beatjump_size_double"));
+    m_pCOBeatJumpSizeDouble->setKbdRepeatable(true);
     connect(m_pCOBeatJumpSizeDouble,
             &ControlObject::valueChanged,
             this,
             &LoopingControl::slotBeatJumpSizeDouble);
 
     m_pCOBeatJumpForward = new ControlPushButton(ConfigKey(group, "beatjump_forward"));
+    m_pCOBeatJumpForward->setKbdRepeatable(true);
     connect(m_pCOBeatJumpForward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpForward);
     m_pCOBeatJumpBackward = new ControlPushButton(ConfigKey(group, "beatjump_backward"));
+    m_pCOBeatJumpBackward->setKbdRepeatable(true);
     connect(m_pCOBeatJumpBackward, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatJumpBackward);
 
@@ -221,9 +226,11 @@ LoopingControl::LoopingControl(const QString& group,
     connect(m_pCOLoopScale, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopScale);
     m_pLoopHalveButton = new ControlPushButton(ConfigKey(group, "loop_halve"));
+    m_pLoopHalveButton->setKbdRepeatable(true);
     connect(m_pLoopHalveButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopHalve);
     m_pLoopDoubleButton = new ControlPushButton(ConfigKey(group, "loop_double"));
+    m_pLoopDoubleButton->setKbdRepeatable(true);
     connect(m_pLoopDoubleButton, &ControlObject::valueChanged,
             this, &LoopingControl::slotLoopDouble);
 
@@ -777,8 +784,24 @@ void LoopingControl::slotLoopRemove() {
     loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
     loopInfo.seekMode = LoopSeekMode::None;
     m_loopInfo.setValue(loopInfo);
+    m_oldLoopInfo = loopInfo;
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
+    // if the loop is valid, else it is removed.
+    // We remove it here right away so the loop is not restored
+    // when the track is loaded to another player in the meantime.
+    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pLoadedTrack) {
+        return;
+    }
+    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cuePoints) {
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            pLoadedTrack->removeCue(pCue);
+            return;
+        }
+    }
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -858,6 +881,17 @@ void LoopingControl::setLoopOutToCurrentPosition() {
                     quantizedBeatPosition = closestBeatPosition;
                 }
             }
+            // Note: with quantize enabled and playpos AFTER an inactive loop,
+            // the new loop_out might snap to the exact the same position as before.
+            // Then m_oldLoopInfo would be unchanged and process() would not seek back
+            // inside the loop, so we would (re)create and activate a loop
+            // we'd never reach (when playing forward).
+            // Invalidate the old loop end so adjustedPositionInsideAdjustedLoop()
+            // will return a position inside the new/old loop.
+            if (position > quantizedBeatPosition &&
+                    quantizedBeatPosition == m_oldLoopInfo.endPosition) {
+                m_oldLoopInfo.endPosition = mixxx::audio::kInvalidFramePos;
+            }
             position = quantizedBeatPosition;
         }
     }
@@ -869,8 +903,8 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     }
 
     // If the loop-in and out points are set so close that the loop would be
-    //  inaudible (which can happen easily with quantize-to-beat enabled,)
-    //  use the smallest pre-defined beatloop instead (when possible)
+    // inaudible (which can happen easily with quantize-to-beat enabled,)
+    // use the smallest pre-defined beatloop instead (when possible)
     if ((position - loopInfo.startPosition) < kMinimumAudibleLoopSizeFrames) {
         if (quantizedBeatPosition.isValid() && pBeats) {
             position = pBeats->findNthBeat(quantizedBeatPosition, 2);
@@ -1244,10 +1278,10 @@ void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopCon
     // and QVector::iterator is a pointer type in Qt5, but QStack inherits
     // from QList in Qt6 so QStack::iterator is not a pointer type in Qt6.
     // NOLINTNEXTLINE(readability-qualified-auto)
-    auto i = m_activeLoopRolls.begin();
-    while (i != m_activeLoopRolls.end()) {
+    auto i = m_activeLoopRolls.constBegin();
+    while (i != m_activeLoopRolls.constEnd()) {
         if (size == *i) {
-            i = m_activeLoopRolls.erase(i);
+            i = constErase(&m_activeLoopRolls, i);
         } else {
             ++i;
         }
@@ -1775,11 +1809,13 @@ BeatJumpControl::BeatJumpControl(const QString& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_forward", size));
+    m_pJumpForward->setKbdRepeatable(true);
     connect(m_pJumpForward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpForward,
             Qt::DirectConnection);
     m_pJumpBackward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_backward", size));
+    m_pJumpBackward->setKbdRepeatable(true);
     connect(m_pJumpBackward, &ControlObject::valueChanged,
             this, &BeatJumpControl::slotJumpBackward,
             Qt::DirectConnection);

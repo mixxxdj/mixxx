@@ -169,9 +169,9 @@ void allshader::WaveformRenderMark::paintGL() {
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
-            const float currentMarkPoint = std::floor(static_cast<float>(
+            float currentMarkPoint = static_cast<float>(
                     m_waveformRenderer->transformSamplePositionInRendererWorld(
-                            samplePosition)));
+                            samplePosition));
             const double sampleEndPosition = pMark->getSampleEndPosition();
 
             // Pixmaps are expected to have the mark stroke at the center,
@@ -179,6 +179,7 @@ void allshader::WaveformRenderMark::paintGL() {
             // exactly at the sample position.
             const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
             const float drawOffset = currentMarkPoint - markHalfWidth;
+            currentMarkPoint = qRound(drawOffset * devicePixelRatio) / devicePixelRatio;
 
             bool visible = false;
             // Check if the current point needs to be displayed.
@@ -192,15 +193,15 @@ void allshader::WaveformRenderMark::paintGL() {
             // Check if the range needs to be displayed.
             if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
                 DEBUG_ASSERT(samplePosition < sampleEndPosition);
-                const float currentMarkEndPoint = std::floor(static_cast<
+                const float currentMarkEndPoint = static_cast<
                         float>(
                         m_waveformRenderer
                                 ->transformSamplePositionInRendererWorld(
-                                        sampleEndPosition)));
+                                        sampleEndPosition));
 
                 if (visible || currentMarkEndPoint > 0) {
                     QColor color = pMark->fillColor();
-                    color.setAlphaF(0.4);
+                    color.setAlphaF(0.4f);
 
                     drawMark(
                             QRectF(QPointF(currentMarkPoint, 0),

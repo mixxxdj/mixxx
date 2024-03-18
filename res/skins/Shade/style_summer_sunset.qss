@@ -6,7 +6,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 QTextBrowser QMenu,
 QTextBrowser QMenu::item,
 WTrackMenu,
@@ -64,8 +64,9 @@ WBeatSpinBox,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu::item:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 QTextBrowser QMenu::item:selected,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
@@ -99,7 +100,7 @@ WEffectSelector::indicator:unchecked:selected,
   }
   /* unchecked menu checkbox */
   WLibrarySidebar QMenu::indicator:unchecked,
-  WTrackTableViewHeader QMenu::indicator:unchecked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
   WTrackMenu QMenu QCheckBox::indicator:enabled:unchecked {
     border-color: #222;
   }
@@ -107,7 +108,7 @@ WEffectSelector::indicator:unchecked:selected,
   /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
   WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
@@ -152,6 +153,10 @@ WLibrarySidebar:focus,
 WLibraryTextBrowser:focus,
 WSearchLineEdit:focus {
   border-color: #78C70B;
+}
+
+#LibraryBPMButton::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_lib_bpm_unlocked_white.svg);
 }
 
 #LibraryFeatureControls QPushButton:enabled {

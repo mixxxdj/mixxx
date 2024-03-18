@@ -1,12 +1,12 @@
 #include "preferences/dialog/dlgpreferences.h"
 
-#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
+#include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
@@ -15,6 +15,7 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
+#include "util/desktophelper.h"
 #include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
@@ -27,9 +28,7 @@
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "preferences/dialog/dlgprefwaveform.h"
-#endif
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -44,7 +43,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif // __MODPLUG__
 
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
 #include "util/darkappearance.h"
 #endif
 
@@ -154,7 +153,6 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
         DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
@@ -169,7 +167,6 @@ DlgPreferences::DlgPreferences(
                 &DlgPreferences::reloadUserInterface,
                 Qt::DirectConnection);
     }
-#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),
@@ -422,12 +419,10 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         }
         break;
     case QDialogButtonBox::ApplyRole:
-        // Only apply settings on the current page.
-        if (pCurrentPage) {
-            pCurrentPage->slotApply();
-        }
+        emit applyPreferences();
         break;
     case QDialogButtonBox::AcceptRole:
+        // Same as Apply but close the dialog
         emit applyPreferences();
         accept();
         break;
@@ -439,7 +434,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         if (pCurrentPage) {
             QUrl helpUrl = pCurrentPage->helpUrl();
             DEBUG_ASSERT(helpUrl.isValid());
-            QDesktopServices::openUrl(helpUrl);
+            mixxx::DesktopHelper::openUrl(helpUrl);
         }
         break;
     default:
@@ -576,7 +571,7 @@ QRect DlgPreferences::getDefaultGeometry() {
 }
 
 void DlgPreferences::fixSliderStyle() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // Only used on macOS where the default slider style has several issues:
     // - the handle is semi-transparent
     // - the slider is higher than the space we give it, which causes that:

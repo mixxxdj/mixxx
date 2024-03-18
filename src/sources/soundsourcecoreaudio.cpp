@@ -2,8 +2,8 @@
 
 #include "engine/engine.h"
 #include "sources/mp3decoding.h"
+#include "util/appleosversion.h"
 #include "util/logger.h"
-#include "util/macosversion.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -50,7 +50,7 @@ SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
 }
 
 QString SoundSourceProviderCoreAudio::getVersionString() const {
-    return getMacOsVersion();
+    return getAppleOsVersion();
 }
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)

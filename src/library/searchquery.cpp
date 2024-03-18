@@ -122,14 +122,6 @@ QString AndNode::toSql() const {
 }
 
 bool OrNode::match(const TrackPointer& pTrack) const {
-    // An empty OR node would always evaluate to false
-    // which is inconsistent with the generated SQL query!
-    VERIFY_OR_DEBUG_ASSERT(!m_nodes.empty()) {
-        // Evaluate to true even if the correct choice would
-        // be false to keep the evaluation consistent with
-        // the generated SQL query.
-        return true;
-    }
     for (const auto& pNode : m_nodes) {
         if (pNode->match(pTrack)) {
             return true;
@@ -139,6 +131,9 @@ bool OrNode::match(const TrackPointer& pTrack) const {
 }
 
 QString OrNode::toSql() const {
+    if (m_nodes.empty()) {
+        return "FALSE";
+    }
     QStringList queryFragments;
     queryFragments.reserve(static_cast<int>(m_nodes.size()));
     for (const auto& pNode : m_nodes) {

@@ -1,7 +1,7 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include <taglib/opusfile.h>
-#include <taglib/vorbisfile.h>
+#include <opusfile.h>
+#include <vorbisfile.h>
 
 #include <QFile>
 #include <memory>

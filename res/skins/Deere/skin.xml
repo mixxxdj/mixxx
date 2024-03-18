@@ -79,11 +79,10 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:../Deere/style.qss"
-         src-mac="skin:../Deere/style-mac.qss"
-         src-linux="skin:../default-menu-styles-linux.qss"
-         src-windows="skin:../default-menu-styles-windows.qss"/>
-
+  <Style src="skins:Deere/style.qss"
+         src-mac="skins:Deere/style-mac.qss"
+         src-linux="skins:default-menu-styles-linux.qss"
+         src-windows="skins:default-menu-styles-windows.qss"/>
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
 
@@ -140,7 +139,7 @@
     main_decks.xml, left_deck.xml, and right_deck.xml, so define them in singletons. This makes
     toggling between 2/4 decks and stacked/split waveforms slower, but it makes Mixxx startup
     and shutdown much faster and saves a lot of memory.-->
-    <Template src="skin:../Deere/deck_singletons.xml">
+    <Template src="skins:Deere/deck_singletons.xml">
       <SetVariable name="i">1</SetVariable>
       <!-- Traditional Blue -->
       <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
@@ -148,7 +147,7 @@
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
-    <Template src="skin:../Deere/deck_singletons.xml">
+    <Template src="skins:Deere/deck_singletons.xml">
       <SetVariable name="i">2</SetVariable>
       <!-- Traditional Orange -->
       <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
@@ -156,7 +155,7 @@
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
-    <Template src="skin:../Deere/deck_singletons.xml">
+    <Template src="skins:Deere/deck_singletons.xml">
       <SetVariable name="i">3</SetVariable>
       <!-- Violet -->
       <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
@@ -164,7 +163,7 @@
       <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
     </Template>
 
-    <Template src="skin:../Deere/deck_singletons.xml">
+    <Template src="skins:Deere/deck_singletons.xml">
       <SetVariable name="i">4</SetVariable>
       <!-- Lime -->
       <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
@@ -175,7 +174,14 @@
     <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
-        <Template src="skin:../Deere/library.xml"/>
+        <Template src="skins:Deere/library.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SamplerSettingsSingleton</ObjectName>
+      <Children>
+        <Template src="skins:Deere/skinsettings_sampler_buttons.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -184,7 +190,7 @@
       <SizePolicy>me,me</SizePolicy>
       <Layout>vertical</Layout>
       <Children>
-        <Template src="skin:../Deere/tool_bar.xml"/>
+        <Template src="skins:Deere/tool_bar.xml"/>
 
         <!-- regular or maximized library -->
         <WidgetStack currentpage="[Skin],show_maximized_library">
@@ -201,7 +207,7 @@
 
                 <!-- Waveforms & spinnies are shown here as stack or
                   separately in each deck -->
-                <Template src="skin:../Deere/parallel_waveforms.xml"/>
+                <Template src="skins:Deere/parallel_waveforms.xml"/>
 
                 <WidgetGroup>
                   <Layout>vertical</Layout>
@@ -211,10 +217,10 @@
                       <Layout>vertical</Layout>
                       <SizePolicy>min,max</SizePolicy>
                       <Children>
-                        <Template src="skin:../Deere/main_decks.xml"/>
-                        <Template src="skin:../Deere/effect_rack.xml"/>
-                        <Template src="skin:sample_decks.xml"/>
-                        <Template src="skin:../Deere/microphone_rack.xml"/>
+                        <Template src="skins:Deere/main_decks.xml"/>
+                        <Template src="skins:Deere/effect_rack.xml"/>
+                        <Template src="skins:Deere/sample_decks.xml"/>
+                        <Template src="skins:Deere/microphone_rack.xml"/>
                       </Children>
                     </WidgetGroup><!-- /Main section -->
                     <SingletonContainer>
@@ -231,7 +237,7 @@
               <Layout>vertical</Layout>
               <SizePolicy>me,me</SizePolicy>
               <Children>
-                <Template src="skin:../Deere/decks_small.xml"/>
+                <Template src="skins:Deere/decks_small.xml"/>
                 <SingletonContainer>
                   <ObjectName>Library</ObjectName>
                 </SingletonContainer>
@@ -243,6 +249,7 @@
 
       </Children>
     </WidgetGroup>
+
     <WidgetGroup>
       <Layout>vertical</Layout>
       <SizePolicy>min,me</SizePolicy>
@@ -251,7 +258,7 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
-        <Template src="skin:skin_settings.xml"/>
+        <Template src="skins:Deere/skin_settings.xml"/>
       </Children>
     </WidgetGroup>
   </Children>

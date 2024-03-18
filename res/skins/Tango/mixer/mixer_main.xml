@@ -21,8 +21,8 @@ Description:
           <KnobComposed>
             <TooltipId>main_gain</TooltipId>
             <Size>26f,22f</Size>
-            <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
-            <BackPath>skin:../Tango/knobs_sliders/knob_bg_main.svg</BackPath>
+            <Knob>skins:Tango/knobs_sliders/knob_yellow.svg</Knob>
+            <BackPath>skins:Tango/knobs_sliders/knob_bg_main.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -41,8 +41,8 @@ Description:
           <KnobComposed>
             <TooltipId>booth_gain</TooltipId>
             <Size>26f,22f</Size>
-            <Knob>skin:../Tango/knobs_sliders/knob_yellow.svg</Knob>
-            <BackPath>skin:../Tango/knobs_sliders/knob_bg_booth.svg</BackPath>
+            <Knob>skins:Tango/knobs_sliders/knob_yellow.svg</Knob>
+            <BackPath>skins:Tango/knobs_sliders/knob_bg_booth.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
             <KnobCenterYOffset>2.000</KnobCenterYOffset>
@@ -61,8 +61,8 @@ Description:
         <TooltipId>balance</TooltipId>
         <ObjectName>MixerbarSlider</ObjectName>
         <Size>48f,24f</Size>
-        <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/balance_handle.svg</Handle>
-        <Slider scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/balance_scale.svg</Slider>
+        <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/balance_handle.svg</Handle>
+        <Slider scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/balance_scale.svg</Slider>
         <Horizontal>true</Horizontal>
         <Connection>
           <ConfigKey>[Master],balance</ConfigKey>
@@ -82,10 +82,10 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/main_button.xml">
+              <Template src="skins:Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">1</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/main_button.xml">
+              <Template src="skins:Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">3</SetVariable>
               </Template>
             </Children>
@@ -96,10 +96,10 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:../Tango/fx/main_button.xml">
+              <Template src="skins:Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">2</SetVariable>
               </Template>
-              <Template src="skin:../Tango/fx/main_button.xml">
+              <Template src="skins:Tango/fx/main_button.xml">
                 <SetVariable name="FxUnit">4</SetVariable>
               </Template>
             </Children>

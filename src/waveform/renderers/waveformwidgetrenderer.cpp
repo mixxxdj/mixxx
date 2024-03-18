@@ -116,9 +116,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
     double rateRatio = m_pRateRatioCO->get();
 
-    // This gain adjustment compensates for an arbitrary /2 gain chop in
-    // EnginePregain. See the comment there.
-    m_gain = m_pGainControlObject->get() * 2;
+    m_gain = m_pGainControlObject->get();
 
     // Compute visual sample to pixel ratio
     // Allow waveform to spread one visual sample across a hundred pixels
@@ -317,7 +315,11 @@ void WaveformWidgetRenderer::drawPassthroughLabel(QPainter* painter) {
     font.setFamily("Open Sans"); // default label font
     // Make the label always fit
     font.setPixelSize(math_min(25, int(m_height * 0.8)));
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     font.setWeight(75); // bold
+#else
+    font.setWeight(QFont::Bold); // bold
+#endif
     font.setItalic(false);
 
     QString label = QObject::tr("Passthrough");

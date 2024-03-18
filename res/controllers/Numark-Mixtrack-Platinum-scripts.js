@@ -50,6 +50,9 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
     // set up two banks of samplers, 4 samplers each
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     MixtrackPlatinum.sampler_all = new components.ComponentContainer();
     MixtrackPlatinum.sampler_all[1] = new MixtrackPlatinum.Sampler(1);
     MixtrackPlatinum.sampler_all[2] = new MixtrackPlatinum.Sampler(5);

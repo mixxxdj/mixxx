@@ -14,6 +14,8 @@
 #include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
+#include "util/clipboard.h"
+#include "util/dnd.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 
@@ -159,6 +161,14 @@ void AutoDJFeature::activate() {
     emit switchToView(kViewName);
     emit disableSearch();
     emit enableCoverArtDisplay(true);
+}
+
+void AutoDJFeature::clear() {
+    m_playlistDao.clearAutoDJQueue();
+}
+
+void AutoDJFeature::paste() {
+    emit pasteFromSidebar();
 }
 
 bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {

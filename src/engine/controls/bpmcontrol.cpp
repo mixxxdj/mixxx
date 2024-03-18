@@ -1,7 +1,7 @@
 #include "engine/controls/bpmcontrol.h"
 
+#include "control/controlencoder.h"
 #include "control/controllinpotmeter.h"
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/effects/groupfeaturestate.h"
@@ -68,20 +68,30 @@ BpmControl::BpmControl(const QString& group,
 
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
+    m_pAdjustBeatsFaster->setKbdRepeatable(true);
     connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
             this, &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
     m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
+    m_pAdjustBeatsSlower->setKbdRepeatable(true);
     connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
             this, &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
     m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
+    m_pTranslateBeatsEarlier->setKbdRepeatable(true);
     connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsEarlier,
             Qt::DirectConnection);
     m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
+    m_pTranslateBeatsLater->setKbdRepeatable(true);
     connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
             this, &BpmControl::slotTranslateBeatsLater,
+            Qt::DirectConnection);
+    m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
+    connect(m_pTranslateBeatsMove,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
 
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
@@ -123,7 +133,6 @@ BpmControl::BpmControl(const QString& group,
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
-    m_pSyncEnabled = new ControlProxy(group, "sync_enabled", this);
 }
 
 BpmControl::~BpmControl() {
@@ -134,6 +143,7 @@ BpmControl::~BpmControl() {
     delete m_pBeatsTranslateMatchAlignment;
     delete m_pTranslateBeatsEarlier;
     delete m_pTranslateBeatsLater;
+    delete m_pTranslateBeatsMove;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
 }
@@ -183,23 +193,19 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
         return;
     }
-    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        return;
-    }
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats) {
-        const double sampleOffset = frameInfo().sampleRate * -0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
-        const auto translatedBeats = pBeats->tryTranslate(frameOffset);
-        if (translatedBeats) {
-            pTrack->trySetBeats(*translatedBeats);
-        }
-    }
+    slotTranslateBeatsMove(-1);
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
+        return;
+    }
+    slotTranslateBeatsMove(1);
+}
+
+void BpmControl::slotTranslateBeatsMove(double v) {
+    v = std::round(v);
+    if (v == 0) {
         return;
     }
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
@@ -209,7 +215,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
-        const double sampleOffset = frameInfo().sampleRate * 0.01;
+        const double sampleOffset = frameInfo().sampleRate * v * 0.01;
         const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
@@ -299,9 +305,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
     double rate = 1.0;
-    // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->toBool()) {
-        rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
+    double localBpm = m_pLocalBpm->get();
+    if (localBpm != 0.0) {
+        rate = m_dSyncInstantaneousBpm / localBpm;
     }
 
     // If we are not quantized, or there are no beats, or we're leader,
@@ -347,6 +353,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we have all we need to calculate the sync adjustment if any.
     double adjustment = calcSyncAdjustment(userTweak != 0.0);
+    // This can be used to detect pitch shift issues with cloned decks
+    // DEBUG_ASSERT(((rate + userTweak) * adjustment) == 1);
     return (rate + userTweak) * adjustment;
 }
 
@@ -754,7 +762,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
         }
-        // This happens if dThisPosition is the target position of a requested
+        // This happens if thisPosition is the target position of a requested
         // seek command.  Get new prev and next beats for the calculation.
         getBeatContext(
                 m_pBeats,
@@ -922,7 +930,9 @@ void BpmControl::slotUpdateEngineBpm(double value) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << value << m_pLocalBpm->get() << dRate;
+                        << value << m_pLocalBpm->get() << dRate << frameInfo().currentPosition;
+        // This can be used to detect pitch shift issues with cloned decks
+        // DEBUG_ASSERT(getGroup() != "[Channel1]" || dRate == 1);
     }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
@@ -1019,16 +1029,16 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     if (pBeats) {
         if (info.currentPosition.isValid() && info.currentPosition != kInitialPlayPosition) {
             localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
-        }
-        if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
+            if (!localBpm.isValid()) {
+                localBpm = pBeats->getBpmInRange(
+                        mixxx::audio::kStartFramePos, info.trackEndPosition);
+            }
         }
     }
     if (localBpm != prevLocalBpm) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << localBpm;
         }
-        // FIXME: Should this really update the engine bpm if it's invalid?
         double localBpmValue = mixxx::Bpm::kValueUndefined;
         if (localBpm.isValid()) {
             localBpmValue = localBpm.value();

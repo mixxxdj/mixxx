@@ -1,7 +1,6 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 
 #include <QApplication>
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFontDialog>
@@ -18,6 +17,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
+#include "util/desktophelper.h"
 #include "widget/wsearchlineedit.h"
 
 using namespace mixxx::library::prefs;
@@ -66,7 +66,7 @@ DlgPrefLibrary::DlgPrefLibrary(
     connect(PushButtonOpenSettingsDir,
             &QPushButton::clicked,
             [settingsDir] {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
+                mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(settingsDir));
             });
 
     // Set default direction as stored in config file
@@ -124,7 +124,7 @@ DlgPrefLibrary::DlgPrefLibrary(
     connect(label_settingsManualLink,
             &QLabel::linkActivated,
             [](const QString& url) {
-                QDesktopServices::openUrl(url);
+                mixxx::DesktopHelper::openUrl(url);
             });
 
     connect(checkBox_SyncTrackMetadata,
@@ -180,7 +180,13 @@ void DlgPrefLibrary::initializeDirList() {
                                   ->internalCollection()
                                   ->loadRootDirs();
     for (const mixxx::FileInfo& rootDir : rootDirs) {
-        m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
+        // mark missing/invalid dirs with a warning icon, add a tooltip
+        auto* pDirItem = new QStandardItem(rootDir.location());
+        if (!rootDir.exists() || !rootDir.isDir()) {
+            pDirItem->setIcon(QIcon(kWarningIconPath));
+            pDirItem->setToolTip(tr("Item is not a directory or directory is missing"));
+        }
+        m_dirListModel.appendRow(pDirItem);
     }
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
@@ -205,6 +211,8 @@ void DlgPrefLibrary::slotResetToDefaults() {
     checkBoxEditMetadataSelectedClicked->setChecked(kEditMetadataSelectedClickDefault);
     radioButton_dbclick_deck->setChecked(true);
     spinbox_bpm_precision->setValue(BaseTrackTableModel::kBpmColumnPrecisionDefault);
+    checkbox_played_track_color->setChecked(
+            BaseTrackTableModel::kApplyPlayedTrackColorDefault);
 
     radioButton_cover_art_fetcher_medium->setChecked(true);
 
@@ -294,7 +302,7 @@ void DlgPrefLibrary::slotUpdate() {
             kEditMetadataSelectedClickConfigKey,
             kEditMetadataSelectedClickDefault);
     checkBoxEditMetadataSelectedClicked->setChecked(editMetadataSelectedClick);
-    m_pLibrary->setEditMedatataSelectedClick(editMetadataSelectedClick);
+    m_pLibrary->setEditMetadataSelectedClick(editMetadataSelectedClick);
 
     checkBoxEnableSearchCompletions->setChecked(m_pConfig->getValue(
             kEnableSearchCompletionsConfigKey,
@@ -319,6 +327,12 @@ void DlgPrefLibrary::slotUpdate() {
                     kBpmColumnPrecisionConfigKey,
                     BaseTrackTableModel::kBpmColumnPrecisionDefault);
     spinbox_bpm_precision->setValue(bpmColumnPrecision);
+
+    const auto applyPlayedTrackColor =
+            m_pConfig->getValue(
+                    mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+                    BaseTrackTableModel::kApplyPlayedTrackColorDefault);
+    checkbox_played_track_color->setChecked(applyPlayedTrackColor);
 }
 
 void DlgPrefLibrary::slotCancel() {
@@ -502,7 +516,7 @@ void DlgPrefLibrary::slotApply() {
 
     m_pConfig->set(kEditMetadataSelectedClickConfigKey,
             ConfigValue(checkBoxEditMetadataSelectedClicked->checkState()));
-    m_pLibrary->setEditMedatataSelectedClick(
+    m_pLibrary->setEditMetadataSelectedClick(
             checkBoxEditMetadataSelectedClicked->checkState());
 
     QFont font = m_pLibrary->getTrackTableFont();
@@ -516,6 +530,12 @@ void DlgPrefLibrary::slotApply() {
         m_pConfig->set(ConfigKey("[Library]","RowHeight"),
                        ConfigValue(rowHeight));
     }
+
+    BaseTrackTableModel::setApplyPlayedTrackColor(
+            checkbox_played_track_color->isChecked());
+    m_pConfig->set(
+            mixxx::library::prefs::kApplyPlayedTrackColorConfigKey,
+            ConfigValue(checkbox_played_track_color->isChecked()));
 
     // TODO(rryan): Don't save here.
     m_pConfig->save();

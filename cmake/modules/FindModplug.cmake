@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,13 +50,13 @@ endif()
 
 find_path(Modplug_INCLUDE_DIR
   NAMES libmodplug/modplug.h
-  PATHS ${PC_Modplug_INCLUDE_DIRS}
+  HINTS ${PC_Modplug_INCLUDE_DIRS}
   DOC "Modplug include directory")
 mark_as_advanced(Modplug_INCLUDE_DIR)
 
 find_library(Modplug_LIBRARY
   NAMES modplug
-  PATHS ${PC_Modplug_LIBRARY_DIRS}
+  HINTS ${PC_Modplug_LIBRARY_DIRS}
   DOC "Modplug library"
 )
 mark_as_advanced(Modplug_LIBRARY)

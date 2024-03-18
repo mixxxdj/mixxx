@@ -416,7 +416,7 @@ class DeckClass {
             } else {
                 this.wheelTouchInertiaTimer = engine.beginTimer(
                     inertiaTime,
-                    this.finishJogPress, 
+                    this.finishJogPress.bind(this),
                     true);
             }
         }
@@ -530,7 +530,7 @@ class DeckClass {
                 engine.scratchDisable(this.number, true);
             } else {
             // Check again soon.
-                this.wheelPressInertiaTimer = engine.beginTimer(20, finishJogPress, true);
+                this.wheelPressInertiaTimer = engine.beginTimer(20, this.finishJogPress.bind(this), true);
             }
         }
     }
@@ -1012,6 +1012,9 @@ class EffectParameter {
 class TraktorS2MK1Class {
     constructor() {
         this.controller = new HIDController();
+        if (engine.getValue("[App]", "num_samplers") < 8) {
+            engine.setValue("[App]", "num_samplers", 8);
+        }
 
         // When true, packets will not be sent to the controller.
         // Used when updating multiple LEDs simultaneously.

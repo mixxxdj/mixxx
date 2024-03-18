@@ -3,13 +3,13 @@
 
   <!-- Create Singletons for samplers 1-4 because they're needed when
     showing 4 or 8 samplers... -->
-  <Template src="skin:../LateNight/samplers/singletons.xml"/>
+  <Template src="skins:LateNight/samplers/singletons.xml"/>
   <!-- ...the create a singleton for samplers_8decks.xml because it's used
     when showing 8 or 16 samplers. -->
   <SingletonDefinition>
     <ObjectName>Samplers_1-8</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/samplers_8decks.xml">
+      <Template src="skins:LateNight/samplers/samplers_8decks.xml">
         <SetVariable name="Count">1-8</SetVariable>
       </Template>
     </Children>
@@ -18,7 +18,7 @@
   <SingletonDefinition>
     <ObjectName>Samplers_9-16</ObjectName>
     <Children>
-      <Template src="skin:../LateNight/samplers/samplers_row.xml">
+      <Template src="skins:LateNight/samplers/samplers_row.xml">
         <SetVariable name="Count">9-16</SetVariable>
         <SetVariable name="Sampler1">9</SetVariable>
         <SetVariable name="Sampler2">10</SetVariable>
@@ -40,7 +40,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">17-24</SetVariable>
             <SetVariable name="Sampler1">17</SetVariable>
             <SetVariable name="Sampler2">18</SetVariable>
@@ -51,7 +51,7 @@
             <SetVariable name="Sampler7">23</SetVariable>
             <SetVariable name="Sampler8">24</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">25-32</SetVariable>
             <SetVariable name="Sampler1">25</SetVariable>
             <SetVariable name="Sampler2">26</SetVariable>
@@ -75,7 +75,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">33-40</SetVariable>
             <SetVariable name="Sampler1">33</SetVariable>
             <SetVariable name="Sampler2">34</SetVariable>
@@ -86,7 +86,7 @@
             <SetVariable name="Sampler7">39</SetVariable>
             <SetVariable name="Sampler8">40</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">41-48</SetVariable>
             <SetVariable name="Sampler1">41</SetVariable>
             <SetVariable name="Sampler2">42</SetVariable>
@@ -110,7 +110,7 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">49-56</SetVariable>
             <SetVariable name="Sampler1">49</SetVariable>
             <SetVariable name="Sampler2">50</SetVariable>
@@ -121,7 +121,7 @@
             <SetVariable name="Sampler7">55</SetVariable>
             <SetVariable name="Sampler8">56</SetVariable>
           </Template>
-          <Template src="skin:../LateNight/samplers/samplers_row.xml">
+          <Template src="skins:LateNight/samplers/samplers_row.xml">
             <SetVariable name="Count">57-64</SetVariable>
             <SetVariable name="Sampler1">57</SetVariable>
             <SetVariable name="Sampler2">58</SetVariable>
@@ -149,7 +149,7 @@
           <WidgetGroup trigger="[LateNight],show_4samplers" on_hide_select="1">
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:../LateNight/samplers/samplers_4decks.xml"/>
+              <Template src="skins:LateNight/samplers/samplers_4decks.xml"/>
             </Children>
             <Connection>
               <ConfigKey>[LateNight],show_4samplers</ConfigKey>

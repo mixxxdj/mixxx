@@ -52,7 +52,7 @@
                 <Pos>0,2</Pos>
                 <Layout>vertical</Layout>
                 <Children>
-                <Text>
+                <TrackProperty>
                   <Size>0e,40f</Size>
                   <TooltipId>text</TooltipId>
                   <Style>QLabel {
@@ -65,8 +65,9 @@
                       padding-top: 2px;}
                   </Style>
                   <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                  <Property>titleInfo</Property>
                   <Elide>right</Elide>
-                </Text>
+                </TrackProperty>
                 <!-- Alternative "TITLE ONLY" display
                 <TrackProperty>
                   <TooltipId>track_title</TooltipId>

@@ -20,7 +20,6 @@ WNumber, WNumberPos,
 WPushButton,
 WKey,
 WTime,
-WTrackText,
 WTrackProperty,
 WRecordingDuration,
 QSpinBox,
@@ -45,6 +44,8 @@ QToolTip,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
+WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu QCheckBox,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
@@ -1019,9 +1020,15 @@ WLabel#TrackComment {
 #HotcueButton[light="true"] {
     color: #0f0f0f;
 }
-
 #HotcueButton[light="true"]:hover {
     border: 1px solid #808080;
+}
+
+#HotcueButton[light="true"][type="loop"] {
+  image: url(skin:/../Tango/buttons/btn_hotcue_loop_dark.svg) no-repeat;
+}
+#HotcueButton[dark="true"][type="loop"] {
+  image: url(skin:/../Tango/buttons/btn_hotcue_loop_light.svg) no-repeat;
 }
 
 #CueButton {
@@ -1541,9 +1548,23 @@ decks, samplers, mic, aux, fx */
 #SamplersMiniMaxi {
   background-position: top center;
 }
-#FxMiniMaxi {
-  background-position: bottom center;
+
+#FxUnitLeft #FxMiniMaxi {
+  background-position: bottom left;
+  margin-left: 10px;
 }
+#FxUnitRight #FxMiniMaxi {
+  background-position: bottom right;
+  margin-right: 10px;
+  }
+  #FxUnitMini #FxMiniMaxi {
+    background-position: bottom center;
+  }
+
+#FxUnitLeft #FxUnitLabel {
+  padding-left: 30px;
+}
+
 
 #FixedLoopSizesMiniMaxi[displayValue="0"],
 #FxMiniMaxi[displayValue="0"],
@@ -1782,34 +1803,24 @@ decks, samplers, mic, aux, fx */
 
   WEffectChainPresetButton {
     padding: 0px;
-    margin: 1px;
     border:  none;
-    /*border-color: #0f0f0f;
-    border-style: solid;
-    border-width: 0px 1px 1px 1px;
-    border-radius: 2px;*/
+    border-radius: 2px;
     background-color: #333;
+    image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
     }
-    /*WEffectChainPresetButton#EffectChainPresetButtonLeft {
-      border-width: 1px 0px 1px 1px;
-    }
-    WEffectChainPresetButton#EffectChainPresetButtonRight {
-      border-width: 1px 1px 1px 0px;
-    }*/
     WEffectChainPresetButton:hover {
       background-color: #151515;
+      image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     WEffectChainPresetButton::menu-indicator {
       subcontrol-position: center center;
       subcontrol-origin: margin;
-      margin: 0px 2px 0px 0px;
       padding: 0px;
       border: 0px;
       outline: none;
     }
 
   WEffectSelector::down-arrow,
-  WEffectChainPresetButton::menu-indicator,
   WSearchLineEdit::down-arrow,
   #fadeModeCombobox::down-arrow {
     /* With a fixed size and the skin being scaled
@@ -1821,7 +1832,6 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/../Tango/buttons/btn_arrow_down_fx.svg) no-repeat center center;
     }
     WEffectSelector::down-arrow:hover,
-    WEffectChainPresetButton::menu-indicator:hover,
     WSearchLineEdit::down-arrow:hover,
     #fadeModeCombobox::down-arrow:hover {
       image: url(skin:/../Tango/buttons/btn_arrow_down_fx_hover.svg) no-repeat center center;
@@ -2287,7 +2297,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2356,7 +2366,9 @@ WSearchLineEdit QAbstractScrollArea,
 /* ::indicator:!checked won't work. use 'unchecked' */
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
-WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -2414,7 +2426,7 @@ QPlainTextEdit QMenu::item:disabled {
   }
 
 WLibrarySidebar QMenu::indicator,
-WTrackTableViewHeader QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
 WEffectChainPresetButton QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
   background-color: #0f0f0f;
@@ -2422,7 +2434,7 @@ WTrackMenu QMenu QCheckBox::indicator {
   border-radius: 1px;
   }
   WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkmark.svg);
@@ -2556,7 +2568,6 @@ WLibraryTextBrowser,
 WLibrarySidebar {
   border: 2px solid #585858;
   /* font-weight: normal; */
-  color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
   /* In selected library rows this sets the color of
@@ -2567,10 +2578,24 @@ WLibrarySidebar {
   /* background of Color delegate in selected row */
   selection-background-color: #555;
 }
+WTrackTableView,
+WLibraryTextBrowser,
+WLibrarySidebar,
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  color: #9e9e9e;
+}
+
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
 
 /* selected table row */
 WTrackTableView::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #fff;
   background-color: #555;
 }
@@ -2590,7 +2615,13 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
   /* Table cell in edit mode */
@@ -3017,10 +3048,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   #LibraryBPMButton::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_bpm_unlocked.svg);
     }
-  /* BPM value */
-  #LibraryBPMButton::item {
-    color: #cfcfcf;
-    }
 
 #LibraryBPMSpinBox {
   padding: 0px;
@@ -3073,10 +3100,10 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
     }*/
 
   /* checkbox in library "Played" column */
-  WTrackTableView::indicator:checked {
+  #LibraryPlayedCheckbox::indicator:checked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox_checked.svg);
     }
-  WTrackTableView::indicator:unchecked {
+  #LibraryPlayedCheckbox::indicator:unchecked {
     image: url(skin:/../Tango/buttons/btn_lib_checkbox.svg);
     }
 

@@ -148,6 +148,24 @@ QModelIndex SidebarModel::getFeatureRootIndex(LibraryFeature* pFeature) {
     return ind;
 }
 
+void SidebarModel::clear(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->clear();
+    }
+}
+
+void SidebarModel::paste(const QModelIndex& index) {
+    if (index.internalPointer() == this) {
+        m_sFeatures[index.row()]->paste();
+    } else {
+        TreeItem* pTreeItem = (TreeItem*)index.internalPointer();
+        if (pTreeItem) {
+            LibraryFeature* feature = pTreeItem->feature();
+            feature->pasteChild(index);
+        }
+    }
+}
+
 QModelIndex SidebarModel::parent(const QModelIndex& index) const {
     //qDebug() << "SidebarModel::parent index=" << index.getData();
     if (index.isValid()) {
@@ -475,7 +493,7 @@ QModelIndex SidebarModel::translateIndex(
 }
 
 void SidebarModel::slotDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight) {
-    //qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
+    // qDebug() << "slotDataChanged topLeft:" << topLeft << "bottomRight:" << bottomRight;
     QModelIndex topLeftTranslated = translateSourceIndex(topLeft);
     QModelIndex bottomRightTranslated = translateSourceIndex(bottomRight);
     emit dataChanged(topLeftTranslated, bottomRightTranslated);
@@ -499,8 +517,8 @@ void SidebarModel::slotRowsInserted(const QModelIndex& parent, int start, int en
     Q_UNUSED(parent);
     Q_UNUSED(start);
     Q_UNUSED(end);
-    //qDebug() << "slotRowsInserted" << parent << start << end;
-    //QModelIndex newParent = translateSourceIndex(parent);
+    // qDebug() << "slotRowsInserted" << parent << start << end;
+    // QModelIndex newParent = translateSourceIndex(parent);
     endInsertRows();
 }
 

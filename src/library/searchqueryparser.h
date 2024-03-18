@@ -30,6 +30,9 @@ class SearchQueryParser {
     void parseTokens(QStringList tokens,
                      AndNode* pQuery) const;
 
+    std::unique_ptr<AndNode> parseAndNode(const QString& query) const;
+    std::unique_ptr<OrNode> parseOrNode(const QString& query) const;
+
     struct TextArgumentResult {
         QString argument;
         StringMatch mode;

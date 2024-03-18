@@ -282,6 +282,14 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         return;
     }
 
+    // Don't load an effect into the '---' preset. The preset would remain
+    // selected in WEffectChainPresetSelector and WEffectChainPresetButton and
+    // therefore couldn't be used to clear the chain.
+    // Instead, load an empty, nameless preset, then load the desired effect.
+    if (m_pChain->isEmptyPlaceholderPresetLoaded()) {
+        m_pChain->loadEmptyNamelessPreset();
+    }
+
     m_pManifest = pManifest;
     addToEngine();
 
@@ -335,6 +343,8 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     loadParameters();
 
+    m_pControlMetaParameter->setDefaultValue(pManifest->metaknobDefault());
+
     m_pControlLoaded->forceSet(1.0);
 
     if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
@@ -386,6 +396,8 @@ void EffectSlot::unloadEffect() {
     for (auto& parameterList : m_hiddenParameters) {
         parameterList.clear();
     }
+
+    m_pControlMetaParameter->setDefaultValue(0.0);
 
     m_pManifest.clear();
 

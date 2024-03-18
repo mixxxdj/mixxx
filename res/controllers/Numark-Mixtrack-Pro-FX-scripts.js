@@ -74,6 +74,9 @@ MixtrackProFX.init = function() {
     var faderCutSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0xF7];
     midi.sendSysexMsg(faderCutSysex, faderCutSysex.length);
 
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
     // initialize component containers
     MixtrackProFX.deck = new components.ComponentContainer();
     MixtrackProFX.effect = new components.ComponentContainer();

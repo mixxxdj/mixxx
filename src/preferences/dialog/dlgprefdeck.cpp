@@ -324,16 +324,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     // Ramping Temporary Rate Change configuration
     //
 
-    // Rate Ramp Sensitivity slider & spinbox
-    connect(SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::valueChanged),
-            SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::setValue));
-    connect(SpinBoxRateRampSensitivity,
-            QOverload<int>::of(&QSpinBox::valueChanged),
-            SliderRateRampSensitivity,
-            QOverload<int>::of(&QAbstractSlider::setValue));
-
+    // Rate Ramp Sensitivity slider
     m_iRateRampSensitivity =
             m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"),
                     kDefaultRateRampSensitivity);
@@ -351,10 +342,6 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
     connect(radioButtonRateRampModeLinear,
             &QRadioButton::toggled,
             SliderRateRampSensitivity,
-            &QWidget::setEnabled);
-    connect(radioButtonRateRampModeLinear,
-            &QRadioButton::toggled,
-            SpinBoxRateRampSensitivity,
             &QWidget::setEnabled);
     // Enable/disable temporary rate spinboxes when abrupt ramping is selected
     connect(radioButtonRateRampModeStepping,
@@ -702,11 +689,11 @@ void DlgPrefDeck::slotApply() {
     for (ControlProxy* pControl : std::as_const(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), m_cueMode);
 
-    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, static_cast<int>(m_loadWhenDeckPlaying));
+    m_pConfig->setValue(kConfigKeyLoadWhenDeckPlaying, m_loadWhenDeckPlaying);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), m_seekOnLoadMode);
     m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
             m_bCloneDeckOnLoadDoubleTap);
 
@@ -717,9 +704,9 @@ void DlgPrefDeck::slotApply() {
 
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
-            static_cast<int>(m_bRateDownIncreasesSpeed));
+            m_bRateDownIncreasesSpeed);
 
-    int configSPAutoReset = BaseTrackPlayer::RESET_NONE;
+    BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 
     if (m_speedAutoReset && m_pitchAutoReset) {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH_AND_SPEED;
@@ -729,8 +716,8 @@ void DlgPrefDeck::slotApply() {
         configSPAutoReset = BaseTrackPlayer::RESET_PITCH;
     }
 
-    m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
-                   ConfigValue(configSPAutoReset));
+    m_pConfig->setValue(ConfigKey("[Controls]", "SpeedAutoReset"),
+            configSPAutoReset);
 
     if (radioButtonSoftLeader->isChecked()) {
         m_pConfig->setValue(ConfigKey(kBpmConfigGroup, kSyncLockAlgorithmConfigKey),
@@ -741,21 +728,21 @@ void DlgPrefDeck::slotApply() {
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
-                        static_cast<int>(m_keylockMode));
+            m_keylockMode);
     // Set key lock behavior for every group
     for (ControlProxy* pControl : std::as_const(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
-                        static_cast<int>(m_keyunlockMode));
+            m_keyunlockMode);
     // Set key un-lock behavior for every group
     for (ControlProxy* pControl : std::as_const(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 
     RateControl::setRateRampMode(m_bRateRamping);
-    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), static_cast<int>(m_bRateRamping));
+    m_pConfig->setValue(ConfigKey("[Controls]", "RateRamp"), m_bRateRamping);
 
     RateControl::setRateRampSensitivity(m_iRateRampSensitivity);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRampSensitivity"), m_iRateRampSensitivity);

@@ -527,7 +527,7 @@ SingleDoubleBtn.prototype.ButtonDown = function(channel, control, value, status,
     if (this.ButtonTimer === 0) { // first press
 
         this.ButtonTimer =
-            engine.beginTimer(this.DoublePressTimeOut, this.ButtonDecide, true);
+            engine.beginTimer(this.DoublePressTimeOut, this.ButtonDecide.bind(this), true);
         this.ButtonCount = 1;
     } else { // 2nd press (before timer's out)
         engine.stopTimer(this.ButtonTimer);
@@ -599,7 +599,7 @@ LongShortBtn.prototype.ButtonDown = function(channel, control, value, status, gr
     this.status = status;
     this.group = group;
     this.ButtonLongPress = false;
-    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress, true);
+    this.ButtonLongPressTimer = engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress.bind(this), true);
 };
 
 LongShortBtn.prototype.ButtonUp = function() {
@@ -696,10 +696,10 @@ LongShortDoubleBtn.prototype.ButtonDown = function(channel, control, value, stat
         // and short press
         this.ButtonLongPress = false;
         this.ButtonLongPressTimer =
-            engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress,
+            engine.beginTimer(this.LongPressThreshold, this.ButtonAssertLongPress.bind(this),
                               true);
         this.ButtonTimer =
-            engine.beginTimer(this.DoublePressTimeOut, this.ButtonAssert1Press, true);
+            engine.beginTimer(this.DoublePressTimeOut, this.ButtonAssert1Press.bind(this), true);
     } else if (this.ButtonCount == 1) { // 2nd press (before short timer's out)
         // stop timers...
         if (this.ButtonLongPressTimer !== 0) {
@@ -862,7 +862,7 @@ Jogger.prototype.finishWheelTouch = function() {
         } else {
             // Check again soon.
             this.wheelTouchInertiaTimer =
-                engine.beginTimer(100, this.finishWheelTouch, true);
+                engine.beginTimer(100, this.finishWheelTouch.bind(this), true);
         }
     }
 };
@@ -893,7 +893,7 @@ Jogger.prototype.onWheelTouch = function(value,Do_iCut) {
             this.finishWheelTouch();
         } else { // If button up
             this.wheelTouchInertiaTimer =
-                engine.beginTimer(inertiaTime, this.finishWheelTouch, true);
+                engine.beginTimer(inertiaTime, this.finishWheelTouch.bind(this), true);
         }
     }
 };
@@ -1102,7 +1102,7 @@ ReloopBeatpad.rgbLEDs.prototype.flashOn = function(num_ms_on, RGBColor, num_ms_o
         // so we don't need this part  if flashcount=1
         // temporary timer. The end of this timer stops the permanent flashing
 
-        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.Stopflash, true);
+        this.flashTimer2 = engine.beginTimer(flashCount * (num_ms_on + num_ms_off) - num_ms_off, this.Stopflash.bind(this), true);
     }
 };
 
@@ -1633,6 +1633,10 @@ ReloopBeatpad.init = function(id, debug) {
     print("1/3 : Mapping initialization");
     print("============================");
     TurnLEDsOff();
+
+    if (engine.getValue("[App]", "num_samplers") < 16) {
+        engine.setValue("[App]", "num_samplers", 16);
+    }
 
     ReloopBeatpad.initButtonsObjects();
     ReloopBeatpad.initobjects();

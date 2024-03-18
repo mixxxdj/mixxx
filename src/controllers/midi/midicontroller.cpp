@@ -1,6 +1,7 @@
 #include "controllers/midi/midicontroller.h"
 
 #include <QJSValue>
+#include <algorithm>
 
 #include "control/controlobject.h"
 #include "controllers/defs_controllers.h"
@@ -11,6 +12,7 @@
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
+#include "util/make_const_iterator.h"
 #include "util/math.h"
 
 MidiController::MidiController(const QString& deviceName)
@@ -282,7 +284,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                 status,
                 mapping.control.group,
         };
-        if (!pEngine->executeFunction(function, args)) {
+        if (!pEngine->executeFunction(&function, args)) {
             qCWarning(m_logBase) << "MidiController: Invalid script function"
                                  << mapping.control.item;
         }
@@ -310,8 +312,9 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (auto it = m_fourteen_bit_queued_mappings.begin();
-             it != m_fourteen_bit_queued_mappings.end(); ++it) {
+        for (auto it = m_fourteen_bit_queued_mappings.constBegin();
+                it != m_fourteen_bit_queued_mappings.constEnd();
+                ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options & mapping.options) &
                         (MidiOption::FourteenBitLSB | MidiOption::FourteenBitMSB)) {
@@ -319,7 +322,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                             << "MidiController: 14-bit MIDI mapping has "
                                "mis-matched LSB/MSB options."
                             << "Ignoring both messages.";
-                    m_fourteen_bit_queued_mappings.erase(it);
+                    constErase(&m_fourteen_bit_queued_mappings, it);
                     return;
                 }
 
@@ -346,7 +349,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                 newValue = math_min(newValue, 127.0);
 
                 // Erase the queued message since we processed it.
-                m_fourteen_bit_queued_mappings.erase(it);
+                constErase(&m_fourteen_bit_queued_mappings, it);
 
                 found = true;
                 break;
@@ -516,10 +519,11 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
-    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
-    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
-        processInputMapping(it.value(), data, timestamp);
-    }
+    const auto [inputMappingsBegin, inputMappingsEnd] =
+            m_pMapping->getInputMappings().equal_range(mappingKey.key);
+    std::for_each(inputMappingsBegin, inputMappingsEnd, [&](const auto& inputMapping) {
+        processInputMapping(inputMapping, data, timestamp);
+    });
 }
 
 void MidiController::processInputMapping(const MidiInputMapping& mapping,

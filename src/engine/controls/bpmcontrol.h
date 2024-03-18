@@ -9,6 +9,7 @@
 #include "track/beats.h"
 #include "util/tapfilter.h"
 
+class ControlEncoder;
 class ControlLinPotmeter;
 class ControlPushButton;
 
@@ -100,6 +101,7 @@ class BpmControl : public EngineControl {
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
+    void slotTranslateBeatsMove(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
@@ -141,6 +143,7 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pAdjustBeatsSlower;
     ControlPushButton* m_pTranslateBeatsEarlier;
     ControlPushButton* m_pTranslateBeatsLater;
+    ControlEncoder* m_pTranslateBeatsMove;
 
     // The current effective BPM of the engine
     ControlLinPotmeter* m_pEngineBpm;
@@ -162,7 +165,6 @@ class BpmControl : public EngineControl {
     ControlValueAtomic<double> m_dUserOffset;
     QAtomicInt m_resetSyncAdjustment;
     ControlProxy* m_pSyncMode;
-    ControlProxy* m_pSyncEnabled;
 
     TapFilter m_tapFilter; // threadsafe
 

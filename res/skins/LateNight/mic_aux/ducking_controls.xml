@@ -9,7 +9,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/controls/button_3state.xml">
+          <Template src="skins:LateNight/controls/button_3state.xml">
             <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
             <SetVariable name="ObjectName">MicDucking</SetVariable>
             <SetVariable name="Size">42f,24f</SetVariable>
@@ -24,7 +24,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <Template src="skin:../LateNight/controls/knob.xml">
+          <Template src="skins:LateNight/controls/knob.xml">
             <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
             <SetVariable name="Size">35f,30f</SetVariable>
             <SetVariable name="KnobColor">red</SetVariable>

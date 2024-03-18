@@ -2,6 +2,7 @@
 
 #include <QStylePainter>
 
+#include "control/controlobject.h"
 #include "moc_wtrackwidgetgroup.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
@@ -11,21 +12,6 @@
 namespace {
 
 constexpr int kDefaultTrackColorAlpha = 255;
-
-constexpr WTrackMenu::Features kTrackMenuFeatures =
-        WTrackMenu::Feature::SearchRelated |
-        WTrackMenu::Feature::Playlist |
-        WTrackMenu::Feature::Crate |
-        WTrackMenu::Feature::Metadata |
-        WTrackMenu::Feature::Reset |
-        WTrackMenu::Feature::Analyze |
-        WTrackMenu::Feature::BPM |
-        WTrackMenu::Feature::Color |
-        WTrackMenu::Feature::FileBrowser |
-        WTrackMenu::Feature::Properties |
-        WTrackMenu::Feature::UpdateReplayGainFromPregain |
-        WTrackMenu::Feature::FindOnWeb |
-        WTrackMenu::Feature::SelectInLibrary;
 
 } // anonymous namespace
 
@@ -132,6 +118,15 @@ void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackWidgetGroup::ensureTrackMenuIsCreated() {
     if (m_pTrackMenu.get() == nullptr) {
         m_pTrackMenu = make_parented<WTrackMenu>(
-                this, m_pConfig, m_pLibrary, kTrackMenuFeatures);
+                this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
+
+        // See WTrackProperty for info
+        connect(m_pTrackMenu,
+                &WTrackMenu::trackMenuVisible,
+                this,
+                [this](bool visible) {
+                    ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
+                            visible ? 1.0 : 0.0);
+                });
     }
 }
