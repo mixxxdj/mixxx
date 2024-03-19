@@ -145,6 +145,10 @@ QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) 
     return m_directoryDao.loadAllDirectories(skipInvalidOrMissing);
 }
 
+QStringList TrackCollection::getRootDirStrings() const {
+    return m_directoryDao.getRootDirStrings();
+}
+
 bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
