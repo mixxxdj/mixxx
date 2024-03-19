@@ -96,16 +96,12 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-02-23" timestamp="1708721847">
+    <release version="2.5.0" type="development" date="2024-03-18" timestamp="1710747808">
       <description>
  <p>
   Features
  </p>
  <ul>
-  <li>
-   Sync Lock: End of track checking is not needed
-   #11035
-  </li>
   <li>
    BaseExternalLibraryFeature: Add ability to import external playlists as crates
    #11852
@@ -143,15 +139,45 @@
    Fullscreen toggle rework
    #11566
   </li>
+  <li>
+   Playlists: Update of playlist labels after adding tracks
+   #12866
+   #12761
+  </li>
+  <li>
+   Tracks: Custom text color for played tracks (qss)
+   #12744
+   #5911
+   #12912
+  </li>
+  <li>
+   History: Show track count and duration in sidebar
+   #12811
+   #12788
+  </li>
+  <li>
+   fixes around cratetablemodel, remove tracks + don't allow pasting tracks into locked playlists/crates or History
+   #12926
+  </li>
+  <li>
+   Tootips: Improve
+   rate_up/down
+   tooltips, pitch vs. speed
+   #12590
+  </li>
+  <li>
+   Shortkeys for track list management
+   #12020
+  </li>
+  <li>
+   Track menu: Rephrase "Reset" to "Clear"
+   #12955
+  </li>
  </ul>
  <p>
   Controller Mappings
  </p>
  <ul>
-  <li>
-   Traktor Kontrol S2 MK3: Add colored hotcues
-   #4637
-  </li>
   <li>
    Pioneer DDJ-FLX4: mapping improvements
    #12842
@@ -168,6 +194,10 @@
   <li>
    Add control for showing a deck's track menu
    #10825
+  </li>
+  <li>
+   Removed old examples HID keyboard and HID trackpad
+   #12977
   </li>
  </ul>
  <p>
@@ -206,6 +236,14 @@
    #12546
    #12794
    #12536
+  </li>
+  <li>
+   Install qml module on Windows
+   #12604
+  </li>
+  <li>
+   Add scrolling waveforms
+   #3967
   </li>
  </ul>
  <p>
@@ -300,6 +338,10 @@
    Revert "BaseTrackPlayer: Remove references to WaveformWidgetRenderer when using Qt6"
    #12342
   </li>
+  <li>
+   Fix Tango waveform splitter
+   #12939
+  </li>
  </ul>
  <p>
   Experimental iOs support
@@ -368,6 +410,62 @@
    Q_OS_MACOS
    cond-compiles where appropriate
    #12663
+  </li>
+ </ul>
+ <p>
+  Experimental WebAssembly support
+ </p>
+ <ul>
+  <li>
+   CMakeLists: Add support for targeting Emscripten/WebAssembly
+   #12918
+  </li>
+  <li>
+   CMakeLists: Emit better errors for exotic target platforms
+   #12910
+  </li>
+  <li>
+   Build: Add
+   PORTMIDI
+   flag for compiling with(out) PortMidi
+   #12913
+  </li>
+  <li>
+   DesktopHelper: Compile out process-spawning on WASM too
+   #12916
+  </li>
+  <li>
+   MixxxApplication: Use
+   QWasmIntegrationPlugin
+   when targeting WebAssembly
+   #12915
+  </li>
+  <li>
+   CMakeLists: Enable asyncify when targeting WASM
+   #12921
+  </li>
+  <li>
+   Resources: Bundle resources for preloading when targeting Emscripten/WASM
+   #12922
+  </li>
+  <li>
+   CMakeLists: Add
+   WASM_ASSERTIONS
+   option
+   #12931
+  </li>
+  <li>
+   VersionStore: Recognize Emscripten/WebAssembly
+   #12940
+  </li>
+  <li>
+   OpenGLWindow: Fix sizing on Wasm by setting
+   Qt::FramelessWindowHint
+   #12945
+  </li>
+  <li>
+   CMakeLists: Require WebGL 2.0 when building for Wasm
+   #12952
   </li>
  </ul>
  <p>
@@ -520,10 +618,54 @@
    #12726
   </li>
   <li>
+   refactor: Avoid temporary qlist allocation on midi sysex receive
+   #12843
+  </li>
+  <li>
+   SoundSourceMP3: fix unused function warning
+   #12847
+  </li>
+  <li>
+   update libkeyfinder to 2.2.8
+   #12853
+  </li>
+  <li>
+   feat(ci): Add eslint rule prefer-template
+   #12889
+  </li>
+  <li>
+   Labeler: Add
+   qml
+   to labeler config
+   #12911
+  </li>
+  <li>
+   WTrackMenu: Add missing wcoverartlabel.h include
+   #12924
+  </li>
+  <li>
+   Fix clazy complains and naming
+   #12935
+  </li>
+  <li>
+   src/library: Sort files into sub-directories
+   #12956
+  </li>
+  <li>
+   CMakeLists: Fix deduplication trap with
+   --preload-file
+   #12944
+  </li>
+  <li>
+   Add CI runner that allows cleaning up the download server
+   #12957
+  </li>
+  <li>
    Update to latest vcpkg dependencies
    #11649
    #12512
    #12067
+   #12898
   </li>
   <li>
    GitHub actions updates
@@ -562,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-02-23" timestamp="1708721847">
+    <release version="2.4.1" type="development" date="2024-03-18" timestamp="1710747808">
       <description>
  <p>
   Controller Mappings
