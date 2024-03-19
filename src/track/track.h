@@ -16,6 +16,7 @@
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
+#include "util/performancetimer.h"
 #include "waveform/waveform.h"
 
 class Track : public QObject {
@@ -569,6 +570,7 @@ class Track : public QObject {
     mixxx::BeatsPointer m_pBeats;
     QStack<mixxx::BeatsPointer> m_pBeatsUndoStack;
     bool m_undoingBeatsChange;
+    PerformanceTimer m_beatChangeTimer;
 
     // Visual waveform data
     ConstWaveformPointer m_waveform;

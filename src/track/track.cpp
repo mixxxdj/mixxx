@@ -8,6 +8,7 @@
 #include "sources/metadatasource.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/time.h"
 
 namespace {
 
@@ -56,6 +57,9 @@ inline mixxx::Bpm getBeatsPointerBpm(
 }
 
 constexpr int kMaxBeatsUndoStack = 10;
+// The minimum time that has to pass between beat changes to consider them 'separate'.
+// Used to filter actions done in quick succession.
+constexpr int kQuickBeatChangeDeltaMillis = 800;
 
 } // anonymous namespace
 
@@ -96,6 +100,7 @@ Track::Track(
                 << "->"
                 << numberOfInstancesBefore + 1;
     }
+    m_beatChangeTimer.start();
 }
 
 Track::~Track() {
@@ -439,8 +444,15 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
         if (m_pBeatsUndoStack.size() >= kMaxBeatsUndoStack) {
             m_pBeatsUndoStack.removeFirst();
         }
-        m_pBeatsUndoStack.push(m_pBeats);
+
+        // If changes done in quick succession, e.g. quick beats_translate_later,
+        // we only store the beats from before the first quick action.
+        mixxx::Duration elapsed = m_beatChangeTimer.restart();
+        if (elapsed > mixxx::Duration::fromMillis(kQuickBeatChangeDeltaMillis)) {
+            m_pBeatsUndoStack.push(m_pBeats);
+        }
     }
+
     m_pBeats = std::move(pBeats);
     m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
