@@ -8,6 +8,7 @@
 #include "sources/metadatasource.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/time.h"
 
 namespace {
 
@@ -56,6 +57,9 @@ inline mixxx::Bpm getBeatsPointerBpm(
 }
 
 constexpr int kMaxBeatsUndoStack = 10;
+// The minimum time that has to pass between beat changes to consider them 'separate'.
+// Used to filter actions done in quick succession.
+constexpr int kQuickBeatChangeDelta = 800;
 
 } // anonymous namespace
 
@@ -440,12 +444,24 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
     // Don't add null beats to the undo stack. Happens when beats are deserialized,
     // e.g. when opening the track menu.
     // Don't add beats to stack which we're about to undo.
+    mixxx::Duration time = mixxx::Time::elapsed();
     if (!m_undoingBeatsChange && m_pBeats != nullptr) {
         if (m_pBeatsUndoStack.size() >= kMaxBeatsUndoStack) {
             m_pBeatsUndoStack.removeFirst();
         }
-        m_pBeatsUndoStack.push(m_pBeats);
+        // For 'batch' changes done in quick succession, e.g. quick beats_translate_later,
+        // we only store the last action, i.e. remove the previous action.
+        const mixxx::Duration timeDelta = time - m_lastBeatChangeTime;
+        if (timeDelta < mixxx::Duration::fromMillis(kQuickBeatChangeDelta)) {
+            if (m_pBeatsUndoStack.size() > 1) {
+                m_pBeatsUndoStack.pop();
+            }
+        } else {
+            m_pBeatsUndoStack.push(m_pBeats);
+        }
     }
+    m_lastBeatChangeTime = time;
+
     m_pBeats = std::move(pBeats);
     m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;

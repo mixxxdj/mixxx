@@ -569,6 +569,7 @@ class Track : public QObject {
     mixxx::BeatsPointer m_pBeats;
     QStack<mixxx::BeatsPointer> m_pBeatsUndoStack;
     bool m_undoingBeatsChange;
+    mixxx::Duration m_lastBeatChangeTime;
 
     // Visual waveform data
     ConstWaveformPointer m_waveform;
