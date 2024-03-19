@@ -779,7 +779,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerBindFunctionI
                   engine.setValue('[Test]', 'coTimerId', this.timerId);
                }
             }
-            var MyMapping = new MyClass;
+            var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
     processEvents();
     EXPECT_DOUBLE_EQ(0.0, co->get());
@@ -827,7 +827,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_singleShotTimerArrowFunction
                   engine.setValue('[Test]', 'coTimerId', this.timerId);
                }
             }
-            var MyMapping = new MyClass;
+            var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
     processEvents();
     EXPECT_DOUBLE_EQ(0.0, co->get());
@@ -877,7 +877,7 @@ TEST_F(ControllerScriptEngineLegacyTest, beginTimer_repeatedTimerArrowFunctionCa
                   engine.setValue('[Test]', 'coTimerId', this.timerId);
                }
             }
-            var MyMapping = new MyClass;
+            var MyMapping = new MyClass();
             MyMapping.runTimer();)"));
     processEvents();
     EXPECT_DOUBLE_EQ(7.0, co->get());
