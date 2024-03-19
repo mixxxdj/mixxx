@@ -154,6 +154,17 @@
 
               <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
+              <!-- Undo beats change -->
+              <Template src="skins:LateNight/controls/button_1state.xml">
+                <!-- <SetVariable name="TooltipId">beats_translate_curpos</SetVariable> -->
+                <SetVariable name="ObjectName">LoopOut</SetVariable>
+                <SetVariable name="Size">26f,52f</SetVariable>
+                <SetVariable name="BtnSize">library_tall</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,beats_undo_adjustment</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
+
               <!-- CurPos -->
               <Template src="skins:LateNight/controls/button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
