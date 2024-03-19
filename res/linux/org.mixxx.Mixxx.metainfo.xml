@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-03-13" timestamp="1710302656">
+    <release version="2.5.0" type="development" date="2024-03-18" timestamp="1710747808">
       <description>
  <p>
   Features
@@ -140,18 +140,18 @@
    #11566
   </li>
   <li>
-   Playlists: Uupdate of playlist labels after adding tracks
+   Playlists: Update of playlist labels after adding tracks
    #12866
    #12761
   </li>
   <li>
-   Tracks: custom text color for played tracks (qss)
+   Tracks: Custom text color for played tracks (qss)
    #12744
    #5911
    #12912
   </li>
   <li>
-   History: show track count and duration in sidebar
+   History: Show track count and duration in sidebar
    #12811
    #12788
   </li>
@@ -170,7 +170,7 @@
    #12020
   </li>
   <li>
-   Track menu: rephrase "Reset" to "Clear"
+   Track menu: Rephrase "Reset" to "Clear"
    #12955
   </li>
  </ul>
@@ -618,7 +618,7 @@
    #12726
   </li>
   <li>
-   refactor: avoid temporary qlist allocation on midi sysex receive
+   refactor: Avoid temporary qlist allocation on midi sysex receive
    #12843
   </li>
   <li>
@@ -630,7 +630,7 @@
    #12853
   </li>
   <li>
-   feat(ci): add eslint rule prefer-template
+   feat(ci): Add eslint rule prefer-template
    #12889
   </li>
   <li>
@@ -648,7 +648,7 @@
    #12935
   </li>
   <li>
-   src/library: sort files into sub-directories
+   src/library: Sort files into sub-directories
    #12956
   </li>
   <li>
@@ -704,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710302656">
+    <release version="2.4.1" type="development" date="2024-03-18" timestamp="1710747808">
       <description>
  <p>
   Controller Mappings
