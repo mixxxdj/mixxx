@@ -1111,19 +1111,17 @@ void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) 
                 m_pConfig->getValue<bool>(kConfigKeyAllowTrackLoadToPlayingDeck);
     }
     // If the track load override is disabled, check to see if a track is
-    // playing before trying to load it
-    if (!allowLoadTrackIntoPlayingDeck) {
-        // TODO(XXX): Check for other than just the first preview deck.
-        if (group != "[PreviewDeck1]" &&
-                ControlObject::get(ConfigKey(group, "play")) > 0.0) {
-            return;
-        }
+    // playing before trying to load it.
+    // Always load to preview deck.
+    if (!allowLoadTrackIntoPlayingDeck &&
+            !PlayerManager::isPreviewDeckGroup(group) &&
+            ControlObject::get(ConfigKey(group, "play")) > 0.0) {
+        return;
     }
     auto index = indices.at(0);
     auto* trackModel = getTrackModel();
     TrackPointer pTrack;
-    if (trackModel &&
-            (pTrack = trackModel->getTrack(index))) {
+    if (trackModel && (pTrack = trackModel->getTrack(index))) {
         emit loadTrackToPlayer(pTrack, group, play);
     }
 }
