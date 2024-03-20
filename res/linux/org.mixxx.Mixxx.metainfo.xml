@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-03-12" timestamp="1710283944">
+    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710284546">
       <description>
  <p>
   Controller Mappings
@@ -112,7 +112,7 @@
    #12842
   </li>
   <li>
-   Traktor F1: Fixes for hid-parser and related script
+   Traktor Kontrol F1: Fixes for hid-parser and related script
    #12876
   </li>
   <li>
@@ -141,11 +141,11 @@
    #12445
   </li>
   <li>
-   Developer Tools: initially sort controls by group name, ascending
+   Developer Tools: Initially sort controls by group name, ascending
    #12884
   </li>
   <li>
-   History: show track count and duration in sidebar
+   History: Show track count and duration in sidebar
    #12811
   </li>
   <li>
@@ -1442,7 +1442,7 @@
    #12458
   </li>
   <li>
-   change SKIN_WARNING to show the skin file and line first, then c++ context
+   Change SKIN_WARNING to show the skin file and line first, then c++ context
    #12253
   </li>
   <li>
