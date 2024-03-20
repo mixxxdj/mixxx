@@ -1,7 +1,7 @@
 #pragma once
 
 // required for Qt-Macros
-#include <QObject>
+#include <qobjectdefs.h>
 
 namespace mixxx {
 
