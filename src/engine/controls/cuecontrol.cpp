@@ -2200,8 +2200,10 @@ void CueControl::updateIndicators() {
             posInsideLoop(currPos, loopInfo)) {
         // Check if we wrapped around
         if (!reverse && prevPos > currPos) {
+            qWarning() << "       loop wrap-around";
             loopingWrapAround = true;
         } else if (reverse && prevPos < currPos) {
+            qWarning() << "       loop wrap-around reverse";
             loopingWrapAroundReverse = true;
         }
     }
@@ -2219,15 +2221,31 @@ void CueControl::updateIndicators() {
                 // Hotcue inside loop?
                 posInsideLoop(cuePos, loopInfo) &&
                 (cuePos > prevPos || cuePos <= currPos)) {
+            qWarning() << "    >> activate"
+                       << pControl->getHotcueIndex() + 1
+                       << "(loop wrap-around)";
             active = 1.0;
         } else if (loopingWrapAroundReverse &&
                 // Hotcue inside loop?
                 posInsideLoop(cuePos, loopInfo) &&
                 (cuePos < prevPos || cuePos >= currPos)) {
+            qWarning() << "    >> activate"
+                       << pControl->getHotcueIndex() + 1
+                       << "(loop wrap-around reverse)";
             active = 1.0;
         } else if (reverse && cuePos <= prevPos && cuePos >= currPos) {
+            // Fires constantly when stopped at hotcue,
+            // enable if needed.
+            // qWarning() << "    >> activate"
+            //            << pControl->getHotcueIndex() + 1
+            //            << "(regular, reverse)";
             active = 1.0;
         } else if (!reverse && cuePos >= prevPos && cuePos <= currPos) {
+            // Fires constantly when stopped at hotcue,
+            // enable if needed.
+            // qWarning() << "    >> activate"
+            //            << pControl->getHotcueIndex() + 1
+            //            << "(regular)";
             active = 1.0;
         }
 
@@ -2249,6 +2267,9 @@ void CueControl::resetIndicators() {
 /// hotcue indicators. Otherwise m_prevPosition would be the position from before
 /// the seek and we'd falsely activate indicators.
 void CueControl::notifySeek(mixxx::audio::FramePos position) {
+    qWarning() << "     .";
+    qWarning() << "     notifySeek";
+    qWarning() << "     .";
     m_prevPosition.setValue(position);
 }
 
@@ -2815,6 +2836,11 @@ void HotcueControl::setStatus(HotcueControl::Status status) {
 void HotcueControl::setIndicator(double on) {
     if (on == m_pHotcueIndicator->get()) {
         return;
+    }
+    if (on > 0.0) {
+        qWarning() << "  >> set indicator"
+                   << getHotcueIndex() + 1
+                   << "ON";
     }
     m_pHotcueIndicator->forceSet(on);
     // TODO: check if we can squeez this into hotcue_N_status without too much effort.
