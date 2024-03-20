@@ -442,9 +442,15 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
 
     if (!m_denormals) {
         m_denormals = true;
+
         // This disables the denormals calculations, to avoid a
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
+
+        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero is not
+        // configurable, for discussion and links see
+        // https://github.com/mixxxdj/mixxx/pull/12917
+
 #if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
             qDebug() << "SSE: Enabling denormals to zero mode";
