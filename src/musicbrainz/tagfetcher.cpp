@@ -7,6 +7,7 @@
 #include "musicbrainz/chromaprinter.h"
 #include "track/track.h"
 #include "util/thread_affinity.h"
+#include <qmainwindow.h>
 
 namespace {
 
@@ -143,6 +144,7 @@ void TagFetcher::slotFingerprintReady() {
             &mixxx::AcoustIdLookupTask::networkError,
             this,
             &TagFetcher::slotAcoustIdTaskNetworkError);
+    
     m_pAcoustIdTask->invokeStart(
             kAcoustIdTimeoutMillis);
 }
@@ -303,7 +305,41 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
             std::move(pTrack),
             std::move(guessedTrackReleases));
 }
+void TagFetcher::updateStatusBar(const QString& message) {
+    emit fetchProgress(message);
+}
+void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
+        QNetworkReply::NetworkError errorCode,
+        const QString& errorString,
 
+        const mixxx::network::WebResponseWithContent& responseWithContent) {
+    Q_UNUSED(responseWithContent);
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    if (m_pCoverArtArchiveLinksTask.get() != sender()) {
+        return; // Stray call from an already aborted try
+    }
+    m_pCoverArtArchiveLinksTask = make_parented<mixxx::CoverArtArchiveLinksTask>(
+            &m_network,
+            std::move(errorString),
+            this);
+    QString userFriendlyErrorMessage = tr("An error occurred while fetching cover art: ");
+    switch (errorCode) {
+    case QNetworkReply::HostNotFoundError:
+        userFriendlyErrorMessage += tr("The server could not be found. Please check your internet connection or try again later.");
+        break;
+    case QNetworkReply::TimeoutError:
+        userFriendlyErrorMessage += tr("The request timed out. Please try again later.");
+        break;
+    default:
+        userFriendlyErrorMessage += tr("An unexpected error occurred: ") + errorString;
+    }
+
+    emit coverArtLinkNotFound(userFriendlyErrorMessage);
+    connect(m_pCoverArtArchiveLinksTask, &mixxx::CoverArtArchiveLinksTask::networkError, this, &TagFetcher::updateStatusBar);
+
+    terminate();
+}
 void TagFetcher::startFetchCoverArtLinks(
         const QUuid& albumReleaseId) {
     // In here the progress message can be handled better.
@@ -343,28 +379,6 @@ void TagFetcher::slotCoverArtArchiveLinksTaskAborted() {
         // stray call from an already aborted try
         return;
     }
-
-    terminate();
-}
-
-void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
-        QNetworkReply::NetworkError errorCode,
-        const QString& errorString,
-        const mixxx::network::WebResponseWithContent& responseWithContent) {
-    
-    // Log the error
-    qDebug() << "Cover Art Archive Links Task Network Error:"
-             << "Error code:" << errorCode
-             << "Error string:" << errorString;
-
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    if (m_pCoverArtArchiveLinksTask.get() != sender()) {
-        // Stray call from an already aborted try
-        return;
-    }
-
-    emit coverArtLinkNotFound();
-
     terminate();
 }
 

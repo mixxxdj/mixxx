@@ -6,6 +6,8 @@
 # Logs
 *.log
 *.log.*
+.vs/
+
 
 # TOOLS
 
