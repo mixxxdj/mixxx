@@ -209,7 +209,9 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
 
 // static
 void DragAndDropHelper::mousePressed(QMouseEvent* pEvent) {
-    mouseMoveInitiatesDragHelper(pEvent, true);
+    if (pEvent->button() == Qt::LeftButton) {
+        mouseMoveInitiatesDragHelper(pEvent, true);
+    }
 }
 
 // static
