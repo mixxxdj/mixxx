@@ -22,15 +22,14 @@ QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataT
         return url;
     }
     m_fileWatcher.addPath(url.toLocalFile());
+    m_pathTriggeringReload.insert(url.toLocalFile());
     return url;
 }
 
 void QmlAutoReload::slotFileChanged(const QString& changedFile) {
     qDebug() << "File" << changedFile << "used in QML interface has been changed.";
-    // This is to prevent double-reload when a file is updated twice
-    // in a row as part of the normal saving process. See note in
-    // QFileSystemWatcher::fileChanged documentation.
-    if (m_fileWatcher.removePath(changedFile)) {
+    if (m_pathTriggeringReload.remove(changedFile)) {
+        m_fileWatcher.removePath(changedFile);
         emit triggered();
     }
 }
