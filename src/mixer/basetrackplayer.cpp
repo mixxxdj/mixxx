@@ -629,7 +629,6 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
     QString trackInfoArtist = " ";
     QString trackInfoTitle = " ";
-//    QString DeckStatusTime = " ";
     QString DeckStatusTxtLine2 = " ";
     QString DeckStatusTxtLine3 = " ";
     QString DeckStatusTxtLine4 = " ";
@@ -649,18 +648,14 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
     } else {
         DeckStatusTxtLine2 = "Artist : \" \",";
         DeckStatusTxtLine3 = "Title : \" \",";
-        //DeckStatusTxtLine4 = "Time : \" \",";
         DeckStatusTxtLine4 = "Time : \"" + DeckStatusTime + "\",";
     }
     QString trackInfoDeck = getGroup();
     trackInfoDeck.replace("[Channel", "");
     trackInfoDeck.replace("]", "");
-        // how to call m_settingsPath;
-    //QString DeckStatusFilePath = getenv("appdata");
     QString DeckStatusFilePath = m_pConfig->getSettingsPath();
     DeckStatusFilePath.replace("Roaming", "Local");
     DeckStatusFilePath.replace("\\", "/");
-    //QString DeckStatusFileLocation = DeckStatusFilePath + "/Mixxx/controllers/Status" + getGroup() + ".js";
     QString DeckStatusFileLocation = DeckStatusFilePath + "/controllers/Status" + getGroup() + ".js";
     //  Different file for each Deck / Sampler
     QString DeckStatusTxtLine1 = "var TrackDeck" + trackInfoDeck + " = { ";
