@@ -32,6 +32,9 @@ class AutoDJFeature : public LibraryFeature {
 
     QVariant title() override;
 
+    void clear() override;
+    void paste() override;
+
     bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
     bool dragMoveAccept(const QUrl& url) override;
 

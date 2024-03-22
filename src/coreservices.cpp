@@ -30,6 +30,7 @@
 #include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "util/clipboard.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
@@ -335,6 +336,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
+    Clipboard::createInstance();
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -579,6 +581,8 @@ void CoreServices::finalize() {
 
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
+
+    Clipboard::destroy();
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     // The player manager has to be deleted before the library to ensure

@@ -3,17 +3,17 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-#include "library/bpmdelegate.h"
-#include "library/colordelegate.h"
 #include "library/coverartcache.h"
-#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
-#include "library/locationdelegate.h"
-#include "library/multilineeditdelegate.h"
-#include "library/playcountdelegate.h"
-#include "library/previewbuttondelegate.h"
-#include "library/stardelegate.h"
 #include "library/starrating.h"
+#include "library/tabledelegates/bpmdelegate.h"
+#include "library/tabledelegates/colordelegate.h"
+#include "library/tabledelegates/coverartdelegate.h"
+#include "library/tabledelegates/locationdelegate.h"
+#include "library/tabledelegates/multilineeditdelegate.h"
+#include "library/tabledelegates/playcountdelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
+#include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -21,6 +21,7 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/clipboard.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -112,6 +113,14 @@ void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
     }
     s_bpmColumnPrecision = precision;
 }
+
+bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
+        kApplyPlayedTrackColorDefault;
+
+void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
+    s_bApplyPlayedTrackColor = apply;
+}
+
 //static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
@@ -372,6 +381,59 @@ int BaseTrackTableModel::columnCount(const QModelIndex& parent) const {
     return countValidColumnHeaders();
 }
 
+void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
+    copyTracks(indices);
+    removeTracks(indices);
+}
+
+void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+}
+
+QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
+    // Don't paste into locked playlists and crates or into into History
+    if (isLocked() || !hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        return QList<int>{};
+    }
+
+    int insertionPos = 0;
+    const QList<QUrl> urls = Clipboard::urls();
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, true);
+    if (!trackIds.isEmpty()) {
+        addTracksWithTrackIds(insertionIndex, trackIds, &insertionPos);
+    }
+
+    QList<int> rows;
+    for (const auto& trackId : trackIds) {
+        const auto trackRows = getTrackRows(trackId);
+        for (int trackRow : trackRows) {
+            if (insertionPos == 0) {
+                rows.append(trackRow);
+            } else {
+                int pos =
+                        index(
+                                trackRow,
+                                fieldIndex(ColumnCache::
+                                                COLUMN_PLAYLISTTRACKSTABLE_POSITION))
+                                .data()
+                                .toInt();
+                // trackRows includes all instances in the table of the pasted
+                // tracks. We only want to select the ones we just inserted
+                if (pos >= insertionPos && pos < insertionPos + trackIds.size()) {
+                    rows.append(trackRow);
+                }
+            }
+        }
+    }
+    return rows;
+}
+
 bool BaseTrackTableModel::isColumnHiddenByDefault(
         int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
@@ -460,7 +522,7 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
         bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
-    } else if (role == Qt::ForegroundRole) {
+    } else if (role == Qt::ForegroundRole && s_bApplyPlayedTrackColor) {
         // Custom text color for played tracks
         auto playedRaw = rawSiblingValue(
                 index,

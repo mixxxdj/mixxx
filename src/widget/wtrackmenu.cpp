@@ -41,6 +41,7 @@
 #include "util/widgethelper.h"
 #include "widget/findonwebmenufactory.h"
 #include "widget/wcolorpickeraction.h"
+#include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
@@ -204,7 +205,7 @@ void WTrackMenu::createMenus() {
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu = new QMenu(this);
         //: Reset metadata in right click track context menu in library
-        m_pClearMetadataMenu->setTitle(tr("Reset"));
+        m_pClearMetadataMenu->setTitle(tr("Clear"));
     }
 
     if (featureIsEnabled(Feature::Analyze)) {
@@ -480,7 +481,7 @@ void WTrackMenu::createActions() {
             slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
         });
 
-        m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
+        m_pBpmResetAction = new QAction(tr("Clear BPM and Beatgrid"), m_pBPMMenu);
         connect(m_pBpmResetAction,
                 &QAction::triggered,
                 this,

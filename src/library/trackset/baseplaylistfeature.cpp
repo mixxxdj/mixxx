@@ -165,7 +165,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) const {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return kInvalidPlaylistId;
@@ -802,6 +802,16 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
             markTreeItem(children.at(i));
         }
     }
+}
+
+QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
+        int count,
+        int duration) const {
+    return QStringLiteral("%1 (%2) %3")
+            .arg(name,
+                    QString::number(count),
+                    mixxx::Duration::formatTime(
+                            duration, mixxx::Duration::Precision::SECONDS));
 }
 
 void BasePlaylistFeature::slotResetSelectedTrack() {

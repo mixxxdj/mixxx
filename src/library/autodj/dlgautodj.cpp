@@ -390,6 +390,10 @@ void DlgAutoDJ::setFocus() {
     m_pTrackTableView->setFocus();
 }
 
+void DlgAutoDJ::pasteFromSidebar() {
+    m_pTrackTableView->pasteFromSidebar();
+}
+
 void DlgAutoDJ::keyPressEvent(QKeyEvent* pEvent) {
     // If we receive key events either the mode selector or the spinbox are focused.
     // Return, Enter and Escape move focus back to the previously focused
