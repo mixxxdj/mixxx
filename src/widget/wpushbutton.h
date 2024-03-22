@@ -61,6 +61,9 @@ class WPushButton : public WWidget {
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+  private slots:
+    void onAnimTimer();
+
   protected:
     bool event(QEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
@@ -86,6 +89,8 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
+    void paintOnDevice(QPaintDevice* pd);
+
     // True, if the button is currently pressed
     bool m_bPressed;
     // True, if the button is pointer is above button
@@ -101,9 +106,12 @@ class WPushButton : public WWidget {
     // Associated background pixmap
     PaintablePointer m_pPixmapBack;
 
+    QPixmap m_preLongPressPixmap;
+
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
+    QTimer m_animTimer; // To animate long press latching
     QVector<int> m_align;
 };
