@@ -228,6 +228,9 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     setFocusPolicy(Qt::NoFocus);
+
+    // To animate the long press latching
+    connect(&m_animTimer, &QTimer::timeout, this, &WPushButton::onAnimTimer);
 }
 
 void WPushButton::setStates(int iStates) {
@@ -300,19 +303,28 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
     restyleAndRepaint();
 }
 
+void WPushButton::onAnimTimer() {
+    // To animate the long press latching
+    update();
+}
+
 void WPushButton::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
+    paintOnDevice(nullptr);
+}
+
+void WPushButton::paintOnDevice(QPaintDevice* pd) {
     QStyleOption option;
     option.initFrom(this);
-    QStylePainter p(this);
-    p.drawPrimitive(QStyle::PE_Widget, option);
+    std::unique_ptr<QStylePainter> p(pd ? new QStylePainter(pd, this) : new QStylePainter(this));
+    p->drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_iNoStates == 0) {
         return;
     }
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(rect(), &p);
+        m_pPixmapBack->draw(rect(), p.get());
     }
 
     const QVector<PaintablePointer>& pixmaps = m_bPressed ?
@@ -335,7 +347,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     PaintablePointer pPixmap = pixmaps.at(idx);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
-        pPixmap->draw(rect(), &p);
+        pPixmap->draw(rect(), p.get());
     }
 
     QString text = m_text.at(idx);
@@ -348,7 +360,25 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 //        int textWidth = width() - lPad - rPad;
 //        QRect textRect = rect().adjust(x1, y1, x2, y2);
         QString elidedText = metrics.elidedText(text, m_elideMode, width());
-        p.drawText(rect(), m_align.at(idx), elidedText);
+        p->drawText(rect(), m_align.at(idx), elidedText);
+    }
+
+    if (pd == nullptr && m_animTimer.isActive()) {
+        // Animate the long press latching by capturing the off state in a pixmap
+        // and gradually draw less of it over the duration of the long press latching.
+
+        qreal x = width() * static_cast<qreal>(m_clickTimer.remainingTime()) /
+                static_cast<qreal>(ControlPushButtonBehavior::
+                                kLongPressLatchingTimeMillis);
+        p->drawPixmap(QPointF(width() - x, 0),
+                m_preLongPressPixmap,
+                QRectF((width() - x) * devicePixelRatio(),
+                        0,
+                        x * devicePixelRatio(),
+                        height() * devicePixelRatio()));
+        if (m_clickTimer.remainingTime() <= 0) {
+            m_animTimer.stop();
+        }
     }
 }
 
@@ -395,12 +425,22 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle through the states
             emitValue = getControlParameterLeft();
+            const auto oldValue = emitValue;
             if (!util_isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
             }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
+                if (oldValue == 0.0) {
+                    // Capture pixmap with the off state ...
+                    m_preLongPressPixmap = QPixmap(width() * devicePixelRatio(),
+                            height() * devicePixelRatio());
+                    m_preLongPressPixmap.setDevicePixelRatio(devicePixelRatio());
+                    paintOnDevice(&m_preLongPressPixmap);
+                    // ... and start the long press latching animation
+                    m_animTimer.start(1000 / 60);
+                }
             }
         }
         setControlParameterLeftDown(emitValue);
@@ -454,6 +494,8 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
+
+    m_animTimer.stop();
 
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
