@@ -632,9 +632,14 @@ void Tooltips::addStandardTooltips() {
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
                              tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is a loop cue, toggles the loop and jumps to "
+                        "if the loop is behind the play position.")
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
                   << quantizeSnap
+                  << tr("If the play position is inside an active loop, "
+                        "stores the loop as loop cue.")
+                  << " " // add linebreak, '\n' would result in two linebreaks
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
                                 "labels and colors."))
