@@ -18,25 +18,30 @@ QmlAutoReload::QmlAutoReload() {
 }
 
 QUrl QmlAutoReload::intercept(const QUrl& url, QQmlAbstractUrlInterceptor::DataType type) {
-    if (!url.isLocalFile() || !QFileInfo(url.toLocalFile()).isFile()) {
+    const auto path = url.toLocalFile();
+
+    if (!url.isLocalFile() || !QFileInfo(path).isFile()) {
         return url;
     }
-    m_fileWatcher.addPath(url.toLocalFile());
+
+    m_fileWatcher.addPath(path);
     return url;
 }
 
 void QmlAutoReload::slotFileChanged(const QString& changedFile) {
     qDebug() << "File" << changedFile << "used in QML interface has been changed.";
-    // This is to prevent double-reload when a file is updated twice
-    // in a row as part of the normal saving process. See note in
-    // QFileSystemWatcher::fileChanged documentation.
-    if (m_fileWatcher.removePath(changedFile)) {
-        emit triggered();
-    }
+
+    // Unfortunately we cannot be sure that `QFileSystemWatcher::removePath()`
+    // actually returns true, so we need to emit the signal anyway.
+    m_fileWatcher.removePath(changedFile);
+    emit triggered();
 }
 
 void QmlAutoReload::clear() {
-    m_fileWatcher.removePaths(m_fileWatcher.files());
+    const auto files = m_fileWatcher.files();
+    if (!files.isEmpty()) {
+        m_fileWatcher.removePaths(files);
+    }
 }
 
 } // namespace qml
