@@ -14,6 +14,10 @@
 #include "moc_legacycontrollersettingslayout.cpp"
 #include "util/parented_ptr.h"
 
+namespace {
+constexpr int kMinScreenSizeForControllerSettingRow = 960;
+} // anonymous namespace
+
 void LegacyControllerSettingsLayoutContainer::addItem(
         std::shared_ptr<AbstractLegacyControllerSetting> setting) {
     m_elements.push_back(std::make_unique<LegacyControllerSettingsLayoutItem>(
@@ -63,11 +67,11 @@ QWidget* LegacyControllerSettingsLayoutItem::build(QWidget* parent) {
     VERIFY_OR_DEBUG_ASSERT(m_setting.get() != nullptr) {
         return nullptr;
     }
-    return m_setting->buildWidget(parent, m_prefferedOrientation);
+    return m_setting->buildWidget(parent, m_preferredOrientation);
 }
 
 void WLegacyControllerSettingsContainer::resizeEvent(QResizeEvent* event) {
-    if (m_prefferedOrientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
+    if (m_preferredOrientation == LegacyControllerSettingsLayoutContainer::VERTICAL) {
         return;
     }
 
@@ -76,13 +80,13 @@ void WLegacyControllerSettingsContainer::resizeEvent(QResizeEvent* event) {
         return;
     }
 
-    if (event->size().width() < MIN_SCREEN_SIZE_FOR_CONTROLLER_SETTING_ROW &&
+    if (event->size().width() < kMinScreenSizeForControllerSettingRow &&
             pLayout->direction() == QBoxLayout::LeftToRight) {
         pLayout->setDirection(QBoxLayout::TopToBottom);
         pLayout->setSpacing(6);
         emit orientationChanged(LegacyControllerSettingsLayoutContainer::VERTICAL);
     } else if (event->size().width() >=
-                    MIN_SCREEN_SIZE_FOR_CONTROLLER_SETTING_ROW &&
+                    kMinScreenSizeForControllerSettingRow &&
             pLayout->direction() == QBoxLayout::TopToBottom) {
         pLayout->setDirection(QBoxLayout::LeftToRight);
         pLayout->setSpacing(16);

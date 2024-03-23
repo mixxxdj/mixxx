@@ -1,16 +1,25 @@
 #include "controllers/legacycontrollermapping.h"
 
-void LegacyControllerMapping::loadSettings(const QFileInfo& mappingFile,
-        UserSettingsPointer pConfig,
+#include <QFileInfo>
+
+namespace {
+const QString kControllerSettingsPreferenceGroupKey = QStringLiteral("[ControllerSettings_%1_%2]");
+const QString kControllerSettingsSettingPathSubst = QStringLiteral("%SETTING_PATH");
+const QString kControllerSettingsResourcePathSubst = QStringLiteral("%RESOURCE_PATH");
+} // anonymous namespace
+
+void LegacyControllerMapping::loadSettings(UserSettingsPointer pConfig,
         const QString& controllerName) const {
+    auto mappingFile = QFileInfo(m_filePath);
+    DEBUG_ASSERT(mappingFile.exists());
     QString controllerPath =
             mappingFile.absoluteFilePath()
                     .replace(pConfig->getSettingsPath(),
-                            CONTROLLER_SETTINGS_SETTING_PATH_SUBST)
+                            kControllerSettingsSettingPathSubst)
                     .replace(pConfig->getResourcePath(),
-                            CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST);
+                            kControllerSettingsResourcePathSubst);
 
-    QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
+    QString controllerKey = QString(kControllerSettingsPreferenceGroupKey)
                                     .arg(controllerName, controllerPath);
 
     auto availableSettings = getSettings();
@@ -48,14 +57,21 @@ void LegacyControllerMapping::loadSettings(const QFileInfo& mappingFile,
     }
 }
 
-void LegacyControllerMapping::saveSettings(const QFileInfo& mappingFile,
-        UserSettingsPointer pConfig,
+void LegacyControllerMapping::resetSettings() {
+    for (auto setting : getSettings()) {
+        setting->reset();
+    }
+}
+
+void LegacyControllerMapping::saveSettings(UserSettingsPointer pConfig,
         const QString& controllerName) const {
+    auto mappingFile = QFileInfo(m_filePath);
+    DEBUG_ASSERT(mappingFile.exists());
     QString controllerPath =
             mappingFile.absoluteFilePath()
-                    .replace(pConfig->getSettingsPath(), CONTROLLER_SETTINGS_SETTING_PATH_SUBST)
-                    .replace(pConfig->getResourcePath(), CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST);
-    QString controllerKey = QString(CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY)
+                    .replace(pConfig->getSettingsPath(), kControllerSettingsSettingPathSubst)
+                    .replace(pConfig->getResourcePath(), kControllerSettingsResourcePathSubst);
+    QString controllerKey = QString(kControllerSettingsPreferenceGroupKey)
                                     .arg(controllerName, controllerPath);
     for (auto setting : getSettings()) {
         if (!setting->isDirty()) {

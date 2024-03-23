@@ -411,6 +411,7 @@ QString DlgPrefController::mappingFileLinks(
 
 void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     m_ui.comboBoxMapping->blockSignals(true);
+    QString currentMappingFilePath = mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex());
     m_ui.comboBoxMapping->clear();
 
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
@@ -462,14 +463,18 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     } else if (match.isValid()) {
         index = m_ui.comboBoxMapping->findText(match.getName());
     }
+    QString newMappingFilePath = mappingFilePathFromIndex(index);
     if (index == -1) {
         m_ui.chkEnabledDevice->setEnabled(false);
+        m_ui.groupBoxSettings->setVisible(false);
     } else {
         m_ui.comboBoxMapping->setCurrentIndex(index);
         m_ui.chkEnabledDevice->setEnabled(true);
     }
     m_ui.comboBoxMapping->blockSignals(false);
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    if (newMappingFilePath != currentMappingFilePath) {
+        slotMappingSelected(index);
+    }
 }
 
 MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
@@ -499,6 +504,8 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
+    // Force updating the controller settings
+    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
 
     // enumeratePresets calls slotPresetSelected which will check the m_ui.chkEnabledDevice
     // checkbox if there is a valid mapping saved in the mixxx.cfg file. However, the
@@ -515,9 +522,10 @@ void DlgPrefController::slotUpdate() {
 }
 
 void DlgPrefController::slotResetToDefaults() {
-    m_ui.chkEnabledDevice->setChecked(false);
+    if (m_pMapping) {
+        m_pMapping->resetSettings();
+    }
     enumerateMappings(QString());
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
 }
 
 void DlgPrefController::applyMappingChanges() {
@@ -558,22 +566,13 @@ void DlgPrefController::slotApply() {
         return;
     }
 
-    QString mappingFilePath = mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex());
-
-    auto mappingFileInfo = QFileInfo(mappingFilePath);
-
+    // If there is currently a mapping loaded, we save the new settings for it.
+    // Note that `m_pMapping`, `mappingFileInfo` and the setting on the screen
+    // will always match as the settings displayed are updated depending of the
+    // currently selected mapping in `slotMappingSelected`
     if (m_pMapping) {
-        m_pMapping->saveSettings(mappingFileInfo, m_pConfig, m_pController->getName());
+        m_pMapping->saveSettings(m_pConfig, m_pController->getName());
     }
-
-    m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
-            mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
-
-    if (m_pMapping) {
-        m_pMapping->loadSettings(mappingFileInfo, m_pConfig, m_pController->getName());
-    }
-
-    slotShowMapping(m_pMapping);
 
     // Load the resulting mapping (which has been mutated by the input/output
     // table models). The controller clones the mapping so we aren't touching
@@ -666,7 +665,6 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
-        pMapping->loadSettings(mappingFileInfo, m_pConfig, m_pController->getName());
     }
 
     if (previousMappingSaved) {
@@ -842,6 +840,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
 
     if (pMapping) {
+        pMapping->loadSettings(m_pConfig, m_pController->getName());
         auto settings = pMapping->getSettings();
         auto* pLayout = pMapping->getSettingsLayout();
 
@@ -861,10 +860,16 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         m_ui.groupBoxSettings->setVisible(!settings.isEmpty());
     }
 
-    // We mutate this mapping so keep a reference to it while we are using it.
-    // TODO(rryan): Clone it? Technically a waste since nothing else uses this
-    // copy but if someone did they might not expect it to change.
-    m_pMapping = pMapping;
+    // If there is still settings that may be saved and no new mapping selected
+    // (e.g restored default), we keep the the dirty mapping live so it can be
+    // saved in apply slot. If there is a new mapping, then setting changes are
+    // discarded
+    if (pMapping || (m_pMapping && !m_pMapping->hasDirtySettings())) {
+        // We mutate this mapping so keep a reference to it while we are using it.
+        // TODO(rryan): Clone it? Technically a waste since nothing else uses this
+        // copy but if someone did they might not expect it to change.
+        m_pMapping = pMapping;
+    }
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =

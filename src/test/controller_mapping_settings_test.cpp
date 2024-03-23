@@ -98,6 +98,8 @@ TEST_F(LegacyControllerMappingSettingsTest, booleanSettingEditing) {
     EXPECT_TRUE(setting->value().isBool());
     EXPECT_TRUE(setting->value().toBool());
     setting->reset();
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
     EXPECT_EQ(setting->stringify(), "false");
     EXPECT_TRUE(setting->isDefault());
 
@@ -196,6 +198,8 @@ TEST_F(LegacyControllerMappingSettingsTest, integerSettingEditing) {
     EXPECT_TRUE(setting->value().isNumber());
     EXPECT_EQ(setting->value().toInt(), 30);
     setting->reset();
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
     EXPECT_EQ(setting->stringify(), "0");
     EXPECT_TRUE(setting->isDefault());
     setting->parse("abc ", &ok);
@@ -294,6 +298,8 @@ TEST_F(LegacyControllerMappingSettingsTest, doubleSettingEditing) {
     EXPECT_TRUE(setting->value().isNumber());
     EXPECT_EQ(setting->value().toNumber(), 30.0);
     setting->reset();
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
     EXPECT_EQ(setting->stringify(), "0");
     EXPECT_TRUE(setting->isDefault());
     setting->parse("abc ", &ok);
@@ -375,6 +381,8 @@ TEST_F(LegacyControllerMappingSettingsTest, enumSettingEditing) {
     EXPECT_EQ(setting->value().toString(), "myOptionValue2");
     EXPECT_FALSE(setting->isDefault());
     setting->reset();
+    EXPECT_TRUE(setting->isDirty());
+    setting->save();
     EXPECT_EQ(setting->stringify(), "myOptionValue1");
     EXPECT_TRUE(setting->isDefault());
     setting->parse("abc ", &ok);

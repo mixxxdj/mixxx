@@ -2,25 +2,13 @@
 
 #include <util/assert.h>
 
-#include <QDebug>
 #include <QDir>
-#include <QDomElement>
-#include <QHash>
-#include <QList>
-#include <QSharedPointer>
-#include <QString>
-#include <QtGlobal>
-#include <memory>
-#include <vector>
+#include <QFileInfo>
 
 #include "controllers/legacycontrollersettings.h"
 #include "controllers/legacycontrollersettingslayout.h"
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
-
-#define CONTROLLER_SETTINGS_PREFERENCE_GROUP_KEY "[ControllerSettings_%1_%2]"
-#define CONTROLLER_SETTINGS_SETTING_PATH_SUBST "%SETTING_PATH"
-#define CONTROLLER_SETTINGS_RESOURCE_PATH_SUBST "%RESOURCE_PATH"
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
@@ -118,6 +106,15 @@ class LegacyControllerMapping {
 
     const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& getSettings() const {
         return m_settings;
+    }
+
+    bool hasDirtySettings() const {
+        for (const auto& setting : m_settings) {
+            if (setting->isDirty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     LegacyControllerSettingsLayoutElement* getSettingsLayout() {
@@ -244,12 +241,11 @@ class LegacyControllerMapping {
 
     virtual bool isMappable() const = 0;
 
-    void loadSettings(const QFileInfo& mappingFile,
-            UserSettingsPointer pConfig,
+    void loadSettings(UserSettingsPointer pConfig,
             const QString& controllerName) const;
-    void saveSettings(const QFileInfo& mappingFile,
-            UserSettingsPointer pConfig,
+    void saveSettings(UserSettingsPointer pConfig,
             const QString& controllerName) const;
+    void resetSettings();
 
     // Optional list of controller device match details
     QList<QHash<QString, QString>> m_productMatches;

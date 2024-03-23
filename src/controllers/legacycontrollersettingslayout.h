@@ -1,25 +1,10 @@
 #pragma once
 
-#include <util/assert.h>
-
-#include <QBoxLayout>
-#include <QDebug>
-#include <QDomElement>
-#include <QHash>
-#include <QList>
-#include <QSharedPointer>
-#include <QString>
-#include <QWidget>
-#include <QtGlobal>
-#include <memory>
-#include <vector>
-
 #include "defs_urls.h"
 #include "preferences/usersettings.h"
 
-#define MIN_SCREEN_SIZE_FOR_CONTROLLER_SETTING_ROW 960
-
 class AbstractLegacyControllerSetting;
+class QBoxLayout;
 
 /// @brief Layout information used for controller setting when rendered in the Preference Dialog
 class LegacyControllerSettingsLayoutElement {
@@ -112,7 +97,7 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
                     LegacyControllerSettingsGroup::HORIZONTAL)
             : LegacyControllerSettingsLayoutElement(),
               m_setting(setting),
-              m_prefferedOrientation(orientation) {
+              m_preferredOrientation(orientation) {
     }
     virtual ~LegacyControllerSettingsLayoutItem() = default;
 
@@ -124,7 +109,7 @@ class LegacyControllerSettingsLayoutItem : public LegacyControllerSettingsLayout
 
   private:
     std::shared_ptr<AbstractLegacyControllerSetting> m_setting;
-    LegacyControllerSettingsLayoutContainer::Disposition m_prefferedOrientation;
+    LegacyControllerSettingsLayoutContainer::Disposition m_preferredOrientation;
 };
 
 class WLegacyControllerSettingsContainer : public QWidget {
@@ -132,9 +117,9 @@ class WLegacyControllerSettingsContainer : public QWidget {
   public:
     WLegacyControllerSettingsContainer(
             LegacyControllerSettingsLayoutContainer::Disposition
-                    prefferedOrientation,
+                    preferredOrientation,
             QWidget* parent)
-            : QWidget(parent), m_prefferedOrientation(prefferedOrientation) {
+            : QWidget(parent), m_preferredOrientation(preferredOrientation) {
     }
 
   protected:
@@ -144,5 +129,5 @@ class WLegacyControllerSettingsContainer : public QWidget {
     void orientationChanged(LegacyControllerSettingsLayoutContainer::Disposition);
 
   private:
-    LegacyControllerSettingsLayoutContainer::Disposition m_prefferedOrientation;
+    LegacyControllerSettingsLayoutContainer::Disposition m_preferredOrientation;
 };

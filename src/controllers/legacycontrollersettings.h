@@ -1,23 +1,13 @@
 #pragma once
 
-#include <QDomElement>
 #include <QJSValue>
-#include <QLabel>
-#include <QLayout>
-#include <QList>
-#include <QLocale>
-#include <QObject>
-#include <QSizePolicy>
-#include <QSpinBox>
-#include <QString>
-#include <QWidget>
-#include <limits>
-#include <memory>
-#include <tuple>
 
 #include "controllers/legacycontrollersettingsfactory.h"
 #include "controllers/legacycontrollersettingslayout.h"
 #include "util/parented_ptr.h"
+
+class QSpinBox;
+class QDoubleSpinBox;
 
 /// @brief The abstract controller setting. Any type of setting will have to
 /// implement this base class
@@ -114,6 +104,8 @@ class AbstractLegacyControllerSetting : public QObject {
     /// This signal will be emitted when the user has interacted with the
     /// setting and changed its value
     void changed();
+    /// This signal will be emitted when the user has requested a value reset
+    void valueReset();
 
   private:
     QString m_variableName;
@@ -159,8 +151,8 @@ class LegacyControllerBooleanSetting
     }
 
     virtual void reset() override {
-        m_savedValue = m_defaultValue;
         m_editedValue = m_defaultValue;
+        emit valueReset();
     }
 
     static AbstractLegacyControllerSetting* createFrom(const QDomElement& element) {
@@ -229,6 +221,7 @@ class LegacyControllerNumberSetting
             m_defaultValue = 0;
         }
         reset();
+        save();
     }
 
     virtual ~LegacyControllerNumberSetting() = default;
@@ -257,8 +250,8 @@ class LegacyControllerNumberSetting
     }
 
     virtual void reset() override {
-        m_savedValue = m_defaultValue;
         m_editedValue = m_defaultValue;
+        emit valueReset();
     }
 
     /// @brief Whether of not this setting definition and its current state are
@@ -382,8 +375,8 @@ class LegacyControllerEnumSetting
     }
 
     virtual void reset() override {
-        m_savedValue = m_defaultValue;
         m_editedValue = m_defaultValue;
+        emit valueReset();
     }
 
     /// @brief Whether or not this setting definition and its current state are

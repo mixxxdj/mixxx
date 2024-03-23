@@ -1,17 +1,6 @@
 #pragma once
 
 #include <QDomElement>
-#include <QLabel>
-#include <QLayout>
-#include <QList>
-#include <QObject>
-#include <QSizePolicy>
-#include <QSpinBox>
-#include <QString>
-#include <QWidget>
-#include <limits>
-#include <memory>
-#include <tuple>
 
 #include "controllers/legacycontrollersettingsfactory.h"
 

@@ -4,6 +4,10 @@
 
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QLabel>
+#include <QLayout>
+#include <QSpinBox>
 
 #include "moc_legacycontrollersettings.cpp"
 
@@ -95,15 +99,19 @@ QWidget* LegacyControllerBooleanSetting::buildWidget(
 }
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
-    auto pCheckBox = make_parented<QCheckBox>(label(), pParent);
+    auto* pCheckBox = new QCheckBox(label(), pParent);
     pCheckBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    if (m_savedValue) {
+    if (m_editedValue) {
         pCheckBox->setCheckState(Qt::Checked);
     }
 
     if (!description().isEmpty()) {
         pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
     }
+
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, &pCheckBox]() {
+        pCheckBox->setCheckState(m_editedValue ? Qt::Checked : Qt::Unchecked);
+    });
 
     connect(pCheckBox, &QCheckBox::stateChanged, this, [this](int state) {
         m_editedValue = state == Qt::Checked;
@@ -128,14 +136,18 @@ QWidget* LegacyControllerNumberSetting<SettingType,
         ValueSerializer,
         ValueDeserializer,
         InputWidget>::buildInputWidget(QWidget* pParent) {
-    auto spinBox = make_parented<InputWidget>(pParent);
-    spinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    auto* pSpinBox = new InputWidget(pParent);
+    pSpinBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 
-    spinBox->setRange(m_minValue, m_maxValue);
-    spinBox->setSingleStep(m_stepValue);
-    spinBox->setValue(m_savedValue);
+    pSpinBox->setRange(m_minValue, m_maxValue);
+    pSpinBox->setSingleStep(m_stepValue);
+    pSpinBox->setValue(m_editedValue);
 
-    connect(spinBox,
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pSpinBox, [this, pSpinBox]() {
+        pSpinBox->setValue(m_editedValue);
+    });
+
+    connect(pSpinBox,
             QOverload<SettingType>::of(&InputWidget::valueChanged),
             this,
             [this](SettingType value) {
@@ -143,7 +155,7 @@ QWidget* LegacyControllerNumberSetting<SettingType,
                 emit changed();
             });
 
-    return spinBox;
+    return pSpinBox;
 }
 
 QWidget* LegacyControllerRealSetting::buildInputWidget(QWidget* pParent) {
@@ -174,6 +186,7 @@ LegacyControllerEnumSetting::LegacyControllerEnumSetting(
         pos++;
     }
     reset();
+    save();
 }
 
 void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
@@ -181,6 +194,7 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
         *ok = false;
     }
     reset();
+    save();
 
     size_t pos = 0;
     for (const auto& value : qAsConst(m_options)) {
@@ -197,14 +211,18 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 }
 
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
-    auto comboBox = make_parented<QComboBox>(pParent);
+    auto* pComboBox = new QComboBox(pParent);
 
     for (const auto& value : qAsConst(m_options)) {
-        comboBox->addItem(std::get<1>(value));
+        pComboBox->addItem(std::get<1>(value));
     }
-    comboBox->setCurrentIndex(static_cast<int>(m_savedValue));
+    pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
 
-    connect(comboBox,
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, &pComboBox]() {
+        pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
+    });
+
+    connect(pComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             [this](int selected) {
@@ -212,5 +230,5 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
                 emit changed();
             });
 
-    return comboBox;
+    return pComboBox;
 }
