@@ -434,8 +434,8 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
                 if (oldValue == 0.0) {
                     // Capture pixmap with the off state ...
-                    m_preLongPressPixmap = QPixmap(width() * devicePixelRatio(),
-                            height() * devicePixelRatio());
+                    m_preLongPressPixmap = QPixmap(static_cast<int>(width() * devicePixelRatio()),
+                            static_cast<int>(height() * devicePixelRatio()));
                     m_preLongPressPixmap.setDevicePixelRatio(devicePixelRatio());
                     paintOnDevice(&m_preLongPressPixmap);
                     // ... and start the long press latching animation
