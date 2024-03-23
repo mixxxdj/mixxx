@@ -16,7 +16,7 @@ enum class JsonType {
 };
 
 const QString kListenBrainzAPIURL = QStringLiteral("https://api.listenbrainz.org/1/submit-listens");
-//const QString kMockServerURL = QStringLiteral("http://localhost/cgi-bin/mixxxPostDummy.py");
+// const QString kMockServerURL = QStringLiteral("http://localhost/cgi-bin/mixxxPostDummy.py");
 
 QByteArray getJSONFromTrack(TrackPointer pTrack, JsonType type) {
     QJsonObject jsonObject;

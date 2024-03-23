@@ -64,7 +64,7 @@ class ScrobblingTest : public ::testing::Test {
         scrobblingManager.setTimer(timerScrobbler);
         dummyTrackLeft->setDuration(120);
         dummyTrackRight->setDuration(120);
-        //Set up left player
+        // Set up left player
         QObject::connect(&dummyPlayerLeft,
                 &Deck::newTrackLoaded,
                 [this](TrackPointer pTrack) -> void {
@@ -81,7 +81,7 @@ class ScrobblingTest : public ::testing::Test {
                 &Deck::trackPaused,
                 &scrobblingManager,
                 &ScrobblingManager::slotTrackPaused);
-        //Set up right player
+        // Set up right player
         QObject::connect(&dummyPlayerRight,
                 &Deck::newTrackLoaded,
                 [this](TrackPointer pTrack) -> void {
@@ -117,7 +117,7 @@ class ScrobblingTest : public ::testing::Test {
     AudibleStrategyMock* strategyMock;
 };
 
-//1 track, audible the whole time
+// 1 track, audible the whole time
 TEST_F(ScrobblingTest, SingleTrackAudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
@@ -149,7 +149,7 @@ TEST_F(ScrobblingTest, SingleTrackAudible) {
     dummyPlayerLeft.emitTrackResumed(dummyTrackLeft);
 }
 
-//1 Track, inaudible.
+// 1 Track, inaudible.
 TEST_F(ScrobblingTest, SingleTrackInaudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
@@ -168,8 +168,8 @@ TEST_F(ScrobblingTest, SingleTrackInaudible) {
     ASSERT_FALSE(scrobblingManager.hasScrobbledAnyTrack());
 }
 
-//Doesn't work because the two Id's are -1 and Scrobbling
-// Manager stores ID's not TrackPointers.
+// Doesn't work because the two Id's are -1 and Scrobbling
+//  Manager stores ID's not TrackPointers.
 TEST_F(ScrobblingTest, DISABLED_TwoTracksUnbalanced) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {

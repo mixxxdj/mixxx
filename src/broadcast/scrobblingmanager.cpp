@@ -165,7 +165,7 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QStri
 }
 
 void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup) {
-    //Empty player gives a null pointer.
+    // Empty player gives a null pointer.
     if (!pNewTrack) {
         return;
     }

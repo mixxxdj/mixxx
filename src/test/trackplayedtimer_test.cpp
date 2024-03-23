@@ -29,8 +29,8 @@ class DISABLED_TrackTimingInfoTest : public testing::Test {
 
 TEST_F(DISABLED_TrackTimingInfoTest, SendsSignalWhenScrobbable) {
     testTrack->setDuration(5);
-    //These have to be created in the heap otherwise
-    //we're deleting them twice.
+    // These have to be created in the heap otherwise
+    // we're deleting them twice.
     ElapsedTimerMock* etmock = new ElapsedTimerMock();
     TimerMock* tmock = new TimerMock();
     EXPECT_CALL(*etmock, invalidate())
