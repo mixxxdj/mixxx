@@ -13,6 +13,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_scrobblingmanager.cpp"
+#include "util/make_const_iterator.h"
 
 #ifdef MIXXX_BUILD_DEBUG
 QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info) {
@@ -134,7 +135,8 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     qDebug() << "Hash:" << m_trackInfoHashDict;
 #endif
     DEBUG_ASSERT(m_trackInfoHashDict.contains(pPausedTrack->getId()));
-    for (const auto& playerGroup : m_trackInfoHashDict.value(pPausedTrack->getId()).m_players) {
+    const TrackInfo pausedTrackInfo = m_trackInfoHashDict.value(pPausedTrack->getId());
+    for (const auto& playerGroup : pausedTrackInfo.m_players) {
         BaseTrackPlayer* player = m_pPlayerManager->getPlayer(playerGroup);
         DEBUG_ASSERT(player);
         if (!player->isTrackPaused()) {
@@ -183,7 +185,7 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString
         if (it->m_players.contains(playerGroup) && it.key() != pNewTrack->getId()) {
             it->m_players.remove(playerGroup);
             if (it->m_players.empty()) {
-                it = m_trackInfoHashDict.erase(it);
+                it = erase(&m_trackInfoHashDict, it);
             } else {
                 ++it;
             }
