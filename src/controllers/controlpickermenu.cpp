@@ -578,14 +578,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pLoopMenu = addSubmenu(tr("Looping"));
     // add beatloop_activate and beatlooproll_activate to both the
     // Loop and Beat-Loop menus to make sure users can find them.
+    QString noBeatsSeconds = tr(" (if track has no beats the unit is seconds)");
     QString beatloopActivateTitle = tr("Loop Selected Beats");
-    QString beatloopActivateDescription = tr("Create a beat loop of selected beat size");
+    QString beatloopActivateDescription =
+            tr("Create a beat loop of selected beat size") + noBeatsSeconds;
     QString beatloopRollActivateTitle = tr("Loop Roll Selected Beats");
-    QString beatloopRollActivateDescription = tr("Create a rolling beat loop of selected beat size");
+    QString beatloopRollActivateDescription =
+            tr("Create a rolling beat loop of selected beat size") + noBeatsSeconds;
     QString beatLoopTitle = tr("Loop %1 Beats");
     QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
     QString beatLoopDescription = tr("Create %1-beat loop");
-    QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
+    QString beatLoopRollDescription =
+            tr("Create temporary %1-beat loop roll") + noBeatsSeconds;
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 
@@ -653,8 +657,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* pBeatJumpMenu = addSubmenu(tr("Beat Jump / Loop Move"));
     QString beatJumpForwardTitle = tr("Jump / Move Loop Forward %1 Beats");
     QString beatJumpBackwardTitle = tr("Jump / Move Loop Backward %1 Beats");
-    QString beatJumpForwardDescription = tr("Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats");
-    QString beatJumpBackwardDescription = tr("Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats");
+    QString beatJumpForwardDescription =
+            tr("Jump forward by %1 beats, or if a loop is enabled, move the "
+               "loop forward %1 beats") +
+            noBeatsSeconds;
+    QString beatJumpBackwardDescription =
+            tr("Jump backward by %1 beats, or if a loop is enabled, move the "
+               "loop backward %1 beats") +
+            noBeatsSeconds;
     addDeckControl("beatjump_forward",
             tr("Beat Jump / Loop Move Forward Selected Beats"),
             tr("Jump forward by the selected number of beats, or if a loop is "
@@ -690,8 +700,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     // Loop moving
     QString loopMoveForwardTitle = tr("Move Loop +%1 Beats");
     QString loopMoveBackwardTitle = tr("Move Loop -%1 Beats");
-    QString loopMoveForwardDescription = tr("Move loop forward by %1 beats");
-    QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats");
+    QString loopMoveForwardDescription = tr("Move loop forward by %1 beats") +
+            noBeatsSeconds;
+    QString loopMoveBackwardDescription = tr("Move loop backward by %1 beats") +
+            noBeatsSeconds;
 
     QMenu* pLoopmoveFwdSubmenu = addSubmenu(tr("Loop Move Forward"), pBeatJumpMenu);
     foreach (double beats, beatSizes) {
