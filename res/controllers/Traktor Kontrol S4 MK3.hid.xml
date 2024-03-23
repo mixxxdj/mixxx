@@ -451,7 +451,7 @@
                     variable="librarySortableColumns5Value"
                     type="enum"
                     label="Fifth column">
-                    <value label="---" default="true">0</value>
+                    <value label="---">0</value>
                     <value label="Artist">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
@@ -468,7 +468,7 @@
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
                     <value label="ReplayGain">16</value>
-                    <value label="Datetime Added">17</value>
+                    <value label="Datetime Added" default="true">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>

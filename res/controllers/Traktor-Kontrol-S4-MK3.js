@@ -38,103 +38,124 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
+
+/**
+ * This helper function is used to ensure backward compatibility between 2.4 and later versions
+ * @param {string} key the setting key as per defined in the manifest
+ * @param {any} defaultVal the value to use if not controller setting is available
+ * @returns {any} the value to use for this setting
+ */
+var getSetting = (key, defaultVal) => {
+    if (engine.getSetting) {
+        const value = engine.getSetting(key);
+        if (typeof value !== typeof defaultVal) {
+            console.warn(`expected a value of type ${typeof defaultVal} for "${key}", got a ${typeof value} ("${value}"). Using default value.`);
+            return defaultVal;
+        }
+        return value;
+    }
+    return engine.getSetting ? engine.getSetting(key) : defaultVal;
+};
+
 /*
  * USER CONFIGURABLE SETTINGS
- * Adjust these to your liking
+ * Adjust these to your liking or change settings in the preferences (Mixxx >= 2.5)
+ * Make sure to edit the second argument, or second value after the coma
  */
 
 const DeckColors = [
-    LedColors[engine.getSetting("deckA")] || LedColors.red,
-    LedColors[engine.getSetting("deckB")] || LedColors.blue,
-    LedColors[engine.getSetting("deckC")] || LedColors.yellow,
-    LedColors[engine.getSetting("deckD")] || LedColors.purple,
+    LedColors[getSetting("deckA", "red")],
+    LedColors[getSetting("deckB", "blue")],
+    LedColors[getSetting("deckC", "yellow")],
+    LedColors[getSetting("deckD", "purple")],
 ];
 
 const LibrarySortableColumns = [
-    script.LIBRARY_COLUMNS.ARTIST,
-    script.LIBRARY_COLUMNS.TITLE,
-    script.LIBRARY_COLUMNS.BPM,
-    script.LIBRARY_COLUMNS.KEY,
-    script.LIBRARY_COLUMNS.DATETIME_ADDED,
-];
+    getSetting("librarySortableColumns1Value", script.LIBRARY_COLUMNS.ARTIST.toString()),
+    getSetting("librarySortableColumns2Value", script.LIBRARY_COLUMNS.TITLE.toString()),
+    getSetting("librarySortableColumns3Value", script.LIBRARY_COLUMNS.BPM.toString()),
+    getSetting("librarySortableColumns4Value", script.LIBRARY_COLUMNS.KEY.toString()),
+    getSetting("librarySortableColumns5Value", script.LIBRARY_COLUMNS.DATETIME_ADDED.toString()),
+    getSetting("librarySortableColumns6Value", "0"),
+].map(c => parseInt(c)).filter(c => c); // Filter '0' column, equivalent to '---' value in the UI or disabled
 
-const LoopWheelMoveFactor = engine.getSetting("loopWheelMoveFactor") || 50;
-const LoopEncoderMoveFactor = engine.getSetting("loopEncoderMoveFactor") || 500;
-const LoopEncoderShiftMoveFactor = engine.getSetting("loopEncoderShiftMoveFactor") || 2500;
+const LoopWheelMoveFactor = getSetting("loopWheelMoveFactor", 50);
+const LoopEncoderMoveFactor = getSetting("loopEncoderMoveFactor", 500);
+const LoopEncoderShiftMoveFactor = getSetting("loopEncoderShiftMoveFactor", 2500);
 
-const TempoFaderSoftTakeoverColorLow = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorLow")] || LedColors.white;
-const TempoFaderSoftTakeoverColorHigh = LedColors[engine.getSetting("tempoFaderSoftTakeoverColorHigh")] || LedColors.green;
+const TempoFaderSoftTakeoverColorLow = LedColors[getSetting("tempoFaderSoftTakeoverColorLow", "white")];
+const TempoFaderSoftTakeoverColorHigh = LedColors[getSetting("tempoFaderSoftTakeoverColorHigh", "green")];
 
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
-const KeepLEDWithOneColorDimedWhenInactive = !!engine.getSetting("keepLEDWithOneColorDimedWhenInactive");
+const KeepLEDWithOneColorDimedWhenInactive = getSetting("keepLEDWithOneColorDimedWhenInactive", true);
 
 // Keep both deck select buttons backlit and do not fully turn off the inactive deck button.
 // 'true' will keep the unseclected deck dimmed, 'false' to fully turn it off. Default: true
-const KeepDeckSelectDimmed = !!engine.getSetting("keepDeckSelectDimmed");
+const KeepDeckSelectDimmed = getSetting("keepDeckSelectDimmed", true);
 
 // Define whether the keylock is mapped when doing "shift+master" (on press) or "shift+sync" (on release since long push copies the key)".
 // 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
-const UseKeylockOnMaster = !!engine.getSetting("useKeylockOnMaster");
+const UseKeylockOnMaster = getSetting("useKeylockOnMaster", false);
 
 // Define whether the grid button would blink when the playback is going over a detected beat. Can help to adjust beat grid.
 // Default: false
-const GridButtonBlinkOverBeat = !!engine.getSetting("gridButtonBlinkOverBeat");
+const GridButtonBlinkOverBeat = getSetting("gridButtonBlinkOverBeat", false);
 
 // Wheel led blinking if reaching the end of track warning (default 30 seconds, can be changed in the settings, under "Waveforms" > "End of track warning").
 // Default: true
-const WheelLedBlinkOnTrackEnd = !!engine.getSetting("wheelLedBlinkOnTrackEnd");
+const WheelLedBlinkOnTrackEnd = getSetting("wheelLedBlinkOnTrackEnd", true);
 
 // When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
 // Default: false
-const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMixAuxOnShift");
+const MixerControlsMixAuxOnShift = getSetting("mixerControlsMixAuxOnShift", false);
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
-const WheelSpeedSample = engine.getSetting("wheelSpeedSample") || 3;
+const WheelSpeedSample = getSetting("wheelSpeedSample", 5);
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
-const UseBeatloopRollInsteadOfSampler = engine.getSetting("useBeatloopRollInsteadOfSampler") || false;
+const UseBeatloopRollInsteadOfSampler = getSetting("useBeatloopRollInsteadOfSampler", false);
 
 // Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
 // last size will be ignored
 const BeatLoopRolls = [
-    engine.getSetting("beatLoopRollsSize0") || 1/8,
-    engine.getSetting("beatLoopRollsSize1") || 1/4,
-    engine.getSetting("beatLoopRollsSize2") || 1/2,
-    engine.getSetting("beatLoopRollsSize3") || 1,
-    engine.getSetting("beatLoopRollsSize4") || 2,
-    engine.getSetting("beatLoopRollsSize5") || 4,
-    engine.getSetting("beatLoopRollsSize6") || "half",
-    engine.getSetting("beatLoopRollsSize7") || "double"
+    getSetting("beatLoopRollsSize0", "1/8"),
+    getSetting("beatLoopRollsSize1", "1/4"),
+    getSetting("beatLoopRollsSize2", "1/2"),
+    getSetting("beatLoopRollsSize3", "1"),
+    getSetting("beatLoopRollsSize4", "2"),
+    getSetting("beatLoopRollsSize5", "4"),
+    getSetting("beatLoopRollsSize6", "half"),
+    getSetting("beatLoopRollsSize7", "double")
 ];
 
 
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
-const BaseRevolutionsPerMinute = engine.getSetting("baseRevolutionsPerMinute") || 33 + 1/3;
+const BaseRevolutionsPerMinute = parseInt(getSetting("baseRevolutionsPerMinute", "0")) || 33 + 1/3;
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
 // Default: false
-const UseMotors = engine.getSetting("useMotors") || false;
+const UseMotors = getSetting("useMotors", false);
 
 // Define how many wheel moves are sampled to compute the speed when using the motor. This is helpful to mitigate delay that
 // occurs in communication as well as Mixxx limitation to 20ms latency.
 // The more you have, the more the speed is accurate.
 // less responsive it gets in Mixxx. Default: 20
-const TurnTableSpeedSample = engine.getSetting("turnTableSpeedSample") || 20;
+const TurnTableSpeedSample = getSetting("turnTableSpeedSample", 20);
 
 // Define how much the wheel will resist. It is a similar setting that the Grid+Wheel in Tracktor
 // Value must defined between 0 to 1. 0 is very tight, 1 is very loose.
 // Default: 0.5
-const TightnessFactor = engine.getSetting("tightnessFactor") || 0.5;
+const TightnessFactor = getSetting("tightnessFactor", 0.5);
 
 // Define how much force can the motor use. This defines how much the wheel will "fight" you when you block it in TT mode
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
-const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
+const MaxWheelForce = getSetting("maxWheelForce", 25000);  // Traktor seems to cap the max value at 60000, which just sounds insane
 
 
 
