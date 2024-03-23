@@ -139,8 +139,8 @@ qlonglong MprisPlayer::position() const {
             if (playing.toBool()) {
                 DeckAttributes* pDeck = m_deckAttributes.at(i);
                 qlonglong playPosition =
-                        static_cast<qlonglong>(pDeck->playPosition() *   //Fraction of duration
-                                pDeck->getLoadedTrack()->getDuration() * //Duration in seconds
+                        static_cast<qlonglong>(pDeck->playPosition() *   // Fraction of duration
+                                pDeck->getLoadedTrack()->getDuration() * // Duration in seconds
                                 1e6);
                 return playPosition;
             }
@@ -364,8 +364,8 @@ void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
 
 void MprisPlayer::slotPlayPositionChanged(DeckAttributes* pDeck, double position) {
     if (autoDjIdle()) {
-        qlonglong playPosition = static_cast<qlonglong>(position * //Fraction of duration
-                pDeck->getLoadedTrack()->getDuration() *           //Duration in seconds
+        qlonglong playPosition = static_cast<qlonglong>(position * // Fraction of duration
+                pDeck->getLoadedTrack()->getDuration() *           // Duration in seconds
                 1e6);
         m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Position", playPosition);
     }
