@@ -404,12 +404,12 @@ void MprisPlayer::setRate(double value) {
     }
 }
 
-void MprisPlayer::slotCoverArtFound(const QObject* requestor,
+void MprisPlayer::slotCoverArtFound(const QObject* requester,
         const CoverInfoRelative& info,
         const QPixmap& pixmap) {
     Q_UNUSED(info);
 
-    if (!pixmap.isNull() && requestor == this) {
+    if (!pixmap.isNull() && requester == this) {
         QImage coverImage = pixmap.toImage();
         m_currentCoverArtFile.open();
         bool success = coverImage.save(&m_currentCoverArtFile, "JPG");
