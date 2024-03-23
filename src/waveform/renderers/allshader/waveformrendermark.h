@@ -5,6 +5,7 @@
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
 #include "util/opengltexture2d.h"
+#include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
@@ -47,12 +48,18 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p2,
             QPointF p3);
 
-    void drawMark(const QRectF& rect, QColor color);
-    void drawTexture(float x, float y, QOpenGLTexture* texture);
+    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
+    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
+
+    void updateBeatDistance(double playPosition, double markerPosition);
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     OpenGLTexture2D m_playPosMarkTexture;
+    DigitsRenderer m_digitsRenderer;
+    int m_beatDistance;
+    double m_currentBeatPosition;
+    double m_nextBeatPosition;
 
     bool m_isSlipRenderer;
 

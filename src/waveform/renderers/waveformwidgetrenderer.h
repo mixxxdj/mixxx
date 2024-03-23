@@ -68,6 +68,10 @@ class WaveformWidgetRenderer {
         return m_lastDisplayedPosition[type];
     }
 
+    double getTruePosSample() const {
+        return m_truePosSample;
+    }
+
     void setZoom(double zoom);
 
     void setDisplayBeatGrid(bool set);

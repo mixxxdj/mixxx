@@ -1505,12 +1505,14 @@ if(QOPENGL)
     src/shaders/slipmodeshader.cpp
     src/shaders/patternshader.cpp
     src/shaders/rgbashader.cpp
+    src/shaders/coloredtextureshader.cpp
     src/shaders/rgbshader.cpp
     src/shaders/shader.cpp
     src/shaders/textureshader.cpp
     src/shaders/unicolorshader.cpp
     src/shaders/vinylqualityshader.cpp
     src/util/opengltexture2d.cpp
+    src/waveform/renderers/allshader/digitsrenderer.cpp
     src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
     src/waveform/renderers/allshader/waveformrenderbackground.cpp
     src/waveform/renderers/allshader/waveformrenderbeat.cpp
