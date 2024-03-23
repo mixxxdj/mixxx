@@ -4,6 +4,7 @@
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
+#include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
@@ -47,9 +48,15 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
+    DigitsRenderer m_digitsRenderer;
+    int m_beatDistance;
+    double m_currentBeatPosition;
+    double m_nextBeatPosition;
 
-    void drawMark(const QRectF& rect, QColor color);
-    void drawTexture(float x, float y, QOpenGLTexture* texture);
+    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
+    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
+
+    void updateBeatDistance(double playPosition, double markerPosition);
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
