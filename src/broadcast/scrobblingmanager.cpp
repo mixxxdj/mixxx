@@ -94,6 +94,8 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
 #ifdef __MPRIS__
     m_pBroadcaster->addNewScrobblingService(ScrobblingServicePtr(
             new MprisService(pWindow, pPlayerManager.get(), pConfig)));
+#else
+    Q_UNUSED(pWindow);
 #endif
 
     connect(pPlayerManager.get(),
