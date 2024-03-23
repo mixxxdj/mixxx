@@ -50,7 +50,7 @@ class MprisPlayer : public QObject {
     void slotPlayChanged(DeckAttributes* pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
     void slotMasterGainChanged(double volume);
-    void slotCoverArtFound(const QObject* requestor,
+    void slotCoverArtFound(const QObject* requester,
             const CoverInfoRelative& info,
             const QPixmap& pixmap);
     void slotPlayingTrackChanged(TrackPointer pTrack);
