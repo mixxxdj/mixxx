@@ -31,6 +31,8 @@ void MediaPlayer2::setFullscreen(bool fullscreen) {
     if (m_pMixxx) {
         m_pMixxx->slotViewFullScreen(fullscreen);
     }
+#else
+    Q_UNUSED(fullscreen);
 #endif
 }
 
