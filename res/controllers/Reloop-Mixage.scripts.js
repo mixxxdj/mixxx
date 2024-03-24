@@ -200,7 +200,7 @@ Mixage.init = function(_id, _debugging) {
         engine.softTakeover(`[QuickEffectRack1_${channel}]`, "super1", true);
 
         // make connections for status LEDs
-        Mixage.vuMeterConnection.push(engine.makeConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
+        Mixage.vuMeterConnection.push(engine.makeUnbufferedConnection(channel, "vu_meter", function(val) { midi.sendShortMsg(0x90, Mixage.ledMap[channel].vu_meter, val * 7); }));
         Mixage.trackLoadedConnection.push(engine.makeConnection(channel, "track_loaded", function() { if (Mixage.adjustLoop[channel]) { Mixage.stopLoopAdjust(channel); } }));
         Mixage.fxSelectConnection.push(engine.makeConnection(effectUnit, "focused_effect", function(value) { Mixage.handleFxSelect(value, channel); }));
 
