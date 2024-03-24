@@ -688,8 +688,6 @@ DJ202.Sampler = function() {
         }
     });
 
-    // TR-S
-    ///////////////////////
     const getActiveDeck = function() {
         const deckvolume = new Array(0, 0, 0, 0);
         let volumemax = -1;
@@ -765,6 +763,7 @@ DJ202.Sampler.prototype =
 
 DJ202.FlashingButton = function() {
     components.Button.call(this);
+    // used for flashing button every 50ms
     this.flashFreq = 50;
 };
 
