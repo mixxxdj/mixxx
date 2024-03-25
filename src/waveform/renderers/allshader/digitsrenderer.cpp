@@ -15,6 +15,18 @@
 
 // Render digits using a texture (generated) with digits with blurred dark outline
 
+namespace {
+int charToIndex(char ch) {
+    if (ch >= '0' && ch <= '9') {
+        return static_cast<int>(ch - '0');
+    }
+    if (ch == ':') {
+        return 10;
+    }
+    return 11;
+}
+} // namespace
+
 allshader::DigitsRenderer::~DigitsRenderer() = default;
 
 void allshader::DigitsRenderer::init() {
@@ -23,12 +35,12 @@ void allshader::DigitsRenderer::init() {
 }
 
 float allshader::DigitsRenderer::height() const {
-    return m_pTexture->height();
+    return static_cast<float>(m_pTexture->height());
 }
 
 void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
     QFont font;
-
+    const char* str = "0123456789:.";
     font.setFamily("Open Sans");
     font.setPixelSize(18);
 
@@ -36,8 +48,9 @@ void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
 
     qreal totalTextWidth = 0;
     qreal maxTextHeight = 0;
-    for (int i = 0; i < 10; i++) {
-        const auto text = QString::number(i);
+    for (int i = 0; i < 12; i++) {
+        assert(charToIndex(str[i]) == i);
+        const QString text(str[i]);
         const auto rect = metrics.tightBoundingRect(text);
         maxTextHeight = std::max(maxTextHeight, rect.height());
         totalTextWidth += metrics.horizontalAdvance(text) + 6;
@@ -63,8 +76,8 @@ void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
     painter.setPen(pen);
     painter.setFont(font);
     qreal x = 0;
-    for (int i = 0; i < 10; i++) {
-        const auto text = QString::number(i);
+    for (int i = 0; i < 12; i++) {
+        const QString text(str[i]);
         QPainterPath path;
         path.addText(QPointF(x + 3, maxTextHeight + 3), font, text);
         painter.drawPath(path);
@@ -92,55 +105,43 @@ void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
     painter.setFont(font);
 
     x = 0;
-    for (int i = 0; i < 10; i++) {
-        const auto text = QString::number(i);
+    for (int i = 0; i < 12; i++) {
+        const QString text(str[i]);
         painter.drawText(QPointF(x + 3, maxTextHeight + 3), text);
-        m_offset[i] = x / totalTextWidth;
-        m_width[i] = metrics.horizontalAdvance(text) + 6;
+        m_offset[i] = static_cast<float>(x / totalTextWidth);
+        m_width[i] = static_cast<float>(metrics.horizontalAdvance(text) + 6);
         x += metrics.horizontalAdvance(text) + 6;
     }
+    m_offset[12] = 1.f;
 
     painter.end();
 
     m_pTexture = createTexture(image);
 }
 
-void allshader::DigitsRenderer::drawNumber(const QMatrix4x4& matrix,
+void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,
-        int number,
+        const QString& s,
         QColor color,
         float devicePixelRatio) {
-    if (number < 0) {
-        assert(false);
-        return;
-    }
-
-    int digits[10];
-    int ndigits = 0;
-
-    do {
-        digits[ndigits++] = number % 10;
-        number /= 10;
-    } while (number && ndigits < 10);
+    const int n = s.length();
 
     VertexData posVertices;
     VertexData texVertices;
 
-    posVertices.reserve(ndigits * 6); // two triangles per digit
-    texVertices.reserve(ndigits * 6);
+    posVertices.reserve(n * 6); // two triangles per character
+    texVertices.reserve(n * 6);
 
-    while (ndigits) {
-        int digit = digits[--ndigits];
+    for (int i = 0; i < n; i++) {
+        int index = charToIndex(s[i].cell());
 
-        texVertices.addRectangle(m_offset[digit], 0.f, digit == 9 ? 1.0 : m_offset[digit + 1], 1.f);
+        texVertices.addRectangle(m_offset[index], 0.f, m_offset[index + 1], 1.f);
         posVertices.addRectangle(x,
                 y,
-                x + m_width[digit],
-                y +
-                        static_cast<float>(
-                                m_pTexture->height() / devicePixelRatio));
-        x += m_width[digit] - 5.0;
+                x + m_width[index],
+                y + height() / devicePixelRatio);
+        x += m_width[index] - 5.0;
     }
 
     m_shader.bind();

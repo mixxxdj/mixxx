@@ -44,12 +44,34 @@ class TextureGraphics : public WaveformMark::Graphics {
 // The boolean argument for the WaveformRenderMarkBase constructor indicates
 // that updateMarkImages should not be called immediately.
 
+namespace {
+QString timeToString(double t) {
+    int hundreds = std::lround(t * 100.0);
+    int seconds = hundreds / 100;
+    hundreds -= seconds * 100;
+    int minutes = seconds / 60;
+    seconds -= minutes * 60;
+
+    return QString::number(minutes) + (seconds < 10 ? ":0" : ":") +
+            QString::number(seconds) + (hundreds < 10 ? ".0" : ".") +
+            QString::number(hundreds);
+}
+
+} // namespace
+
 allshader::WaveformRenderMark::WaveformRenderMark(
-        WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::PositionSource type)
-        : WaveformRenderMarkBase(waveformWidget, false),
-          m_beatDistance(0),
+        WaveformWidgetRenderer* waveformWidget)
+        : ::WaveformRenderMarkBase(waveformWidget, false),
+          m_beatsUntilMark(0),
+          m_timeUntilMark(0.0),
+          m_pTimeRemainingControl(nullptr),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
+}
+
+bool allshader::WaveformRenderMark::init() {
+    m_pTimeRemainingControl.reset(new ControlProxy(
+            m_waveformRenderer->getGroup(), "time_remaining"));
+    return true;
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
@@ -270,11 +292,12 @@ void allshader::WaveformRenderMark::paintGL() {
         drawTexture(matrix, drawOffset, 0.f, m_pPlayPosMarkTexture.get());
     }
 
-    updateBeatDistance(playPosition, nextMarkPosition);
+    updateUntilMark(playPosition, nextMarkPosition);
 
-    if (m_beatDistance != 0) {
+    if (m_timeUntilMark != 0.0) {
         // Show the number of beats until the next marker,
         // fading out over the duration of the beat.
+        /*
         double alpha = (playPosition - m_currentBeatPosition) /
                 (m_nextBeatPosition - m_currentBeatPosition);
         alpha = std::max(0., std::min(1., alpha));
@@ -286,6 +309,24 @@ void allshader::WaveformRenderMark::paintGL() {
                 m_waveformRenderer->getBreadth() / 2 -
                         m_digitsRenderer.height() / 2 / devicePixelRatio,
                 m_beatDistance,
+        */
+        const int ialpha = 255;
+
+        const float yoffset = 10.f;
+
+        m_digitsRenderer.draw(matrix,
+                drawOffset + 8.f,
+                m_waveformRenderer->getBreadth() / 2.f - yoffset -
+                        m_digitsRenderer.height() / 2.f / devicePixelRatio,
+                QString::number(m_beatsUntilMark),
+                QColor(255, 255, 255, ialpha),
+                devicePixelRatio);
+        m_digitsRenderer.draw(matrix,
+                drawOffset + 8.f,
+                m_waveformRenderer->getBreadth() / 2.f + yoffset -
+                        m_digitsRenderer.height() / 2.f / devicePixelRatio,
+                timeToString(m_timeUntilMark),
+>>>>>>> 13349d0e47 (also show time until marker)
                 QColor(255, 255, 255, ialpha),
                 devicePixelRatio);
 >>>>>>> ea0a4d064d (show beats until next marker, using digitsrenderer with digits texture (generated) and fade out during beat duration)
@@ -384,23 +425,25 @@ void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
             pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
 }
 
-void allshader::WaveformRenderMark::updateBeatDistance(
+void allshader::WaveformRenderMark::updateUntilMark(
         double playPosition, double nextMarkPosition) {
+    m_beatsUntilMark = 0;
+    m_timeUntilMark = 0.0;
     if (nextMarkPosition == std::numeric_limits<double>::max()) {
-        m_beatDistance = 0;
         return;
     }
 
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     if (!trackInfo) {
-        m_beatDistance = 0;
         return;
     }
 
+    const double endPosition = m_waveformRenderer->getTrackSamples();
+    const double remainingTime = m_pTimeRemainingControl->get();
+
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
-        m_beatDistance = 0;
         return;
     }
 
@@ -411,13 +454,18 @@ void allshader::WaveformRenderMark::updateBeatDistance(
 
     if (std::abs(itA->toEngineSamplePos() - playPosition) < 1) {
         m_currentBeatPosition = itA->toEngineSamplePos();
-        m_beatDistance = std::distance(itA, itB);
+        m_beatsUntilMark = std::distance(itA, itB);
         itA++;
         m_nextBeatPosition = itA->toEngineSamplePos();
     } else {
         m_nextBeatPosition = itA->toEngineSamplePos();
         itA--;
         m_currentBeatPosition = itA->toEngineSamplePos();
-        m_beatDistance = std::distance(itA, itB);
+        m_beatsUntilMark = std::distance(itA, itB);
     }
+    // As endPosition - playPosition corresponds with remainingTime,
+    // we calculate the proportional part of nextMarkPosition - playPosition
+    m_timeUntilMark = std::max(0.0,
+            remainingTime * (nextMarkPosition - playPosition) /
+                    (endPosition - playPosition));
 }
