@@ -13,6 +13,8 @@
 
 class EngineMixer;
 class ControlObject;
+class ControlEncoder;
+class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
 class QString;
@@ -123,10 +125,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotLoadTrackFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
     void slotVinylControlEnabled(double v);
-    void slotWaveformZoomValueChangeRequest(double pressed);
-    void slotWaveformZoomUp(double pressed);
-    void slotWaveformZoomDown(double pressed);
-    void slotWaveformZoomSetDefault(double pressed);
     void slotShiftCuesMillis(double milliseconds);
     void slotShiftCuesMillisButton(double value, double milliseconds);
     void slotUpdateReplayGainFromPregain(double pressed);
@@ -164,10 +162,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlObject> m_pTrackColor;
 
     // Waveform display related controls
-    std::unique_ptr<ControlObject> m_pWaveformZoom;
-    std::unique_ptr<ControlPushButton> m_pWaveformZoomUp;
-    std::unique_ptr<ControlPushButton> m_pWaveformZoomDown;
-    std::unique_ptr<ControlPushButton> m_pWaveformZoomSetDefault;
+    std::unique_ptr<ControlPotmeter> m_pWaveformZoom;
+    std::unique_ptr<ControlEncoder> m_pWaveformZoomSelector;
 
     parented_ptr<ControlProxy> m_pLoopInPoint;
     parented_ptr<ControlProxy> m_pLoopOutPoint;

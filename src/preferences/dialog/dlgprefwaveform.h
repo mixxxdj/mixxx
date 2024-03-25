@@ -5,7 +5,10 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
+class ControlProxy;
+class ControlObject;
 class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
@@ -22,6 +25,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotApply() override;
     void slotResetToDefaults() override;
     void slotSetWaveformEndRender(int endTime);
+
+    void slotNumDecksChanged(double);
+    void slotNumSamplersChanged(double);
 
   private slots:
     void slotSetFrameRate(int frameRate);
@@ -49,4 +55,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
+
+    const parented_ptr<ControlProxy> m_pNumDecks;
+    const parented_ptr<ControlProxy> m_pNumSamplers;
+
+    int m_numConfiguredDecks;
+    int m_numConfiguredSamplers;
+
+    QStringList m_playerGroups;
 };
