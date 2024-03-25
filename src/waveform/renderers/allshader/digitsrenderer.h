@@ -17,10 +17,10 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
 
     void init();
     void generateTexture(float devicePixelRatio);
-    void drawNumber(const QMatrix4x4& matrix,
+    void draw(const QMatrix4x4& matrix,
             float x,
             float y,
-            int number,
+            const QString& s,
             QColor color,
             float devicePixelRatio);
     float height() const;
@@ -28,8 +28,8 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
   private:
     mixxx::ColoredTextureShader m_shader;
     std::unique_ptr<QOpenGLTexture> m_pTexture;
-    qreal m_offset[10];
-    qreal m_width[10];
+    float m_offset[13];
+    float m_width[12];
 
     DISALLOW_COPY_AND_ASSIGN(DigitsRenderer);
 };
