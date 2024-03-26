@@ -884,16 +884,14 @@ void EngineBuffer::processTrackLocked(
 
     bool useIndependentPitchAndTempoScaling = false;
 
-    // TODO(owen): Maybe change this so that rubberband doesn't disable
-    // keylock on scratch. (just check m_pScaleKeylock == m_pScaleST)
-    if (is_scratching || fabs(speed) > 1.9) {
-        // Scratching and high speeds with always disables keylock
-        // because Soundtouch sounds terrible in these conditions.  Rubberband
-        // sounds better, but still has some problems (it may reallocate in
-        // a party-crashing manner at extremely slow speeds).
-        // High seek speeds also disables keylock.  Our pitch slider could go
-        // to 90%, so that's the cutoff point.
-
+    // Scratching and high speeds with always disables keylock
+    // because Soundtouch sounds terrible in these conditions. Rubberband sounds
+    // better, but still has some problems (it may reallocate in a party-crashing
+    // manner at extremely slow speeds).
+    // High seek speeds also disables keylock.
+    // Our pitch slider could go to 190% with the max. selectable rate range of 90%,
+    // but users may override this per deck. Let's set the cutoff point to 250&.
+    if (m_pScaleKeylock == m_pScaleST && (is_scratching || fabs(speed) > 2.5)) {
         // Force pitchRatio to the linear pitch set by speed
         pitchRatio = speed;
         // This is for the natural speed pitch found on turn tables
