@@ -141,7 +141,7 @@ void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
                 y,
                 x + m_width[index],
                 y + height() / devicePixelRatio);
-        x += m_width[index] - 5.0;
+        x += m_width[index] - 5.f;
     }
 
     m_shader.bind();
