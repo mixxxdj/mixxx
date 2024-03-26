@@ -414,7 +414,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
-                if (oldValue == 0.0) {
+                if (oldValue == 0.0 && m_pLongPressLatching) {
                     m_pLongPressLatching->start();
                 }
             }
