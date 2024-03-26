@@ -62,7 +62,7 @@ class WPushButton : public WWidget {
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
   private slots:
-    void onAnimTimer();
+    void updateSlot();
 
   protected:
     bool event(QEvent* e) override;
@@ -106,12 +106,24 @@ class WPushButton : public WWidget {
     // Associated background pixmap
     PaintablePointer m_pPixmapBack;
 
-    QPixmap m_preLongPressPixmap;
-
     // short click toggle button long click push button
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
-    QTimer m_animTimer; // To animate long press latching
     QVector<int> m_align;
+
+    class LongPressLatching {
+      public:
+        LongPressLatching(WPushButton* pButton);
+        void paint(QPainter* p, int remainingTime);
+        void start();
+        void stop();
+
+      private:
+        WPushButton* m_pButton;
+        QPixmap m_preLongPressPixmap;
+        QTimer m_animTimer;
+    };
+
+    std::unique_ptr<LongPressLatching> m_pLongPressLatching;
 };
