@@ -441,10 +441,10 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                 // The buffer is playing, so calculate the buffer rate.
 
                 // There are four rate effects we apply: wheel, scratch, jog and temp.
-                // Wheel: a linear additive effect (no spring-back)
+                // Wheel:   a linear additive effect (no spring-back)
                 // Scratch: a rate multiplier
-                // Jog: a linear additive effect whose value is filtered (springs back)
-                // Temp: pitch bend
+                // Jog:     a linear additive effect whose value is filtered (springs back)
+                // Temp:    pitch bend
 
                 // New scratch behavior - overrides playback speed (and old behavior)
                 if (useScratch2Value) {
