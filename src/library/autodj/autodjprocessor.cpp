@@ -1674,12 +1674,6 @@ void AutoDJProcessor::playlistFirstTrackChanged() {
     if (m_eState != ADJ_DISABLED) {
         DeckAttributes* pLeftDeck = getLeftDeck();
         DeckAttributes* pRightDeck = getRightDeck();
-        // if (!pLeftDeck || !pRightDeck) {
-        //     // User has changed the orientation, disable Auto DJ
-        //     toggleAutoDJ(false);
-        //     emit autoDJError(ADJ_NOT_TWO_DECKS);
-        //     return ADJ_NOT_TWO_DECKS;
-        // }
 
         if (!pLeftDeck->isPlaying()) {
             loadNextTrackFromQueue(*pLeftDeck);
