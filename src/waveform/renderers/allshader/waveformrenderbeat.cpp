@@ -10,8 +10,10 @@
 
 namespace allshader {
 
-WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget)
-        : WaveformRenderer(waveformWidget) {
+WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::Type type)
+        : WaveformRenderer(waveformWidget),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 void WaveformRenderBeat::initializeGL() {
@@ -27,9 +29,12 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 void WaveformRenderBeat::paintGL() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
-    if (!trackInfo) {
+    if (!trackInfo || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
     }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
 
     mixxx::BeatsPointer trackBeats = trackInfo->getBeats();
     if (!trackBeats) {
@@ -54,9 +59,9 @@ void WaveformRenderBeat::paintGL() {
     }
 
     const double firstDisplayedPosition =
-            m_waveformRenderer->getFirstDisplayedPosition();
+            m_waveformRenderer->getFirstDisplayedPosition(positionType);
     const double lastDisplayedPosition =
-            m_waveformRenderer->getLastDisplayedPosition();
+            m_waveformRenderer->getLastDisplayedPosition(positionType);
 
     const auto startPosition = mixxx::audio::FramePos::fromEngineSamplePos(
             firstDisplayedPosition * trackSamples);
@@ -91,14 +96,18 @@ void WaveformRenderBeat::paintGL() {
             ++it) {
         double beatPosition = it->toEngineSamplePos();
         double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
+                m_waveformRenderer->transformSamplePositionInRendererWorld(
+                        beatPosition, positionType);
 
         xBeatPoint = qRound(xBeatPoint * devicePixelRatio) / devicePixelRatio;
 
         const float x1 = static_cast<float>(xBeatPoint);
         const float x2 = x1 + 1.f;
 
-        m_vertices.addRectangle(x1, 0.f, x2, rendererBreadth);
+        m_vertices.addRectangle(x1,
+                0.f,
+                x2,
+                m_isSlipRenderer ? rendererBreadth / 2 : rendererBreadth);
     }
 
     DEBUG_ASSERT(reserved == m_vertices.size());
