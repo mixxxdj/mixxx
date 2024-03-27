@@ -18,7 +18,9 @@ class WaveformRenderMark;
 class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
                                       public allshader::WaveformRendererAbstract {
   public:
-    explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget);
+    explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
+            ::WaveformRendererAbstract::Type type =
+                    ::WaveformRendererAbstract::Play);
 
     void draw(QPainter* painter, QPaintEvent* event) override {
         Q_UNUSED(painter);
@@ -47,6 +49,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
+
+    bool m_isSlipRenderer;
 
     void drawMark(const QRectF& rect, QColor color);
     void drawTexture(float x, float y, QOpenGLTexture* texture);

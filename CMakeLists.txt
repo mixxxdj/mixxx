@@ -1497,6 +1497,7 @@ endif()
 if(QOPENGL)
   target_sources(mixxx-lib PRIVATE
     src/shaders/endoftrackshader.cpp
+    src/shaders/slipmodeshader.cpp
     src/shaders/patternshader.cpp
     src/shaders/rgbashader.cpp
     src/shaders/rgbshader.cpp
@@ -1510,6 +1511,7 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrenderbeat.cpp
     src/waveform/renderers/allshader/waveformrenderer.cpp
     src/waveform/renderers/allshader/waveformrendererendoftrack.cpp
+    src/waveform/renderers/allshader/waveformrendererslipmode.cpp
     src/waveform/renderers/allshader/waveformrendererfiltered.cpp
     src/waveform/renderers/allshader/waveformrendererhsv.cpp
     src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
