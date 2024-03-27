@@ -70,13 +70,13 @@ BulkController::BulkController(libusb_context* context,
                   get_string(handle, desc->iSerialNumber))),
           m_context(context),
           m_phandle(handle),
-          in_epaddr(0),
-          out_epaddr(0) {
-    vendor_id = desc->idVendor;
-    product_id = desc->idProduct;
+          m_inEndpointAddr(0),
+          m_outEndpointAddr(0) {
+    m_vendorId = desc->idVendor;
+    m_productId = desc->idProduct;
 
-    manufacturer = get_string(handle, desc->iManufacturer);
-    product = get_string(handle, desc->iProduct);
+    m_manufacturer = get_string(handle, desc->iManufacturer);
+    m_product = get_string(handle, desc->iProduct);
     m_sUID = get_string(handle, desc->iSerialNumber);
 
     setDeviceCategory(tr("USB Controller"));
@@ -122,17 +122,17 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok, 16);
-    if (!ok || vendor_id != value) {
+    if (!ok || m_vendorId != value) {
         return false;
     }
     value = product.product_id.toInt(&ok, 16);
-    if (!ok || product_id != value) {
+    if (!ok || m_productId != value) {
         return false;
     }
 
-#ifdef _WIN32
+#ifdef __WINDOWS__
     value = product.interface_number.toInt(&ok, 16);
-    if (!ok || interface_number != value) {
+    if (!ok || m_InterfaceNumber != value) {
         return false;
     }
 #endif
@@ -150,12 +150,12 @@ int BulkController::open() {
     /* Look up endpoint addresses in supported database */
     int i;
     for (i = 0; bulk_supported[i].vendor_id; ++i) {
-        if ((bulk_supported[i].vendor_id == vendor_id) &&
-            (bulk_supported[i].product_id == product_id)) {
-            in_epaddr = bulk_supported[i].in_epaddr;
-            out_epaddr = bulk_supported[i].out_epaddr;
-#ifdef _WIN32
-            interface_number = bulk_supported[i].interface_number;
+        if ((bulk_supported[i].vendor_id == m_vendorId) &&
+                (bulk_supported[i].product_id == m_productId)) {
+            m_inEndpointAddr = bulk_supported[i].in_epaddr;
+            m_outEndpointAddr = bulk_supported[i].out_epaddr;
+#ifdef __WINDOWS__
+            m_InterfaceNumber = bulk_supported[i].m_InterfaceNumber;
 #endif
             break;
         }
@@ -169,7 +169,7 @@ int BulkController::open() {
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == nullptr) {
         m_phandle = libusb_open_device_with_vid_pid(
-            m_context, vendor_id, product_id);
+                m_context, m_vendorId, m_productId);
     }
 
     if (m_phandle == nullptr) {
@@ -177,8 +177,8 @@ int BulkController::open() {
         return -1;
     }
 
-#ifdef _WIN32
-    if (interface_number && libusb_kernel_driver_active(m_phandle, interface_number) == 1) {
+#ifdef __WINDOWS__
+    if (m_InterfaceNumber && libusb_kernel_driver_active(m_phandle, m_InterfaceNumber) == 1) {
         qCDebug(m_logBase) << "Found a driver active for" << getName();
         if (libusb_detach_kernel_driver(m_phandle, 0) == 0)
             qCDebug(m_logBase) << "Kernel driver detached for" << getName();
@@ -189,8 +189,8 @@ int BulkController::open() {
         }
     }
 
-    if (interface_number) {
-        int ret = libusb_claim_interface(m_phandle, interface_number);
+    if (m_InterfaceNumber) {
+        int ret = libusb_claim_interface(m_phandle, m_InterfaceNumber);
         if (ret < 0) {
             qCWarning(m_logBase) << "Cannot claim interface for" << getName()
                                  << ":" << libusb_error_name(ret);
@@ -208,7 +208,7 @@ int BulkController::open() {
     if (m_pReader != nullptr) {
         qCWarning(m_logBase) << "BulkReader already present for" << getName();
     } else {
-        m_pReader = new BulkReader(m_phandle, in_epaddr);
+        m_pReader = new BulkReader(m_phandle, m_inEndpointAddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
 
         connect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
@@ -247,9 +247,9 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
-#ifdef _WIN32
-    if (interface_number) {
-        int ret = libusb_release_interface(m_phandle, interface_number);
+#ifdef __WINDOWS__
+    if (m_InterfaceNumber) {
+        int ret = libusb_release_interface(m_phandle, m_InterfaceNumber);
         if (ret < 0) {
             qCWarning(m_logBase) << "Cannot release interface for" << getName()
                                  << ":" << libusb_error_name(ret);
@@ -278,9 +278,12 @@ void BulkController::sendBytes(const QByteArray& data) {
     int transferred;
 
     // XXX: don't get drunk again.
-    ret = libusb_bulk_transfer(m_phandle, out_epaddr,
-                               (unsigned char *)data.constData(), data.size(),
-                               &transferred, 0);
+    ret = libusb_bulk_transfer(m_phandle,
+            m_outEndpointAddr,
+            (unsigned char*)data.constData(),
+            data.size(),
+            &transferred,
+            0);
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
                                << "serial #" << m_sUID << "-" << libusb_error_name(ret);

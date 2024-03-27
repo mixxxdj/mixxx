@@ -72,15 +72,15 @@ class BulkController : public Controller {
 
     // Local copies of things we need from desc
 
-    unsigned short vendor_id;
-    unsigned short product_id;
-    unsigned char in_epaddr;
-    unsigned char out_epaddr;
-#ifdef _WIN32
-    unsigned int interface_number;
+    unsigned short m_vendorId;
+    unsigned short m_productId;
+    unsigned char m_inEndpointAddr;
+    unsigned char m_outEndpointAddr;
+#ifdef __WINDOWS__
+    unsigned int m_InterfaceNumber;
 #endif
-    QString manufacturer;
-    QString product;
+    QString m_manufacturer;
+    QString m_product;
 
     QString m_sUID;
     BulkReader* m_pReader;
