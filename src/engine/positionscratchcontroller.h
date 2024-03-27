@@ -15,7 +15,13 @@ class PositionScratchController : public QObject {
     PositionScratchController(const QString& group);
     virtual ~PositionScratchController();
 
-    void process(double currentSample, double releaseRate, int iBufferSize, double baseSampleRate);
+    void process(double currentSample,
+            double releaseRate,
+            int iBufferSize,
+            double baseSampleRate,
+            int wrappedAround,
+            mixxx::audio::FramePos trigger,
+            mixxx::audio::FramePos target);
     bool isEnabled();
     double getRate();
     void notifySeek(mixxx::audio::FramePos position);

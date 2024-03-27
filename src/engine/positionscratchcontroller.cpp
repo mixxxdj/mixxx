@@ -93,7 +93,10 @@ PositionScratchController::~PositionScratchController() {
 void PositionScratchController::process(double currentSamplePos,
         double releaseRate,
         int iBufferSize,
-        double baseSampleRate) {
+        double baseSampleRate,
+        int wrappedAround,
+        mixxx::audio::FramePos trigger,
+        mixxx::audio::FramePos target) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
     if (!m_isScratching && !scratchEnable) {
@@ -171,11 +174,33 @@ void PositionScratchController::process(double currentSamplePos,
             // sure.
             m_inertiaEnabled = false;
 
+            double sampleDelta = 0.0;
+            if (wrappedAround > 0) {
+                // If we wrapped around calculate the virtual position like if
+                // we are not looping, i.e. sum up diffs from loop start/end and
+                // loop length for each wrap-aound (necessary if the buffer is
+                // longer than the loop, e.g. when looping at high rates / with short loops.
+                // This avoids high rate and infinite wrap-around scratching
+                // even after mouse was stopped.
+                double triggerPos = trigger.toEngineSamplePos();
+                double targetPos = target.toEngineSamplePos();
+                bool reverse = triggerPos < targetPos;
+                double loopLength = reverse ? -1 * (targetPos - triggerPos)
+                                            : triggerPos - targetPos;
+                if (wrappedAround > 2) {
+                    sampleDelta = (wrappedAround - 1) * loopLength;
+                }
+                sampleDelta +=
+                        (triggerPos - m_prevSamplePos) +
+                        (currentSamplePos - targetPos);
+            } else {
+                sampleDelta = currentSamplePos - m_prevSamplePos;
+            }
+
             // Measure the total distance traveled since last frame and add
             // it to the running total. This is required to scratch within loop
             // boundaries. And normalize to one buffer
-            m_samplePosDeltaSum += (currentSamplePos - m_prevSamplePos) /
-                    (iBufferSize * baseSampleRate);
+            m_samplePosDeltaSum += (sampleDelta) / (iBufferSize * baseSampleRate);
 
             // Continue with the last rate if we do not have a new
             // Mouse position
