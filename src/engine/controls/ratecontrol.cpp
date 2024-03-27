@@ -34,6 +34,9 @@ RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_pBpmControl(nullptr),
+          m_wrapAroundCount(0),
+          m_jumpPos(mixxx::audio::FramePos()),
+          m_targetPos(mixxx::audio::FramePos()),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0) {
@@ -459,7 +462,17 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         }
 
         double currentSample = frameInfo().currentPosition.toEngineSamplePos();
-        m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
+        // Let PositionScratchController also know if the play pos wrapped around
+        // (beatloop or track repeat) so it can correctly interpret the sample position delta.
+        m_pScratchController->process(currentSample,
+                rate,
+                iSamplesPerBuffer,
+                baserate,
+                m_wrapAroundCount,
+                m_jumpPos,
+                m_targetPos);
+        // Reset count after use.
+        m_wrapAroundCount = 0;
 
         // If waveform scratch is enabled, override all other controls
         if (m_pScratchController->isEnabled()) {
@@ -602,4 +615,16 @@ bool RateControl::isReverseButtonPressed() {
         return m_pReverseButton->toBool();
     }
     return false;
+}
+
+void RateControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
+        mixxx::audio::FramePos targetPos) {
+    VERIFY_OR_DEBUG_ASSERT(triggerPos.isValid() && targetPos.isValid()) {
+        m_wrapAroundCount = 0;
+        // no need to reset the position, they're not used if count is 0.
+        return;
+    }
+    m_wrapAroundCount++;
+    m_jumpPos = triggerPos;
+    m_targetPos = targetPos;
 }
