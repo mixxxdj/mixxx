@@ -17,10 +17,7 @@ class CompressorGroupState : public EffectState {
     double previousAttackCoeff;
     double previousReleaseParamMs;
     double previousReleaseCoeff;
-    double previousThresholdParam;
-    double previousThresholdParamRatio;
     CSAMPLE_GAIN previousMakeUpGain;
-    CSAMPLE_GAIN kMakeUpTargetRatio;
 };
 
 class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
@@ -66,5 +63,8 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
             const CSAMPLE* pInput,
             CSAMPLE* pOutput);
 
-    void applyAutoMakeUp(CompressorGroupState* pState, CSAMPLE* pOutput, const SINT& numSamples);
+    void applyAutoMakeUp(CompressorGroupState* pState,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const SINT& numSamples);
 };
