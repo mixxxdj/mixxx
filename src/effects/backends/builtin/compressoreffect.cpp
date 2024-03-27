@@ -2,7 +2,6 @@
 
 namespace {
 constexpr CSAMPLE_GAIN kMakeUpAttackCoeff = 0.03f;
-constexpr CSAMPLE_GAIN kMakeUpTarget = -3.0f;
 constexpr double defaultAttackMs = 1;
 constexpr double defaultReleaseMs = 300;
 constexpr CSAMPLE_GAIN defaultThresholdDB = -20;
@@ -34,9 +33,10 @@ EffectManifestPointer CompressorEffect::getManifest() {
     autoMakeUp->setId("automakeup");
     autoMakeUp->setName(QObject::tr("Auto Makeup Gain"));
     autoMakeUp->setShortName(QObject::tr("Makeup"));
-    autoMakeUp->setDescription(
-            QObject::tr("The Auto Makeup button enables automatic gain "
-                        "adjustment to almost 0 dBFS volume level"));
+    autoMakeUp->setDescription(QObject::tr(
+            "The Auto Makeup button enables automatic gain adjustment to keep "
+            "the input signal \nand the processed output signal as close as "
+            "possible in perceived loudness"));
     autoMakeUp->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
     autoMakeUp->setRange(0, 1, 1);
     autoMakeUp->appendStep(qMakePair(
@@ -130,10 +130,7 @@ CompressorGroupState::CompressorGroupState(
           previousAttackCoeff(calculateBallistics(defaultAttackMs, engineParameters)),
           previousReleaseParamMs(defaultReleaseMs),
           previousReleaseCoeff(calculateBallistics(defaultReleaseMs, engineParameters)),
-          previousThresholdParam(defaultThresholdDB),
-          previousThresholdParamRatio(db2ratio(defaultThresholdDB * 2)),
-          previousMakeUpGain(1),
-          kMakeUpTargetRatio(db2ratio(kMakeUpTarget)) {
+          previousMakeUpGain(1) {
 }
 
 void CompressorEffect::loadEngineEffectParameters(
@@ -164,7 +161,7 @@ void CompressorEffect::processChannel(
 
     // Auto make up
     if (m_pAutoMakeUp->toInt() == static_cast<int>(AutoMakeUp::AutoMakeUpOn)) {
-        applyAutoMakeUp(pState, pOutput, numSamples);
+        applyAutoMakeUp(pState, pInput, pOutput, numSamples);
     }
 
     // Output gain
@@ -173,29 +170,18 @@ void CompressorEffect::processChannel(
 }
 
 void CompressorEffect::applyAutoMakeUp(CompressorGroupState* pState,
+        const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const SINT& numSamples) {
-    double thresholdParam = m_pThreshold->value();
-    double thresholdRatio = pState->previousThresholdParamRatio;
-    if (thresholdParam != pState->previousThresholdParam) {
-        thresholdRatio = db2ratio(thresholdParam * 2);
-        pState->previousThresholdParam = thresholdParam;
-        pState->previousThresholdParamRatio = thresholdRatio;
-    }
-
-    CSAMPLE maxSample = SampleUtil::maxAbsAmplitude(pOutput, numSamples);
-    if (maxSample > thresholdRatio) {
+    CSAMPLE rmsInput = SampleUtil::rms(pInput, numSamples);
+    if (rmsInput > CSAMPLE_ZERO) {
         CSAMPLE_GAIN makeUpGainState = pState->previousMakeUpGain;
-        CSAMPLE_GAIN makeUpTargetRatio = pState->kMakeUpTargetRatio;
-        CSAMPLE_GAIN makeUp = makeUpTargetRatio / maxSample;
-        makeUpGainState = kMakeUpAttackCoeff * makeUp + (1 - kMakeUpAttackCoeff) * makeUpGainState;
+
+        CSAMPLE rmsOutput = SampleUtil::rms(pOutput, numSamples);
+        CSAMPLE_GAIN makeUp = rmsInput / rmsOutput;
 
         // smoothing
-        if (makeUpGainState * maxSample > makeUpTargetRatio) {
-            CSAMPLE_GAIN k = (1 - makeUpTargetRatio * makeUpTargetRatio) /
-                    (makeUpGainState * maxSample + 1);
-            makeUpGainState = (1 - k) / maxSample;
-        }
+        makeUpGainState = kMakeUpAttackCoeff * makeUp + (1 - kMakeUpAttackCoeff) * makeUpGainState;
 
         pState->previousMakeUpGain = makeUpGainState;
         SampleUtil::applyGain(pOutput, makeUpGainState, numSamples);
