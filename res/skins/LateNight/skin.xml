@@ -154,8 +154,6 @@
       <SetVariable name="SignalColor_12">#d9b28c</SetVariable>
       <SetVariable name="SignalColor_34">#7bc6c3</SetVariable>
 
-      <!-- Only named colors are accepted, see w3 color chart
-          https://www.w3.org/wiki/CSS/Properties/color/keywords -->
       <SetVariable name="SignalHighColor">mediumblue</SetVariable><!-- #0000cd -->
       <SetVariable name="SignalMidColor">darkgreen</SetVariable><!-- #006400 -->
       <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #ff4500 -->

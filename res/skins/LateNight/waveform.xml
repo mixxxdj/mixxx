@@ -19,12 +19,21 @@
             <BgColor><Variable name="BgColorWaveform"/></BgColor>
             <SignalColor><Variable name="SignalColor"/></SignalColor>
             <!-- Default colors are used for high/mid/low: blue/green/red -->
-            <SignalHighColor></SignalHighColor>
-            <SignalMidColor></SignalMidColor>
-            <SignalLowColor></SignalLowColor>
+            <SignalHighColor><Variable name="SignalHighColor"/></SignalHighColor>
+            <SignalMidColor><Variable name="SignalMidColor"/></SignalMidColor>
+            <SignalLowColor><Variable name="SignalLowColor"/></SignalLowColor>
             <SignalRGBHighColor></SignalRGBHighColor>
             <SignalRGBMidColor></SignalRGBMidColor>
             <SignalRGBLowColor></SignalRGBLowColor>
+
+            <!-- Parameter used for the moving average of the 3-band waveform. This settings can be adjusted to tweak the right trade-off between sharpeness, accuracy and smoothing curves -->
+            <SmoothFactorLow></SmoothFactorLow>
+            <SmoothFactorMid></SmoothFactorMid>
+            <SmoothFactorHigh>10</SmoothFactorHigh>
+            <SmoothThresholdLow></SmoothThresholdLow>
+            <SmoothThresholdMid>96</SmoothThresholdMid>
+            <SmoothThresholdHigh>16</SmoothThresholdHigh>
+
             <BeatColor><Variable name="BeatColor"/></BeatColor>
             <AxesColor><Variable name="AxesColor"/></AxesColor>
             <BeatHighlightColor></BeatHighlightColor>

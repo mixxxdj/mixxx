@@ -46,6 +46,7 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
     case WWT::AllShaderFilteredWaveform:
     case WWT::AllShaderSimpleWaveform:
     case WWT::AllShaderHSVWaveform:
+    case WWT::AllShaderThreeBandWaveform:
     case WWT::Count_WaveformwidgetType:
         return waveformType;
     case WWT::QtSimpleWaveform:
