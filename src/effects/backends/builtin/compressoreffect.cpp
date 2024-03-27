@@ -108,16 +108,16 @@ EffectManifestPointer CompressorEffect::getManifest() {
     release->setUnitsHint(EffectManifestParameter::UnitsHint::Millisecond);
     release->setRange(0, defaultReleaseMs, 1500);
 
-    EffectManifestParameterPointer gain = pManifest->addParameter();
-    gain->setId("gain");
-    gain->setName(QObject::tr("Output gain"));
-    gain->setShortName(QObject::tr("Gain"));
-    gain->setDescription(
-            QObject::tr("The Output gain knob adjusts the level of the output "
+    EffectManifestParameterPointer level = pManifest->addParameter();
+    level->setId("level");
+    level->setName(QObject::tr("Level"));
+    level->setShortName(QObject::tr("Level"));
+    level->setDescription(
+            QObject::tr("The Level knob adjusts the level of the output "
                         "signal after the compression was applied"));
-    gain->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
-    gain->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
-    gain->setRange(-25, 0, 25);
+    level->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    level->setUnitsHint(EffectManifestParameter::UnitsHint::Decibel);
+    level->setRange(-25, 0, 25);
 
     return pManifest;
 }
@@ -140,7 +140,7 @@ void CompressorEffect::loadEngineEffectParameters(
     m_pKnee = parameters.value("knee");
     m_pAttack = parameters.value("attack");
     m_pRelease = parameters.value("release");
-    m_pGain = parameters.value("gain");
+    m_pLevel = parameters.value("level");
     m_pAutoMakeUp = parameters.value("automakeup");
 }
 
@@ -165,7 +165,7 @@ void CompressorEffect::processChannel(
     }
 
     // Output gain
-    CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(m_pGain->value()));
+    CSAMPLE gain = static_cast<CSAMPLE>(db2ratio(m_pLevel->value()));
     SampleUtil::applyGain(pOutput, gain, numSamples);
 }
 

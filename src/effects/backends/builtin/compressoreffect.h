@@ -54,7 +54,7 @@ class CompressorEffect : public EffectProcessorImpl<CompressorGroupState> {
     EngineEffectParameterPointer m_pKnee;
     EngineEffectParameterPointer m_pAttack;
     EngineEffectParameterPointer m_pRelease;
-    EngineEffectParameterPointer m_pGain;
+    EngineEffectParameterPointer m_pLevel;
 
     DISALLOW_COPY_AND_ASSIGN(CompressorEffect);
 
