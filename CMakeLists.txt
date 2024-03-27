@@ -735,6 +735,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/controllerruntimedata.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -2071,6 +2072,7 @@ add_executable(mixxx-test
   src/test/configobject_test.cpp
   src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
+  src/test/controller_runtimedata_test.cpp
   src/test/controlobjecttest.cpp
   src/test/controlobjectaliastest.cpp
   src/test/controlobjectscripttest.cpp
