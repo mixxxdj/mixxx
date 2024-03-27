@@ -58,9 +58,9 @@ class Sandbox {
     ("A new security token should be used, e.g. by assigning it to a " \
      "variable, otherwise it will be invalidated immediately.")
 
-    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    [[nodiscard]] static SecurityTokenPointer
     openSecurityToken(mixxx::FileInfo* pFileInfo, bool create);
-    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    [[nodiscard]] static SecurityTokenPointer
     openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
@@ -69,7 +69,7 @@ class Sandbox {
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 
     // Must hold s_mutex to call this.
-    [[nodiscard SECURITY_TOKEN_NODISCARD_RATIONALE]] static SecurityTokenPointer
+    [[nodiscard]] static SecurityTokenPointer
     openTokenFromBookmark(
             const QString& canonicalPath, const QString& bookmarkBase64);
 

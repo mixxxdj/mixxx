@@ -1,5 +1,6 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 
+#include <QFileDialog>
 #include <QHeaderView>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -9,11 +10,13 @@
 #include <shoutidjc/shout.h>
 
 #include "broadcast/defs_broadcast.h"
+#include "broadcast/filelistener/filelistener.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
 #include "moc_dlgprefbroadcast.cpp"
 #include "preferences/broadcastsettingsmodel.h"
+#include "preferences/configobject.h"
 #include "recording/defs_recording.h"
 #include "util/logger.h"
 
@@ -24,8 +27,8 @@ constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 } // namespace
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   BroadcastSettingsPointer pBroadcastSettings)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
+        BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
