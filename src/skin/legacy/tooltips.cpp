@@ -664,6 +664,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Record Mix")
             << tr("Toggle mix recording.");
 
+    add("expand_samplers")
+            << tr("Expand/Collapse Samplers")
+            << tr("Toggle expanded samplers view.");
+
     // Status displays and toggle buttons
     add("recording_duration")
             << tr("Recording Duration")
