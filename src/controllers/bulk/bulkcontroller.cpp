@@ -130,6 +130,13 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
         return false;
     }
 
+#ifdef _WIN32
+    value = product.interface_number.toInt(&ok, 16);
+    if (!ok || interface_number != value) {
+        return false;
+    }
+#endif
+
     // Match found
     return true;
 }
@@ -147,6 +154,9 @@ int BulkController::open() {
             (bulk_supported[i].product_id == product_id)) {
             in_epaddr = bulk_supported[i].in_epaddr;
             out_epaddr = bulk_supported[i].out_epaddr;
+#ifdef _WIN32
+            interface_number = bulk_supported[i].interface_number;
+#endif
             break;
         }
     }
@@ -166,6 +176,31 @@ int BulkController::open() {
         qCWarning(m_logBase) << "Unable to open USB Bulk device" << getName();
         return -1;
     }
+
+#ifdef _WIN32
+    if (interface_number && libusb_kernel_driver_active(m_phandle, interface_number) == 1) {
+        qCDebug(m_logBase) << "Found a driver active for" << getName();
+        if (libusb_detach_kernel_driver(m_phandle, 0) == 0)
+            qCDebug(m_logBase) << "Kernel driver detached for" << getName();
+        else {
+            qCWarning(m_logBase) << "Couldn't detach kernel driver for" << getName();
+            libusb_close(m_phandle);
+            return -1;
+        }
+    }
+
+    if (interface_number) {
+        int ret = libusb_claim_interface(m_phandle, interface_number);
+        if (ret < 0) {
+            qCWarning(m_logBase) << "Cannot claim interface for" << getName()
+                                 << ":" << libusb_error_name(ret);
+            libusb_close(m_phandle);
+            return -1;
+        } else {
+            qCDebug(m_logBase) << "Claimed interface for" << getName();
+        }
+    }
+#endif
 
     setOpen(true);
     startEngine();
@@ -212,6 +247,15 @@ int BulkController::close() {
     stopEngine();
 
     // Close device
+#ifdef _WIN32
+    if (interface_number) {
+        int ret = libusb_release_interface(m_phandle, interface_number);
+        if (ret < 0) {
+            qCWarning(m_logBase) << "Cannot release interface for" << getName()
+                                 << ":" << libusb_error_name(ret);
+        }
+    }
+#endif
     qCInfo(m_logBase) << "  Closing device";
     libusb_close(m_phandle);
     m_phandle = nullptr;
@@ -239,9 +283,9 @@ void BulkController::sendBytes(const QByteArray& data) {
                                &transferred, 0);
     if (ret < 0) {
         qCWarning(m_logOutput) << "Unable to send data to" << getName()
-                               << "serial #" << m_sUID;
+                               << "serial #" << m_sUID << "-" << libusb_error_name(ret);
     } else {
-        qCDebug(m_logOutput) << ret << "bytes sent to" << getName()
+        qCDebug(m_logOutput) << transferred << "bytes sent to" << getName()
                              << "serial #" << m_sUID;
     }
 }
