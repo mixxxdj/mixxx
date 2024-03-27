@@ -56,9 +56,9 @@ bool MidiController::matchMapping(const MappingInfo& mapping) {
     return false;
 }
 
-bool MidiController::applyMapping() {
+bool MidiController::applyMapping(const QString& resourcePath) {
     // Handles the engine
-    bool result = Controller::applyMapping();
+    bool result = Controller::applyMapping(resourcePath);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -271,8 +271,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 
     if (mapping.options.testFlag(MidiOption::Script)) {
-        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
-        if (pEngine == nullptr) {
+        auto pEngine = getScriptEngine();
+        if (!pEngine) {
             return;
         }
 
@@ -531,8 +531,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          mixxx::Duration timestamp) {
     // Custom script handler
     if (mapping.options.testFlag(MidiOption::Script)) {
-        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
-        if (pEngine == nullptr) {
+        auto pEngine = getScriptEngine();
+        if (!pEngine) {
             return;
         }
         pEngine->handleIncomingData(data);

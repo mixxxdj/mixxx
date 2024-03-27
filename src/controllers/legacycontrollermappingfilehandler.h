@@ -3,6 +3,11 @@
 #include <QDomElement>
 #include <QString>
 #include <memory>
+#ifdef MIXXX_USE_QML
+#include <QImage>
+#include <QMap>
+#include <bit>
+#endif
 
 class QFileInfo;
 class QDir;
@@ -48,10 +53,10 @@ class LegacyControllerMappingFileHandler {
     void parseMappingSettings(const QDomElement& root,
             LegacyControllerMapping* mapping) const;
 
-    /// Adds script files from XML to the LegacyControllerMapping.
+    /// Adds script files and QML scenes from XML to the LegacyControllerMapping.
     ///
     /// This function parses the supplied QDomElement structure, finds the
-    /// matching script files inside the search paths and adds them to
+    /// matching script files and QML scenes inside the search paths and adds them to
     /// LegacyControllerMapping.
     ///
     /// @param root The root node of the XML document for the mapping.
@@ -66,6 +71,13 @@ class LegacyControllerMappingFileHandler {
     QDomDocument buildRootWithScripts(const LegacyControllerMapping& mapping) const;
 
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
+
+#ifdef MIXXX_USE_QML
+    // Maximum target frame per request for a a screen controller
+    static constexpr int s_maxTargetFps = 240;
+    // Maximum time allowed for a screen to run a splash off animation
+    static constexpr int s_maxSplashOffDuration = 3000;
+#endif
 
   private:
     /// @brief Recursively parse setting definition and layout information
@@ -84,5 +96,11 @@ class LegacyControllerMappingFileHandler {
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
 
+#ifdef MIXXX_USE_QML
+    static QMap<QString, QImage::Format> kSupportedPixelFormat;
+    static QMap<QString, std::endian> kEndianFormat;
+
+    friend class ControllerRenderingEngineTest;
+#endif
     friend class LegacyControllerMappingSettingsTest_parseSettingBlock_Test;
 };

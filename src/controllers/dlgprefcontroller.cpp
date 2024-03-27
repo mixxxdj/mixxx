@@ -13,13 +13,18 @@
 #include "controllers/controllermappinginfoenumerator.h"
 #include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/controlpickermenu.h"
+#ifdef MIXXX_USE_QML
+#include "controllers/controllerscreenpreview.h"
+#endif
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/midicontroller.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
+#include "util/cmdlineargs.h"
 #include "util/desktophelper.h"
 #include "util/parented_ptr.h"
 #include "util/string.h"
@@ -109,6 +114,20 @@ DlgPrefController::DlgPrefController(
             &ControllerManager::mappingApplied,
             this,
             &DlgPrefController::enableWizardAndIOTabs);
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance()
+                    .getControllerPreviewScreens()) {
+        connect(m_pController,
+                &Controller::engineStarted,
+                this,
+                QOverload<std::shared_ptr<ControllerScriptEngineLegacy>>::of(
+                        &DlgPrefController::slotShowPreviewScreens));
+        connect(m_pController,
+                &Controller::engineStopped,
+                this,
+                QOverload<>::of(&DlgPrefController::slotShowPreviewScreens));
+    }
+#endif
 
     // Open script file links
     connect(m_ui.labelLoadedMappingScriptFileLinks,
@@ -406,6 +425,24 @@ QString DlgPrefController::mappingFileLinks(
 
         linkList << scriptFileLink;
     }
+
+#ifdef MIXXX_USE_QML
+    for (const auto& qmlLibrary : pMapping->getLibraryDirectories()) {
+        QString scriptFileLink = coloredLinkString(
+                m_pLinkColor,
+                qmlLibrary.dirinfo.fileName(),
+                qmlLibrary.dirinfo.absoluteFilePath());
+        if (!qmlLibrary.dirinfo.exists()) {
+            scriptFileLink +=
+                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
+        } else if (qmlLibrary.dirinfo.absoluteFilePath().startsWith(
+                           systemMappingPath)) {
+            scriptFileLink += builtinFileSuffix;
+        }
+
+        linkList << scriptFileLink;
+    }
+#endif
     return linkList.join("<br/>");
 }
 
@@ -629,6 +666,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
 
         m_ui.groupBoxSettings->setVisible(false);
+        m_ui.groupBoxScreens->setVisible(false);
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
@@ -832,6 +870,35 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setAlternatingRowColors(true);
 }
 
+#ifdef MIXXX_USE_QML
+void DlgPrefController::slotShowPreviewScreens(
+        std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine) {
+    qDeleteAll(m_ui.groupBoxScreens->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
+
+    if (!m_pMapping) {
+        return;
+    }
+
+    m_ui.groupBoxScreens->setVisible(scriptEngine != nullptr);
+    if (!scriptEngine) {
+        return;
+    }
+
+    auto screens = m_pMapping->getInfoScreens();
+
+    for (const LegacyControllerMapping::ScreenInfo& screen : qAsConst(screens)) {
+        ControllerScreenPreview* pPreviewScreen =
+                new ControllerScreenPreview(m_ui.groupBoxScreens, screen);
+        m_ui.groupBoxScreens->layout()->addWidget(pPreviewScreen);
+
+        connect(scriptEngine.get(),
+                &ControllerScriptEngineLegacy::previewRenderedScreen,
+                pPreviewScreen,
+                &ControllerScreenPreview::updateFrame);
+    }
+}
+#endif
+
 void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
     m_ui.labelLoadedMapping->setText(mappingName(pMapping));
     m_ui.labelLoadedMappingDescription->setText(mappingDescription(pMapping));
@@ -873,6 +940,19 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         // TODO(rryan): Clone it? Technically a waste since nothing else uses this
         // copy but if someone did they might not expect it to change.
         m_pMapping = pMapping;
+    }
+
+#ifdef MIXXX_USE_QML
+    if (pMapping &&
+            CmdlineArgs::Instance()
+                    .getControllerPreviewScreens() &&
+            pMapping &&
+            !pMapping->getInfoScreens().isEmpty()) {
+        slotShowPreviewScreens(m_pController->getScriptEngine());
+    } else
+#endif
+    {
+        m_ui.groupBoxScreens->setVisible(false);
     }
 
     // Inputs tab
