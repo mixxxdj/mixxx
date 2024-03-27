@@ -62,7 +62,7 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    bool applyMapping() override;
+    bool applyMapping(const QString& resourcePath) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
