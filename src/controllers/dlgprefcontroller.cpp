@@ -844,7 +844,11 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         auto settings = pMapping->getSettings();
         auto* pLayout = pMapping->getSettingsLayout();
 
-        qDeleteAll(m_ui.groupBoxSettings->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
+        QLayoutItem* pItem;
+        while ((pItem = m_ui.groupBoxSettings->layout()->takeAt(0)) != nullptr) {
+            delete pItem->widget();
+            delete pItem;
+        }
 
         if (pLayout != nullptr && !settings.isEmpty()) {
             m_ui.groupBoxSettings->layout()->addWidget(pLayout->build(m_ui.groupBoxSettings));
