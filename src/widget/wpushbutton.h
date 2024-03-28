@@ -61,6 +61,9 @@ class WPushButton : public WWidget {
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+  private slots:
+    void updateSlot();
+
   protected:
     bool event(QEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
@@ -86,6 +89,8 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
+    void paintOnDevice(QPaintDevice* pd);
+
     // True, if the button is currently pressed
     bool m_bPressed;
     // True, if the button is pointer is above button
@@ -106,4 +111,19 @@ class WPushButton : public WWidget {
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
+
+    class LongPressLatching {
+      public:
+        LongPressLatching(WPushButton* pButton);
+        void paint(QPainter* p, int remainingTime);
+        void start();
+        void stop();
+
+      private:
+        WPushButton* m_pButton;
+        QPixmap m_preLongPressPixmap;
+        QTimer m_animTimer;
+    };
+
+    std::unique_ptr<LongPressLatching> m_pLongPressLatching;
 };
