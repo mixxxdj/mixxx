@@ -306,7 +306,7 @@ bool Track::replaceRecord(
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
-        bpmUpdatedFlag = trySetBeatsWhileLocked(std::move(pOptionalBeats));
+        bpmUpdatedFlag = trySetBeatsWhileLocked(pOptionalBeats);
         if (recordUnchanged && !bpmUpdatedFlag) {
             return false;
         }
@@ -390,7 +390,7 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         auto pBeats = mixxx::Beats::fromConstTempo(getSampleRate(),
                 cuePosition,
                 bpm);
-        return trySetBeatsWhileLocked(std::move(pBeats));
+        return trySetBeatsWhileLocked(pBeats);
     } else if (getBeatsPointerBpm(m_pBeats, getDuration()) != bpm) {
         // Continue with the regular cases
         const auto newBeats = m_pBeats->trySetBpm(bpm);
