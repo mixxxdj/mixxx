@@ -76,6 +76,8 @@ bool Controller::applyMapping() {
     }
 
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+
+    m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
     return m_pScriptEngineLegacy->initialize();
 }
 
