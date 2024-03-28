@@ -95,6 +95,8 @@ class HotcueControl : public QObject {
     void setStatus(HotcueControl::Status status);
     HotcueControl::Status getStatus() const;
 
+    void setIndicator(double on);
+
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
@@ -164,6 +166,7 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlObject> m_hotcuePosition;
     std::unique_ptr<ControlObject> m_hotcueEndPosition;
     std::unique_ptr<ControlObject> m_pHotcueStatus;
+    std::unique_ptr<ControlObject> m_pHotcueIndicator;
     std::unique_ptr<ControlObject> m_hotcueType;
     std::unique_ptr<ControlObject> m_hotcueColor;
     // Hotcue button controls
@@ -193,6 +196,7 @@ class CueControl : public EngineControl {
     ~CueControl() override;
 
     void hintReader(gsl::not_null<HintVector*> pHintList) override;
+    void notifySeek(mixxx::audio::FramePos position) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtIntroCue();
@@ -208,8 +212,8 @@ class CueControl : public EngineControl {
 
   public slots:
     void slotLoopReset();
-    void slotLoopEnabledChanged(bool enabled);
-    void slotLoopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
+    void slotLoopEnabledChanged(double value);
+    void slotLoopUpdated(const LoopInfo& loopInfo); // clazy:exclude=fully-qualified-moc-types
 
   private slots:
     void quantizeChanged(double v);
@@ -282,6 +286,9 @@ class CueControl : public EngineControl {
     mixxx::audio::FramePos quantizeCuePoint(mixxx::audio::FramePos position);
     mixxx::audio::FramePos getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
+    bool posInsideLoop(mixxx::audio::FramePos position, const LoopInfo& info) const {
+        return position >= info.startPosition && position < info.endPosition;
+    }
     void seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition);
     void setHotcueFocusIndex(int hotcueIndex);
     int getHotcueFocusIndex() const;
@@ -350,6 +357,7 @@ class CueControl : public EngineControl {
 
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlMode;
+    std::unique_ptr<ControlProxy> m_pReverse;
 
     std::unique_ptr<ControlObject> m_pHotcueFocus;
     std::unique_ptr<ControlObject> m_pHotcueFocusColorNext;
@@ -361,6 +369,10 @@ class CueControl : public EngineControl {
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
+
+    // Position used to update hotcue indicators in updateIndicators()
+    ControlValueAtomic<mixxx::audio::FramePos> m_prevPosition;
+    LoopInfo m_loopInfo; // clazy:exclude=fully-qualified-moc-types
 
     // Must be locked when using the m_pLoadedTrack and it's properties
     QT_RECURSIVE_MUTEX m_trackMutex;

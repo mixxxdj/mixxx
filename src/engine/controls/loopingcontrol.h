@@ -57,19 +57,7 @@ class LoopingControl : public EngineControl {
             mixxx::audio::FramePos endPosition,
             bool enabled);
 
-    enum class LoopSeekMode {
-        Changed, // force the playposition to be inside the loop after adjusting it.
-        MovedOut,
-        None,
-    };
-
-    struct LoopInfo {
-        mixxx::audio::FramePos startPosition;
-        mixxx::audio::FramePos endPosition;
-        LoopSeekMode seekMode;
-    };
-
-    LoopInfo getLoopInfo() {
+    LoopInfo getLoopInfo() { // clazy:exclude=fully-qualified-moc-types
         return m_loopInfo.getValue();
     }
 
@@ -99,7 +87,7 @@ class LoopingControl : public EngineControl {
   signals:
     void loopReset();
     void loopEnabledChanged(bool enabled);
-    void loopUpdated(mixxx::audio::FramePos startPosition, mixxx::audio::FramePos endPosition);
+    void loopUpdated(LoopInfo loopInfo); // clazy:exclude=fully-qualified-moc-types
 
   public slots:
     void slotLoopIn(double pressed);
@@ -148,7 +136,8 @@ class LoopingControl : public EngineControl {
     void setLoopOutToCurrentPosition();
     void clearActiveBeatLoop();
     void updateBeatLoopingControls();
-    bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo) const;
+    bool currentLoopMatchesBeatloopSize(const LoopInfo& loopInfo)
+            const; // clazy:exclude=fully-qualified-moc-types
 
     // Given loop in and out points, determine if this is a beatloop of a particular
     // size.
@@ -199,8 +188,8 @@ class LoopingControl : public EngineControl {
     bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
     QStack<double> m_activeLoopRolls;
-    ControlValueAtomic<LoopInfo> m_loopInfo;
-    LoopInfo m_oldLoopInfo;
+    ControlValueAtomic<LoopInfo> m_loopInfo; // clazy:exclude=fully-qualified-moc-types
+    LoopInfo m_oldLoopInfo;                  // clazy:exclude=fully-qualified-moc-types
     ControlValueAtomic<mixxx::audio::FramePos> m_currentPosition;
     ControlObject* m_pQuantizeEnabled;
     QAtomicPointer<BeatLoopingControl> m_pActiveBeatLoop;

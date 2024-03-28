@@ -116,6 +116,9 @@ CueControl::CueControl(const QString& group,
     m_pLoopStartPosition = make_parented<ControlProxy>(group, "loop_start_position", this);
     m_pLoopEndPosition = make_parented<ControlProxy>(group, "loop_end_position", this);
     m_pLoopEnabled = make_parented<ControlProxy>(group, "loop_enabled", this);
+    m_pLoopEnabled->connectValueChanged(this,
+            &CueControl::slotLoopEnabledChanged,
+            Qt::DirectConnection);
     m_pBeatLoopActivate = make_parented<ControlProxy>(group, "beatloop_activate", this);
     m_pBeatLoopSize = make_parented<ControlProxy>(group, "beatloop_size", this);
 
@@ -198,6 +201,8 @@ void CueControl::createControls() {
 
     m_pVinylControlEnabled = std::make_unique<ControlProxy>(m_group, "vinylcontrol_enabled");
     m_pVinylControlMode = std::make_unique<ControlProxy>(m_group, "vinylcontrol_mode");
+
+    m_pReverse = std::make_unique<ControlProxy>(m_group, "reverse");
 
     m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
@@ -500,6 +505,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
+        m_prevPosition.setValue(mixxx::audio::kStartFramePos);
     }
 
     if (!pNewTrack) {
@@ -2168,11 +2174,103 @@ void CueControl::updateIndicators() {
             m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
         }
     }
+
+    // Update hotcue indicators: activate the indicator if we are at the cue pos
+    // or if we passed it since the last update, else deactivate.
+    auto prevPos = m_prevPosition.getValue();
+    const auto currPos = frameInfo().currentPosition;
+    VERIFY_OR_DEBUG_ASSERT(prevPos.isValid()) {
+        m_prevPosition.setValue(currPos);
+        return;
+    }
+
+    // If we're looping check if we just wrapped around.
+    // Since explicit seeks are reported in notifiySeek(), this is safe
+    // to detect the true loop wrap-around.
+    LoopInfo loopInfo = m_loopInfo;
+    bool loopingWrapAround = false;
+    bool loopingWrapAroundReverse = false;
+    // This covers both `reverse` and scratching backwards
+    bool reverse = getEngineBuffer()->getSpeed() < 0.0;
+    if (m_pLoopEnabled->toBool() &&
+            loopInfo.startPosition.isValid() &&
+            loopInfo.endPosition.isValid() &&
+            // Are we inside the current loop?
+            posInsideLoop(prevPos, loopInfo) &&
+            posInsideLoop(currPos, loopInfo)) {
+        // Check if we wrapped around
+        if (!reverse && prevPos > currPos) {
+            qWarning() << "       loop wrap-around";
+            loopingWrapAround = true;
+        } else if (reverse && prevPos < currPos) {
+            qWarning() << "       loop wrap-around reverse";
+            loopingWrapAroundReverse = true;
+        }
+    }
+
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        const auto cuePos = pControl->getPosition();
+        if (!cuePos.isValid()) {
+            continue;
+        }
+        double active = 0.0;
+        // If we just wrapped around, check if the cue is inside the
+        // processed frame ranges.
+        // Note: loop_end is considered outside the loop.
+        if (loopingWrapAround &&
+                // Hotcue inside loop?
+                posInsideLoop(cuePos, loopInfo) &&
+                (cuePos > prevPos || cuePos <= currPos)) {
+            qWarning() << "    >> activate"
+                       << pControl->getHotcueIndex() + 1
+                       << "(loop wrap-around)";
+            active = 1.0;
+        } else if (loopingWrapAroundReverse &&
+                // Hotcue inside loop?
+                posInsideLoop(cuePos, loopInfo) &&
+                (cuePos < prevPos || cuePos >= currPos)) {
+            qWarning() << "    >> activate"
+                       << pControl->getHotcueIndex() + 1
+                       << "(loop wrap-around reverse)";
+            active = 1.0;
+        } else if (reverse && cuePos <= prevPos && cuePos >= currPos) {
+            // Fires constantly when stopped at hotcue,
+            // enable if needed.
+            // qWarning() << "    >> activate"
+            //            << pControl->getHotcueIndex() + 1
+            //            << "(regular, reverse)";
+            active = 1.0;
+        } else if (!reverse && cuePos >= prevPos && cuePos <= currPos) {
+            // Fires constantly when stopped at hotcue,
+            // enable if needed.
+            // qWarning() << "    >> activate"
+            //            << pControl->getHotcueIndex() + 1
+            //            << "(regular)";
+            active = 1.0;
+        }
+
+        pControl->setIndicator(active);
+    }
+
+    m_prevPosition.setValue(currPos);
 }
 
 void CueControl::resetIndicators() {
     m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
+        pControl->setIndicator(0.0);
+    }
+}
+
+/// Store the position so we can do a correct range check when updating the
+/// hotcue indicators. Otherwise m_prevPosition would be the position from before
+/// the seek and we'd falsely activate indicators.
+void CueControl::notifySeek(mixxx::audio::FramePos position) {
+    qWarning() << "     .";
+    qWarning() << "     notifySeek";
+    qWarning() << "     .";
+    m_prevPosition.setValue(position);
 }
 
 CueControl::TrackAt CueControl::getTrackAt() const {
@@ -2363,7 +2461,8 @@ void CueControl::slotLoopReset() {
     setCurrentSavedLoopControlAndActivate(nullptr);
 }
 
-void CueControl::slotLoopEnabledChanged(bool enabled) {
+/// Check if we just toggled current saved loop and change its status accordingly
+void CueControl::slotLoopEnabledChanged(double value) {
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2379,15 +2478,26 @@ void CueControl::slotLoopEnabledChanged(bool enabled) {
                     mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                             m_pLoopEndPosition->get()));
 
-    if (enabled) {
+    if (value > 0.0) {
         pSavedLoopControl->setStatus(HotcueControl::Status::Active);
     } else {
         pSavedLoopControl->setStatus(HotcueControl::Status::Set);
     }
 }
 
-void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
-        mixxx::audio::FramePos endPosition) {
+void CueControl::slotLoopUpdated(const LoopInfo& loopInfo) {
+    const auto endPosition = loopInfo.endPosition;
+    const auto startPosition = loopInfo.startPosition;
+    bool validLoop = false;
+    // Store LoopInfo, used for updating hotcue indicators in updateindicators().
+    if (startPosition.isValid() && endPosition.isValid() &&
+            startPosition < endPosition) {
+        validLoop = true;
+        m_loopInfo = loopInfo;
+    } else {
+        m_loopInfo = LoopInfo();
+    }
+
     HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
     if (!pSavedLoopControl) {
         return;
@@ -2409,8 +2519,7 @@ void CueControl::slotLoopUpdated(mixxx::audio::FramePos startPosition,
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(startPosition.isValid() && endPosition.isValid() &&
-            startPosition < endPosition) {
+    if (!validLoop) {
         return;
     }
 
@@ -2461,9 +2570,12 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
 
     m_pHotcueStatus = std::make_unique<ControlObject>(keyForControl(QStringLiteral("status")));
     m_pHotcueStatus->setReadOnly();
-
     // Add an alias for the legacy hotcue_X_enabled CO
     m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
+
+    m_pHotcueIndicator = std::make_unique<ControlObject>(
+            keyForControl(QStringLiteral("indicator")));
+    m_pHotcueIndicator->setReadOnly();
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();
@@ -2702,6 +2814,7 @@ void HotcueControl::resetCue() {
     setEndPosition(mixxx::audio::kInvalidFramePos);
     setType(mixxx::CueType::Invalid);
     setStatus(Status::Empty);
+    setIndicator(0.0);
 }
 
 void HotcueControl::setPosition(mixxx::audio::FramePos position) {
@@ -2718,6 +2831,20 @@ void HotcueControl::setType(mixxx::CueType type) {
 
 void HotcueControl::setStatus(HotcueControl::Status status) {
     m_pHotcueStatus->forceSet(static_cast<double>(status));
+}
+
+void HotcueControl::setIndicator(double on) {
+    if (on == m_pHotcueIndicator->get()) {
+        return;
+    }
+    if (on > 0.0) {
+        qWarning() << "  >> set indicator"
+                   << getHotcueIndex() + 1
+                   << "ON";
+    }
+    m_pHotcueIndicator->forceSet(on);
+    // TODO: check if we can squeez this into hotcue_N_status without too much effort.
+    // IINM that would require reading e.g. m_pCurrentSavedLoopControl.
 }
 
 HotcueControl::Status HotcueControl::getStatus() const {

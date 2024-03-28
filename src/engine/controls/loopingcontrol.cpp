@@ -336,7 +336,7 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
             : LoopSeekMode::MovedOut;
 
     m_loopInfo.setValue(loopInfo);
-    emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
+    emit loopUpdated(loopInfo);
 
     // Update CO for loop end marker
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePos());
@@ -821,7 +821,7 @@ void LoopingControl::slotLoopIn(double pressed) {
             m_bAdjustingLoopIn = false;
             LoopInfo loopInfo = m_loopInfo.getValue();
             if (loopInfo.startPosition < loopInfo.endPosition) {
-                emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
+                emit loopUpdated(loopInfo);
             } else {
                 emit loopReset();
             }
@@ -967,7 +967,7 @@ void LoopingControl::slotLoopOut(double pressed) {
                 setLoopOutToCurrentPosition();
                 LoopInfo loopInfo = m_loopInfo.getValue();
                 if (loopInfo.startPosition < loopInfo.endPosition) {
-                    emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
+                    emit loopUpdated(loopInfo);
                 } else {
                     emit loopReset();
                 }
@@ -1214,8 +1214,6 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
             pActiveBeatLoop->deactivate();
         }
     }
-
-    emit loopEnabledChanged(enabled);
 }
 
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1534,7 +1532,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         newloopInfo.seekMode = LoopSeekMode::Changed;
     }
     m_loopInfo.setValue(newloopInfo);
-    emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
+    emit loopUpdated(newloopInfo);
     m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
     m_pCOLoopEndPosition->set(newloopInfo.endPosition.toEngineSamplePos());
 
@@ -1695,7 +1693,7 @@ void LoopingControl::slotLoopMove(double beats) {
         loopInfo.startPosition = newLoopStartPosition;
         loopInfo.endPosition = newLoopEndPosition;
         m_loopInfo.setValue(loopInfo);
-        emit loopUpdated(loopInfo.startPosition, loopInfo.endPosition);
+        emit loopUpdated(loopInfo);
         m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
         m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
     }
