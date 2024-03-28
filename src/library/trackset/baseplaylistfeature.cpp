@@ -39,12 +39,14 @@ BasePlaylistFeature::BasePlaylistFeature(
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName,
-        const QString& iconName)
+        const QString& iconName,
+        bool keepHiddenTracks)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),
-          m_pPlaylistTableModel(pModel) {
+          m_pPlaylistTableModel(pModel),
+          m_keepHiddenTracks(keepHiddenTracks) {
     pModel->setParent(this);
 
     initActions();
@@ -568,7 +570,8 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollectionManager(),
-                    "mixxx.db.model.playlist_export"));
+                    "mixxx.db.model.playlist_export",
+                    m_keepHiddenTracks));
 
     emit saveModelState();
     pPlaylistTableModel->selectPlaylist(playlistId);
