@@ -733,9 +733,25 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
     m_pTrack1->trySetBpm(60.0);
     setCurrentPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                                m_pTrackSamples->get()) -
-            200);
+            44100);
+    m_pBeatLoopSize->set(0.5);
+    m_pButtonBeatLoopActivate->set(1.0);
+    m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_TRUE(m_pLoopEnabled->toBool());
     m_pBeatLoopSize->set(64.0);
     EXPECT_NE(64.0, m_pBeatLoopSize->get());
+    EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
+}
+
+TEST_F(LoopingControlTest, BeatLoopSize_SetPastTrackEndIfLoopInactive) {
+    // TODO: actually calculate that the beatloop would go beyond
+    // the end of the track
+    m_pTrack1->trySetBpm(60.0);
+    setCurrentPosition(mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                               m_pTrackSamples->get()) -
+            44100);
+    m_pBeatLoopSize->set(64.0);
+    EXPECT_EQ(64.0, m_pBeatLoopSize->get());
     EXPECT_FALSE(m_pBeatLoop64Enabled->toBool());
 }
 

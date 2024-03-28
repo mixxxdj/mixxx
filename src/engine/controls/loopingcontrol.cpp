@@ -136,6 +136,10 @@ LoopingControl::LoopingControl(const QString& group,
             this,
             [this](double value) { slotBeatLoop(value); },
             Qt::DirectConnection);
+    m_pCOLoopAnchor = new ControlPushButton(ConfigKey(group, "loop_anchor"),
+            true,
+            static_cast<double>(LoopAnchorPoint::Start));
+    m_pCOLoopAnchor->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
@@ -269,6 +273,7 @@ LoopingControl::~LoopingControl() {
         delete pBeatLoop;
     }
     delete m_pCOBeatLoopSize;
+    delete m_pCOLoopAnchor;
     delete m_pCOBeatLoopActivate;
     delete m_pCOBeatLoopRollActivate;
 
@@ -1408,9 +1413,9 @@ mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
     return previousFractionBeatPosition + loopLength;
 }
 
-void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable) {
+void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) {
     // If this is a "new" loop, stop tracking saved loop changes
-    if (!keepStartPoint) {
+    if (!keepSetPoint) {
         emit loopReset();
     }
 
@@ -1442,6 +1447,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
+    const LoopAnchorPoint loopAnchor = static_cast<LoopAnchorPoint>(m_pCOLoopAnchor->get());
     // Calculate the new loop start and end positions
     // give start and end defaults so we can detect problems
     LoopInfo newloopInfo = {mixxx::audio::kInvalidFramePos,
@@ -1451,12 +1457,18 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     mixxx::audio::FramePos currentPosition = info.currentPosition;
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
-    if (keepStartPoint) {
-        if (loopInfo.startPosition.isValid()) {
-            newloopInfo.startPosition = loopInfo.startPosition;
-        } else {
-            newloopInfo.startPosition =
-                    math_min(info.currentPosition, info.trackEndPosition);
+    if (keepSetPoint) {
+        switch (loopAnchor) {
+        case LoopAnchorPoint::Start:
+            newloopInfo.startPosition = loopInfo.startPosition.isValid()
+                    ? loopInfo.startPosition
+                    : math_min(info.currentPosition, info.trackEndPosition);
+            break;
+        case LoopAnchorPoint::End:
+            newloopInfo.endPosition = loopInfo.endPosition.isValid()
+                    ? loopInfo.endPosition
+                    : math_min(info.currentPosition, info.trackEndPosition);
+            break;
         }
     } else {
         // If running reverse, move the loop one loop size to the left.
@@ -1470,23 +1482,42 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             currentPosition = pBeats->findNBeatsFromPosition(currentPosition, -beats);
         }
 
-        if (!m_pQuantizeEnabled->toBool()) {
-            newloopInfo.startPosition = currentPosition;
-        } else {
-            // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
-            // The closest beat might be ahead of play position and will cause a catching loop.
-            newloopInfo.startPosition = findQuantizedBeatloopStart(pBeats, currentPosition, beats);
+        bool quantize = m_pQuantizeEnabled->toBool();
+        // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
+        // The closest beat might be ahead of play position and will cause a catching loop.
+        switch (loopAnchor) {
+        case LoopAnchorPoint::Start:
+            newloopInfo.startPosition = !quantize
+                    ? currentPosition
+                    : findQuantizedBeatloopStart(
+                              pBeats, currentPosition, beats);
+            break;
+        case LoopAnchorPoint::End:
+            newloopInfo.endPosition = !quantize
+                    ? currentPosition
+                    : findQuantizedBeatloopStart(
+                              pBeats, currentPosition, beats);
+            break;
         }
     }
 
-    newloopInfo.endPosition = pBeats->findNBeatsFromPosition(newloopInfo.startPosition, beats);
+    switch (loopAnchor) {
+    case LoopAnchorPoint::Start:
+        newloopInfo.endPosition = pBeats->findNBeatsFromPosition(newloopInfo.startPosition, beats);
+        break;
+    case LoopAnchorPoint::End:
+        newloopInfo.startPosition = pBeats->findNBeatsFromPosition(newloopInfo.endPosition, -beats);
+        break;
+    }
 
     if (!newloopInfo.startPosition.isValid() ||
             !newloopInfo.endPosition.isValid() ||
             newloopInfo.startPosition >=
                     newloopInfo.endPosition // happens when the call above fails
-            || newloopInfo.endPosition >
-                    trackEndPosition) { // Do not allow beat loops to go beyond the end of the track
+            || (newloopInfo.endPosition > trackEndPosition &&
+                       (enable || m_bLoopingEnabled))) { // Do not allow beat
+                                                         // loops to go beyond
+                                                         // the end of the track
         // If a track is loaded with beatloop_size larger than
         // the distance between the loop in point and
         // the end of the track, let beatloop_size be set to
@@ -1523,16 +1554,34 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         return;
     }
 
-    // If the start point has changed, or the loop is not enabled,
-    // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
-    if (!keepStartPoint ||
-            !(enable || m_bLoopingEnabled) ||
-            (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
-                    positionNear(newloopInfo.endPosition, loopInfo.endPosition))) {
-        newloopInfo.seekMode = LoopSeekMode::MovedOut;
-    } else {
-        newloopInfo.seekMode = LoopSeekMode::Changed;
+    switch (loopAnchor) {
+    case LoopAnchorPoint::Start:
+        // If the start point has changed, or the loop is not enabled,
+        // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
+        if (!keepSetPoint ||
+                !(enable || m_bLoopingEnabled) ||
+                (positionNear(newloopInfo.startPosition, loopInfo.startPosition) &&
+                        positionNear(newloopInfo.endPosition, loopInfo.endPosition))) {
+            newloopInfo.seekMode = LoopSeekMode::MovedOut;
+        } else {
+            newloopInfo.seekMode = LoopSeekMode::Changed;
+        }
+        break;
+    case LoopAnchorPoint::End:
+        // If the end point is behind the current position and the loop is enabled, seek backward .
+        if (!(enable || m_bLoopingEnabled) || newloopInfo.endPosition > currentPosition) {
+            newloopInfo.seekMode = LoopSeekMode::MovedOut;
+        } else {
+            newloopInfo.seekMode = LoopSeekMode::Changed;
+            // If the loop is being enabled, flush the old loop status to force
+            // LoopingControl::nextTrigger to evaluate the LoopSeekMode
+            if (!m_bLoopingEnabled) {
+                m_oldLoopInfo = LoopInfo{};
+            }
+        }
+        break;
     }
+
     m_loopInfo.setValue(newloopInfo);
     emit loopUpdated(newloopInfo.startPosition, newloopInfo.endPosition);
     m_pCOLoopStartPosition->set(newloopInfo.startPosition.toEngineSamplePos());
