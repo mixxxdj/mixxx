@@ -305,6 +305,7 @@ void TagFetcher::slotMusicBrainzTaskSucceeded(
             std::move(pTrack),
             std::move(guessedTrackReleases));
 }
+
 void TagFetcher::updateStatusBar(const QString& message) {
     emit fetchProgress(message);
 }
@@ -358,14 +359,9 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
         const mixxx::network::WebResponseWithContent& responseWithContent) {
     Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
         return; // Stray call from an already aborted try
     }
-    m_pCoverArtArchiveLinksTask = make_parented<mixxx::CoverArtArchiveLinksTask>(
-            &m_network,
-            std::move(errorString),
-            this);
     QString userFriendlyErrorMessage = tr("An error occurred while fetching cover art: ");
     switch (errorCode) {
     case QNetworkReply::HostNotFoundError:
@@ -379,11 +375,9 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
     }
 
     emit coverArtLinkNotFound(userFriendlyErrorMessage);
-    connect(m_pCoverArtArchiveLinksTask, &mixxx::CoverArtArchiveLinksTask::networkError, this, &TagFetcher::updateStatusBar);
-
+    emit coverArtArchiveLinksTaskNetworkError(userFriendlyErrorMessage);
     terminate();
 }
-
 
 void TagFetcher::slotCoverArtArchiveLinksTaskFailed(
         const mixxx::network::JsonWebResponse& response) {
