@@ -8,6 +8,7 @@
 #include "controllers/midi/midicontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "test/mixxxtest.h"
 #include "util/time.h"
 
@@ -16,13 +17,15 @@ class MockMidiController : public MidiController {
     explicit MockMidiController()
             : MidiController("test") {
     }
-    ~MockMidiController() override { }
+    ~MockMidiController() override {
+    }
 
     MOCK_METHOD0(open, int());
     MOCK_METHOD0(close, int());
-    MOCK_METHOD3(sendShortMsg, void(unsigned char status,
-                                    unsigned char byte1,
-                                    unsigned char byte2));
+    MOCK_METHOD3(sendShortMsg,
+            void(unsigned char status,
+                    unsigned char byte1,
+                    unsigned char byte2));
     MOCK_METHOD1(sendBytes, void(const QByteArray& data));
     MOCK_CONST_METHOD0(isPolling, bool());
 };
@@ -32,6 +35,8 @@ class MidiControllerTest : public MixxxTest {
     void SetUp() override {
         m_pController.reset(new MockMidiController());
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
+        m_pController->startEngine();
+        m_pController->m_pScriptEngineLegacy->initialize();
     }
 
     void addMapping(const MidiInputMapping& mapping) {
@@ -49,6 +54,18 @@ class MidiControllerTest : public MixxxTest {
                 MidiUtils::statusFromOpCodeAndChannel(opcode, channel),
                 control,
                 value);
+    }
+
+    bool evaluateAndAssert(const QString& code) {
+        return m_pController->m_pScriptEngineLegacy->jsEngine()->evaluate(code).isError();
+    }
+
+    std::shared_ptr<LegacyMidiControllerMapping> getControllerMapping() {
+        return m_pController->m_pMapping;
+    }
+
+    void shutdownController() {
+        m_pController->m_pScriptEngineLegacy->shutdown();
     }
 
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
@@ -595,4 +612,33 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     // LSB by 1 is greater than the middle value.
     receivedShortMessage(MidiOpCode::PitchBendChange, channel, 0x01, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_BindHandler) {
+    constexpr double kMinValue = -1234.5;
+    constexpr double kMaxValue = 678.9;
+    ControlPotmeter potmeter(ConfigKey("[Channel1]", "test_pot"), kMinValue, kMaxValue);
+    m_pController->setMapping(m_pMapping->clone());
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
+            "engine.setParameter('[Channel1]', 'test_pot', value);"
+            "})");
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 1);
+    receivedShortMessage(0x90, 0x43, 0x00);
+    EXPECT_DOUBLE_EQ(potmeter.get(), kMinValue);
+    receivedShortMessage(0x90, 0x43, 0x7F);
+    EXPECT_DOUBLE_EQ(potmeter.get(), kMaxValue);
+}
+
+TEST_F(MidiControllerTest, JSInputHandler_ControllerShutdownSlot) {
+    m_pController->setMapping(m_pMapping->clone());
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
+    evaluateAndAssert(
+            "midi.makeInputHandler(0x90, 0x43, (channel, control, value, status) => {"
+            "engine.setParameter('[Channel1]', 'test_pot', value);"
+            "})");
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 1);
+    shutdownController();
+    EXPECT_EQ(getControllerMapping()->getInputMappings().count(), 0);
 }

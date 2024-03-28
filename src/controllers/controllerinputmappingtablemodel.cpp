@@ -197,6 +197,17 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
         }
 
         const MidiInputMapping& mapping = m_midiInputMappings.at(row);
+
+        if (std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+            return QVariant();
+        }
+
+        const auto* const control = std::get_if<ConfigKey>(&mapping.control);
+
+        VERIFY_OR_DEBUG_ASSERT(control != nullptr) {
+            return QVariant();
+        }
+
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
@@ -213,9 +224,9 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_ACTION:
                 if (role == Qt::UserRole) {
                     // TODO(rryan): somehow get the delegate display text?
-                    return QVariant(mapping.control.group + QStringLiteral(",") + mapping.control.item);
+                    return QVariant(control->group + QStringLiteral(",") + control->item);
                 }
-                return QVariant::fromValue(mapping.control);
+                return QVariant::fromValue(control);
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:
@@ -233,6 +244,10 @@ QString ControllerInputMappingTableModel::getDisplayString(const QModelIndex& in
     int row = index.row();
     int column = index.column();
     const MidiInputMapping& mapping = m_midiInputMappings.at(row);
+
+    if (!std::holds_alternative<ConfigKey>(mapping.control)) {
+        return QString();
+    }
 
     switch (column) {
     case MIDI_COLUMN_COMMENT: {
@@ -259,7 +274,7 @@ QString ControllerInputMappingTableModel::getDisplayString(const QModelIndex& in
         // untranslated script control
         return data(index, Qt::UserRole).toString() + QStringLiteral(" ") +
                 del->displayText(
-                        QVariant::fromValue(mapping.control), QLocale());
+                        QVariant::fromStdVariant(mapping.control), QLocale());
     }
     default:
         return QString();

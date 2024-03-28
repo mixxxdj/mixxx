@@ -15,9 +15,29 @@
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 
+const QString kMakeInputHandlerError = QStringLiteral(
+        "Invalid timer callback provided to midi.makeInputHandler. "
+        "Please pass a function and make sure that your code contains no syntax errors.");
+
+MidiInputHandleJSProxy::MidiInputHandleJSProxy(
+        const std::shared_ptr<LegacyMidiControllerMapping> mapping,
+        const MidiInputMapping& inputMapping)
+        : m_mapping(mapping), m_inputMapping(inputMapping) {
+}
+
+bool MidiInputHandleJSProxy::disconnect() {
+    // We want to remove only this mapping when disconnecting
+    return m_mapping->removeInputMapping(m_inputMapping.key.key, m_inputMapping);
+}
+
 MidiController::MidiController(const QString& deviceName)
         : Controller(deviceName) {
     setDeviceCategory(tr("MIDI Controller"));
+}
+
+void MidiController::slotBeforeEngineShutdown() {
+    Controller::slotBeforeEngineShutdown();
+    m_pMapping->removeInputHandlerMappings();
 }
 
 MidiController::~MidiController() {
@@ -182,8 +202,18 @@ void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappin
                      .rightJustified(2,'0')) :
                 QString("0x%1")
                 .arg(QString::number(mapping.key.status, 16).toUpper());
-        qDebug() << "Set mapping for" << message << "to"
-                 << mapping.control.group << mapping.control.item;
+
+        std::visit(
+                MidiUtils::overloaded{
+                        [message](const ConfigKey& control) {
+                            qDebug() << "Set mapping for" << message << "to"
+                                     << control.group << control.item;
+                        },
+                        [message](const std::shared_ptr<QJSValue>& control) {
+                            Q_UNUSED(control);
+                            qDebug() << "Set mapping for" << message << "to lambda";
+                        }},
+                mapping.control);
     }
 }
 
@@ -246,27 +276,27 @@ void MidiController::receivedShortMessage(unsigned char status,
     if (isLearning()) {
         emit messageReceived(status, control, value);
 
-        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
-        if (it != m_temporaryInputMappings.constEnd()) {
-            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.find(mappingKey.key);
+        if (it != m_temporaryInputMappings.end()) {
+            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
         }
     }
 
-    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
-    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().find(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().end() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
 
-void MidiController::processInputMapping(const MidiInputMapping& mapping,
-                                         unsigned char status,
-                                         unsigned char control,
-                                         unsigned char value,
-                                         mixxx::Duration timestamp) {
-    Q_UNUSED(timestamp);
+void MidiController::processInputMapping(MidiInputMapping& mapping,
+        unsigned char status,
+        unsigned char control,
+        unsigned char value,
+        mixxx::Duration timestamp) {
+    Q_UNUSED(timestamp)
     unsigned char channel = MidiUtils::channelFromStatus(status);
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 
@@ -276,23 +306,37 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             return;
         }
 
-        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
+        if (std::holds_alternative<ConfigKey>(mapping.control)) {
+            // Lazily compute the QJSValue
+            QJSValue function = pEngine->wrapFunctionCode(
+                    std::get<ConfigKey>(mapping.control).item, 5);
+            mapping.control = std::make_shared<QJSValue>(function);
+        }
+
+        VERIFY_OR_DEBUG_ASSERT(std::holds_alternative<std::shared_ptr<QJSValue>>(mapping.control)) {
+            return;
+        }
+
         const auto args = QJSValueList{
                 channel,
                 control,
                 value,
                 status,
-                mapping.control.group,
         };
-        if (!pEngine->executeFunction(&function, args)) {
-            qCWarning(m_logBase) << "MidiController: Invalid script function"
-                                 << mapping.control.item;
+        const auto& fun = std::get<std::shared_ptr<QJSValue>>(mapping.control);
+        if (!pEngine->executeFunction(fun.get(), args)) {
+            qCWarning(m_logBase) << "MidiController: Invalid script function";
         }
         return;
     }
 
+    VERIFY_OR_DEBUG_ASSERT(std::holds_alternative<ConfigKey>(mapping.control)) {
+        return;
+    }
+
     // Only pass values on to valid ControlObjects.
-    ControlObject* pCO = ControlObject::getControl(mapping.control);
+    auto configKey = std::get<ConfigKey>(mapping.control);
+    ControlObject* pCO = ControlObject::getControl(configKey);
     if (pCO == nullptr) {
         return;
     }
@@ -315,7 +359,12 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         for (auto it = m_fourteen_bit_queued_mappings.constBegin();
                 it != m_fourteen_bit_queued_mappings.constEnd();
                 ++it) {
-            if (it->first.control == mapping.control) {
+            const auto* const fourteen_bit_control = std::get_if<ConfigKey>(&it->first.control);
+            VERIFY_OR_DEBUG_ASSERT(fourteen_bit_control != nullptr) {
+                continue;
+            }
+
+            if (*fourteen_bit_control == configKey) {
                 if ((it->first.options & mapping.options) &
                         (MidiOption::FourteenBitLSB | MidiOption::FourteenBitMSB)) {
                     qCWarning(m_logBase)
@@ -540,4 +589,38 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     }
     qCWarning(m_logBase) << "MidiController: No script function specified for"
                          << MidiUtils::formatSysexMessage(getName(), data, timestamp);
+}
+
+QJSValue MidiController::makeInputHandler(int status, int midino, const QJSValue& scriptCode) {
+    auto pJsEngine = getScriptEngine()->jsEngine();
+    VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
+        return QJSValue();
+    }
+
+    if (!scriptCode.isCallable()) {
+        auto error = kMakeInputHandlerError;
+        if (scriptCode.isError()) {
+            error.append("\n" + scriptCode.toString());
+        }
+        getScriptEngine()->throwJSError(error);
+        return QJSValue();
+    }
+
+    if (status <= 0 || midino <= 0) {
+        auto mStatusError = QStringLiteral(
+                "Invalid status or midino passed to midi.makeInputHandler. "
+                "Please pass a strictly positive integer. status=%1,midino=%2")
+                                    .arg(status, midino);
+
+        getScriptEngine()->throwJSError(mStatusError);
+        return QJSValue();
+    }
+
+    MidiInputMapping inputMapping(
+            MidiKey(status, midino),
+            MidiOption::Script,
+            std::make_shared<QJSValue>(scriptCode));
+
+    m_pMapping->addInputMapping(inputMapping.key.key, inputMapping);
+    return pJsEngine->newQObject(new MidiInputHandleJSProxy(m_pMapping, inputMapping));
 }

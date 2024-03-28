@@ -26,6 +26,10 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     /// and ensures the function is executed with the correct 'this' object.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
+    std::shared_ptr<QJSEngine> jsEngine() const {
+        return m_pJSEngine;
+    }
+
   public slots:
     void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts);
 
@@ -65,9 +69,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     // There is lots of tight coupling between ControllerScriptEngineLegacy
     // and ControllerScriptInterface. This is probably not worth improving in legacy code.
     friend class ControllerScriptInterfaceLegacy;
-    std::shared_ptr<QJSEngine> jsEngine() const {
-        return m_pJSEngine;
-    }
 
     friend class ControllerScriptEngineLegacyTest;
+    friend class MidiControllerTest;
 };

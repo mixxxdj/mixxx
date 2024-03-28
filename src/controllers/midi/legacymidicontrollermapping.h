@@ -23,6 +23,8 @@ class LegacyMidiControllerMapping : public LegacyControllerMapping {
     // Input mappings
     void addInputMapping(uint16_t key, const MidiInputMapping& mapping);
     void removeInputMapping(uint16_t key);
+    bool removeInputMapping(uint16_t key, const MidiInputMapping& mapping);
+    void removeInputHandlerMappings();
     const QMultiHash<uint16_t, MidiInputMapping>& getInputMappings() const;
     void setInputMappings(const QMultiHash<uint16_t, MidiInputMapping>& mappings);
 
