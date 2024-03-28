@@ -77,7 +77,7 @@ WLibrary,
   border-left: 1px solid #333;
   border-bottom: 1px solid #0a0a0a;
   border-right: 1px solid #0a0a0a;
-  border-radius: 2px;
+  border-radius: 0px;
   }
   #WaveformsContainer {
     border-width: 1px 0px;
@@ -109,8 +109,8 @@ WSearchLineEdit,
   border-left: 1px solid #0a0a0a;
   border-bottom: 1px solid #333;
   border-right: 1px solid #333;
-  border-bottom-left-radius: 1px;
-  border-top-right-radius: 1px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 0px;
   background-color: #151515;
   }
   #KeyText {
@@ -175,7 +175,7 @@ WSearchLineEdit,
   border-left: 1px solid #222;
   border-bottom: 1px solid #111;
   border-right: 1px solid #111;
-  border-radius: 2px;
+  border-radius: 0px;
   background-color: #171717;
   }
 
@@ -201,8 +201,8 @@ WSearchLineEdit,
   border-top: 1px solid #585858;
   border-bottom: 1px solid #585858;
   border-left: 1px solid #585858;
-  border-top-left-radius: 2px;
-  border-bottom-left-radius: 2px;
+  border-top-left-radius: 1px;
+  border-bottom-left-radius: 1px;
 }
 
 #SubmenuCover {
@@ -711,7 +711,7 @@ WLibrary {
     padding: 1px;
     border-bottom: 1px solid #333;
     border-right: 1px solid #333;
-    border-bottom-right-radius: 1px;
+    border-bottom-right-radius: 0px;
     }
   #CrossfaderButtonContainer_Aux {
     margin-left: 4px;
@@ -761,13 +761,13 @@ WLibrary {
 #VuMeterDeck3_Compact {
   padding: 0px 4px 0px 5px;
   border-top-left-radius: 0px;
-  border-bottom-left-radius: 1px;
+  border-bottom-left-radius: 0px;
 }
 #VuMeterDeck2_Compact,
 #VuMeterDeck4_Compact {
   padding: 0px 5px 0px 4px;
   border-top-right-radius: 0px;
-  border-bottom-right-radius: 1px;
+  border-bottom-right-radius: 0px;
 }
 
 /************** Fx *********************************************************/
@@ -853,7 +853,7 @@ WEffectChainPresetButton::menu-indicator {
 
 WPushButton#FxSuperLinkButton,
 WPushButton#FxSuperLinkInvertButton {
-  border-radius: 3px;
+  border-radius: 1px;
   margin: 1px 1px 0px 0px;
 }
 
@@ -978,10 +978,10 @@ WEffectSelector,
   }
 
 #MicAuxMainControls {
-  border-radius: 2px;
+  border-radius: 0px;
   padding: 0px 1px 0px 2px;
-  border-bottom-left-radius: 1px;
-  border-top-right-radius: 1px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 0px;
   }
   #MicAuxLabel {
     padding: 3px 0px 3px 1px;
@@ -1365,7 +1365,7 @@ WPushButton#PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
   margin: 1px;
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
-  border-radius: 2px;
+  border-radius: 0px;
 }
 
 WPushButton#FxExpand,
@@ -2189,7 +2189,7 @@ WCueMenuPopup QPushButton:focus {
 #LibraryPreviewButton {
   margin: 0px;
   padding: 0px;
-  border-radius: 2px;
+  border-radius: 1px;
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
@@ -2244,7 +2244,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar,
 WSearchLineEdit QAbstractScrollArea QScrollBar {
   border: 0px solid #585858;
   background: #000;
-  border-radius: 2px;
+  border-radius: 1px;
   padding: 1px;
   color: #999999;
   }
@@ -2280,7 +2280,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:horizontal,
 WSearchLineEdit QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
-  border-radius: 2px;
+  border-radius: 1px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #725309,
     stop:1 #412f05);
@@ -2291,7 +2291,7 @@ WEffectChainPresetSelector QAbstractScrollArea QScrollBar::handle:vertical,
 WEffectChainPresetButton QMenu QAbstractScrollArea QScrollBar::handle:vertical,
 WSearchLineEdit QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
-  border-radius: 2px;
+  border-radius: 1px;
   background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #725309,
     stop:1 #412f05);
@@ -2311,7 +2311,7 @@ WSearchLineEdit QAbstractScrollArea QScrollBar::sub-page {
   min-width: 15px;
   min-height: 15px;
   background-color: #000;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 /* Turn off buttons */
 #LibraryContainer QScrollBar::add-line,
@@ -2471,7 +2471,7 @@ WEffectChainPresetButton QMenu,
 WSearchLineEdit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   border: 1px solid #888;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
 #SkinContainer,
