@@ -40,12 +40,14 @@ BasePlaylistFeature::BasePlaylistFeature(
         PlaylistTableModel* pModel,
         const QString& rootViewName,
         const QString& iconName,
+        const QString& countsDurationTableName,
         bool keepHiddenTracks)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel),
+          m_countsDurationTableName(countsDurationTableName),
           m_keepHiddenTracks(keepHiddenTracks) {
     pModel->setParent(this);
 
@@ -706,6 +708,46 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
     } else {
         qDebug() << "Unknown playlist link clicked" << link.path();
     }
+}
+
+QString BasePlaylistFeature::fetchPlaylistLabel(int playlistId) {
+    // This queries the temporary id/count/duration table that was has been created
+    // by the features' createPlaylistLabels() (updated each time playlists are added/removed)
+    QSqlDatabase database =
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
+    VERIFY_OR_DEBUG_ASSERT(database.tables(QSql::Views).contains(m_countsDurationTableName)) {
+        qWarning() << "BasePlaylistFeature: view" << m_countsDurationTableName
+                   << "does not exist! Can't fetch label for playlist" << playlistId;
+        return QString();
+    }
+    QSqlTableModel playlistTableModel(this, database);
+    playlistTableModel.setTable(m_countsDurationTableName);
+    const QString filter = "id=" + QString::number(playlistId);
+    playlistTableModel.setFilter(filter);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
+        QString name =
+                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
+                        .toString();
+        int count = playlistTableModel
+                            .data(playlistTableModel.index(0, countColumn))
+                            .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(0, durationColumn))
+                        .toInt();
+        return createPlaylistLabel(name, count, duration);
+    }
+    return QString();
 }
 
 void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {

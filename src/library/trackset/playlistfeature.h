@@ -37,7 +37,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   protected:
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
