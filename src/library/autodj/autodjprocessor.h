@@ -207,6 +207,9 @@ class AutoDJProcessor : public QObject {
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
 
+  public slots:
+    void playlistFirstTrackChanged();
+
   private slots:
     void crossfaderChanged(double value);
     void playerPositionChanged(DeckAttributes* pDeck, double position);
