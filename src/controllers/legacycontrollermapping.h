@@ -15,7 +15,8 @@
 class LegacyControllerMapping {
   public:
     LegacyControllerMapping()
-            : m_bDirty(false) {
+            : m_bDirty(false),
+              m_deviceDirection(DeviceDirection::Bidirectionnal) {
     }
     LegacyControllerMapping(const LegacyControllerMapping& other)
             : m_productMatches(other.m_productMatches),
@@ -50,6 +51,19 @@ class LegacyControllerMapping {
         QFileInfo file;
         bool builtin;
     };
+
+    // TODO (xxx): this is a temporary solution to address devices that don't
+    // support and need bidirectional communication and lead to
+    // polling/performance issues. The proper solution would involve refactoring
+    // the bulk integration to perform a better endpoint capability discovery
+    // and let Mixxx decide communication direction depending of the hardware
+    // capabilities
+    enum class DeviceDirection : uint8_t {
+        Outgoing = 0x1,
+        Incoming = 0x2,
+        Bidirectionnal = 0x3
+    };
+    Q_DECLARE_FLAGS(DeviceDirections, DeviceDirection)
 
     /// Adds a script file to the list of controller scripts for this mapping.
     /// @param filename Name of the script file to add
@@ -119,6 +133,14 @@ class LegacyControllerMapping {
 
     LegacyControllerSettingsLayoutElement* getSettingsLayout() {
         return m_settingsLayout.get();
+    }
+
+    void setDeviceDirection(DeviceDirections aDeviceDirection) {
+        m_deviceDirection = aDeviceDirection;
+    }
+
+    DeviceDirections getDeviceDirection() const {
+        return m_deviceDirection;
     }
 
     void setDirty(bool bDirty) {
@@ -267,4 +289,5 @@ class LegacyControllerMapping {
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
     std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
     QList<ScriptFileInfo> m_scripts;
+    DeviceDirections m_deviceDirection;
 };
