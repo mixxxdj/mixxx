@@ -398,6 +398,12 @@ void MixxxMainWindow::initialize() {
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
+
+    // Start Auto DJ if the cmdline arg is passed.
+    if (CmdlineArgs::Instance().getStartAutoDJ()) {
+        qDebug("Enabling Auto DJ from CLI flag.");
+        ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
