@@ -224,7 +224,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     mixxx::FileInfo fileInfo(file);
     QFile traktor_file(file);
     if (!Sandbox::askForAccess(&fileInfo) || !traktor_file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open Traktor music collection";
+        qDebug() << "Cannot open Traktor music collection: " << traktor_file.errorString();
         return nullptr;
     }
     QXmlStreamReader xml(&traktor_file);

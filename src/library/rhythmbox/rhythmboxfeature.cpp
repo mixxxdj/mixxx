@@ -164,6 +164,7 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     mixxx::FileInfo fileInfo(db);
     if (!Sandbox::askForAccess(&fileInfo) ||
             !db.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open Rhythmbox db at" << db.fileName() << db.errorString();
         return nullptr;
     }
 
