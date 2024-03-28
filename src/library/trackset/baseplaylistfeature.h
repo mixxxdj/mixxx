@@ -25,7 +25,8 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             UserSettingsPointer pConfig,
             PlaylistTableModel* pModel,
             const QString& rootViewName,
-            const QString& iconName);
+            const QString& iconName,
+            bool keepHiddenTracks = false);
     ~BasePlaylistFeature() override = default;
 
     TreeItemModel* sidebarModel() const override;
@@ -127,4 +128,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void markTreeItem(TreeItem* pTreeItem);
 
     TrackId m_selectedTrackId;
+
+    const bool m_keepHiddenTracks;
 };
