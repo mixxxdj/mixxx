@@ -1,6 +1,7 @@
 #include "qml/qmlcontrolproxy.h"
 
 #include "moc_qmlcontrolproxy.cpp"
+#include "util/cmdlineargs.h"
 
 namespace mixxx {
 namespace qml {
@@ -135,12 +136,15 @@ void QmlControlProxy::reinitializeFromKey() {
     }
 
     // We don't need to warn here if the control is missing, because we'll do a
-    // check below and print a warning anyway. If the key is invalid, this will
-    // still trigger an assertion because we checked the key validity above. If
-    // it's still invalid, that's a programming error.
+    // check below and print a warning anyway. If the key is invalid, we also don't
+    // trigger an assert. This is to ensure backward compatibility with
+    // ControlObjectScript::ControlObjectScript and let the caller handle a missing key
     std::unique_ptr<ControlProxy> pControlProxy =
-            std::make_unique<ControlProxy>(
-                    m_coKey, this, ControlFlag::NoWarnIfMissing);
+            std::make_unique<ControlProxy>(m_coKey,
+                    this,
+                    CmdlineArgs::Instance().getDeveloper()
+                            ? ControlFlag::NoWarnIfMissing
+                            : ControlFlag::AllowMissingOrInvalid);
 
     // This should never happen, but it doesn't hurt to check.
     VERIFY_OR_DEBUG_ASSERT(pControlProxy != nullptr) {
