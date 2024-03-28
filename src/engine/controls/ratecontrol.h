@@ -71,6 +71,11 @@ public:
   static void setRateRampSensitivity(int);
   static int getRateRampSensitivity();
   bool isReverseButtonPressed();
+  // ReadAheadManager::getNextSamples() notifies us each time the play position
+  // wrapped around during one buffer process (beatloop or track repeat) so
+  // PositionScratchController can correctly interpret the sample position delta.
+  void notifyWrapAround(mixxx::audio::FramePos triggerPos,
+          mixxx::audio::FramePos targetPos);
 
 public slots:
   void slotRateRangeChanged(double);
@@ -146,6 +151,10 @@ private:
 
   ControlProxy* m_pSyncMode;
   ControlProxy* m_pSlipEnabled;
+
+  int m_wrapAroundCount;
+  mixxx::audio::FramePos m_jumpPos;
+  mixxx::audio::FramePos m_targetPos;
 
   // This is true if we've already started to ramp the rate
   bool m_bTempStarted;
