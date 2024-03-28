@@ -4,6 +4,7 @@
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
+#include "waveform/renderers/allshader/digitsrenderer.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
@@ -29,6 +30,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
         return this;
     }
 
+    bool init() override;
+
     void initializeGL() override;
     void paintGL() override;
     void resizeGL(int w, int h) override;
@@ -44,12 +47,19 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p2,
             QPointF p3);
 
+    void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
+    void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
+    void updateUntilMark(double playPosition, double markerPosition);
+
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
     std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
-
-    void drawMark(const QRectF& rect, QColor color);
-    void drawTexture(float x, float y, QOpenGLTexture* texture);
+    DigitsRenderer m_digitsRenderer;
+    int m_beatsUntilMark;
+    double m_timeUntilMark;
+    double m_currentBeatPosition;
+    double m_nextBeatPosition;
+    std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
