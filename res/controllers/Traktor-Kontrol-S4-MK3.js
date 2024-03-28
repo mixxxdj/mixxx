@@ -38,97 +38,124 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
+
+/**
+ * This helper function is used to ensure backward compatibility between 2.4 and later versions
+ * @param {string} key the setting key as per defined in the manifest
+ * @param {any} defaultVal the value to use if not controller setting is available
+ * @returns {any} the value to use for this setting
+ */
+var getSetting = (key, defaultVal) => {
+    if (engine.getSetting) {
+        const value = engine.getSetting(key);
+        if (typeof value !== typeof defaultVal) {
+            console.warn(`expected a value of type ${typeof defaultVal} for "${key}", got a ${typeof value} ("${value}"). Using default value.`);
+            return defaultVal;
+        }
+        return value;
+    }
+    return engine.getSetting ? engine.getSetting(key) : defaultVal;
+};
+
 /*
  * USER CONFIGURABLE SETTINGS
- * Adjust these to your liking
+ * Adjust these to your liking or change settings in the preferences (Mixxx >= 2.5)
+ * Make sure to edit the second argument, or second value after the coma
  */
 
 const DeckColors = [
-    LedColors.red,
-    LedColors.blue,
-    LedColors.yellow,
-    LedColors.purple,
+    LedColors[getSetting("deckA", "red")],
+    LedColors[getSetting("deckB", "blue")],
+    LedColors[getSetting("deckC", "yellow")],
+    LedColors[getSetting("deckD", "purple")],
 ];
 
 const LibrarySortableColumns = [
-    script.LIBRARY_COLUMNS.ARTIST,
-    script.LIBRARY_COLUMNS.TITLE,
-    script.LIBRARY_COLUMNS.BPM,
-    script.LIBRARY_COLUMNS.KEY,
-    script.LIBRARY_COLUMNS.DATETIME_ADDED,
-];
+    getSetting("librarySortableColumns1Value", script.LIBRARY_COLUMNS.ARTIST.toString()),
+    getSetting("librarySortableColumns2Value", script.LIBRARY_COLUMNS.TITLE.toString()),
+    getSetting("librarySortableColumns3Value", script.LIBRARY_COLUMNS.BPM.toString()),
+    getSetting("librarySortableColumns4Value", script.LIBRARY_COLUMNS.KEY.toString()),
+    getSetting("librarySortableColumns5Value", script.LIBRARY_COLUMNS.DATETIME_ADDED.toString()),
+    getSetting("librarySortableColumns6Value", "0"),
+].map(c => parseInt(c)).filter(c => c); // Filter '0' column, equivalent to '---' value in the UI or disabled
 
-const LoopWheelMoveFactor = 50;
-const LoopEncoderMoveFactor = 500;
-const LoopEncoderShiftmoveFactor = 2500;
+const LoopWheelMoveFactor = getSetting("loopWheelMoveFactor", 50);
+const LoopEncoderMoveFactor = getSetting("loopEncoderMoveFactor", 500);
+const LoopEncoderShiftMoveFactor = getSetting("loopEncoderShiftMoveFactor", 2500);
 
-const TempoFaderSoftTakeoverColorLow = LedColors.white;
-const TempoFaderSoftTakeoverColorHigh = LedColors.green;
+const TempoFaderSoftTakeoverColorLow = LedColors[getSetting("tempoFaderSoftTakeoverColorLow", "white")];
+const TempoFaderSoftTakeoverColorHigh = LedColors[getSetting("tempoFaderSoftTakeoverColorHigh", "green")];
 
 // Define whether or not to keep LED that have only one color (reverse, flux, play, shift) dimmed if they are inactive.
 // 'true' will keep them dimmed, 'false' will turn them off. Default: true
-const KeepLEDWithOneColorDimedWhenInactive = true;
+const KeepLEDWithOneColorDimedWhenInactive = getSetting("keepLEDWithOneColorDimedWhenInactive", true);
 
 // Keep both deck select buttons backlit and do not fully turn off the inactive deck button.
 // 'true' will keep the unseclected deck dimmed, 'false' to fully turn it off. Default: true
-const KeepDeckSelectDimmed = true;
+const KeepDeckSelectDimmed = getSetting("keepDeckSelectDimmed", true);
 
 // Define whether the keylock is mapped when doing "shift+master" (on press) or "shift+sync" (on release since long push copies the key)".
 // 'true' will use "sync+master", 'false' will use "shift+sync". Default: false
-const UseKeylockOnMaster = false;
+const UseKeylockOnMaster = getSetting("useKeylockOnMaster", false);
 
-// Define whether the grid button would blink when the playback is going over a detcted beat. Can help to adjust beat grid.
+// Define whether the grid button would blink when the playback is going over a detected beat. Can help to adjust beat grid.
 // Default: false
-const GridButtonBlinkOverBeat = false;
+const GridButtonBlinkOverBeat = getSetting("gridButtonBlinkOverBeat", false);
 
 // Wheel led blinking if reaching the end of track warning (default 30 seconds, can be changed in the settings, under "Waveforms" > "End of track warning").
 // Default: true
-const WheelLedBlinkOnTrackEnd = true;
+const WheelLedBlinkOnTrackEnd = getSetting("wheelLedBlinkOnTrackEnd", true);
 
 // When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
 // Default: false
-const MixerControlsMixAuxOnShift = false;
+const MixerControlsMixAuxOnShift = getSetting("mixerControlsMixAuxOnShift", false);
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
-const WheelSpeedSample = 3;
+const WheelSpeedSample = getSetting("wheelSpeedSample", 5);
 
 // Make the sampler tab a beatlooproll tab instead
 // Default: false
-const UseBeatloopRollInsteadOfSampler = false;
+const UseBeatloopRollInsteadOfSampler = getSetting("useBeatloopRollInsteadOfSampler", false);
 
 // Predefined beatlooproll sizes. Note that if you use AddLoopHalveAndDoubleOnBeatloopRollTab, the first and
 // last size will be ignored
-const BeatLoopRolls = [1/16, 1/8, 1/4, 1/2, 1, 2, 4, 8];
+const BeatLoopRolls = [
+    getSetting("beatLoopRollsSize0", "1/8"),
+    getSetting("beatLoopRollsSize1", "1/4"),
+    getSetting("beatLoopRollsSize2", "1/2"),
+    getSetting("beatLoopRollsSize3", "1"),
+    getSetting("beatLoopRollsSize4", "2"),
+    getSetting("beatLoopRollsSize5", "4"),
+    getSetting("beatLoopRollsSize6", "half"),
+    getSetting("beatLoopRollsSize7", "double")
+];
 
-// Make the two last button on the beatlooproll pad halve or double the loop size. This will take away the 1/16 and 8 loop size.
-// Default: true
-const AddLoopHalveAndDoubleOnBeatloopRollTab = true;
 
 // Define the speed of the jogwheel. This will impact the speed of the LED playback indicator, the sratch, and the speed of
 // the motor if enable. Recommended value are 33 + 1/3 or 45.
 // Default: 33 + 1/3
-const BaseRevolutionsPerMinute = 33 + 1/3;
+const BaseRevolutionsPerMinute = parseInt(getSetting("baseRevolutionsPerMinute", "0")) || 33 + 1/3;
 
 // Define whether or not to use motors.
 // This is a BETA feature! Please use at your own risk. Setting this off means that below settings are inactive
 // Default: false
-const UseMotors = false;
+const UseMotors = getSetting("useMotors", false);
 
 // Define how many wheel moves are sampled to compute the speed when using the motor. This is helpful to mitigate delay that
 // occurs in communication as well as Mixxx limitation to 20ms latency.
 // The more you have, the more the speed is accurate.
 // less responsive it gets in Mixxx. Default: 20
-const TurnTableSpeedSample = 20;
+const TurnTableSpeedSample = getSetting("turnTableSpeedSample", 20);
 
 // Define how much the wheel will resist. It is a similar setting that the Grid+Wheel in Tracktor
 // Value must defined between 0 to 1. 0 is very tight, 1 is very loose.
 // Default: 0.5
-const TightnessFactor = 0.5;
+const TightnessFactor = getSetting("tightnessFactor", 0.5);
 
 // Define how much force can the motor use. This defines how much the wheel will "fight" you when you block it in TT mode
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
-const MaxWheelForce = 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
+const MaxWheelForce = getSetting("maxWheelForce", 25000);  // Traktor seems to cap the max value at 60000, which just sounds insane
 
 
 
@@ -699,7 +726,7 @@ class HotcueButton extends PushButton {
         if (this.number === undefined || !Number.isInteger(this.number) || this.number < 1 || this.number > 32) {
             throw Error("HotcueButton must have a number property of an integer between 1 and 32");
         }
-        this.outKey = `hotcue_${this.number}_enabled`;
+        this.outKey = `hotcue_${this.number}_status`;
         this.colorKey = `hotcue_${this.number}_color`;
         this.outConnect();
     }
@@ -815,8 +842,16 @@ class BeatLoopRollButton extends TriggerButton {
         if (options.number === undefined || !Number.isInteger(options.number) || options.number < 0 || options.number > 7) {
             throw Error("BeatLoopRollButton must have a number property of an integer between 0 and 7");
         }
-        if (options.number <= 5  || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
-            options.key = "beatlooproll_"+BeatLoopRolls[AddLoopHalveAndDoubleOnBeatloopRollTab ? options.number + 1 : options.number]+"_activate";
+        if (BeatLoopRolls[options.number] === "half") {
+            options.key = "loop_halve";
+        } else if (BeatLoopRolls[options.number] === "double") {
+            options.key = "loop_double";
+        } else {
+            const size = parseFloat(BeatLoopRolls[options.number]);
+            if (isNaN(size)) {
+                throw Error(`BeatLoopRollButton ${options.number}'s size "${BeatLoopRolls[options.number]}" is invalid. Must be a float, or the literal 'half' or 'double'`);
+            }
+            options.key = `beatlooproll_${size}_activate`;
             options.onShortPress = function() {
                 if (!this.deck.beatloopSize) {
                     this.deck.beatloopSize = engine.getValue(this.group, "beatloop_size");
@@ -830,10 +865,6 @@ class BeatLoopRollButton extends TriggerButton {
                     this.deck.beatloopSize = undefined;
                 }
             };
-        } else if (options.number === 6) {
-            options.key = "loop_halve";
-        } else {
-            options.key = "loop_double";
         }
         super(options);
         if (this.deck === undefined) {
@@ -843,7 +874,7 @@ class BeatLoopRollButton extends TriggerButton {
         this.outConnect();
     }
     output(value) {
-        if (this.number <= 5 || !AddLoopHalveAndDoubleOnBeatloopRollTab) {
+        if (this.key.startsWith("beatlooproll_")) {
             this.send(LedColors.white + (value ? this.brightnessOn : this.brightnessOff));
         } else {
             this.send(this.color);
@@ -1924,7 +1955,7 @@ class S4Mk3Deck extends Deck {
             deck: this,
             onChange: function(right) {
                 if (this.deck.wheelMode === wheelModes.loopIn || this.deck.wheelMode === wheelModes.loopOut) {
-                    const moveFactor = this.shifted ? LoopEncoderShiftmoveFactor : LoopEncoderMoveFactor;
+                    const moveFactor = this.shifted ? LoopEncoderShiftMoveFactor : LoopEncoderMoveFactor;
                     const valueIn = engine.getValue(this.group, "loop_start_position") + (right ? moveFactor : -moveFactor);
                     const valueOut = engine.getValue(this.group, "loop_end_position") + (right ? moveFactor : -moveFactor);
                     engine.setValue(this.group, "loop_start_position", valueIn);
