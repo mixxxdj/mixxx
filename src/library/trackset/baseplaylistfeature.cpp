@@ -162,8 +162,8 @@ void BasePlaylistFeature::connectPlaylistDAO() {
     connect(&m_playlistDao,
             &PlaylistDAO::renamed,
             this,
-            // In "History") just the item is renamed, while in "Playlists" the
-            // entire sidebar model is rebuilt to resort items by name
+            // In "History" just the item is renamed, while in "Playlists" the
+            // entire sidebar model is rebuilt to re-sort items by name
             &BasePlaylistFeature::slotPlaylistTableRenamed);
 }
 
@@ -741,6 +741,7 @@ void BasePlaylistFeature::updateChildModel(const QSet<int>& playlistIds) {
             }
         }
     }
+    m_pSidebarModel->triggerRepaint();
 }
 
 /// Clears the child model dynamically, but the invisible root item remains
