@@ -272,6 +272,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust Beatgrid - Match Alignment"),
             tr("Adjust beatgrid to match another playing deck."),
             pBpmMenu);
+    addDeckControl("beats_undo_adjustment",
+            tr("Revert last BPM/Beatgrid Change"),
+            tr("Revert last BPM/Beatgrid Change of the loaded track."),
+            pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), pBpmMenu);
 

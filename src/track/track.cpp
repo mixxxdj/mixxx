@@ -8,6 +8,7 @@
 #include "sources/metadatasource.h"
 #include "util/assert.h"
 #include "util/logger.h"
+#include "util/time.h"
 
 namespace {
 
@@ -55,6 +56,11 @@ inline mixxx::Bpm getBeatsPointerBpm(
     return pBeats->getBpmInRange(mixxx::audio::kStartFramePos, trackEndPosition);
 }
 
+constexpr int kMaxBeatsUndoStack = 10;
+// The minimum time that has to pass between beat changes to consider them 'separate'.
+// Used to filter actions done in quick succession.
+constexpr int kQuickBeatChangeDelta = 800;
+
 } // anonymous namespace
 
 // Don't change this string without an entry in the CHANGELOG!
@@ -83,7 +89,8 @@ Track::Track(
           m_fileAccess(std::move(fileAccess)),
           m_record(trackId),
           m_bDirty(false),
-          m_bMarkedForMetadataExport(false) {
+          m_bMarkedForMetadataExport(false),
+          m_undoingBeatsChange(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -431,9 +438,52 @@ bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
+    qWarning() << "     .";
+    qWarning().noquote() << "     setBeatsWhileLocked "
+                         << "old beats:" << QString(m_pBeats != nullptr ? "X" : "-")
+                         << "| new beats:" << QString(pBeats != nullptr ? "X" : "-");
     if (m_pBeats == pBeats) {
+        qWarning() << "       old == new, return";
+        qWarning() << "     .";
         return false;
     }
+    if (m_undoingBeatsChange) {
+        qWarning() << "       (currently undoing, don't rec)";
+    }
+    if (m_pBeats == nullptr) {
+        qWarning() << "       (currently null beats, don't rec)";
+    }
+
+    // Don't add null beats to the undo stack. Happens when beats are deserialized,
+    // e.g. when opening the track menu.
+    // Don't add beats to stack which we're about to undo.
+    mixxx::Duration time = mixxx::Time::elapsed();
+    if (!m_undoingBeatsChange && m_pBeats != nullptr) {
+        if (m_pBeatsUndoStack.size() >= kMaxBeatsUndoStack) {
+            qWarning() << "       undo stack >" << kMaxBeatsUndoStack
+                       << "remove oldest adjustment from stack";
+            m_pBeatsUndoStack.removeFirst();
+        }
+        // For 'batch' changes done in quick succession, e.g. quick beats_translate_later,
+        // we only store the last action, i.e. remove the previous action.
+        const mixxx::Duration timeDelta = time - m_lastBeatChangeTime;
+        if (timeDelta < mixxx::Duration::fromMillis(kQuickBeatChangeDelta)) {
+            if (m_pBeatsUndoStack.size() > 1) {
+                qWarning() << "       quick action (" << timeDelta.toIntegerMillis()
+                           << " >> replace prev";
+                m_pBeatsUndoStack.pop();
+            } else {
+                qWarning() << "       quick action (" << timeDelta.toIntegerMillis()
+                           << " but stack has" << m_pBeatsUndoStack.size() << "items";
+            }
+        } else {
+            qWarning() << "       add prev beats to undoStack";
+            m_pBeatsUndoStack.push(m_pBeats);
+        }
+    }
+    m_lastBeatChangeTime = time;
+    qWarning() << "     .";
+
     m_pBeats = std::move(pBeats);
     m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats, getDuration()));
     return true;
@@ -475,6 +525,24 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
 mixxx::BeatsPointer Track::getBeats() const {
     const auto locked = lockMutex(&m_qMutex);
     return m_pBeats;
+}
+
+void Track::undoBeatsChange() {
+    if (!canUndoBeatsChange()) {
+        qWarning() << "     .";
+        qWarning() << "     (undoBeatsChange but no prev beats, return";
+        qWarning() << "     .";
+        return;
+    }
+    qWarning() << "     .";
+    qWarning() << "     undoBeatsChange";
+    qWarning() << "     .";
+
+    auto locked = lockMutex(&m_qMutex);
+    m_undoingBeatsChange = true;
+    const auto pPrevBeats = m_pBeatsUndoStack.pop();
+    trySetBeats(pPrevBeats);
+    m_undoingBeatsChange = false;
 }
 
 void Track::afterBeatsAndBpmUpdated(
