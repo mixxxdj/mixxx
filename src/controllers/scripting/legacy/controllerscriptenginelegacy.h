@@ -70,5 +70,5 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     }
 
     friend class ControllerScriptEngineLegacyTest;
-    friend class ControllerRuntimeDataTest;
+    friend class ControllerSharedDataTest;
 };

@@ -25,6 +25,7 @@ declare interface ScriptConnection {
 
 declare namespace engine {
     type SettingValue = string | number | boolean;
+    type SharedDataValue = string | number | boolean | object | array | undefined;
     /**
      * Gets the value of a controller setting
      * The value is either set in the preferences dialog,
@@ -73,6 +74,28 @@ declare namespace engine {
     function setParameter(group: string, name: string, newValue: number): void;
 
     /**
+     * Gets the shared runtime data.
+     * @returns Runtime shared data value
+     */
+    function getSharedData(): SharedDataValue;
+
+    /**
+     * Override the the shared runtime data with a new value.
+     *
+     * It is suggested to make additive changes (e.g add new attribute to existing object) in order to ease integration with other controller mapping
+     * @param newValue Runtime shared data value to be set
+     */
+   function setSharedData(newValue: SharedDataValue): void;
+
+    /**
+     * Sets the control value specified with normalized range of 0..1
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "play_indicator"
+     * @param newValue Value to be set, normalized to a range of 0..1
+     */
+    function setParameter(group: string, name: string, newValue: number): void;
+
+    /**
      * Normalizes a specified value using the range of the given control,
      * to the range of 0..1
      *
@@ -112,6 +135,7 @@ declare namespace engine {
     function getDefaultParameter(group: string, name: string): number;
 
     type CoCallback = (value: number, group: string, name: string) => void
+    type RuntimeSharedDataCallback = (value: SharedDataValue) => void
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes
@@ -121,9 +145,18 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param callback JS function, which will be called every time, the value of the connected control changes.
-     * @returns Returns script connection object on success, otherwise 'undefined''
+     * @returns Returns script connection object on success, otherwise 'undefined'
      */
-    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection |undefined;
+    function makeConnection(group: string, name: string, callback: CoCallback): ScriptConnection | undefined;
+
+    /**
+     * Register callback function to be triggered when the shared data is updated
+     *
+     * Note that local update will also trigger the callback. Make sure to make your callback safe against recursion.
+     * @param callback JS function, which will be called every time, the shared controller value changes.
+     * @returns Returns script connection object on success, otherwise 'undefined'
+     */
+    function makeSharedDataConnection(callback: RuntimeSharedDataCallback): ScriptConnection | undefined;
 
     /**
      * Connects a specified Mixxx Control with a callback function, which is executed if the value of the control changes

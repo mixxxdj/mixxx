@@ -6,7 +6,7 @@
 #include "controllers/controller.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermappinginfoenumerator.h"
-#include "controllers/controllerruntimedata.h"
+#include "controllers/controllershareddata.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controllermanager.cpp"
@@ -96,7 +96,7 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
           m_skipPoll(false),
-          m_pRuntimeData(std::make_shared<ControllerRuntimeData>(this)) {
+          m_pRuntimeData(std::make_shared<ControllerSharedData>(this)) {
     qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
             "std::shared_ptr<LegacyControllerMapping>");
 
@@ -308,7 +308,7 @@ void ControllerManager::slotSetUpDevices() {
                           "controller open successfully?";
             continue;
         }
-        pController->getScriptEngine()->setRuntimeData(m_pRuntimeData);
+        pController->getScriptEngine()->setSharedData(m_pRuntimeData);
         pController->applyMapping();
     }
 
@@ -406,7 +406,7 @@ void ControllerManager::openController(Controller* pController) {
                           "controller open successfully?";
             return;
         }
-        pController->getScriptEngine()->setRuntimeData(m_pRuntimeData);
+        pController->getScriptEngine()->setSharedData(m_pRuntimeData);
 
         pController->applyMapping();
 

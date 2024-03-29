@@ -4,15 +4,15 @@
 
 #include "util/assert.h"
 
-/// ControllerRuntimeData is a wrapper that allows controllers script runtimes
+/// ControllerSharedData is a wrapper that allows controllers script runtimes
 /// to share arbitrary data via a the JavaScript interface. It doesn't enforce
 /// any type consistency and it is the script responsibility to use this data in
 /// a considerate, non-destructive way (append to lists, extend to objects,
 /// ...), as well as expecting that others won't do so.
-class ControllerRuntimeData : public QObject {
+class ControllerSharedData : public QObject {
     Q_OBJECT
   public:
-    ControllerRuntimeData(QObject* parent)
+    ControllerSharedData(QObject* parent)
             : QObject(parent), m_value() {
     }
 

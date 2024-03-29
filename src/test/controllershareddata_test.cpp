@@ -1,9 +1,10 @@
+#include "controllers/controllershareddata.h"
+
 #include <QtDebug>
 #include <memory>
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
-#include "controllers/controllerruntimedata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "controllers/scripting/legacy/scriptconnection.h"
@@ -15,17 +16,17 @@
 
 const RuntimeLoggingCategory logger(QString("test").toLocal8Bit());
 
-class ControllerRuntimeDataTest : public MixxxTest {
+class ControllerSharedDataTest : public MixxxTest {
   protected:
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
-        pRuntimeData = std::make_shared<ControllerRuntimeData>(nullptr);
+        pRuntimeData = std::make_shared<ControllerSharedData>(nullptr);
         cEngineA = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngineA->setRuntimeData(pRuntimeData);
+        cEngineA->setSharedData(pRuntimeData);
         cEngineA->initialize();
         cEngineB = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngineA->setRuntimeData(pRuntimeData);
+        cEngineA->setSharedData(pRuntimeData);
         cEngineB->initialize();
     }
 
@@ -66,15 +67,15 @@ class ControllerRuntimeDataTest : public MixxxTest {
     ControllerScriptEngineLegacy* cEngineA;
     ControllerScriptEngineLegacy* cEngineB;
 
-    std::shared_ptr<ControllerRuntimeData> pRuntimeData;
+    std::shared_ptr<ControllerSharedData> pRuntimeData;
 };
 
-TEST_F(ControllerRuntimeDataTest, getSetRuntimeData) {
+TEST_F(ControllerSharedDataTest, getSetRuntimeData) {
     pRuntimeData->set(QVariant("foobar"));
     EXPECT_TRUE(!evaluateA(R"--(
-let data = engine.getRuntimeData();
+let data = engine.getSharedData();
 if (data !== "foobar") throw "Something is wrong";
-engine.setRuntimeData("barfoo");
+engine.setSharedData("barfoo");
 )--")
                          .isError());
     auto data = pRuntimeData->get();
@@ -82,9 +83,9 @@ engine.setRuntimeData("barfoo");
     EXPECT_EQ(data.toString(), "barfoo");
 
     EXPECT_TRUE(!evaluateB(R"--(
-let data = engine.getRuntimeData();
+let data = engine.getSharedData();
 if (data !== "barfoo") throw "Something is wrong";
-engine.setRuntimeData("bazfuu");
+engine.setSharedData("bazfuu");
 )--")
                          .isError());
     data = pRuntimeData->get();
@@ -92,11 +93,11 @@ engine.setRuntimeData("bazfuu");
     EXPECT_EQ(data.toString(), "bazfuu");
 }
 
-TEST_F(ControllerRuntimeDataTest, runtimeDataCallback) {
+TEST_F(ControllerSharedDataTest, runtimeDataCallback) {
     EXPECT_TRUE(!evaluateA(R"--(
-engine.onRuntimeDataUpdate((data) => {
+engine.makeSharedDataConnection((data) => {
     if (data !== "foobar") throw "Something is wrong";
-    engine.setRuntimeData("bazfuu")
+    engine.setSharedData("bazfuu")
 });
 )--")
                          .isError());
@@ -108,11 +109,11 @@ engine.onRuntimeDataUpdate((data) => {
     EXPECT_EQ(data.toString(), "bazfuu");
 }
 
-TEST_F(ControllerRuntimeDataTest, canTrigger) {
+TEST_F(ControllerSharedDataTest, canTrigger) {
     EXPECT_TRUE(!evaluateA(R"--(
-engine.onRuntimeDataUpdate((data) => {
+engine.makeSharedDataConnection((data) => {
     if (data) return;
-    engine.setRuntimeData("bazfuu")
+    engine.setSharedData("bazfuu")
 }).trigger();
 )--")
                          .isError());
@@ -123,9 +124,9 @@ engine.onRuntimeDataUpdate((data) => {
     EXPECT_EQ(data.toString(), "bazfuu");
 }
 
-TEST_F(ControllerRuntimeDataTest, canConnectDisconnect) {
+TEST_F(ControllerSharedDataTest, canConnectDisconnect) {
     EXPECT_TRUE(!evaluateA(R"--(
-let con = engine.onRuntimeDataUpdate((data) => {
+let con = engine.makeSharedDataConnection((data) => {
     throw "Something is wrong";
 });
 if (!con.isConnected) throw "Something is wrong";

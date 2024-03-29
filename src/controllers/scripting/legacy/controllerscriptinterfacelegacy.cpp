@@ -2,7 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
-#include "controllers/controllerruntimedata.h"
+#include "controllers/controllershareddata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
@@ -49,8 +49,8 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         m_softStartActive[i] = false;
     }
 
-    connect(m_pEngine->getRuntimeData().get(),
-            &ControllerRuntimeData::updated,
+    connect(m_pEngine->getSharedData().get(),
+            &ControllerSharedData::updated,
             this,
             &ControllerScriptInterfaceLegacy::onRuntimeDataUpdated);
 }
@@ -170,12 +170,12 @@ void ControllerScriptInterfaceLegacy::setValue(
     }
 }
 
-QJSValue ControllerScriptInterfaceLegacy::getRuntimeData() {
+QJSValue ControllerScriptInterfaceLegacy::getSharedData() {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "Unable to fetch the runtime data";
@@ -185,12 +185,12 @@ QJSValue ControllerScriptInterfaceLegacy::getRuntimeData() {
     return pJsEngine->toScriptValue(pRuntimeData->get());
 }
 
-void ControllerScriptInterfaceLegacy::setRuntimeData(const QJSValue& value) {
+void ControllerScriptInterfaceLegacy::setSharedData(const QJSValue& value) {
     auto pJsEngine = m_pScriptEngineLegacy->jsEngine();
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return;
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "Unable to fetch the runtime data";
@@ -201,7 +201,7 @@ void ControllerScriptInterfaceLegacy::setRuntimeData(const QJSValue& value) {
     qDebug() << "runtime data set successfully";
 }
 
-QJSValue ControllerScriptInterfaceLegacy::onRuntimeDataUpdate(const QJSValue& callback) {
+QJSValue ControllerScriptInterfaceLegacy::makeSharedDataConnection(const QJSValue& callback) {
     if (!callback.isCallable()) {
         m_pScriptEngineLegacy->throwJSError(
                 "Tried to connect runtime data update handler"
@@ -213,7 +213,7 @@ QJSValue ControllerScriptInterfaceLegacy::onRuntimeDataUpdate(const QJSValue& ca
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getRuntimeData();
+    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "Unable to fetch the runtime data";
@@ -446,7 +446,7 @@ void ControllerScriptInterfaceLegacy::triggerRuntimeDataConnection(
 
     QJSValue func = connection.callback; // copy function because QJSValue::call is not const
     auto args = QJSValueList{
-            pJsEngine->toScriptValue(m_pScriptEngineLegacy->getRuntimeData()->get()),
+            pJsEngine->toScriptValue(m_pScriptEngineLegacy->getSharedData()->get()),
     };
     QJSValue result = func.call(args);
     if (result.isError()) {

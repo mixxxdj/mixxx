@@ -8,7 +8,7 @@
 
 class Controller;
 class QJSEngine;
-class ControllerRuntimeData;
+class ControllerSharedData;
 
 /// ControllerScriptEngineBase manages the JavaScript engine for controller scripts.
 /// ControllerScriptModuleEngine implements the current system using JS modules.
@@ -41,11 +41,11 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
-    void setRuntimeData(std::shared_ptr<ControllerRuntimeData> runtimeData) {
+    void setSharedData(std::shared_ptr<ControllerSharedData> runtimeData) {
         m_pRuntimeData = std::move(runtimeData);
     }
 
-    std::shared_ptr<ControllerRuntimeData> getRuntimeData() const {
+    std::shared_ptr<ControllerSharedData> getSharedData() const {
         return m_pRuntimeData;
     }
 
@@ -57,7 +57,7 @@ class ControllerScriptEngineBase : public QObject {
 
     bool m_bDisplayingExceptionDialog;
     std::shared_ptr<QJSEngine> m_pJSEngine;
-    std::shared_ptr<ControllerRuntimeData> m_pRuntimeData;
+    std::shared_ptr<ControllerSharedData> m_pRuntimeData;
 
     Controller* m_pController;
     const RuntimeLoggingCategory m_logger;
@@ -73,5 +73,5 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
     friend class ColorMapperJSProxy;
-    friend class ControllerRuntimeDataTest;
+    friend class ControllerSharedDataTest;
 };
