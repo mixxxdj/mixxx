@@ -183,7 +183,6 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     IF NOT DEFINED BUILDENV_RELEASE (
         CALL :Configuration2CMakeSettings_JSON off       Debug
     )
-    CALL :Configuration2CMakeSettings_JSON legacy    RelWithDebInfo
     CALL :Configuration2CMakeSettings_JSON portable  RelWithDebInfo
     SET configElementTermination=
     CALL :Configuration2CMakeSettings_JSON native    Release

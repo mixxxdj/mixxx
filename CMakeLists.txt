@@ -307,8 +307,8 @@ endif()
 # Optimizations
 #
 
-set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
-set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native" "legacy")
+set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native)")
+set_property(CACHE OPTIMIZE PROPERTY STRINGS "off" "portable" "native")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
@@ -423,12 +423,6 @@ if(MSVC)
       # add_compile_options(/arch:AVX512)
       message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
-    elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        message("Enabling pure x64 instruction set (without AVX etc.)")
-      else()
-        message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
-      endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
@@ -531,13 +525,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
           -mfloat-abi=hard
           -mfpu=neon
         )
-      endif()
-    elseif(OPTIMIZE STREQUAL "legacy")
-      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
-        message("Enabling pure i386 code")
-        add_compile_options(-mtune=generic)
-        # -mtune=generic pick the most common, but compatible options.
-        # on arm platforms equivalent to -march=arch
       endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
