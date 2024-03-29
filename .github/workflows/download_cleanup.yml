@@ -25,44 +25,20 @@ jobs:
         if: env.SSH_AUTH_SOCK != null
         run: |
           mkdir empty_folder
-          echo clang-tidy-ignore/ >> include_file.txt
-          echo clang-tidy-ignore/* >> include_file.txt
-          echo clang-tidy-warning/ >> include_file.txt
-          echo clang-tidy-warning/* >> include_file.txt
-          echo cmake-version-urls/ >> include_file.txt
-          echo cmake-version-urls/* >> include_file.txt
-          echo denormals_test_fix/ >> include_file.txt
-          echo denormals_test_fix/* >> include_file.txt
-          echo dependabot/ >> include_file.txt
-          echo dependabot/* >> include_file.txt
-          echo korg-kaoss-dj/ >> include_file.txt
-          echo korg-kaoss-dj/* >> include_file.txt
-          echo notarytool-2.4/ >> include_file.txt
-          echo notarytool-2.4/* >> include_file.txt
-          echo pr/ >> include_file.txt
-          echo pr/* >> include_file.txt
-          echo pr12370_winbuildenv_bat/ >> include_file.txt
-          echo pr12370_winbuildenv_bat/* >> include_file.txt
-          echo qt6/ >> include_file.txt
-          echo qt6/* >> include_file.txt
-          echo revert-12394-dependabot/ >> include_file.txt
-          echo revert-12394-dependabot/* >> include_file.txt
-          echo synclock-06-scratch-phase/ >> include_file.txt
-          echo synclock-06-scratch-phase/* >> include_file.txt
-          echo taglib_20_fail/ >> include_file.txt
-          echo taglib_20_fail/* >> include_file.txt
-          echo tracklists_shortkeys/ >> include_file.txt
-          echo tracklists_shortkeys/* >> include_file.txt
-          echo translate-spam-revert-2.4/ >> include_file.txt
-          echo translate-spam-revert-2.4/* >> include_file.txt
-          echo update-manifest/ >> include_file.txt
-          echo update-manifest/* >> include_file.txt
-          echo vcpkg_manifest/ >> include_file.txt
-          echo vcpkg_manifest/* >> include_file.txt
-          echo vcpkg_osx/ >> include_file.txt
-          echo vcpkg_osx/* >> include_file.txt
-          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+          echo 1.12/ > include_file.txt
+          echo 1.12/* >> include_file.txt
+          echo 1.12/*/* >> include_file.txt
+          echo 2.0/ >> include_file.txt
+          echo 2.0/* >> include_file.txt
+          echo 2.0/*/* >> include_file.txt
+          echo 2.1/ >> include_file.txt
+          echo 2.1/* >> include_file.txt
+          echo 2.1/*/* >> include_file.txt
+          echo 2.2/ >> include_file.txt
+          echo 2.2/* >> include_file.txt
+          echo 2.2/*/* >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
         env:
-          DESTDIR: public_html/downloads/snapshots
+          DESTDIR: public_html/downloads
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
