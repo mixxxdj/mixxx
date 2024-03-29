@@ -36,6 +36,11 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void selectPlaylistInSidebar(int playlistId, bool select = true);
     int getSiblingPlaylistIdOf(QModelIndex& start);
 
+    void activateAutoDJPlaylist();
+    void addPlaylistToAutoDJQueue(const int playlistId, PlaylistDAO::AutoDJSendLoc loc);
+    void toggleAutoDJ(bool enabled);
+    int createImportPlaylist(const QString& playlistFile);
+
   public slots:
     void activateChild(const QModelIndex& index) override;
     virtual void activatePlaylist(int playlistId);
@@ -53,6 +58,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     virtual void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) = 0;
     virtual void slotPlaylistTableRenamed(int playlistId, const QString& newName) = 0;
     void slotCreatePlaylist();
+    void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void renameItem(const QModelIndex& index) override;
     void deleteItem(const QModelIndex& index) override;
 
@@ -65,7 +71,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void slotRenamePlaylist();
     void slotTogglePlaylistLock();
     void slotImportPlaylist();
-    void slotImportPlaylistFile(const QString& playlistFile, int playlistId);
     void slotCreateImportPlaylist();
     void slotExportPlaylist();
     // Copy all of the tracks in a playlist to a new directory.
