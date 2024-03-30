@@ -77,6 +77,45 @@ BpmControl::BpmControl(const QString& group,
     connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
             this, &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
+
+    m_pAdjustBeats_1_2 = new ControlPushButton(ConfigKey(group, "beats_adjust_1_2"), false);
+    m_pAdjustBeats_1_2->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_1_2, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_1_2,
+            Qt::DirectConnection);
+
+    m_pAdjustBeats_2_3 = new ControlPushButton(ConfigKey(group, "beats_adjust_2_3"), false);
+    m_pAdjustBeats_2_3->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_2_3, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_2_3,
+            Qt::DirectConnection);
+
+    m_pAdjustBeats_3_4 = new ControlPushButton(ConfigKey(group, "beats_adjust_3_4"), false);
+    m_pAdjustBeats_3_4->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_3_4, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_3_4,
+            Qt::DirectConnection);            
+
+    m_pAdjustBeats_4_3 = new ControlPushButton(ConfigKey(group, "beats_adjust_4_3"), false);
+    m_pAdjustBeats_4_3->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_4_3, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_4_3,
+            Qt::DirectConnection);
+
+    m_pAdjustBeats_3_2 = new ControlPushButton(ConfigKey(group, "beats_adjust_3_2"), false);
+    m_pAdjustBeats_3_2->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_3_2, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_3_2,
+            Qt::DirectConnection);
+
+    m_pAdjustBeats_2_1 = new ControlPushButton(ConfigKey(group, "beats_adjust_2_1"), false);
+    m_pAdjustBeats_2_1->setKbdRepeatable(true);
+    connect(m_pAdjustBeats_2_1, &ControlObject::valueChanged,
+            this, &BpmControl::slotAdjustBeats_2_1,
+            Qt::DirectConnection);
+
+
+
     m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
     m_pTranslateBeatsEarlier->setKbdRepeatable(true);
     connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
@@ -146,6 +185,12 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeatsMove;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
+    delete m_pAdjustBeats_1_2;
+    delete m_pAdjustBeats_2_3;
+    delete m_pAdjustBeats_3_4;
+    delete m_pAdjustBeats_4_3;
+    delete m_pAdjustBeats_3_2;
+    delete m_pAdjustBeats_2_1;   
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -175,6 +220,20 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     pTrack->trySetBeats(*newBeats);
 }
 
+void BpmControl::adjustBeatsBpmRatio(double deltaBpmRatio) {
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const mixxx::Bpm bpm = pBeats->getBpmInRange(
+            mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
+    adjustBeatsBpm(deltaBpmRatio*bpm.value());
+}
+
 void BpmControl::slotAdjustBeatsFaster(double v) {
     if (v <= 0) {
         return;
@@ -188,6 +247,49 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     }
     adjustBeatsBpm(-kBpmAdjustStep);
 }
+
+void BpmControl::slotAdjustBeats_1_2(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(1./2.-1.);
+}
+
+void BpmControl::slotAdjustBeats_2_3(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(2./3.-1.);
+}
+
+void BpmControl::slotAdjustBeats_3_4(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(3./4.-1.);
+}
+
+void BpmControl::slotAdjustBeats_4_3(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(4./3.-1.);
+}
+
+void BpmControl::slotAdjustBeats_3_2(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(3./2.-1.);
+}
+
+void BpmControl::slotAdjustBeats_2_1(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpmRatio(2./1.-1.);
+}
+
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {

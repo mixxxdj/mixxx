@@ -99,6 +99,12 @@ class BpmControl : public EngineControl {
   private slots:
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
+    void slotAdjustBeats_1_2(double);
+    void slotAdjustBeats_2_3(double);
+    void slotAdjustBeats_3_4(double);
+    void slotAdjustBeats_4_3(double);
+    void slotAdjustBeats_3_2(double);
+    void slotAdjustBeats_2_1(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
     void slotTranslateBeatsMove(double);
@@ -118,6 +124,7 @@ class BpmControl : public EngineControl {
     }
     double calcSyncAdjustment(bool userTweakingSync);
     void adjustBeatsBpm(double deltaBpm);
+    void adjustBeatsBpmRatio(double deltaBpmRatio);
 
     friend class SyncControl;
 
@@ -141,6 +148,12 @@ class BpmControl : public EngineControl {
     ControlObject* m_pLocalBpm;
     ControlPushButton* m_pAdjustBeatsFaster;
     ControlPushButton* m_pAdjustBeatsSlower;
+    ControlPushButton* m_pAdjustBeats_1_2;
+    ControlPushButton* m_pAdjustBeats_2_3;
+    ControlPushButton* m_pAdjustBeats_3_4;
+    ControlPushButton* m_pAdjustBeats_4_3;
+    ControlPushButton* m_pAdjustBeats_3_2;
+    ControlPushButton* m_pAdjustBeats_2_1;
     ControlPushButton* m_pTranslateBeatsEarlier;
     ControlPushButton* m_pTranslateBeatsLater;
     ControlEncoder* m_pTranslateBeatsMove;

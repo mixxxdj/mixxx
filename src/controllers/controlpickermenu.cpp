@@ -252,6 +252,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust Beatgrid Slower -.01"),
             tr("Decrease track's average BPM by 0.01"),
             pBpmMenu);
+
+    addDeckAndSamplerControl("beats_adjust_1_2",
+            tr("Multiply the BPM by 1/2"),
+            tr("Multiply the BPM by 1/2"),
+            pBpmMenu);
+    
+    addDeckAndSamplerControl("beats_adjust_2_3",
+            tr("Multiply the BPM by 2/3"),
+            tr("Multiply the BPM by 2/3"),
+            pBpmMenu);
+    
+    addDeckAndSamplerControl("beats_adjust_3_4",
+            tr("Multiply the BPM by 3/4"),
+            tr("Multiply the BPM by 3/4"),
+            pBpmMenu);
+    
+    addDeckAndSamplerControl("beats_adjust_4_3",
+            tr("Multiply the BPM by 4/3"),
+            tr("Multiply the BPM by 4/3"),
+            pBpmMenu);
+    
+    addDeckAndSamplerControl("beats_adjust_3_2",
+            tr("Multiply the BPM by 3/2"),
+            tr("Multiply the BPM by 3/2"),
+            pBpmMenu);
+    
+    addDeckAndSamplerControl("beats_adjust_2_1",
+            tr("Multiply the BPM by 2"),
+            tr("Multiply the BPM by 2"),
+            pBpmMenu);
+
     addDeckAndSamplerControl("beats_translate_earlier",
             tr("Move Beatgrid Earlier"),
             tr("Adjust the beatgrid to the left"),
