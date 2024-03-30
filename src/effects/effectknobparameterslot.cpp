@@ -108,7 +108,7 @@ void EffectKnobParameterSlot::clear() {
 }
 
 void EffectKnobParameterSlot::setParameter(double value) {
-    m_pControlValue->setParameterFrom(value, this);
+    m_pControlValue->setNormalizedValueFrom(value, this);
 }
 
 void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
@@ -222,20 +222,20 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
 
         //qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter << "force?" << force;
         if (force) {
-            m_pControlValue->setParameterFrom(parameter, nullptr);
+            m_pControlValue->setNormalizedValueFrom(parameter, nullptr);
             // This ensures that softtakover is in sync for following updates
             m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
         } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter)) {
-            m_pControlValue->setParameterFrom(parameter, nullptr);
+            m_pControlValue->setNormalizedValueFrom(parameter, nullptr);
         }
     }
 }
 
 void EffectKnobParameterSlot::syncSofttakeover() {
-    double parameter = m_pControlValue->getParameter();
+    double parameter = m_pControlValue->getNormalizedValue();
     m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
 double EffectKnobParameterSlot::getValueParameter() const {
-    return m_pControlValue->getParameter();
+    return m_pControlValue->getNormalizedValue();
 }

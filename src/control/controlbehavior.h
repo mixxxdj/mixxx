@@ -16,26 +16,26 @@ class ControlNumericBehavior {
     // Returns false to reject the new value entirely
     virtual bool setFilter(double* dValue);
 
-    // returns the normalized parameter range 0..1
-    virtual double valueToParameter(double dValue);
-    // returns the normalized parameter range 0..1
-    virtual double midiToParameter(double midiValue);
+    // returns the normalized value range 0..1
+    virtual double valueToNormalizedValue(double dValue);
+    // returns the normalized value range 0..1
+    virtual double midi7BitToNormalizedValue(double midiValue);
     // returns the scaled user visible value
-    virtual double parameterToValue(double dParam);
-    // returns the midi range parameter 0..127
-    virtual double valueToMidiParameter(double dValue);
+    virtual double normalizedValueToValue(double dParam);
+    // returns the midi range value 0..127
+    virtual double valueToMidi7Bit(double dValue);
 
-    virtual void setValueFromMidi(
+    virtual void setValueFromMidi7Bit(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl);
 };
 
-// ControlEncoderBehavior passes the midi value directly to the internal parameter value.  It's
+// ControlEncoderBehavior passes the midi value directly to the internal parameter value. It's
 // useful for selector knobs that pass +1 in one direction and -1 in the other.
 class ControlEncoderBehavior : public ControlNumericBehavior {
   public:
     ControlEncoderBehavior() {}
-    double midiToParameter(double midiValue) override;
-    double valueToMidiParameter(double dValue) override;
+    double midi7BitToNormalizedValue(double midiValue) override;
+    double valueToMidi7Bit(double dValue) override;
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
@@ -44,10 +44,10 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
                             bool allowOutOfBounds);
 
     bool setFilter(double* dValue) override;
-    double valueToParameter(double dValue) override;
-    double midiToParameter(double midiValue) override;
-    double parameterToValue(double dParam) override;
-    double valueToMidiParameter(double dValue) override;
+    double valueToNormalizedValue(double dValue) override;
+    double midi7BitToNormalizedValue(double midiValue) override;
+    double normalizedValueToValue(double dParam) override;
+    double valueToMidi7Bit(double dValue) override;
 
   protected:
     double m_dMinValue;
@@ -60,8 +60,8 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
 
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
 
   protected:
     double m_minDB;
@@ -72,8 +72,8 @@ class ControlLogInvPotmeterBehavior : public ControlLogPotmeterBehavior {
   public:
     ControlLogInvPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
 
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
 };
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
@@ -86,8 +86,8 @@ class ControlLinInvPotmeterBehavior : public ControlPotmeterBehavior {
   public:
     ControlLinInvPotmeterBehavior(
             double dMinValue, double dMaxValue, bool allowOutOfBounds);
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
@@ -95,13 +95,13 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     ControlAudioTaperPotBehavior(double minDB, double maxDB,
                                  double neutralParameter);
 
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
-    double midiToParameter(double midiValue) override;
-    double valueToMidiParameter(double dValue) override;
-    void setValueFromMidi(
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
+    double midi7BitToNormalizedValue(double midiValue) override;
+    double valueToMidi7Bit(double dValue) override;
+    void setValueFromMidi7Bit(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
-                    override;
+            override;
 
   protected:
     // a knob position between 0 and 1 where the gain is 1 (0dB)
@@ -121,8 +121,8 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
 };
 
 class ControlPushButtonBehavior : public ControlNumericBehavior {
@@ -141,9 +141,9 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
-    void setValueFromMidi(
+    void setValueFromMidi7Bit(
             MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
-                override;
+            override;
 
   private:
     // We create many hundreds of push buttons at Mixxx startup and most of them
@@ -164,8 +164,8 @@ class ControlLinSteppedIntPotBehavior : public ControlPotmeterBehavior {
     ControlLinSteppedIntPotBehavior(
             double dMinValue, double dMaxValue, bool allowOutOfBounds);
 
-    double valueToParameter(double dValue) override;
-    double parameterToValue(double dParam) override;
+    double valueToNormalizedValue(double dValue) override;
+    double normalizedValueToValue(double dParam) override;
 
   protected:
     double m_lastSnappedParam;

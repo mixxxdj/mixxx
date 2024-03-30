@@ -332,7 +332,7 @@ Item {
             mouseAnchor = Qt.point(mouse.x, mouse.y);
             if (mouse.button == Qt.LeftButton) {
                 if (mouseStatus == WaveformRow.MouseStatus.Bending)
-                    wheelControl.parameter = 0.5;
+                    wheelControl.normalizedValue = 0.5;
 
                 mouseStatus = WaveformRow.MouseStatus.Scratching;
                 scratchPositionEnableControl.value = 1;
@@ -343,7 +343,7 @@ Item {
                 if (mouseStatus == WaveformRow.MouseStatus.Scratching)
                     scratchPositionEnableControl.value = 0;
 
-                wheelControl.parameter = 0.5;
+                wheelControl.normalizedValue = 0.5;
                 mouseStatus = WaveformRow.MouseStatus.Bending;
             }
         }
@@ -356,7 +356,7 @@ Item {
                     // this is tuned to 127.
                     const v = 0.5 + (diff / 1270);
                     // clamp to [0.0, 1.0]
-                    wheelControl.parameter = Mixxx.MathUtils.clamp(v, 0, 1);
+                    wheelControl.normalizedValue = Mixxx.MathUtils.clamp(v, 0, 1);
                     break;
                 };
                 case WaveformRow.MouseStatus.Scratching:
@@ -368,7 +368,7 @@ Item {
         onReleased: {
             switch (mouseStatus) {
                 case WaveformRow.MouseStatus.Bending:
-                    wheelControl.parameter = 0.5;
+                    wheelControl.normalizedValue = 0.5;
                     break;
                 case WaveformRow.MouseStatus.Scratching:
                     scratchPositionEnableControl.value = 0;

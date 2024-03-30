@@ -7,7 +7,7 @@ namespace qml {
 
 namespace {
 constexpr double kDefaultValue = 0.0;
-constexpr double kDefaultParameter = 0.0;
+constexpr double kDefaultNormalizedValue = 0.0;
 } // namespace
 
 QmlControlProxy::QmlControlProxy(QObject* parent)
@@ -87,21 +87,21 @@ double QmlControlProxy::getValue() const {
     return m_pControlProxy->get();
 }
 
-void QmlControlProxy::setParameter(double newValue) {
+void QmlControlProxy::setNormalizedValue(double newValue) {
     if (!isInitialized()) {
-        emit parameterChanged(kDefaultValue);
+        emit normalizedValueChanged(kDefaultNormalizedValue);
         return;
     }
-    m_pControlProxy->setParameter(newValue);
+    m_pControlProxy->setNormalizedValue(newValue);
     emit valueChanged(m_pControlProxy->get());
-    emit parameterChanged(newValue);
+    emit normalizedValueChanged(newValue);
 }
 
-double QmlControlProxy::getParameter() const {
+double QmlControlProxy::getNormalizedValue() const {
     if (!isInitialized()) {
-        return kDefaultParameter;
+        return kDefaultNormalizedValue;
     }
-    return m_pControlProxy->getParameter();
+    return m_pControlProxy->getNormalizedValue();
 }
 
 void QmlControlProxy::reset() {
@@ -175,7 +175,7 @@ void QmlControlProxy::reinitializeFromKey() {
 
 void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
     emit valueChanged(newValue);
-    emit parameterChanged(m_pControlProxy->getParameter());
+    emit normalizedValueChanged(m_pControlProxy->getNormalizedValue());
 }
 
 } // namespace qml

@@ -309,53 +309,53 @@ void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
-void ControlDoublePrivate::setParameter(double dParam, QObject* pSender) {
+void ControlDoublePrivate::setNormalizedValue(double dParam, QObject* pSender) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (pBehavior.isNull()) {
         set(dParam, pSender);
     } else {
-        set(pBehavior->parameterToValue(dParam), pSender);
+        set(pBehavior->normalizedValueToValue(dParam), pSender);
     }
 }
 
-double ControlDoublePrivate::getParameter() const {
-    return getParameterForValue(get());
+double ControlDoublePrivate::getNormalizedValue() const {
+    return getNormalizedValueForValue(get());
 }
 
-double ControlDoublePrivate::getParameterForValue(double value) const {
+double ControlDoublePrivate::getNormalizedValueForValue(double value) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior.isNull()) {
-        value = pBehavior->valueToParameter(value);
+        value = pBehavior->valueToNormalizedValue(value);
     }
     return value;
 }
 
-double ControlDoublePrivate::getParameterForMidi(double midiParam) const {
+double ControlDoublePrivate::getNormalizedValueForMidi7Bit(double midiParam) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "for Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, getParameterForMidi is returning 0");
+        DEBUG_ASSERT(!"pBehavior == nullptr, getNormalizedValueForMidi7Bit is returning 0");
         return 0;
     }
-    return pBehavior->midiToParameter(midiParam);
+    return pBehavior->midi7BitToNormalizedValue(midiParam);
 }
 
-void ControlDoublePrivate::setValueFromMidi(MidiOpCode opcode, double midiParam) {
+void ControlDoublePrivate::setValueFromMidi7Bit(MidiOpCode opcode, double midiParam) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot set" << m_key << "from Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, abort setValueFromMidi()");
+        DEBUG_ASSERT(!"pBehavior == nullptr, abort setValueFromMidi7Bit()");
         return;
     }
-    pBehavior->setValueFromMidi(opcode, midiParam, this);
+    pBehavior->setValueFromMidi7Bit(opcode, midiParam, this);
 }
 
-double ControlDoublePrivate::getMidiParameter() const {
+double ControlDoublePrivate::getValueScaledAsMidi7Bit() const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "as Midi";
-        DEBUG_ASSERT(!"pBehavior == nullptr, getMidiParameter() is returning 0");
+        DEBUG_ASSERT(!"pBehavior == nullptr, getValueScaledAsMidi7Bit() is returning 0");
         return 0;
     }
-    return pBehavior->valueToMidiParameter(get());
+    return pBehavior->valueToMidi7Bit(get());
 }

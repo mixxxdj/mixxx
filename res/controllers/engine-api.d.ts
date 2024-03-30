@@ -61,6 +61,15 @@ declare namespace engine {
      * @param name Name of the control e.g. "play_indicator"
      * @returns Value of the control normalized to range of 0..1
      */
+    function getNormalizedValue(group: string, name: string): number;
+
+    /**
+     * Gets the control value normalized to a range of 0..1
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "play_indicator"
+     * @returns Value of the control normalized to range of 0..1
+     * @deprecated Use {@link getNormalizedValue} instead
+     */
     function getParameter(group: string, name: string): number;
 
     /**
@@ -69,6 +78,15 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @param newValue Value to be set, normalized to a range of 0..1
+     */
+    function setNormalizedValue(group: string, name: string, newValue: number): void;
+
+    /**
+     * Sets the control value specified with normalized range of 0..1
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "play_indicator"
+     * @param newValue Value to be set, normalized to a range of 0..1
+     * @deprecated Use {@link setNormalizedValue} instead
      */
     function setParameter(group: string, name: string, newValue: number): void;
 
@@ -81,6 +99,18 @@ declare namespace engine {
      * @param value Value with the controls range according Mixxx Controls manual page:
      *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      * @returns Value normalized to range of 0..1
+     */
+    function getNormalizedValueForValue(group: string, name: string, value: number): number;
+
+    /**
+     * Normalizes a specified value using the range of the given control,
+     * to the range of 0..1
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "play_indicator"
+     * @param value Value with the controls range according Mixxx Controls manual page:
+     *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
+     * @returns Value normalized to range of 0..1
+     * @deprecated Use {@link getNormalizedValueForValue} instead
      */
     function getParameterForValue(group: string, name: string, value: number): number;
 
@@ -108,6 +138,15 @@ declare namespace engine {
      * @param group Group of the control e.g. "[Channel1]"
      * @param name Name of the control e.g. "play_indicator"
      * @returns Default value of the specified control normalized to range of 0..1
+     */
+    function getNormalizedDefaultValue(group: string, name: string): number;
+
+    /**
+     * Returns the default value of a control, normalized to a range of 0..1
+     * @param group Group of the control e.g. "[Channel1]"
+     * @param name Name of the control e.g. "play_indicator"
+     * @returns Default value of the specified control normalized to range of 0..1
+     * @deprecated Use {@link getNormalizedDefaultValue} instead
      */
     function getDefaultParameter(group: string, name: string): number;
 

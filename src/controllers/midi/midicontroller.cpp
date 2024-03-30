@@ -375,7 +375,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         newValue = static_cast<double>(iValue) / 128.0;
         newValue = math_min(newValue, 127.0);
     } else {
-        double currControlValue = pCO->getMidiParameter();
+        double currControlValue = pCO->getValueScaledAsMidi7Bit();
         newValue = computeValue(mapping.options, currControlValue, value);
     }
 
@@ -388,11 +388,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     if (mapping.options.testFlag(MidiOption::SoftTakeover)) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
-        if (m_st.ignore(pCO, pCO->getParameterForMidi(newValue))) {
+        if (m_st.ignore(pCO, pCO->getNormalizedValueForMidi7Bit(newValue))) {
             return;
         }
     }
-    pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+    pCO->setValueFromMidi7Bit(static_cast<MidiOpCode>(opCode), newValue);
 }
 
 double MidiController::computeValue(

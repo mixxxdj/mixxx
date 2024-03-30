@@ -154,7 +154,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
-    co->setParameter(0.0);
+    co->setNormalizedValue(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
             "engine.setValue('[Test]', 'co', 0.0);"));
@@ -163,7 +163,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
-    co->setParameter(0.5);
+    co->setNormalizedValue(0.5);
 
     // Time elapsed is not greater than the threshold, so we do not ignore this
     // set.
@@ -175,7 +175,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
-    co->setParameter(0.5);
+    co->setNormalizedValue(0.5);
 
     // Ignore the change since it occurred after the threshold and is too large.
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', -10.0);"));
@@ -186,7 +186,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
-    co->setParameter(0.0);
+    co->setNormalizedValue(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
             "engine.setParameter('[Test]', 'co', 1.0);"));
@@ -195,7 +195,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
-    co->setParameter(0.5);
+    co->setNormalizedValue(0.5);
 
     // Time elapsed is not greater than the threshold, so we do not ignore this
     // set.
@@ -207,7 +207,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
-    co->setParameter(0.5);
+    co->setNormalizedValue(0.5);
 
     // Ignore the change since it occurred after the threshold and is too large.
     EXPECT_TRUE(evaluateAndAssert("engine.setParameter('[Test]', 'co', 0.0);"));
@@ -218,7 +218,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_ignoreNextValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
-    co->setParameter(0.0);
+    co->setNormalizedValue(0.0);
     EXPECT_TRUE(evaluateAndAssert(
             "engine.softTakeover('[Test]', 'co', true);"
             "engine.setParameter('[Test]', 'co', 1.0);"));
@@ -227,7 +227,7 @@ TEST_F(ControllerScriptEngineLegacyTest, softTakeover_ignoreNextValue) {
 
     // Change the control internally (putting it out of sync with the
     // ControllerEngine).
-    co->setParameter(0.5);
+    co->setNormalizedValue(0.5);
 
     EXPECT_TRUE(evaluateAndAssert("engine.softTakeoverIgnoreNextValue('[Test]', 'co');"));
 
@@ -242,7 +242,7 @@ TEST_F(ControllerScriptEngineLegacyTest, reset) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
-    co->setParameter(1.0);
+    co->setNormalizedValue(1.0);
     EXPECT_TRUE(evaluateAndAssert("engine.reset('[Test]', 'co');"));
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }

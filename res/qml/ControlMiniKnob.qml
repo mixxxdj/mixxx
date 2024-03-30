@@ -8,8 +8,8 @@ Skin.MiniKnob {
     property alias group: control.group
     property alias key: control.key
 
-    value: control.parameter
-    onTurned: control.parameter = value
+    value: control.normalizedValue
+    onTurned: control.normalizedValue = value
 
     Mixxx.ControlProxy {
         id: control

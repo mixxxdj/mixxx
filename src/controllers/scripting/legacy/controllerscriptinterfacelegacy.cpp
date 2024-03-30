@@ -158,13 +158,14 @@ void ControllerScriptInterfaceLegacy::setValue(
                 coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl &&
                 !m_st.ignore(
-                        pControl, coScript->getParameterForValue(newValue))) {
+                        pControl, coScript->getNormalizedValueForValue(newValue))) {
             coScript->set(newValue);
         }
     }
 }
 
-double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const QString& name) {
+double ControllerScriptInterfaceLegacy::getNormalizedValue(
+        const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         m_pScriptEngineLegacy->logOrThrowError(
@@ -172,10 +173,10 @@ double ControllerScriptInterfaceLegacy::getParameter(const QString& group, const
                         .arg(group, name));
         return 0.0;
     }
-    return coScript->getParameter();
+    return coScript->getNormalizedValue();
 }
 
-void ControllerScriptInterfaceLegacy::setParameter(
+void ControllerScriptInterfaceLegacy::setNormalizedValue(
         const QString& group, const QString& name, double newParameter) {
     if (util_isnan(newParameter)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
@@ -190,12 +191,12 @@ void ControllerScriptInterfaceLegacy::setParameter(
         ControlObject* pControl = ControlObject::getControl(
                 coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
-            coScript->setParameter(newParameter);
+            coScript->setNormalizedValue(newParameter);
         }
     }
 }
 
-double ControllerScriptInterfaceLegacy::getParameterForValue(
+double ControllerScriptInterfaceLegacy::getNormalizedValueForValue(
         const QString& group, const QString& name, double value) {
     if (util_isnan(value)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
@@ -213,7 +214,7 @@ double ControllerScriptInterfaceLegacy::getParameterForValue(
         return 0.0;
     }
 
-    return coScript->getParameterForValue(value);
+    return coScript->getNormalizedValueForValue(value);
 }
 
 void ControllerScriptInterfaceLegacy::reset(const QString& group, const QString& name) {
@@ -236,7 +237,7 @@ double ControllerScriptInterfaceLegacy::getDefaultValue(const QString& group, co
     return coScript->getDefault();
 }
 
-double ControllerScriptInterfaceLegacy::getDefaultParameter(
+double ControllerScriptInterfaceLegacy::getNormalizedDefaultValue(
         const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
@@ -247,7 +248,7 @@ double ControllerScriptInterfaceLegacy::getDefaultParameter(
         return 0.0;
     }
 
-    return coScript->getParameterForValue(coScript->getDefault());
+    return coScript->getNormalizedValueForValue(coScript->getDefault());
 }
 
 QJSValue ControllerScriptInterfaceLegacy::makeConnection(
