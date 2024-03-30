@@ -191,9 +191,9 @@
                 </description>
             </option>
             <option
-                variable="mixerControlsMixAuxOnShift"
+                variable="mixerControlsMicAuxOnShift"
                 type="boolean"
-                default="false"
+                default="true"
                 label="Shift to mix microphones or auxiliary lines">
                 <description>
                     When shifting decks, the mixer controls microphones or auxiliary lines. If both a microphone and an auxiliary are configured on the same channel, the mixer will prioritize controlling the auxiliary.
@@ -352,19 +352,19 @@
                     <value label="Artist" default="true">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -379,19 +379,19 @@
                     <value label="Artist">1</value>
                     <value label="Title" default="true">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -406,19 +406,19 @@
                     <value label="Artist">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM" default="true">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -433,19 +433,19 @@
                     <value label="Artist">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -460,19 +460,19 @@
                     <value label="Artist">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -487,19 +487,19 @@
                     <value label="Artist">1</value>
                     <value label="Title">2</value>
                     <value label="Album">3</value>
-                    <value label="Albumartist">4</value>
+                    <value label="Album Artist">4</value>
                     <value label="Year">5</value>
                     <value label="Genre">6</value>
                     <value label="Composer">7</value>
                     <value label="Grouping">8</value>
-                    <value label="Tracknumber">9</value>
-                    <value label="Filetype">10</value>
+                    <value label="Track Number">9</value>
+                    <value label="File Type">10</value>
                     <value label="Native Location">11</value>
                     <value label="Comment">12</value>
                     <value label="Duration">13</value>
                     <value label="Bitrate">14</value>
                     <value label="BPM">15</value>
-                    <value label="ReplayGain">16</value>
+                    <value label="Replay Gain">16</value>
                     <value label="Datetime Added">17</value>
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
@@ -513,7 +513,7 @@
                 variable="loopWheelMoveFactor"
                 type="integer"
                 min="20"
-                max="250"
+                max="500"
                 step="2"
                 default="50"
                 label="Jogwheel sensitivity in loop mode" />

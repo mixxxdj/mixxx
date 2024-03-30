@@ -40,7 +40,7 @@ const KeyboardColors = [
 
 /*
  * USER CONFIGURABLE SETTINGS
- * Change settings in the preferences (Mixxx >= 2.5)
+ * Change settings in the preferences
  */
 
 const DeckColors = [
@@ -88,7 +88,7 @@ const WheelLedBlinkOnTrackEnd = !!engine.getSetting("wheelLedBlinkOnTrackEnd");
 
 // When shifting either decks, the mixer will control microphones or auxiliary lines. If there is both a mic and an configure on the same channel, the mixer will control the auxiliary.
 // Default: false
-const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMixAuxOnShift");
+const MixerControlsMixAuxOnShift = !!engine.getSetting("mixerControlsMicAuxOnShift");
 
 // Define how many wheel moves are sampled to compute the speed. The more you have, the more the speed is accurate, but the
 // less responsive it gets in Mixxx. Default: 5
