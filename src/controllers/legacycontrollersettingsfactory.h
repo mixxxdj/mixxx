@@ -43,7 +43,7 @@ class LegacyControllerSettingBuilder {
     /// @return an instance if a a supported setting has been found, null
     /// otherwise
     static AbstractLegacyControllerSetting* build(const QDomElement& element) {
-        for (const auto& settingType : qAsConst(instance()->m_supportedSettings)) {
+        for (const auto& settingType : std::as_const(instance()->m_supportedSettings)) {
             if (settingType.matcher(element)) {
                 return settingType.builder(element);
             }

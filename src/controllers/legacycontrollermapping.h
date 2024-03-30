@@ -91,7 +91,7 @@ class LegacyControllerMapping {
         VERIFY_OR_DEBUG_ASSERT(option->valid()) {
             return false;
         }
-        for (const auto& setting : qAsConst(m_settings)) {
+        for (const auto& setting : std::as_const(m_settings)) {
             if (*setting == *option) {
                 qWarning() << "Mapping setting duplication detected for "
                               "setting with name"

@@ -197,7 +197,7 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
     save();
 
     size_t pos = 0;
-    for (const auto& value : qAsConst(m_options)) {
+    for (const auto& value : std::as_const(m_options)) {
         if (std::get<0>(value) == in) {
             if (ok != nullptr) {
                 *ok = true;
@@ -213,7 +213,7 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     auto* pComboBox = new QComboBox(pParent);
 
-    for (const auto& value : qAsConst(m_options)) {
+    for (const auto& value : std::as_const(m_options)) {
         pComboBox->addItem(std::get<1>(value));
     }
     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
