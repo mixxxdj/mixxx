@@ -42,7 +42,7 @@
                             <Size>0me,20f</Size>
                             <Elide>right</Elide>
                             <Group><Variable name="Group"/></Group>
-                            <Property>titleInfo</Property>
+                            <Property>info</Property>
                           </TrackProperty>
                           <Number>
                             <ObjectName>PreviewBPM</ObjectName>

@@ -288,7 +288,6 @@ mixxx::TrackRecord Track::getRecord(
 bool Track::replaceRecord(
         mixxx::TrackRecord newRecord,
         mixxx::BeatsPointer pOptionalBeats) {
-    const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
     const auto newColor = newRecord.getColor();
     const auto newRating = newRecord.getRating();
@@ -299,14 +298,13 @@ bool Track::replaceRecord(
         return false;
     }
 
-    const auto oldKey = m_record.getGlobalKey();
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
     const auto oldColor = m_record.getColor();
     const auto oldRating = m_record.getRating();
 
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
-        bpmUpdatedFlag = trySetBeatsWhileLocked(std::move(pOptionalBeats));
+        bpmUpdatedFlag = trySetBeatsWhileLocked(pOptionalBeats);
         if (recordUnchanged && !bpmUpdatedFlag) {
             return false;
         }
@@ -327,10 +325,7 @@ bool Track::replaceRecord(
     markDirtyAndUnlock(&locked);
 
     if (bpmUpdatedFlag) {
-        emitBeatsAndBpmUpdated();
-    }
-    if (oldKey != newKey) {
-        emit keyChanged();
+        emit beatsUpdated();
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -390,7 +385,7 @@ bool Track::trySetBpmWhileLocked(mixxx::Bpm bpm) {
         auto pBeats = mixxx::Beats::fromConstTempo(getSampleRate(),
                 cuePosition,
                 bpm);
-        return trySetBeatsWhileLocked(std::move(pBeats));
+        return trySetBeatsWhileLocked(pBeats);
     } else if (getBeatsPointerBpm(m_pBeats, getDuration()) != bpm) {
         // Continue with the regular cases
         const auto newBeats = m_pBeats->trySetBpm(bpm);

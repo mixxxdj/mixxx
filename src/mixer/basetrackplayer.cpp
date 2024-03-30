@@ -326,6 +326,12 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         return;
     }
 
+    // Don't allow eject while playing a track. We don't need to lock to
+    // call ControlObject::get() so this is fine.
+    if (m_pPlay->toBool()) {
+        return;
+    }
+
     mixxx::Duration elapsed = m_ejectTimer.restart();
 
     // Double-click always restores the last replaced track, i.e. un-eject the second
@@ -347,11 +353,6 @@ void BaseTrackPlayerImpl::slotEjectTrack(double v) {
         return;
     }
 
-    // Don't allow rejections while playing a track. We don't need to lock to
-    // call ControlObject::get() so this is fine.
-    if (m_pPlay->toBool()) {
-        return;
-    }
     m_pChannel->getEngineBuffer()->ejectTrack();
 }
 
