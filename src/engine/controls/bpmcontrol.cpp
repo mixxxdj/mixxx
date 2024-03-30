@@ -54,8 +54,7 @@ BpmControl::BpmControl(const QString& group,
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
-    m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
-                                      Qt::DirectConnection);
+    m_pRateRatio->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm, Qt::DirectConnection);
 
     m_pQuantize = ControlObject::getControl(group, "quantize");
 
@@ -69,63 +68,41 @@ BpmControl::BpmControl(const QString& group,
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
     m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
     m_pAdjustBeatsFaster->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsFaster,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeatsFaster, Qt::DirectConnection);
     m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
     m_pAdjustBeatsSlower->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsSlower,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeatsSlower, Qt::DirectConnection);
 
     m_pAdjustBeats_1_2 = new ControlPushButton(ConfigKey(group, "beats_adjust_1_2"), false);
     m_pAdjustBeats_1_2->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_1_2, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_1_2,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeats_1_2, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_1_2, Qt::DirectConnection);
 
     m_pAdjustBeats_2_3 = new ControlPushButton(ConfigKey(group, "beats_adjust_2_3"), false);
     m_pAdjustBeats_2_3->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_2_3, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_2_3,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeats_2_3, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_2_3, Qt::DirectConnection);
 
     m_pAdjustBeats_3_4 = new ControlPushButton(ConfigKey(group, "beats_adjust_3_4"), false);
     m_pAdjustBeats_3_4->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_3_4, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_3_4,
-            Qt::DirectConnection);            
+    connect(m_pAdjustBeats_3_4, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_3_4, Qt::DirectConnection);
 
     m_pAdjustBeats_4_3 = new ControlPushButton(ConfigKey(group, "beats_adjust_4_3"), false);
     m_pAdjustBeats_4_3->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_4_3, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_4_3,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeats_4_3, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_4_3, Qt::DirectConnection);
 
     m_pAdjustBeats_3_2 = new ControlPushButton(ConfigKey(group, "beats_adjust_3_2"), false);
     m_pAdjustBeats_3_2->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_3_2, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_3_2,
-            Qt::DirectConnection);
+    connect(m_pAdjustBeats_3_2, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_3_2, Qt::DirectConnection);
 
     m_pAdjustBeats_2_1 = new ControlPushButton(ConfigKey(group, "beats_adjust_2_1"), false);
     m_pAdjustBeats_2_1->setKbdRepeatable(true);
-    connect(m_pAdjustBeats_2_1, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeats_2_1,
-            Qt::DirectConnection);
-
-
+    connect(m_pAdjustBeats_2_1, &ControlObject::valueChanged, this, &BpmControl::slotAdjustBeats_2_1, Qt::DirectConnection);
 
     m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
     m_pTranslateBeatsEarlier->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsEarlier,
-            Qt::DirectConnection);
+    connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged, this, &BpmControl::slotTranslateBeatsEarlier, Qt::DirectConnection);
     m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
     m_pTranslateBeatsLater->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsLater,
-            Qt::DirectConnection);
+    connect(m_pTranslateBeatsLater, &ControlObject::valueChanged, this, &BpmControl::slotTranslateBeatsLater, Qt::DirectConnection);
     m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
     connect(m_pTranslateBeatsMove,
             &ControlObject::valueChanged,
@@ -146,28 +123,18 @@ BpmControl::BpmControl(const QString& group,
             kBpmRangeSmallStep,
             true);
     m_pEngineBpm->set(0.0);
-    connect(m_pEngineBpm, &ControlObject::valueChanged,
-            this, &BpmControl::slotUpdateRateSlider,
-            Qt::DirectConnection);
+    connect(m_pEngineBpm, &ControlObject::valueChanged, this, &BpmControl::slotUpdateRateSlider, Qt::DirectConnection);
 
     m_pButtonTap = new ControlPushButton(ConfigKey(group, "bpm_tap"));
-    connect(m_pButtonTap, &ControlObject::valueChanged,
-            this, &BpmControl::slotBpmTap,
-            Qt::DirectConnection);
+    connect(m_pButtonTap, &ControlObject::valueChanged, this, &BpmControl::slotBpmTap, Qt::DirectConnection);
 
     m_pTranslateBeats = new ControlPushButton(ConfigKey(group, "beats_translate_curpos"));
-    connect(m_pTranslateBeats, &ControlObject::valueChanged,
-            this, &BpmControl::slotBeatsTranslate,
-            Qt::DirectConnection);
+    connect(m_pTranslateBeats, &ControlObject::valueChanged, this, &BpmControl::slotBeatsTranslate, Qt::DirectConnection);
 
     m_pBeatsTranslateMatchAlignment = new ControlPushButton(ConfigKey(group, "beats_translate_match_alignment"));
-    connect(m_pBeatsTranslateMatchAlignment, &ControlObject::valueChanged,
-            this, &BpmControl::slotBeatsTranslateMatchAlignment,
-            Qt::DirectConnection);
+    connect(m_pBeatsTranslateMatchAlignment, &ControlObject::valueChanged, this, &BpmControl::slotBeatsTranslateMatchAlignment, Qt::DirectConnection);
 
-    connect(&m_tapFilter, &TapFilter::tapped,
-            this, &BpmControl::slotTapFilter,
-            Qt::DirectConnection);
+    connect(&m_tapFilter, &TapFilter::tapped, this, &BpmControl::slotTapFilter, Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
@@ -190,7 +157,7 @@ BpmControl::~BpmControl() {
     delete m_pAdjustBeats_3_4;
     delete m_pAdjustBeats_4_3;
     delete m_pAdjustBeats_3_2;
-    delete m_pAdjustBeats_2_1;   
+    delete m_pAdjustBeats_2_1;
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -231,7 +198,7 @@ void BpmControl::adjustBeatsBpmRatio(double deltaBpmRatio) {
     }
     const mixxx::Bpm bpm = pBeats->getBpmInRange(
             mixxx::audio::kStartFramePos, frameInfo().trackEndPosition);
-    adjustBeatsBpm(deltaBpmRatio*bpm.value());
+    adjustBeatsBpm(deltaBpmRatio * bpm.value());
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
@@ -252,44 +219,43 @@ void BpmControl::slotAdjustBeats_1_2(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(1./2.-1.);
+    adjustBeatsBpmRatio(1. / 2. - 1.);
 }
 
 void BpmControl::slotAdjustBeats_2_3(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(2./3.-1.);
+    adjustBeatsBpmRatio(2. / 3. - 1.);
 }
 
 void BpmControl::slotAdjustBeats_3_4(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(3./4.-1.);
+    adjustBeatsBpmRatio(3. / 4. - 1.);
 }
 
 void BpmControl::slotAdjustBeats_4_3(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(4./3.-1.);
+    adjustBeatsBpmRatio(4. / 3. - 1.);
 }
 
 void BpmControl::slotAdjustBeats_3_2(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(3./2.-1.);
+    adjustBeatsBpmRatio(3. / 2. - 1.);
 }
 
 void BpmControl::slotAdjustBeats_2_1(double v) {
     if (v <= 0) {
         return;
     }
-    adjustBeatsBpmRatio(2./1.-1.);
+    adjustBeatsBpmRatio(2. / 1. - 1.);
 }
-
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
@@ -368,7 +334,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
 // static
 double BpmControl::shortestPercentageChange(const double& current_percentage,
-                                            const double& target_percentage) {
+        const double& target_percentage) {
     if (current_percentage == target_percentage) {
         return 0.0;
     } else if (current_percentage < target_percentage) {
@@ -386,8 +352,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.98 target: 0.99 backwards: -0.99
         const double backwardsDistance = target_percentage - current_percentage - 1.0;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
-                forwardDistance : backwardsDistance;
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ? forwardDistance : backwardsDistance;
     } else { // current_percentage > target_percentage
         // Invariant: forwardDistance - backwardsDistance == 1.0
 
@@ -397,8 +362,7 @@ double BpmControl::shortestPercentageChange(const double& current_percentage,
         // my: 0.99 target:0.01 backwards: -0.98
         const double backwardsDistance = target_percentage - current_percentage;
 
-        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
-                forwardDistance : backwardsDistance;
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ? forwardDistance : backwardsDistance;
     }
 }
 
@@ -517,9 +481,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
             delta = math_clamp(delta, -kSyncDeltaCap, kSyncDeltaCap);
 
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
-            adjustment = 1.0 + math_clamp(
-                    m_dLastSyncAdjustment - 1.0 + delta,
-                    -kSyncAdjustmentCap, kSyncAdjustmentCap);
+            adjustment = 1.0 + math_clamp(m_dLastSyncAdjustment - 1.0 + delta, -kSyncAdjustmentCap, kSyncAdjustmentCap);
         } else {
             // We are in sync, no adjustment needed.
             adjustment = 1.0;
@@ -754,7 +716,7 @@ mixxx::audio::FramePos BpmControl::getNearestPositionInPhase(
         newPlayPosition = thisPrevBeatPosition;
     } else if (thisNearNextBeat && !otherNearNextBeat) {
         newPlayPosition = thisNextBeatPosition;
-    } else { //!thisNearNextBeat && otherNearNextBeat
+    } else { //! thisNearNextBeat && otherNearNextBeat
         thisPrevBeatPosition = pBeats->findNthBeat(thisPosition, -2);
         newPlayPosition = thisPrevBeatPosition;
     }

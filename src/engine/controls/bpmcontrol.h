@@ -90,7 +90,7 @@ class BpmControl : public EngineControl {
     // target_percentage.
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
-                                           const double& target_percentage);
+            const double& target_percentage);
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
@@ -108,7 +108,7 @@ class BpmControl : public EngineControl {
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
     void slotTranslateBeatsMove(double);
-    void slotTapFilter(double,int);
+    void slotTapFilter(double, int);
     void slotBpmTap(double);
     void slotUpdateRateSlider(double v = 0.0);
     void slotUpdateEngineBpm(double v = 0.0);

@@ -257,27 +257,27 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Multiply the BPM by 1/2"),
             tr("Multiply the BPM by 1/2"),
             pBpmMenu);
-    
+
     addDeckAndSamplerControl("beats_adjust_2_3",
             tr("Multiply the BPM by 2/3"),
             tr("Multiply the BPM by 2/3"),
             pBpmMenu);
-    
+
     addDeckAndSamplerControl("beats_adjust_3_4",
             tr("Multiply the BPM by 3/4"),
             tr("Multiply the BPM by 3/4"),
             pBpmMenu);
-    
+
     addDeckAndSamplerControl("beats_adjust_4_3",
             tr("Multiply the BPM by 4/3"),
             tr("Multiply the BPM by 4/3"),
             pBpmMenu);
-    
+
     addDeckAndSamplerControl("beats_adjust_3_2",
             tr("Multiply the BPM by 3/2"),
             tr("Multiply the BPM by 3/2"),
             pBpmMenu);
-    
+
     addDeckAndSamplerControl("beats_adjust_2_1",
             tr("Multiply the BPM by 2"),
             tr("Multiply the BPM by 2"),
