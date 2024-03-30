@@ -195,29 +195,28 @@ class BpmFilterNode : public QueryNode {
 
     BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
 
+    enum class MatchMode {
+        Invalid,
+        Null,
+        Exact,
+        Fuzzy,
+        Range,
+        HalveDouble,
+        Operator,
+    };
+
     // Allows WSearchRelatedTracksMenu to construct the QAction title
-    bool isRangeQuery(double* low, double* high) const {
-        if (m_isRangeQuery) {
-            *low = m_rangeLower;
-            *high = m_rangeUpper;
-            return true;
-        }
-        return false;
+    std::pair<double, double> getBpmRange() const {
+        return std::pair<double, double>(m_rangeLower, m_rangeUpper);
     }
 
     QString toSql() const override;
 
   private:
-    void ifDecimalsSetRange(const QString& argument, double bpm);
     bool match(const TrackPointer& pTrack) const override;
 
-    bool m_fuzzy;
-    bool m_negate;
+    MatchMode m_matchMode;
 
-    bool m_isNullQuery;
-    bool m_isOperatorQuery;
-    bool m_isRangeQuery;
-    bool m_isHalfDoubleQuery;
     QString m_operator;
 
     double m_bpm;

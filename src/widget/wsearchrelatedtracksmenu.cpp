@@ -137,7 +137,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             BpmFilterNode* pBpmNode = new BpmFilterNode(bpmStr, true /* fuzzy search */);
             double bpmLowerBound = 0.0;
             double bpmUpperBound = 0.0;
-            DEBUG_ASSERT(pBpmNode->isRangeQuery(&bpmLowerBound, &bpmUpperBound));
+            std::tie(bpmLowerBound, bpmUpperBound) = pBpmNode->getBpmRange();
             const QString searchQuery =
                     QStringLiteral("bpm:>=") +
                     QString::number(bpmLowerBound) +
