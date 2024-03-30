@@ -850,11 +850,17 @@ void BasePlaylistFeature::markTreeItem(TreeItem* pTreeItem) {
 QString BasePlaylistFeature::createPlaylistLabel(const QString& name,
         int count,
         int duration) const {
-    return QStringLiteral("%1 (%2) %3")
-            .arg(name,
-                    QString::number(count),
-                    mixxx::Duration::formatTime(
-                            duration, mixxx::Duration::Precision::SECONDS));
+    // Show duration only if playlist has tracks
+    if (count > 0) {
+        return QStringLiteral("%1 (%2) %3")
+                .arg(name,
+                        QString::number(count),
+                        mixxx::Duration::formatTime(
+                                duration, mixxx::Duration::Precision::SECONDS));
+    } else {
+        return QStringLiteral("%1 (%2)").arg(name,
+                QString::number(count));
+    }
 }
 
 void BasePlaylistFeature::slotResetSelectedTrack() {
