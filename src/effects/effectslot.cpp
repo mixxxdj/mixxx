@@ -247,12 +247,14 @@ EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(
 }
 
 void EffectSlot::loadEffectFromPreset(const EffectPresetPointer pPreset) {
-    if (!pPreset || pPreset->isEmpty()) {
+    EffectManifestPointer pManifest;
+    if (pPreset && !pPreset->isEmpty()) {
+        pManifest = m_pBackendManager->getManifest(pPreset);
+    }
+    if (!pManifest) {
         loadEffectInner(nullptr, nullptr, true);
         return;
     }
-    EffectManifestPointer pManifest = m_pBackendManager->getManifest(
-            pPreset->id(), pPreset->backendType());
     loadEffectInner(pManifest, pPreset, true);
 }
 
