@@ -99,7 +99,9 @@ QWidget* LegacyControllerBooleanSetting::buildWidget(
 }
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
-    auto* pCheckBox = new QCheckBox(label(), pParent);
+    auto pWidget = make_parented<QWidget>(pParent);
+
+    auto* pCheckBox = new QCheckBox(pWidget);
     pCheckBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     if (m_editedValue) {
         pCheckBox->setCheckState(Qt::Checked);
@@ -118,7 +120,21 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         emit changed();
     });
 
-    return pCheckBox;
+    auto pLabelWidget = make_parented<QLabel>(pWidget);
+    pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    pLabelWidget->setText(label());
+
+    QBoxLayout* pLayout = new QHBoxLayout();
+
+    pLayout->addWidget(pCheckBox);
+    pLayout->addWidget(pLabelWidget);
+
+    pLayout->setStretch(0, 3);
+    pLayout->setStretch(1, 1);
+
+    pWidget->setLayout(pLayout);
+
+    return pWidget;
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
