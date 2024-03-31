@@ -89,7 +89,10 @@ void WEffectChainPresetSelector::populate() {
                 QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                effectNames.append(pBackendManager->getDisplayNameForEffectPreset(pEffectPreset));
+                EffectManifestPointer pManifest = pBackendManager->getManifest(pEffectPreset);
+                if (pManifest) {
+                    effectNames.append(pManifest->name());
+                }
             }
         }
         if (effectNames.size() > 1) {
