@@ -102,6 +102,9 @@ bool allowLoadToPlayer(
 
 // Helper function for DragAndDropHelper::mousePressed and DragAndDropHelper::mouseMoveInitiatesDrag
 bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
+    if (pEvent->buttons() != Qt::LeftButton) {
+        return false;
+    }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     const qreal x = pEvent->position().x();
     const qreal y = pEvent->position().y();
@@ -209,9 +212,7 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
 
 // static
 void DragAndDropHelper::mousePressed(QMouseEvent* pEvent) {
-    if (pEvent->button() == Qt::LeftButton) {
-        mouseMoveInitiatesDragHelper(pEvent, true);
-    }
+    mouseMoveInitiatesDragHelper(pEvent, true);
 }
 
 // static
