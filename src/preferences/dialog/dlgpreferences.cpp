@@ -75,6 +75,8 @@ DlgPreferences::DlgPreferences(
     buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("&Cancel"));
     //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
     buttonBox->button(QDialogButtonBox::Ok)->setText(tr("&Ok"));
+    //: Preferences standard buttons: consider the other buttons to choose a unique Alt hotkey (&)
+    buttonBox->button(QDialogButtonBox::Test)->setText(tr("&Test"));
 
     connect(buttonBox,
             QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
