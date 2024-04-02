@@ -199,9 +199,11 @@ class BpmFilterNode : public QueryNode {
         Invalid,
         Null,
         Exact,
+        ExactStrict,
         Fuzzy,
         Range,
         HalveDouble,
+        HalveDoubleStrict,
         Operator,
     };
 
