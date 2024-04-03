@@ -1595,6 +1595,15 @@ if(APPLE)
       target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
     endif()
   endif()
+
+  option(MACOS_MEDIAPLAYER "macOS media player integration" ON)
+  if(MACOS_MEDIAPLAYER)
+    target_sources(mixxx-lib PRIVATE
+      src/broadcast/macos/macosmediaplayerservice.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE "-weak_framework MediaPlayer")
+    target_compile_definitions(mixxx-lib PUBLIC __MACOS_MEDIAPLAYER__)
+  endif()
 endif()
 
 if(EMSCRIPTEN)
