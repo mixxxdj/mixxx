@@ -85,6 +85,9 @@ WLibrary,
   }
 
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
 #BpmTapContainer:hover {
   background-color: #151517;
   border-radius: 1px;
@@ -2138,7 +2141,10 @@ WLibrarySidebar {
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
-#LibraryBPMSpinBox {
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
+WTrackProperty[selected="true"] {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;

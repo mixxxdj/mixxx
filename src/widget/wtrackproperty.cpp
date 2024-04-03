@@ -2,14 +2,21 @@
 
 #include <QApplication>
 #include <QDebug>
-#include <QUrl>
+#include <QMetaProperty>
+#include <QStyleOption>
 
-#include "control/controlpushbutton.h"
+#include "control/controlobject.h"
 #include "moc_wtrackproperty.cpp"
 #include "skin/legacy/skincontext.h"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
+
+namespace {
+// Duration (ms) the widget is 'selected' after left click, i.e. the duration
+// a second click would open the value editor
+constexpr int kSelectedClickTimeoutMs = 2000;
+} // namespace
 
 WTrackProperty::WTrackProperty(
         QWidget* pParent,
@@ -21,7 +28,11 @@ WTrackProperty::WTrackProperty(
           m_group(group),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
-          m_isMainDeck(isMainDeck) {
+          m_isMainDeck(isMainDeck),
+          m_propertyIsWritable(false),
+          m_pSelectedClickTimer(nullptr),
+          m_bSelected(false),
+          m_pEditor(nullptr) {
     setAcceptDrops(true);
 }
 
@@ -38,11 +49,24 @@ void WTrackProperty::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     // Check if property with that name exists in Track class
-    if (Track::staticMetaObject.indexOfProperty(property.toUtf8().constData()) == -1) {
+    int propertyIndex = Track::staticMetaObject.indexOfProperty(property.toUtf8().constData());
+    if (propertyIndex == -1) {
         qWarning() << "WTrackProperty: Unknown track property:" << property;
         return;
     }
-    m_property = property;
+    m_displayProperty = property;
+    // Handle 'titleInfo' property: displays the title or, if both title & artist
+    // are empty, filename. Though, this property is not writeable, so we map
+    // it to 'title' for the editor.
+    if (property == "titleInfo") {
+        m_editProperty = "title";
+    } else {
+        if (!Track::staticMetaObject.property(propertyIndex).isWritable()) {
+            return;
+        }
+        m_editProperty = m_displayProperty;
+    }
+    m_propertyIsWritable = true;
 }
 
 void WTrackProperty::slotTrackLoaded(TrackPointer pTrack) {
@@ -64,6 +88,9 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
         disconnect(m_pCurrentTrack.get(), nullptr, this, nullptr);
     }
     m_pCurrentTrack.reset();
+    if (m_pEditor && m_pEditor->hasFocus()) {
+        m_pEditor->hide();
+    }
     updateLabel();
 }
 
@@ -74,21 +101,81 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
-        if (m_property.isEmpty()) {
-            return;
-        }
-        QVariant property =
-                m_pCurrentTrack->property(m_property.toUtf8().constData());
-        if (property.isValid() && property.canConvert<QString>()) {
-            setText(property.toString());
-            return;
-        }
+        setText(getPropertyStringFromTrack(m_displayProperty));
+        return;
     }
     setText("");
 }
 
+const QString WTrackProperty::getPropertyStringFromTrack(QString& property) const {
+    if (property.isEmpty() || !m_pCurrentTrack) {
+        return {};
+    }
+    QVariant propVar = m_pCurrentTrack->property(property.toUtf8().constData());
+    if (propVar.isValid() && propVar.canConvert<QString>()) {
+        return propVar.toString();
+    }
+    return {};
+}
+
 void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
     DragAndDropHelper::mousePressed(pEvent);
+
+    // Check if there's another open editor. If yes, close it
+    WTrackPropertyEditor* otherEditor =
+            qobject_cast<WTrackPropertyEditor*>(QApplication::focusWidget());
+    if (otherEditor) {
+        otherEditor->clearFocus();
+        // and don't attempt to activate this editor right away
+        return;
+    }
+
+    if (!pEvent->buttons().testFlag(Qt::LeftButton) || !m_pCurrentTrack) {
+        return;
+    }
+
+    // Don't create the editor or toggle the 'selected' state for protected
+    // properties like duration.
+    if (!m_propertyIsWritable) {
+        return;
+    }
+
+    if (!m_pSelectedClickTimer) {
+        // create & start the timer
+        m_pSelectedClickTimer = make_parented<QTimer>(this);
+        m_pSelectedClickTimer->setSingleShot(true);
+        m_pSelectedClickTimer->setInterval(kSelectedClickTimeoutMs);
+        m_pSelectedClickTimer->callOnTimeout(
+                this, &WTrackProperty::resetSelectedState);
+    } else if (m_pSelectedClickTimer->isActive()) {
+        resetSelectedState();
+        // create the persistent editor, populate & connect
+        if (!m_pEditor) {
+            m_pEditor = make_parented<WTrackPropertyEditor>(this);
+            connect(m_pEditor,
+                    // use custom signal. editingFinished() doesn't suit since it's
+                    // also emitted weh pressing Esc (which should cancel editing)
+                    &WTrackPropertyEditor::commitEditorData,
+                    this,
+                    &WTrackProperty::slotCommitEditorData);
+        }
+        // Don't let the editor expand beyond its initial size
+        m_pEditor->setFixedSize(size());
+
+        QString editText = getPropertyStringFromTrack(m_editProperty);
+        if (m_displayProperty == "titleInfo" && editText.isEmpty()) {
+            editText = tr("title");
+        }
+        m_pEditor->setText(editText);
+        m_pEditor->selectAll();
+        m_pEditor->show();
+        m_pEditor->setFocus();
+        return;
+    }
+    // start timer
+    m_pSelectedClickTimer->start();
+    m_bSelected = true;
+    restyleAndRepaint();
 }
 
 void WTrackProperty::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -104,7 +191,7 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* pEvent) {
     }
     ensureTrackMenuIsCreated();
     m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-    m_pTrackMenu->showDlgTrackInfo(m_property);
+    m_pTrackMenu->showDlgTrackInfo(m_displayProperty);
 }
 
 void WTrackProperty::dragEnterEvent(QDragEnterEvent* pEvent) {
@@ -122,6 +209,11 @@ void WTrackProperty::contextMenuEvent(QContextMenuEvent* pEvent) {
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Show the right-click menu
         m_pTrackMenu->popup(pEvent->globalPos());
+        // Unset the hover state manually (stuck state is probably a Qt bug)
+        // TODO(ronso0) Test whether this is still required with Qt6
+        QEvent lev = QEvent(QEvent::Leave);
+        qApp->sendEvent(this, &lev);
+        update();
     }
 }
 
@@ -198,8 +290,74 @@ void WTrackProperty::slotShowTrackMenuChangeRequest(bool show) {
     // Note: this widget may be hidden so the position may be unexpected,
     // though this is okay as long as all variants of deckN are on the same
     // side of the mixer.
-    QContextMenuEvent event(QContextMenuEvent::Mouse,
+    QContextMenuEvent* pEvent = new QContextMenuEvent(QContextMenuEvent::Mouse,
             QPoint(),
             mapToGlobal(rect().center()));
-    contextMenuEvent(&event);
+    contextMenuEvent(pEvent);
+}
+
+void WTrackProperty::slotCommitEditorData(const QString& text) {
+    // use real track data instead of text() to be independent from display text
+    if (m_pCurrentTrack && text != getPropertyStringFromTrack(m_editProperty)) {
+        const QVariant var(QVariant::fromValue(text));
+        m_pCurrentTrack->setProperty(
+                m_editProperty.toUtf8().constData(),
+                var);
+        // Track::changed() will update label
+    }
+}
+
+void WTrackProperty::resetSelectedState() {
+    if (m_pSelectedClickTimer) {
+        m_pSelectedClickTimer->stop();
+        // explicitly disconnect() queued signals? not crucial
+        // here since timeOut() just calls resetSelectedState()
+    }
+    m_bSelected = false;
+    restyleAndRepaint();
+}
+
+void WTrackProperty::restyleAndRepaint() {
+    emit selectedStateChanged(isSelected());
+
+    style()->unpolish(this);
+    style()->polish(this);
+    // These calls don't always trigger the repaint, so call it explicitly.
+    repaint();
+}
+
+WTrackPropertyEditor::WTrackPropertyEditor(QWidget* pParent)
+        : QLineEdit(pParent) {
+    installEventFilter(this);
+}
+
+bool WTrackPropertyEditor::eventFilter(QObject* pObj, QEvent* pEvent) {
+    if (pEvent->type() == QEvent::KeyPress) {
+        // The widget only receives keystrokes when in edit mode.
+        // Esc will close & reset.
+        // Enter/Return confirms.
+        // Any other keypress is forwarded.
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(pEvent);
+        const int key = keyEvent->key();
+        switch (key) {
+        case Qt::Key_Escape:
+            hide();
+            return true;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            hide();
+            emit commitEditorData(text());
+            ControlObject::set(ConfigKey("[Library]", "refocus_prev_widget"), 1);
+            return true;
+        default:
+            break;
+        }
+    } else if (pEvent->type() == QEvent::FocusOut) {
+        // Close and commit if any other widget gets focus
+        if (isVisible()) {
+            hide();
+            emit commitEditorData(text());
+        }
+    }
+    return QLineEdit::eventFilter(pObj, pEvent);
 }

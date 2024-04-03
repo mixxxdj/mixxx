@@ -337,11 +337,23 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
+WTrackProperty[selected="true"],
 #BpmTapContainer:hover,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
-  border-radius: 1px;
-}
+  }
+  WTrackProperty:hover[selected="true"],
+  WTrackProperty[selected="true"] {
+    background-color: #181819;
+  }
+  #BpmTap[pressed="true"],
+  WTrackProperty[selected="true"] {
+    border: 1px solid #7d350d;
+/*    border: 1px solid #888;*/
+  }
 
 /* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
@@ -1676,9 +1688,6 @@ WPushButton#LoopOut[pressed="true"],
 #CueDeleteButton[pressed="true"]*/ {
   background-color: #7d350d;
   }
-  #BpmTap[pressed="true"] {
-   border: 1px solid #7d350d;
-  }
 
 /* Red */
 #EQKillButtonBox WPushButton[displayValue="1"],
@@ -2532,6 +2541,7 @@ WLibraryTextBrowser,
 WLibrarySidebar,
 #SkinSettings,
 WSearchLineEdit,
+WTrackPropertyEditor,
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 #spinBoxTransition,
@@ -2600,12 +2610,15 @@ WTrackTableView {
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
-#LibraryBPMSpinBox {
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
   color: #ddd;
   selection-color: #000;
   selection-background-color: #ccc;
-  border: 1px solid #2c454f;
-}
+  border: 1px solid #257b82;
+  border-radius: 0px;
+  }
 
 /* Entire BPM cell */
 /* Lock icon at the left */
