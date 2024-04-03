@@ -36,6 +36,9 @@
 #ifdef __MEDIAFOUNDATION__
 #include "sources/soundsourcemediafoundation.h"
 #endif
+#ifdef __STEM__
+#include "sources/soundsourcestem.h"
+#endif
 
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
@@ -177,6 +180,13 @@ QList<QMimeType> mimeTypesForFileType(const QString& fileType) {
             }
         }
     }
+    if (fileType == "stem.mp4") {
+        // *.stem.mp4 suffix doesn't not have a specific MIME type associated
+        // with it, and simply falls back to MP4. To prevent conflicts with the
+        // MP4 decoder able to decode arbitrary MP4 file (such as video,
+        // extracting just the audio track), we don't return any MIME here
+        return {};
+    }
     return mimeTypes;
 }
 
@@ -223,6 +233,11 @@ bool SoundSourceProxy::registerProviders() {
     registerSoundSourceProvider(
             &s_soundSourceProviders,
             std::make_shared<mixxx::SoundSourceProviderSndFile>());
+#endif
+#ifdef __STEM__
+    registerSoundSourceProvider(
+            &s_soundSourceProviders,
+            std::make_shared<mixxx::SoundSourceProviderSTEM>());
 #endif
     // Register the high-priority reference providers AFTER all other
     // providers to verify that their priorities are correct.

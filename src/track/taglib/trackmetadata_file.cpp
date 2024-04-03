@@ -48,12 +48,15 @@ namespace taglib {
 // Deduce the TagLib file type from the file name
 FileType getFileTypeFromFileName(
         const QString& fileName) {
-    DEBUG_ASSERT(!fileName.isEmpty());
-    const QString fileSuffix(fileName.section(QChar('.'), -1).toLower().trimmed());
+    QString normalisedFileName = fileName.toLower().trimmed();
+    DEBUG_ASSERT(!normalisedFileName.isEmpty());
+    const QString fileSuffix(normalisedFileName.section(QChar('.'), -1));
     if (QStringLiteral("mp3") == fileSuffix) {
         return FileType::MP3;
     }
-    if ((QStringLiteral("m4a") == fileSuffix) || (QStringLiteral("m4v") == fileSuffix)) {
+    if ((QStringLiteral("m4a") == fileSuffix) ||
+            (QStringLiteral("m4v") == fileSuffix) ||
+            normalisedFileName.endsWith("stem.mp4")) {
         return FileType::MP4;
     }
     if (QStringLiteral("flac") == fileSuffix) {

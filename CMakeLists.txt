@@ -2191,32 +2191,6 @@ target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gte
 find_package(benchmark)
 target_link_libraries(mixxx-test PRIVATE benchmark::benchmark)
 
-# Test Suite
-include(CTest)
-include(GoogleTest)
-enable_testing()
-gtest_add_tests(
-  TARGET mixxx-test
-  EXTRA_ARGS --logLevel info
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  TEST_LIST testsuite
-)
-if (NOT WIN32)
-  # Default to offscreen rendering during tests.
-  # This is required if the build system like Fedora koji/mock does not
-  # allow to pass environment variables into the ctest macro expansion.
-  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
-endif()
-
-# Benchmarking
-add_custom_target(mixxx-benchmark
-  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
-  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-  COMMENT "Mixxx Benchmarks"
-  VERBATIM
-)
-add_dependencies(mixxx-benchmark mixxx-test)
-
 #
 # Resources
 #
@@ -3470,6 +3444,51 @@ if(FFMPEG)
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
+# STEM file support
+default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
+if (STEM)
+  if(NOT FFMPEG)
+    message(FATAL_ERROR "FFMPEG was not enabled")
+  endif()
+  target_compile_definitions(mixxx-lib PUBLIC __STEM__)
+  target_compile_definitions(mixxx-test PUBLIC __STEM__)
+  target_sources(mixxx-test PUBLIC
+    src/test/stemtest.cpp
+    src/test/steminfotest.cpp
+  )
+  target_sources(mixxx-lib PRIVATE
+    src/sources/soundsourcestem.cpp
+    src/track/steminfoimporter.cpp
+    src/track/steminfo.cpp # TODO precompiled header?
+  )
+endif()
+
+# Test Suite
+include(CTest)
+include(GoogleTest)
+enable_testing()
+gtest_add_tests(
+  TARGET mixxx-test
+  EXTRA_ARGS --logLevel info
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  TEST_LIST testsuite
+)
+if (NOT WIN32)
+  # Default to offscreen rendering during tests.
+  # This is required if the build system like Fedora koji/mock does not
+  # allow to pass environment variables into the ctest macro expansion.
+  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()
+
+# Benchmarking
+add_custom_target(mixxx-benchmark
+  COMMAND $<TARGET_FILE:mixxx-test> --benchmark
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  COMMENT "Mixxx Benchmarks"
+  VERBATIM
+)
+add_dependencies(mixxx-benchmark mixxx-test)
+
 # Google PerfTools
 option(GPERFTOOLS "Google PerfTools libtcmalloc linkage" OFF)
 option(GPERFTOOLSPROFILER "Google PerfTools libprofiler linkage" OFF)
@@ -3577,8 +3596,8 @@ if(OPUS)
     src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
-  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile)
-  target_link_libraries(mixxx-lib PRIVATE Opus::Opus)
+  target_link_libraries(mixxx-lib PRIVATE OpusFile::OpusFile Opus::Opus)
+  target_link_libraries(mixxx-test PRIVATE OpusFile::OpusFile Opus::Opus)
 endif()
 
 # MAD MP3 Decoder

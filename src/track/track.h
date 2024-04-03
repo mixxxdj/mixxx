@@ -9,6 +9,10 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#ifdef __STEM__
+#include "track/steminfo.h"
+#include "track/steminfoimporter.h"
+#endif
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -326,6 +330,15 @@ class Track : public QObject {
 
     void setCuePoints(const QList<CuePointer>& cuePoints);
 
+#ifdef __STEM__
+    QList<StemInfo> getStemInfo() const {
+        const QMutexLocker lock(&m_qMutex);
+        // lock thread-unsafe copy constructors of QList
+        return m_stemInfo;
+    }
+    // Setter is only available internally. See setStemPointsWhileLocked
+#endif
+
     enum class ImportStatus {
         Pending,
         Complete,
@@ -441,6 +454,9 @@ class Track : public QObject {
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void ratingUpdated(int rating);
     void cuesUpdated();
+#ifdef __STEM__
+    void stemsUpdated();
+#endif
     void loopRemove();
     void analyzed();
 
@@ -494,6 +510,17 @@ class Track : public QObject {
     /// indicate if cues were updated. Only supposed to be called while the
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
+
+#ifdef __STEM__
+    /// Sets stem info and returns a boolean to indicate if stems were updated.
+    /// Only supposed to be called while the caller guards this a lock.
+    bool setStemPointsWhileLocked(const QList<StemInfo>& stemInfo);
+
+    /// Imports pending stem info from a stemInfoImporter and returns a boolean to
+    /// indicate if stems were updated. Only supposed to be called while the
+    /// caller guards this a lock.
+    bool importPendingStemInfosWhileLocked();
+#endif
 
     mixxx::Bpm getBpmWhileLocked() const;
     bool trySetBpmWhileLocked(mixxx::Bpm bpm);
@@ -558,6 +585,11 @@ class Track : public QObject {
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
+
+#ifdef __STEM__
+    // The list of stem info
+    QList<StemInfo> m_stemInfo;
+#endif
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

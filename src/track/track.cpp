@@ -1296,6 +1296,21 @@ bool Track::importPendingCueInfosWhileLocked() {
     return setCuePointsWhileLocked(cuePoints);
 }
 
+#ifdef __STEM__
+bool Track::setStemPointsWhileLocked(const QList<StemInfo>& stemInfos) {
+    m_stemInfo = stemInfos;
+    return true;
+}
+
+bool Track::importPendingStemInfosWhileLocked() {
+    const QList<StemInfo> stemInfos =
+            mixxx::StemInfoImporter::importStemInfos(
+                    getLocation());
+
+    return setStemPointsWhileLocked(stemInfos);
+}
+#endif
+
 void Track::importPendingCueInfosMarkDirtyAndUnlock(
         QT_RECURSIVE_MUTEX_LOCKER* pLock) {
     DEBUG_ASSERT(pLock);
@@ -1716,8 +1731,15 @@ void Track::updateStreamInfoFromSource(
 
     const bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
     const bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();
+#ifdef __STEM__
+    const bool importStemInfos = mixxx::StemInfoImporter::isStemFile(getLocation());
+#endif
 
-    if (!importBeats && !importCueInfos) {
+    if (!importBeats && !importCueInfos
+#ifdef __STEM__
+            && !importStemInfos
+#endif
+    ) {
         // Nothing more to do
         if (updated) {
             markDirtyAndUnlock(&locked);
@@ -1742,7 +1764,20 @@ void Track::updateStreamInfoFromSource(
         cuesImported = importPendingCueInfosWhileLocked();
     }
 
-    if (!beatsImported && !cuesImported) {
+#ifdef __STEM__
+    auto stemsImported = false;
+    if (importStemInfos) {
+        kLogger.debug()
+                << "Importing stem(s) info";
+        stemsImported = importPendingStemInfosWhileLocked();
+    }
+#endif
+
+    if (!beatsImported && !cuesImported
+#ifdef __STEM__
+            && !stemsImported
+#endif
+    ) {
         return;
     }
 
@@ -1755,6 +1790,11 @@ void Track::updateStreamInfoFromSource(
     if (cuesImported) {
         emit cuesUpdated();
     }
+#ifdef __STEM__
+    if (stemsImported) {
+        emit stemsUpdated();
+    }
+#endif
 }
 
 QString Track::getGenre() const {
