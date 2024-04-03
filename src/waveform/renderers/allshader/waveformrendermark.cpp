@@ -225,11 +225,12 @@ void allshader::WaveformRenderMark::paintGL() {
     const float currentMarkPoint = std::floor(
             static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
                     m_waveformRenderer->getLength()));
+    if (m_pPlayPosMarkTexture) {
+        const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
+        const float drawOffset = currentMarkPoint - markHalfWidth;
 
-    const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
-    const float drawOffset = currentMarkPoint - markHalfWidth;
-
-    drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
+        drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
+    }
 }
 
 // Generate the texture used to draw the play position marker.
