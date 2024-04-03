@@ -1485,7 +1485,7 @@ else()
       src/shaders/textureshader.cpp
       src/shaders/unicolorshader.cpp
       src/shaders/vinylqualityshader.cpp
-      src/util/texture.cpp
+      src/util/opengltexture2d.cpp
       src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
       src/waveform/renderers/allshader/waveformrenderbackground.cpp
       src/waveform/renderers/allshader/waveformrenderbeat.cpp

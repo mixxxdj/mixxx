@@ -4,7 +4,6 @@
 #include <QPainterPath>
 
 #include "util/colorcomponents.h"
-#include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -20,15 +19,15 @@
 // then used as textures to be drawn with a GLSL shader.
 
 class TextureGraphics : public WaveformMark::Graphics {
-    std::unique_ptr<QOpenGLTexture> m_pTexture;
-
   public:
-    TextureGraphics(std::unique_ptr<QOpenGLTexture>&& pTexture)
-            : m_pTexture{std::move(pTexture)} {
+    TextureGraphics() = default;
+
+    QOpenGLTexture* texture() {
+        return &m_texture;
     }
-    QOpenGLTexture* texture() const {
-        return m_pTexture.get();
-    }
+
+  private:
+    OpenGLTexture2D m_texture;
 };
 
 // Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
@@ -225,11 +224,12 @@ void allshader::WaveformRenderMark::paintGL() {
     const float currentMarkPoint = std::floor(
             static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
                     m_waveformRenderer->getLength()));
-    if (m_pPlayPosMarkTexture) {
-        const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
+
+    if (m_playPosMarkTexture.isStorageAllocated()) {
+        const float markHalfWidth = m_playPosMarkTexture.width() / devicePixelRatio / 2.f;
         const float drawOffset = currentMarkPoint - markHalfWidth;
 
-        drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
+        drawTexture(drawOffset, 0.f, &m_playPosMarkTexture);
     }
 }
 
@@ -297,7 +297,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     }
     painter.end();
 
-    m_pPlayPosMarkTexture = createTexture(image);
+    m_playPosMarkTexture.setData(image);
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -321,6 +321,8 @@ void allshader::WaveformRenderMark::resizeGL(int, int) {
 }
 
 void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
-    pMark->m_pGraphics = std::make_unique<TextureGraphics>(
-            createTexture(pMark->generateImage(m_waveformRenderer->getDevicePixelRatio())));
+    auto pTextureGraphics = std::make_unique<TextureGraphics>();
+    pTextureGraphics->texture()->setData(
+            pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
+    pMark->m_pGraphics = std::move(pTextureGraphics);
 }
