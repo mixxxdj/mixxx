@@ -11,7 +11,6 @@ std::shared_ptr<LegacyControllerMapping>
 LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
         const QDir& systemMappingsPath) {
-    // TODO (XXX): support for controller settings
     if (root.isNull()) {
         return nullptr;
     }
@@ -26,6 +25,7 @@ LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
 
     // Superclass handles parsing <info> tag and script files
     parseMappingInfo(root, pMapping);
+    parseMappingSettings(root, pMapping.get());
     addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
