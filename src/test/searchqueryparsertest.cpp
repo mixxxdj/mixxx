@@ -359,7 +359,7 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
     pTrack->setBitrate(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
-    EXPECT_STREQ( // half/double BPM, half
+    EXPECT_STREQ(
             qPrintable(QString("bitrate = 127")),
             qPrintable(pQuery->toSql()));
 }
@@ -497,21 +497,35 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
 TEST_F(SearchQueryParserTest, BpmFilter) {
     m_parser.setSearchColumns({"artist", "album"});
 
-    // Test (implicit) half/double BPM match
-    auto pQuery(m_parser.parseQuery("bpm:127.12", QString()));
-
+    // Test BpmFilter's MatchModes:
+    // HalveDouble
+    auto pQuery(m_parser.parseQuery("bpm:127", QString()));
     TrackPointer pTrack = newTestTrack();
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->trySetBpm(127.13);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("(bpm >= 126.95 AND bpm < 128) OR "
+                               "(bpm BETWEEN 63 AND 64) OR "
+                               "(bpm BETWEEN 253 AND 255)")),
+            qPrintable(pQuery->toSql()));
+
+    // HalveDoubleStrict
+    pQuery = m_parser.parseQuery("bpm:127.12", QString());
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
             qPrintable(QString("(bpm BETWEEN 127.115 AND 127.125) OR "
-                               "(bpm BETWEEN 63 AND 64) OR "
-                               "(bpm BETWEEN 254 AND 255)")),
+                               "(bpm BETWEEN 63.555 AND 63.565) OR "
+                               "(bpm BETWEEN 254.235 AND 254.245)")),
             qPrintable(pQuery->toSql()));
 
-    // Test (explicit) exact match
+    // ExplicitStrict
+    // '=' omits halve/double ==> MatchMode::Explicit
+    // decimals engage Strict mode
     pQuery = m_parser.parseQuery("bpm:=127.12", QString());
     EXPECT_TRUE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.13);
@@ -521,7 +535,7 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
             qPrintable(QString("bpm BETWEEN 127.115 AND 127.125")),
             qPrintable(pQuery->toSql()));
 
-    // Test BPM range
+    // Range
     pQuery = m_parser.parseQuery("bpm:127.12-129", QString());
     pTrack->trySetBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
@@ -534,7 +548,7 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
             qPrintable(QString("bpm BETWEEN 127.12 AND 129")),
             qPrintable(pQuery->toSql()));
 
-    // Test fuzzy BPM match
+    // Fuzzy
     // Should be enabled by default and default range is 6% (= 75% of default
     // pitch slider range)
     pQuery = m_parser.parseQuery("~bpm:100", QString());
@@ -548,12 +562,42 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
             qPrintable(QString("bpm BETWEEN 94 AND 106")),
             qPrintable(pQuery->toSql()));
 
-    // Test empty BPM
+    // Test empty BPM (incomplete query)
     pQuery = m_parser.parseQuery("bpm:", QString());
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
             qPrintable(QString("")),
+            qPrintable(pQuery->toSql()));
+
+    // Null
+    pQuery = m_parser.parseQuery("bpm:\"\"", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm IS 0")),
+            qPrintable(pQuery->toSql()));
+    // Null
+    pQuery = m_parser.parseQuery("bpm:00.0", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm IS 0")),
+            qPrintable(pQuery->toSql()));
+    // Null
+    pQuery = m_parser.parseQuery("bpm:-", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm IS 0")),
+            qPrintable(pQuery->toSql()));
+
+    // Invalid ~bpm:= | ~bpm:12-34
+    pQuery = m_parser.parseQuery("~bpm:=106", QString());
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("bpm IS NULL")),
             qPrintable(pQuery->toSql()));
 }
 
