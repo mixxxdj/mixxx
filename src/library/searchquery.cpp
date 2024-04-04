@@ -558,7 +558,7 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
     double bpm = argument.toDouble(&isDouble);
     if (isDouble) {
         // Check if the arg has a decimal separator (even if no digits after that)
-        bool strictMatch = argument.contains('.');
+        bool strictMatch = argument.split('.', Qt::SkipEmptyParts).length() > 1;
         if (fuzzy) {
             // fuzzy search +- n%
             m_matchMode = MatchMode::Fuzzy;
