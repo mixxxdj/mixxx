@@ -500,7 +500,6 @@ inline QString rangeSqlString(double lower, double upper) {
 inline std::pair<double, double> rangeFromTrailingDecimal(double bpm) {
     // Set up a range if we have decimals. This will include matches
     // for which we show rounded values in the library. For example
-    // 124  finds 119.95 - 124.05
     // 124.1  finds 124.05 - 124.15
     // 124.92 finds 124.915 - 124.925
     if (bpm == 0.0) {
@@ -576,13 +575,13 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         } else {
             // Operator or basic query, optional negate
             if (m_operator == '=') {
-                // Exact search.
+                // Explicit search.
                 // Same center range as HalveDouble/~Strict
-                // TODO What about -bpm: ? ExactNot
+                // TODO What about -bpm: ? ExplicitNot
                 if (strictMatch) {
-                    m_matchMode = MatchMode::ExactStrict;
+                    m_matchMode = MatchMode::ExplicitStrict;
                 } else {
-                    m_matchMode = MatchMode::Exact;
+                    m_matchMode = MatchMode::Explicit;
                 }
             } else {
                 m_matchMode = MatchMode::Operator;
@@ -615,14 +614,14 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
 
     // Build/prepare match functions
     switch (m_matchMode) {
-    case MatchMode::Exact: {
+    case MatchMode::Explicit: {
         // No decimals: 114 finds   113.95 - 114.99999
         m_rangeLower = rangeFromTrailingDecimal(bpm).first;
         m_rangeUpper = floor(bpm + 1);
         break;
     }
-    case MatchMode::ExactStrict: {
-        // Decimals:    114.0 finds 113.95 - 114.05
+    case MatchMode::ExplicitStrict: {
+        // Decimals: 114.0 finds 113.95 - 114.05
         std::tie(m_rangeLower, m_rangeUpper) = rangeFromTrailingDecimal(bpm);
         break;
     }
@@ -631,19 +630,22 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
         break;
     }
-    case MatchMode::HalveDouble: {
-        m_rangeLower = rangeFromTrailingDecimal(bpm).first;
-        m_rangeUpper = floor(bpm + 1);
-        m_bpmHalfLower = floor(bpm / 2);
-        m_bpmHalfUpper = ceil(bpm / 2);
-        m_bpmDoubleLower = bpm * 2 - 1;
-        m_bpmDoubleUpper = bpm * 2 + 1;
+    case MatchMode::HalveDouble: {                          // 57
+        m_rangeLower = rangeFromTrailingDecimal(bpm).first; // 56.95
+        m_rangeUpper = floor(bpm + 1);                      //       - 58
+        m_bpmHalfLower = floor(bpm / 2);                    // 28
+        m_bpmHalfUpper = ceil(bpm / 2);                     //    - 29
+        m_bpmDoubleLower = bpm * 2 - 1;                     // 113
+        m_bpmDoubleUpper = bpm * 2 + 1;                     //     - 115
         break;
     }
-    case MatchMode::HalveDoubleStrict: {
-        std::tie(m_rangeLower, m_rangeUpper) = rangeFromTrailingDecimal(bpm);
-        std::tie(m_bpmHalfLower, m_bpmHalfUpper) = rangeFromTrailingDecimal(bpm / 2);
-        std::tie(m_bpmDoubleLower, m_bpmDoubleUpper) = rangeFromTrailingDecimal(bpm * 2);
+    case MatchMode::HalveDoubleStrict: { //            57.0
+        std::tie(m_rangeLower, m_rangeUpper) =
+                rangeFromTrailingDecimal(bpm); //      56.95 - 57.05
+        std::tie(m_bpmHalfLower, m_bpmHalfUpper) =
+                rangeFromTrailingDecimal(bpm / 2); //  28.75 - 28.85
+        std::tie(m_bpmDoubleLower, m_bpmDoubleUpper) =
+                rangeFromTrailingDecimal(bpm * 2); // 113.95 - 114.05
         break;
     }
     case MatchMode::Operator: {
@@ -662,13 +664,13 @@ bool BpmFilterNode::match(const TrackPointer& pTrack) const {
     case MatchMode::Null: {
         return value == 0.0;
     }
-    case MatchMode::ExactStrict:
+    case MatchMode::Explicit: {
+        return value >= m_rangeLower && value < m_rangeUpper;
+    }
+    case MatchMode::ExplicitStrict:
     case MatchMode::Fuzzy:
     case MatchMode::Range: {
         return value >= m_rangeLower && value <= m_rangeUpper;
-    }
-    case MatchMode::Exact: {
-        return value >= m_rangeLower && value < m_rangeUpper;
     }
     case MatchMode::HalveDouble: {
         return (value >= m_rangeLower && value <= m_rangeUpper) ||
@@ -699,15 +701,15 @@ QString BpmFilterNode::toSql() const {
     case MatchMode::Null: {
         return QString("bpm IS 0");
     }
-    case MatchMode::Exact:
-    case MatchMode::Fuzzy:
-    case MatchMode::Range: {
-        return rangeSqlString(m_rangeLower, m_rangeUpper);
-    }
-    case MatchMode::ExactStrict: {
+    case MatchMode::Explicit: {
         return QStringLiteral("bpm >= %1 AND bpm < %2")
                 .arg(QString::number(m_rangeLower),
                         QString::number(m_rangeUpper));
+    }
+    case MatchMode::ExplicitStrict:
+    case MatchMode::Fuzzy:
+    case MatchMode::Range: {
+        return rangeSqlString(m_rangeLower, m_rangeUpper);
     }
     case MatchMode::HalveDouble: {
         QStringList searchClauses;
@@ -728,7 +730,7 @@ QString BpmFilterNode::toSql() const {
     case MatchMode::Operator: {
         return QString("bpm %1 %2").arg(m_operator, QString::number(m_bpm));
     }
-    default:
+    default: // MatchMode::Invalid
         return QString("bpm IS NULL");
     }
 }

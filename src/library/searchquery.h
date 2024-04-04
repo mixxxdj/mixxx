@@ -197,14 +197,14 @@ class BpmFilterNode : public QueryNode {
 
     enum class MatchMode {
         Invalid,
-        Null,
-        Exact,
-        ExactStrict,
-        Fuzzy,
-        Range,
-        HalveDouble,
-        HalveDoubleStrict,
-        Operator,
+        Null,              // bpm:- | bpm:000.0 | bpm:0,0 | bpm:""
+        Explicit,          // bpm:=120
+        ExplicitStrict,    // bpm:=120.0
+        Fuzzy,             // ~bpm:120
+        Range,             // bpm:120-130
+        HalveDouble,       // bpm:120
+        HalveDoubleStrict, // bpm:120.0
+        Operator,          // bpm:<=120
     };
 
     // Allows WSearchRelatedTracksMenu to construct the QAction title
