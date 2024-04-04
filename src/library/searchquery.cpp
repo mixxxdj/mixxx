@@ -24,6 +24,8 @@ const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)
 // > are not necessarily greedy.
 const QRegularExpression kNumericOperatorRegex(QStringLiteral("^(<=|>=|=|<|>)(.*)$"));
 
+const QRegularExpression kNullRegex(QStringLiteral("^([0.,]+)$"));
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
         return pTrack->getArtist();
@@ -530,7 +532,10 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
           m_bpmHalfUpper(0.0),
           m_bpmDoubleLower(0.0),
           m_bpmDoubleUpper(0.0) {
-    if (argument == kMissingFieldSearchTerm) {
+    QRegularExpressionMatch nullMatch = kNullRegex.match(argument);
+    if (argument == kMissingFieldSearchTerm || // explicit empty
+            argument == "-" ||                 // displayed in the BPM column
+            nullMatch.hasMatch()) {            // displayed in the BPM widgets
         m_matchMode = MatchMode::Null;
         return;
     }
