@@ -98,6 +98,9 @@ CueControl::CueControl(const QString& group,
           m_bypassCueSetByPlay(false),
           m_iNumHotCues(NUM_HOT_CUES),
           m_pCurrentSavedLoopControl(nullptr),
+          m_wrapAroundCount(0),
+          m_jumpPos(mixxx::audio::FramePos()),
+          m_targetPos(mixxx::audio::FramePos()),
           m_trackMutex(QT_RECURSIVE_MUTEX_INIT) {
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
@@ -2182,25 +2185,73 @@ void CueControl::updateIndicators() {
 
     // Update hotcue indicators: activate the indicator if we are at the cue pos
     // or if we passed it since the last update, else deactivate.
-    const auto prevPos = m_prevPosition.getValue();
-    const auto currPos = frameInfo().currentPosition;
+    auto prevPos = m_prevPosition.getValue();
+    auto currPos = frameInfo().currentPosition;
     VERIFY_OR_DEBUG_ASSERT(prevPos.isValid()) {
         m_prevPosition.setValue(currPos);
         return;
     }
+
+    // These are used to check whether we passed the cue while the play position
+    // was wrapped around (loop of full-track repeat).
+    // Note: notifyWrapAround() guarantees that in/out are valid if count > 0,
+    // so we can use count > 0 for loop pos validation.
+    // Possible situations: c=curr, p=prev, |=loop boundaries
+    // count = 0: Regular play:
+    //    P>>>>>>>C
+    // count = 1, no overlap: jump
+    //    |>>>>>C..........P>>>|
+    // count = 1, with overlap (or P=C): fullLoop
+    //    |............P>>>>>>>|
+    //    |>>>>>>>>>>>>C.......|
+    // count > 1: fullLoop
+    //    Multiple wrap-arounds per buffer. May happen with very short loops.
+    //    |............P>>>>>>>|
+    //    |>>>>>>>>>>>>>>>>>>>>|
+    //    |>>>C................|
+    auto loopOut = m_jumpPos;
+    auto loopIn = m_targetPos;
+    bool reverse = false;
+    if (m_wrapAroundCount > 0 && loopOut < loopIn) {
+        // Reverse loop: swap the two so loopIn/Out are always in/out positions.
+        // This reduces the jump/fullLoop comparison cases to one
+        std::swap(loopOut, loopIn);
+        reverse = true;
+    }
+    // We jumped once from out to in (or vice versa).
+    bool jump = m_wrapAroundCount == 1;
+    // That means all loop samples were read and we just check if the cue is
+    // inside the loop.
+    bool fullLoop = m_wrapAroundCount > 1 ||
+            (jump && (prevPos == currPos || reverse == (prevPos < currPos)));
+
+    if (!fullLoop && (jump || prevPos > currPos)) {
+        // Simple wrap-around or playing in reverse: swap the two so prev is
+        // always before curr. Reduces the jump/regular comparison cases to one
+        std::swap(prevPos, currPos);
+    }
+    // reset counter after use
+    m_wrapAroundCount = 0;
 
     for (const auto& pControl : std::as_const(m_hotcueControls)) {
         const auto cuePos = pControl->getPosition();
         if (!cuePos.isValid()) {
             continue;
         }
-        if ((cuePos >= prevPos && cuePos <= currPos) ||     // forward
-                (cuePos <= prevPos && cuePos >= currPos)) { // reverse
-            pControl->setIndicator(1.0);
-        } else {
-            pControl->setIndicator(0.0);
+        bool activate = false;
+        if (fullLoop) { // is cue inside loop?
+            activate = cuePos >= loopIn && cuePos < loopOut;
+        } else if (jump) { // is cue in the range before or after the jump?
+            activate = (cuePos >= prevPos && cuePos < loopOut) ||
+                    // (cuePos >= currPos && cuePos < loopOut) reverse
+                    (cuePos >= loopIn && cuePos <= currPos);
+            //      (cuePos >= loopIn && cuePos <= prevPos) reverse
+        } else { // is cue between previous and current position?
+            activate = cuePos >= prevPos && cuePos <= currPos;
         }
+        pControl->setIndicator(activate ? 1.0 : 0.0);
     }
+
     m_prevPosition.setValue(currPos);
 }
 
@@ -2470,6 +2521,18 @@ void CueControl::setHotcueFocusIndex(int hotcueIndex) {
 
 int CueControl::getHotcueFocusIndex() const {
     return hotcueNumberToHotcueIndex(static_cast<int>(m_pHotcueFocus->get()));
+}
+
+void CueControl::notifyWrapAround(mixxx::audio::FramePos triggerPos,
+        mixxx::audio::FramePos targetPos) {
+    VERIFY_OR_DEBUG_ASSERT(triggerPos.isValid() && targetPos.isValid()) {
+        m_wrapAroundCount = 0;
+        // no need to reset the position, they're not used if count is 0.
+        return;
+    }
+    m_wrapAroundCount++;
+    m_jumpPos = triggerPos;
+    m_targetPos = targetPos;
 }
 
 ConfigKey HotcueControl::keyForControl(const QString& name) {
