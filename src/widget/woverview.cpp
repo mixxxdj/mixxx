@@ -1240,7 +1240,7 @@ void WOverview::paintText(const QString& text, QPainter* pPainter) {
 
 double WOverview::samplePositionToSeconds(double sample) {
     double trackTime = sample /
-            (m_trackSampleRateControl->get() * mixxx::kEngineChannelCount);
+            (m_trackSampleRateControl->get() * mixxx::kEngineChannelOutputCount);
     return trackTime / m_pRateRatioControl->get();
 }
 

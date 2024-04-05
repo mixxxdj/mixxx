@@ -42,7 +42,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
 
   private:
     // Reset RubberBand library with new audio signal
-    void onSampleRateChanged() override;
+    void onOutputSignalChanged() override;
 
     /// Calls `m_pRubberBand->getPreferredStartPad()`, with backwards
     /// compatibility for older librubberband versions.
@@ -67,10 +67,10 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     /// The audio buffers samples used to send audio to Rubber Band and to
     /// receive processed audio from Rubber Band. This is needed because Mixxx
     /// uses interleaved buffers in most other places.
-    std::array<mixxx::SampleBuffer, 2> m_buffers;
+    std::vector<mixxx::SampleBuffer> m_buffers;
     /// These point to the buffers in `m_buffers`. They can be defined here
     /// since this object cannot be moved or copied.
-    std::array<float*, 2> m_bufferPtrs;
+    std::vector<float*> m_bufferPtrs;
 
     /// Contains interleaved samples read from `m_pReadAheadManager`. These need
     /// to be deinterleaved before they can be passed to Rubber Band.

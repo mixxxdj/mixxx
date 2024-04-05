@@ -324,7 +324,8 @@ void BpmControl::slotTranslateBeatsMove(double v) {
     if (pBeats) {
         // TODO(rryan): Track::frameInfo is possibly inaccurate!
         const double sampleOffset = frameInfo().sampleRate * v * 0.01;
-        const mixxx::audio::FrameDiff_t frameOffset = sampleOffset / mixxx::kEngineChannelCount;
+        const mixxx::audio::FrameDiff_t frameOffset =
+                sampleOffset / mixxx::kEngineChannelOutputCount;
         const auto translatedBeats = pBeats->tryTranslate(frameOffset);
         if (translatedBeats) {
             pTrack->trySetBeats(*translatedBeats);

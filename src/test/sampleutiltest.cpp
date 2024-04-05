@@ -373,28 +373,57 @@ TEST_F(SampleUtilTest, reverse) {
     }
 }
 
-TEST_F(SampleUtilTest, copyReverse) {
-    if (buffers.size() > 1 && sizes[0] > 10 && sizes[1] > 10)  {
-        CSAMPLE* source = buffers[0];
-        CSAMPLE* destination = buffers[1];
-        for (int i = 0; i < 10; ++i) {
-            source[i] = i * 0.1f;
-        }
+TEST_F(SampleUtilTest, copyReverseStereo) {
+    EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 10 && sizes[1] > 10);
 
-        SampleUtil::copyReverse(destination, source, 10);
-
-        // check if right channel remains at odd index
-        EXPECT_FLOAT_EQ(destination[0], 0.8f);
-        EXPECT_FLOAT_EQ(destination[1], 0.9f);
-        EXPECT_FLOAT_EQ(destination[2], 0.6f);
-        EXPECT_FLOAT_EQ(destination[3], 0.7f);
-        EXPECT_FLOAT_EQ(destination[4], 0.4f);
-        EXPECT_FLOAT_EQ(destination[5], 0.5f);
-        EXPECT_FLOAT_EQ(destination[6], 0.2f);
-        EXPECT_FLOAT_EQ(destination[7], 0.3f);
-        EXPECT_FLOAT_EQ(destination[8], 0.0f);
-        EXPECT_FLOAT_EQ(destination[9], 0.1f);
+    CSAMPLE* source = buffers[0];
+    CSAMPLE* destination = buffers[1];
+    for (int i = 0; i < 10; ++i) {
+        source[i] = i * 0.1f;
     }
+
+    SampleUtil::copyReverseStereo(destination, source, 10);
+
+    // check if right channel remains at odd index
+    EXPECT_FLOAT_EQ(destination[0], 0.8f);
+    EXPECT_FLOAT_EQ(destination[1], 0.9f);
+    EXPECT_FLOAT_EQ(destination[2], 0.6f);
+    EXPECT_FLOAT_EQ(destination[3], 0.7f);
+    EXPECT_FLOAT_EQ(destination[4], 0.4f);
+    EXPECT_FLOAT_EQ(destination[5], 0.5f);
+    EXPECT_FLOAT_EQ(destination[6], 0.2f);
+    EXPECT_FLOAT_EQ(destination[7], 0.3f);
+    EXPECT_FLOAT_EQ(destination[8], 0.0f);
+    EXPECT_FLOAT_EQ(destination[9], 0.1f);
+}
+
+TEST_F(SampleUtilTest, copyReverseStem) {
+    EXPECT_TRUE(buffers.size() > 1 && sizes[0] > 16 && sizes[1] > 16);
+    CSAMPLE* source = buffers[0];
+    CSAMPLE* destination = buffers[1];
+    for (int i = 0; i < 16; ++i) {
+        source[i] = i * 0.1f;
+    }
+
+    SampleUtil::copyReverseStem(destination, source, 16);
+
+    // check if multi channel remains in the same order
+    EXPECT_FLOAT_EQ(destination[0], 0.8f);
+    EXPECT_FLOAT_EQ(destination[1], 0.9f);
+    EXPECT_FLOAT_EQ(destination[2], 1.0f);
+    EXPECT_FLOAT_EQ(destination[3], 1.1f);
+    EXPECT_FLOAT_EQ(destination[4], 1.2f);
+    EXPECT_FLOAT_EQ(destination[5], 1.3f);
+    EXPECT_FLOAT_EQ(destination[6], 1.4f);
+    EXPECT_FLOAT_EQ(destination[7], 1.5f);
+    EXPECT_FLOAT_EQ(destination[8], 0.0f);
+    EXPECT_FLOAT_EQ(destination[9], 0.1f);
+    EXPECT_FLOAT_EQ(destination[10], 0.2f);
+    EXPECT_FLOAT_EQ(destination[11], 0.3f);
+    EXPECT_FLOAT_EQ(destination[12], 0.4f);
+    EXPECT_FLOAT_EQ(destination[13], 0.5f);
+    EXPECT_FLOAT_EQ(destination[14], 0.6f);
+    EXPECT_FLOAT_EQ(destination[15], 0.7f);
 }
 
 static void BM_MemCpy(benchmark::State& state) {

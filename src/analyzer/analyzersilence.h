@@ -46,7 +46,8 @@ class AnalyzerSilence : public Analyzer {
     /// last analysis run and is an indicator for file edits or decoder
     /// changes/issues
     static bool verifyFirstSound(std::span<const CSAMPLE> samples,
-            mixxx::audio::FramePos firstSoundFrame);
+            mixxx::audio::FramePos firstSoundFrame,
+            mixxx::audio::ChannelCount channelCount);
 
   private:
     UserSettingsPointer m_pConfig;

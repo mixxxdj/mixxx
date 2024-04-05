@@ -118,7 +118,7 @@ class EngineFilterMoogLadderBase : public EngineObjectConstIn {
             CSAMPLE* M_RESTRICT pOutput,
             const int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
-        SampleUtil::linearCrossfadeBuffersOut(
+        SampleUtil::linearCrossfadeStereoBuffersOut(
                 pOutput, // fade out filtered
                 pIn,     // fade in dry
                 iBufferSize);

@@ -69,7 +69,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
             int iBufferSize) {
         process(pIn, pOutput, iBufferSize);
         if (m_startFromDry) {
-            SampleUtil::linearCrossfadeBuffersOut(
+            SampleUtil::linearCrossfadeStereoBuffersOut(
                     pOutput, // fade out filtered
                     pIn,     // fade in dry
                     iBufferSize);

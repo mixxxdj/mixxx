@@ -23,7 +23,7 @@ using ::testing::Return;
 
 namespace {
 const int kDefaultTransitionTime = 10;
-const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount kChannelCount = mixxx::kEngineChannelOutputCount;
 const QString kTrackLocationTest = QStringLiteral("id3-test-data/cover-test-png.mp3");
 const QString kAppGroup = QStringLiteral("[App]");
 } // namespace

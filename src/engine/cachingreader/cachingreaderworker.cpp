@@ -25,11 +25,13 @@ constexpr SINT kNumSoundFrameToVerify = 2;
 CachingReaderWorker::CachingReaderWorker(
         const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
-        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
+        FIFO<ReaderStatusUpdate>* pReaderStatusFIFO,
+        mixxx::audio::ChannelCount maxSupportedChannel)
         : m_group(group),
           m_tag(QString("CachingReaderWorker %1").arg(m_group)),
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
-          m_pReaderStatusFIFO(pReaderStatusFIFO) {
+          m_pReaderStatusFIFO(pReaderStatusFIFO),
+          m_maxSupportedChannel(maxSupportedChannel) {
 }
 
 ReaderStatusUpdate CachingReaderWorker::processReadRequest(
@@ -82,7 +84,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // to further checks whether a automatic offset adjustment is possible or a the
     // sample position metadata shall be treated as outdated.
     // Failures of the sanity check only result in an entry into the log at the moment.
-    verifyFirstSound(pChunk);
+    verifyFirstSound(pChunk, m_pAudioSource->getSignalInfo().getChannelCount());
 
     ReaderStatusUpdate result;
     result.init(status, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -187,13 +189,26 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     }
 
     mixxx::AudioSource::OpenParams config;
-    config.setChannelCount(CachingReaderChunk::kChannels);
+    config.setChannelCount(m_maxSupportedChannel);
     m_pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!m_pAudioSource) {
         kLogger.warning()
                 << m_group
                 << "Failed to open file"
                 << pTrack->getFileInfo();
+        const auto update = ReaderStatusUpdate::trackUnloaded();
+        m_pReaderStatusFIFO->writeBlocking(&update, 1);
+        emit trackLoadFailed(pTrack,
+                tr("The file '%1' could not be loaded.")
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
+        return;
+    }
+
+    // It is critical that the audio source doesn't contain more channels than
+    // requested as this could lead to overflow when reading chunks
+    VERIFY_OR_DEBUG_ASSERT(m_pAudioSource->getSignalInfo().getChannelCount() <=
+            m_maxSupportedChannel) {
+        m_pAudioSource.reset(); // Close open file handles
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
@@ -233,9 +248,16 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 
     // Emit that the track is loaded.
+    mixxx::audio::ChannelCount chCount = m_pAudioSource->getSignalInfo().getChannelCount();
+    if (chCount % 2 != 0) {
+        // The engine only support a multiple of stereo channel. If there in an
+        // uneven number of channel, we default to stereo as the frame will be
+        // read through the AudioSourceStereoProxy otherwise
+        chCount = mixxx::audio::ChannelCount::stereo();
+    }
     const double sampleCount =
-            CachingReaderChunk::dFrames2samples(
-                    m_pAudioSource->frameLength());
+            CachingReaderChunk::dFrames2samples(m_pAudioSource->frameLength(),
+                    chCount);
 
     // This code is a workaround until we have found a better solution to
     // verify and correct offsets.
@@ -252,6 +274,7 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     emit trackLoaded(
             pTrack,
             m_pAudioSource->getSignalInfo().getSampleRate(),
+            m_pAudioSource->getSignalInfo().getChannelCount(),
             sampleCount);
 }
 
@@ -261,7 +284,8 @@ void CachingReaderWorker::quitWait() {
     wait();
 }
 
-void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
+void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk,
+        mixxx::audio::ChannelCount channelCount) {
     if (!m_firstSoundFrameToVerify.isValid()) {
         return;
     }
@@ -271,12 +295,14 @@ void CachingReaderWorker::verifyFirstSound(const CachingReaderChunk* pChunk) {
                     m_firstSoundFrameToVerify.toLowerFrameBoundary()
                             .value()));
     if (pChunk->getIndex() == firstSoundIndex) {
-        CSAMPLE sampleBuffer[kNumSoundFrameToVerify * mixxx::kEngineChannelCount];
+        mixxx::SampleBuffer sampleBuffer(kNumSoundFrameToVerify * channelCount);
         SINT end = static_cast<SINT>(m_firstSoundFrameToVerify.toLowerFrameBoundary().value());
-        pChunk->readBufferedSampleFrames(sampleBuffer,
+        pChunk->readBufferedSampleFrames(sampleBuffer.data(),
+                channelCount,
                 mixxx::IndexRange::forward(end - 1, kNumSoundFrameToVerify));
-        if (AnalyzerSilence::verifyFirstSound(std::span<const CSAMPLE>(sampleBuffer),
-                    mixxx::audio::FramePos(1))) {
+        if (AnalyzerSilence::verifyFirstSound(sampleBuffer.span(),
+                    mixxx::audio::FramePos(1),
+                    channelCount)) {
             qDebug() << "First sound found at the previously stored position";
         } else {
             // This can happen in case of track edits or replacements, changed
