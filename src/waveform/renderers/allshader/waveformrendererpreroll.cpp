@@ -11,8 +11,7 @@
 #include "widget/wskincolor.h"
 
 namespace {
-void generateTexture(OpenGLTexture2D* pTexture,
-        float markerLength,
+QImage drawPrerollImage(float markerLength,
         float markerBreadth,
         float devicePixelRatio,
         QColor color) {
@@ -54,7 +53,7 @@ void generateTexture(OpenGLTexture2D* pTexture,
     painter.drawPath(path);
     painter.end();
 
-    pTexture->setData(image);
+    return image;
 }
 } // anonymous namespace
 
@@ -120,11 +119,10 @@ void WaveformRendererPreroll::paintGL() {
         // has changed size last time.
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
-        generateTexture(&m_texture,
-                m_markerLength,
+        m_texture.setData(drawPrerollImage(m_markerLength,
                 m_markerBreadth,
                 m_waveformRenderer->getDevicePixelRatio(),
-                m_color);
+                m_color));
     }
 
     if (!m_texture.isStorageAllocated()) {

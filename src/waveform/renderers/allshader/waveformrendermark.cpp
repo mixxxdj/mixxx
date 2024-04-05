@@ -20,8 +20,9 @@
 
 class TextureGraphics : public WaveformMark::Graphics {
   public:
-    TextureGraphics() = default;
-
+    TextureGraphics(const QImage& image) {
+        m_texture.setData(image);
+    }
     QOpenGLTexture* texture() {
         return &m_texture;
     }
@@ -321,8 +322,6 @@ void allshader::WaveformRenderMark::resizeGL(int, int) {
 }
 
 void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
-    auto pTextureGraphics = std::make_unique<TextureGraphics>();
-    pTextureGraphics->texture()->setData(
+    pMark->m_pGraphics = std::make_unique<TextureGraphics>(
             pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
-    pMark->m_pGraphics = std::move(pTextureGraphics);
 }
