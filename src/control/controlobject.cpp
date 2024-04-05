@@ -89,8 +89,8 @@ double ControlObject::getNormalizedValueForValue(double value) const {
     return m_pControl->getNormalizedValueForValue(value);
 }
 
-double ControlObject::getNormalizedValueForMidi7Bit(double midiParameter) const {
-    return m_pControl->getNormalizedValueForMidi7Bit(midiParameter);
+double ControlObject::getNormalizedValueForMidi7Bit(double midi7BitValue) const {
+    return m_pControl->getNormalizedValueForMidi7Bit(midi7BitValue);
 }
 
 void ControlObject::setNormalizedValue(double v) {

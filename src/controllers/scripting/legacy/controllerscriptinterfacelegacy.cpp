@@ -177,8 +177,8 @@ double ControllerScriptInterfaceLegacy::getNormalizedValue(
 }
 
 void ControllerScriptInterfaceLegacy::setNormalizedValue(
-        const QString& group, const QString& name, double newParameter) {
-    if (util_isnan(newParameter)) {
+        const QString& group, const QString& name, double normalizedValue) {
+    if (util_isnan(normalizedValue)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
                 "Script tried setting (%1, %2) to NotANumber (NaN)")
                                                        .arg(group, name));
@@ -190,8 +190,8 @@ void ControllerScriptInterfaceLegacy::setNormalizedValue(
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
                 coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
-        if (pControl && !m_st.ignore(pControl, newParameter)) {
-            coScript->setNormalizedValue(newParameter);
+        if (pControl && !m_st.ignore(pControl, normalizedValue)) {
+            coScript->setNormalizedValue(normalizedValue);
         }
     }
 }

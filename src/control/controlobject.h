@@ -139,7 +139,7 @@ class ControlObject : public QObject {
     virtual double getNormalizedValueForValue(double value) const;
 
     // Returns the normalized value of the object. Thread safe, non-blocking.
-    virtual double getNormalizedValueForMidi7Bit(double midiValue) const;
+    virtual double getNormalizedValueForMidi7Bit(double midi7BitValue) const;
 
     // Sets the control normalized value to v. Thread safe, non-blocking.
     virtual void setNormalizedValue(double v);

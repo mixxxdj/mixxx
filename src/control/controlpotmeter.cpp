@@ -141,33 +141,33 @@ void PotmeterControls::addAlias(const ConfigKey& key) {
 
 void PotmeterControls::incValue(double v) {
     if (v > 0) {
-        double parameter = m_control.getNormalizedValue();
-        parameter += 1.0 / m_stepCount;
-        m_control.setNormalizedValue(parameter);
+        double normalizedValue = m_control.getNormalizedValue();
+        normalizedValue += 1.0 / m_stepCount;
+        m_control.setNormalizedValue(normalizedValue);
     }
 }
 
 void PotmeterControls::decValue(double v) {
     if (v > 0) {
-        double parameter = m_control.getNormalizedValue();
-        parameter -= 1.0 / m_stepCount;
-        m_control.setNormalizedValue(parameter);
+        double normalizedValue = m_control.getNormalizedValue();
+        normalizedValue -= 1.0 / m_stepCount;
+        m_control.setNormalizedValue(normalizedValue);
     }
 }
 
 void PotmeterControls::incSmallValue(double v) {
     if (v > 0) {
-        double parameter = m_control.getNormalizedValue();
-        parameter += 1.0 / m_smallStepCount;
-        m_control.setNormalizedValue(parameter);
+        double normalizedValue = m_control.getNormalizedValue();
+        normalizedValue += 1.0 / m_smallStepCount;
+        m_control.setNormalizedValue(normalizedValue);
     }
 }
 
 void PotmeterControls::decSmallValue(double v) {
     if (v > 0) {
-        double parameter = m_control.getNormalizedValue();
-        parameter -= 1.0 / m_smallStepCount;
-        m_control.setNormalizedValue(parameter);
+        double normalizedValue = m_control.getNormalizedValue();
+        normalizedValue -= 1.0 / m_smallStepCount;
+        m_control.setNormalizedValue(normalizedValue);
     }
 }
 

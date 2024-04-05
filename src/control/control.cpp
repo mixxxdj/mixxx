@@ -330,24 +330,24 @@ double ControlDoublePrivate::getNormalizedValueForValue(double value) const {
     return value;
 }
 
-double ControlDoublePrivate::getNormalizedValueForMidi7Bit(double midiParam) const {
+double ControlDoublePrivate::getNormalizedValueForMidi7Bit(double dMidi7BitValue) const {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot get" << m_key << "for Midi";
         DEBUG_ASSERT(!"pBehavior == nullptr, getNormalizedValueForMidi7Bit is returning 0");
         return 0;
     }
-    return pBehavior->midi7BitToNormalizedValue(midiParam);
+    return pBehavior->midi7BitToNormalizedValue(dMidi7BitValue);
 }
 
-void ControlDoublePrivate::setValueFromMidi7Bit(MidiOpCode opcode, double midiParam) {
+void ControlDoublePrivate::setValueFromMidi7Bit(MidiOpCode opcode, double dMidi7BitValue) {
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior) {
         qWarning() << "Cannot set" << m_key << "from Midi";
         DEBUG_ASSERT(!"pBehavior == nullptr, abort setValueFromMidi7Bit()");
         return;
     }
-    pBehavior->setValueFromMidi7Bit(opcode, midiParam, this);
+    pBehavior->setValueFromMidi7Bit(opcode, dMidi7BitValue, this);
 }
 
 double ControlDoublePrivate::getValueScaledAsMidi7Bit() const {

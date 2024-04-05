@@ -111,9 +111,9 @@ class ControlDoublePrivate : public QObject {
     void setNormalizedValue(double dParam, QObject* pSender);
     double getNormalizedValue() const;
     double getNormalizedValueForValue(double value) const;
-    double getNormalizedValueForMidi7Bit(double midiValue) const;
+    double getNormalizedValueForMidi7Bit(double dMidi7BitValue) const;
 
-    void setValueFromMidi7Bit(MidiOpCode opcode, double dParam);
+    void setValueFromMidi7Bit(MidiOpCode opcode, double dMidi7BitValue);
     double getValueScaledAsMidi7Bit() const;
 
     bool ignoreNops() const {

@@ -19,23 +19,23 @@ class ControlNumericBehavior {
     // returns the normalized value range 0..1
     virtual double valueToNormalizedValue(double dValue);
     // returns the normalized value range 0..1
-    virtual double midi7BitToNormalizedValue(double midiValue);
+    virtual double midi7BitToNormalizedValue(double dMidi7BitValue);
     // returns the scaled user visible value
-    virtual double normalizedValueToValue(double dParam);
+    virtual double normalizedValueToValue(double dNormalizedValue);
     // returns the midi range value 0..127
     virtual double valueToMidi7Bit(double dValue);
 
     virtual void setValueFromMidi7Bit(
-            MidiOpCode o, double dParam, ControlDoublePrivate* pControl);
+            MidiOpCode o, double dNormalizedValue, ControlDoublePrivate* pControl);
 };
 
-// ControlEncoderBehavior passes the midi value directly to the internal parameter value. It's
+// ControlEncoderBehavior passes the midi value directly to the internal normalized value. It's
 // useful for selector knobs that pass +1 in one direction and -1 in the other.
 class ControlEncoderBehavior : public ControlNumericBehavior {
   public:
     ControlEncoderBehavior() {}
-    double midi7BitToNormalizedValue(double midiValue) override;
-    double valueToMidi7Bit(double dValue) override;
+    double midi7BitToNormalizedValue(double dMidi7BitValue) override;
+    double valueToMidi7Bit(double dNormalizedValue) override;
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
@@ -45,8 +45,8 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
 
     bool setFilter(double* dValue) override;
     double valueToNormalizedValue(double dValue) override;
-    double midi7BitToNormalizedValue(double midiValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double midi7BitToNormalizedValue(double dMidi7BitValue) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
     double valueToMidi7Bit(double dValue) override;
 
   protected:
@@ -61,7 +61,7 @@ class ControlLogPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLogPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
 
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
 
   protected:
     double m_minDB;
@@ -73,7 +73,7 @@ class ControlLogInvPotmeterBehavior : public ControlLogPotmeterBehavior {
     ControlLogInvPotmeterBehavior(double dMinValue, double dMaxValue, double minDB);
 
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
 };
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
@@ -87,31 +87,30 @@ class ControlLinInvPotmeterBehavior : public ControlPotmeterBehavior {
     ControlLinInvPotmeterBehavior(
             double dMinValue, double dMaxValue, bool allowOutOfBounds);
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
 };
 
 class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
   public:
-    ControlAudioTaperPotBehavior(double minDB, double maxDB,
-                                 double neutralParameter);
+    ControlAudioTaperPotBehavior(double minDB, double maxDB, double neutralNormalizedValue);
 
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
-    double midi7BitToNormalizedValue(double midiValue) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
+    double midi7BitToNormalizedValue(double dMidi7BitValue) override;
     double valueToMidi7Bit(double dValue) override;
     void setValueFromMidi7Bit(
-            MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
+            MidiOpCode o, double dNormalizedValue, ControlDoublePrivate* pControl)
             override;
 
   protected:
     // a knob position between 0 and 1 where the gain is 1 (0dB)
-    double m_neutralParameter;
+    double m_neutralNormalizedValue;
     // the Start value of the pure db scale it cranked to -Infinity by the
     // linear part of the AudioTaperPot
     double m_minDB;
     // maxDB is the upper gain Value
     double m_maxDB;
-    // offset at knob position 0 (Parameter = 0) to reach -Infinity
+    // offset at knob position 0 (normalized value = 0) to reach -Infinity
     double m_offset;
     // ensures that the neutral position on a integer midi value
     // This value is subtracted from the Midi value at neutral position
@@ -122,7 +121,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
 };
 
 class ControlPushButtonBehavior : public ControlNumericBehavior {
@@ -142,7 +141,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
     void setValueFromMidi7Bit(
-            MidiOpCode o, double dParam, ControlDoublePrivate* pControl)
+            MidiOpCode o, double dNormalizedValue, ControlDoublePrivate* pControl)
             override;
 
   private:
@@ -165,10 +164,10 @@ class ControlLinSteppedIntPotBehavior : public ControlPotmeterBehavior {
             double dMinValue, double dMaxValue, bool allowOutOfBounds);
 
     double valueToNormalizedValue(double dValue) override;
-    double normalizedValueToValue(double dParam) override;
+    double normalizedValueToValue(double dNormalizedValue) override;
 
   protected:
-    double m_lastSnappedParam;
+    double m_lastSnappedNormalizedValue;
     double m_dist;
     double m_oldVal;
 };

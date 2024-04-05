@@ -46,14 +46,14 @@ void SoftTakeoverCtrl::disable(ControlObject* control) {
     }
 }
 
-bool SoftTakeoverCtrl::ignore(ControlObject* control, double newParameter) {
+bool SoftTakeoverCtrl::ignore(ControlObject* control, double normalizedValue) {
     if (control == nullptr) {
         return false;
     }
     bool ignore = false;
     SoftTakeover* pSt = m_softTakeoverHash.value(control);
     if (pSt) {
-        ignore = pSt->ignore(control, newParameter);
+        ignore = pSt->ignore(control, normalizedValue);
     }
     return ignore;
 }
@@ -72,15 +72,15 @@ void SoftTakeoverCtrl::ignoreNext(ControlObject* control) {
 }
 
 SoftTakeover::SoftTakeover()
-    : m_prevParameter(0),
-      m_dThreshold(kDefaultTakeoverThreshold) {
+        : m_prevNormalizedValue(0),
+          m_dThreshold(kDefaultTakeoverThreshold) {
 }
 
 void SoftTakeover::setThreshold(double threshold) {
     m_dThreshold = threshold;
 }
 
-bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
+bool SoftTakeover::ignore(ControlObject* control, double newNormalizedValue) {
     bool ignore = false;
     /*
      * We only want to ignore the controller when:
@@ -115,21 +115,24 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         // Change the stored time (but keep it far away from the current time)
         //  so this block doesn't run again.
         m_time = mixxx::Duration::fromMillis(1);
-//         qDebug() << "SoftTakeover::ignore: ignoring the first value"
-//                  << newParameter;
+        //         qDebug() << "SoftTakeover::ignore: ignoring the first value"
+        //                  << newNormalizedValue;
     } else if (currentTime - m_time > kSubsequentValueOverrideTime) {
         // don't ignore value if a previous one was not ignored in time
-        const double currentParameter = control->getNormalizedValue();
-        const double difference = currentParameter - newParameter;
-        const double prevDiff = currentParameter - m_prevParameter;
+        const double currentNormalizedValue = control->getNormalizedValue();
+        const double difference = currentNormalizedValue - newNormalizedValue;
+        const double prevDiff = currentNormalizedValue - m_prevNormalizedValue;
         if ((prevDiff < 0 && difference < 0) ||
                 (prevDiff > 0 && difference > 0)) {
-            // On same side of the current parameter value
+            // On same side of the current normalized value
             if (fabs(difference) > m_dThreshold && fabs(prevDiff) > m_dThreshold) {
                 // differences are above threshold
                 ignore = true;
-//                 qDebug() << "SoftTakeover::ignore: ignoring, not near"
-//                          << newParameter << m_prevParameter << currentParameter;
+                //                 qDebug() << "SoftTakeover::ignore: ignoring,
+                //                 not near"
+                //                          << newNormalizedValue <<
+                //                          m_prevNormalizedValue <<
+                //                          currentNormalizedValue;
             }
         }
     }
@@ -139,7 +142,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
         m_time = currentTime;
     }
     // Update the previous value every time
-    m_prevParameter = newParameter;
+    m_prevNormalizedValue = newNormalizedValue;
 
     return ignore;
 }
