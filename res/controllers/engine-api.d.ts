@@ -58,7 +58,7 @@ declare namespace engine {
      * Gets the control value normalized to a range of 0..1
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @returns Value of the control normalized to range of 0..1
      */
     function getNormalizedValue(group: string, name: string): number;
@@ -66,7 +66,7 @@ declare namespace engine {
     /**
      * Gets the control value normalized to a range of 0..1
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @returns Value of the control normalized to range of 0..1
      * @deprecated Use {@link getNormalizedValue} instead
      */
@@ -76,7 +76,7 @@ declare namespace engine {
      * Sets the control value specified with normalized range of 0..1
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g.  "rate" or "pregain"
      * @param newValue Value to be set, normalized to a range of 0..1
      */
     function setNormalizedValue(group: string, name: string, newValue: number): void;
@@ -84,7 +84,7 @@ declare namespace engine {
     /**
      * Sets the control value specified with normalized range of 0..1
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @param newValue Value to be set, normalized to a range of 0..1
      * @deprecated Use {@link setNormalizedValue} instead
      */
@@ -95,7 +95,7 @@ declare namespace engine {
      * to the range of 0..1
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @param value Value with the controls range according Mixxx Controls manual page:
      *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      * @returns Value normalized to range of 0..1
@@ -106,7 +106,7 @@ declare namespace engine {
      * Normalizes a specified value using the range of the given control,
      * to the range of 0..1
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @param value Value with the controls range according Mixxx Controls manual page:
      *              https://manual.mixxx.org/latest/chapters/appendix/mixxx_controls.html
      * @returns Value normalized to range of 0..1
@@ -136,7 +136,7 @@ declare namespace engine {
      * Returns the default value of a control, normalized to a range of 0..1
      *
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g. "rate" or "pregain"
      * @returns Default value of the specified control normalized to range of 0..1
      */
     function getNormalizedDefaultValue(group: string, name: string): number;
@@ -144,7 +144,7 @@ declare namespace engine {
     /**
      * Returns the default value of a control, normalized to a range of 0..1
      * @param group Group of the control e.g. "[Channel1]"
-     * @param name Name of the control e.g. "play_indicator"
+     * @param name Name of the control e.g.  "rate" or "pregain"
      * @returns Default value of the specified control normalized to range of 0..1
      * @deprecated Use {@link getNormalizedDefaultValue} instead
      */
