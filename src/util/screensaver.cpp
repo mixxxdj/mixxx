@@ -5,6 +5,7 @@ Windows: https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.
 Freedesktop: https://people.freedesktop.org/~hadess/idle-inhibition-spec/re01.html
 XScreenSaver: https://linux.die.net/man/3/xscreensaversuspend
 GTK: https://developer.gnome.org/gtk3/stable/GtkApplication.html#gtk-application-inhibit
+Portal: https://docs.flatpak.org/en/latest/portal-api-reference.html#gdbus-org.freedesktop.portal.Inhibit
 
 With the help of the following source codes:
 
@@ -12,6 +13,7 @@ https://github.com/videolan/vlc/blob/fbaa27ae2d7fcf5ccee7f0ca424ec0cc5bf01f4c/mo
 https://github.com/videolan/vlc/blob/fbaa27ae2d7fcf5ccee7f0ca424ec0cc5bf01f4c/modules/video_output/win32/events.c#L168
 https://github.com/GNOME/totem/blob/0c18deceed780e5ca13ba2b97446d81d70cfbec6/src/plugins/screensaver/totem-screensaver.c#L76
 https://github.com/awjackson/bsnes-classic/blob/038e2e051ffc8abe7c56a3bf27e3016c433ee563/bsnes/ui-qt/platform/platform_x.cpp
+https://github.com/libsdl-org/SDL/blob/70b0d33106e98176bf44de5d301855d49587fa50/src/core/linux/SDL_dbus.c#L428
 
 **/
 
@@ -145,29 +147,48 @@ void ScreenSaverHelper::uninhibitInternal()
 }
 
 #elif defined(Q_OS_LINUX)
-const char *SCREENSAVERS[][4] = {
-    // org.freedesktop.ScreenSaver is the standard. should work for gnome and kde too, 
-    // but I add their specific names too
-    {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit"},
-    {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "Inhibit"},
-    {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "Inhibit"},
-    {nullptr, nullptr, nullptr, nullptr}
+// Common inhibitor structure
+struct Inhibitor {
+    QString service;
+    QString object_path;
+    QString interface;
 };
-// Disabling the method with DBus since it seems to be failing on several systems.
-#if 0
-const char *USERACTIVITY[][4] = {
-    // "SimulateUserActivity" is not widely supported, but we can try that first.
-    {"org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "SimulateUserActivity" },
-    {"org.cinnamon.ScreenSaver", "/ScreenSaver", "org.cinnamon.ScreenSaver", "SimulateUserActivity"},
-    {"org.gnome.ScreenSaver", "/org/gnome/ScreenSaver", "org.gnome.ScreenSaver", "SimulateUserActivity"},
-    {"org.kde.screensaver", "/ScreenSaver", "org.kde.screensaver", "SimulateUserActivity"},
-    {nullptr, nullptr, nullptr, nullptr}
-};
-#endif // 0
 
-uint32_t ScreenSaverHelper::s_cookie = 0;
-int ScreenSaverHelper::s_saverindex = -1;
-bool ScreenSaverHelper::s_sendActivity = true;
+// Portal idle ihibitor
+const Inhibitor kFreeDesktopPortal = {
+        .service = QStringLiteral("org.freedesktop.portal.Desktop"),
+        .object_path = QStringLiteral("/org/freedesktop/portal/desktop"),
+        .interface = QStringLiteral("org.freedesktop.portal.Inhibit")};
+
+// Standard D-Bus idle inhibitors
+const QVector<Inhibitor> kDBusInhibitors = {
+        {.service = QStringLiteral("org.freedesktop.ScreenSaver"),
+                .object_path = QStringLiteral("/org/freedesktop/ScreenSaver"),
+                .interface = QStringLiteral("org.freedesktop.ScreenSaver")},
+        {.service = QStringLiteral("org.gnome.ScreenSaver"),
+                .object_path = QStringLiteral("/org/gnome/ScreenSaver"),
+                .interface = QStringLiteral("org.gnome.ScreenSaver")},
+        {.service = QStringLiteral("org.kde.ScreenSaver"),
+                .object_path = QStringLiteral("/org/kde/ScreenSaver"),
+                .interface = QStringLiteral("org.kde.ScreenSaver")},
+        {.service = QStringLiteral("org.cinnamon.ScreenSaver"),
+                .object_path = QStringLiteral("/org/cinnamon/ScreenSaver"),
+                .interface = QStringLiteral("org.cinnamon.ScreenSaver")},
+        {.service = QStringLiteral("org.mate.ScreenSaver"),
+                .object_path = QStringLiteral("/org/mate/ScreenSaver"),
+                .interface = QStringLiteral("org.mate.ScreenSaver")},
+        {.service = QStringLiteral("org.xfce.screenSaver"),
+                .object_path = QStringLiteral("/org/xfce/ScreenSaver"),
+                .interface = QStringLiteral("org.xfce.ScreenSaver")}};
+
+// Pointer to selected idle inhibitor
+const Inhibitor* inhibitor = nullptr;
+
+// Inhibit portal handle
+QString ScreenSaverHelper::session_handle = "";
+
+// Standard inhibit cookie
+uint32_t ScreenSaverHelper::inhibit_cookie = 0;
 
 void ScreenSaverHelper::triggerUserActivity()
 {
@@ -183,100 +204,121 @@ void ScreenSaverHelper::triggerUserActivity()
     }
     return;
 }
-// Disabling the method with DBus since it seems to be failing on several systems.
-#if 0
-void ScreenSaverHelper::triggerUserActivity()
-{
-    if (!s_sendActivity) {
-        // If the D-Bus method didn't work, let's try the Xlib method.
-        const char* name = ":0.0";
-        Display *display;
-        if (getenv("DISPLAY"))
-            name=getenv("DISPLAY");
-        display=XOpenDisplay(name);
-        XResetScreenSaver(display);
-        XCloseDisplay(display);
-        return;
-    }
-    
-    s_sendActivity = false;
-    if (!QDBusConnection::sessionBus().isConnected()) {
-        qWarning("Cannot connect to the D-Bus session bus.\nTo start it, run:\n"
-                "\teval `dbus-launch --auto-syntax`");
-        return;
-    }
-    s_sendActivity = false;
-    QString errors;
-    for (int i=0; USERACTIVITY[i][0] != nullptr; i++ ) {
-        QDBusInterface iface(USERACTIVITY[i][0], USERACTIVITY[i][1], USERACTIVITY[i][2], 
-            QDBusConnection::sessionBus());
-        if (iface.isValid()) {
-            QDBusReply<void> reply = iface.call(USERACTIVITY[i][3]);
-            if (reply.isValid()) {
-                s_sendActivity = true;
-                break;
-            } else {
-                errors = errors +  "\nCall to inhibit for " + USERACTIVITY[i][0] + " failed: " 
-                    + reply.error().message();
-            }
-        } 
-    }
-    if (!s_sendActivity) {
-        qWarning() << "Could not send activity using the registered DBus methods. " 
-        << "Errors were: " << errors << 
-        "\nWill try to use the Xlib XResetScreensaver instead.";
-    }
-}
-#endif // 0
 
 void ScreenSaverHelper::inhibitInternal()
 {
     if (!QDBusConnection::sessionBus().isConnected()) {
-        qWarning("Cannot connect to the D-Bus session bus.\nTo start it, run:\n"
-                "\teval `dbus-launch --auto-syntax`");
+        qWarning() << "Cannot connect to the D-Bus session bus";
         return;
     }
-    if (s_cookie > 0) {
+
+    // Call uninhibit if the handle / cookie has not been reset
+    if (!session_handle.isEmpty() || inhibit_cookie > 0) {
         uninhibit();
     }
-    s_cookie = 0;
-    for (int i=0; SCREENSAVERS[i][0] != nullptr; i++ ) {
-        QDBusInterface iface(SCREENSAVERS[i][0], SCREENSAVERS[i][1], SCREENSAVERS[i][2], 
+
+    // Check if the inhibit portal interface is available
+    QDBusInterface iface(kFreeDesktopPortal.service,
+            kFreeDesktopPortal.object_path,
+            kFreeDesktopPortal.interface,
             QDBusConnection::sessionBus());
+    if (iface.isValid()) {
+        // Portal API: 8 = idle inhibit
+        QDBusReply<QDBusObjectPath> reply = iface.call("Inhibit",
+                "org.mixxx.Mixxx",
+                static_cast<uint32_t>(8),
+                QVariantMap{{"reason", "Mixxx is running"}});
+        if (reply.isValid()) {
+            inhibitor = &kFreeDesktopPortal;
+            session_handle = reply.value().path();
+            s_enabled = true;
+            qDebug() << "Idle inhibitor" << kFreeDesktopPortal.interface << "enabled";
+            return;
+        } else {
+            qWarning() << "Inhibit for" << kFreeDesktopPortal.interface << "failed: "
+                       << reply.error().message();
+        }
+    } else {
+        qDebug() << "Interface" << kFreeDesktopPortal.interface << "is not valid";
+    }
+
+    for (int i = 0; i < kDBusInhibitors.size(); ++i) {
+        // Portal unavailable, try to use standard D-Bus idle inhibit interfaces
+        QDBusInterface iface(kDBusInhibitors[i].service,
+                kDBusInhibitors[i].object_path,
+                kDBusInhibitors[i].interface,
+                QDBusConnection::sessionBus());
         if (iface.isValid()) {
-            QDBusReply<uint32_t> reply = iface.call(SCREENSAVERS[i][3], "org.mixxxdj","Mixxx active");
+            QDBusReply<uint32_t> reply = iface.call("Inhibit",
+                    "org.mixxx.Mixxx",
+                    "Mixxx is running");
             if (reply.isValid()) {
-                s_cookie = reply.value();
-                s_saverindex = i;
+                inhibitor = &kDBusInhibitors[i];
+                inhibit_cookie = reply.value();
                 s_enabled = true;
-                qDebug() << "DBus screensaver " << SCREENSAVERS[i][0] <<" inhibited";
-                break;
+                qDebug() << "Idle inhibitor" << kDBusInhibitors[i].interface << "enabled";
+                return;
             } else {
-                qWarning() << "Call to inhibit for " << SCREENSAVERS[i][0] << " failed: " 
-                    << reply.error().message();
+                qWarning() << "Inhibit for"
+                           << kDBusInhibitors[i].interface << "failed: "
+                           << reply.error().message();
             }
         } else {
-            qDebug() << "DBus interface " << SCREENSAVERS[i][0] << " not valid";
+            qDebug() << "Interface" << kDBusInhibitors[i].interface << "is not valid";
         }
     }
+
+    if (!inhibitor) {
+        qDebug() << "No supported idle inhibitation services found";
+    }
 }
+
 void ScreenSaverHelper::uninhibitInternal()
 {
-    if (s_cookie > 0) {
-        s_enabled = false;
-        QDBusInterface iface(SCREENSAVERS[s_saverindex][0], SCREENSAVERS[s_saverindex][1], 
-            SCREENSAVERS[s_saverindex][2],  QDBusConnection::sessionBus());
+    if (!inhibitor) {
+        qDebug() << "Cannot uninhibit without a selected interface";
+        return;
+    }
+
+    if (inhibitor->service == "org.freedesktop.portal.Desktop" && !session_handle.isEmpty()) {
+        // Ihibit portal uses the common request interface for uninhibit
+        QDBusInterface iface(inhibitor->service,
+                session_handle,
+                "org.freedesktop.portal.Request",
+                QDBusConnection::sessionBus());
         if (iface.isValid()) {
-            QDBusReply<void> reply = iface.call("UnInhibit", s_cookie);
+            QDBusReply<void> reply = iface.call("Close");
             if (reply.isValid()) {
-                s_cookie = 0;
-                qDebug() << "DBus screensaver " << SCREENSAVERS[s_saverindex][0] << " uninhibited";
+                session_handle = "";
+                s_enabled = false;
+                qDebug() << "Idle inhibitor" << inhibitor->interface << "disabled";
             } else {
-                qWarning() << "Call to uninhibit for " << SCREENSAVERS[s_saverindex][0] << " failed: " 
-                    << reply.error().message();
+                qWarning() << "Call to uninhibit for"
+                           << inhibitor->interface << "failed:"
+                           << reply.error().message();
             }
         } else {
-            qDebug() << "DBus interface " << SCREENSAVERS[s_saverindex][0] << " not valid";
+            qDebug() << "Interface" << inhibitor->interface << "is not valid";
+        }
+    } else if (inhibit_cookie > 0) {
+        // Standard D-Bus idle uninhibit
+        QDBusInterface iface(inhibitor->service,
+                inhibitor->object_path,
+                inhibitor->interface,
+                QDBusConnection::sessionBus());
+        if (iface.isValid()) {
+            QDBusReply<void> reply = iface.call("UnInhibit", inhibit_cookie);
+            if (reply.isValid()) {
+                inhibit_cookie = 0;
+                s_enabled = false;
+                qDebug() << "Idle inhibitor" << inhibitor->interface << "disabled";
+            } else {
+                qWarning() << "Call to uninhibit for"
+                           << inhibitor->interface << "failed:"
+                           << reply.error().message();
+            }
+        } else {
+            qDebug() << "Interface" << inhibitor->interface << "is not valid";
         }
     }
 }
