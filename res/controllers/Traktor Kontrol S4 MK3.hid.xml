@@ -102,9 +102,9 @@
                 variable="gridButtonBlinkOverBeat"
                 type="boolean"
                 default="false"
-                label="Make the &lt;tt style='background-color: #111111; color: #d9d9d9;padding: 2px;'&gt;GRID&lt;/tt&gt; button blink over the beat">
+                label="Make the :hwbtn:`GRID` button blink over the beat">
                 <description>
-                    This will make the &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;GRID&lt;/tt&gt; button blink when the track is going over a detected beat. This can help adjusting the beat grid or BPM.
+                    This will make the :hwbtn:`GRID` button blink when the track is going over a detected beat. This can help adjusting the beat grid or BPM.
                 </description>
             </option>
             <option
@@ -176,9 +176,9 @@
                 variable="useKeylockOnMaster"
                 type="boolean"
                 default="false"
-                label="Keylock on &lt;tt style='background-color: #111111; color: #d9d9d9;padding: 2px;'&gt;SHIFT&lt;/tt&gt;+&lt;tt style='background-color: #111111; color: #d9d9d9;padding: 2px;'&gt;MASTER&lt;/tt&gt; instead of &lt;tt style='background-color: #111111; color: #d9d9d9;padding: 2px;'&gt;SHIFT&lt;/tt&gt;+&lt;tt style='background-color: #111111; color: #d9d9d9;padding: 2px;'&gt;SYNC&lt;/tt&gt;">
+                label="Keylock on :hwbtn:`SHIFT`+:hwbtn:`MASTER` instead of :hwbtn:`SHIFT`+:hwbtn:`SYNC`">
                 <description>
-                    This setting toggles the keylock on push instead of release, as there is a long-press action on &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;SHIFT&lt;/tt&gt;+&lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;SYNC&lt;/tt&gt; (copy key).
+                    This setting toggles the keylock on push instead of release, as there is a long-press action on :hwbtn:`SHIFT`+:hwbtn:`SYNC` (copy key).
                 </description>
             </option>
             <option
@@ -369,7 +369,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>
-                    <description>First column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>First column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
                 <option
                     variable="librarySortableColumns2Value"
@@ -396,7 +396,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>
-                    <description>Second column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>Second column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
                 <option
                     variable="librarySortableColumns3Value"
@@ -423,7 +423,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>
-                    <description>Third column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>Third column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
                 <option
                     variable="librarySortableColumns4Value"
@@ -450,7 +450,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key" default="true">20</value>
-                    <description>Fourth column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>Fourth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
                 <option
                     variable="librarySortableColumns5Value"
@@ -477,7 +477,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>
-                    <description>Fifth column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>Fifth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
                 <option
                     variable="librarySortableColumns6Value"
@@ -504,7 +504,7 @@
                     <value label="Times Played">18</value>
                     <value label="Rating">19</value>
                     <value label="Key">20</value>
-                    <description>Sixth column when iterating over sortable library columns using &lt;tt style="background-color: #111111; color: #d9d9d9;padding: 2px;"&gt;VIEW&lt;/tt&gt;+Library Encoder press</description>
+                    <description>Sixth column when iterating over sortable library columns using :hwbtn:`VIEW`+Library Encoder press</description>
                 </option>
             </row>
         </group>
