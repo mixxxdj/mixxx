@@ -497,6 +497,12 @@ inline QString rangeSqlString(double lower, double upper) {
                     QString::number(upper));
 }
 
+inline QString rangeUpperExclusiveSqlString(double lower, double upper) {
+    return QStringLiteral("bpm >= %1 AND bpm < %2")
+            .arg(QString::number(lower),
+                    QString::number(upper));
+}
+
 inline std::pair<double, double> rangeFromTrailingDecimal(double bpm) {
     // Set up a range if we have decimals. This will include matches
     // for which we show rounded values in the library. For example
@@ -630,20 +636,25 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         m_rangeUpper = ceil((1 + s_relativeRange) * bpm);
         break;
     }
-    case MatchMode::HalveDouble: {                          // 57
-        m_rangeLower = rangeFromTrailingDecimal(bpm).first; // 56.95
-        m_rangeUpper = floor(bpm + 1);                      //       - 58
-        m_bpmHalfLower = floor(bpm / 2);                    // 28
-        m_bpmHalfUpper = ceil(bpm / 2);                     //    - 29
-        m_bpmDoubleLower = bpm * 2 - 1;                     // 113
-        m_bpmDoubleUpper = bpm * 2 + 1;                     //     - 115
+    case MatchMode::HalveDouble: {
+        // For instance bpm = 127
+        // We find everything that is displayed as 127.** in the library
+        m_rangeLower = rangeFromTrailingDecimal(bpm).first; // [126.95
+        m_rangeUpper = floor(bpm + 1);                      // ]128
+        // In case bpm / 2 is a fractional, we include the *.0 value neighbours
+        // since fractional bpm values are less common in some genres.
+        m_bpmHalfLower = floor(bpm / 2); // [63
+        m_bpmHalfUpper = ceil(bpm / 2);  // 64]
+        // We find everything which would be found when editing the beat grid via / 2
+        m_bpmDoubleLower = rangeFromTrailingDecimal(bpm * 2).first; // [253.95
+        m_bpmDoubleUpper = m_rangeUpper * 2;                        // ]256
         break;
     }
     case MatchMode::HalveDoubleStrict: { //            57.0
         std::tie(m_rangeLower, m_rangeUpper) =
                 rangeFromTrailingDecimal(bpm); //      56.95 - 57.05
         std::tie(m_bpmHalfLower, m_bpmHalfUpper) =
-                rangeFromTrailingDecimal(bpm / 2); //  28.75 - 28.85
+                rangeFromTrailingDecimal(bpm / 2); //  28.45 - 28.55
         std::tie(m_bpmDoubleLower, m_bpmDoubleUpper) =
                 rangeFromTrailingDecimal(bpm * 2); // 113.95 - 114.05
         break;
@@ -713,11 +724,9 @@ QString BpmFilterNode::toSql() const {
     }
     case MatchMode::HalveDouble: {
         QStringList searchClauses;
-        searchClauses << QStringLiteral("bpm >= %1 AND bpm < %2")
-                                 .arg(QString::number(m_rangeLower),
-                                         QString::number(m_rangeUpper));
+        searchClauses << rangeUpperExclusiveSqlString(m_rangeLower, m_rangeUpper);
         searchClauses << rangeSqlString(m_bpmHalfLower, m_bpmHalfUpper);
-        searchClauses << rangeSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
+        searchClauses << rangeUpperExclusiveSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
         return concatSqlClauses(searchClauses, "OR");
     }
     case MatchMode::HalveDoubleStrict: {

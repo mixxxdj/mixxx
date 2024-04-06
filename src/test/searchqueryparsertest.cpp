@@ -508,7 +508,7 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
     EXPECT_STREQ(
             qPrintable(QString("(bpm >= 126.95 AND bpm < 128) OR "
                                "(bpm BETWEEN 63 AND 64) OR "
-                               "(bpm BETWEEN 253 AND 255)")),
+                               "(bpm >= 253.95 AND bpm < 256)")),
             qPrintable(pQuery->toSql()));
 
     // HalveDoubleStrict
