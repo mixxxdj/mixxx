@@ -42,7 +42,13 @@ class LegacyControllerMapping {
               m_settingsLayout(other.m_settingsLayout.get() != nullptr
                               ? other.m_settingsLayout->clone()
                               : nullptr),
+#ifdef MIXXX_USE_QML
+              m_scripts(other.m_scripts),
+              m_modules(other.m_modules),
+              m_screens(other.m_screens) {
+#else
               m_scripts(other.m_scripts) {
+#endif
     }
     virtual ~LegacyControllerMapping() = default;
 
@@ -231,12 +237,12 @@ class LegacyControllerMapping {
     /// @param rawData whether or not the screen is allowed to reserve bare data, not transformed
     virtual void addScreenInfo(const QString& identifier,
             const QSize& size,
-            uint targetFps = 30,
-            uint splashoff = 50,
-            QImage::Format pixelFormat = QImage::Format_RGB32,
-            std::endian endian = std::endian::little,
-            bool reversedColor = false,
-            bool rawData = false) {
+            uint targetFps,
+            uint splashoff,
+            QImage::Format pixelFormat,
+            std::endian endian,
+            bool reversedColor,
+            bool rawData) {
         m_screens.append(ScreenInfo(identifier,
                 size,
                 targetFps,

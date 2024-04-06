@@ -84,9 +84,6 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             const LegacyControllerMapping::ScriptFileInfo& qmlScript,
             std::shared_ptr<ControllerRenderingEngine> pScreen);
 
-    static QByteArray kScreenTranformFunctionUntypedSignature;
-    static QByteArray kScreenTranformFunctionTypedSignature;
-
     struct TransformScreenFrameFunction {
         QMetaMethod method;
         bool typed;

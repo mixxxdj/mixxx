@@ -4,6 +4,7 @@
 
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "util/logger.h"
 #include "util/xml.h"
 
 #ifdef __HID__
@@ -23,6 +24,7 @@ QMap<QString, std::endian> LegacyControllerMappingFileHandler::kEndianFormat = {
 };
 #endif
 namespace {
+const mixxx::Logger kLogger("LegacyControllerMappingFileHandler");
 
 #ifdef MIXXX_USE_QML
 
@@ -46,6 +48,14 @@ QFileInfo findLibraryPath(
         dir = QFileInfo(systemMappingsPath.absoluteFilePath(dirname));
     }
     return dir;
+}
+
+/// @brief Parse a string that contain a boolean value in human representation
+/// @param value the string containing the boolean setting
+/// @return true for string value "yes", "true" and "1", false otherwise
+bool parseHumanBoolean(const QString& value) {
+    return value == QStringLiteral("yes") || value == QStringLiteral("true") ||
+            value == QStringLiteral("1");
 }
 #endif
 
@@ -284,7 +294,7 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
                     file,
                     LegacyControllerMapping::ScriptFileInfo::Type::QML);
 #else
-            qWarning() << "Unsupported render scene. Mixxx isn't built with QML support";
+            kLogger.warning() << "Unsupported render scene. Mixxx isn't built with QML support";
             return;
 #endif
         } else {
@@ -308,31 +318,33 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         uint targetFps = screen.attribute("targetFps", "30").toUInt();
         QString pixelFormatName = screen.attribute("pixelType", "RBG");
         QString endianName = screen.attribute("endian", "little");
-        QString reversedColor = screen.attribute("reversed", "false").toLower();
-        QString rawData = screen.attribute("raw", "false").toLower();
+        QString reversedColor = screen.attribute("reversed", "false").toLower().trimmed();
+        QString rawData = screen.attribute("raw", "false").toLower().trimmed();
         uint splashOff = screen.attribute("splashoff", "0").toUInt();
 
         if (!targetFps || targetFps > s_maxTargetFps) {
-            qWarning() << "Invalid target FPS. Target FPS must be between 1 and" << s_maxTargetFps;
+            kLogger.warning()
+                    << "Invalid target FPS. Target FPS must be between 1 and"
+                    << s_maxTargetFps;
             return;
         }
 
         if (splashOff > s_maxSplashOffDuration) {
-            qWarning() << QString(
+            kLogger.warning() << QString(
                     "Invalid splashoff duration. Splashoff duration must be "
                     "between 0 and %1. Clamping to %2")
-                                  .arg(s_maxSplashOffDuration)
-                                  .arg(s_maxSplashOffDuration);
+                                         .arg(s_maxSplashOffDuration)
+                                         .arg(s_maxSplashOffDuration);
             splashOff = s_maxSplashOffDuration;
         }
 
         if (!kSupportedPixelFormat.contains(pixelFormatName)) {
-            qWarning() << "Unsupported pixel format" << pixelFormatName;
+            kLogger.warning() << "Unsupported pixel format" << pixelFormatName;
             return;
         }
 
         if (!kEndianFormat.contains(endianName)) {
-            qWarning() << "Unknown endiant format" << endianName;
+            kLogger.warning() << "Unknown endian format" << endianName;
             return;
         }
 
@@ -343,20 +355,20 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         uint height = screen.attribute("height", "0").toUInt();
 
         if (!width || !height) {
-            qWarning() << "Invalid screen size. Screen size must have a width "
-                          "and height above 1 pixel";
+            kLogger.warning() << "Invalid screen size. Screen size must have a width "
+                                 "and height above 1 pixel";
             return;
         }
 
-        qDebug() << "Adding screen " << identifier;
+        kLogger.debug() << "Adding screen " << identifier;
         mapping->addScreenInfo(identifier,
                 QSize(width, height),
                 targetFps,
                 splashOff,
                 pixelFormat,
                 endian,
-                reversedColor == "yes" || reversedColor == "true" || reversedColor == "1",
-                rawData == "yes" || rawData == "true" || rawData == "1");
+                parseHumanBoolean(reversedColor),
+                parseHumanBoolean(rawData));
         screen = screen.nextSiblingElement("screen");
     }
     // Build a list of QML files to load
@@ -367,7 +379,7 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     while (!qmlLibrary.isNull()) {
         QString libFilename = qmlLibrary.attribute("path", "");
         QFileInfo path = findLibraryPath(mapping, libFilename, systemMappingsPath);
-        qDebug() << "Adding QML directory " << libFilename;
+        kLogger.debug() << "Adding QML directory " << libFilename;
         mapping->addLibraryDirectory(path);
         qmlLibrary = qmlLibrary.nextSiblingElement("library");
     }
@@ -454,7 +466,7 @@ QDomDocument LegacyControllerMappingFileHandler::buildRootWithScripts(
         if (script.builtin) {
             continue;
         }
-        qDebug() << "writing script block for" << filename;
+        kLogger.debug() << "writing script block for" << filename;
         QString functionPrefix = script.identifier;
         QDomElement scriptFile = doc.createElement("file");
 

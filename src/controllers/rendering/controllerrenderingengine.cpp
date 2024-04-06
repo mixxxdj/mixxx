@@ -17,7 +17,12 @@
 #include "moc_controllerrenderingengine.cpp"
 #include "qml/qmlwaveformoverview.h"
 #include "util/cmdlineargs.h"
+#include "util/logger.h"
 #include "util/time.h"
+
+namespace {
+const mixxx::Logger kLogger("ControllerRenderingEngine");
+} // anonymous namespace
 
 QMutex ControllerRenderingEngine::s_glMutex = QMutex();
 
@@ -50,8 +55,9 @@ ControllerRenderingEngine::ControllerRenderingEngine(
         DEBUG_ASSERT(!"Unsupported format");
     }
 
-    if (!m_isValid)
+    if (!m_isValid) {
         return;
+    }
 
     prepare();
 }
@@ -79,15 +85,15 @@ void ControllerRenderingEngine::prepare() {
 
 ControllerRenderingEngine::~ControllerRenderingEngine() {
     VERIFY_OR_DEBUG_ASSERT(!m_fbo) {
-        qWarning() << "The ControllerEngine is being deleted but hasn't been "
-                      "cleaned up. Brace for impact";
+        kLogger.warning() << "The ControllerEngine is being deleted but hasn't been "
+                             "cleaned up. Brace for impact";
     };
 }
 
 void ControllerRenderingEngine::start() {
     VERIFY_OR_DEBUG_ASSERT(!thread()->isFinished() && !thread()->isInterruptionRequested()) {
-        qWarning() << "Render thread has or ir about to terminate. Cannot "
-                      "start this render anymore.";
+        kLogger.warning() << "Render thread has or ir about to terminate. Cannot "
+                             "start this render anymore.";
         return;
     }
     QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
@@ -99,8 +105,8 @@ bool ControllerRenderingEngine::isRunning() const {
 void ControllerRenderingEngine::requestSetup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_isValid = false;
     VERIFY_OR_DEBUG_ASSERT(QThread::currentThread() != thread()) {
-        qWarning() << "Unable to setup OpenGL rendering context from the same "
-                      "thread as the render object";
+        kLogger.warning() << "Unable to setup OpenGL rendering context from the same "
+                             "thread as the render object";
         return;
     }
     emit setupRequested(qmlEngine);
@@ -129,7 +135,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_context = std::make_unique<QOpenGLContext>();
     m_context->setFormat(format);
     VERIFY_OR_DEBUG_ASSERT(m_context->create()) {
-        qWarning() << "Unable to initialize controller screen rendering. Giving up";
+        kLogger.warning() << "Unable to initialize controller screen rendering. Giving up";
         m_waitCondition.wakeAll();
         return;
     }
@@ -150,8 +156,8 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
                                    // This invocation will block the current thread!
                                    Qt::BlockingQueuedConnection) &&
             m_offscreenSurface->isValid()) {
-        qWarning() << "Unable to create the OffscreenSurface for controller "
-                      "screen rendering. Giving up";
+        kLogger.warning() << "Unable to create the OffscreenSurface for controller "
+                             "screen rendering. Giving up";
         m_offscreenSurface.reset();
         m_waitCondition.wakeAll();
         return;
@@ -160,8 +166,9 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_renderControl = std::make_unique<QQuickRenderControl>(this);
     m_quickWindow = std::make_unique<QQuickWindow>(m_renderControl.get());
 
-    if (!qmlEngine->incubationController())
+    if (!qmlEngine->incubationController()) {
         qmlEngine->setIncubationController(m_quickWindow->incubationController());
+    }
 
     m_quickWindow->setGeometry(0, 0, m_screenInfo.size.width(), m_screenInfo.size.height());
 
@@ -201,16 +208,18 @@ void ControllerRenderingEngine::finish() {
 }
 
 void ControllerRenderingEngine::renderFrame() {
-    if (!m_isValid)
+    if (!m_isValid) {
+        DEBUG_ASSERT(!"Trying to render frame on an invalid engine");
         return;
+    }
 
     VERIFY_OR_DEBUG_ASSERT(m_offscreenSurface->isValid()) {
-        qWarning() << "OffscreenSurface isn't valid anymore.";
+        kLogger.warning() << "OffscreenSurface isn't valid anymore.";
         finish();
         return;
     };
     VERIFY_OR_DEBUG_ASSERT(m_context->isValid()) {
-        qWarning() << "GLContext isn't valid anymore.";
+        kLogger.warning() << "GLContext isn't valid anymore.";
         finish();
         return;
     };
@@ -218,7 +227,7 @@ void ControllerRenderingEngine::renderFrame() {
     auto lock = lockMutex(&s_glMutex);
 
     VERIFY_OR_DEBUG_ASSERT(m_context->makeCurrent(m_offscreenSurface.get())) {
-        qWarning() << "Couldn't make the GLContext current to the OffscreenSurface.";
+        kLogger.warning() << "Couldn't make the GLContext current to the OffscreenSurface.";
         lock.unlock();
         finish();
         return;
@@ -226,7 +235,7 @@ void ControllerRenderingEngine::renderFrame() {
 
     if (!m_fbo) {
         VERIFY_OR_DEBUG_ASSERT(QOpenGLFramebufferObject::hasOpenGLFramebufferObjects()) {
-            qWarning() << "OpenGL doesn't support FBO";
+            kLogger.warning() << "OpenGL doesn't support FBO";
             lock.unlock();
             finish();
             return;
@@ -239,14 +248,14 @@ void ControllerRenderingEngine::renderFrame() {
         glError = m_context->functions()->glGetError();
 
         VERIFY_OR_DEBUG_ASSERT(glError == GL_NO_ERROR) {
-            qWarning() << "GLError: " << glError;
+            kLogger.warning() << "GLError: " << glError;
             lock.unlock();
             finish();
             return;
         };
 
         VERIFY_OR_DEBUG_ASSERT(m_fbo->isValid()) {
-            qWarning() << "Failed to initialize FBO";
+            kLogger.warning() << "Failed to initialize FBO";
             lock.unlock();
             finish();
             return;
@@ -255,7 +264,7 @@ void ControllerRenderingEngine::renderFrame() {
         m_quickWindow->setGraphicsDevice(QQuickGraphicsDevice::fromOpenGLContext(m_context.get()));
 
         VERIFY_OR_DEBUG_ASSERT(m_renderControl->initialize()) {
-            qWarning() << "Failed to initialize redirected Qt Quick rendering";
+            kLogger.warning() << "Failed to initialize redirected Qt Quick rendering";
             lock.unlock();
             finish();
             return;
@@ -278,8 +287,7 @@ void ControllerRenderingEngine::renderFrame() {
     m_renderControl->polishItems();
 
     VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
-        qWarning() << "Couldn't sync the render control.";
-        // m_waitCondition.wakeAll();
+        kLogger.warning() << "Couldn't sync the render control.";
         lock.unlock();
         finish();
         if (m_pControllerEngine) {
@@ -295,13 +303,13 @@ void ControllerRenderingEngine::renderFrame() {
     QImage fboImage(m_screenInfo.size, m_screenInfo.pixelFormat);
 
     VERIFY_OR_DEBUG_ASSERT(m_fbo->bind()) {
-        qWarning() << "Couldn't bind the FBO.";
+        kLogger.warning() << "Couldn't bind the FBO.";
     }
     GLenum glError;
     m_context->functions()->glFlush();
     glError = m_context->functions()->glGetError();
     VERIFY_OR_DEBUG_ASSERT(glError == GL_NO_ERROR) {
-        qWarning() << "GLError: " << glError;
+        kLogger.warning() << "GLError: " << glError;
         lock.unlock();
         finish();
         return;
@@ -311,7 +319,7 @@ void ControllerRenderingEngine::renderFrame() {
     }
     glError = m_context->functions()->glGetError();
     VERIFY_OR_DEBUG_ASSERT(glError == GL_NO_ERROR) {
-        qWarning() << "GLError: " << glError;
+        kLogger.warning() << "GLError: " << glError;
         lock.unlock();
         finish();
         return;
@@ -321,8 +329,9 @@ void ControllerRenderingEngine::renderFrame() {
     m_renderControl->render();
     m_renderControl->endFrame();
 
-    while (m_context->functions()->glGetError())
-        ;
+    // Flush any remaining GL errors
+    while (m_context->functions()->glGetError()) {
+    }
     m_context->functions()->glReadPixels(0,
             0,
             m_screenInfo.size.width(),
@@ -332,16 +341,16 @@ void ControllerRenderingEngine::renderFrame() {
             fboImage.bits());
     glError = m_context->functions()->glGetError();
     VERIFY_OR_DEBUG_ASSERT(glError == GL_NO_ERROR) {
-        qWarning() << "GLError: " << glError;
+        kLogger.warning() << "GLError: " << glError;
         lock.unlock();
         finish();
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(!fboImage.isNull()) {
-        qWarning() << "Screen frame is null!";
+        kLogger.warning() << "Screen frame is null!";
     }
     VERIFY_OR_DEBUG_ASSERT(m_fbo->release()) {
-        qDebug() << "Couldn't release the FBO.";
+        kLogger.debug() << "Couldn't release the FBO.";
     }
 
     fboImage.mirror(false, true);
@@ -364,9 +373,9 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
     if (CmdlineArgs::Instance()
                     .getControllerDebug()) {
         auto endOfRender = mixxx::Time::elapsed();
-        qDebug() << "Fame took "
-                 << (endOfRender - m_nextFrameStart).formatMillisWithUnit()
-                 << " and frame has" << frame.size() << "bytes";
+        kLogger.debug() << "Fame took "
+                        << (endOfRender - m_nextFrameStart).formatMillisWithUnit()
+                        << " and frame has" << frame.size() << "bytes";
     }
 
     m_nextFrameStart += mixxx::Duration::fromSeconds(1.0 / (double)m_screenInfo.target_fps);
@@ -377,9 +386,9 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
     if (msecToWaitBeforeFrame > 0) {
         if (CmdlineArgs::Instance()
                         .getControllerDebug()) {
-            qDebug() << "Waiting for "
-                     << durationToWaitBeforeFrame.formatMillisWithUnit()
-                     << " before rendering next frame";
+            kLogger.debug() << "Waiting for "
+                            << durationToWaitBeforeFrame.formatMillisWithUnit()
+                            << " before rendering next frame";
         }
         QTimer::singleShot(msecToWaitBeforeFrame,
                 Qt::PreciseTimer,

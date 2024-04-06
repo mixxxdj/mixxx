@@ -68,7 +68,7 @@ bool ControllerScriptEngineBase::initialize() {
                     pImageProvider);
         } else {
             DEBUG_ASSERT(!"TrackCollectionManager is missing");
-            qWarning() << "TrackCollectionManager hasn't been registered yet";
+            qCWarning(m_logger) << "TrackCollectionManager hasn't been registered yet";
         }
         connect(pQmlEngine.get(),
                 &QQmlEngine::warnings,
@@ -202,21 +202,17 @@ bool ControllerScriptEngineBase::pause() {
     if (m_canPause && !m_isPaused) {
         emit pauseRequested();
     }
-    // qDebug() << "Pause requested by" << QThread::currentThread();
 
     while (m_canPause && !m_isPaused) {
         if (!m_isPausedCondition.wait(&m_pauseMutex, 1000)) {
-            qWarning() << "Pause request timed out!";
+            qCWarning(m_logger) << "Pause request timed out!";
             return false;
         }
     }
-    // qDebug() << "Pause granted to" << QThread::currentThread();
     return !m_canPause || m_isPaused;
 }
 void ControllerScriptEngineBase::resume() {
     const auto lock = lockMutex(&m_pauseMutex);
-
-    // qDebug() << "Resume triggered by" << QThread::currentThread();
 
     m_isPaused = false;
     m_isPausedCondition.wakeAll();
@@ -226,16 +222,14 @@ void ControllerScriptEngineBase::doPause() {
 
     m_isPaused = true;
     m_isPausedCondition.wakeAll();
-    // qDebug() << "Paused of" << QThread::currentThread();
 
     while (m_canPause && m_isPaused) {
         VERIFY_OR_DEBUG_ASSERT(m_isPausedCondition.wait(&m_pauseMutex, 1000)) {
-            qWarning() << "Main GUI pause timed out!";
+            qCWarning(m_logger) << "Main GUI pause timed out!";
             m_isPaused = false;
         };
     }
     m_isPausedCondition.wakeAll();
-    // qDebug() << "Resume of" << QThread::currentThread();
 }
 
 void ControllerScriptEngineBase::showQMLExceptionDialog(

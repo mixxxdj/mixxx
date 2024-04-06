@@ -434,7 +434,7 @@ QString DlgPrefController::mappingFileLinks(
                 qmlLibrary.dirinfo.absoluteFilePath());
         if (!qmlLibrary.dirinfo.exists()) {
             scriptFileLink +=
-                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
+                    tr(" (missing)");
         } else if (qmlLibrary.dirinfo.absoluteFilePath().startsWith(
                            systemMappingPath)) {
             scriptFileLink += builtinFileSuffix;
@@ -873,13 +873,18 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 #ifdef MIXXX_USE_QML
 void DlgPrefController::slotShowPreviewScreens(
         std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine) {
-    qDeleteAll(m_ui.groupBoxScreens->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
+    QLayoutItem* pItem;
+    while ((pItem = m_ui.groupBoxScreens->layout()->takeAt(0)) != nullptr) {
+        delete pItem->widget();
+        delete pItem;
+    }
 
     if (!m_pMapping) {
         return;
     }
 
-    m_ui.groupBoxScreens->setVisible(scriptEngine != nullptr);
+    m_ui.groupBoxScreens->setVisible(
+            scriptEngine != nullptr && !m_pMapping->getInfoScreens().empty());
     if (!scriptEngine) {
         return;
     }

@@ -21,14 +21,17 @@
 #ifdef MIXXX_USE_QML
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+#endif
 
-QByteArray
-        ControllerScriptEngineLegacy::kScreenTranformFunctionUntypedSignature =
-                QMetaObject::normalizedSignature(
-                        "transformFrame(QVariant,QVariant)");
-QByteArray ControllerScriptEngineLegacy::kScreenTranformFunctionTypedSignature =
+namespace {
+#ifdef MIXXX_USE_QML
+QByteArray kScreenTransformFunctionUntypedSignature =
+        QMetaObject::normalizedSignature(
+                "transformFrame(QVariant,QVariant)");
+QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
 #endif
+} // anonymous namespace
 
 ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(
         Controller* controller, const RuntimeLoggingCategory& logger)
@@ -37,7 +40,7 @@ ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(
             &QFileSystemWatcher::fileChanged,
             this,
             [this](const QString& changedFile) {
-                qDebug() << "File" << changedFile << "has been changed.";
+                qCDebug(m_logger) << "File" << changedFile << "has been changed.";
                 // This is to prevent double-reload when a file is updated twice
                 // in a row as part of the normal saving process. See note in
                 // QFileSystemWatcher::fileChanged documentation.
@@ -59,7 +62,7 @@ ControllerScriptEngineLegacy::~ControllerScriptEngineLegacy() {
 
 void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
     if (m_fileWatcher.files().contains(path) || m_fileWatcher.directories().contains(path)) {
-        qDebug() << "File" << path << "is already being watch for controller auto-reload";
+        qCDebug(m_logger) << "File" << path << "is already being watch for controller auto-reload";
         return;
     }
 
@@ -67,7 +70,7 @@ void ControllerScriptEngineLegacy::watchFilePath(const QString& path) {
         qCWarning(m_logger) << "Failed to watch script file"
                             << path;
     } else {
-        qDebug() << "Watching file" << path << "for controller auto-reload";
+        qCDebug(m_logger) << "Watching file" << path << "for controller auto-reload";
     }
 }
 
@@ -128,8 +131,9 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
                               << function << "on QML Scene " << i.key();
 
             VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine->hasError()) {
-                qWarning() << "Controller JS engine has an unhandled error. Discarding.";
-                qDebug() << "Controller JS error is:" << m_pJSEngine->catchError().toString();
+                qCWarning(m_logger) << "Controller JS engine has an unhandled error. Discarding.";
+                qCDebug(m_logger) << "Controller JS error is:"
+                                  << m_pJSEngine->catchError().toString();
             }
 
             switch (args.size()) {
@@ -164,8 +168,8 @@ bool ControllerScriptEngineLegacy::callFunctionOnObjects(
                         Q_ARG(QVariant, args[3].toVariant()));
                 break;
             default:
-                qDebug() << "Trying to call a controller lifecycle method with "
-                            "more than 5 args. Ignoring extra args";
+                qCDebug(m_logger) << "Trying to call a controller lifecycle method with "
+                                     "more than 5 args. Ignoring extra args";
                 [[fallthrough]];
             case 5:
                 success &= method.invoke(i.value().get(),
@@ -280,18 +284,18 @@ bool ControllerScriptEngineLegacy::initialize() {
     if (m_bQmlMode) {
         for (const LegacyControllerMapping::ScreenInfo& screen : std::as_const(m_infoScreens)) {
             VERIFY_OR_DEBUG_ASSERT(!availableScreens.contains(screen.identifier)) {
-                qWarning() << "A controller screen already contains the "
-                              "identifier "
-                           << screen.identifier;
+                qCWarning(m_logger) << "A controller screen already contains the "
+                                       "identifier "
+                                    << screen.identifier;
                 return false;
             }
             availableScreens.insert(screen.identifier,
                     std::make_shared<ControllerRenderingEngine>(screen, this));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
-                qWarning() << QString(
+                qCWarning(m_logger) << QString(
                         "Unable to start the screen render for %1.")
-                                      .arg(screen.identifier);
+                                               .arg(screen.identifier);
                 return false;
             }
 
@@ -310,16 +314,16 @@ bool ControllerScriptEngineLegacy::initialize() {
                             std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
-                qWarning() << QString(
+                qCWarning(m_logger) << QString(
                         "Unable to setup the screen render for %1.")
-                                      .arg(screen.identifier);
+                                               .arg(screen.identifier);
                 availableScreens.value(screen.identifier)->stop();
                 return false;
             }
         }
     } else if (!m_infoScreens.isEmpty()) {
-        qWarning() << "Controller mapping has screen definitions but no QML "
-                      "files to render on it. Ignoring.";
+        qCWarning(m_logger) << "Controller mapping has screen definitions but no QML "
+                               "files to render on it. Ignoring.";
     }
 #endif
 
@@ -361,11 +365,11 @@ bool ControllerScriptEngineLegacy::initialize() {
             watchFilePath(path);
             auto pQmlEngine = std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine);
             pQmlEngine->addImportPath(path);
-            qWarning() << pQmlEngine->importPathList();
+            qCWarning(m_logger) << pQmlEngine->importPathList();
         }
     } else if (!m_libraryDirectories.isEmpty()) {
-        qWarning() << "Controller mapping has QML library definitions but no "
-                      "QML files to use it. Ignoring.";
+        qCWarning(m_logger) << "Controller mapping has QML library definitions but no "
+                               "QML files to use it. Ignoring.";
     }
 
     // If we encounter a failure while loading a scene, we will need to properly
@@ -396,7 +400,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                 }
             } else {
                 if (!availableScreens.contains(script.identifier)) {
-                    qCritical() << "Not screen" << script.identifier << "found!";
+                    qCCritical(m_logger) << "Not screen" << script.identifier << "found!";
 
                     sceneBindingHasFailure = true;
                     break;
@@ -412,7 +416,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 
     if (!availableScreens.isEmpty()) {
         if (!sceneBindingHasFailure) {
-            qWarning()
+            qCWarning(m_logger)
                     << "Found screen with no QML scene able to run on it. Ignoring"
                     << availableScreens.size() << "screens";
         }
@@ -475,33 +479,36 @@ bool ControllerScriptEngineLegacy::initialize() {
 void ControllerScriptEngineLegacy::extractTranformFunction(
         const QMetaObject* metaObject, const QString& screenIdentifier) {
     VERIFY_OR_DEBUG_ASSERT(metaObject) {
-        qWarning() << "Invalid meta object for screen" << screenIdentifier
-                   << "It may be that an unhandled issue occurred when imnporting the scene.";
+        qCWarning(m_logger)
+                << "Invalid meta object for screen" << screenIdentifier
+                << "It may be that an unhandled issue occurred when imnporting "
+                   "the scene.";
         return;
     }
 
     QMetaMethod tranformFunction;
     bool typed = false;
-    int methodIdx = metaObject->indexOfMethod(kScreenTranformFunctionUntypedSignature);
+    int methodIdx = metaObject->indexOfMethod(kScreenTransformFunctionUntypedSignature);
 
     if (methodIdx == -1 || !metaObject->method(methodIdx).isValid()) {
-        qDebug() << "QML Scene for screen" << screenIdentifier
-                 << "has no valid untyped transformFrame method.";
-        methodIdx = metaObject->indexOfMethod(kScreenTranformFunctionTypedSignature);
+        qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
+                          << "has no valid untyped transformFrame method.";
+        methodIdx = metaObject->indexOfMethod(kScreenTransformFunctionTypedSignature);
         typed = true;
     }
 
     tranformFunction = metaObject->method(methodIdx);
 
     if (!tranformFunction.isValid()) {
-        qDebug() << "QML Scene for screen" << screenIdentifier
-                 << "has no valid typed transformFrame method. The frame data will be sent "
-                    "untransformed";
+        qCDebug(m_logger) << "QML Scene for screen" << screenIdentifier
+                          << "has no valid typed transformFrame method. The "
+                             "frame data will be sent "
+                             "untransformed";
         QStringList methods;
         for (int i = metaObject->methodOffset(); i < metaObject->methodCount(); ++i) {
             methods << QString::fromLatin1(metaObject->method(i).methodSignature());
         }
-        qDebug() << "Found methods are: " << methods.join(", ");
+        qCDebug(m_logger) << "Found methods are: " << methods.join(", ");
     }
 
     m_transformScreenFrameFunctions.insert(screenIdentifier,
@@ -543,11 +550,11 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     VERIFY_OR_DEBUG_ASSERT(
             m_transformScreenFrameFunctions.contains(screeninfo.identifier) ||
             m_renderingScreens.contains(screeninfo.identifier)) {
-        qWarning() << "Unable to find transform function info for the given screen";
+        qCWarning(m_logger) << "Unable to find transform function info for the given screen";
         return;
     };
     VERIFY_OR_DEBUG_ASSERT(m_rootItems.contains(screeninfo.identifier)) {
-        qWarning() << "Unable to find a root item for the given screen";
+        qCWarning(m_logger) << "Unable to find a root item for the given screen";
         return;
     };
 
@@ -587,7 +594,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     }
 
     if (!tranformMethod.method.isValid()) {
-        qWarning()
+        qCWarning(m_logger)
                 << "Could not find a valid transform function but the screen "
                    "doesn't accept raw data. Aborting screen rendering.";
         m_renderingScreens[screeninfo.identifier]->stop();
@@ -597,8 +604,8 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     QVariant returnedValue;
 
     VERIFY_OR_DEBUG_ASSERT(!m_pJSEngine->hasError()) {
-        qWarning() << "Controller JS engine has an unhandled error. Discarding.";
-        qDebug() << "Controller JS error is:" << m_pJSEngine->catchError().toString();
+        qCWarning(m_logger) << "Controller JS engine has an unhandled error. Discarding.";
+        qCDebug(m_logger) << "Controller JS error is:" << m_pJSEngine->catchError().toString();
     }
     // During the frame transformation, any QML errors are considered fatal
     setErrorsAreFatal(true);
@@ -618,7 +625,8 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     setErrorsAreFatal(false);
 
     if (!isSuccessful) {
-        qWarning() << "Could not transform rendering buffer for screen" << screeninfo.identifier;
+        qCWarning(m_logger) << "Could not transform rendering buffer for screen"
+                            << screeninfo.identifier;
 
         // We manually stop the screen before we trigger the shutdown procedure
         // as this last one may continue rendering process in order to perform
@@ -627,9 +635,9 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         return;
     }
     if (!isSuccessful || !returnedValue.isValid()) {
-        qWarning() << "Could not transform rendering buffer. The transform "
-                      "function didn't return the expected Array. Stopping "
-                      "rendering on this screen";
+        qCWarning(m_logger) << "Could not transform rendering buffer. The transform "
+                               "function didn't return the expected Array. Stopping "
+                               "rendering on this screen";
         return;
     }
 
@@ -640,14 +648,14 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     } else if (returnedValue.canConvert<QByteArray>()) {
         transformedFrame = returnedValue.toByteArray();
     } else {
-        qWarning() << "Unable to interpret the returned data " << returnedValue;
+        qCWarning(m_logger) << "Unable to interpret the returned data " << returnedValue;
         return;
     }
 
     if (CmdlineArgs::Instance().getControllerDebug()) {
-        qDebug() << "Transform screen data for screen " << screeninfo.identifier
-                 << "(first 64 bytes)"
-                 << QByteArray(transformedFrame.toHex(' '), 128);
+        qCDebug(m_logger) << "Transform screen data for screen " << screeninfo.identifier
+                          << "(first 64 bytes)"
+                          << QByteArray(transformedFrame.toHex(' '), 128);
         m_pController->sendBytes(returnedValue.view<QByteArray>());
     }
 
@@ -685,7 +693,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     for (const auto& pScreen : qAsConst(m_renderingScreens)) {
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
-            qWarning() << "Unable to stop the screen";
+            qCWarning(m_logger) << "Unable to stop the screen";
         };
     }
     m_renderingScreens.clear();
@@ -797,8 +805,8 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
 
     QFile scene = QFile(qmlScript.file.absoluteFilePath());
     if (!scene.exists()) {
-        qWarning() << "Unable to load the QML scene:" << qmlScript.file.absoluteFilePath()
-                   << "does not exist.";
+        qCWarning(m_logger) << "Unable to load the QML scene:" << qmlScript.file.absoluteFilePath()
+                            << "does not exist.";
         return std::shared_ptr<QQuickItem>(nullptr);
     }
 
@@ -813,24 +821,24 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     scene.close();
 
     while (qmlComponent->isLoading()) {
-        qDebug() << "Waiting for component "
-                 << qmlScript.file.absoluteFilePath()
-                 << " to be ready: " << qmlComponent->progress();
+        qCDebug(m_logger) << "Waiting for component "
+                          << qmlScript.file.absoluteFilePath()
+                          << " to be ready: " << qmlComponent->progress();
         QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 500);
     }
 
     if (qmlComponent->isError()) {
         const QList<QQmlError> errorList = qmlComponent->errors();
         for (const QQmlError& error : errorList) {
-            qWarning() << "Unable to load the QML scene:" << error.url()
-                       << "at line" << error.line() << ", error: " << error;
+            qCWarning(m_logger) << "Unable to load the QML scene:" << error.url()
+                                << "at line" << error.line() << ", error: " << error;
             showQMLExceptionDialog(error, true);
         }
         return std::shared_ptr<QQuickItem>(nullptr);
     }
 
     VERIFY_OR_DEBUG_ASSERT(qmlComponent->isReady()) {
-        qWarning() << "QMLComponent isn't ready although synchronous load was requested.";
+        qCWarning(m_logger) << "QMLComponent isn't ready although synchronous load was requested.";
         return std::shared_ptr<QQuickItem>(nullptr);
     }
 
@@ -839,7 +847,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     if (qmlComponent->isError()) {
         const QList<QQmlError> errorList = qmlComponent->errors();
         for (const QQmlError& error : errorList) {
-            qWarning() << error.url() << error.line() << error;
+            qCWarning(m_logger) << error.url() << error.line() << error;
         }
         return std::shared_ptr<QQuickItem>(nullptr);
     }

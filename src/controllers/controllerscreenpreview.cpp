@@ -13,14 +13,13 @@ ControllerScreenPreview::ControllerScreenPreview(
           m_pFrame(make_parented<QLabel>(this)),
           m_pStat(make_parented<QLabel>("- FPS", this)),
           m_frameDurationHistoryIdx(0),
-          m_lastFrameTimespamp(mixxx::Time::elapsed()) {
-    size_t frameDurationHistoryLenght = sizeof(m_frameDurationHistory) / sizeof(uint);
-    memset(m_frameDurationHistory, 0, frameDurationHistoryLenght);
+          m_lastFrameTimestamp(mixxx::Time::elapsed()) {
+    std::fill(m_frameDurationHistory.begin(), m_frameDurationHistory.end(), 0);
     m_pFrame->setFixedSize(screen.size);
     setMaximumWidth(screen.size.width());
     m_pStat->setAlignment(Qt::AlignRight);
     auto pLayout = make_parented<QVBoxLayout>(this);
-    auto pBottomLayout = new QHBoxLayout();
+    auto* pBottomLayout = new QHBoxLayout();
     pLayout->addWidget(m_pFrame);
     pBottomLayout->addWidget(make_parented<QLabel>(
             QString("\"<i>%0</i>\"")
@@ -38,17 +37,17 @@ void ControllerScreenPreview::updateFrame(
     if (m_screenInfo.identifier != screen.identifier) {
         return;
     }
-    size_t frameDurationHistoryLenght = sizeof(m_frameDurationHistory) / sizeof(uint);
+    size_t frameDurationHistoryLength = sizeof(m_frameDurationHistory) / sizeof(uint);
     auto currentTimestamp = mixxx::Time::elapsed();
     m_frameDurationHistory[m_frameDurationHistoryIdx++] =
-            (currentTimestamp - m_lastFrameTimespamp).toIntegerMillis();
-    m_frameDurationHistoryIdx %= frameDurationHistoryLenght;
+            (currentTimestamp - m_lastFrameTimestamp).toIntegerMillis();
+    m_frameDurationHistoryIdx %= frameDurationHistoryLength;
 
     double durationSinceLastFrame = 0.0;
-    for (uint8_t i = 0; i < frameDurationHistoryLenght; i++) {
-        durationSinceLastFrame += (double)m_frameDurationHistory[i];
+    for (uint i = 0; i < frameDurationHistoryLength; i++) {
+        durationSinceLastFrame += static_cast<double>(m_frameDurationHistory[i]);
     }
-    durationSinceLastFrame /= (double)frameDurationHistoryLenght;
+    durationSinceLastFrame /= (double)frameDurationHistoryLength;
 
     if (durationSinceLastFrame > 0.0) {
         m_pStat->setText(QString("<i>FPS: %0/%1</i>")
@@ -56,5 +55,5 @@ void ControllerScreenPreview::updateFrame(
                                  .arg(m_screenInfo.target_fps));
     }
     m_pFrame->setPixmap(QPixmap::fromImage(frame));
-    m_lastFrameTimespamp = currentTimestamp;
+    m_lastFrameTimestamp = currentTimestamp;
 }
