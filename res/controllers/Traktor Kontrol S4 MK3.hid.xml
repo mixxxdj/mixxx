@@ -190,6 +190,18 @@
                     This option is useful if you don't use samplers and would like to access a set of predefined beatloop rolls. Beat size can be customized individually.
                 </description>
             </option>
+            <option
+                variable="defaultPadLayout"
+                type="enum"
+                label="Default Pad Layout">
+                <value label="Intro/Outro + 4 hotcues" default="true">default</value>
+                <value label="Hotcues">hotcue</value>
+                <value label="Sampler or beatloop">samplerBeatloop</value>
+                <value label="Keyboard">keyboard</value>
+                <description>
+                    Define the default layout used for the pads.
+                </description>
+            </option>
         </group>
 
         <group label="Mixer">

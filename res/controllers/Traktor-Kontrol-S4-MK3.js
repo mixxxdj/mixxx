@@ -38,6 +38,11 @@ const KeyboardColors = [
     LedColors.white,
 ];
 
+// Constant used to define custom default pad layout
+const DefaultPadLayoutHotcue = "hotcue";
+const DefaultPadLayoutSamplerBeatloop = "samplerBeatloop";
+const DefaultPadLayoutKeyboard = "keyboard";
+
 /*
  * USER CONFIGURABLE SETTINGS
  * Change settings in the preferences
@@ -142,6 +147,9 @@ const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor s
 const SoftwareMixerMain = !!engine.getSetting("softwareMixerMain");
 const SoftwareMixerBooth = !!engine.getSetting("softwareMixerBooth");
 const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
+
+// Define custom default layout used by the pads, instead of intro/outro  and first 4 hotcues.
+const DefaultPadLayout = engine.getSetting("defaultPadLayout");
 
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
@@ -2254,8 +2262,24 @@ class S4Mk3Deck extends Deck {
             samplerPage: 3,
             keyboard: 5,
         };
-        switchPadLayer(this, defaultPadLayer);
-        this.currentPadLayer = this.padLayers.defaultLayer;
+        switch (DefaultPadLayout) {
+        case DefaultPadLayoutHotcue:
+            switchPadLayer(this, hotcuePage2);
+            this.currentPadLayer = this.padLayers.hotcuePage2;
+            break;
+        case DefaultPadLayoutSamplerBeatloop:
+            switchPadLayer(this, samplerOrBeatloopRollPage);
+            this.currentPadLayer = this.padLayers.samplerPage;
+            break;
+        case DefaultPadLayoutKeyboard:
+            switchPadLayer(this, this.keyboard);
+            this.currentPadLayer = this.padLayers.keyboard;
+            break;
+        default:
+            switchPadLayer(this, defaultPadLayer);
+            this.currentPadLayer = this.padLayers.defaultLayer;
+            break;
+        }
 
         this.hotcuePadModeButton = new Button({
             deck: this,
