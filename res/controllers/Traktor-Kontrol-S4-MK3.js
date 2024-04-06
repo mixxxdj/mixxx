@@ -137,6 +137,11 @@ const TightnessFactor = engine.getSetting("tightnessFactor") || 0.5;
 // This will also affect how quick the wheel starts spinning when enabling motor mode, or starting a deck with motor mode on
 const MaxWheelForce = engine.getSetting("maxWheelForce") || 25000;  // Traktor seems to cap the max value at 60000, which just sounds insane
 
+// Map the mixer potentiometers to different components of the software mixer in Mixxx, on top of the physical control of the hardware
+// mixer embedded in the S4 Mk3. This is useful if you are not using certain S4 Mk3 outputs.
+const SoftwareMixerMain = !!engine.getSetting("softwareMixerMain");
+const SoftwareMixerBooth = !!engine.getSetting("softwareMixerBooth");
+const SoftwareMixerHeadphone = !!engine.getSetting("softwareMixerHeadphone");
 
 
 // The LEDs only support 16 base colors. Adding 1 in addition to
@@ -1143,6 +1148,42 @@ class Mixer extends ComponentContainer {
                 }
             },
         });
+
+        if (SoftwareMixerMain) {
+            this.master = new Pot({
+                group: "[Master]",
+                inKey: "gain",
+                inByte: 22,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerBooth) {
+            this.booth = new Pot({
+                group: "[Master]",
+                inKey: "booth_gain",
+                inByte: 24,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
+        if (SoftwareMixerHeadphone) {
+            this.cue = new Pot({
+                group: "[Master]",
+                inKey: "headMix",
+                inByte: 28,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+
+            this.pflGain = new Pot({
+                group: "[Master]",
+                inKey: "headGain",
+                inByte: 26,
+                bitLength: 12,
+                inReport: inReports[2]
+            });
+        }
 
         for (const component of this) {
             if (component.inReport === undefined) {

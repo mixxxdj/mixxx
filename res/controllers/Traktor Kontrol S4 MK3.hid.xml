@@ -190,6 +190,9 @@
                     This option is useful if you don't use samplers and would like to access a set of predefined beatloop rolls. Beat size can be customized individually.
                 </description>
             </option>
+        </group>
+
+        <group label="Mixer">
             <option
                 variable="mixerControlsMicAuxOnShift"
                 type="boolean"
@@ -197,6 +200,33 @@
                 label="Shift to mix microphones or auxiliary lines">
                 <description>
                     When shifting decks, the mixer controls microphones or auxiliary lines. If both a microphone and an auxiliary are configured on the same channel, the mixer will prioritize controlling the auxiliary.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerMain"
+                type="boolean"
+                default="false"
+                label="Main gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enable, the master potentiometer on top right column of the mixer will drive the main gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerBooth"
+                type="boolean"
+                default="false"
+                label="Booth gain is handled by the Mixxx built-in mixer">
+                <description>
+                    When enable, the booth potentiometer on right column of the mixer will drive the booth gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
+                </description>
+            </option>
+            <option
+                variable="softwareMixerHeadphone"
+                type="boolean"
+                default="false"
+                label="Headphone gain and cue mix is handled by the Mixxx built-in mixer">
+                <description>
+                    When enable, the headphone volume and cue potentiometers on bottom right column of the mixer will drive the headphone controls of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
                 </description>
             </option>
         </group>
