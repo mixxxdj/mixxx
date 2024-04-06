@@ -137,7 +137,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
     }
 
-    connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, &pCheckBox]() {
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, pCheckBox]() {
         pCheckBox->setCheckState(m_editedValue ? Qt::Checked : Qt::Unchecked);
     });
 
@@ -260,7 +260,7 @@ QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     }
     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
 
-    connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, &pComboBox]() {
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
         pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
     });
 
