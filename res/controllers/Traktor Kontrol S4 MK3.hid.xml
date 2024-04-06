@@ -6,7 +6,7 @@
         <description>HID Mapping for Traktor Kontrol S4 MK3</description>
         <manual>native_instruments_traktor_kontrol_s4_mk3</manual>
         <devices>
-            <product protocol="hid" vendor_id="0x17cc" product_id="0x1720" usage_page="0xff01" usage="0x1" interface_number="0x4" />
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1720" usage_page="0xff01" usage="0x0" interface_number="0x3" />
         </devices>
     </info>
     <settings>
@@ -56,7 +56,7 @@
                     label="Deck C">
                     <value label="Aqua">aqua</value>
                     <value label="Azalea">azalea</value>
-                    <value label="Blue" default="true">blue</value>
+                    <value label="Blue">blue</value>
                     <value label="Celeste">celeste</value>
                     <value label="Fuscia">fuscia</value>
                     <value label="Green">green</value>
@@ -131,7 +131,7 @@
                 label="Tempo fader low soft takeover color">
                 <value label="Aqua">aqua</value>
                 <value label="Azalea">azalea</value>
-                <value label="Blue" default="true">blue</value>
+                <value label="Blue">blue</value>
                 <value label="Celeste">celeste</value>
                 <value label="Fuscia">fuscia</value>
                 <value label="Green">green</value>
