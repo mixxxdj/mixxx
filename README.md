@@ -44,8 +44,8 @@ corresponding command for your operating system:
 | -- | ------- |
 | Windows | `tools\windows_buildenv.bat` |
 | macOS | `source tools/macos_buildenv.sh setup` |
-| Debian/Ubuntu | `source tools/debian_buildenv.sh setup` |
-| Fedora | `source tools/rpm_buildenv.sh setup` |
+| Debian/Ubuntu | `tools/debian_buildenv.sh setup` |
+| Fedora | `tools/rpm_buildenv.sh setup` |
 | Other Linux distros | See the [wiki article](https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux) |
 
 To build Mixxx, run
