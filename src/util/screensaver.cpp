@@ -1,11 +1,16 @@
 /**
 Documentation:
-OSX: https://developer.apple.com/reference/iokit/1557134-iopmassertioncreatewithname
-Windows: https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx
-Freedesktop: https://people.freedesktop.org/~hadess/idle-inhibition-spec/re01.html
+OSX:
+https://developer.apple.com/reference/iokit/1557134-iopmassertioncreatewithname
+Windows:
+https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx
+Freedesktop:
+https://people.freedesktop.org/~hadess/idle-inhibition-spec/re01.html
 XScreenSaver: https://linux.die.net/man/3/xscreensaversuspend
-GTK: https://developer.gnome.org/gtk3/stable/GtkApplication.html#gtk-application-inhibit
-Portal: https://docs.flatpak.org/en/latest/portal-api-reference.html#gdbus-org.freedesktop.portal.Inhibit
+GTK:
+https://developer.gnome.org/gtk3/stable/GtkApplication.html#gtk-application-inhibit
+Portal:
+https://docs.flatpak.org/en/latest/portal-api-reference.html#gdbus-org.freedesktop.portal.Inhibit
 
 With the help of the following source codes:
 
@@ -205,8 +210,7 @@ void ScreenSaverHelper::triggerUserActivity()
     return;
 }
 
-void ScreenSaverHelper::inhibitInternal()
-{
+void ScreenSaverHelper::inhibitInternal() {
     if (!QDBusConnection::sessionBus().isConnected()) {
         qWarning() << "Cannot connect to the D-Bus session bus";
         return;
@@ -273,8 +277,7 @@ void ScreenSaverHelper::inhibitInternal()
     }
 }
 
-void ScreenSaverHelper::uninhibitInternal()
-{
+void ScreenSaverHelper::uninhibitInternal() {
     if (!inhibitor) {
         qDebug() << "Cannot uninhibit without a selected interface";
         return;
