@@ -22,7 +22,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
         WDoubleSpinBox* pBpmSpinbox = new WDoubleSpinBox(parent);
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
-        pBpmSpinbox->setMaximum(1000);
+        pBpmSpinbox->setMaximum(99999);
         pBpmSpinbox->setSingleStep(1e-3);
         pBpmSpinbox->setDecimals(8);
         pBpmSpinbox->setObjectName("LibraryBPMSpinBox");
