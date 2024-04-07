@@ -169,9 +169,14 @@ void allshader::WaveformRenderMark::paintGL() {
 
         const double samplePosition = pMark->getSamplePosition();
         if (samplePosition != Cue::kNoPosition) {
-            float currentMarkPoint = static_cast<float>(
-                    m_waveformRenderer->transformSamplePositionInRendererWorld(
-                            samplePosition));
+            const float currentMarkPoint =
+                    std::round(
+                            static_cast<float>(
+                                    m_waveformRenderer
+                                            ->transformSamplePositionInRendererWorld(
+                                                    samplePosition)) *
+                            devicePixelRatio) /
+                    devicePixelRatio;
             const double sampleEndPosition = pMark->getSampleEndPosition();
 
             // Pixmaps are expected to have the mark stroke at the center,
@@ -179,12 +184,11 @@ void allshader::WaveformRenderMark::paintGL() {
             // exactly at the sample position.
             const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
             const float drawOffset = currentMarkPoint - markHalfWidth;
-            currentMarkPoint = qRound(drawOffset * devicePixelRatio) / devicePixelRatio;
 
             bool visible = false;
             // Check if the current point needs to be displayed.
-            if (currentMarkPoint > -markHalfWidth &&
-                    currentMarkPoint < m_waveformRenderer->getLength() +
+            if (drawOffset > -markHalfWidth &&
+                    drawOffset < m_waveformRenderer->getLength() +
                                     markHalfWidth) {
                 drawTexture(drawOffset, 0, pTexture);
                 visible = true;
@@ -222,9 +226,12 @@ void allshader::WaveformRenderMark::paintGL() {
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);
 
-    const float currentMarkPoint = std::floor(
-            static_cast<float>(m_waveformRenderer->getPlayMarkerPosition() *
-                    m_waveformRenderer->getLength()));
+    const float currentMarkPoint =
+            std::round(static_cast<float>(
+                               m_waveformRenderer->getPlayMarkerPosition() *
+                               m_waveformRenderer->getLength()) *
+                    devicePixelRatio) /
+            devicePixelRatio;
 
     const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
     const float drawOffset = currentMarkPoint - markHalfWidth;
