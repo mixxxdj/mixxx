@@ -19,6 +19,11 @@ case "$1" in
             echo "Warning: You are not running Fedora and may have to set up RPM Fusion manually if there are missing packages!"
         fi
 
+        # Install the build dependencies.
+        # This list is largely identical to what `dnf builddep mixxx` would
+        # install, with the exception of replacing Qt 5 with Qt 6 (once 2.5 is
+        # released, we could install `dnf-command(builddep)` and then use `dnf
+        # builddep mixxx`).
         sudo dnf install -y \
             appstream \
             ccache \
