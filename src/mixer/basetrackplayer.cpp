@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include <QMetaMethod>
 
+#include "control/controlencoder.h"
 #include "control/controlobject.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/controls/enginecontrol.h"
@@ -104,6 +105,36 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
     m_pTrackColor->set(kNoTrackColor);
     m_pTrackColor->connectValueChangeRequest(
             this, &BaseTrackPlayerImpl::slotTrackColorChangeRequest);
+
+    m_pTrackColorPrev = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "track_color_prev"));
+    connect(m_pTrackColorPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0)
+                    BaseTrackPlayerImpl::slotTrackColorSelector(-1);
+            });
+
+    m_pTrackColorNext = std::make_unique<ControlPushButton>(
+            ConfigKey(getGroup(), "track_color_next"));
+    connect(m_pTrackColorNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                if (value > 0)
+                    BaseTrackPlayerImpl::slotTrackColorSelector(1);
+            });
+
+    m_pTrackColorSelect = std::make_unique<ControlEncoder>(
+            ConfigKey(getGroup(), "track_color_selector"), false);
+    connect(m_pTrackColorSelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                int iSteps = static_cast<int>(steps);
+                BaseTrackPlayerImpl::slotTrackColorSelector(iSteps);
+            });
 
     // Deck cloning
     m_pCloneFromDeck = std::make_unique<ControlObject>(
@@ -792,6 +823,27 @@ void BaseTrackPlayerImpl::slotSetTrackColor(const mixxx::RgbColor::optional_t& c
     m_pTrackColor->forceSet(trackColorToDouble(color));
 }
 
+void BaseTrackPlayerImpl::slotTrackColorSelector(int steps) {
+    if (!m_pLoadedTrack || steps == 0) {
+        return;
+    }
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    mixxx::RgbColor::optional_t color = m_pLoadedTrack->getColor();
+
+    while (steps != 0) {
+        if (steps > 0) {
+            color = colorPalette.nextColor(color);
+            steps--;
+        } else {
+            color = colorPalette.previousColor(color);
+            steps++;
+        }
+    }
+    m_pLoadedTrack->setColor(color);
+}
+
 void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
     if (!m_pLoadedTrack) {
         return;
@@ -805,7 +857,6 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
         }
         color = mixxx::RgbColor::optional(colorCode);
     }
-    m_pTrackColor->setAndConfirm(trackColorToDouble(color));
     m_pLoadedTrack->setColor(color);
 }
 
