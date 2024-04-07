@@ -8,6 +8,7 @@
 #include <QTableView>
 
 #include "moc_bpmdelegate.cpp"
+#include "widget/wdoublespinbox.h"
 
 // We override the typical QDoubleSpinBox editor by registering this class with
 // a QItemEditorFactory for the BPMDelegate.
@@ -18,7 +19,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
     }
 
     QWidget* createWidget(QWidget* parent) const override {
-        QDoubleSpinBox* pBpmSpinbox = new QDoubleSpinBox(parent);
+        WDoubleSpinBox* pBpmSpinbox = new WDoubleSpinBox(parent);
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
         pBpmSpinbox->setMaximum(1000);

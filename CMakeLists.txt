@@ -1195,6 +1195,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wcoverartmenu.cpp
   src/widget/wcuemenupopup.cpp
   src/widget/wdisplay.cpp
+  src/widget/wdoublespinbox.cpp
   src/widget/weffectbuttonparametername.cpp
   src/widget/weffectchain.cpp
   src/widget/weffectchainpresetbutton.cpp
