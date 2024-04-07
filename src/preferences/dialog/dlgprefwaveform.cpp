@@ -48,9 +48,9 @@ DlgPrefWaveform::DlgPrefWaveform(
     untilNextMarkerShowComboBox->addItem(tr("Beats + Time"));
     untilNextMarkerShowComboBox->addItem(tr("Beats + Time (multi-line)"));
 
-    untilNextMarkerPlacementComboBox->addItem(tr("Top"));
-    untilNextMarkerPlacementComboBox->addItem(tr("Center"));
-    untilNextMarkerPlacementComboBox->addItem(tr("Bottom"));
+    untilNextMarkerAlignComboBox->addItem(tr("Top"));
+    untilNextMarkerAlignComboBox->addItem(tr("Center"));
+    untilNextMarkerAlignComboBox->addItem(tr("Bottom"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -142,6 +142,18 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+    connect(untilNextMarkerShowComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilNextMarkerShow);
+    connect(untilNextMarkerAlignComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilNextMarkerAlign);
+    connect(untilNextMarkerSizeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetUntilNextMarkerSize);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -179,6 +191,13 @@ void DlgPrefWaveform::slotUpdate() {
     playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
+
+    untilNextMarkerShowComboBox->setCurrentIndex(
+            static_cast<int>(factory->getUntilNextMarkerShow()));
+    untilNextMarkerAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilNextMarkerAlignIndex(
+                    factory->getUntilNextMarkerAlign()));
+    untilNextMarkerSizeSpinBox->setValue(factory->getUntilNextMarkerSize());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -321,6 +340,20 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     // QSlider works with integer values, so divide the percentage given by the
     // slider value by 100 to get a fraction of the waveform width.
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
+}
+
+void DlgPrefWaveform::slotSetUntilNextMarkerShow(int index) {
+    WaveformWidgetFactory::instance()->setUntilNextMarkerShow(
+            static_cast<UntilNextMarkerShow>(index));
+}
+
+void DlgPrefWaveform::slotSetUntilNextMarkerAlign(int index) {
+    WaveformWidgetFactory::instance()->setUntilNextMarkerAlign(
+            WaveformWidgetFactory::toUntilNextMarkerAlign(index));
+}
+
+void DlgPrefWaveform::slotSetUntilNextMarkerSize(int value) {
+    WaveformWidgetFactory::instance()->setUntilNextMarkerSize(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

@@ -16,8 +16,8 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
     ~DigitsRenderer();
 
     void init();
-    void generateTexture(float devicePixelRatio);
-    void draw(const QMatrix4x4& matrix,
+    void generateTexture(float fontPixelSize, float devicePixelRatio);
+    float draw(const QMatrix4x4& matrix,
             float x,
             float y,
             const QString& s,

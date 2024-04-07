@@ -55,6 +55,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     void updateBeatDistance(double playPosition, double markerPosition);
     void updateUntilMark(double playPosition, double markerPosition);
+    void drawUntilMark(const QMatrix4x4& matrix, float x);
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
@@ -63,6 +64,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     int m_beatDistance;
     double m_currentBeatPosition;
     double m_nextBeatPosition;
+    float m_untilNextMarkerSize;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;

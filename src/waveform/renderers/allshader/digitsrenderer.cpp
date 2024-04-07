@@ -38,11 +38,11 @@ float allshader::DigitsRenderer::height() const {
     return static_cast<float>(m_pTexture->height());
 }
 
-void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
+void allshader::DigitsRenderer::generateTexture(float fontPixelSize, float devicePixelRatio) {
     QFont font;
     const char* str = "0123456789:.";
     font.setFamily("Open Sans");
-    font.setPixelSize(18);
+    font.setPixelSize(fontPixelSize);
 
     QFontMetricsF metrics{font};
 
@@ -119,13 +119,14 @@ void allshader::DigitsRenderer::generateTexture(float devicePixelRatio) {
     m_pTexture = createTexture(image);
 }
 
-void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
+float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,
         const QString& s,
         QColor color,
         float devicePixelRatio) {
     const int n = s.length();
+    const float x0 = x;
 
     VertexData posVertices;
     VertexData texVertices;
@@ -173,4 +174,6 @@ void allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
     m_shader.disableAttributeArray(positionLocation);
     m_shader.disableAttributeArray(texcoordLocation);
     m_shader.release();
+
+    return x - x0;
 }

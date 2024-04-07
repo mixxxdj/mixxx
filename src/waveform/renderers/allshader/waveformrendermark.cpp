@@ -9,6 +9,7 @@
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
 // On the use of QPainter:
 //
@@ -83,7 +84,10 @@ void allshader::WaveformRenderMark::initializeGL() {
     // Will create textures so requires OpenGL context
     updateMarkImages();
     updatePlayPosMarkTexture();
-    m_digitsRenderer.generateTexture(m_waveformRenderer->getDevicePixelRatio());
+    m_untilNextMarkerSize = static_cast<float>(
+            WaveformWidgetFactory::instance()->getUntilNextMarkerSize());
+    m_digitsRenderer.generateTexture(
+            m_untilNextMarkerSize, m_waveformRenderer->getDevicePixelRatio());
 }
 
 void allshader::WaveformRenderMark::drawTexture(
@@ -292,39 +296,71 @@ void allshader::WaveformRenderMark::paintGL() {
         drawTexture(matrix, drawOffset, 0.f, m_pPlayPosMarkTexture.get());
     }
 
-    updateUntilMark(playPosition, nextMarkPosition);
+    if (WaveformWidgetFactory::instance()->getUntilNextMarkerShow() != UntilNextMarkerShow::None) {
+        updateUntilMark(playPosition, nextMarkPosition);
+        drawUntilMark(matrix, drawOffset + 20);
+    }
+}
 
-    if (m_timeUntilMark != 0.0) {
-        // Show the number of beats until the next marker,
-        // fading out over the duration of the beat.
-        /*
-        double alpha = (playPosition - m_currentBeatPosition) /
-                (m_nextBeatPosition - m_currentBeatPosition);
-        alpha = std::max(0., std::min(1., alpha));
-        // Cubic curve
-        alpha = 1.0 - alpha * alpha * alpha;
-        int ialpha = static_cast<int>(alpha * 255.0);
-        m_digitsRenderer.drawNumber(matrix,
-                currentMarkPoint + 8.f,
-                m_waveformRenderer->getBreadth() / 2 -
-                        m_digitsRenderer.height() / 2 / devicePixelRatio,
-                m_beatDistance,
-        */
-        const int ialpha = 255;
+void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, float x) {
+    const auto untilNextMarkerShow = WaveformWidgetFactory::instance()->getUntilNextMarkerShow();
+    const auto untilNextMarkerAlign = WaveformWidgetFactory::instance()->getUntilNextMarkerAlign();
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-        const float yoffset = 10.f;
+    const auto untilNextMarkerSize = static_cast<float>(
+            WaveformWidgetFactory::instance()->getUntilNextMarkerSize());
+    if (untilNextMarkerSize != m_untilNextMarkerSize) {
+        m_untilNextMarkerSize = untilNextMarkerSize;
+        m_digitsRenderer.generateTexture(m_untilNextMarkerSize,
+                m_waveformRenderer->getDevicePixelRatio());
+    }
 
-        m_digitsRenderer.draw(matrix,
-                drawOffset + 8.f,
-                m_waveformRenderer->getBreadth() / 2.f - yoffset -
-                        m_digitsRenderer.height() / 2.f / devicePixelRatio,
+    if (m_timeUntilMark == 0.0) {
+        return;
+    }
+    const int ialpha = 255;
+
+    const float ch = m_digitsRenderer.height() / devicePixelRatio;
+
+    float y = untilNextMarkerAlign == Qt::AlignTop ? 0.f
+            : untilNextMarkerAlign == Qt::AlignBottom
+            ? m_waveformRenderer->getBreadth() - ch
+            : m_waveformRenderer->getBreadth() / 2.f;
+
+    if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
+        if (untilNextMarkerAlign != Qt::AlignTop) {
+            y -= ch;
+        }
+    } else {
+        if (untilNextMarkerAlign != Qt::AlignTop && untilNextMarkerAlign != Qt::AlignBottom) {
+            // center
+            y -= ch / 2.f;
+        }
+    }
+
+    if (untilNextMarkerShow == UntilNextMarkerShow::Beats ||
+            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime ||
+            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
+        const float w = m_digitsRenderer.draw(matrix,
+                x,
+                y,
                 QString::number(m_beatsUntilMark),
                 QColor(255, 255, 255, ialpha),
                 devicePixelRatio);
+        if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime) {
+            x += w + std::roundf(m_untilNextMarkerSize * 0.75);
+        }
+        if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
+            y += ch;
+        }
+    }
+
+    if (untilNextMarkerShow == UntilNextMarkerShow::Time ||
+            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime ||
+            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
         m_digitsRenderer.draw(matrix,
-                drawOffset + 8.f,
-                m_waveformRenderer->getBreadth() / 2.f + yoffset -
-                        m_digitsRenderer.height() / 2.f / devicePixelRatio,
+                x,
+                y,
                 timeToString(m_timeUntilMark),
 >>>>>>> 13349d0e47 (also show time until marker)
                 QColor(255, 255, 255, ialpha),

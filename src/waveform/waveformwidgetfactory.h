@@ -55,6 +55,14 @@ class WaveformWidgetHolder {
 
 //########################################
 
+enum class UntilNextMarkerShow {
+    None,
+    Beats,
+    Time,
+    BeatsAndTime,
+    BeatsAndTimeMultiline
+};
+
 class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
@@ -97,6 +105,23 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+
+    void setUntilNextMarkerShow(UntilNextMarkerShow value);
+    void setUntilNextMarkerAlign(Qt::Alignment align);
+    void setUntilNextMarkerSize(int value);
+
+    UntilNextMarkerShow getUntilNextMarkerShow() const {
+        return m_untilNextMarkerShow;
+    }
+    Qt::Alignment getUntilNextMarkerAlign() const {
+        return m_untilNextMarkerAlign;
+    }
+    int getUntilNextMarkerSize() const {
+        return m_untilNextMarkerSize;
+    }
+
+    static Qt::Alignment toUntilNextMarkerAlign(int index);
+    static int toUntilNextMarkerAlignIndex(Qt::Alignment align);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -193,6 +218,10 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
+
+    UntilNextMarkerShow m_untilNextMarkerShow;
+    Qt::Alignment m_untilNextMarkerAlign;
+    int m_untilNextMarkerSize;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

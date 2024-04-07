@@ -111,6 +111,9 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
           m_zoomSync(true),
           m_overviewNormalized(false),
+          m_untilNextMarkerShow(UntilNextMarkerShow::None),
+          m_untilNextMarkerAlign(Qt::AlignVCenter),
+          m_untilNextMarkerSize(24),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -402,6 +405,16 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
             WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
     setPlayMarkerPosition(m_playMarkerPosition);
+
+    setUntilNextMarkerShow(static_cast<UntilNextMarkerShow>(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilNextMarkerShow"),
+                    static_cast<int>(m_untilNextMarkerShow))));
+    setUntilNextMarkerAlign(toUntilNextMarkerAlign(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilNextMarkerAlign"),
+                    toUntilNextMarkerAlignIndex(m_untilNextMarkerAlign))));
+    setUntilNextMarkerSize(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilNextMarkerSize"),
+                    m_untilNextMarkerSize));
 
     return true;
 }
@@ -1247,4 +1260,54 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
     format.setSwapInterval(vsyncMode == VSyncThread::ST_PLL ? 1 : 0);
 #endif
     return format;
+}
+
+void WaveformWidgetFactory::setUntilNextMarkerShow(UntilNextMarkerShow value) {
+    m_untilNextMarkerShow = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "UntilNextMarkerShow"),
+                static_cast<int>(m_untilNextMarkerShow));
+    }
+}
+void WaveformWidgetFactory::setUntilNextMarkerAlign(Qt::Alignment align) {
+    m_untilNextMarkerAlign = align;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "UntilNextMarkerAlign"),
+                toUntilNextMarkerAlignIndex(m_untilNextMarkerAlign));
+    }
+}
+void WaveformWidgetFactory::setUntilNextMarkerSize(int value) {
+    m_untilNextMarkerSize = value;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "UntilNextMarkerSize"), m_untilNextMarkerSize);
+    }
+}
+
+// static
+Qt::Alignment WaveformWidgetFactory::toUntilNextMarkerAlign(int index) {
+    switch (index) {
+    case 0:
+        return Qt::AlignTop;
+    case 1:
+        return Qt::AlignVCenter;
+    case 2:
+        return Qt::AlignBottom;
+    }
+    assert(false);
+    return Qt::AlignVCenter;
+}
+// static
+int WaveformWidgetFactory::toUntilNextMarkerAlignIndex(Qt::Alignment align) {
+    switch (align) {
+    case Qt::AlignTop:
+        return 0;
+    case Qt::AlignVCenter:
+        return 1;
+    case Qt::AlignBottom:
+        return 2;
+    default:
+        break;
+    }
+    assert(false);
+    return 1;
 }
