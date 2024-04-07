@@ -447,9 +447,11 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         // performance penalty of ~20
         // https://github.com/mixxxdj/mixxx/issues/7747
 
-        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero is not
-        // configurable, for discussion and links see
-        // https://github.com/mixxxdj/mixxx/pull/12917
+        // On Emscripten (WebAssembly) denormals-as-zero/flush-as-zero are
+        // neither supported nor configurable. This may lead to degraded
+        // performance compared to other platforms and may be addressed in the
+        // future if/when WebAssembly adds support for DAZ/FTZ. For further
+        // discussion and links see https://github.com/mixxxdj/mixxx/pull/12917
 
 #if defined(__SSE__) && !defined(__EMSCRIPTEN__)
         if (!_MM_GET_DENORMALS_ZERO_MODE()) {
