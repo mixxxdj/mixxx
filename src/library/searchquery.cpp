@@ -13,6 +13,8 @@
 
 namespace {
 
+constexpr double kLibraryRoundRange = 0.05;
+
 const QRegularExpression kDurationRegex(QStringLiteral("^(\\d+)(m|:)?([0-5]?\\d)?s?$"));
 
 // The ordering of operator alternatives separated by '|' is crucial to avoid incomplete
@@ -506,6 +508,7 @@ inline QString rangeUpperExclusiveSqlString(double lower, double upper) {
 inline std::pair<double, double> rangeFromTrailingDecimal(double bpm) {
     // Set up a range if we have decimals. This will include matches
     // for which we show rounded values in the library. For example
+    // 124.0  finds 123.95 - 124.05
     // 124.1  finds 124.05 - 124.15
     // 124.92 finds 124.915 - 124.925
     if (bpm == 0.0) {
@@ -637,17 +640,18 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         break;
     }
     case MatchMode::HalveDouble: {
+        DEBUG_ASSERT(bpm == floor(bpm));
         // For instance bpm = 127
         // We find everything that is displayed as 127.** in the library
-        m_rangeLower = rangeFromTrailingDecimal(bpm).first; // [126.95
-        m_rangeUpper = floor(bpm + 1);                      // ]128
+        m_rangeLower = bpm - kLibraryRoundRange; // [126.95
+        m_rangeUpper = bpm + 1;                  // ]128
         // In case bpm / 2 is a fractional, we include the *.0 value neighbours
         // since fractional bpm values are less common in some genres.
         m_bpmHalfLower = floor(bpm / 2); // [63
         m_bpmHalfUpper = ceil(bpm / 2);  // 64]
         // We find everything which would be found when editing the beat grid via / 2
-        m_bpmDoubleLower = rangeFromTrailingDecimal(bpm * 2).first; // [253.95
-        m_bpmDoubleUpper = m_rangeUpper * 2;                        // ]256
+        m_bpmDoubleLower = (bpm * 2) - kLibraryRoundRange; // [253.95
+        m_bpmDoubleUpper = m_rangeUpper * 2;               // ]256
         break;
     }
     case MatchMode::HalveDoubleStrict: { //            57.0
