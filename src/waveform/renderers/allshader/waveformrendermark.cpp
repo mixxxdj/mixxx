@@ -346,7 +346,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
                 QColor(255, 255, 255, ialpha),
                 devicePixelRatio);
         if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime) {
-            x += w + std::roundf(m_untilNextMarkerSize * 0.75);
+            x += w + std::round(static_cast<float>(m_untilNextMarkerSize) * 0.75f);
         }
         if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
             y += ch;
