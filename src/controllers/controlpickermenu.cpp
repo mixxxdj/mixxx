@@ -1398,6 +1398,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Decrease the track rating by one star"),
             pGuiMenu);
 
+    // Controls to change a deck's loaded track color
+    addDeckAndPreviewDeckControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select previous color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_selector",
+            tr("Navigate Through Track Colors"),
+            tr("Select either next or previous color in the palette for the loaded track."),
+            pGuiMenu);
+
     // Misc. controls
     addControl("[Shoutcast]",
             "enabled",
