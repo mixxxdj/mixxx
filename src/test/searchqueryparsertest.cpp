@@ -498,16 +498,29 @@ TEST_F(SearchQueryParserTest, BpmFilter) {
     m_parser.setSearchColumns({"artist", "album"});
 
     // Test BpmFilter's MatchModes:
-    // HalveDouble
-    auto pQuery(m_parser.parseQuery("bpm:127", QString()));
+
+    // HalveDouble even
+    auto pQuery = m_parser.parseQuery("bpm:126", QString());
     TrackPointer pTrack = newTestTrack();
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->trySetBpm(126.13);
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+            qPrintable(QString("(bpm >= 125.95 AND bpm < 127) OR "
+                               "(bpm >= 62.95 AND bpm < 64) OR "
+                               "(bpm >= 251.95 AND bpm < 254)")),
+            qPrintable(pQuery->toSql()));
+
+    // HalveDouble uneven
+    pQuery = m_parser.parseQuery("bpm:127", QString());
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->trySetBpm(127.13);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
             qPrintable(QString("(bpm >= 126.95 AND bpm < 128) OR "
-                               "(bpm BETWEEN 63 AND 64) OR "
+                               "(bpm >= 62.95 AND bpm < 64.5) OR "
                                "(bpm >= 253.95 AND bpm < 256)")),
             qPrintable(pQuery->toSql()));
 

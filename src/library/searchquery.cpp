@@ -645,10 +645,19 @@ BpmFilterNode::BpmFilterNode(QString& argument, bool fuzzy, bool negate)
         // We find everything that is displayed as 127.** in the library
         m_rangeLower = bpm - kLibraryRoundRange; // [126.95
         m_rangeUpper = bpm + 1;                  // ]128
-        // In case bpm / 2 is a fractional, we include the *.0 value neighbours
-        // since fractional bpm values are less common in some genres.
-        m_bpmHalfLower = floor(bpm / 2); // [63
-        m_bpmHalfUpper = ceil(bpm / 2);  // 64]
+
+        double halfBpm = bpm / 2;
+        if (floor(halfBpm) != halfBpm) {
+            // In case bpm / 2 is a fractional, we include the *.0 value neighbours
+            // since fractional bpm values are less common in some genres.
+            m_bpmHalfLower = floor(halfBpm) - kLibraryRoundRange; // [62.95
+        } else {
+            // Here we are for instance with 126
+            // We find everything that is displayed as 63.** in the library
+            m_bpmHalfLower = halfBpm - kLibraryRoundRange; //        [62.95
+        }
+        m_bpmHalfUpper = halfBpm + 1; //                                ]64
+
         // We find everything which would be found when editing the beat grid via / 2
         m_bpmDoubleLower = (bpm * 2) - kLibraryRoundRange; // [253.95
         m_bpmDoubleUpper = m_rangeUpper * 2;               // ]256
@@ -729,7 +738,7 @@ QString BpmFilterNode::toSql() const {
     case MatchMode::HalveDouble: {
         QStringList searchClauses;
         searchClauses << rangeUpperExclusiveSqlString(m_rangeLower, m_rangeUpper);
-        searchClauses << rangeSqlString(m_bpmHalfLower, m_bpmHalfUpper);
+        searchClauses << rangeUpperExclusiveSqlString(m_bpmHalfLower, m_bpmHalfUpper);
         searchClauses << rangeUpperExclusiveSqlString(m_bpmDoubleLower, m_bpmDoubleUpper);
         return concatSqlClauses(searchClauses, "OR");
     }
