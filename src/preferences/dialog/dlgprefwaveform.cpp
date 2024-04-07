@@ -41,6 +41,17 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
+    // Populate untilNextMarker options
+    untilNextMarkerShowComboBox->addItem(tr("None"));
+    untilNextMarkerShowComboBox->addItem(tr("Beats"));
+    untilNextMarkerShowComboBox->addItem(tr("Time"));
+    untilNextMarkerShowComboBox->addItem(tr("Beats + Time"));
+    untilNextMarkerShowComboBox->addItem(tr("Beats + Time (multi-line)"));
+
+    untilNextMarkerPlacementComboBox->addItem(tr("Top"));
+    untilNextMarkerPlacementComboBox->addItem(tr("Center"));
+    untilNextMarkerPlacementComboBox->addItem(tr("Bottom"));
+
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
