@@ -38,7 +38,7 @@ float allshader::DigitsRenderer::height() const {
     return static_cast<float>(m_pTexture->height());
 }
 
-void allshader::DigitsRenderer::generateTexture(float fontPixelSize, float devicePixelRatio) {
+void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float devicePixelRatio) {
     QFont font;
     const char* str = "0123456789:.";
     font.setFamily("Open Sans");

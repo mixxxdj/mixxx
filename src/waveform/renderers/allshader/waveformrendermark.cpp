@@ -84,8 +84,7 @@ void allshader::WaveformRenderMark::initializeGL() {
     // Will create textures so requires OpenGL context
     updateMarkImages();
     updatePlayPosMarkTexture();
-    m_untilNextMarkerSize = static_cast<float>(
-            WaveformWidgetFactory::instance()->getUntilNextMarkerSize());
+    m_untilNextMarkerSize = WaveformWidgetFactory::instance()->getUntilNextMarkerSize();
     m_digitsRenderer.generateTexture(
             m_untilNextMarkerSize, m_waveformRenderer->getDevicePixelRatio());
 }
@@ -307,8 +306,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     const auto untilNextMarkerAlign = WaveformWidgetFactory::instance()->getUntilNextMarkerAlign();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    const auto untilNextMarkerSize = static_cast<float>(
-            WaveformWidgetFactory::instance()->getUntilNextMarkerSize());
+    const int untilNextMarkerSize = WaveformWidgetFactory::instance()->getUntilNextMarkerSize();
     if (untilNextMarkerSize != m_untilNextMarkerSize) {
         m_untilNextMarkerSize = untilNextMarkerSize;
         m_digitsRenderer.generateTexture(m_untilNextMarkerSize,
