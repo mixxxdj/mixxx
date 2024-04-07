@@ -112,6 +112,11 @@ class WPushButton : public WWidget {
     QTimer m_clickTimer;
     QVector<int> m_align;
 
+    // Animates long press latching by storing the off state of the
+    // WPushButton in a pixmap and gradually (from left to right)
+    // drawing less of the off state on top of the on state, to
+    // give a visual indication that the long press latching is in
+    // progress.
     class LongPressLatching {
       public:
         LongPressLatching(WPushButton* pButton);
@@ -125,5 +130,6 @@ class WPushButton : public WWidget {
         QTimer m_animTimer;
     };
 
+    // Only assigned for WPushButtons that use long press latching
     std::unique_ptr<LongPressLatching> m_pLongPressLatching;
 };
