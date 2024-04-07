@@ -12,6 +12,13 @@ case "$1" in
         ;;
 
     setup)
+        if grep -qP '^NAME=.*Fedora.*' /etc/os-release; then
+            # Add RPM Fusion repository (required for faad2 and ffmpeg-devel)
+            sudo dnf install -y "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm"
+        else
+            echo "Warning: You are not running Fedora and may have to set up RPM Fusion manually if there are missing packages!"
+        fi
+
         sudo dnf install -y \
             appstream \
             ccache \
