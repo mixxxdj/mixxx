@@ -833,6 +833,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Clears the search query"),
             pLibraryMenu);
 
+    // Color selection
+    addLibraryControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette"
+               " for the first selected track"),
+            pLibraryMenu);
+    addLibraryControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select the previous color in the color palette"
+               " for the first selected track"),
+            pLibraryMenu);
+
     pLibraryMenu->addSeparator();
     addControl("[Recording]",
             "toggle_recording",
