@@ -6,12 +6,14 @@
 
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
+#include "widget/wbasewidget.h"
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
         QObject* parent,
         const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(nullptr) {
+          m_pKbdConfigObject(nullptr),
+          m_enabled(false) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -41,6 +43,12 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QKeySequence ks = getKeySeq(ke);
+
+        // Return after logging the key event in getKeySeq()
+        if (!isEnabled()) {
+            return true;
+        }
+
         if (!ks.isEmpty()) {
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
@@ -153,6 +161,21 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
         qDebug() << "keyboard press: " << k.toString();
     }
     return k;
+}
+
+void KeyboardEventFilter::setEnabled(bool enabled) {
+    m_enabled = enabled;
+    emit shortcutsEnabled(enabled);
+}
+
+void KeyboardEventFilter::connectBaseWidgetShortcutToggle(WBaseWidget* pWidget) {
+    // WBaseWidget is not a QObject, need to use a lambda
+    connect(this,
+            &KeyboardEventFilter::shortcutsEnabled,
+            this,
+            [pWidget](bool enabled) {
+                pWidget->toggleKeyboardShortcutHints(enabled);
+            });
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

@@ -6,7 +6,8 @@
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pDisplayConnection(nullptr),
-          m_pWidget(pWidget) {
+          m_pWidget(pWidget),
+          m_showKeyboardShortcuts(false) {
 }
 
 WBaseWidget::~WBaseWidget() {
@@ -151,7 +152,7 @@ void WBaseWidget::updateTooltip() {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = baseTooltip();
+        QString base = baseTooltipOptShortcuts();
         if (!base.isEmpty()) {
             debug.append(QString("Tooltip: \"%1\"").arg(base));
         }

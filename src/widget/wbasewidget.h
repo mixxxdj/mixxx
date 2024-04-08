@@ -1,8 +1,8 @@
 #pragma once
 
+#include <QList>
 #include <QString>
 #include <QWidget>
-#include <QList>
 
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
@@ -20,21 +20,51 @@ class WBaseWidget {
 
     void appendBaseTooltip(const QString& tooltip) {
         m_baseTooltip.append(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void prependBaseTooltip(const QString& tooltip) {
         m_baseTooltip.prepend(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void setBaseTooltip(const QString& tooltip) {
         m_baseTooltip = tooltip;
-        m_pWidget->setToolTip(tooltip);
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void appendShortcutTooltip(const QString& tooltip) {
+        m_shortcutTooltip.append(tooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     QString baseTooltip() const {
         return m_baseTooltip;
+    }
+
+    QString shortcutHints() const {
+        return m_shortcutTooltip;
+    }
+
+    QString baseTooltipOptShortcuts() const {
+        return m_baseTooltipOptShortcuts;
+    }
+
+    /// Append/remove shortcuts hint when shortcuts are toggled
+    void toggleKeyboardShortcutHints(bool enabled) {
+        m_showKeyboardShortcuts = enabled;
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void updateBaseTooltipOptShortcuts() {
+        QString tooltip;
+        tooltip += m_baseTooltip;
+        if (m_showKeyboardShortcuts && !m_shortcutTooltip.isEmpty()) {
+            tooltip += "\n";
+            tooltip += m_shortcutTooltip;
+        }
+        m_baseTooltipOptShortcuts = tooltip;
+        m_pWidget->setToolTip(tooltip);
     }
 
     void addLeftConnection(ControlParameterWidgetConnection* pConnection);
@@ -59,7 +89,6 @@ class WBaseWidget {
     inline const QList<ControlParameterWidgetConnection*>& leftConnections() const {
         return m_leftConnections;
     };
-
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is
@@ -95,7 +124,12 @@ class WBaseWidget {
 
   private:
     QWidget* m_pWidget;
+
     QString m_baseTooltip;
+    QString m_shortcutTooltip;
+    QString m_baseTooltipOptShortcuts;
+
+    bool m_showKeyboardShortcuts;
 
     friend class ControlParameterWidgetConnection;
 };

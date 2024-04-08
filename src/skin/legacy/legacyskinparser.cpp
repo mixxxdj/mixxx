@@ -2275,6 +2275,9 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
 void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
     ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = nullptr;
 
+    QString shortcutTooltip;
+    bool keyboardShortcutsEnabled = m_pKeyboard->isEnabled();
+
     for (QDomNode con = m_pContext->selectNode(node, "Connection");
             !con.isNull();
             con = con.nextSibling()) {
@@ -2386,8 +2389,10 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                 break;
             }
 
+            // Add keyboard shortcuts to tooltip.
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.
+            // I.e. do not add Shortcut string for feedback connections
             if (directionOption & ControlParameterWidgetConnection::DIR_FROM_WIDGET) {
                 m_pControllerManager->getControllerLearningEventFilter()
                         ->addWidgetClickInfo(pWidget->toQWidget(), state, control,
@@ -2395,77 +2400,81 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
 
                 // Add keyboard shortcut info to tooltip string
                 QString key = m_pContext->selectString(con, "ConfigKey");
-                ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
+                const ConfigKey configKey = ConfigKey::parseCommaSeparated(key);
 
-                // do not add Shortcut string for feedback connections
                 QString shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(configKey);
-                addShortcutToToolTip(pWidget, shortcut, QString(""));
+                shortcutTooltip.append(buildShortcutString(shortcut, QString("")));
 
                 const WSliderComposed* pSlider;
 
                 if (qobject_cast<const  WPushButton*>(pWidget->toQWidget())) {
                     // check for "_activate", "_toggle"
                     ConfigKey subkey;
-                    QString shortcut;
 
                     subkey = configKey;
                     subkey.item += "_activate";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                    addShortcutToToolTip(pWidget, shortcut, tr("activate"));
+                    shortcutTooltip.append(buildShortcutString(shortcut, tr("activate")));
 
                     subkey = configKey;
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                    addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
+                    shortcutTooltip.append(buildShortcutString(shortcut, tr("toggle")));
                 } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget()))) {
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
-                    QString shortcut;
 
                     if (pSlider->isHorizontal()) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("right"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("right")));
 
                         subkey = configKey;
                         subkey.item += "_down";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("left"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("left")));
 
                         subkey = configKey;
                         subkey.item += "_up_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("right small"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("right small")));
 
                         subkey = configKey;
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("left small"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("left small")));
                     } else {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("up"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("up")));
 
                         subkey = configKey;
                         subkey.item += "_down";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("down"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("down")));
 
                         subkey = configKey;
                         subkey.item += "_up_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("up small"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("up small")));
 
                         subkey = configKey;
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
-                        addShortcutToToolTip(pWidget, shortcut, tr("down small"));
+                        shortcutTooltip.append(buildShortcutString(shortcut, tr("down small")));
                     }
                 }
             }
         }
+    }
+
+    if (!shortcutTooltip.isEmpty()) {
+        pWidget->appendShortcutTooltip(shortcutTooltip);
+        pWidget->toggleKeyboardShortcutHints(keyboardShortcutsEnabled);
+        // Connect to update tooltip when toggling shortcuts functionality
+        m_pKeyboard->connectBaseWidgetShortcutToggle(pWidget);
     }
 
     // Legacy behavior: The last left-button or no-button connection with
@@ -2477,26 +2486,25 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
     }
 }
 
-void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
-                                            const QString& shortcut, const QString& cmd) {
+const QString LegacySkinParser::buildShortcutString(
+        const QString& shortcut, const QString& cmd) const {
     if (shortcut.isEmpty()) {
-        return;
+        return QString();
     }
-
-    QString tooltip;
 
     // translate shortcut to native text
     QString nativeShortcut = QKeySequence(shortcut, QKeySequence::PortableText).toString(QKeySequence::NativeText);
 
-    tooltip += "\n";
-    tooltip += tr("Shortcut");
+    QString shortcutTooltip;
+    shortcutTooltip += "\n";
+    shortcutTooltip += tr("Shortcut");
     if (!cmd.isEmpty()) {
-        tooltip += " ";
-        tooltip += cmd;
+        shortcutTooltip += " ";
+        shortcutTooltip += cmd;
     }
-    tooltip += ": ";
-    tooltip += nativeShortcut;
-    pWidget->appendBaseTooltip(tooltip);
+    shortcutTooltip += ": ";
+    shortcutTooltip += nativeShortcut;
+    return shortcutTooltip;
 }
 
 QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {

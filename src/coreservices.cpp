@@ -136,7 +136,6 @@ CoreServices::~CoreServices() {
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
     CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
 
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::destroy();
@@ -464,9 +463,6 @@ void CoreServices::initializeKeyboard() {
     // Check first in user's Mixxx directory
     QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
 
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
-
     if (QFile::exists(userKeyboard)) {
         qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
         m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
@@ -496,21 +492,19 @@ void CoreServices::initializeKeyboard() {
     // Workaround for today: KeyboardEventFilter calls delete
     bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
             ConfigKey("[Keyboard]", "Enabled"));
-    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(
-            keyboardShortcutsEnabled ? m_pKbdConfig.get() : m_pKbdConfigEmpty.get());
+    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(m_pKbdConfig.get());
+    m_pKeyboardEventFilter->setEnabled(keyboardShortcutsEnabled);
 }
 
 void CoreServices::slotOptionsKeyboard(bool toggle) {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
+        // qDebug() << "Enable keyboard shortcuts/mappings";
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
+        // qDebug() << "Disable keyboard shortcuts/mappings";
     }
+    m_pKeyboardEventFilter->setEnabled(toggle);
+    pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(toggle ? 1 : 0));
 }
 
 bool CoreServices::initializeDatabase() {

@@ -9,6 +9,7 @@
 class ControlObject;
 class QEvent;
 class QKeyEvent;
+class WBaseWidget;
 
 // This class provides handling of keyboard events.
 class KeyboardEventFilter : public QObject {
@@ -24,6 +25,17 @@ class KeyboardEventFilter : public QObject {
     // ownership of pKbdConfigObject.
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
+
+    void setEnabled(bool enabled);
+    bool isEnabled() {
+        return m_enabled;
+    }
+
+    void connectBaseWidgetShortcutToggle(WBaseWidget* pWidget); // const
+
+  signals:
+    // We're only the relay here: CoreServices -> this -> WBaseWidget
+    void shortcutsEnabled(bool enabled);
 
   private:
     struct KeyDownInformation {
@@ -56,6 +68,8 @@ class KeyboardEventFilter : public QObject {
     QList<KeyDownInformation> m_qActiveKeyList;
     // Pointer to keyboard config object
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
+    bool m_enabled;
+
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };
