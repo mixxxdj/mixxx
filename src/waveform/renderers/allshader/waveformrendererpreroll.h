@@ -22,7 +22,7 @@ class allshader::WaveformRendererPreroll : public allshader::WaveformRenderer {
   public:
     explicit WaveformRendererPreroll(
             WaveformWidgetRenderer* waveformWidgetRenderer,
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
     ~WaveformRendererPreroll() override;
 

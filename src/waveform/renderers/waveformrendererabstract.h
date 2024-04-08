@@ -18,7 +18,7 @@ class WaveformRendererAbstract {
     /// The type of cursor for which the waveform is rendered
     ///  Play: the play cursor is the area of focus for the renderer
     ///  Slip: the slip cursor is the area of focus for the renderer
-    enum Type {
+    enum PositionSource {
         Play,
         Slip
     };

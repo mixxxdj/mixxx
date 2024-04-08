@@ -17,7 +17,6 @@ const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-constexpr int kWaveformRendererAbstractTypeEnd = ::WaveformRendererAbstract::Slip + 1;
 } // namespace
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
@@ -47,7 +46,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_passthroughEnabled(false) {
     //qDebug() << "WaveformWidgetRenderer";
     for (int type = ::WaveformRendererAbstract::Play;
-            type < kWaveformRendererAbstractTypeEnd;
+            type <= ::WaveformRendererAbstract::Slip;
             type++) {
         m_firstDisplayedPosition[type] = 0.0;
         m_lastDisplayedPosition[type] = 0.0;
@@ -110,7 +109,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     if (m_passthroughEnabled) {
         // disables renderers in draw()
         for (int type = ::WaveformRendererAbstract::Play;
-                type < kWaveformRendererAbstractTypeEnd;
+                type <= ::WaveformRendererAbstract::Slip;
                 type++) {
             m_pos[type] = -1.0;
             m_truePosSample[type] = -1.0;
@@ -168,7 +167,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
         m_totalVSamples = static_cast<int>(m_trackPixelCount * m_visualSamplePerPixel);
         for (int type = ::WaveformRendererAbstract::Play;
-                type < kWaveformRendererAbstractTypeEnd;
+                type <= ::WaveformRendererAbstract::Slip;
                 type++) {
             // Avoid pixel jitter in play position by rounding to the nearest track
             // pixel.
@@ -181,7 +180,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
     } else {
         for (int type = ::WaveformRendererAbstract::Play;
-                type < kWaveformRendererAbstractTypeEnd;
+                type <= ::WaveformRendererAbstract::Slip;
                 type++) {
             m_pos[type] = -1.0; // disable renderers
             m_truePosSample[type] = -1.0;

@@ -45,7 +45,7 @@ class TextureGraphics : public WaveformMark::Graphics {
 
 allshader::WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::Type type)
+        ::WaveformRendererAbstract::PositionSource type)
         : WaveformRenderMarkBase(waveformWidget, false),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }

@@ -15,7 +15,7 @@ inline float math_pow2(float x) {
 } // namespace
 
 WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::Type type)
+        ::WaveformRendererAbstract::PositionSource type)
         : WaveformRendererSignalBase(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }

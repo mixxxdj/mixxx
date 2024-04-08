@@ -58,12 +58,12 @@ class WaveformWidgetRenderer {
     CuePointer getCuePointerFromIndex(int cueIndex) const;
 
     double getFirstDisplayedPosition(
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play) const {
         return m_firstDisplayedPosition[type];
     }
     double getLastDisplayedPosition(
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play) const {
         return m_lastDisplayedPosition[type];
     }
@@ -84,7 +84,7 @@ class WaveformWidgetRenderer {
     // stable and deterministic
     // Transform sample index to pixel in track.
     inline double transformSamplePositionInRendererWorld(double samplePosition,
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play) const {
         if (std::abs(samplePosition - m_truePosSample[type]) < 1.f) {
             // When asked for the sample position that corresponds with the play
@@ -97,7 +97,7 @@ class WaveformWidgetRenderer {
                 2 / m_audioSamplePerPixel;
     }
 
-    int getPlayPosVSample(::WaveformRendererAbstract::Type type =
+    int getPlayPosVSample(::WaveformRendererAbstract::PositionSource type =
                                   ::WaveformRendererAbstract::Play) const {
         return m_posVSample[type];
     }

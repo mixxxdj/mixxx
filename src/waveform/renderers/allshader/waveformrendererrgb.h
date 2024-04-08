@@ -13,7 +13,7 @@ class WaveformRendererRGB;
 class allshader::WaveformRendererRGB final : public allshader::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
     // override ::WaveformRendererSignalBase

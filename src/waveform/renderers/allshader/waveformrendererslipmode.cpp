@@ -11,7 +11,11 @@
 namespace {
 
 constexpr int kBlinkingPeriodMillis = 1600;
+// Position matrix passed to OpenGL when drawing the shader
 constexpr float positionArray[] = {-1.f, -1.f, 1.f, -1.f, -1.f, 1.f, 1.f, 1.f};
+
+// Used as default outline color in case no value is provided in the theme
+constexpr QColor kDefaultColor = QColor(224, 224, 224);
 
 } // anonymous namespace
 
@@ -20,7 +24,6 @@ namespace allshader {
 WaveformRendererSlipMode::WaveformRendererSlipMode(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRenderer(waveformWidget),
-          m_pSlipMode(nullptr),
           m_slipBorderTopOutlineSize(10.f),
           m_slipBorderBottomOutlineSize(10.f) {
 }
@@ -28,18 +31,18 @@ WaveformRendererSlipMode::WaveformRendererSlipMode(
 bool WaveformRendererSlipMode::init() {
     m_timer.restart();
 
-    m_pSlipMode.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), "slip_enabled"));
+    m_pSlipMode = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "slip_enabled");
 
     return true;
 }
 
 void WaveformRendererSlipMode::setup(const QDomNode& node, const SkinContext& context) {
-    m_color = QColor(224, 224, 224);
     const QString slipModeOutlineColorName = context.selectString(node, "SlipBorderOutlineColor");
     if (!slipModeOutlineColorName.isNull()) {
-        m_color = QColor(slipModeOutlineColorName);
-        m_color = WSkinColor::getCorrectColor(m_color);
+        m_color = WSkinColor::getCorrectColor(QColor(slipModeOutlineColorName));
+    } else {
+        m_color = kDefaultColor;
     }
     const float slipBorderTopOutlineSize = context.selectFloat(
             node, "SlipBorderTopOutlineSize", m_slipBorderTopOutlineSize);
@@ -65,7 +68,8 @@ void WaveformRendererSlipMode::paintGL() {
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
-    const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
+    const double blinkIntensity =
+            static_cast<double>(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
             kBlinkingPeriodMillis;
 
     const double alpha = 0.25 + 0.5 * blinkIntensity;
@@ -94,8 +98,8 @@ void WaveformRendererSlipMode::paintGL() {
                 positionLocation, GL_FLOAT, positionArray, 2);
 
         m_shader.setUniformValue(gradientLocation,
-                (float)m_waveformRenderer->getLength() / 2,
-                (float)m_waveformRenderer->getBreadth() / 2);
+                static_cast<float>(m_waveformRenderer->getLength()) / 2,
+                static_cast<float>(m_waveformRenderer->getBreadth()) / 2);
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

@@ -11,7 +11,7 @@
 namespace allshader {
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidget,
-        ::WaveformRendererAbstract::Type type)
+        ::WaveformRendererAbstract::PositionSource type)
         : WaveformRenderer(waveformWidget),
           m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }

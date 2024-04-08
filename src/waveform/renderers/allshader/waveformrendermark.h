@@ -19,7 +19,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
                                       public allshader::WaveformRendererAbstract {
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidget,
-            ::WaveformRendererAbstract::Type type =
+            ::WaveformRendererAbstract::PositionSource type =
                     ::WaveformRendererAbstract::Play);
 
     void draw(QPainter* painter, QPaintEvent* event) override {

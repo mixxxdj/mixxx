@@ -27,8 +27,8 @@ in highp vec4 vposition;
 void main()
 {
 
-    float xBorder = abs(dimension.x*vposition.x);
-    float yBorder = dimension.y*vposition.y;
+    float xBorder = abs(dimension.x * vposition.x);
+    float yBorder = dimension.y * vposition.y;
     float upperBoard = borders.x;
     float lowerBoard = borders.y;
 
