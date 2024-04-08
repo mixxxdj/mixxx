@@ -282,6 +282,7 @@ void ControllerManager::slotSetUpDevices() {
         if (!pMapping) {
             continue;
         }
+        pMapping->loadSettings(m_pConfig, pController->getName());
 
         // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
         pController->setMapping(pMapping->clone());

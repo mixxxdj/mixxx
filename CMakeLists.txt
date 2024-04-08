@@ -731,10 +731,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
   src/controllers/controllermappinginfo.cpp
+  src/controllers/legacycontrollersettings.cpp
+  src/controllers/legacycontrollersettingslayout.cpp
   src/controllers/controllermappinginfoenumerator.cpp
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
+  src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -1593,6 +1597,21 @@ if(APPLE)
       target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
     endif()
   endif()
+
+  option(AU_EFFECTS "Audio Unit (AU) effects integration" ON)
+  if(AU_EFFECTS)
+    target_sources(mixxx-lib PRIVATE
+      src/effects/backends/audiounit/audiounitbackend.mm
+      src/effects/backends/audiounit/audiounitmanager.mm
+      src/effects/backends/audiounit/audiouniteffectprocessor.mm
+      src/effects/backends/audiounit/audiounitmanifest.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE
+      "-weak_framework AudioToolbox"
+      "-weak_framework AVFAudio"
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
+  endif()
 endif()
 
 if(EMSCRIPTEN)
@@ -2072,6 +2091,8 @@ add_executable(mixxx-test
   src/test/colorpalette_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_mapping_validation_test.cpp
+  src/test/controller_mapping_settings_test.cpp
+  src/test/controllers/controller_columnid_regression_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/controlobjectaliastest.cpp
@@ -3245,11 +3266,7 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
 if (NOT TagLib_VERSION VERSION_LESS 2.0.0)
-    message(FATAL_ERROR "Installed Taglib ${TagLib_VERSION} is not supported. Use Version >= 1.11 and < 2.0 and its development headers.")
-    # Dear package maintainer: Do not patch away this fatal error
-    # using taglib 2.0.0 will put user data at risk!!
-    # Mixxx is a complex application that needs to be adapted and tested thoroughly
-    # https://github.com/mixxxdj/mixxx/issues/12708
+  message(WARNING "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead.")
 endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if (QML)

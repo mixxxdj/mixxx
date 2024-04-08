@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-03-18" timestamp="1710747808">
+    <release version="2.5.0" type="development" date="2024-03-13" timestamp="1710284546">
       <description>
  <p>
   Features
@@ -704,15 +704,24 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-03-18" timestamp="1710747808">
+    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710284546">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
-   Pioneer DDJ-FLX4 mapping improvements
+   Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
+   #12932
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: Add waveform zoom and other mapping improvements
+   #12896
    #12842
+  </li>
+  <li>
+   Traktor Kontrol F1: Fixes for hid-parser and related script
+   #12876
   </li>
   <li>
    Traktor S3: Fix mapping crash on macOS
@@ -728,6 +737,28 @@
    #12853
    #12847
    #12822
+   #12892
+  </li>
+ </ul>
+ <p>
+  Miscellaneous
+ </p>
+ <ul>
+  <li>
+   Remove unnecessary unpolish operation of the style, before polish the new style
+   #12445
+  </li>
+  <li>
+   Developer Tools: Initially sort controls by group name, ascending
+   #12884
+  </li>
+  <li>
+   History: Show track count and duration in sidebar
+   #12811
+  </li>
+  <li>
+   Prevent removing tracks from locked playlists
+   #12927
   </li>
  </ul>
 </description>
@@ -2019,7 +2050,7 @@
    #12458
   </li>
   <li>
-   change SKIN_WARNING to show the skin file:line first, then c++ context
+   Change SKIN_WARNING to show the skin file and line first, then c++ context
    #12253
   </li>
   <li>

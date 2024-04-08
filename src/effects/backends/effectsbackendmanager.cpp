@@ -2,7 +2,11 @@
 
 #include "control/controlobject.h"
 #include "effects/backends/builtin/builtinbackend.h"
+#include "effects/backends/effectmanifest.h"
 #include "effects/backends/effectprocessor.h"
+#ifdef __AU_EFFECTS__
+#include "effects/backends/audiounit/audiounitbackend.h"
+#endif
 #ifdef __LILV__
 #include "effects/backends/lv2/lv2backend.h"
 #endif
@@ -14,6 +18,9 @@ EffectsBackendManager::EffectsBackendManager() {
     m_pNumEffectsAvailable->setReadOnly();
 
     addBackend(EffectsBackendPointer(new BuiltInBackend()));
+#ifdef __AU_EFFECTS__
+    addBackend(createAudioUnitBackend());
+#endif
 #ifdef __LILV__
     addBackend(EffectsBackendPointer(new LV2Backend()));
 #endif
