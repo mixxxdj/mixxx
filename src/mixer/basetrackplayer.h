@@ -2,6 +2,7 @@
 
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
@@ -14,14 +15,15 @@
 class EngineMixer;
 class ControlObject;
 class ControlProxy;
+class ControlEncoder;
 class EffectsManager;
 class QString;
 class EngineDeck;
 
 constexpr int kUnreplaceDelay = 500;
 
-// Interface for not leaking implementation details of BaseTrackPlayer into the
-// rest of Mixxx. Also makes testing a lot easier.
+/// Interface for not leaking implementation details of BaseTrackPlayer into the
+/// rest of Mixxx. Also makes testing a lot easier.
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
@@ -109,6 +111,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     /// to compensate so there is no audible change in volume.
     void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
+    void slotTrackColorSelector(int steps);
+
     void slotSetTrackRating(int rating) final;
     /// Called via signal from WTrackProperty. Just set and confirm as requested.
     void slotSetAndConfirmTrackMenuControl(bool visible) final;
@@ -162,6 +166,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+    std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
