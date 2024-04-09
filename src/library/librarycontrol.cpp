@@ -317,15 +317,17 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     LibraryControl::slotTrackColorSelector(-1);
+                }
             });
     connect(m_pTrackColorNext.get(),
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     LibraryControl::slotTrackColorSelector(1);
+                }
             });
     connect(m_pTrackColorSelector.get(),
             &ControlEncoder::valueChanged,
