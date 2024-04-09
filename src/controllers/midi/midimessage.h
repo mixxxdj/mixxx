@@ -236,6 +236,7 @@ struct MidiInputMapping {
 
     MidiKey key;
     MidiOptions options;
+    // TODO: find a new name to represent both an XML's control entry and an anonymous JS function
     std::variant<ConfigKey, std::shared_ptr<QJSValue>> control;
     QString description;
 };

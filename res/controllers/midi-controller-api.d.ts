@@ -30,7 +30,7 @@ declare namespace midi {
      */
     function sendSysexMsg(dataList: number[], length?: number): void;
 
-    type InputCallback = (channel: string, control: string, value: number, status: number, group: string) => void
+    type InputCallback = (channel: string, control: string, value: number, status: number) => void
 
     /**
      * Calls the provided callback whenever Mixxx receives a MIDI signal with the first two bytes matching the

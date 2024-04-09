@@ -89,7 +89,7 @@ class MidiController : public Controller {
 
   private:
     void processInputMapping(
-            MidiInputMapping& mapping,
+            const MidiInputMapping& mapping,
             unsigned char status,
             unsigned char control,
             unsigned char value,
