@@ -290,7 +290,7 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     // Open input file and allocate/initialize AVFormatContext
     const int avformat_open_input_result =
             avformat_open_input(
-                    &pavInputFormatContext, fileName.toLocal8Bit().constData(), nullptr, nullptr);
+                    &pavInputFormatContext, fileName.toUtf8().constData(), nullptr, nullptr);
     if (avformat_open_input_result != 0) {
         DEBUG_ASSERT(avformat_open_input_result < 0);
         kLogger.warning().noquote()
@@ -606,12 +606,15 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
         // A dedicated number of channels for the output signal
         // has been requested. Forward this to FFmpeg to avoid
         // manual resampling or post-processing after decoding.
+        const int requestChannels = std::min(
+                static_cast<int>(params.getSignalInfo().getChannelCount()),
+                pavStream->codecpar->ch_layout.nb_channels);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
         av_channel_layout_default(&pavCodecContext->ch_layout,
-                params.getSignalInfo().getChannelCount());
+                requestChannels);
 #else
         pavCodecContext->request_channel_layout =
-                av_get_default_channel_layout(params.getSignalInfo().getChannelCount());
+                av_get_default_channel_layout(requestChannels);
 #endif
     }
 

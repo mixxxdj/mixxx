@@ -5,10 +5,10 @@
 
 #include "control/controlproxy.h"
 #include "track/cue.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;
-class WaveformSignalColors;
 class QOpenGLTexture;
 
 namespace allshader {
@@ -36,6 +36,10 @@ class WaveformMark {
     // Disable copying
     WaveformMark(const WaveformMark&) = delete;
     WaveformMark& operator=(const WaveformMark&) = delete;
+
+    float getOffset() const {
+        return m_offset;
+    }
 
     int getHotCue() const {
         return m_iHotCue;
@@ -158,6 +162,7 @@ class WaveformMark {
     QString m_iconPath;
 
     float m_linePosition;
+    float m_offset;
     float m_breadth;
 
     // When there are overlapping marks, level is increased for each overlapping mark,

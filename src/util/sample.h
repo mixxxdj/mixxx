@@ -347,6 +347,15 @@ class SampleUtil {
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
+    // Scales, adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereoWithGain(CSAMPLE_GAIN gain,
+            CSAMPLE* pDest,
+            const CSAMPLE* pSrc,
+            SINT numFrames);
+
     // Adds and doubles the mono samples in pSrc to dual mono samples
     // to pDest.
     // (numFrames) samples will be read from pSrc
@@ -411,9 +420,52 @@ class SampleUtil {
             SINT numSamples,
             int channelCount);
 
-    // Include auto-generated methods (e.g. copyXWithGain, copyXWithRampingGain,
-    // etc.)
-#include "util/sample_autogen.h"
+    static void copy1WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            int iNumSamples);
+    static void copy1WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            int iNumSamples);
+
+    static void copy2WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1,
+            int iNumSamples);
+
+    static void copy2WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1in,
+            CSAMPLE_GAIN gain1out,
+            int iNumSamples);
+
+    static void copy3WithGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1,
+            const CSAMPLE* M_RESTRICT pSrc2,
+            CSAMPLE_GAIN gain2,
+            int iNumSamples);
+
+    static void copy3WithRampingGain(CSAMPLE* M_RESTRICT pDest,
+            const CSAMPLE* M_RESTRICT pSrc0,
+            CSAMPLE_GAIN gain0in,
+            CSAMPLE_GAIN gain0out,
+            const CSAMPLE* M_RESTRICT pSrc1,
+            CSAMPLE_GAIN gain1in,
+            CSAMPLE_GAIN gain1out,
+            const CSAMPLE* M_RESTRICT pSrc2,
+            CSAMPLE_GAIN gain2in,
+            CSAMPLE_GAIN gain2out,
+            int iNumSamples);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);

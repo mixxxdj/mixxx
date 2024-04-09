@@ -254,6 +254,10 @@ BpmControl::BpmControl(const QString& group,
             this,
             &BpmControl::slotBeatsUndoAdjustment,
             Qt::DirectConnection);
+
+    m_pBeatsUndoPossible = std::make_unique<ControlObject>(
+            ConfigKey(group, "beats_undo_possible"));
+    m_pBeatsUndoPossible->setReadOnly();
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -342,6 +346,7 @@ void BpmControl::slotBeatsUndoAdjustment(double v) {
         return;
     }
     pTrack->undoBeatsChange();
+    m_pBeatsUndoPossible->forceSet(pTrack->canUndoBeatsChange());
 }
 
 void BpmControl::slotBpmTap(double v) {
@@ -1101,7 +1106,7 @@ void BpmControl::slotUpdateRateSlider(double value) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateRateSlider"
                         << value;
     }
-    // Adjust rate slider position response to a change in rate range or m_pEngineBpm
+    // Adjust rate slider position in response to a change in rate range or m_pEngineBpm
 
     double localBpm = m_pLocalBpm->get();
     if (localBpm == 0.0) {
@@ -1132,10 +1137,18 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_pBeats = pBeats;
     updateLocalBpm();
     resetSyncAdjustment();
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    m_pBeatsUndoPossible->forceSet(pTrack ? pTrack->canUndoBeatsChange() : 0);
 }
 
 void BpmControl::trackBpmLockChanged(bool locked) {
     m_pBpmLock->setAndConfirm(locked);
+    if (locked) {
+        m_pBeatsUndoPossible->forceSet(0);
+    } else {
+        TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+        m_pBeatsUndoPossible->forceSet(pTrack ? pTrack->canUndoBeatsChange() : 0);
+    }
 }
 
 void BpmControl::notifySeek(mixxx::audio::FramePos position) {

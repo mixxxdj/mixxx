@@ -55,15 +55,18 @@ class CoverArtDelegate : public TableItemDelegate {
   private:
     void emitRowsChanged(
             QList<int>&& rows);
-
-    TrackPointer loadTrackByLocation(
-            const QString& trackLocation) const;
+    void cleanCacheMissRows() const;
+    void requestUncachedCover(
+            const CoverInfo& coverInfo,
+            int width,
+            int row) const;
 
     CoverArtCache* const m_pCache;
     bool m_inhibitLazyLoading;
+    int m_column;
 
     // We need to record rows in paint() (which is const) so
     // these are marked mutable.
-    mutable QList<int> m_cacheMissRows;
+    mutable QSet<int> m_cacheMissRows;
     mutable QMultiHash<mixxx::cache_key_t, int> m_pendingCacheRows;
 };

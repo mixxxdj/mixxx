@@ -121,9 +121,10 @@
                 </Connection>
               </PushButton>
               <!-- Play -->
-              <PushButton>
+              <PlayButton>
                 <TooltipId>play_cue_set</TooltipId>
                 <Pos>11,200</Pos>
+                <Group>[Channel1]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -147,7 +148,7 @@
                   <ConfigKey>[Channel1],play_latched</ConfigKey>
                   <ConnectValueFromWidget>false</ConnectValueFromWidget>
                 </Connection>
-              </PushButton>
+              </PlayButton>
 
               <!-- Play deck 2 -->
               <!-- Play indicator, blinks depending on Cue mode -->
@@ -185,9 +186,10 @@
                 </Connection>
               </PushButton>
               <!-- Play -->
-              <PushButton>
+              <PlayButton>
                 <TooltipId>play_cue_set</TooltipId>
                 <Pos>203,200</Pos>
+                <Group>[Channel2]</Group>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -211,7 +213,7 @@
                   <ConfigKey>[Channel2],play_latched</ConfigKey>
                   <ConnectValueFromWidget>false</ConnectValueFromWidget>
                 </Connection>
-              </PushButton>
+              </PlayButton>
 
               <!--
               **********************************************

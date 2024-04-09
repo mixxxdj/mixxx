@@ -37,6 +37,24 @@ ControllerJSProxy* Controller::jsProxy() {
     return new ControllerJSProxy(this);
 }
 
+QString Controller::physicalTransport2String(PhysicalTransportProtocol protocol) {
+    switch (protocol) {
+    case PhysicalTransportProtocol::USB:
+        return QStringLiteral("USB");
+    case PhysicalTransportProtocol::BlueTooth:
+        return QStringLiteral("Bluetooth");
+    case PhysicalTransportProtocol::I2C:
+        return QStringLiteral("I2C");
+    case PhysicalTransportProtocol::SPI:
+        return QStringLiteral("SPI");
+    case PhysicalTransportProtocol::FireWire:
+        return QStringLiteral("Firewire - IEEE 1394");
+    case PhysicalTransportProtocol::UNKNOWN:
+        break; // Effectively fallthrough
+    }
+    return tr("Unknown");
+}
+
 void Controller::startEngine() {
     qCInfo(m_logBase) << "Starting engine";
     if (m_pScriptEngineLegacy) {

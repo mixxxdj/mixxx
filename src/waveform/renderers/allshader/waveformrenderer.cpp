@@ -8,9 +8,7 @@ WaveformRenderer::WaveformRenderer(WaveformWidgetRenderer* widget)
         : ::WaveformRendererAbstract(widget) {
 }
 
-void WaveformRenderer::draw(QPainter* painter, QPaintEvent* event) {
-    Q_UNUSED(painter);
-    Q_UNUSED(event);
+void WaveformRenderer::draw(QPainter*, QPaintEvent*) {
     DEBUG_ASSERT(false);
 }
 

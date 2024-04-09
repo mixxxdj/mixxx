@@ -22,7 +22,6 @@ class LegacyControllerMappingFileHandlerTest
     void SetUp() override {
         mixxx::Time::setTestMode(true);
         mixxx::Time::addTestTime(10ms);
-        SETUP_LOG_CAPTURE();
     }
 
     void TearDown() override {
@@ -43,6 +42,9 @@ class LegacyControllerMappingFileHandlerTest
             const QDir&) {
         return QFileInfo(QDir("/dummy/path/").absoluteFilePath(filename));
     }
+
+  private:
+    LogCaptureGuard m_logCaptureGuard;
 };
 
 class MockLegacyControllerMapping : public LegacyControllerMapping {
@@ -57,9 +59,6 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
             (override));
     MOCK_METHOD(void, addModule, (const QFileInfo& dirinfo, bool builtin), (override));
 
-    std::shared_ptr<LegacyControllerMapping> clone() const override {
-        throw std::runtime_error("not implemented");
-    }
     bool saveMapping(const QString&) const override {
         throw std::runtime_error("not implemented");
     }
@@ -924,6 +923,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                         </screens>
                 </controller>
                 )EOF"));
+    ASSERT_ALL_EXPECTED_MSG();
 
     mapping = std::make_shared<MockLegacyControllerMapping>();
     // This file always gets added
@@ -944,6 +944,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
             doc.documentElement(),
             mapping,
             QDir());
+    ASSERT_ALL_EXPECTED_MSG();
 }
 
 TEST_F(LegacyControllerMappingFileHandlerTest, canParseHybridMapping) {

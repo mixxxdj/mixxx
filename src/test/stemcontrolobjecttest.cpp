@@ -10,15 +10,13 @@
 
 class StemControlTest : public BaseSignalPathTest {
   protected:
-    QString getGroupForStem(const QString& deckGroup, int stemIdx) {
-        DEBUG_ASSERT(deckGroup.endsWith("]"));
-        return QStringLiteral("%1Stem%2]")
-                .arg(deckGroup.left(deckGroup.size() - 1),
-                        QString::number(stemIdx));
+    QString getGroupForStem(QStringView deckGroup, int stemNr) {
+        DEBUG_ASSERT(deckGroup.endsWith(QChar(']')) && stemNr <= 4);
+        return deckGroup.chopped(1) + QStringLiteral("_Stem") + QChar('0' + stemNr) + QChar(']');
     }
-    QString getFxGroupForStem(const QString& deckGroup, int stemIdx) {
+    QString getFxGroupForStem(const QString& deckGroup, int stemNr) {
         return QStringLiteral("[QuickEffectRack1_%1]")
-                .arg(getGroupForStem(deckGroup, stemIdx));
+                .arg(getGroupForStem(deckGroup, stemNr));
     }
 
     void SetUp() override {
@@ -94,16 +92,34 @@ class StemControlTest : public BaseSignalPathTest {
     }
 
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
-        BaseSignalPathTest::loadTrack(pDeck, pTrack);
         // Because there is connection across the main thread in caching reader
-        // thread, we need to manually process the eventloop to trigger
+        // thread, we need to manually process the Qt event loop to trigger
         // `BaseTrackPlayerImpl::slotTrackLoaded` Here is the chain of
         // connections (Symbol (thread)) EngineDeck::slotLoadTrack (main) ->
         // EngineBuffer::loadTrack (main) -> CachingReader*::newTrack (main) ->
         // CachingReaderWorker::trackLoaded (CachingReader) ->
         // EngineBuffer::loaded (CachingReader, direct) ->
         // BaseTrackPlayerImpl::slotTrackLoaded  (main)
-        QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, 100);
+
+        TrackPointer pLoadedTrack;
+        QMetaObject::Connection connection = QObject::connect(pDeck,
+                &BaseTrackPlayerImpl::newTrackLoaded,
+                [&pLoadedTrack]( // clazy:exclude=lambda-in-connect
+                        TrackPointer pNewTrack) { pLoadedTrack = pNewTrack; });
+        BaseSignalPathTest::loadTrack(pDeck, pTrack);
+
+        for (int i = 0; i < 10000; ++i) {
+            if (pLoadedTrack == pTrack) {
+                break;
+            }
+            int maxtime = 1; // ms
+            QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents, maxtime);
+            // 1 ms for waiting 10 s at max
+        }
+        QObject::disconnect(connection);
+        if (pLoadedTrack != pTrack) {
+            qWarning() << "Timeout: failed loading track" << pTrack->getLocation();
+        }
     }
 
     std::unique_ptr<PollingControlProxy> m_pPlay;

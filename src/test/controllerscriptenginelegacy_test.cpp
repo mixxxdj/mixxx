@@ -3,6 +3,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <QByteArrayView>
+#include <QMetaEnum>
 #include <QScopedPointer>
 #include <QTemporaryFile>
 #include <QThread>
@@ -12,6 +14,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
+#include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #ifdef MIXXX_USE_QML
 #include <QQuickItem>
 
@@ -21,6 +24,9 @@
 #include "controllers/softtakeover.h"
 #include "helpers/log_test.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QML
+#include "qml/qmlmixxxcontrollerscreen.h"
+#endif
 #include "test/mixxxtest.h"
 #include "util/color/colorpalette.h"
 #include "util/time.h"
@@ -55,6 +61,9 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
 
     void TearDown() override {
         mixxx::Time::setTestMode(false);
+#ifdef MIXXX_USE_QML
+        m_rootItems.clear();
+#endif
     }
 
     bool evaluateScriptFile(const QFileInfo& scriptFile) {
@@ -81,15 +90,13 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
     }
 
 #ifdef MIXXX_USE_QML
-    QHash<QString, TransformScreenFrameFunction>& transformScreenFrameFunctions() {
-        return m_transformScreenFrameFunctions;
-    }
-
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>>& renderingScreens() {
         return m_renderingScreens;
     }
 
-    QHash<QString, std::shared_ptr<QQuickItem>>& rootItems() {
+    std::unordered_map<QString,
+            std::unique_ptr<mixxx::qml::QmlMixxxControllerScreen>>&
+    rootItems() {
         return m_rootItems;
     }
 
@@ -98,11 +105,6 @@ class ControllerScriptEngineLegacyTest : public ControllerScriptEngineLegacy, pu
             const QImage& frame,
             const QDateTime& timestamp) {
         handleScreenFrame(screeninfo, frame, timestamp);
-    }
-
-    TransformScreenFrameFunction newTransformScreenFrameFunction(
-            QMetaMethod method, bool typed) const {
-        return TransformScreenFrameFunction{method, typed};
     }
 #endif
 };
@@ -659,6 +661,163 @@ TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0) // Latin9 is available form Qt 6.5
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetCorrectValueStringCharset) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin9, 'Hello! €')");
+
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4'}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetUnsupportedChars) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.Latin9, 'مايأ نامز ™')"));
+    char sub = '\x1A'; // ASCII/Latin9 SUB character
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray(
+                    {sub, sub, sub, sub, '\x20', sub, sub, sub, sub, '\x20', sub}));
+}
+#endif
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetLatin1Eur) {
+    const auto result = evaluate(
+            "engine.convertCharset(engine.Charset.Latin1, 'Hello! ¤€')");
+
+    char sub = '?'; // used by Qt for substitution
+    EXPECT_EQ(qjsvalue_cast<QByteArray>(result),
+            QByteArrayView::fromArray({'\x48',
+                    '\x65',
+                    '\x6c',
+                    '\x6c',
+                    '\x6f',
+                    '\x21',
+                    '\x20',
+                    '\xA4',
+                    sub}));
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetMultiByteEncoding) {
+    auto result = qjsvalue_cast<QByteArray>(
+            evaluate("engine.convertCharset(engine.Charset.UTF_16LE, 'مايأ نامز')"));
+    EXPECT_EQ(result,
+            QByteArrayView::fromArray({'\x45',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x4A',
+                    '\x06',
+                    '\x23',
+                    '\x06',
+                    '\x20',
+                    '\x00',
+                    '\x46',
+                    '\x06',
+                    '\x27',
+                    '\x06',
+                    '\x45',
+                    '\x06',
+                    '\x32',
+                    '\x06'}));
+}
+
+#define COMPLICATEDSTRINGLITERAL "Hello, 世界! שלום! こんにちは! 안녕하세요! ™ 😊"
+
+static int convertedCharsetForString(ControllerScriptInterfaceLegacy::Charset charset) {
+    // the expected length after conversion of COMPLICATEDSTRINGLITERAL
+    using enum ControllerScriptInterfaceLegacy::Charset;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    switch (charset) {
+    case UTF_8:
+        return 67;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 70;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 136;
+    case ASCII:
+    case CentralEurope:
+    case Cyrillic:
+    case WesternEurope:
+    case Greek:
+    case Turkish:
+    case Hebrew:
+    case Arabic:
+    case Baltic:
+    case Vietnamese:
+    case Latin9:
+    case KOI8_U:
+        return 34;
+    case Latin1:
+        // Latin1 is handled by Qt internally and 😊 becomes "??"
+        return 35;
+    case EUC_JP:
+        return 53;
+    case Shift_JIS:
+    case EUC_KR:
+    case Big5_HKSCS:
+        return 52;
+    case UCS2:
+        return 72;
+    case SCSU:
+        return 55;
+    case BOCU_1:
+        return 56;
+    case CESU_8:
+        return 69;
+    }
+#else
+    // Qt < 6.4 only supports these conversions
+    switch (charset) {
+    case UTF_8:
+        return 67;
+    case UTF_16LE:
+    case UTF_16BE:
+        return 70;
+    case UTF_32LE:
+    case UTF_32BE:
+        return 136;
+    case Latin1:
+        return 35;
+    default:
+        return 0;
+    }
+#endif
+
+    // unreachable, but gtest does not offer a way to assert this here.
+    // returning 0 will almost certainly also result in a failure.
+    return 0;
+}
+
+TEST_F(ControllerScriptEngineLegacyTest, convertCharsetAllCharset) {
+    QMetaEnum charsetEnumEntry = QMetaEnum::fromType<
+            ControllerScriptInterfaceLegacy::Charset>();
+
+    for (int i = 0; i < charsetEnumEntry.keyCount(); ++i) {
+        QString key = charsetEnumEntry.key(i);
+        auto enumValue =
+                static_cast<ControllerScriptInterfaceLegacy::Charset>(
+                        charsetEnumEntry.value(i));
+        QString source = QStringLiteral(
+                "engine.convertCharset(engine.Charset.%1, "
+                "'" COMPLICATEDSTRINGLITERAL "')")
+                                 .arg(key);
+        auto result = qjsvalue_cast<QByteArray>(evaluate(source));
+        EXPECT_EQ(result.size(), convertedCharsetForString(enumValue))
+                << "Unexpected length of converted string for encoding: '"
+                << key.toStdString() << "'";
+    }
+}
+
 #ifdef MIXXX_USE_QML
 class MockScreenRender : public ControllerRenderingEngine {
   public:
@@ -671,7 +830,7 @@ class MockScreenRender : public ControllerRenderingEngine {
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
-    SETUP_LOG_CAPTURE();
+    LogCaptureGuard logCaptureGuard;
     LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                                                    // identifier
             QSize(0, 0),                                           // size
@@ -693,13 +852,9 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
             "Could not find a valid transform function but the screen doesn't "
             "accept raw data. Aborting screen rendering.");
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,
@@ -710,7 +865,7 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
 }
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
-    SETUP_LOG_CAPTURE();
+    LogCaptureGuard logCaptureGuard;
     LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                                                    // identifier
             QSize(0, 0),                                           // size
@@ -729,13 +884,9 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
             std::make_shared<MockScreenRender>(dummyScreen);
     EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
-    transformScreenFrameFunctions().insert(
-            dummyScreen.identifier,
-            newTransformScreenFrameFunction(
-                    QMetaMethod(),
-                    false));
     renderingScreens().insert(dummyScreen.identifier, pDummyRender);
-    rootItems().insert(dummyScreen.identifier, std::make_shared<QQuickItem>());
+    rootItems().emplace(dummyScreen.identifier,
+            std::make_unique<mixxx::qml::QmlMixxxControllerScreen>());
 
     testHandleScreen(
             dummyScreen,

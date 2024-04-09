@@ -339,6 +339,19 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     m_pTrackCollectionManager->internalCollection()->getPlaylistDAO().shuffleTracks(m_iPlaylistId, positions, allIds);
 }
 
+const QList<int> PlaylistTableModel::getSelectedPositions(const QModelIndexList& indices) const {
+    if (indices.isEmpty()) {
+        return {};
+    }
+    QList<int> positions;
+    const int positionColumn = fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
+    for (auto idx : indices) {
+        int pos = idx.siblingAtColumn(positionColumn).data().toInt();
+        positions.append(pos);
+    }
+    return positions;
+}
+
 mixxx::Duration PlaylistTableModel::getTotalDuration(const QModelIndexList& indices) {
     if (indices.isEmpty()) {
         return mixxx::Duration::empty();
@@ -388,8 +401,9 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             m_pTrackCollectionManager->internalCollection()
                     ->getPlaylistDAO()
                     .getPlaylistIdFromName(AUTODJ_TABLE)) {
-        // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
-        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist;
+        // Only allow Add to AutoDJ and sorting if we aren't currently showing
+        // the AutoDJ queue.
+        caps |= Capability::AddToAutoDJ | Capability::RemovePlaylist | Capability::Sorting;
     } else {
         caps |= Capability::Remove;
     }

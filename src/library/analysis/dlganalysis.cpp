@@ -154,6 +154,7 @@ void DlgAnalysis::slotAnalysisActive(bool bActive) {
     if (bActive) {
         pushButtonAnalyze->setChecked(true);
         pushButtonAnalyze->setText(tr("Stop Analysis"));
+        pushButtonAnalyze->setEnabled(true);
         labelProgress->setEnabled(true);
     } else {
         pushButtonAnalyze->setChecked(false);

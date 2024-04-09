@@ -57,12 +57,12 @@ QHash<QString, TrackModel::SortColumnId>
 };
 
 TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
+    QDir systemMappingsPath = getTestDir().filePath(QStringLiteral("../../res/controllers/"));
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(getTestDir().filePath(
-                            "../../res/controllers/Traktor Kontrol S4 "
-                            "MK3.hid.xml")),
-                    QDir());
+                    QFileInfo(systemMappingsPath.filePath(
+                            QStringLiteral("Traktor Kontrol S4 MK3.hid.xml"))),
+                    systemMappingsPath);
     EXPECT_TRUE(pMapping);
     auto settings = pMapping->getSettings();
     EXPECT_TRUE(!settings.isEmpty());
@@ -76,7 +76,7 @@ TEST_F(ControllerLibraryColumnIDRegressionTest, ensureS4MK3) {
         auto pEnum = std::dynamic_pointer_cast<LegacyControllerEnumSetting>(setting);
         EXPECT_TRUE(pEnum);
         for (const auto& opt : pEnum->options()) {
-            EXPECT_EQ(static_cast<int>(COLUMN_MAPPING[std::get<0>(opt)]), std::get<1>(opt).toInt());
+            EXPECT_EQ(static_cast<int>(COLUMN_MAPPING[opt.value]), opt.label.toInt());
         }
         count++;
     }

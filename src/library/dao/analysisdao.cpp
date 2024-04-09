@@ -1,6 +1,7 @@
 #include "library/dao/analysisdao.h"
 
 #include <QSqlQuery>
+#include <QSqlRecord>
 #include <QtDebug>
 
 #include "library/queryutil.h"
