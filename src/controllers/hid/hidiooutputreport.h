@@ -25,6 +25,7 @@ class HidIoOutputReport {
   private:
     const quint8 m_reportId;
     QByteArray m_lastSentData;
+    bool m_hidWriteErrorLogged;
 
     /// Mutex must be locked when reading/writing m_cachedData
     /// or m_possiblyUnsentDataCached

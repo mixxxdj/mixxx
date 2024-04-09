@@ -38,6 +38,22 @@ LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QStr
             this,
             &LoadToGroupController::slotLoadToGroupAndPlay);
 
+#ifdef __STEM__
+    m_loadSelectedTrackStems =
+            std::make_unique<ControlPushButton>(ConfigKey(group, "load_selected_track_stems"));
+    connect(m_loadSelectedTrackStems.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](double value) {
+                if (value >= 0 && value <= 2 << mixxx::kMaxSupportedStems) {
+                    emit loadToGroup(m_group,
+                            mixxx::StemChannelSelection::fromInt(
+                                    static_cast<int>(value)),
+                            false);
+                }
+            });
+#endif
+
     connect(this,
             &LoadToGroupController::loadToGroup,
             pParent,
@@ -48,13 +64,24 @@ LoadToGroupController::~LoadToGroupController() = default;
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, false);
+        emit loadToGroup(m_group,
+#ifdef __STEM__
+                mixxx::StemChannelSelection(),
+#endif
+                false);
     }
 }
 
 void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
     if (v > 0) {
-        emit loadToGroup(m_group, true);
+#ifdef __STEM__
+        emit loadToGroup(m_group,
+                mixxx::StemChannelSelection(),
+                true);
+#else
+        emit loadToGroup(m_group,
+                true);
+#endif
     }
 }
 
@@ -230,6 +257,18 @@ LibraryControl::LibraryControl(Library* pLibrary)
                 &LibraryControl::refocusPrevLibraryWidget);
     }
 
+    // Control to "edit" the currently selected item/field in focused widget (context dependent)
+    m_pEditItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "EditItem"));
+#ifdef MIXXX_USE_QML
+    if (!CmdlineArgs::Instance().isQml())
+#endif
+    {
+        connect(m_pEditItem.get(),
+                &ControlPushButton::valueChanged,
+                this,
+                &LibraryControl::slotEditItem);
+    }
+
     // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
 #ifdef MIXXX_USE_QML
@@ -337,14 +376,31 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
+    m_pTrackColorSelector = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "track_color_selector"), false);
     connect(m_pTrackColorPrev.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorPrev);
+            [this](double value) {
+                if (value > 0) {
+                    slotTrackColorSelector(-1);
+                }
+            });
     connect(m_pTrackColorNext.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorNext);
+            [this](double value) {
+                if (value > 0) {
+                    LibraryControl::slotTrackColorSelector(1);
+                }
+            });
+    connect(m_pTrackColorSelector.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                int iSteps = static_cast<int>(steps);
+                LibraryControl::slotTrackColorSelector(iSteps);
+            });
 
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
@@ -600,14 +656,23 @@ void LibraryControl::slotUpdateTrackMenuControl(bool visible) {
     m_pShowTrackMenu->setAndConfirm(visible ? 1.0 : 0.0);
 }
 
+#ifdef __STEM__
+void LibraryControl::slotLoadSelectedTrackToGroup(
+        const QString& group, mixxx::StemChannelSelection stemMask, bool play) {
+#else
 void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
+#endif
     if (!m_pLibraryWidget) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
     if (pTrackTableView) {
+#ifdef __STEM__
+        pTrackTableView->loadSelectedTrackToGroup(group, stemMask, play);
+#else
         pTrackTableView->loadSelectedTrackToGroup(group, play);
+#endif
     }
 }
 
@@ -1010,6 +1075,29 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
     }
 }
 
+void LibraryControl::slotEditItem(double v) {
+    if (v <= 0) {
+        return;
+    }
+
+    switch (m_focusedWidget) {
+    case FocusWidget::Sidebar: {
+        m_pSidebarWidget->renameSelectedItem();
+        break;
+    }
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->editSelectedItem();
+        }
+        break;
+    }
+    default: {
+        break;
+    }
+    }
+}
+
 void LibraryControl::slotGoToItem(double v) {
     if (v <= 0) {
         return;
@@ -1039,8 +1127,11 @@ void LibraryControl::slotGoToItem(double v) {
         // press & release Space (QAbstractButton::clicked() is emitted on release)
         QKeyEvent pressSpace = QKeyEvent{QEvent::KeyPress, Qt::Key_Space, Qt::NoModifier};
         QKeyEvent releaseSpace = QKeyEvent{QEvent::KeyRelease, Qt::Key_Space, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &pressSpace);
-        QApplication::sendEvent(QApplication::focusWindow(), &releaseSpace);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &pressSpace);
+            QApplication::sendEvent(pWindow, &releaseSpace);
+        }
         return;
     }
     case FocusWidget::ContextMenu:
@@ -1054,7 +1145,10 @@ void LibraryControl::slotGoToItem(double v) {
         // If Unknown is some other 'untrained' or unresponsive widget
         // GoToItem is inappropriate and we can't do much about that.
         QKeyEvent event = QKeyEvent{QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier};
-        QApplication::sendEvent(QApplication::focusWindow(), &event);
+        auto* pWindow = QApplication::focusWindow();
+        if (pWindow) {
+            QApplication::sendEvent(pWindow, &event);
+        }
         return;
     }
     case FocusWidget::Searchbar:
@@ -1109,24 +1203,15 @@ void LibraryControl::slotDecrementFontSize(double v) {
     }
 }
 
-void LibraryControl::slotTrackColorPrev(double v) {
-    if (!m_pLibraryWidget || v <= 0) {
+void LibraryControl::slotTrackColorSelector(int steps) {
+    if (!m_pLibraryWidget || steps == 0) {
         return;
     }
 
     WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
-    if (pTrackTableView) {
-        pTrackTableView->assignPreviousTrackColor();
-    }
-}
-
-void LibraryControl::slotTrackColorNext(double v) {
-    if (!m_pLibraryWidget || v <= 0) {
+    if (!pTrackTableView) {
         return;
     }
 
-    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
-    if (pTrackTableView) {
-        pTrackTableView->assignNextTrackColor();
-    }
+    pTrackTableView->selectTrackColor(steps);
 }

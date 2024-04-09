@@ -3,6 +3,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QStandardPaths>
 #include <algorithm>
 #include <vector>
 
@@ -68,7 +69,6 @@ void CrateFeature::initActions() {
             &CrateFeature::slotCreateCrate);
 
     m_pRenameCrateAction = make_parented<QAction>(tr("Rename"), this);
-    m_pRenameCrateAction->setShortcut(kRenameSidebarItemShortcutKey);
     connect(m_pRenameCrateAction.get(),
             &QAction::triggered,
             this,
@@ -693,7 +693,7 @@ void CrateFeature::slotImportPlaylistFile(const QString& playlistFile, CrateId c
 
 void CrateFeature::slotCreateImportCrate() {
     // Get file to read
-    QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
+    const QStringList playlistFiles = LibraryFeature::getPlaylistFiles();
     if (playlistFiles.isEmpty()) {
         return;
     }

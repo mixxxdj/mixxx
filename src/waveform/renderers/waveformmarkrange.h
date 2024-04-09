@@ -56,7 +56,7 @@ class WaveformMarkRange {
     WaveformMarkLabel m_durationLabel;
 
   private:
-    void generateImage(int weidth, int height);
+    void generateImage(int width, int height);
 
     std::unique_ptr<ControlProxy> m_markStartPointControl;
     std::unique_ptr<ControlProxy> m_markEndPointControl;

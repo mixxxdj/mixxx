@@ -92,10 +92,20 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
 }
 
 // WARNING: Always called from a different thread (GUI)
+#ifdef __STEM__
+void CachingReaderWorker::newTrack(TrackPointer pTrack, mixxx::StemChannelSelection stemMask) {
+#else
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
+#endif
     {
         const auto locker = lockMutex(&m_newTrackMutex);
+#ifdef __STEM__
+        m_pNewTrack = NewTrackRequest{
+                pTrack,
+                stemMask};
+#else
         m_pNewTrack = pTrack;
+#endif
         m_newTrackAvailable.storeRelease(1);
     }
     workReady();
@@ -113,16 +123,25 @@ void CachingReaderWorker::run() {
         // Request is initialized by reading from FIFO
         CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable.loadAcquire()) {
+#ifdef __STEM__
+            NewTrackRequest pLoadTrack;
+#else
             TrackPointer pLoadTrack;
+#endif
             { // locking scope
                 const auto locker = lockMutex(&m_newTrackMutex);
                 pLoadTrack = m_pNewTrack;
-                m_pNewTrack.reset();
                 m_newTrackAvailable.storeRelease(0);
             } // implicitly unlocks the mutex
+#ifdef __STEM__
+            if (pLoadTrack.track) {
+                // in this case the engine is still running with the old track
+                loadTrack(pLoadTrack.track, pLoadTrack.stemMask);
+#else
             if (pLoadTrack) {
                 // in this case the engine is still running with the old track
                 loadTrack(pLoadTrack);
+#endif
             } else {
                 // here, the engine is already stopped
                 unloadTrack();
@@ -168,7 +187,12 @@ void CachingReaderWorker::unloadTrack() {
     m_pReaderStatusFIFO->writeBlocking(&update, 1);
 }
 
+#ifdef __STEM__
+void CachingReaderWorker::loadTrack(
+        const TrackPointer& pTrack, mixxx::StemChannelSelection stemMask) {
+#else
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
+#endif
     // This emit is directly connected and returns synchronized
     // after the engine has been stopped.
     emit trackLoading();
@@ -190,6 +214,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
 
     mixxx::AudioSource::OpenParams config;
     config.setChannelCount(m_maxSupportedChannel);
+#ifdef __STEM__
+    config.setStemMask(stemMask);
+#endif
     m_pAudioSource = SoundSourceProxy(pTrack).openAudioSource(config);
     if (!m_pAudioSource) {
         kLogger.warning()

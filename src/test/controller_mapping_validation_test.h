@@ -77,6 +77,19 @@ class FakeController : public Controller {
         return new FakeBulkControllerJSProxy();
     }
 
+    PhysicalTransportProtocol getPhysicalTransportProtocol() const override {
+        return PhysicalTransportProtocol::USB;
+    }
+    DataRepresentationProtocol getDataRepresentationProtocol() const override {
+        if (m_bMidiMapping) {
+            return DataRepresentationProtocol::MIDI;
+        } else if (m_bHidMapping) {
+            return DataRepresentationProtocol::HID;
+        } else {
+            return DataRepresentationProtocol::USB_BULK_TRANSFER;
+        }
+    }
+
     void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override {
         auto pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
         if (pMidiMapping) {
@@ -98,9 +111,9 @@ class FakeController : public Controller {
 
     virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
         if (m_pMidiMapping) {
-            return m_pMidiMapping->clone();
+            return std::make_shared<LegacyMidiControllerMapping>(*m_pMidiMapping);
         } else if (m_pHidMapping) {
-            return m_pHidMapping->clone();
+            return std::make_shared<LegacyHidControllerMapping>(*m_pHidMapping);
         }
         return nullptr;
     };
@@ -112,6 +125,30 @@ class FakeController : public Controller {
         Q_UNUSED(mapping);
         return false;
     }
+    QString getVendorString() const override {
+        static const QString vendor = "Test Vendor";
+        return vendor;
+    }
+    std::optional<uint16_t> getVendorId() const override {
+        return std::nullopt;
+    }
+
+    QString getProductString() const override {
+        static const QString product = "Test Product";
+        return product;
+    }
+    std::optional<uint16_t> getProductId() const override {
+        return std::nullopt;
+    }
+
+    QString getSerialNumber() const override {
+        static const QString serialNumber = "123456789";
+        return serialNumber;
+    }
+
+    std::optional<uint8_t> getUsbInterfaceNumber() const override {
+        return std::nullopt;
+    }
 
   protected:
     void send(const QList<int>& data, unsigned int length) override {
@@ -119,8 +156,9 @@ class FakeController : public Controller {
         Q_UNUSED(length);
     }
 
-    void sendBytes(const QByteArray& data) override {
+    bool sendBytes(const QByteArray& data) override {
         Q_UNUSED(data);
+        return true;
     }
 
   private slots:

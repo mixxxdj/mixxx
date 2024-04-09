@@ -125,9 +125,11 @@ bool EffectManifestTableModel::dropMimeData(const QMimeData* data,
         return false;
     }
     if (row == -1) {
-        row = parent.row();
+        if (parent.isValid()) {
+            row = parent.row();
+        }
         // Dropping onto an empty model or dropping past the end of a model
-        if (parent.row() == -1) {
+        if (row == -1) {
             row = m_manifests.size();
         }
     }

@@ -26,7 +26,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
             bool primaryDeck);
     ~EngineDeck() override;
 
-    void process(CSAMPLE* pOutput, const int iBufferSize) override;
+    void process(CSAMPLE* pOutput, const std::size_t bufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
 
     // postProcessLocalBpm() is called on all decks to update the localBpm after
@@ -38,7 +38,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     // Update beat distances, sync modes, and other values that are only known
     // after all other processing is done.
-    void postProcess(const int iBufferSize) override;
+    void postProcess(const std::size_t bufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.
     EngineBuffer* getEngineBuffer() override;
@@ -71,6 +71,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // of stem track
     void cloneStemState(const EngineDeck* deckToClone);
     void addStemHandle(const ChannelHandleAndGroup& stemHandleGroup);
+    static QString getGroupForStem(QStringView deckGroup, int stemIdx);
 #endif
 
   signals:
@@ -86,7 +87,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   private:
 #ifdef __STEM__
     // Process multiple channels and mix them together into the passed buffer
-    void processStem(CSAMPLE* pOutput, const int iBufferSize);
+    void processStem(CSAMPLE* pOutput, const std::size_t bufferSize);
 #endif
 
     std::vector<ChannelHandleAndGroup> m_stems;

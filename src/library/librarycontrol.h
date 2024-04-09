@@ -5,6 +5,9 @@
 
 #include "control/controlproxy.h"
 #include "library/library_decl.h"
+#ifdef __STEM__
+#include "engine/engine.h"
+#endif
 
 class ControlEncoder;
 class ControlObject;
@@ -23,7 +26,14 @@ class LoadToGroupController : public QObject {
     virtual ~LoadToGroupController();
 
   signals:
-    void loadToGroup(const QString& group, bool);
+#ifdef __STEM__
+    void loadToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool);
+#else
+    void loadToGroup(const QString& group,
+            bool);
+#endif
 
   public slots:
     void slotLoadToGroup(double v);
@@ -33,6 +43,10 @@ class LoadToGroupController : public QObject {
     const QString m_group;
     std::unique_ptr<ControlObject> m_pLoadControl;
     std::unique_ptr<ControlObject> m_pLoadAndPlayControl;
+
+#ifdef __STEM__
+    std::unique_ptr<ControlPushButton> m_loadSelectedTrackStems;
+#endif
 };
 
 class LibraryControl : public QObject {
@@ -54,7 +68,13 @@ class LibraryControl : public QObject {
 
   public slots:
     // Deprecated navigation slots
+#ifdef __STEM__
+    void slotLoadSelectedTrackToGroup(const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool play);
+#else
     void slotLoadSelectedTrackToGroup(const QString& group, bool play);
+#endif
     void slotUpdateTrackMenuControl(bool visible);
 
   private slots:
@@ -82,10 +102,10 @@ class LibraryControl : public QObject {
     void slotMoveTrackUp(double);
     void slotMoveTrackDown(double);
     void slotMoveTrack(double);
+    void slotEditItem(double);
     void slotGoToItem(double v);
 
-    void slotTrackColorPrev(double v);
-    void slotTrackColorNext(double v);
+    void slotTrackColorSelector(int steps);
 
     // Deprecated navigation slots
     void slotSelectNextTrack(double v);
@@ -148,6 +168,9 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlPushButton> m_pMoveTrackDown;
     std::unique_ptr<ControlEncoder> m_pMoveTrack;
 
+    // Control to edit the currently selected item/field in focused widget
+    std::unique_ptr<ControlObject> m_pEditItem;
+
     // Control to choose the currently selected item in focused widget (double click)
     std::unique_ptr<ControlObject> m_pGoToItem;
 
@@ -165,6 +188,7 @@ class LibraryControl : public QObject {
     // Controls to change track color
     std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
     std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+    std::unique_ptr<ControlEncoder> m_pTrackColorSelector;
 
     // Control to show/hide the track menu
     std::unique_ptr<ControlPushButton> m_pShowTrackMenu;

@@ -11,21 +11,11 @@
 
 class Trace {
   public:
-    Trace(const char* tag, const char* arg=NULL,
-          bool writeToStdout=false, bool time=true)
+    Trace(const char* tag, const char* arg = nullptr, bool writeToStdout = false, bool time = true)
             : m_writeToStdout(writeToStdout),
               m_time(time) {
         if (writeToStdout || CmdlineArgs::Instance().getDeveloper()) {
             initialize(tag, arg);
-        }
-    }
-
-    Trace(const char* tag, int arg,
-          bool writeToStdout=false, bool time=true)
-            : m_writeToStdout(writeToStdout),
-              m_time(time) {
-        if (writeToStdout || CmdlineArgs::Instance().getDeveloper()) {
-            initialize(tag, QString::number(arg));
         }
     }
 
@@ -38,7 +28,7 @@ class Trace {
         }
     }
 
-    virtual ~Trace() {
+    ~Trace() {
         // Proxy for whether initialize was called.
         if (m_tag.isEmpty()) {
             return;
@@ -86,16 +76,7 @@ class Trace {
     }
 
     QString m_tag;
-    const bool m_writeToStdout, m_time;
     PerformanceTimer m_timer;
-
-};
-
-class DebugTrace : public Trace {
-  public:
-    DebugTrace(const char* tag, bool time=true)
-            : Trace(tag, "", CmdlineArgs::Instance().getDeveloper(), time) {
-    }
-    virtual ~DebugTrace() {
-    }
+    bool m_writeToStdout;
+    bool m_time;
 };

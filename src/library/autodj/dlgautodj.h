@@ -49,7 +49,14 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
   signals:
     void addRandomTrackButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
+#ifdef __STEM__
+    void loadTrackToPlayer(TrackPointer tio,
+            const QString& group,
+            mixxx::StemChannelSelection stemMask,
+            bool);
+#else
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
+#endif
     void trackSelected(TrackPointer pTrack);
 
   private:

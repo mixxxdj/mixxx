@@ -1135,6 +1135,7 @@ WTrackProperty:hover {
   border: 1px solid #FF6600;
   border-right: 0px;
   color: #D6D6D6;
+  qproperty-layoutSpacing: 2;
 }
 
 #BpmKeyEditTrigger {
@@ -2048,6 +2049,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu::item,
 WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
@@ -2104,6 +2106,7 @@ WSearchLineEdit QAbstractScrollArea,
   #MainMenu QMenu::indicator:unchecked:selected,
   WLibrarySidebar QMenu::item:selected,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu::item:selected,
   WTrackTableViewHeader QMenu QCheckBox:selected,
   WTrackTableViewHeader QMenu QCheckBox:focus,
   WTrackTableViewHeader QMenu QCheckBox:hover,

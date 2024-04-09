@@ -53,6 +53,7 @@ case "$1" in
             lilv-devel \
             mesa-libGL-devel \
             mesa-libGLU-devel \
+            mold \
             ninja-build \
             opus-devel \
             opusfile-devel \
