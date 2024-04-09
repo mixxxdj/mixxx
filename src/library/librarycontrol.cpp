@@ -311,14 +311,29 @@ LibraryControl::LibraryControl(Library* pLibrary)
     // Track Color controls
     m_pTrackColorPrev = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_prev"));
     m_pTrackColorNext = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "track_color_next"));
+    m_pTrackColorSelector = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "track_color_selector"), false);
     connect(m_pTrackColorPrev.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorPrev);
+            [this](double value) {
+                if (value > 0)
+                    LibraryControl::slotTrackColorSelector(-1);
+            });
     connect(m_pTrackColorNext.get(),
             &ControlPushButton::valueChanged,
             this,
-            &LibraryControl::slotTrackColorNext);
+            [this](double value) {
+                if (value > 0)
+                    LibraryControl::slotTrackColorSelector(1);
+            });
+    connect(m_pTrackColorSelector.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                int iSteps = static_cast<int>(steps);
+                LibraryControl::slotTrackColorSelector(iSteps);
+            });
 
     // Controls to select saved searchbox queries and to clear the searchbox
     m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
@@ -1059,30 +1074,23 @@ void LibraryControl::slotDecrementFontSize(double v) {
     }
 }
 
-void LibraryControl::slotTrackColorPrev(double v) {
-    if (!m_pLibraryWidget) {
+void LibraryControl::slotTrackColorSelector(int steps) {
+    if (!m_pLibraryWidget || steps == 0) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
-        }
-        pActiveView->assignPreviousTrackColor();
-    }
-}
-
-void LibraryControl::slotTrackColorNext(double v) {
-    if (!m_pLibraryWidget) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
 
-    if (v > 0) {
-        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
-        if (!pActiveView) {
-            return;
+    while (steps != 0) {
+        if (steps > 0) {
+            pActiveView->assignNextTrackColor();
+            steps--;
+        } else {
+            pActiveView->assignPreviousTrackColor();
+            steps++;
         }
-        pActiveView->assignNextTrackColor();
     }
 }
