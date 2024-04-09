@@ -620,7 +620,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
     EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
-            "Unknown endiant format \"enormous\"");
+            "Unknown endian format \"enormous\"");
 
     addScriptFilesToMapping(
             doc.documentElement(),
