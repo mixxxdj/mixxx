@@ -104,6 +104,13 @@ if(SndFile_FOUND)
           FLAC::FLAC
         )
       endif()
+
+      find_package(mpg123 CONFIG)
+      if(mpg123_FOUND)
+        set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          MPG123::libmpg123
+        )
+      endif()
     endif()
   endif()
 endif()
