@@ -2404,7 +2404,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     ConfigKey subkey;
                     QString shortcut;
 
-                    if (pSlider->isHorizontal()) {
+                    if (pSlider->tryParseHorizontal(node)) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
