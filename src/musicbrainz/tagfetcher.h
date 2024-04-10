@@ -61,7 +61,7 @@ class TagFetcher : public QObject {
     void coverArtImageFetchAvailable(const QByteArray& coverArtBytes);
     void coverArtArchiveLinksAvailable(const QList<QString>& allUrls);
     void coverArtLinkNotFound(const QString& userFriendlyErrorMessage);
-    void coverArtArchiveLinksTaskNetworkError(const QString& errorMessage);
+    void showCoverArtErrorMessage(const QString& errorMessage);
 
   private slots:
     void slotFingerprintReady();

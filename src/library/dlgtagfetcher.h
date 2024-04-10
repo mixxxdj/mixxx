@@ -70,7 +70,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void slotWorkerCoverArtCopyFailed(const QString& errorMessage);
     void slotWorkerCoverArtUpdated(const CoverInfoRelative& coverInfo);
     void slotWorkerFinished();
-    void slotCoverArtArchiveLinksTaskNetworkError(const QString& errorMessage);
+    void slotshowCoverArtErrorMessage(const QString& errorMessage);
 
   private:
     // Called on population or changed via buttons Next&Prev.

@@ -362,10 +362,6 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
         return; // Stray call from an already aborted try
     }
-    m_pCoverArtArchiveLinksTask = make_parented<mixxx::CoverArtArchiveLinksTask>(
-            &m_network,
-            std::move(errorString),
-            this);
     QString userFriendlyErrorMessage = tr("An error occurred while fetching cover art: ");
     switch (errorCode) {
     case QNetworkReply::HostNotFoundError:
@@ -378,8 +374,7 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
         userFriendlyErrorMessage += tr("An unexpected error occurred: ") + errorString;
     }
 
-    emit coverArtLinkNotFound(userFriendlyErrorMessage);
-    emit coverArtArchiveLinksTaskNetworkError(userFriendlyErrorMessage);
+    emit showCoverArtErrorMessage(userFriendlyErrorMessage);
     terminate();
 }
 
