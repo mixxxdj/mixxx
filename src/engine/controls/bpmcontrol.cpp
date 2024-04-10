@@ -130,6 +130,15 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotTapFilter,
             Qt::DirectConnection);
 
+    m_pToggleBpmLock = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "bpm_toggle_lock"), false);
+    m_pToggleBpmLock->setKbdRepeatable(true);
+    connect(m_pToggleBpmLock.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotToggleBpmLock,
+            Qt::DirectConnection);
+
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
@@ -1019,6 +1028,18 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
             pTrack->trySetBeats(*translatedBeats);
         }
     }
+}
+
+void BpmControl::slotToggleBpmLock(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    bool locked = pTrack->isBpmLocked();
+    pTrack->setBpmLocked(!locked);
 }
 
 mixxx::Bpm BpmControl::updateLocalBpm() {
