@@ -212,7 +212,7 @@ PioneerUnlock.incomingData = function(data, _length) {
         console.assert(firmwareVersionTlv.length === 4);
         const firmwareView = new DataView(firmwareVersionTlv.value);
         console.info(`Pioneer Firmware version: ${firmwareView.getInt8(0)}.${firmwareView.getInt8(1)}`);
-        controller.send([0x00, 0xf0, 0x00, 0x01, 0x00, 0x01].concat(
+        controller.sendOutputReport(0x00, [0xf0, 0x00, 0x01, 0x00, 0x01].concat(
             PioneerUnlock.makeTLV(0x12,
                 // TODO idk if these are for authentication or just info, they might have to spoof
                 // "licensed" DJ software for the handshake to succeed.
@@ -255,9 +255,7 @@ PioneerUnlock.incomingData = function(data, _length) {
 
         const hashE = PioneerUnlock.U32Math.FNVhash((new Uint8Array(seedE.concat(secret))).buffer);
 
-        // TODO generate HashE
-
-        controller.send([0x00, 0xf0, 0x00, 0x01, 0x00, 0x02].concat(
+        controller.sendOutputReport(0x00, [0xf0, 0x00, 0x01, 0x00, 0x02].concat(
             PioneerUnlock.makeTLV(0x14,
                 // I'm using the spoofed creds here.
                 PioneerUnlock.makeTLV(0x01, PioneerUnlock.asciiEncode(manufacturer)).concat(
@@ -275,7 +273,7 @@ PioneerUnlock.incomingData = function(data, _length) {
             engine.stopTimer(PioneerUnlock.keepAliveTimer);
         }
         PioneerUnlock.keepAliveTimer = engine.beginTimer(400, () => {
-            controller.send(Array(64).fill(0));
+            controller.sendOutputReport(0x00, Array(63).fill(0), true);
         });
 
     } else if (PioneerUnlock.buffIsEmpty(data)) {
