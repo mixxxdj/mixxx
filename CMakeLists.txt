@@ -2531,9 +2531,21 @@ target_include_directories(MP3GuessEnc SYSTEM PUBLIC lib/mp3guessenc-0.27.4)
 target_link_libraries(mixxx-lib PRIVATE MP3GuessEnc)
 
 # OpenGL
+if(APPLE)
+  # Prefer the system-provided OpenGL framework on macOS to avoid accidentally
+  # linking some other implementation, e.g. /usr/X11R6/lib/libGL.dylib if the
+  # user has XQuartz installed, due to vcpkg setting CMAKE_FIND_FRAMEWORK to
+  # LAST (see https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_FRAMEWORK.html)
+  set(_previous_find_framework ${CMAKE_FIND_FRAMEWORK})
+  set(CMAKE_FIND_FRAMEWORK FIRST)
+endif()
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+if(APPLE)
+  # Restore the previous CMAKE_FIND_FRAMEWORK value
+  set(CMAKE_FIND_FRAMEWORK ${_previous_find_framework})
+endif()
 
 # Ogg
 find_package(Ogg REQUIRED)
