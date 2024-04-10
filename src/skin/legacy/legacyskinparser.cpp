@@ -2399,12 +2399,13 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                     addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
-                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget()))) {
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget())) ||
+                        qobject_cast<const WKnobComposed*>(pWidget->toQWidget())) {
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
                     QString shortcut;
 
-                    if (pSlider->tryParseHorizontal(node)) {
+                    if (pSlider && pSlider->tryParseHorizontal(node)) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
@@ -2424,7 +2425,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                         addShortcutToToolTip(pWidget, shortcut, tr("left small"));
-                    } else {
+                    } else { // vertical slider of knob
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
