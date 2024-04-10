@@ -192,12 +192,11 @@ PioneerUnlock.DeviceManufacturerDeviceID = {
 PioneerUnlock.seedA = [0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF];
 
 PioneerUnlock.keepAliveTimer = 0;
+PioneerUnlock.handshakeState = {};
 
 PioneerUnlock.incomingData = function(data, _length) {
 
     const manufacturer = "NativeInstruments";
-    // TODO identify correct device properly
-    const device = "DJM750MK2";
 
     console.trace(data);
     const view = new DataView(data);
@@ -230,7 +229,8 @@ PioneerUnlock.incomingData = function(data, _length) {
 
         const productTlv = PioneerUnlock.readTLV(manufacturerTlv.rest);
         console.assert(productTlv.type === 0x02);
-        console.info(`Product: ${PioneerUnlock.asciiDecode(productTlv.value)}`);
+        PioneerUnlock.handshakeState.device = PioneerUnlock.asciiDecode(productTlv.value);
+        console.info(`Product: ${PioneerUnlock.handshakeState.device}`);
 
         const hashATlv = PioneerUnlock.readTLV(productTlv.rest);
         console.assert(hashATlv.type === 0x04);
@@ -261,7 +261,7 @@ PioneerUnlock.incomingData = function(data, _length) {
                 PioneerUnlock.makeTLV(0x01, PioneerUnlock.asciiEncode(manufacturer)).concat(
                     PioneerUnlock.makeTLV(0x02, PioneerUnlock.asciiEncode("TraktorDJ 2")),
                     PioneerUnlock.makeTLV(0x04, PioneerUnlock.spreadBuff(hashE)),
-                    PioneerUnlock.makeTLV(0x05, PioneerUnlock.spreadBuff(device)),
+                    PioneerUnlock.makeTLV(0x05, PioneerUnlock.spreadBuff(PioneerUnlock.DeviceManufacturerDeviceID[manufacturer][PioneerUnlock.handshakeState.device])),
                 )
             )));
     } else if (supertlv.type === 0x15) {
@@ -277,8 +277,7 @@ PioneerUnlock.incomingData = function(data, _length) {
         });
 
     } else if (PioneerUnlock.buffIsEmpty(data)) {
-        // reset packet received
-        PioneerUnlock.handshakeState.lastStep = 0;
+        PioneerUnlock.handshakeState = {};
     }
     console.assert(PioneerUnlock.buffIsEmpty(supertlv.rest));
 };
