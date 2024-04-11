@@ -54,6 +54,8 @@ class ControllerScriptEngineBase : public QObject {
     static void registerTrackCollectionManager(
             std::shared_ptr<TrackCollectionManager> pTrackCollectionManager);
 #endif
+  signals:
+    void beforeShutdown();
 
   protected:
     virtual void shutdown();
@@ -124,4 +126,5 @@ class ControllerScriptEngineBase : public QObject {
 #endif
 
     friend class ColorMapperJSProxy;
+    friend class MidiControllerTest;
 };

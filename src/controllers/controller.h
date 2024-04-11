@@ -81,6 +81,7 @@ class Controller : public QObject {
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     virtual bool applyMapping(const QString& resourcePath);
+    virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -177,6 +178,7 @@ class Controller : public QObject {
     friend class ControllerManager;
     // For testing
     friend class LegacyControllerMappingValidationTest;
+    friend class MidiControllerTest;
 };
 
 // An object of this class gets exposed to the JS engine, so the methods of this class

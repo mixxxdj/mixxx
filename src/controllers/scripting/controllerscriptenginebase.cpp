@@ -104,6 +104,7 @@ bool ControllerScriptEngineBase::initialize() {
 
 void ControllerScriptEngineBase::shutdown() {
     DEBUG_ASSERT(m_pJSEngine.use_count() == 1);
+    emit beforeShutdown();
     m_pJSEngine.reset();
 }
 

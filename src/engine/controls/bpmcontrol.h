@@ -108,6 +108,7 @@ class BpmControl : public EngineControl {
     void slotUpdateEngineBpm(double v = 0.0);
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
+    void slotToggleBpmLock(double);
 
   private:
     SyncMode getSyncMode() const {
@@ -144,6 +145,8 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeatsEarlier;
     ControlPushButton* m_pTranslateBeatsLater;
     ControlEncoder* m_pTranslateBeatsMove;
+
+    std::unique_ptr<ControlPushButton> m_pToggleBpmLock;
 
     // The current effective BPM of the engine
     ControlLinPotmeter* m_pEngineBpm;

@@ -45,6 +45,10 @@ void Controller::startEngine()
         stopEngine();
     }
     m_pScriptEngineLegacy = std::make_shared<ControllerScriptEngineLegacy>(this, m_logBase);
+    QObject::connect(m_pScriptEngineLegacy.get(),
+            &ControllerScriptEngineBase::beforeShutdown,
+            this,
+            &Controller::slotBeforeEngineShutdown);
     emit engineStarted(m_pScriptEngineLegacy);
 }
 
@@ -158,4 +162,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     }
 
     m_pScriptEngineLegacy->handleIncomingData(data);
+}
+void Controller::slotBeforeEngineShutdown() {
+    /* Override this to get called before the JS engine shuts down */
+    qCDebug(m_logInput) << "Engine shutdown";
 }
