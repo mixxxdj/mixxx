@@ -63,7 +63,7 @@ mark_as_advanced(Sleef_LIBRARY)
 
 foreach(_component ${Sleef_FIND_COMPONENTS})
   find_library(Sleef_${_component}_LIBRARY
-    NAMES ${_component}
+    NAMES sleef${_component}
     PATHS ${PC_Sleef_LIBRARY_DIRS})
   mark_as_advanced(Sleef_${_component}_LIBRARY)
   set(ADDITIONAL_REQUIRED_VARS ${ADDITIONAL_REQUIRED_VARS} Sleef_${_component}_LIBRARY)
@@ -125,16 +125,16 @@ if(Sleef_FOUND)
   set(Sleef_INCLUDE_DIRS "${Sleef_INCLUDE_DIR}")
   set(Sleef_DEFINITIONS ${PC_Sleef_CFLAGS_OTHER})
 
-  if(Sleef_sleefdft_FOUND)
-    is_static_library(Sleef_sleefdft_IS_STATIC Sleef::sleefdft)
-    if(Sleef_sleefdft_IS_STATIC)
-      set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+  if(Sleef_dft_FOUND)
+    is_static_library(Sleef_dft_IS_STATIC Sleef::dft)
+    if(Sleef_dft_IS_STATIC)
+      set_property(TARGET Sleef::dft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
         Sleef::sleef
       )
 
       find_package(OpenMP)
       if(OpenMP_CXX_FOUND)
-        set_property(TARGET Sleef::sleefdft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+        set_property(TARGET Sleef::dft APPEND PROPERTY INTERFACE_LINK_LIBRARIES
           OpenMP::OpenMP_CXX
         )
       endif()
