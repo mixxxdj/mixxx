@@ -140,4 +140,8 @@ if(Sleef_FOUND)
         INTERFACE_INCLUDE_DIRECTORIES "${Sleef_INCLUDE_DIR}"
     )
   endif()
+
+  if(NOT TARGET Sleef::sleefdft)
+    message(WARNING "Sleef found at ${Sleef_LIBRARY} does not have sleefdft, this means static builds will not link it with Rubberband! Perhaps you meant to use some other version of Sleef?")
+  endif()
 endif()
