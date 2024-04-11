@@ -30,8 +30,8 @@ private:
    static IOPMAssertionID s_systemSleepAssertionID;
    static IOPMAssertionID s_userActivityAssertionID;
 #elif defined(Q_OS_LINUX)
-   static QString session_handle;
-   static uint32_t inhibit_cookie;
+   static QString s_session_handle;
+   static uint32_t s_inhibit_cookie;
 #endif // Q_OS_MACOS
 };
 
