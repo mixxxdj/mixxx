@@ -11,7 +11,8 @@ PioneerUnlock.shutdown = function() {
 
 // sysex handler
 PioneerUnlock.incomingData = function(data, _length) {
-    if (pcon.handleAuth(data, pcon.protocol.HID)) {
+    if (pcon.handleAuth(data, pcon.protocol.SYSEX)) {
         // done, packet handled.
+
     }
 };

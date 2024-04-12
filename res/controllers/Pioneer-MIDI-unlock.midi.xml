@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset mixxxVersion="2.1.0+" schemaVersion="1">
+    <info>
+        <name>Pioneer Hardware Unlock</name>
+        <author>Swiftb0y</author>
+        <description>"Unlocks" some functions pioneer DJ locks behind licensing, supported (but untested) devices: DJM-250MK2, DJM-750MK2 </description>
+        <manual></manual>
+    </info>
+    <controller id="PioneerUnlock">
+        <scriptfiles>
+            <file functionprefix="" filename="libpcon.js"/>
+            <file filename="Pioneer-MIDI-unlock-scripts.js" functionprefix="PioneerUnlock"/>
+        </scriptfiles>
+        <controls>
+            <!-- No controls, this is only a demo mapping that unlocks the hardware -->
+            <!-- Proper mappings should use this mapping as a base for their full implementation -->
+        </controls>
+    </controller>
+</MixxxControllerPreset>
