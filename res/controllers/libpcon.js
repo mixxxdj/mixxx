@@ -202,7 +202,7 @@ pcon.handshakeState = {};
 pcon.send = {
     // https://swiftb0y.github.io/CDJHidProtocol/hid-analysis/startup.html#_sysex_extended_header
     sysex: function(deviceId, inner) {
-        midi.sendSysexMsg([0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0x7f]));
+        midi.sendSysexMsg([0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0xF7]));
     },
     hid: function(deck, type, inner) {
         if (inner.length <= 62) {
@@ -245,7 +245,8 @@ pcon.sysexGreet = function() {
 /**
  *
  * @param {ArrayBuffer} data BinaryData from hardware
- * @returns {pcon.protocol} whether the packet was auth-related and handled by this function
+ * @param {pcon.protocol} protocol whether to communicate via HID or sysex (ugly hack for now)
+ * @returns {bool} whether the packet was auth-related and handled by this function
  */
 
 pcon.handleAuth = function(data, protocol) {
