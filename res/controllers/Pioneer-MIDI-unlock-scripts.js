@@ -3,6 +3,7 @@ var PioneerUnlock = {};
 
 PioneerUnlock.init = function(id, _debugging) {
     console.info(`Pioneer Controller mapping started ${id}`);
+    pcon.sysexGreet();
 };
 
 PioneerUnlock.shutdown = function() {

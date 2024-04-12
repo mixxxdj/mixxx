@@ -236,6 +236,12 @@ pcon.protocol = {
     SYSEX: Symbol(),
 };
 
+// run this to start the sysex handshake init
+pcon.sysexGreet = function() {
+    // TODO don't hardcode this
+    pcon.send.sysex(pcon.DeviceSysexCode.DJM750MK2, [0x50, 0x01]);
+};
+
 /**
  *
  * @param {ArrayBuffer} data BinaryData from hardware
