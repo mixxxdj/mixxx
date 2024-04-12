@@ -189,6 +189,11 @@ pcon.DeviceManufacturerDeviceID = {
     }
 };
 
+pcon.DeviceSysexCode = {
+    DJM250MK2: [0x00, 0x00, 0x00, 0x17, 0x00],
+    DJM750MK2: [0x00, 0x00, 0x10, 0xB0, 0x00],
+};
+
 pcon.seedA = [0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF];
 
 pcon.keepAliveTimer = 0;
@@ -196,8 +201,8 @@ pcon.handshakeState = {};
 
 pcon.send = {
     // https://swiftb0y.github.io/CDJHidProtocol/hid-analysis/startup.html#_sysex_extended_header
-    sysex: function(inner) {
-        midi.sendSysexMsg([0xf0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x00, 0x17, 0x00].concat(inner, [0x7f]));
+    sysex: function(deviceId, inner) {
+        midi.sendSysexMsg([0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0x7f]));
     },
     hid: function(deck, type, inner) {
         if (inner.length <= 62) {
@@ -243,7 +248,8 @@ pcon.handleAuth = function(data, protocol) {
         if (protocol === pcon.protocol.HID) {
             pcon.send.hidextended(0, 0xf0, 1, stage, inner);
         } else {
-            pcon.send.sysex(inner);
+            // TODO don't hardcode this
+            pcon.send.sysex(pcon.DeviceSysexCode.DJM750MK2, inner);
         }
     };
 
@@ -319,11 +325,16 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(supertlv.length === 2);
         console.info("Hardware authenticated successfully");
 
-        if (pcon.keepAliveTimer === 0 && protocol === pcon.protocol.HID) {
+        if (pcon.keepAliveTimer !== 0) {
             engine.stopTimer(pcon.keepAliveTimer);
         }
         pcon.keepAliveTimer = engine.beginTimer(400, () => {
-            controller.sendOutputReport(0x00, Array(63).fill(0), true);
+            if (protocol === pcon.protocol.HID) {
+                // TODO confirm sendOutputReport is appropriate instead of setFeatureReport
+                controller.sendOutputReport(0x00, Array(63).fill(0), true);
+            } else if (protocol === pcon.protocol.SYSEX) {
+                send([0x50, 0x01]);
+            }
         });
         return true;
     } else if (pcon.buffIsEmpty(data)) {
