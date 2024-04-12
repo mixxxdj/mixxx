@@ -884,13 +884,14 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
         return;
     }
 
+    const auto prevIdx = currentIndex();
+
     const QList<int> rows = trackModel->pasteTracks(index);
     if (rows.empty()) {
         return;
     }
 
     updateGeometries();
-
     const auto lastVisibleRow = rowAt(height());
 
     // Use selectRow to scroll to the first or last pasted row. We would use
@@ -900,6 +901,13 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
         selectRow(rows.back());
     } else {
         selectRow(rows.front());
+    }
+
+    const auto idx = prevIdx.siblingAtRow(rows.back());
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (pSelectionModel && idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx,
+                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
     }
 
     // Select all the rows that we pasted
