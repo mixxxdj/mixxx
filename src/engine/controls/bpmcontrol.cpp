@@ -132,7 +132,6 @@ BpmControl::BpmControl(const QString& group,
 
     m_pToggleBpmLock = std::make_unique<ControlPushButton>(
             ConfigKey(group, "bpm_toggle_lock"), false);
-    m_pToggleBpmLock->setKbdRepeatable(true);
     connect(m_pToggleBpmLock.get(),
             &ControlObject::valueChanged,
             this,
