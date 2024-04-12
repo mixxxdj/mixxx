@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Window 2.3
-import QtQuick.Scene3D 2.14
 
 import QtQuick.Controls 2.15
 import QtQuick.Shapes 1.11
