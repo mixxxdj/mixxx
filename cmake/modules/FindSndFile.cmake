@@ -106,7 +106,7 @@ if(SndFile_FOUND)
       endif()
 
       # The mpg123 dependency was introduced in libsndfile 1.1.0
-      if(SndFile_VERSION_MAJOR GREATER 1 OR (SndFile_VERSION_MAJOR EQUAL 1 AND SndFile_VERSION_MINOR GREATER_EQUAL 1))
+      if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
         find_package(mpg123 CONFIG)
         if(mpg123_FOUND)
           set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
