@@ -44,6 +44,10 @@ class BaseTrackPlayer : public BasePlayer {
     };
     virtual void ensureStarControlsArePrepared(){};
 
+    virtual bool isTrackPaused() const {
+        return false;
+    }
+
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
@@ -57,10 +61,13 @@ class BaseTrackPlayer : public BasePlayer {
     void trackUnloaded(TrackPointer pUnloadedTrack);
     void loadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty();
+    void trackLoadFailed(TrackPointer pFailedTrack);
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
     void trackRatingChangeRequest(int change);
+    void trackPaused(TrackPointer pPausedTrack);
+    void trackResumed(TrackPointer pResumedTrack);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -98,6 +105,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
+    bool isTrackPaused() const override;
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;

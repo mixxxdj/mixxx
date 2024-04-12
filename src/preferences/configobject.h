@@ -154,10 +154,9 @@ template <class ValueType> class ConfigObject {
 
     // Sets the value for key to ValueType(value), over-writing pre-existing
     // values. ResultType is serialized to string on a per-type basis.
-    template <class ResultType>
+    template<class ResultType, std::enable_if_t<!std::is_enum_v<ResultType>, bool> = true>
     void setValue(const ConfigKey& key, const ResultType& value);
-    template<class EnumType>
-        requires std::is_enum_v<EnumType>
+    template<typename EnumType, std::enable_if_t<std::is_enum_v<EnumType>, bool> = true>
     // we need to take value as const ref otherwise the overload is ambiguous
     void setValue(const ConfigKey& key, const EnumType& value) {
         setValue<int>(key, static_cast<int>(value));
@@ -175,11 +174,10 @@ template <class ValueType> class ConfigObject {
 
     // Returns the value for key, converted to ResultType. If key is not present
     // or the value cannot be converted to ResultType, returns default_value.
-    template <class ResultType>
+    template<class ResultType, std::enable_if_t<!std::is_enum_v<ResultType>, bool> = true>
     ResultType getValue(const ConfigKey& key, const ResultType& default_value) const;
     QString getValue(const ConfigKey& key, const char* default_value) const;
-    template<typename EnumType>
-        requires std::is_enum_v<EnumType>
+    template<typename EnumType, std::enable_if_t<std::is_enum_v<EnumType>, bool> = true>
     EnumType getValue(const ConfigKey& key, const EnumType& default_value) const {
         // we need to take default_value as const ref otherwise the overload is ambiguous
         return static_cast<EnumType>(getValue<int>(key, static_cast<int>(default_value)));
