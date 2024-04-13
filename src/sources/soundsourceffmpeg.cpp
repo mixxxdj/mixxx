@@ -112,7 +112,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
 }
 
 #if VERBOSE_DEBUG_LOG
-inline void avTrace(const char* preamble, const AVPacket& avPacket) {
+inline void avTrace(const QString& preamble, const AVPacket& avPacket) {
     kLogger.debug()
             << preamble
             << "{ stream_index" << avPacket.stream_index
@@ -124,7 +124,7 @@ inline void avTrace(const char* preamble, const AVPacket& avPacket) {
             << '}';
 }
 
-inline void avTrace(const char* preamble, const AVFrame& avFrame) {
+inline void avTrace(const QString& preamble, const AVFrame& avFrame) {
     kLogger.debug()
             << preamble
             << "{ channels" << avFrame.channels
