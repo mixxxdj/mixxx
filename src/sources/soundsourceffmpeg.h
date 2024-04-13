@@ -134,7 +134,8 @@ class SoundSourceFFmpeg : public SoundSource {
             audio::SampleRate* pResampledSampleRate);
 
   public:
-    // The following static functions are used by children classes
+    // The following static functions are used by children and closely related
+    // classes, this is why these static methods aren't defined as protected.
     static AVFormatContext* openInputFile(const QString& fileName);
     static bool openDecodingContext(AVCodecContext* pavCodecContext);
 #if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 28, 100) // FFmpeg 5.1
