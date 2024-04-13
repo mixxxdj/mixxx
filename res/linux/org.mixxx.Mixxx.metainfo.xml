@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710284546">
+    <release version="2.4.1" type="development" date="2024-04-10" timestamp="1712773094">
       <description>
  <p>
   Controller Mappings
@@ -119,6 +119,10 @@
    Traktor S3: Fix mapping crash on macOS
    #12840
   </li>
+  <li>
+   Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
+   #12969
+  </li>
  </ul>
  <p>
   Target Support
@@ -130,6 +134,12 @@
    #12847
    #12822
    #12892
+   #13079
+   #12989
+  </li>
+  <li>
+   CMakeLists: Always prefer OpenGL framework on macOS
+   #13080
   </li>
  </ul>
  <p>
@@ -151,6 +161,30 @@
   <li>
    Prevent removing tracks from locked playlists
    #12927
+  </li>
+  <li>
+   Fix waveform scratch crossing loop boundaries
+   #13007
+  </li>
+  <li>
+   Prohibit un-replace when deck is playing
+   #13023
+   #12906
+  </li>
+  <li>
+   DlgTrackInfo: Prevent wiping metadata when applying twice quickly
+   #12965
+   #12963
+  </li>
+  <li>
+   Library: Fix removing deleted tracks form History playlist during export
+   #13016
+   #13000
+  </li>
+  <li>
+   AutoDJ: Fix button state after error message about playing deck 3/4
+   #12976
+   #12975
   </li>
  </ul>
 </description>

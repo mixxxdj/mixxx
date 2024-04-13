@@ -10,6 +10,7 @@
   [#12842](https://github.com/mixxxdj/mixxx/pull/12842)
 * Traktor Kontrol F1: Fixes for hid-parser and related script [#12876](https://github.com/mixxxdj/mixxx/pull/12876)
 * Traktor S3: Fix mapping crash on macOS [#12840](https://github.com/mixxxdj/mixxx/pull/12840)
+* Behringer DDM4000 & BCR2000: Fix exception in JS code [#12969](https://github.com/mixxxdj/mixxx/pull/12969)
 
 ### Target Support
 
@@ -18,6 +19,10 @@
   [#12847](https://github.com/mixxxdj/mixxx/pull/12847)
   [#12822](https://github.com/mixxxdj/mixxx/pull/12822)
   [#12892](https://github.com/mixxxdj/mixxx/pull/12892)
+  [#13079](https://github.com/mixxxdj/mixxx/pull/13079)
+  [#12989](https://github.com/mixxxdj/mixxx/pull/12989)
+* CMakeLists: Always prefer OpenGL framework on macOS
+  [#13080](https://github.com/mixxxdj/mixxx/pull/13080)
 
 ### Miscellaneous
 
@@ -25,6 +30,17 @@
 * Developer Tools: Initially sort controls by group name, ascending [#12884](https://github.com/mixxxdj/mixxx/pull/12884)
 * History: Show track count and duration in sidebar [#12811](https://github.com/mixxxdj/mixxx/pull/12811)
 * Prevent removing tracks from locked playlists [#12927](https://github.com/mixxxdj/mixxx/pull/12927)
+* Fix waveform scratch crossing loop boundaries [#13007](https://github.com/mixxxdj/mixxx/pull/13007)
+* Prohibit un-replace when deck is playing [#13023](https://github.com/mixxxdj/mixxx/pull/13023) [#12906](https://github.com/mixxxdj/mixxx/issues/12906)
+* DlgTrackInfo: Prevent wiping metadata when applying twice quickly
+  [#12965](https://github.com/mixxxdj/mixxx/pull/12965)
+  [#12963](https://github.com/mixxxdj/mixxx/issues/12963)
+* Library: Fix removing deleted tracks form History playlist during export
+  [#13016](https://github.com/mixxxdj/mixxx/pull/13016)
+  [#13000](https://github.com/mixxxdj/mixxx/issues/13000)
+* AutoDJ: Fix button state after error message about playing deck 3/4
+  [#12976](https://github.com/mixxxdj/mixxx/pull/12976)
+  [#12975](https://github.com/mixxxdj/mixxx/issues/12975)
 
 ## [2.4.0](https://github.com/mixxxdj/mixxx/milestone/15?closed=1) (2024-02-16)
 
