@@ -14,6 +14,14 @@
         <controls>
             <!-- No controls, this is only a demo mapping that unlocks the hardware -->
             <!-- Proper mappings should use this mapping as a base for their full implementation -->
+            <!-- only incoming sysexhandling -->
+            <control>
+                <key>PioneerUnlock.incomingData</key> <!-- https://github.com/mixxxdj/mixxx/issues/12824 -->
+                <status>0xF0</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
         </controls>
     </controller>
 </MixxxControllerPreset>
