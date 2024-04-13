@@ -40,8 +40,8 @@ pcon.makeTLV = function(type, data) {
 };
 /**
  *
- * @param {ArrayBuffer} data ArrayBuffer containing the start of the TLV, along with trailing data
- * @returns {Object} TODO define
+ * @param {Uint8Array} data ArrayBuffer containing the start of the TLV, along with trailing data
+ * @returns {Uint8Array} TODO define
  */
 pcon.readTLV = function(data) {
     const type = data[0];
@@ -307,7 +307,7 @@ pcon.handleAuth = function(data, protocol) {
         const firmwareVersionTlv = pcon.readTLV(supertlv.value);
         console.assert(firmwareVersionTlv.type === 0x01);
         console.assert(firmwareVersionTlv.length === 4);
-        const firmwareView = new DataView(firmwareVersionTlv.value);
+        const firmwareView = new DataView(firmwareVersionTlv.value.buffer);
         console.info(`Pioneer Firmware version: ${firmwareView.getInt8(0)}.${firmwareView.getInt8(1)}`);
         send(1, pcon.makeTLV(0x12,
             // TODO idk if these are for authentication or just info, they might have to spoof
@@ -346,7 +346,7 @@ pcon.handleAuth = function(data, protocol) {
 
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
-        const hashAView = new DataView(pcon.contractBuff(hashATlv.value));
+        const hashAView = new DataView(pcon.contractBuff(hashATlv.value).buffer);
         console.assert(hashAView.getUint32(0) === hashAd);
 
         const hashE = pcon.U32Math.FNVhash((new Uint8Array(seedE.concat(secret))).buffer);
