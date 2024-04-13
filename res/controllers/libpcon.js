@@ -84,7 +84,7 @@ pcon.spreadBuff = function(buff) {
 
 pcon.contractBuff = function(buff) {
     const view = new Uint8Array(buff);
-    const ret = new Array(buff.length / 2);
+    const ret = new Uint8Array(buff.length / 2);
     for (let i = 0; i < ret.length; i++) {
         ret[i] = (view[i*2] << 4) + view[i*2 + 1];
     }
@@ -247,6 +247,7 @@ pcon.parseHeader = {
         console.assert(view.getUint8(0) === 0xf0);
         console.assert(view.getUint8(1) === 0x00);
         const manufacturerId = view.getUint16(1);
+        console.debug(manufacturerId);
         console.assert(manufacturerId === 0x4005);
         const usbPid = (new DataView(pcon.contractBuff(data.slice(4, 8)))).getUint16(0);
         const deck = view.getUint8(8);
@@ -290,7 +291,7 @@ pcon.handleAuth = function(data, protocol) {
     const manufacturer = "NativeInstruments";
 
     console.debug(data);
-    console.debug(typeof data);
+    console.debug(`arr: ${Array.isArray(data)}, arraybuffer: ${data instanceof ArrayBuffer}, view: ${ArrayBuffer.isView(data)}`);
     const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
     // console.assert(view.getInt16(0) === 0x00f0);
     // console.assert(view.getInt16(1) === 0x0001);
