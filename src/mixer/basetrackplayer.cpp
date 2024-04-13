@@ -112,8 +112,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     BaseTrackPlayerImpl::slotTrackColorSelector(-1);
+                }
             });
 
     m_pTrackColorNext = std::make_unique<ControlPushButton>(
@@ -122,8 +123,9 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
             &ControlPushButton::valueChanged,
             this,
             [this](double value) {
-                if (value > 0)
+                if (value > 0) {
                     BaseTrackPlayerImpl::slotTrackColorSelector(1);
+                }
             });
 
     m_pTrackColorSelect = std::make_unique<ControlEncoder>(
