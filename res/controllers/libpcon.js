@@ -9,26 +9,29 @@ var pcon = {};
 //     // nothing to do
 // };
 
-/**
- * this converts a typed array from one to the other, respecting the views offset and length.
- * in theory, this is similar to a C++ reinterpret_cast
- * @param {Function} cls constructor of a TypedArray to cast to
- * @param {TypedArray} from TypedArray
- * @returns {cls} the type being cast too
- */
-pcon.castViewTo = function(cls, from) {
-    if (from instanceof cls) {
-        return from;
-    }
-    if (from instanceof ArrayBuffer) {
-        return new cls(from);
-    }
-    if (from instanceof Array) {
-        return pcon.castViewTo(cls, new ArrayBuffer(from));
-    }
-    const div = (cls === DataView) ? 1 : cls.BYTES_PER_ELEMENT;
-    return new cls(from.buffer, from.byteOffset, Math.trunc((from.byteLength) / div));
-};
+// /**
+//  * this converts a typed array from one to the other, respecting the views offset and length.
+//  * in theory, this is similar to a C++ reinterpret_cast
+//  * @param {Function} cls constructor of a TypedArray to cast to
+//  * @param {TypedArray} from TypedArray
+//  * @returns {cls} the type being cast too
+//  */
+// pcon.castViewTo = function(cls, from) {
+//     if (from instanceof cls) {
+//         return from;
+//     }
+//     if (from instanceof ArrayBuffer) {
+//         return new cls(from);
+//     }
+//     if (from instanceof Array) {
+//         return pcon.castViewTo(cls, new Uint8Array(from));
+//     }
+//     if (cls === DataView) {
+//         return new DataView()
+//     }
+//     const div =  ? 1 : cls.BYTES_PER_ELEMENT;
+//     return new cls(from.buffer, from.byteOffset, Math.trunc((from.byteLength) / div));
+// };
 
 pcon.makeTLV = function(type, data) {
     console.assert(pcon.isByte(type));
@@ -243,10 +246,10 @@ pcon.protocol = {
 
 pcon.parseHeader = {
     sysex: function(data) {
-        const view = pcon.castViewTo(DataView, data);
+        const view = new DataView(data.buffer);
         console.assert(view.getUint8(0) === 0xf0);
         console.assert(view.getUint8(1) === 0x00);
-        const manufacturerId = view.getUint16(1);
+        const manufacturerId = view.getUint16(2);
         console.debug(manufacturerId);
         console.assert(manufacturerId === 0x4005);
         const usbPid = (new DataView(pcon.contractBuff(data.slice(4, 8)))).getUint16(0);
@@ -344,8 +347,7 @@ pcon.handleAuth = function(data, protocol) {
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
         const hashAView = new DataView(pcon.contractBuff(hashATlv.value));
-        console.assert(hashAView.getUint16(0) === hashAd.hi);
-        console.assert(hashAView.getUint16(1) === hashAd.lo);
+        console.assert(hashAView.getUint32(0) === hashAd);
 
         const hashE = pcon.U32Math.FNVhash((new Uint8Array(seedE.concat(secret))).buffer);
 
