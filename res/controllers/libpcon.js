@@ -252,7 +252,7 @@ pcon.parseHeader = {
         const manufacturerId = view.getUint16(2);
         console.debug(manufacturerId);
         console.assert(manufacturerId === 0x4005);
-        const usbPid = (new DataView(pcon.contractBuff(data.slice(4, 8)))).getUint16(0);
+        const usbPid = (new DataView(pcon.contractBuff(data.slice(4, 8))).buffer).getUint16(0);
         const deck = view.getUint8(8);
         console.assert(view.getUint8(data.length - 1) === 0xF7);
         const inner = data.slice(9, -1); // snip trailing sysex EOX
