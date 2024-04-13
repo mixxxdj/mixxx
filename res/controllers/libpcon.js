@@ -236,6 +236,30 @@ pcon.protocol = {
     SYSEX: Symbol(),
 };
 
+
+
+pcon.parseHeader = {
+    sysex: function(data) {
+        const view = new DataView(data);
+        console.assert(view.getUint8(0) === 0xf0);
+        console.assert(view.getUint8(1) === 0x00);
+        const manufacturerId = view.getUint16(1);
+        console.assert(manufacturerId === 0x4005);
+        const usbPid = (new DataView(pcon.contractBuff(data.slice(4, 8)))).getUint16(0);
+        const deck = view.getUint8(8);
+        console.assert(view.getUint8(data.length - 1) === 0xF7);
+        const inner = data.slice(9, -1); // snip trailing sysex EOX
+        return {
+            usbPid: usbPid,
+            deck: deck,
+            inner: inner
+        };
+    },
+    hid: function() {
+        // TODO, also handle reassembly and the different header formats
+    }
+};
+
 // run this to start the sysex handshake init
 pcon.sysexGreet = function() {
     // TODO don't hardcode this
@@ -264,11 +288,12 @@ pcon.handleAuth = function(data, protocol) {
 
     console.trace(data);
     const view = new DataView(data);
-    console.assert(view.getInt16(0) === 0x00f0);
-    console.assert(view.getInt16(1) === 0x0001);
-    const supertlv = pcon.readTLV(data.slice(6));
+    const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
+    // console.assert(view.getInt16(0) === 0x00f0);
+    // console.assert(view.getInt16(1) === 0x0001);
+    const supertlv = pcon.readTLV(payload);
     if (supertlv.type === 0x11) {
-        console.assert(view.getInt16(2) === 0x0001);
+        // console.assert(view.getInt16(2) === 0x0001);
 
         const firmwareVersionTlv = pcon.readTLV(supertlv.value);
         console.assert(firmwareVersionTlv.type === 0x01);
@@ -284,7 +309,7 @@ pcon.handleAuth = function(data, protocol) {
             )));
         return true;
     } else if (supertlv.type === 0x13) {
-        console.assert(view.getInt16(2) === 0x0002);
+        // console.assert(view.getInt16(2) === 0x0002);
 
         const manufacturerTlv = pcon.readTLV(supertlv.value);
         console.assert(manufacturerTlv.type === 0x01);
@@ -328,7 +353,7 @@ pcon.handleAuth = function(data, protocol) {
         ));
         return true;
     } else if (supertlv.type === 0x15) {
-        console.assert(view.getInt16(2) === 0x0002);
+        // console.assert(view.getInt16(2) === 0x0002);
         console.assert(supertlv.length === 2);
         console.info("Hardware authenticated successfully");
 
