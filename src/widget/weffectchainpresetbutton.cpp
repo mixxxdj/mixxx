@@ -58,7 +58,7 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->clear();
 
     // Chain preset items
-    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
+    const EffectsBackendManagerPointer pBackendManager = m_pEffectsManager->getBackendManager();
     bool presetIsReadOnly = true;
     QStringList effectNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
@@ -72,7 +72,10 @@ void WEffectChainPresetButton::populateMenu() {
                 QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+                EffectManifestPointer pManifest = pBackendManager->getManifest(pEffectPreset);
+                if (pManifest) {
+                    effectNames.append(pManifest->name());
+                }
             }
         }
         if (effectNames.size() > 1) {

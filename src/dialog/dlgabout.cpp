@@ -118,6 +118,9 @@ DlgAbout::DlgAbout()
             << "djantti"
             << "Eugene Erokhin"
             << "Ben Duval"
+            << "Nicolau Leal Werneck"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
             << "Daniel Fernandes"
             << "Gr&eacute;goire Locqueville"
             << "grizeldi";
@@ -302,7 +305,6 @@ DlgAbout::DlgAbout()
             << "Russ Mannex"
             << "Brendan Austin"
             << "Lorenz Drescher"
-            << "David Guglielmi"
             << "James Atwill"
             << "Alex Barker"
             << "Jean Claveau"
