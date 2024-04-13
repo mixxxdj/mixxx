@@ -23,6 +23,9 @@ pcon.castViewTo = function(cls, from) {
     if (from instanceof ArrayBuffer) {
         return new cls(from);
     }
+    if (from instanceof Array) {
+        return pcon.castViewTo(cls, new ArrayBuffer(from));
+    }
     const div = (cls === DataView) ? 1 : cls.BYTES_PER_ELEMENT;
     return new cls(from.buffer, from.byteOffset, Math.trunc((from.byteLength) / div));
 };
@@ -240,7 +243,7 @@ pcon.protocol = {
 
 pcon.parseHeader = {
     sysex: function(data) {
-        const view = new DataView(data);
+        const view = pcon.castViewTo(DataView, data);
         console.assert(view.getUint8(0) === 0xf0);
         console.assert(view.getUint8(1) === 0x00);
         const manufacturerId = view.getUint16(1);
@@ -287,7 +290,7 @@ pcon.handleAuth = function(data, protocol) {
     const manufacturer = "NativeInstruments";
 
     console.debug(data);
-    const view = new DataView(data);
+    console.debug(typeof data);
     const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
     // console.assert(view.getInt16(0) === 0x00f0);
     // console.assert(view.getInt16(1) === 0x0001);
