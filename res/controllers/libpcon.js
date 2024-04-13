@@ -286,12 +286,14 @@ pcon.handleAuth = function(data, protocol) {
 
     const manufacturer = "NativeInstruments";
 
-    console.trace(data);
+    console.debug(data);
     const view = new DataView(data);
     const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
     // console.assert(view.getInt16(0) === 0x00f0);
     // console.assert(view.getInt16(1) === 0x0001);
     const supertlv = pcon.readTLV(payload);
+    console.debug(supertlv.type);
+    console.debug(supertlv.length);
     if (supertlv.type === 0x11) {
         // console.assert(view.getInt16(2) === 0x0001);
 
