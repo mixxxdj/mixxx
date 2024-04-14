@@ -50,6 +50,10 @@ pcon.readTLV = function(data) {
     console.assert(length <= data.length);
     const value = data.slice(2, length);
 
+    console.debug(type.toString(16));
+    console.debug(length.toString(16));
+    console.debug(value);
+
     return {type: type, length: length, value: value, rest: data.slice(length)};
 };
 
@@ -304,11 +308,14 @@ pcon.handleAuth = function(data, protocol) {
     if (supertlv.type === 0x11) {
         // console.assert(view.getInt16(2) === 0x0001);
 
-        const firmwareVersionTlv = pcon.readTLV(supertlv.value);
-        console.assert(firmwareVersionTlv.type === 0x01);
-        console.assert(firmwareVersionTlv.length === 4);
-        const firmwareView = new DataView(firmwareVersionTlv.value.buffer);
-        console.info(`Pioneer Firmware version: ${firmwareView.getInt8(0)}.${firmwareView.getInt8(1)}`);
+        if (protocol !== pcon.protocol.SYSEX) {
+            // no firmware version in sysex?
+            const firmwareVersionTlv = pcon.readTLV(supertlv.value);
+            console.assert(firmwareVersionTlv.type === 0x01);
+            console.assert(firmwareVersionTlv.length === 4);
+            const firmwareView = new DataView(firmwareVersionTlv.value.buffer);
+            console.info(`Pioneer Firmware version: ${firmwareView.getInt8(0)}.${firmwareView.getInt8(1)}`);
+        }
         send(1, pcon.makeTLV(0x12,
             // TODO idk if these are for authentication or just info, they might have to spoof
             // "licensed" DJ software for the handshake to succeed.
