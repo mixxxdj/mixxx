@@ -34,9 +34,25 @@ WSliderComposed::~WSliderComposed() {
     unsetPixmaps();
 }
 
+bool WSliderComposed::tryParseHorizontal(const QDomNode& node) const {
+    QDomNode horiNode = SkinContext::selectNode(node, "Horizontal");
+    if (!horiNode.isNull()) {
+        QDomNode child = horiNode.firstChild();
+        if (!child.isNull() && child.isText()) {
+            // No support for variables.
+            if (child.nodeValue().contains("true", Qt::CaseInsensitive)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // Setup pixmaps
     unsetPixmaps();
+
+    m_bHorizontal = context.selectBool(node, "Horizontal", false);
 
     double scaleFactor = context.getScaleFactor();
     QDomElement slider = context.selectElement(node, "Slider");
@@ -55,12 +71,12 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
 
     QDomElement handle = context.selectElement(node, "Handle");
     PixmapSource sourceHandle = context.getPixmapSource(handle);
-    bool h = context.selectBool(node, "Horizontal", false);
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
-    setHandlePixmap(h, sourceHandle,
-                    context.selectScaleMode(handle, Paintable::FIXED),
-                    scaleFactor);
+    setHandlePixmap(
+            sourceHandle,
+            context.selectScaleMode(handle, Paintable::FIXED),
+            scaleFactor);
 
     // Set up the level bar.
     QColor barColor = context.selectColor(node, "BarColor");
@@ -164,11 +180,10 @@ void WSliderComposed::setSliderPixmap(const PixmapSource& sourceSlider,
     }
 }
 
-void WSliderComposed::setHandlePixmap(bool bHorizontal,
+void WSliderComposed::setHandlePixmap(
         const PixmapSource& sourceHandle,
         Paintable::DrawMode mode,
         double scaleFactor) {
-    m_bHorizontal = bHorizontal;
     m_handler.setHorizontal(m_bHorizontal);
     m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);
     m_dHandleLength = calculateHandleLength();
