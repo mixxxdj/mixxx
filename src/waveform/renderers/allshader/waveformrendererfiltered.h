@@ -2,7 +2,7 @@
 
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/vertexdata.h"
+#include "waveform/renderers/allshader/vertexbuffer.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
@@ -21,7 +21,7 @@ class allshader::WaveformRendererFiltered final : public allshader::WaveformRend
 
   private:
     mixxx::UnicolorShader m_shader;
-    VertexData m_vertices[4];
+    Vector2DVertexBuffer m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererFiltered);
 };

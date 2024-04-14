@@ -3,7 +3,7 @@
 #include "shaders/rgbshader.h"
 #include "util/class.h"
 #include "waveform/renderers/allshader/rgbdata.h"
-#include "waveform/renderers/allshader/vertexdata.h"
+#include "waveform/renderers/allshader/vertexbuffer.h"
 #include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 
 namespace allshader {
@@ -22,8 +22,7 @@ class allshader::WaveformRendererRGB final : public allshader::WaveformRendererS
 
   private:
     mixxx::RGBShader m_shader;
-    VertexData m_vertices;
-    RGBData m_colors;
+    Vector2DRGBVertexBuffer m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererRGB);
 };

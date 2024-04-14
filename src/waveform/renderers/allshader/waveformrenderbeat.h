@@ -4,7 +4,7 @@
 
 #include "shaders/unicolorshader.h"
 #include "util/class.h"
-#include "waveform/renderers/allshader/vertexdata.h"
+#include "waveform/renderers/allshader/vertexbuffer.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
 class QDomNode;
@@ -25,7 +25,7 @@ class allshader::WaveformRenderBeat final : public allshader::WaveformRenderer {
   private:
     mixxx::UnicolorShader m_shader;
     QColor m_color;
-    VertexData m_vertices;
+    Vector2DVertexBuffer m_vertices;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
