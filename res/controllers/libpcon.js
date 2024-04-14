@@ -33,6 +33,10 @@ var pcon = {};
 //     return new cls(from.buffer, from.byteOffset, Math.trunc((from.byteLength) / div));
 // };
 
+pcon.isByte = function(size) {
+    return size >= 0x00 && size <= 0xFF;
+};
+
 pcon.makeTLV = function(type, data) {
     console.assert(pcon.isByte(type));
     console.assert(pcon.isByte(data.length + 2));
@@ -308,8 +312,8 @@ pcon.handleAuth = function(data, protocol) {
     if (supertlv.type === 0x11) {
         // console.assert(view.getInt16(2) === 0x0001);
 
-        if (protocol !== pcon.protocol.SYSEX) {
-            // no firmware version in sysex?
+        if (supertlv.length <= 2) {
+            // no firmware version. only seems to be happening with sysex messages.
             const firmwareVersionTlv = pcon.readTLV(supertlv.value);
             console.assert(firmwareVersionTlv.type === 0x01);
             console.assert(firmwareVersionTlv.length === 4);
