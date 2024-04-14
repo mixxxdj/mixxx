@@ -186,12 +186,6 @@
 <!--################################################################
      Singleton definitions  #######################################
    ############################################################### -->
-    <SingletonDefinition>
-      <ObjectName>Waveforms_Singleton</ObjectName>
-      <Children>
-        <Template src="skins:Tango/waveforms_container.xml"/>
-      </Children>
-    </SingletonDefinition>
 
     <!-- Overviews are needed in both regular and minimal decks -->
     <SingletonDefinition>
@@ -432,12 +426,10 @@
                           <Layout>vertical</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <SingletonContainer>
-                              <ObjectName>Waveforms_Singleton</ObjectName>
-                            </SingletonContainer>
+                            <Template src="skins:Tango/waveforms_container.xml"/>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
