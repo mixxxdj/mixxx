@@ -349,7 +349,8 @@ pcon.handleAuth = function(data, protocol) {
 
         const seedETlv = pcon.readTLV(hashATlv.rest);
         console.assert(seedETlv.type === 0x03);
-        console.assert(seedETlv.length === 0x0D);
+        // length seems to change between devices/protocol?
+        // console.assert(seedETlv.length === 0x0D);
 
         const seedE = pcon.contractBuff(seedETlv.value);
 
@@ -363,7 +364,8 @@ pcon.handleAuth = function(data, protocol) {
         const hashAView = new DataView(pcon.contractBuff(hashATlv.value).buffer);
         console.assert(hashAView.getUint32(0) === hashAd);
 
-        const hashE = pcon.U32Math.FNVhash((new Uint8Array(seedE.concat(secret))).buffer);
+        // TODO optimize?
+        const hashE = pcon.U32Math.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer);
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
