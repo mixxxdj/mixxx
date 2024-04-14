@@ -23,7 +23,8 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME"),
-                  QStringLiteral("playlist")) {
+                  QStringLiteral("playlist"),
+                  QStringLiteral("PlaylistsCountsDurations")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
@@ -111,7 +112,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
@@ -125,8 +126,11 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = 0 " // PlaylistDAO::HiddenType::PLHT_NOT_HIDDEN
-            "  GROUP BY Playlists.id");
+            "  WHERE Playlists.hidden = %2 "
+            "  GROUP BY Playlists.id")
+                                  .arg(m_countsDurationTableName,
+                                          QString::number(
+                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));
@@ -171,40 +175,6 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
         playlistLabels.append(idAndLabel);
     }
     return playlistLabels;
-}
-
-QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
-    // Setup the sidebar playlist model
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    QString filter = "id=" + QString::number(playlistId);
-    playlistTableModel.setFilter(filter);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
-    if (playlistTableModel.rowCount() > 0) {
-        QString name =
-                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
-                        .toString();
-        int count = playlistTableModel
-                            .data(playlistTableModel.index(0, countColumn))
-                            .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(0, durationColumn))
-                        .toInt();
-        return createPlaylistLabel(name, count, duration);
-    }
-    return QString();
 }
 
 /// Purpose: When inserting or removing playlists,
