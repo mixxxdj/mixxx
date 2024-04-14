@@ -48,6 +48,9 @@ pcon.makeTLV = function(type, data) {
  * @returns {Uint8Array} TODO define
  */
 pcon.readTLV = function(data) {
+    if (data.length < 2) {
+        return undefined;
+    }
     const type = data[0];
     const length = data[1];
 
@@ -312,7 +315,7 @@ pcon.handleAuth = function(data, protocol) {
     if (supertlv.type === 0x11) {
         // console.assert(view.getInt16(2) === 0x0001);
 
-        if (supertlv.length <= 2) {
+        if (supertlv.length > 2) {
             // no firmware version. only seems to be happening with sysex messages.
             const firmwareVersionTlv = pcon.readTLV(supertlv.value);
             console.assert(firmwareVersionTlv.type === 0x01);
