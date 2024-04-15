@@ -62,27 +62,25 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     const auto newCanonicalLocation = newDir.canonicalLocation();
     DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
     QList<mixxx::FileInfo> obsoleteChildDirs;
-    for (auto&& oldDir : loadAllDirectories()) {
-        if (!oldDir.exists() || !oldDir.isDir()) {
-            // Abort to prevent inconsistencies in the database
-            kLogger.warning()
-                    << "Aborting to add"
-                    << newDir
-                    << ": Loaded directory"
-                    << oldDir
-                    << "does not exist or is inaccessible";
-            return AddResult::InvalidOrMissingDirectory;
-        }
+    // Ignore invalid or missing directories in order to allow adding new dirs
+    // while the list contains e.g. currently unmounted removable drives.
+    // Worst that can happen is that we have orphan tracks in the database that
+    // would be moved to missing after the rescan (which is required anyway after
+    // having added a new dir).
+    for (auto&& oldDir : loadAllDirectories(true)) {
         const auto oldCanonicalLocation = oldDir.canonicalLocation();
         DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
                     oldCanonicalLocation,
                     newCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
             return AddResult::AlreadyWatching;
         }
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
                     newCanonicalLocation,
                     oldCanonicalLocation)) {
+            // New dir is the parent of an existing dir. Remove the child from
+            // the dir list.
             obsoleteChildDirs.append(std::move(oldDir));
         }
     }
@@ -92,9 +90,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                     .arg(
                             kTable,
                             kLocationColumn);
-    FwdSqlQuery query(
-            m_database,
-            statement);
+    FwdSqlQuery query(m_database, statement);
     query.bindValue(
             QStringLiteral(":location"),
             newDir.location());
