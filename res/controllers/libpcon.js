@@ -46,6 +46,12 @@ pcon.util = {
             ret.push(Array.from(arr.slice(chunk, chunk+=size)));
         }
         return ret;
+    },
+    asUint64: function(number, littleEndian = false) {
+        const ret = new Uint32Array(2);
+        ret[littleEndian ? 1 : 0] = number >> 32;
+        ret[littleEndian ? 0 : 1] = (number & 0xFFFFFFFF) >>> 0;
+        return ret.buffer;
     }
 };
 
@@ -398,9 +404,7 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const E = Array.from(seedE).concat(secret);
-        console.debug(pcon.debug.hexDump(E));
-        const hashE = pcon.U32Math.FNVhash((new Uint8Array(E)).buffer);
+        const hashE = pcon.util.asUint64(pcon.U32Math.FNVhash((Array.from(seedE).concat(secret)).buffer));
 
         console.debug(pcon.debug.hexDump(hashE));
 
