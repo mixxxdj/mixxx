@@ -345,7 +345,7 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const hashE = pcon.util.asUint64(pcon.FNVhash((Array.from(seedE).concat(secret)).buffer));
+        const hashE = new Uint8Array(pcon.util.asUint64(pcon.FNVhash((Array.from(seedE).concat(secret)).buffer)));
 
         console.debug(pcon.debug.hexDump(hashE));
 
