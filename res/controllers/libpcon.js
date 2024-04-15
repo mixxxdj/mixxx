@@ -382,13 +382,13 @@ pcon.handleAuth = function(data, protocol) {
 
         const seedE = pcon.contractBuff(seedETlv.value);
 
-        console.debug(`seedE:\n${pcon.util.hexDump(seedE)}`);
+        console.debug(`seedE:\n${pcon.debug.hexDump(seedE)}`);
 
         const manufacturerSecret = pcon.ManufacturerUnlockSecretArray[manufacturer];
 
         console.assert(seedE.length === manufacturerSecret.length);
         const secret = manufacturerSecret.map((val, i) => val ^ seedE[i]);
-        console.debug(`secret:\n${pcon.util.hexDump(secret)}`);
+        console.debug(`secret:\n${pcon.debug.hexDump(secret)}`);
 
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
