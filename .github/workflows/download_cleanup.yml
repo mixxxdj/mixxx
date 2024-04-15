@@ -25,10 +25,42 @@ jobs:
         if: env.SSH_AUTH_SOCK != null
         run: |
           mkdir empty_folder
-          echo build-checks-fix/ >> include_file.txt
-          echo build-checks-fix/* >> include_file.txt
-          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+          echo 1.12/ > include_file.txt
+          echo 1.12/* >> include_file.txt
+          echo 1.12/*/* >> include_file.txt
+          echo 2.0/ >> include_file.txt
+          echo 2.0/* >> include_file.txt
+          echo 2.0/*/* >> include_file.txt
+          echo 2.1/ >> include_file.txt
+          echo 2.1/* >> include_file.txt
+          echo 2.1/*/* >> include_file.txt
+          echo 2.2/ >> include_file.txt
+          echo 2.2/* >> include_file.txt
+          echo 2.2/*/* >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
+          echo sccache/ > include_file.txt
+          echo sccache/* >> include_file.txt
+          echo sccache/*/* >> include_file.txt
+          echo qt_debug_fix/ >> include_file.txt
+          echo qt_debug_fix/* >> include_file.txt
+          echo qt_debug_fix/*/* >> include_file.txt
+          echo qt6/ >> include_file.txt
+          echo qt6/* >> include_file.txt
+          echo qt6/*/* >> include_file.txt
+          echo portaudio-jack/ >> include_file.txt
+          echo portaudio-jack/* >> include_file.txt
+          echo portaudio-jack/*/* >> include_file.txt
+          echo manifest_mode_ci/ >> include_file.txt
+          echo manifest_mode_ci/* >> include_file.txt
+          echo manifest_mode_ci/*/* >> include_file.txt
+          echo main/ >> include_file.txt
+          echo main/* >> include_file.txt
+          echo main/*/* >> include_file.txt
+          echo 2.3.macos/ >> include_file.txt
+          echo 2.3.macos/* >> include_file.txt
+          echo 2.3.macos/*/* >> include_file.txt
+          rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/dependencies/"
         env:
-          DESTDIR: public_html/downloads/snapshots
+          DESTDIR: public_html/downloads
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
