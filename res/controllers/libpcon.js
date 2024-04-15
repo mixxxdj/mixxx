@@ -47,12 +47,6 @@ pcon.util = {
         }
         return ret;
     },
-    asUint64: function(number, littleEndian = false) {
-        const ret = new Uint32Array(2);
-        ret[littleEndian ? 1 : 0] = number >> 32;
-        ret[littleEndian ? 0 : 1] = (number & 0xFFFFFFFF) >>> 0;
-        return ret.buffer;
-    }
 };
 
 pcon.debug = {
@@ -345,8 +339,7 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const hashE = new Uint8Array(pcon.util.asUint64(pcon.FNVhash((Array.from(seedE).concat(secret)).buffer)));
-
+        const hashE = new Uint8Array(new Uint32Array([pcon.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer)]));
         console.debug(pcon.debug.hexDump(hashE));
 
         send(2, pcon.makeTLV(0x14,
