@@ -397,7 +397,7 @@ pcon.handleAuth = function(data, protocol) {
         // TODO optimize?
         const hashE = pcon.U32Math.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer);
 
-        pcon.debug.debugBuff(hashE);
+        console.debug(pcon.debug.hexDump(hashE));
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
