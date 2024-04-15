@@ -33,13 +33,40 @@ var pcon = {};
 //     return new cls(from.buffer, from.byteOffset, Math.trunc((from.byteLength) / div));
 // };
 
-pcon.isByte = function(size) {
-    return size >= 0x00 && size <= 0xFF;
+pcon.util = {
+    isByte: function(size) {
+        return size >= 0x00 && size <= 0xFF;
+    },
+    isASCII: function(byte) {
+        return byte >= 0x20 && byte <= 0x7E;
+    },
+    chunk: function(arr, size) {
+        const ret = [];
+        for (let chunk = 0; chunk <  arr.length;) {
+            ret.push(arr.slice(chunk, chunk+=size));
+        }
+        return ret;
+    }
 };
 
+pcon.debug = {
+    hexDump: function(buff) {
+        return pcon.util.chunk(buff, 16).map(chunk => {
+            const asciiRep = chunk.map(byte => pcon.util.isASCII(byte) ? String.fromCharCode(byte) : "•").join("");
+            const bufHex = chunk.map(byte => pcon.util.isByte(byte) ? byte.toString(16).padStart(2, "0") : "  ").join(" ");
+            const charsPerByte = 3;
+            const pad = Math.min(buff.length, 16);
+            const strBuffer = `${bufHex.slice(0, 8*charsPerByte)} ${bufHex.slice(8*charsPerByte, 16*charsPerByte)}`.padEnd(pad*charsPerByte);
+            return `${strBuffer} | ${asciiRep}`;
+        })
+            .join("\n");
+    }
+};
+
+
 pcon.makeTLV = function(type, data) {
-    console.assert(pcon.isByte(type));
-    console.assert(pcon.isByte(data.length + 2));
+    console.assert(pcon.util.isByte(type));
+    console.assert(pcon.util.isByte(data.length + 2));
     return [type, data.length + 2].concat(data);
 };
 /**
@@ -88,15 +115,16 @@ pcon.buffIsEmpty = function(buff) {
 
 pcon.spreadBuff = function(buff) {
     const ret = [];
-    for (const byte in buff) {
-        console.assert(pcon.isByte(byte));
-        ret.push(byte >> 4);
+    for (const byte of buff) {
+        console.assert(pcon.util.isByte(byte));
+        ret.push(byte >>> 4);
         ret.push(byte & 0x0F);
     }
     return ret;
 };
 
 pcon.contractBuff = function(buff) {
+    console.assert(buff.length % 2 === 0);
     const view = new Uint8Array(buff);
     const ret = new Uint8Array(buff.length / 2);
     for (let i = 0; i < ret.length; i++) {
@@ -219,7 +247,9 @@ pcon.handshakeState = {};
 pcon.send = {
     // https://swiftb0y.github.io/CDJHidProtocol/hid-analysis/startup.html#_sysex_extended_header
     sysex: function(deviceId, inner) {
-        midi.sendSysexMsg([0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0xF7]));
+        const data = [0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0xF7]);
+        console.debug(pcon.debug.hexDump(data));
+        midi.sendSysexMsg(data);
     },
     hid: function(deck, type, inner) {
         if (inner.length <= 62) {
@@ -304,8 +334,7 @@ pcon.handleAuth = function(data, protocol) {
 
     const manufacturer = "NativeInstruments";
 
-    console.debug(data);
-    console.debug(`arr: ${Array.isArray(data)}, arraybuffer: ${data instanceof ArrayBuffer}, view: ${ArrayBuffer.isView(data)}`);
+    console.debug(pcon.debug.hexDump(data));
     const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
     // console.assert(view.getInt16(0) === 0x00f0);
     // console.assert(view.getInt16(1) === 0x0001);
@@ -316,7 +345,7 @@ pcon.handleAuth = function(data, protocol) {
         // console.assert(view.getInt16(2) === 0x0001);
 
         if (supertlv.length > 2) {
-            // no firmware version. only seems to be happening with sysex messages.
+            // firmware version only seems to be contained in HID messages?
             const firmwareVersionTlv = pcon.readTLV(supertlv.value);
             console.assert(firmwareVersionTlv.type === 0x01);
             console.assert(firmwareVersionTlv.length === 4);
@@ -360,12 +389,15 @@ pcon.handleAuth = function(data, protocol) {
 
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
-        console.debug(`verify hash: ${hashAd}`);
         const hashAView = new DataView(pcon.contractBuff(hashATlv.value).buffer);
+        console.debug(`verify hash: ${hashAd}`);
+        console.debug(`hashA ${hashAView.getUint32(0)}`);
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
         const hashE = pcon.U32Math.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer);
+
+        pcon.debug.debugBuff(hashE);
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
