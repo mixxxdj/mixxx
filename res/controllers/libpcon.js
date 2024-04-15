@@ -139,53 +139,7 @@ pcon.contractBuff = function(buff) {
     return ret;
 };
 
-pcon.U32Math = {};
-
-// pcon.U32Math.Oxl = ([num]) => {return {
-//     lo: Number.parseInt(num.slice(-4), 16), // lower 16-bit
-//     hi: Number.parseInt(num.slice(-8, -4), 16) // higher 16-bit
-// }};
-
-// pcon.U32Math.fromBuffer = (buffer) => {
-//     const view = new DataView(buffer);
-//     return {
-//         lo: view.getUint16(1),
-//         hi: view.getUint16(0)
-//     }
-// };
-
-// pcon.U32Math.losslessXor = (lhs, rhs) => {
-//     return {
-//         lo: lhs.lo ^ rhs.lo,
-//         hi: lhs.hi ^ rhs.hi
-//     };
-// }
-
-// pcon.U32Math.losslessMult = (lhs, rhs) => {
-//     const lo = (lhs.lo * rhs.lo) >>> 0;
-//     const loCarry = lo >>> 16;
-//     return {
-//         lo: lo & 0xFFFF,
-//         hi: (((lhs.hi * rhs.hi) + loCarry) >>> 0) & 0xFFFF
-//     }
-// }
-
-// pcon.U32Math.FNVhash = function (buff) {
-//     // need to do 32-bit operations manually because
-//     // rounding errors in 32-bit floats ruin the hash
-
-//     let Oxl = pcon.U32Math.Oxl;
-//     let losslessMult = pcon.U32Math.losslessMult;
-//     let losslessXor = pcon.U32Math.losslessXor;
-
-//     const bytes = new Uint8Array(buff);
-//     return bytes.reduce((hash, val) =>
-//         (losslessMult(losslessXor(val, hash), Oxl`1000193`)),
-//         Oxl`811c9dc5`);
-// }
-
-
-pcon.U32Math.FNVhash = function(buff) {
+pcon.FNVhash = function(buff) {
     const bytes = new Uint8Array(buff);
     return bytes.reduce((hash, val) =>
         // appending >>> 0 to interpret result as Uint32
@@ -193,17 +147,6 @@ pcon.U32Math.FNVhash = function(buff) {
     0x811c9dc5);
 };
 
-
-// pcon.ManufacturerUnlockSecretHiLo = {
-//     PioneerDJ: pcon.U32Math.Oxl`680131FB`,
-//     Serato: pcon.U32Math.Oxl`0D6F55AB`,
-//     NativeInstruments: pcon.U32Math.Oxl`8C5B3F5D`,
-//     Atomix: pcon.U32Math.Oxl`97779123`,
-//     Algoriddim: pcon.U32Math.Oxl`384B522B`,
-//     Mixvibes: pcon.U32Math.Oxl`9EA1A8B6`,
-//     Numark: pcon.U32Math.Oxl`889127C7`,
-//     Dolby: pcon.U32Math.Oxl`7A2B59AB`
-// };
 pcon.ManufacturerUnlockSecretArray = {
     PioneerDJ: [0x68, 0x01, 0x31, 0xFB],
     Serato: [0x0D, 0x6F, 0x55, 0xAB],
@@ -214,8 +157,6 @@ pcon.ManufacturerUnlockSecretArray = {
     Numark: [0x88, 0x91, 0x27, 0xC7],
     Dolby: [0x7A, 0x2B, 0x59, 0xAB]
 };
-
-
 
 pcon.DeviceManufacturerDeviceID = {
     NativeInstruments: {
@@ -397,14 +338,14 @@ pcon.handleAuth = function(data, protocol) {
         console.debug(`secret:\n${pcon.debug.hexDump(secret)}`);
 
 
-        const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
+        const hashAd = pcon.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
         const hashAView = new DataView(pcon.contractBuff(hashATlv.value).buffer);
         console.debug(`verify hash: ${hashAd}`);
         console.debug(`hashA ${hashAView.getUint32(0)}`);
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const hashE = pcon.util.asUint64(pcon.U32Math.FNVhash((Array.from(seedE).concat(secret)).buffer));
+        const hashE = pcon.util.asUint64(pcon.FNVhash((Array.from(seedE).concat(secret)).buffer));
 
         console.debug(pcon.debug.hexDump(hashE));
 
