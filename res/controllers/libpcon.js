@@ -274,6 +274,7 @@ pcon.handleAuth = function(data, protocol) {
     };
 
     const manufacturer = "NativeInstruments";
+    const softProd = "Traktor Pro 2";
 
     console.debug(pcon.debug.hexDump(data));
     const payload = (protocol === pcon.protocol.SYSEX) ? pcon.parseHeader.sysex(data).inner : pcon.parseHeader.hid(data).inner;
@@ -296,7 +297,7 @@ pcon.handleAuth = function(data, protocol) {
         send(1, pcon.makeTLV(0x12,
             // probably already need to send the spoofed creds here
             pcon.makeTLV(0x01, pcon.asciiEncode(manufacturer)).concat(
-                pcon.makeTLV(0x02, pcon.asciiEncode("TraktorDJ 2")),
+                pcon.makeTLV(0x02, pcon.asciiEncode(softProd)),
                 pcon.makeTLV(0x03, pcon.spreadBuff(pcon.seedA))
             )));
         return true;
@@ -347,7 +348,7 @@ pcon.handleAuth = function(data, protocol) {
             // I'm using the spoofed creds here.
             // TODO don't hardcode traktor here.
             pcon.makeTLV(0x01, pcon.asciiEncode(manufacturer)).concat(
-                pcon.makeTLV(0x02, pcon.asciiEncode("TraktorDJ 2")),
+                pcon.makeTLV(0x02, pcon.asciiEncode(softProd)),
                 pcon.makeTLV(0x04, pcon.spreadBuff(hashE)),
                 pcon.makeTLV(0x05, pcon.spreadBuff(pcon.DeviceManufacturerDeviceID[manufacturer][pcon.handshakeState.device])),
             )
