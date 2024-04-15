@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-10" timestamp="1712773094">
+    <release version="2.4.1" type="development" date="2024-04-13" timestamp="1713014401">
       <description>
  <p>
   Controller Mappings
@@ -159,11 +159,11 @@
    #12811
   </li>
   <li>
-   Prevent removing tracks from locked playlists
+   Playlists: Prevent removing tracks from locked playlists
    #12927
   </li>
   <li>
-   Fix waveform scratch crossing loop boundaries
+   Waveforms: Fix scratching crossing loop boundaries
    #13007
   </li>
   <li>
@@ -172,12 +172,12 @@
    #12906
   </li>
   <li>
-   DlgTrackInfo: Prevent wiping metadata when applying twice quickly
+   Track Properties dialog: Prevent wiping metadata when applying twice quickly
    #12965
    #12963
   </li>
   <li>
-   Library: Fix removing deleted tracks form History playlist during export
+   Library: Fix removing deleted tracks from History playlist after export
    #13016
    #13000
   </li>

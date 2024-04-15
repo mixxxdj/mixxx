@@ -29,13 +29,13 @@
 * Remove unnecessary unpolish operation of the style, before polish the new style [#12445](https://github.com/mixxxdj/mixxx/pull/12445)
 * Developer Tools: Initially sort controls by group name, ascending [#12884](https://github.com/mixxxdj/mixxx/pull/12884)
 * History: Show track count and duration in sidebar [#12811](https://github.com/mixxxdj/mixxx/pull/12811)
-* Prevent removing tracks from locked playlists [#12927](https://github.com/mixxxdj/mixxx/pull/12927)
-* Fix waveform scratch crossing loop boundaries [#13007](https://github.com/mixxxdj/mixxx/pull/13007)
+* Playlists: Prevent removing tracks from locked playlists [#12927](https://github.com/mixxxdj/mixxx/pull/12927)
+* Waveforms: Fix scratching crossing loop boundaries [#13007](https://github.com/mixxxdj/mixxx/pull/13007)
 * Prohibit un-replace when deck is playing [#13023](https://github.com/mixxxdj/mixxx/pull/13023) [#12906](https://github.com/mixxxdj/mixxx/issues/12906)
-* DlgTrackInfo: Prevent wiping metadata when applying twice quickly
+* Track Properties dialog: Prevent wiping metadata when applying twice quickly
   [#12965](https://github.com/mixxxdj/mixxx/pull/12965)
   [#12963](https://github.com/mixxxdj/mixxx/issues/12963)
-* Library: Fix removing deleted tracks form History playlist during export
+* Library: Fix removing deleted tracks from History playlist after export
   [#13016](https://github.com/mixxxdj/mixxx/pull/13016)
   [#13000](https://github.com/mixxxdj/mixxx/issues/13000)
 * AutoDJ: Fix button state after error message about playing deck 3/4
