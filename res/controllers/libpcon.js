@@ -324,10 +324,9 @@ pcon.handleAuth = function(data, protocol) {
             console.info(`Pioneer Firmware version: ${firmwareView.getInt8(0)}.${firmwareView.getInt8(1)}`);
         }
         send(1, pcon.makeTLV(0x12,
-            // TODO idk if these are for authentication or just info, they might have to spoof
-            // "licensed" DJ software for the handshake to succeed.
-            pcon.makeTLV(0x01, pcon.asciiEncode("MixxxDJ")).concat(
-                pcon.makeTLV(0x02, pcon.asciiEncode("Mixxx")),
+            // probably already need to send the spoofed creds here
+            pcon.makeTLV(0x01, pcon.asciiEncode(manufacturer)).concat(
+                pcon.makeTLV(0x02, pcon.asciiEncode("TraktorDJ 2")),
                 pcon.makeTLV(0x03, pcon.spreadBuff(pcon.seedA))
             )));
         return true;
@@ -361,6 +360,7 @@ pcon.handleAuth = function(data, protocol) {
 
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
+        console.debug(`verify hash: ${hashAd}`);
         const hashAView = new DataView(pcon.contractBuff(hashATlv.value).buffer);
         console.assert(hashAView.getUint32(0) === hashAd);
 
@@ -369,6 +369,7 @@ pcon.handleAuth = function(data, protocol) {
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
+            // TODO don't hardcode traktor here.
             pcon.makeTLV(0x01, pcon.asciiEncode(manufacturer)).concat(
                 pcon.makeTLV(0x02, pcon.asciiEncode("TraktorDJ 2")),
                 pcon.makeTLV(0x04, pcon.spreadBuff(hashE)),
