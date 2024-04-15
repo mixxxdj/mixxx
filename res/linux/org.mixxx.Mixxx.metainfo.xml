@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-13" timestamp="1713014401">
+    <release version="2.4.1" type="development" date="2024-04-15" timestamp="1713205801">
       <description>
  <p>
   Controller Mappings
@@ -157,6 +157,24 @@
   <li>
    History: Show track count and duration in sidebar
    #12811
+   #13020
+   #13019
+   #12788
+  </li>
+  <li>
+   Library sidebar: fix History label update
+   #12882
+   #12880
+  </li>
+  <li>
+   Library: allow adding new dirs while we have missing watched dir(s)
+   #12937
+   #10481
+  </li>
+  <li>
+   Computer feature: update removable devices on Linux
+   #12893
+   #12891
   </li>
   <li>
    Playlists: Prevent removing tracks from locked playlists
@@ -185,6 +203,14 @@
    AutoDJ: Fix button state after error message about playing deck 3/4
    #12976
    #12975
+  </li>
+  <li>
+   Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
+   #13088
+  </li>
+  <li>
+   Deere: Make sampler rows persist
+   #12928
   </li>
  </ul>
 </description>

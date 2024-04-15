@@ -28,7 +28,16 @@
 
 * Remove unnecessary unpolish operation of the style, before polish the new style [#12445](https://github.com/mixxxdj/mixxx/pull/12445)
 * Developer Tools: Initially sort controls by group name, ascending [#12884](https://github.com/mixxxdj/mixxx/pull/12884)
-* History: Show track count and duration in sidebar [#12811](https://github.com/mixxxdj/mixxx/pull/12811)
+* History: Show track count and duration in sidebar
+  [#12811](https://github.com/mixxxdj/mixxx/pull/12811)
+  [#13020](https://github.com/mixxxdj/mixxx/pull/13020)
+  [#13019](https://github.com/mixxxdj/mixxx/issues/13019)
+  [#12788](https://github.com/mixxxdj/mixxx/issues/12788)
+* Library sidebar: fix History label update [#12882](https://github.com/mixxxdj/mixxx/pull/12882) [#12880](https://github.com/mixxxdj/mixxx/issues/12880)
+* Library: allow adding new dirs while we have missing watched dir(s)
+  [#12937](https://github.com/mixxxdj/mixxx/pull/12937)
+  [#10481](https://github.com/mixxxdj/mixxx/issues/10481)
+* Computer feature: update removable devices on Linux [#12893](https://github.com/mixxxdj/mixxx/pull/12893) [#12891](https://github.com/mixxxdj/mixxx/issues/12891)
 * Playlists: Prevent removing tracks from locked playlists [#12927](https://github.com/mixxxdj/mixxx/pull/12927)
 * Waveforms: Fix scratching crossing loop boundaries [#13007](https://github.com/mixxxdj/mixxx/pull/13007)
 * Prohibit un-replace when deck is playing [#13023](https://github.com/mixxxdj/mixxx/pull/13023) [#12906](https://github.com/mixxxdj/mixxx/issues/12906)
@@ -41,6 +50,8 @@
 * AutoDJ: Fix button state after error message about playing deck 3/4
   [#12976](https://github.com/mixxxdj/mixxx/pull/12976)
   [#12975](https://github.com/mixxxdj/mixxx/issues/12975)
+* Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed [#13088](https://github.com/mixxxdj/mixxx/pull/13088)
+* Deere: Make sampler rows persist [#12928](https://github.com/mixxxdj/mixxx/pull/12928)
 
 ## [2.4.0](https://github.com/mixxxdj/mixxx/milestone/15?closed=1) (2024-02-16)
 
