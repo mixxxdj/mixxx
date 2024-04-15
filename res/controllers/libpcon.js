@@ -43,7 +43,7 @@ pcon.util = {
     chunk: function(arr, size) {
         const ret = [];
         for (let chunk = 0; chunk <  arr.length;) {
-            ret.push(arr.slice(chunk, chunk+=size));
+            ret.push(Array.from(arr.slice(chunk, chunk+=size)));
         }
         return ret;
     }
@@ -248,7 +248,7 @@ pcon.send = {
     // https://swiftb0y.github.io/CDJHidProtocol/hid-analysis/startup.html#_sysex_extended_header
     sysex: function(deviceId, inner) {
         const data = [0xf0, 0x00, 0x40, 0x05].concat(deviceId, inner, [0xF7]);
-        console.debug(pcon.debug.hexDump(data));
+        console.debug(`outgoing:\n${pcon.debug.hexDump(data)}`);
         midi.sendSysexMsg(data);
     },
     hid: function(deck, type, inner) {
@@ -382,10 +382,13 @@ pcon.handleAuth = function(data, protocol) {
 
         const seedE = pcon.contractBuff(seedETlv.value);
 
+        console.debug(`seedE:\n${pcon.util.hexDump(seedE)}`);
+
         const manufacturerSecret = pcon.ManufacturerUnlockSecretArray[manufacturer];
 
         console.assert(seedE.length === manufacturerSecret.length);
         const secret = manufacturerSecret.map((val, i) => val ^ seedE[i]);
+        console.debug(`secret:\n${pcon.util.hexDump(secret)}`);
 
 
         const hashAd = pcon.U32Math.FNVhash((new Uint8Array(pcon.seedA.concat(secret))).buffer);
@@ -395,7 +398,9 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const hashE = pcon.U32Math.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer);
+        const E = Array.from(seedE).concat(secret);
+        console.debug(pcon.debug.hexDump(E));
+        const hashE = pcon.U32Math.FNVhash((new Uint8Array(E)).buffer);
 
         console.debug(pcon.debug.hexDump(hashE));
 
