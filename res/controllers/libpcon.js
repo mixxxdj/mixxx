@@ -339,8 +339,9 @@ pcon.handleAuth = function(data, protocol) {
         console.assert(hashAView.getUint32(0) === hashAd);
 
         // TODO optimize?
-        const hashE = new Uint8Array(new Uint32Array([pcon.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer)]));
+        const hashE = new Uint8Array((new Uint32Array([pcon.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer)])).buffer);
         console.debug(pcon.debug.hexDump(hashE));
+        console.assert(hashE.length === 4);
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
