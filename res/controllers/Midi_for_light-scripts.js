@@ -102,10 +102,10 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
 };
 
 midi_for_light.shutdown = function(id) { // called when the MIDI device is closed
-    engine.stopTimer(midi_for_light.deck_beat_watchdog_timer[0]);
-    engine.stopTimer(midi_for_light.deck_beat_watchdog_timer[1]);
-    engine.stopTimer(midi_for_light.deck_beat_watchdog_timer[2]);
-    engine.stopTimer(midi_for_light.deck_beat_watchdog_timer[3]);
+    engine.stopTimer(deck_beat_watchdog_timer[0]);
+    engine.stopTimer(deck_beat_watchdog_timer[1]);
+    engine.stopTimer(deck_beat_watchdog_timer[2]);
+    engine.stopTimer(deck_beat_watchdog_timer[3]);
     engine.stopTimer(midi_for_light.vu_meter_timer);
     engine.stopTimer(midi_for_light.volumeBeatBlock_timer);
     engine.stopTimer(midi_for_light.crossfader_change_block_timer);
