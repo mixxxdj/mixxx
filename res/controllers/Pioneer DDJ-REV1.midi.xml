@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.3.0+">
+<MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.4.0+">
     <info>
         <name>Pioneer DDJ-REV1</name>
         <author>LauraRozier</author>
@@ -366,8 +366,8 @@
             </control>
                 <!-- Deck 2 -->
             <control>
-                <description>PLAY/PAUSE (DECK1) - press - Play/Pause</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE (DECK2) - press - Play/Pause</description>
+                <group>[Channel2]</group>
                 <key>play</key>
                 <status>0x91</status>
                 <midino>0x0B</midino>
@@ -376,8 +376,8 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE + SHIFT (DECK1) - press - Stutter</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE + SHIFT (DECK2) - press - Stutter</description>
+                <group>[Channel2]</group>
                 <key>play_stutter</key>
                 <status>0x91</status>
                 <midino>0x47</midino>
@@ -386,8 +386,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE (DECK1) - press - Set/Call Cue, Back Cue</description>
-                <group>[Channel1]</group>
+                <description>CUE (DECK2) - press - Set/Call Cue, Back Cue</description>
+                <group>[Channel2]</group>
                 <key>cue_default</key>
                 <status>0x91</status>
                 <midino>0x0C</midino>
@@ -396,8 +396,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE + SHIFT (DECK1) - press - Jump to track start</description>
-                <group>[Channel1]</group>
+                <description>CUE + SHIFT (DECK2) - press - Jump to track start</description>
+                <group>[Channel2]</group>
                 <key>start_play</key>
                 <status>0x91</status>
                 <midino>0x48</midino>
@@ -406,8 +406,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode On (DECK1) - rotate - Scratch</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode On (DECK2) - rotate - Scratch</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB1</status>
                 <midino>0x22</midino>
@@ -416,8 +416,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode Off (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode Off (DECK2) - rotate - Pitch bend</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB1</status>
                 <midino>0x23</midino>
@@ -426,8 +426,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - rotate - Search (Fast Pitch bend)</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK2) - rotate - Search (Fast Pitch bend)</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogSearch</key>
                 <status>0xB1</status>
                 <midino>0x1F</midino>
@@ -436,8 +436,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER (DECK1) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER (DECK2) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x91</status>
                 <midino>0x36</midino>
@@ -446,8 +446,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK2) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x91</status>
                 <midino>0x67</midino>
@@ -456,8 +456,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL SIDE (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL SIDE (DECK2) - rotate - Pitch bend</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB1</status>
                 <midino>0x21</midino>
@@ -466,8 +466,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control LSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK2) - fader - Tempo control LSB</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.tempoSliderLSB</key>
                 <status>0xB1</status>
                 <midino>0x20</midino>
@@ -476,8 +476,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control MSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK2) - fader - Tempo control MSB</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.tempoSliderMSB</key>
                 <status>0xB1</status>
                 <midino>0x00</midino>
@@ -486,8 +486,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC (DECK1) - press - Beat Sync to Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC (DECK2) - press - Beat Sync to Master deck</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.syncPressed</key>
                 <status>0x91</status>
                 <midino>0x58</midino>
@@ -496,8 +496,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC + SHIFT (DECK1) - press - Set as Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC + SHIFT (DECK2) - press - Set as Master deck</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.syncShiftPressed</key>
                 <status>0x91</status>
                 <midino>0x5C</midino>
@@ -506,8 +506,8 @@
                 </options>
             </control>
             <control>
-                <description>DECK SELECT LONG PRESS (DECK1) - press - Change Tempo range</description>
-                <group>[Channel1]</group>
+                <description>DECK SELECT LONG PRESS (DECK2) - press - Change Tempo range</description>
+                <group>[Channel2]</group>
                 <key>PioneerDDJREV1.cycleTempoRange</key>
                 <status>0x91</status>
                 <midino>0x60</midino>
@@ -516,8 +516,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT (DECK1) - press - (loop off) Reloop, (loop on) Loop exit</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT (DECK2) - press - (loop off) Reloop, (loop on) Loop exit</description>
+                <group>[Channel2]</group>
                 <key>reloop_toggle</key>
                 <status>0x91</status>
                 <midino>0x14</midino>
@@ -526,8 +526,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT + SHIFT (DECK1) - press - Reloop and stop</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT + SHIFT (DECK2) - press - Reloop and stop</description>
+                <group>[Channel2]</group>
                 <key>reloop_andstop</key>
                 <status>0x91</status>
                 <midino>0x50</midino>
@@ -536,8 +536,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X (DECK1) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
-                <group>[Channel1]</group>
+                <description>1/2X (DECK2) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
+                <group>[Channel2]</group>
                 <key>loop_halve</key>
                 <status>0x91</status>
                 <midino>0x12</midino>
@@ -546,8 +546,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X + SHIFT (DECK1) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
-                <group>[Channel1]</group>
+                <description>1/2X + SHIFT (DECK2) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
+                <group>[Channel2]</group>
                 <key>loop_in</key>
                 <status>0x91</status>
                 <midino>0x10</midino>
@@ -556,8 +556,8 @@
                 </options>
             </control>
             <control>
-                <description>2X (DECK1) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
-                <group>[Channel1]</group>
+                <description>2X (DECK2) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
+                <group>[Channel2]</group>
                 <key>loop_double</key>
                 <status>0x91</status>
                 <midino>0x13</midino>
@@ -566,8 +566,8 @@
                 </options>
             </control>
             <control>
-                <description>2X + SHIFT (DECK1) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
-                <group>[Channel1]</group>
+                <description>2X + SHIFT (DECK2) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
+                <group>[Channel2]</group>
                 <key>loop_out</key>
                 <status>0x91</status>
                 <midino>0x11</midino>
@@ -577,8 +577,8 @@
             </control>
                 <!-- Deck 3 -->
             <control>
-                <description>PLAY/PAUSE (DECK1) - press - Play/Pause</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE (DECK3) - press - Play/Pause</description>
+                <group>[Channel3]</group>
                 <key>play</key>
                 <status>0x92</status>
                 <midino>0x0B</midino>
@@ -587,8 +587,8 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE + SHIFT (DECK1) - press - Stutter</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE + SHIFT (DECK3) - press - Stutter</description>
+                <group>[Channel3]</group>
                 <key>play_stutter</key>
                 <status>0x92</status>
                 <midino>0x47</midino>
@@ -597,8 +597,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE (DECK1) - press - Set/Call Cue, Back Cue</description>
-                <group>[Channel1]</group>
+                <description>CUE (DECK3) - press - Set/Call Cue, Back Cue</description>
+                <group>[Channel3]</group>
                 <key>cue_default</key>
                 <status>0x92</status>
                 <midino>0x0C</midino>
@@ -607,8 +607,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE + SHIFT (DECK1) - press - Jump to track start</description>
-                <group>[Channel1]</group>
+                <description>CUE + SHIFT (DECK3) - press - Jump to track start</description>
+                <group>[Channel3]</group>
                 <key>start_play</key>
                 <status>0x92</status>
                 <midino>0x48</midino>
@@ -617,8 +617,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode On (DECK1) - rotate - Scratch</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode On (DECK3) - rotate - Scratch</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB2</status>
                 <midino>0x22</midino>
@@ -627,8 +627,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode Off (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode Off (DECK3) - rotate - Pitch bend</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB2</status>
                 <midino>0x23</midino>
@@ -637,8 +637,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - rotate - Search (Fast Pitch bend)</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK3) - rotate - Search (Fast Pitch bend)</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogSearch</key>
                 <status>0xB2</status>
                 <midino>0x1F</midino>
@@ -647,8 +647,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER (DECK1) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER (DECK3) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x92</status>
                 <midino>0x36</midino>
@@ -657,8 +657,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK3) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x92</status>
                 <midino>0x67</midino>
@@ -667,8 +667,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL SIDE (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL SIDE (DECK3) - rotate - Pitch bend</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB2</status>
                 <midino>0x21</midino>
@@ -677,8 +677,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control LSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK3) - fader - Tempo control LSB</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.tempoSliderLSB</key>
                 <status>0xB2</status>
                 <midino>0x20</midino>
@@ -687,8 +687,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control MSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK3) - fader - Tempo control MSB</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.tempoSliderMSB</key>
                 <status>0xB2</status>
                 <midino>0x00</midino>
@@ -697,8 +697,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC (DECK1) - press - Beat Sync to Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC (DECK3) - press - Beat Sync to Master deck</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.syncPressed</key>
                 <status>0x92</status>
                 <midino>0x58</midino>
@@ -707,8 +707,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC + SHIFT (DECK1) - press - Set as Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC + SHIFT (DECK3) - press - Set as Master deck</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.syncShiftPressed</key>
                 <status>0x92</status>
                 <midino>0x5C</midino>
@@ -717,8 +717,8 @@
                 </options>
             </control>
             <control>
-                <description>DECK SELECT LONG PRESS (DECK1) - press - Change Tempo range</description>
-                <group>[Channel1]</group>
+                <description>DECK SELECT LONG PRESS (DECK3) - press - Change Tempo range</description>
+                <group>[Channel3]</group>
                 <key>PioneerDDJREV1.cycleTempoRange</key>
                 <status>0x92</status>
                 <midino>0x60</midino>
@@ -727,8 +727,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT (DECK1) - press - (loop off) Reloop, (loop on) Loop exit</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT (DECK3) - press - (loop off) Reloop, (loop on) Loop exit</description>
+                <group>[Channel3]</group>
                 <key>reloop_toggle</key>
                 <status>0x92</status>
                 <midino>0x14</midino>
@@ -737,8 +737,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT + SHIFT (DECK1) - press - Reloop and stop</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT + SHIFT (DECK3) - press - Reloop and stop</description>
+                <group>[Channel3]</group>
                 <key>reloop_andstop</key>
                 <status>0x92</status>
                 <midino>0x50</midino>
@@ -747,8 +747,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X (DECK1) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
-                <group>[Channel1]</group>
+                <description>1/2X (DECK3) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
+                <group>[Channel3]</group>
                 <key>loop_halve</key>
                 <status>0x92</status>
                 <midino>0x12</midino>
@@ -757,8 +757,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X + SHIFT (DECK1) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
-                <group>[Channel1]</group>
+                <description>1/2X + SHIFT (DECK3) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
+                <group>[Channel3]</group>
                 <key>loop_in</key>
                 <status>0x92</status>
                 <midino>0x10</midino>
@@ -767,8 +767,8 @@
                 </options>
             </control>
             <control>
-                <description>2X (DECK1) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
-                <group>[Channel1]</group>
+                <description>2X (DECK3) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
+                <group>[Channel3]</group>
                 <key>loop_double</key>
                 <status>0x92</status>
                 <midino>0x13</midino>
@@ -777,8 +777,8 @@
                 </options>
             </control>
             <control>
-                <description>2X + SHIFT (DECK1) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
-                <group>[Channel1]</group>
+                <description>2X + SHIFT (DECK3) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
+                <group>[Channel3]</group>
                 <key>loop_out</key>
                 <status>0x92</status>
                 <midino>0x11</midino>
@@ -788,8 +788,8 @@
             </control>
                 <!-- Deck 4 -->
             <control>
-                <description>PLAY/PAUSE (DECK1) - press - Play/Pause</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE (DECK4) - press - Play/Pause</description>
+                <group>[Channel4]</group>
                 <key>play</key>
                 <status>0x93</status>
                 <midino>0x0B</midino>
@@ -798,8 +798,8 @@
                 </options>
             </control>
             <control>
-                <description>PLAY/PAUSE + SHIFT (DECK1) - press - Stutter</description>
-                <group>[Channel1]</group>
+                <description>PLAY/PAUSE + SHIFT (DECK4) - press - Stutter</description>
+                <group>[Channel4]</group>
                 <key>play_stutter</key>
                 <status>0x93</status>
                 <midino>0x47</midino>
@@ -808,8 +808,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE (DECK1) - press - Set/Call Cue, Back Cue</description>
-                <group>[Channel1]</group>
+                <description>CUE (DECK4) - press - Set/Call Cue, Back Cue</description>
+                <group>[Channel4]</group>
                 <key>cue_default</key>
                 <status>0x93</status>
                 <midino>0x0C</midino>
@@ -818,8 +818,8 @@
                 </options>
             </control>
             <control>
-                <description>CUE + SHIFT (DECK1) - press - Jump to track start</description>
-                <group>[Channel1]</group>
+                <description>CUE + SHIFT (DECK4) - press - Jump to track start</description>
+                <group>[Channel4]</group>
                 <key>start_play</key>
                 <status>0x93</status>
                 <midino>0x48</midino>
@@ -828,8 +828,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode On (DECK1) - rotate - Scratch</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode On (DECK4) - rotate - Scratch</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB3</status>
                 <midino>0x22</midino>
@@ -838,8 +838,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER Vinyl mode Off (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER Vinyl mode Off (DECK4) - rotate - Pitch bend</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB3</status>
                 <midino>0x23</midino>
@@ -848,8 +848,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - rotate - Search (Fast Pitch bend)</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK4) - rotate - Search (Fast Pitch bend)</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogSearch</key>
                 <status>0xB3</status>
                 <midino>0x1F</midino>
@@ -858,8 +858,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER (DECK1) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER (DECK4) - touch - enable (on touch) / disable (on release) Scratching/Pitch bend</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x93</status>
                 <midino>0x36</midino>
@@ -868,8 +868,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL PLATTER + SHIFT (DECK1) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL PLATTER + SHIFT (DECK4) - touch - enable (on touch) / disable (on release) highspeed Pitch bend</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogTouch</key>
                 <status>0x93</status>
                 <midino>0x67</midino>
@@ -878,8 +878,8 @@
                 </options>
             </control>
             <control>
-                <description>JOG DIAL SIDE (DECK1) - rotate - Pitch bend</description>
-                <group>[Channel1]</group>
+                <description>JOG DIAL SIDE (DECK4) - rotate - Pitch bend</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.jogTurn</key>
                 <status>0xB3</status>
                 <midino>0x21</midino>
@@ -888,8 +888,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control LSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK4) - fader - Tempo control LSB</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.tempoSliderLSB</key>
                 <status>0xB3</status>
                 <midino>0x20</midino>
@@ -898,8 +898,8 @@
                 </options>
             </control>
             <control>
-                <description>TEMPO (DECK1) - fader - Tempo control MSB</description>
-                <group>[Channel1]</group>
+                <description>TEMPO (DECK4) - fader - Tempo control MSB</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.tempoSliderMSB</key>
                 <status>0xB3</status>
                 <midino>0x00</midino>
@@ -908,8 +908,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC (DECK1) - press - Beat Sync to Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC (DECK4) - press - Beat Sync to Master deck</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.syncPressed</key>
                 <status>0x93</status>
                 <midino>0x58</midino>
@@ -918,8 +918,8 @@
                 </options>
             </control>
             <control>
-                <description>BEAT SYNC + SHIFT (DECK1) - press - Set as Master deck</description>
-                <group>[Channel1]</group>
+                <description>BEAT SYNC + SHIFT (DECK4) - press - Set as Master deck</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.syncShiftPressed</key>
                 <status>0x93</status>
                 <midino>0x5C</midino>
@@ -928,8 +928,8 @@
                 </options>
             </control>
             <control>
-                <description>DECK SELECT LONG PRESS (DECK1) - press - Change Tempo range</description>
-                <group>[Channel1]</group>
+                <description>DECK SELECT LONG PRESS (DECK4) - press - Change Tempo range</description>
+                <group>[Channel4]</group>
                 <key>PioneerDDJREV1.cycleTempoRange</key>
                 <status>0x93</status>
                 <midino>0x60</midino>
@@ -938,8 +938,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT (DECK1) - press - (loop off) Reloop, (loop on) Loop exit</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT (DECK4) - press - (loop off) Reloop, (loop on) Loop exit</description>
+                <group>[Channel4]</group>
                 <key>reloop_toggle</key>
                 <status>0x93</status>
                 <midino>0x14</midino>
@@ -948,8 +948,8 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT + SHIFT (DECK1) - press - Reloop and stop</description>
-                <group>[Channel1]</group>
+                <description>RELOOP/EXIT + SHIFT (DECK4) - press - Reloop and stop</description>
+                <group>[Channel4]</group>
                 <key>reloop_andstop</key>
                 <status>0x93</status>
                 <midino>0x50</midino>
@@ -958,8 +958,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X (DECK1) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
-                <group>[Channel1]</group>
+                <description>1/2X (DECK4) - press - Loop off: Halves beatloop size; Loop on: Halve the current loop size</description>
+                <group>[Channel4]</group>
                 <key>loop_halve</key>
                 <status>0x93</status>
                 <midino>0x12</midino>
@@ -968,8 +968,8 @@
                 </options>
             </control>
             <control>
-                <description>1/2X + SHIFT (DECK1) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
-                <group>[Channel1]</group>
+                <description>1/2X + SHIFT (DECK4) - press - Loop off: Set beatloop-in position; Loop on: Hold to move beatloop-in position</description>
+                <group>[Channel4]</group>
                 <key>loop_in</key>
                 <status>0x93</status>
                 <midino>0x10</midino>
@@ -978,8 +978,8 @@
                 </options>
             </control>
             <control>
-                <description>2X (DECK1) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
-                <group>[Channel1]</group>
+                <description>2X (DECK4) - press - Loop off: Doubles beatloop size; Loop on: Doubles the current loop size</description>
+                <group>[Channel4]</group>
                 <key>loop_double</key>
                 <status>0x93</status>
                 <midino>0x13</midino>
@@ -988,8 +988,8 @@
                 </options>
             </control>
             <control>
-                <description>2X + SHIFT (DECK1) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
-                <group>[Channel1]</group>
+                <description>2X + SHIFT (DECK4) - press - Loop off: Set beatloop-out position; Loop on: Hold to move beatloop-out position</description>
+                <group>[Channel4]</group>
                 <key>loop_out</key>
                 <status>0x93</status>
                 <midino>0x11</midino>
