@@ -3455,7 +3455,20 @@ if (STEM)
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
     src/track/steminfo.cpp
+    src/waveform/renderers/allshader/waveformrendererstem.cpp
+    src/widget/wstemcontrol.cpp
   )
+  if(QOPENGL)
+    target_sources(mixxx-lib PRIVATE
+      src/waveform/renderers/allshader/waveformrendererstem.cpp
+    )
+  endif()
+  if(QML)
+    target_compile_definitions(mixxx-qml-lib PUBLIC __STEM__)
+    target_sources(mixxx-qml-lib PRIVATE
+      src/qml/qmlstemsmodel.cpp
+    )
+  endif()
 endif()
 
 # Test Suite

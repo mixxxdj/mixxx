@@ -11,6 +11,16 @@
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wglwidget.h"
+#ifdef __STEM__
+#include "widget/wstemcontrol.h"
+
+namespace {
+const QString kStemControlLeftAlignment = QStringLiteral("left");
+const QString kStemControlRightAlignment = QStringLiteral("right");
+const QString kStemControlElementName = QStringLiteral("StemControl");
+const QString kStemElementName = QStringLiteral("Stem");
+} // anonymous namespace
+#endif
 
 WWaveformViewer::WWaveformViewer(
         const QString& group,
@@ -23,7 +33,13 @@ WWaveformViewer::WWaveformViewer(
           m_bScratching(false),
           m_bBending(false),
           m_pCueMenuPopup(make_parented<WCueMenuPopup>(pConfig, this)),
-          m_waveformWidget(nullptr) {
+          m_waveformWidget(nullptr)
+#ifdef __STEM__
+          ,
+          m_stemControlWidget(std::make_unique<WStemControlBox>(group, this))
+#endif
+
+{
     setMouseTracking(true);
     setAcceptDrops(true);
     m_pZoom = new ControlProxy(group, "waveform_zoom", this, ControlFlag::NoAssertIfMissing);
@@ -39,6 +55,16 @@ WWaveformViewer::WWaveformViewer(
     m_pPassthroughEnabled = make_parented<ControlProxy>(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this, &WWaveformViewer::passthroughChanged);
 
+#ifdef __STEM__
+    connect(m_stemControlWidget.get(), &WStemControlBox::displayedChanged, this, [this](bool) {
+        if (isVisible() && m_stemControlWidget->shouldShow()) {
+            m_stemControlWidget->show();
+        } else {
+            m_stemControlWidget->hide();
+        }
+    });
+#endif
+
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
 }
@@ -52,6 +78,18 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
         m_waveformWidget->setup(node, context);
         m_dimBrightThreshold = m_waveformWidget->getDimBrightThreshold();
     }
+
+#ifdef __STEM__
+    QDomElement child = node.firstChildElement(kStemControlElementName);
+    if (!child.isNull()) {
+        QString alignment = child.attribute("alignment", kStemControlLeftAlignment).toLower();
+        if (alignment == kStemControlRightAlignment) {
+            m_stemControlWidgetAlignment = WWaveformViewer::StemControlAlignment::Right;
+        } else {
+            m_stemControlWidgetAlignment = WWaveformViewer::StemControlAlignment::Left;
+        }
+    }
+#endif
 }
 
 void WWaveformViewer::resizeEvent(QResizeEvent* event) {
@@ -63,6 +101,24 @@ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
         // a QWidget, though that will be called directly.
         m_waveformWidget->resize(width(), height());
     }
+#ifdef __STEM__
+    m_stemControlWidget->resize(m_stemControlWidget->width(), height());
+
+    if (m_stemControlWidget->height() > height()) {
+        m_stemControlWidget->hide();
+    } else if (m_stemControlWidget->shouldShow()) {
+        m_stemControlWidget->show();
+    }
+
+    switch (m_stemControlWidgetAlignment) {
+    case WWaveformViewer::StemControlAlignment::Right:
+        m_stemControlWidget->move(mapToGlobal(QPoint(width() - m_stemControlWidget->width(), 0)));
+        break;
+    case WWaveformViewer::StemControlAlignment::Left:
+        m_stemControlWidget->move(mapToGlobal(QPoint(0, 0)));
+        break;
+    }
+#endif
 }
 
 void WWaveformViewer::showEvent(QShowEvent* event) {
@@ -74,6 +130,13 @@ void WWaveformViewer::showEvent(QShowEvent* event) {
         m_waveformWidget->resizeRenderer(
                 width(), height(), static_cast<float>(devicePixelRatioF()));
     }
+}
+
+void WWaveformViewer::hideEvent(QHideEvent* event) {
+    Q_UNUSED(event);
+#ifdef __STEM__
+    m_stemControlWidget->hide();
+#endif
 }
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
@@ -225,6 +288,18 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(track);
     }
+#ifdef __STEM__
+    m_stemControlWidget->slotTrackLoaded(track);
+    if (isVisible() && m_stemControlWidget->shouldShow()) {
+        m_stemControlWidget->show();
+    } else {
+        m_stemControlWidget->hide();
+    }
+#endif
+}
+
+void WWaveformViewer::slotTrackUnloaded(TrackPointer pOldTrack) {
+    slotLoadingTrack(pOldTrack, TrackPointer());
 }
 
 void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -233,6 +308,10 @@ void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOld
     if (m_waveformWidget) {
         m_waveformWidget->setTrack(TrackPointer());
     }
+#ifdef __STEM__
+    m_stemControlWidget->slotTrackLoaded(TrackPointer());
+    m_stemControlWidget->hide();
+#endif
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {
