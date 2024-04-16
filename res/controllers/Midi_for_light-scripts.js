@@ -106,17 +106,9 @@ midi_for_light.shutdown = function(id) { // called when the MIDI device is close
     engine.stopTimer(deck_beat_watchdog_timer[1]);
     engine.stopTimer(deck_beat_watchdog_timer[2]);
     engine.stopTimer(deck_beat_watchdog_timer[3]);
-    if (midi_for_light.vu_meter_timer) {
-        engine.stopTimer(midi_for_light.vu_meter_timer);
-    }
-    if (midi_for_light.volumeBeatBlock_timer) {
-        engine.stopTimer(midi_for_light.volumeBeatBlock_timer);
-    }
-    if (midi_for_light.crossfader_change_block_timer) {
-        engine.stopTimer(midi_for_light.crossfader_change_block_timer);
-    }
-    if (midi_for_light.volumebeat_on_delay_timer) {
-        engine.stopTimer(midi_for_light.volumebeat_on_delay_timer);
+    for (const timer of ["vu_meter_timer", "volumeBeatBlock_timer", "crossfader_change_block_timer", "volumebeat_on_delay_timer"]) {
+        engine.stopTimer(midi_for_light[timer]);
+        midi_for_light[timer] = undefined;
     }
 };
 
@@ -130,6 +122,7 @@ midi_for_light.deckButtonPlay = function(value, group, control) { // called when
     } else { // deck play stop
         engine.stopTimer(deck_beat_watchdog_timer[deck]);
         beat_watchdog[deck] = true;
+        deck_beat_watchdog_timer[deck] = undefined;
     }
 
     if (midi_for_light.volumebeat === true) {
@@ -142,6 +135,7 @@ midi_for_light.deckButtonPlay = function(value, group, control) { // called when
 
 midi_for_light.deckBeatWatchdog = function(deck) { //  if current deck beat lost without reason, search a new current deck
     engine.stopTimer(deck_beat_watchdog_timer[deck]);
+    deck_beat_watchdog_timer[deck] = undefined;
     beat_watchdog[deck] = true;
     if (midi_for_light.volumebeat === false) midi_for_light.crossfaderChange();
 };
@@ -431,6 +425,7 @@ midi_for_light.deckVolumeChange = function(value, group, control) { // deck volu
 midi_for_light.volumeBeatBlock = function() { // prevent deck change for one second
     if (midi_for_light.volumeBeatBlock_timer) {
         engine.stopTimer(midi_for_light.volumeBeatBlock_timer);
+        midi_for_light.volumeBeatBlock_timer = undefined;
     }
     midi_for_light.volumeBeatBlockStatus = false;
     midi.sendShortMsg(0x8F + midi_channel, 0x30, 0x0); // note C on with value 0
@@ -440,6 +435,7 @@ midi_for_light.volumeBeatBlock = function() { // prevent deck change for one sec
 midi_for_light.volumeBeatOnDelay = function() { // allow deck change with volume after 3 second fader do nothing
     if (midi_for_light.volumebeat_on_delay_timer) {
         engine.stopTimer(midi_for_light.volumebeat_on_delay_timer);
+        midi_for_light.volumebeat_on_delay_timer = undefined;
     }
     midi_for_light.volumebeat = true;
 };
@@ -452,6 +448,7 @@ midi_for_light.crossfaderChange = function() { // crossfader chenge, check deck 
     midi_for_light.volumebeat = false;
     if (midi_for_light.volumebeat_on_delay_timer) {
         engine.stopTimer(midi_for_light.volumebeat_on_delay_timer);
+        midi_for_light.volumebeat_on_delay_timer = undefined;
     }
     if (engine.getValue("[Master]", "crossfader") > -0.25) { // crossfader more than 25% left;
         if (engine.getValue("[Master]", "crossfader") < 0.25) { // crossfader more then 25% right;
@@ -484,6 +481,7 @@ midi_for_light.crossfaderChange = function() { // crossfader chenge, check deck 
 midi_for_light.crossfaderChangeBlock = function() { // prevent deck change for one second
     if (midi_for_light.crossfader_change_block_timer) {
         engine.stopTimer(midi_for_light.crossfader_change_block_timer);
+        midi_for_light.crossfader_change_block_timer = undefined;
     }
     midi_for_light.crossfader_block = false;
     midi.sendShortMsg(0x8F + midi_channel, 0x30, 0x0); // note C on with value 0
