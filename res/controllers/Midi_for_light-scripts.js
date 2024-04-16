@@ -75,12 +75,12 @@ midi_for_light.init = function(id) { // called when the MIDI device is opened & 
     midi_for_light.directory_mode = false;
     midi_for_light.deck_current = 0;
     midi_for_light.crossfader_block = false;
-    midi_for_light.crossfader_change_block_timer = [-1, -1];
+    midi_for_light.crossfader_change_block_timer = undefined;
     midi_for_light.volumebeat = false;
     midi_for_light.volumeBeatBlockStatus = false;
-    midi_for_light.volumeBeatBlock_timer = [-1, -1];
-    midi_for_light.vu_meter_timer = [-1, -1];
-    midi_for_light.volumebeat_on_delay_timer = [-1, -1];
+    midi_for_light.volumeBeatBlock_timer = undefined;
+    midi_for_light.vu_meter_timer = undefined;
+    midi_for_light.volumebeat_on_delay_timer = undefined;
 
     engine.connectControl("[Master]", "crossfader", "midi_for_light.crossfaderChange");
 
