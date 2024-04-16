@@ -28,7 +28,7 @@ PioneerDDJREV1.zero         = 0;
 PioneerDDJREV1.channelCount = 4;
 PioneerDDJREV1.padCount     = 8;
 PioneerDDJREV1.samplerCount = 16;
-PioneerDDJREV1.vuAdjust     = 150;
+PioneerDDJREV1.vuAdjust     = 125;
 
 /* Timer IDs */
 PioneerDDJREV1.timers = {};
