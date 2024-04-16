@@ -25,30 +25,30 @@ jobs:
         if: env.SSH_AUTH_SOCK != null
         run: |
           mkdir empty_folder
-          1.12 >> include_file.txt
-          1.12/release >> include_file.txt
-          1.12/release/* >> include_file.txt
-          1.12/release/*/* >> include_file.txt
-          1.12/manual >> include_file.txt
-          1.12/manual/* >> include_file.txt
-          1.12/manual/*/pdf >> include_file.txt
-          1.12/manual/*/pdf/* >> include_file.txt
-          1.12/manual/*/html >> include_file.txt
-          1.12/manual/*/html/build >> include_file.txt
-          1.12/manual/*/html/build/html >> include_file.txt
-          1.12/manual/*/html/build/html/* >> include_file.txt
-          2.0 >> include_file.txt
-          2.0/release >> include_file.txt
-          2.0/release/* >> include_file.txt
-          2.0/release/*/* >> include_file.txt
-          2.0/manual >> include_file.txt
-          2.0/manual/* >> include_file.txt
-          2.0/manual/*/pdf >> include_file.txt
-          2.0/manual/*/pdf/* >> include_file.txt
-          2.0/manual/*/html >> include_file.txt
-          2.0/manual/*/html/build >> include_file.txt
-          2.0/manual/*/html/build/html >> include_file.txt
-          2.0/manual/*/html/build/html/* >> include_file.txt
+          echo 1.12 >> include_file.txt
+          echo 1.12/release >> include_file.txt
+          echo 1.12/release/* >> include_file.txt
+          echo 1.12/release/*/* >> include_file.txt
+          echo 1.12/manual >> include_file.txt
+          echo 1.12/manual/* >> include_file.txt
+          echo 1.12/manual/*/pdf >> include_file.txt
+          echo 1.12/manual/*/pdf/* >> include_file.txt
+          echo 1.12/manual/*/html >> include_file.txt
+          echo 1.12/manual/*/html/build >> include_file.txt
+          echo 1.12/manual/*/html/build/html >> include_file.txt
+          echo 1.12/manual/*/html/build/html/* >> include_file.txt
+          echo 2.0 >> include_file.txt
+          echo 2.0/release >> include_file.txt
+          echo 2.0/release/* >> include_file.txt
+          echo 2.0/release/*/* >> include_file.txt
+          echo 2.0/manual >> include_file.txt
+          echo 2.0/manual/* >> include_file.txt
+          echo 2.0/manual/*/pdf >> include_file.txt
+          echo 2.0/manual/*/pdf/* >> include_file.txt
+          echo 2.0/manual/*/html >> include_file.txt
+          echo 2.0/manual/*/html/build >> include_file.txt
+          echo 2.0/manual/*/html/build/html >> include_file.txt
+          echo 2.0/manual/*/html/build/html/* >> include_file.txt
           rsync --verbose --archive --times --recursive --delete --include-from=include_file.txt --exclude=* "empty_folder/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/snapshots/"
         env:
           DESTDIR: public_html/downloads
