@@ -1,14 +1,6 @@
 // eslint-disable-next-line no-var, no-redeclare
 var pcon = {};
 
-// pcon.init = function(id, _debugging) {
-//     console.info(`Pioneer Controller mapping started ${id}`);
-// };
-
-// pcon.shutdown = function() {
-//     // nothing to do
-// };
-
 // /**
 //  * this converts a typed array from one to the other, respecting the views offset and length.
 //  * in theory, this is similar to a C++ reinterpret_cast
@@ -47,6 +39,9 @@ pcon.util = {
         }
         return ret;
     },
+    fromHexStream: function(str) {
+        return new Uint8Array(pcon.util.chunk(str, 2).map(byte => Number.parseInt(byte.join(""), 16)));
+    }
 };
 
 pcon.debug = {
@@ -181,6 +176,7 @@ pcon.DeviceSysexCode = {
 };
 
 pcon.seedA = [0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF];
+// pcon.seedA = [0, 0, 0x2c, 0xe, 0, 0, 9, 0x46]
 
 pcon.keepAliveTimer = 0;
 pcon.handshakeState = {};
@@ -265,6 +261,7 @@ pcon.sysexGreet = function() {
 pcon.handleAuth = function(data, protocol) {
 
     const send = (stage, inner) => {
+        // console.debug(`outgoing:\n${pcon.debug.hexDump(inner)}`);
         if (protocol === pcon.protocol.HID) {
             pcon.send.hidextended(0, 0xf0, 1, stage, inner);
         } else {
@@ -339,17 +336,18 @@ pcon.handleAuth = function(data, protocol) {
         console.debug(`hashA ${hashAView.getUint32(0)}`);
         console.assert(hashAView.getUint32(0) === hashAd);
 
-        // TODO optimize?
-        const hashE = new Uint8Array((new Uint32Array([pcon.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer)])).buffer);
-        console.debug(pcon.debug.hexDump(hashE));
-        console.assert(hashE.length === 4);
+        const hashEBuf = new Uint8Array(4);
+        const hashEview = new DataView(hashEBuf.buffer);
+        const hashEnum = pcon.FNVhash((new Uint8Array(Array.from(seedE).concat(secret))).buffer);
+        hashEview.setUint32(0, hashEnum);
+        console.debug(pcon.debug.hexDump(hashEBuf));
 
         send(2, pcon.makeTLV(0x14,
             // I'm using the spoofed creds here.
             // TODO don't hardcode traktor here.
             pcon.makeTLV(0x01, pcon.asciiEncode(manufacturer)).concat(
                 pcon.makeTLV(0x02, pcon.asciiEncode(softProd)),
-                pcon.makeTLV(0x04, pcon.spreadBuff(hashE)),
+                pcon.makeTLV(0x04, pcon.spreadBuff(hashEBuf)),
                 pcon.makeTLV(0x05, pcon.spreadBuff(pcon.DeviceManufacturerDeviceID[manufacturer][pcon.handshakeState.device])),
             )
         ));
