@@ -38,7 +38,7 @@ PioneerDDJREV1.highResMSB = {
     "[Channel1]": {},
     "[Channel2]": {},
     "[Channel3]": {},
-    "[Channel4]": {}
+    "[Channel4]": {},
 };
 
 /* Used to track the SHIFT button state */
@@ -57,11 +57,6 @@ PioneerDDJREV1.fastSeekScale = 150;
 PioneerDDJREV1.bendScale     = 0.8;
 
 PioneerDDJREV1.tempoRanges = [0.06, 0.10, 0.16, 0.25];
-
-/* Jog wheel loop adjust */
-PioneerDDJREV1.loopAdjustIn       = [false, false, false, false];
-PioneerDDJREV1.loopAdjustOut      = [false, false, false, false];
-PioneerDDJREV1.loopAdjustMultiply = 50;
 
 /* Midi channels */
 PioneerDDJREV1.midiChan = {
@@ -88,8 +83,8 @@ PioneerDDJREV1.midiChan = {
         deck3:      0x0B,
         deck3Shift: 0x0C,
         deck4:      0x0D,
-        deck4Shift: 0x0E
-    }
+        deck4Shift: 0x0E,
+    },
 };
 
 /* Status light addresses */
@@ -100,37 +95,6 @@ PioneerDDJREV1.lights = {
     },
 
     decks: {
-        playPauseBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x0B
-        },
-        playPauseShiftBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x47
-        },
-
-        cueBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x0C
-        },
-        cueShiftBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x48
-        },
-
-        deckSelectLeft: {
-            status: PioneerDDJREV1.midiChan.note + 0x02,
-            data1:  0x72
-        },
-        deckSelectRight: {
-            status: PioneerDDJREV1.midiChan.note + 0x03,
-            data1:  0x72
-        },
-        deckSelectShiftBase: { // Unused
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x17
-        },
-
         autoLoopBase: {
             status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
             data1:  0x14
@@ -139,39 +103,12 @@ PioneerDDJREV1.lights = {
             status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
             data1:  0x50
         },
-
-        syncBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x58
-        },
-        syncShiftBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x5C
-        }
     },
 
     mixer: {
         vuMeterBase: {
             status: PioneerDDJREV1.midiChan.ctrl + PioneerDDJREV1.midiChan.subChan.ch1,
             data1:  0x02
-        },
-
-        cueBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x54
-        },
-        cueShiftBase: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x68
-        },
-
-        cueMaster: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.master,
-            data1:  0x63
-        },
-        cueShiftMaster: {
-            status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.master,
-            data1:  0x62
         },
     },
 
@@ -202,7 +139,7 @@ PioneerDDJREV1.lights = {
             slot3Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
                 data1:  0x07
-            }
+            },
         },
         fx2: {
             slot1: {
@@ -230,9 +167,9 @@ PioneerDDJREV1.lights = {
             slot3Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
                 data1:  0x07
-            }
-        }
-    }
+            },
+        },
+    },
 };
 
 /*
@@ -246,11 +183,8 @@ PioneerDDJREV1.lights = {
  * @param {boolean} active Indicator on when true; off otherwise
  */
 PioneerDDJREV1.setIndicatorState = function(channel, address, active) {
-    midi.sendShortMsg(
-        channel,
-        address,
-        active ? this.lights.status.on : this.lights.status.off
-    );
+    const state = active ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off;
+    midi.sendShortMsg(channel, address, state);
 };
 
 /**
@@ -260,9 +194,9 @@ PioneerDDJREV1.setIndicatorState = function(channel, address, active) {
  */
 PioneerDDJREV1.setVuMeterState = function(channel, value) {
     midi.sendShortMsg(
-        this.lights.mixer.vuMeterBase.status + channel,
-        this.lights.mixer.vuMeterBase.data1,
-        value * this.vuAdjust
+        PioneerDDJREV1.lights.mixer.vuMeterBase.status + channel,
+        PioneerDDJREV1.lights.mixer.vuMeterBase.data1,
+        value * PioneerDDJREV1.vuAdjust
     );
 };
 
@@ -282,44 +216,44 @@ PioneerDDJREV1.getPadNumber = function(control) {
 PioneerDDJREV1.init = function() {
     engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
 
-    for (let i = this.zero; i < this.channelCount; i++) {
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.channelCount; i++) {
         const channel = `[Channel${i + 1}]`;
 
         // Connect to VU meter and zero it out
-        engine.makeUnbufferedConnection(channel, "vu_meter", this.vuMeterUpdate);
-        this.setVuMeterState(this.midiChan.subChan.ch1 + i, this.lights.status.off);
+        engine.makeUnbufferedConnection(channel, "vu_meter", PioneerDDJREV1.vuMeterUpdate);
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1 + i, PioneerDDJREV1.lights.status.off);
 
         // Connect to channel rate
         engine.softTakeover(channel, "rate", true);
 
         // Connect to channel track loaded
-        engine.makeConnection(channel, "track_loaded", this.trackLoadedLED);
+        engine.makeConnection(channel, "track_loaded", PioneerDDJREV1.trackLoadedLED);
         // Play the "track loaded" animation on both decks at startup
-        midi.sendShortMsg(this.midiChan.special, i, this.lights.status.on);
+        midi.sendShortMsg(PioneerDDJREV1.midiChan.special, i, PioneerDDJREV1.lights.status.on);
 
         // Connect to channel loop
-        engine.makeConnection(channel, "loop_enabled", this.loopToggle);
+        engine.makeConnection(channel, "loop_enabled", PioneerDDJREV1.loopToggle);
     }
 
-    for (let i = this.zero; i < 2; i++) {
+    for (let i = PioneerDDJREV1.zero; i < 2; i++) {
         //const effectUnit = `[EffectRack1_EffectUnit${i + 1}]`;
         //engine.softTakeover(effectUnit, "mix", true);
-        //engine.makeConnection(effectUnit, "focused_effect", this.toggleFxLight);
+        //engine.makeConnection(effectUnit, "focused_effect", PioneerDDJREV1.toggleFxLight);
 
-        for (let j = this.zero; j < 3; j++) {
+        for (let j = PioneerDDJREV1.zero; j < 3; j++) {
             const effect = `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`;
 
             engine.softTakeover(effect, "meta", true);
-            engine.makeConnection(effect, "enabled", this.toggleFxLight);
+            engine.makeConnection(effect, "enabled", PioneerDDJREV1.toggleFxLight);
         }
     }
 
-    if (engine.getValue("[App]", "num_samplers") < this.samplerCount) {
-        engine.setValue("[App]", "num_samplers", this.samplerCount);
+    if (engine.getValue("[App]", "num_samplers") < PioneerDDJREV1.samplerCount) {
+        engine.setValue("[App]", "num_samplers", PioneerDDJREV1.samplerCount);
     }
 
-    for (let i = this.zero; i < this.samplerCount; i++) {
-        engine.makeConnection(`[Sampler${i + 1}]`, "play", this.samplerPlayOutputCallbackFunction);
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.samplerCount; i++) {
+        engine.makeConnection(`[Sampler${i + 1}]`, "play", PioneerDDJREV1.samplerPlayOutputCallbackFunction);
     }
 
     // Query the controller for current control positions on startup
@@ -331,90 +265,40 @@ PioneerDDJREV1.init = function() {
  */
 PioneerDDJREV1.shutdown = function() {
     // Zero out VU meter lights
-    for (let i = this.zero; i < this.channelCount; i++) {
-        this.setVuMeterState(this.midiChan.subChan.ch1 + i, this.lights.status.off);
-        this.setReloopLight(this.midiChan.subChan.ch1 + i, this.lights.status.off);
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.channelCount; i++) {
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1 + i, PioneerDDJREV1.lights.status.off);
+        PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch1 + i, PioneerDDJREV1.lights.status.off);
     }
 
-    for (let mode = this.zero; mode < 0x80; mode += 0x10) {
+    for (let mode = PioneerDDJREV1.zero; mode < 0x80; mode += 0x10) {
         // We can skip these, as we never changed them
-        if ([0x20, 0x60, 0x70].indexOf(mode) > -1) { continue; }
+        if ([0x20, 0x60, 0x70].indexOf(mode) > -1) {
+            continue;
+        }
 
-        for (let padId = this.zero; padId < this.padCount; padId++) {
+        for (let padId = PioneerDDJREV1.zero; padId < PioneerDDJREV1.padCount; padId++) {
             const data1Addr = mode + padId;
 
-            for (let deckId = this.midiChan.subChan.deck1; deckId <= this.midiChan.subChan.deck4Shift; deckId++) {
-                this.setIndicatorState(
-                    this.midiChan.note + deckId,
-                    data1Addr,
-                    this.lights.status.off
-                );
+            for (let deckId = PioneerDDJREV1.midiChan.subChan.deck1; deckId <= PioneerDDJREV1.midiChan.subChan.deck4Shift; deckId++) {
+                PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.midiChan.note + deckId, data1Addr, false);
             }
         }
     }
 
     // Cleanup FX lights
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot1.status,
-        this.lights.fx.fx1.slot1.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot1Shift.status,
-        this.lights.fx.fx1.slot1Shift.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot2.status,
-        this.lights.fx.fx1.slot2.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot2Shift.status,
-        this.lights.fx.fx1.slot2Shift.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot3.status,
-        this.lights.fx.fx1.slot3.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx1.slot3Shift.status,
-        this.lights.fx.fx1.slot3Shift.data1,
-        this.lights.status.off
-    );
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1.status, PioneerDDJREV1.lights.fx.fx1.slot1.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1Shift.status, PioneerDDJREV1.lights.fx.fx1.slot1Shift.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2.status, PioneerDDJREV1.lights.fx.fx1.slot2.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2Shift.status, PioneerDDJREV1.lights.fx.fx1.slot2Shift.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3.status, PioneerDDJREV1.lights.fx.fx1.slot3.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3Shift.status, PioneerDDJREV1.lights.fx.fx1.slot3Shift.data1, false);
 
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot1.status,
-        this.lights.fx.fx2.slot1.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot1Shift.status,
-        this.lights.fx.fx2.slot1Shift.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot2.status,
-        this.lights.fx.fx2.slot2.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot2Shift.status,
-        this.lights.fx.fx2.slot2Shift.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot3.status,
-        this.lights.fx.fx2.slot3.data1,
-        this.lights.status.off
-    );
-    this.setIndicatorState(
-        this.lights.fx.fx2.slot3Shift.status,
-        this.lights.fx.fx2.slot3Shift.data1,
-        this.lights.status.off
-    );
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1.status, PioneerDDJREV1.lights.fx.fx2.slot1.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1Shift.status, PioneerDDJREV1.lights.fx.fx2.slot1Shift.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2.status, PioneerDDJREV1.lights.fx.fx2.slot2.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2Shift.status, PioneerDDJREV1.lights.fx.fx2.slot2Shift.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3.status, PioneerDDJREV1.lights.fx.fx2.slot3.data1, false);
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3Shift.status, PioneerDDJREV1.lights.fx.fx2.slot3Shift.data1, false);
 };
 
 /*
@@ -423,189 +307,110 @@ PioneerDDJREV1.shutdown = function() {
 PioneerDDJREV1.vuMeterUpdate = function(value, group) {
     switch (group) {
         case "[Channel1]":
-            this.setVuMeterState(this.midiChan.subChan.ch1, value);
+            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1, value);
             break;
 
         case "[Channel2]":
-            this.setVuMeterState(this.midiChan.subChan.ch2, value);
+            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch2, value);
             break;
 
         case "[Channel3]":
-            this.setVuMeterState(this.midiChan.subChan.ch3, value);
+            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch3, value);
             break;
 
         case "[Channel4]":
-            this.setVuMeterState(this.midiChan.subChan.ch4, value);
+            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch4, value);
             break;
     }
 };
 
 PioneerDDJREV1.loopToggle = function(value, group) {
-    const state = value ? this.lights.status.on : this.lights.status.off;
-
     switch (group) {
         case "[Channel1]":
-            this.setReloopLight(this.midiChan.subChan.ch1, state);
+            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch1, value);
             break;
 
         case "[Channel2]":
-            this.setReloopLight(this.midiChan.subChan.ch2, state);
+            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch2, value);
             break;
 
         case "[Channel3]":
-            this.setReloopLight(this.midiChan.subChan.ch3, state);
+            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch3, value);
             break;
 
         case "[Channel4]":
-            this.setReloopLight(this.midiChan.subChan.ch4, state);
+            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch4, value);
             break;
     }
 };
 
 PioneerDDJREV1.setReloopLight = function(channel, value) {
-    midi.sendShortMsg(
-        this.lights.decks.autoLoopBase.status + channel,
-        this.lights.decks.autoLoopBase.data1,
-        value
-    );
-    midi.sendShortMsg(
-        this.lights.decks.autoLoopShiftBase.status + channel,
-        this.lights.decks.autoLoopShiftBase.data1,
-        value
-    );
+    const state = value ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off;
+    midi.sendShortMsg(PioneerDDJREV1.lights.decks.autoLoopBase.status + channel, PioneerDDJREV1.lights.decks.autoLoopBase.data1, state);
+    midi.sendShortMsg(PioneerDDJREV1.lights.decks.autoLoopShiftBase.status + channel, PioneerDDJREV1.lights.decks.autoLoopShiftBase.data1, state);
 };
 
-PioneerDDJREV1.trackLoadedLED = function() {
-    midi.sendShortMsg(
-        this.midiChan.special,
-        group.match(script.channelRegEx)[1] - 1,
-        value > this.zero ? this.lights.status.on : this.lights.status.off
-    );
+PioneerDDJREV1.trackLoadedLED = function(value, group) {
+    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.midiChan.special, group.match(script.channelRegEx)[1] - 1, value > PioneerDDJREV1.zero);
 };
 
 PioneerDDJREV1.toggleFxLight = function(value, group) {
     switch (group) {
         case "[EffectRack1_EffectUnit1_Effect1":
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot1.status,
-                this.lights.fx.fx1.slot1.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot1Shift.status,
-                this.lights.fx.fx1.slot1Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1.status, PioneerDDJREV1.lights.fx.fx1.slot1.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1Shift.status, PioneerDDJREV1.lights.fx.fx1.slot1Shift.data1, value);
             break;
 
         case "[EffectRack1_EffectUnit1_Effect2":
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot2.status,
-                this.lights.fx.fx1.slot2.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot2Shift.status,
-                this.lights.fx.fx1.slot2Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2.status, PioneerDDJREV1.lights.fx.fx1.slot2.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2Shift.status, PioneerDDJREV1.lights.fx.fx1.slot2Shift.data1, value);
             break;
 
         case "[EffectRack1_EffectUnit1_Effect3":
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot3.status,
-                this.lights.fx.fx1.slot3.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx1.slot3Shift.status,
-                this.lights.fx.fx1.slot3Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3.status, PioneerDDJREV1.lights.fx.fx1.slot3.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3Shift.status, PioneerDDJREV1.lights.fx.fx1.slot3Shift.data1, value);
             break;
 
         case "[EffectRack1_EffectUnit2_Effect1":
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot1.status,
-                this.lights.fx.fx2.slot1.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot1Shift.status,
-                this.lights.fx.fx2.slot1Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1.status, PioneerDDJREV1.lights.fx.fx2.slot1.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1Shift.status, PioneerDDJREV1.lights.fx.fx2.slot1Shift.data1, value);
             break;
 
         case "[EffectRack1_EffectUnit2_Effect2":
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot2.status,
-                this.lights.fx.fx2.slot2.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot2Shift.status,
-                this.lights.fx.fx2.slot2Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2.status, PioneerDDJREV1.lights.fx.fx2.slot2.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2Shift.status, PioneerDDJREV1.lights.fx.fx2.slot2Shift.data1, value);
             break;
 
         case "[EffectRack1_EffectUnit2_Effect3":
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot3.status,
-                this.lights.fx.fx2.slot3.data1,
-                value
-            );
-            this.setIndicatorState(
-                this.lights.fx.fx2.slot3Shift.status,
-                this.lights.fx.fx2.slot3Shift.data1,
-                value
-            );
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3.status, PioneerDDJREV1.lights.fx.fx2.slot3.data1, value);
+            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3Shift.status, PioneerDDJREV1.lights.fx.fx2.slot3Shift.data1, value);
             break;
     }
 };
 
 PioneerDDJREV1.samplerPlayOutputCallbackFunction = function(value, group) {
-    if (value === this.zero) { return; }
+    if (value === PioneerDDJREV1.zero) { // ignore release
+        return;
+    }
 
     const curPad = group.match(script.samplerRegEx)[1];
-    const data1Addr = 0x30 + ((
-        curPad > this.padCount
-            ? curPad - this.padCount
-            : curPad
-        ) - 1);
+    const data1Addr = 0x30 + ((curPad > PioneerDDJREV1.padCount ? curPad - PioneerDDJREV1.padCount : curPad) - 1);
 
-    if (curPad <= this.padCount) {
-        this.startSamplerBlink(
-            this.midiChan.note + this.midiChan.subChan.deck1,
-            data1Addr,
-            group
-        );
-        this.startSamplerBlink(
-            this.midiChan.note + this.midiChan.subChan.deck3,
-            data1Addr,
-            group
-        );
+    if (curPad <= PioneerDDJREV1.padCount) {
+        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck1, data1Addr, group);
+        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck3, data1Addr, group);
     } else {
-        this.startSamplerBlink(
-            this.midiChan.note + this.midiChan.subChan.deck2,
-            data1Addr,
-            group
-        );
-        this.startSamplerBlink(
-            this.midiChan.note + this.midiChan.subChan.deck4,
-            data1Addr,
-            group
-        );
+        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck2, data1Addr, group);
+        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck4, data1Addr, group);
     }
 };
 
 PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
-    let val = this.lights.status.on;
+    let val = PioneerDDJREV1.lights.status.on;
 
-    this.stopSamplerBlink(channel, control);
-    this.timers[channel][control] = engine.beginTimer(250, () => {
-        val = this.lights.status.on - val;
+    PioneerDDJREV1.stopSamplerBlink(channel, control);
+    PioneerDDJREV1.timers[channel][control] = engine.beginTimer(250, () => {
+        val = PioneerDDJREV1.lights.status.on - val;
 
         // blink the appropriate pad
         midi.sendShortMsg(channel, control, val);
@@ -614,21 +419,21 @@ PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
 
         if (engine.getValue(group, "play") < 1) {
             // kill timer
-            this.stopSamplerBlink(channel, control);
+            PioneerDDJREV1.stopSamplerBlink(channel, control);
             // set the pad LED to ON
-            midi.sendShortMsg(channel, control, this.lights.status.on);
+            midi.sendShortMsg(channel, control, PioneerDDJREV1.lights.status.on);
             // set the pad LED to ON while SHIFT is pressed
-            midi.sendShortMsg((channel + 1), control, this.lights.status.on);
+            midi.sendShortMsg((channel + 1), control, PioneerDDJREV1.lights.status.on);
         }
     });
 };
 
 PioneerDDJREV1.stopSamplerBlink = function(channel, control) {
-    this.timers[channel] = this.timers[channel] || {};
+    PioneerDDJREV1.timers[channel] = PioneerDDJREV1.timers[channel] || {};
 
-    if (this.timers[channel][control] !== undefined) {
-        engine.stopTimer(this.timers[channel][control]);
-        this.timers[channel][control] = undefined;
+    if (PioneerDDJREV1.timers[channel][control] !== undefined) {
+        engine.stopTimer(PioneerDDJREV1.timers[channel][control]);
+        PioneerDDJREV1.timers[channel][control] = undefined;
     }
 };
 
@@ -636,14 +441,16 @@ PioneerDDJREV1.stopSamplerBlink = function(channel, control) {
  * Shift button
  */
 PioneerDDJREV1.shiftPressed = function(_channel, _control, value) {
-    PioneerDDJREV1.shiftState = (value === 0x7F);
+    PioneerDDJREV1.shiftState = (value === PioneerDDJREV1.lights.status.on);
 };
 
 /*
  * Browser button press
  */
 PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
-    if (value === this.zero) { return; } // ignore release
+    if (value === PioneerDDJREV1.zero) { // ignore release
+        return;
+    }
 
     if (engine.getValue("[PreviewDeck1]", "play")) {
         script.triggerControl("[PreviewDeck1]", "stop");
@@ -662,44 +469,23 @@ PioneerDDJREV1.jogTurn = function(channel, _control, value, _status, group) {
     // wheel center at 64; <64 rew >64 fwd
     let newVal = value - 64;
 
-    // loop_in / out adjust
-    const loopEnabled = engine.getValue(group, "loop_enabled");
-
-    if (loopEnabled > this.zero) {
-        if (this.loopAdjustIn[channel]) {
-            newVal = newVal * this.loopAdjustMultiply + engine.getValue(group, "loop_start_position");
-            engine.setValue(group, "loop_start_position", newVal);
-            return;
-        }
-        if (this.loopAdjustOut[channel]) {
-            newVal = newVal * this.loopAdjustMultiply + engine.getValue(group, "loop_end_position");
-            engine.setValue(group, "loop_end_position", newVal);
-            return;
-        }
-    }
-
     if (engine.isScratching(deckNum)) {
         engine.scratchTick(deckNum, newVal);
     } else { // fallback
-        engine.setValue(group, "jog", newVal * this.bendScale);
+        engine.setValue(group, "jog", newVal * PioneerDDJREV1.bendScale);
     }
 };
 
 PioneerDDJREV1.jogSearch = function(_channel, _control, value, _status, group) {
-    const newVal = (value - 64) * this.fastSeekScale;
+    const newVal = (value - 64) * PioneerDDJREV1.fastSeekScale;
     engine.setValue(group, "jog", newVal);
 };
 
 PioneerDDJREV1.jogTouch = function(channel, _control, value) {
     const deckNum = channel + 1;
 
-    // skip while adjusting the loop points
-    if (this.loopAdjustIn[channel] || this.loopAdjustOut[channel]) {
-        return;
-    }
-
-    if (value !== this.zero && this.vinylMode) {
-        engine.scratchEnable(deckNum, 720, 33 + 1 / 3, this.alpha, this.beta);
+    if (value !== PioneerDDJREV1.zero && PioneerDDJREV1.vinylMode) {
+        engine.scratchEnable(deckNum, 720, 33 + 1 / 3, PioneerDDJREV1.alpha, PioneerDDJREV1.beta);
     } else {
         engine.scratchDisable(deckNum);
     }
@@ -713,11 +499,11 @@ PioneerDDJREV1.jogTouch = function(channel, _control, value) {
  * UI and the control sliders always move in the same direction.
  */
 PioneerDDJREV1.tempoSliderMSB = function(_channel, _control, value, _status, group) {
-    this.highResMSB[group].tempoSlider = value;
+    PioneerDDJREV1.highResMSB[group].tempoSlider = value;
 };
 
 PioneerDDJREV1.tempoSliderLSB = function(_channel, _control, value, _status, group) {
-    const fullValue = (this.highResMSB[group].tempoSlider << 7) + value;
+    const fullValue = (PioneerDDJREV1.highResMSB[group].tempoSlider << 7) + value;
     engine.setValue(group, "rate", 1 - (fullValue / 0x2000));
 };
 
@@ -733,7 +519,7 @@ PioneerDDJREV1.syncPressed = function(_channel, _control, value, _status, group)
 };
 
 PioneerDDJREV1.syncShiftPressed = function(_channel, _control, value, _status, group) {
-    if (value) {
+    if (value > PioneerDDJREV1.zero) {
         engine.setValue(group, "sync_enabled", 1);
     }
 };
@@ -745,30 +531,32 @@ PioneerDDJREV1.syncShiftPressed = function(_channel, _control, value, _status, g
  * press of the same button.
  */
 PioneerDDJREV1.cycleTempoRange = function(_channel, _control, value, _status, group) {
-    if (value === this.zero) { return; } // ignore release
+    if (value === PioneerDDJREV1.zero) { // ignore release
+        return;
+    }
 
     const currRange = engine.getValue(group, "rateRange");
     let idx = 0;
 
-    for (let i = this.zero; i < this.tempoRanges.length; i++) {
-        if (currRange === this.tempoRanges[i]) {
-            idx = (i + 1) % this.tempoRanges.length;
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.tempoRanges.length; i++) {
+        if (currRange === PioneerDDJREV1.tempoRanges[i]) {
+            idx = (i + 1) % PioneerDDJREV1.tempoRanges.length;
             break;
         }
     }
 
-    engine.setValue(group, "rateRange", this.tempoRanges[idx]);
+    engine.setValue(group, "rateRange", PioneerDDJREV1.tempoRanges[idx]);
 };
 
 /*
  * Hotcue PAD button press
  */
 PioneerDDJREV1.hotcuePadPress = function(_channel, control, value, _status, group) {
-    const padNum = this.getPadNumber(control);
+    const padNum = PioneerDDJREV1.getPadNumber(control);
     engine.setValue(group, `hotcue_${padNum}_activate`, value);
 };
 PioneerDDJREV1.hotcuePadShiftPress = function(_channel, control, value, _status, group) {
-    const padNum = this.getPadNumber(control);
+    const padNum = PioneerDDJREV1.getPadNumber(control);
     engine.setValue(group, `hotcue_${padNum}_clear`, value);
 };
 
