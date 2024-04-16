@@ -365,7 +365,7 @@ pcon.handleAuth = function(data, protocol) {
                 // TODO confirm sendOutputReport is appropriate instead of setFeatureReport
                 controller.sendOutputReport(0x00, Array(63).fill(0), true);
             } else if (protocol === pcon.protocol.SYSEX) {
-                send([0x50, 0x01]);
+                send(0, [0x50, 0x01]);
             }
         });
         return true;
