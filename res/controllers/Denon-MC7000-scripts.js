@@ -596,7 +596,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                     engine.setValue(group, "pitch", 0);
                     MC7000.HotcueSelectedGroup[deckIndex] = 0;
                     for (let padIdx = 1; padIdx <= 8; padIdx++) {
-                        const padHotcueEnabled = engine.getValue(group, `hotcue_${padIdx}_status`, true);
+                        const padHotcueEnabled = engine.getValue(group, `hotcue_${padIdx}_status`);
                         midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
                         midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff); // keep color when shift is pressed
                     }
