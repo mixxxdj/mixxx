@@ -404,7 +404,7 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
         if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) {
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff);
         } else {
-            const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_enabled`);
+            const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_status`);
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
         }
     }
@@ -569,7 +569,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 const isButtonReleased = (value === 0x00);
                 const isControlAddress = (control === 0x14 + pitchIdx - 1);
                 const isControlAddressShift = (control === 0x1C + pitchIdx - 1);
-                const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + "_enabled"), HotcueSelectedOnDeck = MC7000.HotcueSelectedGroup[deckIndex];
+                const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_status`), HotcueSelectedOnDeck = MC7000.HotcueSelectedGroup[deckIndex];
                 if (isButtonPressed && isControlAddress) {
                     if (!HotcueSelectedOnDeck) {
                         MC7000.setAllPadColor(deckIndex, MC7000.padColor.pitchoff);
@@ -596,7 +596,7 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                     engine.setValue(group, "pitch", 0);
                     MC7000.HotcueSelectedGroup[deckIndex] = 0;
                     for (let padIdx = 1; padIdx <= 8; padIdx++) {
-                        const padHotcueEnabled = engine.getValue(group, "hotcue_" + padIdx + "_enabled", true);
+                        const padHotcueEnabled = engine.getValue(group, `hotcue_${padIdx}_status`, true);
                         midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
                         midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, padHotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff); // keep color when shift is pressed
                     }
@@ -1091,12 +1091,12 @@ MC7000.HotCueLED = function(value, group) {
     if (MC7000.PADMode[deckIndex] === "Cue") {
         for (let padIdx = 1; padIdx <= 8; padIdx++) {
             if (value === 1) {
-                if (engine.getValue(group, "hotcue_"+padIdx+"_enabled") === 1) {
+                if (engine.getValue(group, `hotcue_${padIdx}_status`) === 1) {
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, MC7000.padColor.hotcueon);
                     midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, MC7000.padColor.hotcueon);
                 }
             } else {
-                if (engine.getValue(group, "hotcue_"+padIdx+"_enabled") === 0) {
+                if (engine.getValue(group, `hotcue_${padIdx}_status`) === 0) {
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + padIdx - 1, MC7000.padColor.hotcueoff);
                     midi.sendShortMsg(0x94 + deckIndex, 0x1C + padIdx - 1, MC7000.padColor.hotcueoff);
                 }
