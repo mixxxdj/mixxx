@@ -404,7 +404,7 @@ MC7000.padModePitch = function(channel, control, value, status, group) {
         if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) {
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, MC7000.padColor.pitchoff);
         } else {
-            const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + "_enabled", true);
+            const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx}_enabled`);
             midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
         }
     }
