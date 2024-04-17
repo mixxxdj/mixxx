@@ -21,7 +21,7 @@
  *      * 
  */
 
-var PioneerDDJREV1 = {};
+let PioneerDDJREV1 = {};
 
 /* Useful constant values */
 PioneerDDJREV1.zero          = 0;
@@ -205,15 +205,15 @@ PioneerDDJREV1.setVuMeterState = function(channel, value) {
 /**
  * Convert a control ID to a PAD number
  * @param {number} control The control ID
- * @returns The PAD number
+ * @returns {number} The PAD number
  */
 PioneerDDJREV1.getPadNumber = function(control) {
     // Pads are all 0xCP (C = Control channel; P = Pad ID)
     return (control & 0x0F) + 0x01;
 };
 
-/*
- * Init
+/**
+ * The controller mapping script INIT method
  */
 PioneerDDJREV1.init = function() {
     engine.setValue("[EffectRack1_EffectUnit1]", "show_focus", 1);
@@ -258,8 +258,8 @@ PioneerDDJREV1.init = function() {
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7], 7); // Serato "gimme your status" command
 };
 
-/*
- * Shutdown
+/**
+ * The controller mapping script SHUTDOWN method
  */
 PioneerDDJREV1.shutdown = function() {
     // Zero out VU meter lights
@@ -292,8 +292,10 @@ PioneerDDJREV1.shutdown = function() {
     }
 };
 
-/*
+/**
  * Channel VU Meter lights
+ * @param {number} value The current VU meter value
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.vuMeterUpdate = function(value, group) {
     switch (group) {
@@ -315,6 +317,11 @@ PioneerDDJREV1.vuMeterUpdate = function(value, group) {
     }
 };
 
+/**
+ * Toggles the reloop button lights
+ * @param {boolean} value The current reloop button state
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.loopToggle = function(value, group) {
     switch (group) {
         case "[Channel1]":
@@ -335,6 +342,11 @@ PioneerDDJREV1.loopToggle = function(value, group) {
     }
 };
 
+/**
+ * Sets the state of the reloop lights
+ * @param {number} channel The channel to change the light state for
+ * @param {boolean} value The requested light state
+ */
 PioneerDDJREV1.setReloopLight = function(channel, value) {
     const state = value ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off;
     midi.sendShortMsg(
@@ -347,13 +359,23 @@ PioneerDDJREV1.setReloopLight = function(channel, value) {
         state);
 };
 
+/**
+ * Triggers the track loaded indicator light effect
+ * @param {boolean} value The track loaded state
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.trackLoadedLED = function(value, group) {
     PioneerDDJREV1.setIndicatorState(
         PioneerDDJREV1.midiChan.special,
-        group.match(script.channelRegEx)[1] - 1,
+        PioneerDDJREV1.midiChan.subChan.ch1 + (group.match(script.channelRegEx)[1] - 1),
         value > PioneerDDJREV1.zero);
 };
 
+/**
+ * Sets the FX button light state to the button state in the DAW
+ * @param {boolean} value The FX unit effect button state
+ * @param {string} group The FX unit effect group tag
+ */
 PioneerDDJREV1.toggleFxLight = function(value, group) {
     switch (group) {
         case "[EffectRack1_EffectUnit1_Effect1]":
@@ -400,6 +422,12 @@ PioneerDDJREV1.toggleFxLight = function(value, group) {
     }
 };
 
+/**
+ * Changes the sample pad light mode
+ * @param {boolean} value The play state
+ * @param {string} group The sample pad group tag
+ * @returns {void}
+ */
 PioneerDDJREV1.samplerPlayOutputCallbackFunction = function(value, group) {
     if (value === PioneerDDJREV1.zero) { // ignore release
         return;
@@ -429,6 +457,12 @@ PioneerDDJREV1.samplerPlayOutputCallbackFunction = function(value, group) {
     }
 };
 
+/**
+ * Start the blinking loop for a sample pad
+ * @param {number} channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} control The midi control/note number
+ * @param {string} group The sample pad group tag
+ */
 PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
     let val = PioneerDDJREV1.lights.status.on;
 
@@ -452,6 +486,11 @@ PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
     });
 };
 
+/**
+ * Stop the blinking loop for a sample pad
+ * @param {number} channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} control The midi control/note number
+ */
 PioneerDDJREV1.stopSamplerBlink = function(channel, control) {
     PioneerDDJREV1.timers[channel] = PioneerDDJREV1.timers[channel] || {};
 
@@ -461,22 +500,33 @@ PioneerDDJREV1.stopSamplerBlink = function(channel, control) {
     }
 };
 
-/*
- * Shift button
+/**
+ * Shift button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
  */
 PioneerDDJREV1.shiftPressed = function(_channel, _control, value) {
     PioneerDDJREV1.shiftState = (value === PioneerDDJREV1.lights.status.on);
 };
 
-/*
- * Browser knob
+/**
+ * Browser knob rotate handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
  */
 PioneerDDJREV1.browseRotate = function(_channel, _control, value) {
-    if (value === PioneerDDJREV1.zero) { // ignore release
+    if (value === PioneerDDJREV1.zero) { // Ignore zero state
         return;
     }
 
-    const rotateVal = value === 0x01 ? 1 : (value === 0x7F ? -1 : 0);
+    /* Rotary encoder states:
+     * - Idle : 0x00        =  0 (SKIP)
+     * - CW   : 0x01 ~ 0x1E = +1
+     * - CCW  : 0x7F ~ 0x62 = -1
+     */
+    const rotateVal = value === 0x7F ? -1 : 1;
 
     if (PioneerDDJREV1.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
         const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
@@ -491,6 +541,12 @@ PioneerDDJREV1.browseRotate = function(_channel, _control, value) {
     }
 };
 
+/**
+ * Browser knob press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ */
 PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
     if (value === PioneerDDJREV1.zero) { // ignore release
         return;
@@ -505,8 +561,13 @@ PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
     }
 };
 
-/*
- * Jog wheels
+/**
+ * Jog wheel turn handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.jogTurn = function(channel, _control, value, _status, group) {
     const deckNum = channel + 1;
@@ -520,11 +581,25 @@ PioneerDDJREV1.jogTurn = function(channel, _control, value, _status, group) {
     }
 };
 
+/**
+ * Jog wheel platter & SHIFT turn handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.jogSearch = function(_channel, _control, value, _status, group) {
     const newVal = (value - 64) * PioneerDDJREV1.fastSeekScale;
     engine.setValue(group, "jog", newVal);
 };
 
+/**
+ * Jog wheel platter touch handler
+ * @param {number} channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ */
 PioneerDDJREV1.jogTouch = function(channel, _control, value) {
     const deckNum = channel + 1;
 
@@ -542,17 +617,38 @@ PioneerDDJREV1.jogTouch = function(channel, _control, value) {
  * increases/decreases the rate. Therefore it must be inverted here so that the
  * UI and the control sliders always move in the same direction.
  */
+/**
+ * The TEMPO slider's most-significant bit handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.tempoSliderMSB = function(_channel, _control, value, _status, group) {
     PioneerDDJREV1.highResMSB[group].tempoSlider = value;
 };
 
+/**
+ * The TEMPO slider's least-significant bit handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.tempoSliderLSB = function(_channel, _control, value, _status, group) {
     const fullValue = (PioneerDDJREV1.highResMSB[group].tempoSlider << 7) + value;
     engine.setValue(group, "rate", 1 - (fullValue / 0x2000));
 };
 
-/*
- * BEAT SYNC
+/**
+ * BEAT SYNC button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.syncPressed = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "sync_enabled") && value > 0) {
@@ -561,18 +657,30 @@ PioneerDDJREV1.syncPressed = function(_channel, _control, value, _status, group)
         engine.setValue(group, "beatsync", value);
     }
 };
-
+/**
+ * BEAT SYNC & SHIFT button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.syncShiftPressed = function(_channel, _control, value, _status, group) {
     if (value > PioneerDDJREV1.zero) {
         engine.setValue(group, "sync_enabled", 1);
     }
 };
 
-/*
- * DECK SELECT
+/**
+ * DECK SELECT button press handler
  *
  * Note that the controller sends different signals for a short press and a long
  * press of the same button.
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.cycleTempoRange = function(_channel, _control, value, _status, group) {
     if (value === PioneerDDJREV1.zero) { // ignore release
@@ -592,20 +700,38 @@ PioneerDDJREV1.cycleTempoRange = function(_channel, _control, value, _status, gr
     engine.setValue(group, "rateRange", PioneerDDJREV1.tempoRanges[idx]);
 };
 
-/*
- * Hotcue PAD button press
+/**
+ * Hotcue PAD button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.hotcuePadPress = function(_channel, control, value, _status, group) {
     const padNum = PioneerDDJREV1.getPadNumber(control);
     engine.setValue(group, `hotcue_${padNum}_activate`, value);
 };
+/**
+ * Hotcue PAD & SHIFT button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.hotcuePadShiftPress = function(_channel, control, value, _status, group) {
     const padNum = PioneerDDJREV1.getPadNumber(control);
     engine.setValue(group, `hotcue_${padNum}_clear`, value);
 };
 
-/*
- * Sampler PAD button press
+/**
+ * Sampler PAD button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
  */
 PioneerDDJREV1.samplerPadPress = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "track_loaded")) {
@@ -614,6 +740,14 @@ PioneerDDJREV1.samplerPadPress = function(_channel, _control, value, _status, gr
         engine.setValue(group, "LoadSelectedTrack", value);
     }
 };
+/**
+ * Sampler PAD & SHIFT button press handler
+ * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} _control The midi control/note number
+ * @param {number} value The midi control value
+ * @param {number} _status The midi status byte
+ * @param {string} group The channel group tag
+ */
 PioneerDDJREV1.samplerPadShiftPress = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "play")) {
         engine.setValue(group, "cue_gotoandstop", value);
