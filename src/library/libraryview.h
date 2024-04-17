@@ -61,5 +61,6 @@ class LibraryView {
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.
     virtual void selectTrackColor(int steps) {
+        Q_UNUSED(steps)
     }
 };
