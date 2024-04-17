@@ -1086,13 +1086,7 @@ void LibraryControl::slotTrackColorSelector(int steps) {
         return;
     }
 
-    while (steps != 0) {
-        if (steps > 0) {
-            pActiveView->assignNextTrackColor();
-            steps--;
-        } else {
-            pActiveView->assignPreviousTrackColor();
-            steps++;
-        }
+    if (steps != 0) {
+        pActiveView->selectTrackColor(steps);
     }
 }
