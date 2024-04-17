@@ -24,11 +24,13 @@
 var PioneerDDJREV1 = {};
 
 /* Useful constant values */
-PioneerDDJREV1.zero         = 0;
-PioneerDDJREV1.channelCount = 4;
-PioneerDDJREV1.padCount     = 8;
-PioneerDDJREV1.samplerCount = 16;
-PioneerDDJREV1.vuAdjust     = 125;
+PioneerDDJREV1.zero          = 0;
+PioneerDDJREV1.channelCount  = 4;
+PioneerDDJREV1.padCount      = 8;
+PioneerDDJREV1.fxBankCount   = 2;
+PioneerDDJREV1.fxEffectCount = 3;
+PioneerDDJREV1.samplerCount  = 16;
+PioneerDDJREV1.vuAdjust      = 125;
 
 /* Timer IDs */
 PioneerDDJREV1.timers = {};
@@ -235,12 +237,8 @@ PioneerDDJREV1.init = function() {
         engine.makeConnection(channel, "loop_enabled", PioneerDDJREV1.loopToggle);
     }
 
-    for (let i = PioneerDDJREV1.zero; i < 2; i++) {
-        //const effectUnit = `[EffectRack1_EffectUnit${i + 1}]`;
-        //engine.softTakeover(effectUnit, "mix", true);
-        //engine.makeConnection(effectUnit, "focused_effect", PioneerDDJREV1.toggleFxLight);
-
-        for (let j = PioneerDDJREV1.zero; j < 3; j++) {
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.fxBankCount; i++) {
+        for (let j = PioneerDDJREV1.zero; j < PioneerDDJREV1.fxEffectCount; j++) {
             const effect = `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`;
 
             engine.softTakeover(effect, "meta", true);
@@ -257,7 +255,7 @@ PioneerDDJREV1.init = function() {
     }
 
     // Query the controller for current control positions on startup
-    midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xF7], 12);
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7], 7); // Serato "gimme your status" command
 };
 
 /*
@@ -286,19 +284,12 @@ PioneerDDJREV1.shutdown = function() {
     }
 
     // Cleanup FX lights
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1.status, PioneerDDJREV1.lights.fx.fx1.slot1.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1Shift.status, PioneerDDJREV1.lights.fx.fx1.slot1Shift.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2.status, PioneerDDJREV1.lights.fx.fx1.slot2.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2Shift.status, PioneerDDJREV1.lights.fx.fx1.slot2Shift.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3.status, PioneerDDJREV1.lights.fx.fx1.slot3.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3Shift.status, PioneerDDJREV1.lights.fx.fx1.slot3Shift.data1, false);
-
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1.status, PioneerDDJREV1.lights.fx.fx2.slot1.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1Shift.status, PioneerDDJREV1.lights.fx.fx2.slot1Shift.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2.status, PioneerDDJREV1.lights.fx.fx2.slot2.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2Shift.status, PioneerDDJREV1.lights.fx.fx2.slot2Shift.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3.status, PioneerDDJREV1.lights.fx.fx2.slot3.data1, false);
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3Shift.status, PioneerDDJREV1.lights.fx.fx2.slot3Shift.data1, false);
+    for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.fxBankCount; i++) {
+        for (let j = PioneerDDJREV1.zero; j < PioneerDDJREV1.fxEffectCount; j++) {
+            const effect = `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`;
+            PioneerDDJREV1.toggleFxLight(false, effect);
+        }
+    }
 };
 
 /*
@@ -346,44 +337,65 @@ PioneerDDJREV1.loopToggle = function(value, group) {
 
 PioneerDDJREV1.setReloopLight = function(channel, value) {
     const state = value ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off;
-    midi.sendShortMsg(PioneerDDJREV1.lights.decks.autoLoopBase.status + channel, PioneerDDJREV1.lights.decks.autoLoopBase.data1, state);
-    midi.sendShortMsg(PioneerDDJREV1.lights.decks.autoLoopShiftBase.status + channel, PioneerDDJREV1.lights.decks.autoLoopShiftBase.data1, state);
+    midi.sendShortMsg(
+        PioneerDDJREV1.lights.decks.autoLoopBase.status + channel,
+        PioneerDDJREV1.lights.decks.autoLoopBase.data1,
+        state);
+    midi.sendShortMsg(
+        PioneerDDJREV1.lights.decks.autoLoopShiftBase.status + channel,
+        PioneerDDJREV1.lights.decks.autoLoopShiftBase.data1,
+        state);
 };
 
 PioneerDDJREV1.trackLoadedLED = function(value, group) {
-    PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.midiChan.special, group.match(script.channelRegEx)[1] - 1, value > PioneerDDJREV1.zero);
+    PioneerDDJREV1.setIndicatorState(
+        PioneerDDJREV1.midiChan.special,
+        group.match(script.channelRegEx)[1] - 1,
+        value > PioneerDDJREV1.zero);
 };
 
 PioneerDDJREV1.toggleFxLight = function(value, group) {
     switch (group) {
-        case "[EffectRack1_EffectUnit1_Effect1":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1.status, PioneerDDJREV1.lights.fx.fx1.slot1.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot1Shift.status, PioneerDDJREV1.lights.fx.fx1.slot1Shift.data1, value);
+        case "[EffectRack1_EffectUnit1_Effect1]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx1.slot1.status,
+                PioneerDDJREV1.lights.fx.fx1.slot1.data1,
+                value);
             break;
 
-        case "[EffectRack1_EffectUnit1_Effect2":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2.status, PioneerDDJREV1.lights.fx.fx1.slot2.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot2Shift.status, PioneerDDJREV1.lights.fx.fx1.slot2Shift.data1, value);
+        case "[EffectRack1_EffectUnit1_Effect2]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx1.slot2.status,
+                PioneerDDJREV1.lights.fx.fx1.slot2.data1,
+                value);
             break;
 
-        case "[EffectRack1_EffectUnit1_Effect3":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3.status, PioneerDDJREV1.lights.fx.fx1.slot3.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx1.slot3Shift.status, PioneerDDJREV1.lights.fx.fx1.slot3Shift.data1, value);
+        case "[EffectRack1_EffectUnit1_Effect3]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx1.slot3.status,
+                PioneerDDJREV1.lights.fx.fx1.slot3.data1,
+                value);
             break;
 
-        case "[EffectRack1_EffectUnit2_Effect1":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1.status, PioneerDDJREV1.lights.fx.fx2.slot1.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot1Shift.status, PioneerDDJREV1.lights.fx.fx2.slot1Shift.data1, value);
+        case "[EffectRack1_EffectUnit2_Effect1]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx2.slot1.status,
+                PioneerDDJREV1.lights.fx.fx2.slot1.data1,
+                value);
             break;
 
-        case "[EffectRack1_EffectUnit2_Effect2":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2.status, PioneerDDJREV1.lights.fx.fx2.slot2.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot2Shift.status, PioneerDDJREV1.lights.fx.fx2.slot2Shift.data1, value);
+        case "[EffectRack1_EffectUnit2_Effect2]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx2.slot2.status,
+                PioneerDDJREV1.lights.fx.fx2.slot2.data1,
+                value);
             break;
 
-        case "[EffectRack1_EffectUnit2_Effect3":
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3.status, PioneerDDJREV1.lights.fx.fx2.slot3.data1, value);
-            PioneerDDJREV1.setIndicatorState(PioneerDDJREV1.lights.fx.fx2.slot3Shift.status, PioneerDDJREV1.lights.fx.fx2.slot3Shift.data1, value);
+        case "[EffectRack1_EffectUnit2_Effect3]":
+            PioneerDDJREV1.setIndicatorState(
+                PioneerDDJREV1.lights.fx.fx2.slot3.status,
+                PioneerDDJREV1.lights.fx.fx2.slot3.data1,
+                value);
             break;
     }
 };
@@ -397,11 +409,23 @@ PioneerDDJREV1.samplerPlayOutputCallbackFunction = function(value, group) {
     const data1Addr = 0x30 + ((curPad > PioneerDDJREV1.padCount ? curPad - PioneerDDJREV1.padCount : curPad) - 1);
 
     if (curPad <= PioneerDDJREV1.padCount) {
-        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck1, data1Addr, group);
-        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck3, data1Addr, group);
+        PioneerDDJREV1.startSamplerBlink(
+            PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck1,
+            data1Addr,
+            group);
+        PioneerDDJREV1.startSamplerBlink(
+            PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck3,
+            data1Addr,
+            group);
     } else {
-        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck2, data1Addr, group);
-        PioneerDDJREV1.startSamplerBlink(PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck4, data1Addr, group);
+        PioneerDDJREV1.startSamplerBlink(
+            PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck2,
+            data1Addr,
+            group);
+        PioneerDDJREV1.startSamplerBlink(
+            PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.deck4,
+            data1Addr,
+            group);
     }
 };
 
@@ -445,8 +469,28 @@ PioneerDDJREV1.shiftPressed = function(_channel, _control, value) {
 };
 
 /*
- * Browser button press
+ * Browser knob
  */
+PioneerDDJREV1.browseRotate = function(_channel, _control, value) {
+    if (value === PioneerDDJREV1.zero) { // ignore release
+        return;
+    }
+
+    const rotateVal = value === 0x01 ? 1 : (value === 0x7F ? -1 : 0);
+
+    if (PioneerDDJREV1.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
+        const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
+        const newPos = Math.max(0, oldPos + (0.05 * rotateVal));
+        engine.setValue("[PreviewDeck1]", "playposition", newPos);
+    } else if (!PioneerDDJREV1.previewSeekEnabled) {
+        engine.setValue(
+            "[Playlist]",
+            "SelectTrackKnob",
+            rotateVal * (PioneerDDJREV1.shiftState ? 10 : 1)
+        );
+    }
+};
+
 PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
     if (value === PioneerDDJREV1.zero) { // ignore release
         return;
@@ -456,7 +500,7 @@ PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
         script.triggerControl("[PreviewDeck1]", "stop");
         PioneerDDJREV1.previewSeekEnabled = false;
     } else {
-        engine.setValue("[PreviewDeck1]", "LoadSelectedTrackAndPlay", 1);
+        script.triggerControl("[PreviewDeck1]", "LoadSelectedTrackAndPlay");
         PioneerDDJREV1.previewSeekEnabled = true;
     }
 };
