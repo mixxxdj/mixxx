@@ -945,12 +945,29 @@ void Track::shiftCuePositionsMillis(double milliseconds) {
     VERIFY_OR_DEBUG_ASSERT(m_record.getStreamInfoFromSource()) {
         return;
     }
-    double frames = m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(milliseconds);
+    const double frames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    milliseconds);
+    qWarning() << "     cue shift by" << frames << "frames";
     for (const CuePointer& pCue : std::as_const(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
     markDirtyAndUnlock(&locked);
+}
+
+void Track::shiftBeatsMillis(double milliseconds) {
+    if (milliseconds == 0 || !m_pBeats) {
+        return;
+    }
+    const double frames =
+            m_record.getStreamInfoFromSource()->getSignalInfo().millis2frames(
+                    milliseconds);
+    qWarning() << "     beat shift by" << frames << "frames";
+    const auto translatedBeats = m_pBeats->tryTranslate(frames);
+    if (translatedBeats) {
+        trySetBeats(*translatedBeats);
+    }
 }
 
 void Track::analysisFinished() {
