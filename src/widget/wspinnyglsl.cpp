@@ -4,7 +4,6 @@
 #include <array>
 
 #include "moc_wspinnyglsl.cpp"
-#include "util/texture.h"
 
 WSpinnyGLSL::WSpinnyGLSL(
         QWidget* parent,
@@ -15,25 +14,10 @@ WSpinnyGLSL::WSpinnyGLSL(
         : WSpinnyBase(parent, group, pConfig, pVCMan, pPlayer) {
 }
 
-WSpinnyGLSL::~WSpinnyGLSL() {
-    cleanupGL();
-}
-
-void WSpinnyGLSL::cleanupGL() {
-    makeCurrentIfNeeded();
-    m_pBgTexture.reset();
-    m_pMaskTexture.reset();
-    m_pFgTextureScaled.reset();
-    m_pGhostTextureScaled.reset();
-    m_pLoadedCoverTextureScaled.reset();
-    m_pQTexture.reset();
-    doneCurrent();
-}
-
 void WSpinnyGLSL::coverChanged() {
     if (isContextValid()) {
         makeCurrentIfNeeded();
-        m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
+        m_loadedCoverTextureScaled.setData(m_loadedCoverScaled);
         doneCurrent();
     }
     // otherwise this will happen in initializeGL
@@ -55,11 +39,11 @@ void WSpinnyGLSL::resizeGL(int w, int h) {
 }
 
 void WSpinnyGLSL::updateTextures() {
-    m_pBgTexture = createTexture(m_pBgImage);
-    m_pMaskTexture = createTexture(m_pMaskImage);
-    m_pFgTextureScaled = createTexture(m_fgImageScaled);
-    m_pGhostTextureScaled = createTexture(m_ghostImageScaled);
-    m_pLoadedCoverTextureScaled = createTexture(m_loadedCoverScaled);
+    m_bgTexture.setData(m_pBgImage);
+    m_maskTexture.setData(m_pMaskImage);
+    m_fgTextureScaled.setData(m_fgImageScaled);
+    m_ghostTextureScaled.setData(m_ghostImageScaled);
+    m_loadedCoverTextureScaled.setData(m_loadedCoverScaled);
 }
 
 void WSpinnyGLSL::setupVinylSignalQuality() {
@@ -69,9 +53,9 @@ void WSpinnyGLSL::updateVinylSignalQualityImage(
         const QColor& qual_color, const unsigned char* data) {
     m_vinylQualityColor = qual_color;
     m_vinylQualityColor.setAlphaF(0.75f);
-    if (m_pQTexture) {
+    if (m_qTexture.isStorageAllocated()) {
         makeCurrentIfNeeded();
-        m_pQTexture->bind();
+        m_qTexture.bind();
         // Using a texture of one byte per pixel so we can store the vinyl
         // signal quality data directly. The VinylQualityShader will draw this
         // colorized with alpha transparency.
@@ -84,7 +68,7 @@ void WSpinnyGLSL::updateVinylSignalQualityImage(
                 GL_RED,
                 GL_UNSIGNED_BYTE,
                 data);
-        m_pQTexture->release();
+        m_qTexture.release();
         doneCurrent();
     }
 }
@@ -112,16 +96,16 @@ void WSpinnyGLSL::paintGL() {
 
     m_textureShader.setUniformValue(textureLocation, 0);
 
-    if (m_pBgTexture) {
-        drawTexture(m_pBgTexture.get());
+    if (m_bgTexture.isStorageAllocated()) {
+        drawTexture(&m_bgTexture);
     }
 
-    if (m_bShowCover && m_pLoadedCoverTextureScaled) {
-        drawTexture(m_pLoadedCoverTextureScaled.get());
+    if (m_bShowCover && m_loadedCoverTextureScaled.isStorageAllocated()) {
+        drawTexture(&m_loadedCoverTextureScaled);
     }
 
-    if (m_pMaskTexture) {
-        drawTexture(m_pMaskTexture.get());
+    if (m_maskTexture.isStorageAllocated()) {
+        drawTexture(&m_maskTexture);
     }
 
     // Overlay the signal quality drawing if vinyl is active
@@ -137,22 +121,22 @@ void WSpinnyGLSL::paintGL() {
     // and draw the image at the corner.
     // p.translate(width() / 2, height() / 2);
 
-    bool paintGhost = m_bGhostPlayback && m_pGhostTextureScaled;
+    bool paintGhost = m_bGhostPlayback && m_ghostTextureScaled.isStorageAllocated();
 
     if (paintGhost) {
         QMatrix4x4 rotate;
         rotate.rotate(m_fGhostAngle, 0, 0, -1);
         m_textureShader.setUniformValue(matrixLocation, rotate);
 
-        drawTexture(m_pGhostTextureScaled.get());
+        drawTexture(&m_ghostTextureScaled);
     }
 
-    if (m_pFgTextureScaled) {
+    if (m_fgTextureScaled.isStorageAllocated()) {
         QMatrix4x4 rotate;
         rotate.rotate(m_fAngle, 0, 0, -1);
         m_textureShader.setUniformValue(matrixLocation, rotate);
 
-        drawTexture(m_pFgTextureScaled.get());
+        drawTexture(&m_fgTextureScaled);
     }
 
     m_textureShader.release();
@@ -163,11 +147,10 @@ void WSpinnyGLSL::initializeGL() {
 
     updateTextures();
 
-    m_pQTexture.reset(new QOpenGLTexture(QOpenGLTexture::Target2D));
-    m_pQTexture->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
-    m_pQTexture->setSize(m_iVinylScopeSize, m_iVinylScopeSize);
-    m_pQTexture->setFormat(QOpenGLTexture::R8_UNorm);
-    m_pQTexture->allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::UInt8);
+    m_qTexture.setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
+    m_qTexture.setSize(m_iVinylScopeSize, m_iVinylScopeSize);
+    m_qTexture.setFormat(QOpenGLTexture::R8_UNorm);
+    m_qTexture.allocateStorage(QOpenGLTexture::Red, QOpenGLTexture::UInt8);
 
     m_textureShader.init();
     m_vinylQualityShader.init();
@@ -241,11 +224,11 @@ void WSpinnyGLSL::drawVinylQuality() {
     m_vinylQualityShader.setAttributeArray(
             texcoordLocation, GL_FLOAT, texarray.data(), 2);
 
-    m_pQTexture->bind();
+    m_qTexture.bind();
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    m_pQTexture->release();
+    m_qTexture.release();
 
     m_vinylQualityShader.release();
 }
