@@ -179,6 +179,10 @@ void DlgTagFetcher::init() {
             this,
             &DlgTagFetcher::showProgressOfConstantTask);
     connect(&m_tagFetcher,
+            &TagFetcher::showCoverArtErrorMessage,
+            this,
+            &DlgTagFetcher::slotshowCoverArtErrorMessage);
+    connect(&m_tagFetcher,
             &TagFetcher::currentRecordingFetchedFromMusicBrainz,
             this,
             &DlgTagFetcher::showProgressOfRecordingTask);
@@ -707,4 +711,8 @@ void DlgTagFetcher::slotWorkerCoverArtCopyFailed(const QString& errorMessage) {
 
 void DlgTagFetcher::slotWorkerFinished() {
     m_isCoverArtCopyWorkerRunning = false;
+}
+
+void DlgTagFetcher::slotshowCoverArtErrorMessage(const QString& errorMessage) {
+    statusMessage->setText(errorMessage);
 }
