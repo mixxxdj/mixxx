@@ -9,7 +9,7 @@
     </info>
     <controller id="DDJ-REV1">
         <scriptfiles>
-            <file functionprefix="PioneerDDJREV1" filename="Pioneer DDJ-REV1-script.js"/>
+            <file functionprefix="PioneerDDJREV1" filename="Pioneer-DDJ-REV1-script.js"/>
         </scriptfiles>
         <controls>
             <!-- Special buttons -->
@@ -28,21 +28,21 @@
             <control>
                 <description>BROWSE - rotate - Scroll tracklist/tree view</description>
                 <group>[Library]</group>
-                <key>MoveVertical</key>
+                <key>PioneerDDJREV1.browseRotate</key>
                 <status>0xB6</status>
                 <midino>0x40</midino>
                 <options>
-                    <SelectKnob/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <description>BROWSE + SHIFT - rotate - Scroll tracklist/tree view fast</description>
                 <group>[Library]</group>
-                <key>ScrollVertical</key>
+                <key>PioneerDDJREV1.browseRotate</key>
                 <status>0xB6</status>
                 <midino>0x64</midino>
                 <options>
-                    <SelectKnob/>
+                    <Script-Binding/>
                 </options>
             </control>
 
@@ -1784,7 +1784,7 @@
             <control>
                 <description>FX Slot 1 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x02</midino>
                 <options>
@@ -1794,7 +1794,7 @@
             <control>
                 <description>FX Slot 1 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x22</midino>
                 <options>
@@ -1804,7 +1804,7 @@
             <control>
                 <description>FX Slot 2 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x04</midino>
                 <options>
@@ -1814,7 +1814,7 @@
             <control>
                 <description>FX Slot 2 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x24</midino>
                 <options>
@@ -1824,7 +1824,7 @@
             <control>
                 <description>FX Slot 3 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x02</midino>
                 <options>
@@ -1834,7 +1834,7 @@
             <control>
                 <description>FX Slot 3 LEVEL/DEPTH (FX1) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB4</status>
                 <midino>0x22</midino>
                 <options>
@@ -1844,7 +1844,7 @@
             <control>
                 <description>FX Slot 1 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x02</midino>
                 <options>
@@ -1854,7 +1854,7 @@
             <control>
                 <description>FX Slot 1 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x22</midino>
                 <options>
@@ -1864,7 +1864,7 @@
             <control>
                 <description>FX Slot 2 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x04</midino>
                 <options>
@@ -1874,7 +1874,7 @@
             <control>
                 <description>FX Slot 2 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x24</midino>
                 <options>
@@ -1884,7 +1884,7 @@
             <control>
                 <description>FX Slot 3 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x02</midino>
                 <options>
@@ -1894,7 +1894,7 @@
             <control>
                 <description>FX Slot 3 LEVEL/DEPTH (FX2) - rotate - Adjust FX Depth (meta) in the selected slot</description>
                 <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>mix</key>
+                <key>meta</key>
                 <status>0xB5</status>
                 <midino>0x22</midino>
                 <options>
