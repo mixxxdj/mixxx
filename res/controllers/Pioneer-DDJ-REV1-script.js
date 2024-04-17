@@ -12,16 +12,32 @@
  *     0xB*: Control Change (CC)
  *
  *  Implemented (as per manufacturer's manual):
- *      * VU Meters
+ *      * Mixer Section (Faders, EQ, Filter, Trim, Cue, Headphone level, Master level, VU Meters)
+ *      * Browser section (Library scroll, Library fast scroll, LOAD)
+ *      * Deck section (Tempo, Jogwheels, Scratching, Bending, searching, free-spin side while holding SHIFT,
+ *                      Auto Loop toggle, 1/2x loop length, 2x loop length, Reloop IN, Reloop OUT, Deck select)
+ *      * Beat Sync
+ *      * Hot Cue Mode Pads
+ *      * Auto Loop Mode Pads
+ *      * Sampler Mode Pads
+ *      * Beat Jump Mode Pads
+ *      * Rolling Auto Loop Mode Pads
+ *      * FX1-2 effect 1-3 toggles, FX bank toggle
  *
  *  Custom (Mixxx specific mappings):
- *      * 
+ *      * Master cue toggles Headphone Split Cue mode
+ *      * Browser push (Preview track, rotate is now preview position control)
+ *      * LOAD + SHIFT (Clear deck track)
+ *      * FX1-2 effect 1-3 change next effect while holding SHIFT
+ *      * FX1-2 effect 1-3 META via Level/Depth knob rotate
  *
  *  Not implemented (after discussion and trial attempts):
- *      * 
+ *      * Tracking Scratch Mode Pads
+ *      * Trans Mode Pads
+ *      * Scratch Bank Mode Pads
  */
 
-let PioneerDDJREV1 = {};
+const PioneerDDJREV1 = {};
 
 /* Useful constant values */
 PioneerDDJREV1.zero = 0;
@@ -470,7 +486,7 @@ PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
         // blink the appropriate pad
         midi.sendShortMsg(channel, control, val);
         // also blink the pad while SHIFT is pressed
-        midi.sendShortMsg((channel + 1), control, val);
+        midi.sendShortMsg(channel + 1, control, val);
 
         if (engine.getValue(group, "play") < 1) {
             // kill timer
@@ -478,7 +494,7 @@ PioneerDDJREV1.startSamplerBlink = function(channel, control, group) {
             // set the pad LED to ON
             midi.sendShortMsg(channel, control, PioneerDDJREV1.lights.status.on);
             // set the pad LED to ON while SHIFT is pressed
-            midi.sendShortMsg((channel + 1), control, PioneerDDJREV1.lights.status.on);
+            midi.sendShortMsg(channel + 1, control, PioneerDDJREV1.lights.status.on);
         }
     });
 };
@@ -526,9 +542,10 @@ PioneerDDJREV1.browseRotate = function(_channel, _control, value) {
     const rotateVal = value === 0x7F ? -1 : 1;
 
     if (PioneerDDJREV1.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
-        const oldPos = engine.getValue("[PreviewDeck1]", "playposition"),
-            newPos = Math.max(0, oldPos + (0.05 * rotateVal));
-        engine.setValue("[PreviewDeck1]", "playposition", newPos);
+        engine.setValue(
+            "[PreviewDeck1]",
+            "playposition",
+            Math.max(0, engine.getValue("[PreviewDeck1]", "playposition") + (0.05 * rotateVal)));
     } else if (!PioneerDDJREV1.previewSeekEnabled) {
         engine.setValue(
             "[Playlist]",
@@ -549,13 +566,9 @@ PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
         return;
     }
 
-    if (engine.getValue("[PreviewDeck1]", "play")) {
-        script.triggerControl("[PreviewDeck1]", "stop");
-        PioneerDDJREV1.previewSeekEnabled = false;
-    } else {
-        script.triggerControl("[PreviewDeck1]", "LoadSelectedTrackAndPlay");
-        PioneerDDJREV1.previewSeekEnabled = true;
-    }
+    const isPlaying = engine.getValue("[PreviewDeck1]", "play");
+    PioneerDDJREV1.previewSeekEnabled = !isPlaying;
+    script.triggerControl("[PreviewDeck1]", isPlaying ? "stop" : "LoadSelectedTrackAndPlay");
 };
 
 /**
@@ -586,8 +599,7 @@ PioneerDDJREV1.jogTurn = function(channel, _control, value, _status, group) {
  * @param {string} group The channel group tag
  */
 PioneerDDJREV1.jogSearch = function(_channel, _control, value, _status, group) {
-    const newVal = (value - 64) * PioneerDDJREV1.fastSeekScale;
-    engine.setValue(group, "jog", newVal);
+    engine.setValue(group, "jog", (value - 64) * PioneerDDJREV1.fastSeekScale);
 };
 
 /**
@@ -684,16 +696,14 @@ PioneerDDJREV1.cycleTempoRange = function(_channel, _control, value, _status, gr
     }
 
     const currRange = engine.getValue(group, "rateRange");
-    let idx = 0;
 
     for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.tempoRanges.length; i++) {
         if (currRange === PioneerDDJREV1.tempoRanges[i]) {
-            idx = (i + 1) % PioneerDDJREV1.tempoRanges.length;
+            const idx = (i + 1) % PioneerDDJREV1.tempoRanges.length;
+            engine.setValue(group, "rateRange", PioneerDDJREV1.tempoRanges[idx]);
             break;
         }
     }
-
-    engine.setValue(group, "rateRange", PioneerDDJREV1.tempoRanges[idx]);
 };
 
 /**
