@@ -38,6 +38,20 @@ mixxx::RgbColor::optional_t ColorPalette::previousColor(mixxx::RgbColor::optiona
     return at(size() - 1);
 }
 
+mixxx::RgbColor::optional_t ColorPalette::getNthColor(
+        mixxx::RgbColor::optional_t color, int steps) const {
+    while (steps) {
+        if (steps > 0) {
+            color = nextColor(color);
+            steps--;
+        } else {
+            color = previousColor(color);
+            steps++;
+        }
+    }
+    return color;
+}
+
 mixxx::RgbColor ColorPalette::colorForHotcueIndex(unsigned int hotcueIndex) const {
     int colorIndex;
     if (m_colorIndicesByHotcue.isEmpty()) {

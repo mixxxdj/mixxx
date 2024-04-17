@@ -431,22 +431,15 @@ void WTrackTableView::selectTrackColor(int steps) {
 
     QModelIndex index = indices.at(0);
     TrackPointer pTrack = trackModel->getTrack(index);
-    if (pTrack) {
-        ColorPaletteSettings colorPaletteSettings(m_pConfig);
-        ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
-        mixxx::RgbColor::optional_t color = pTrack->getColor();
-
-        while (steps != 0) {
-            if (steps > 0) {
-                color = colorPalette.nextColor(color);
-                steps--;
-            } else {
-                color = colorPalette.previousColor(color);
-                steps++;
-            }
-        }
-        pTrack->setColor(color);
+    if (!pTrack) {
+        return;
     }
+
+    ColorPaletteSettings colorPaletteSettings(m_pConfig);
+    ColorPalette colorPalette = colorPaletteSettings.getTrackColorPalette();
+    mixxx::RgbColor::optional_t color = pTrack->getColor();
+
+    pTrack->setColor(colorPalette.getNthColor(color, steps));
 }
 
 void WTrackTableView::slotPurge() {
