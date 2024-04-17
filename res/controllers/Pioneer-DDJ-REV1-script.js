@@ -563,7 +563,7 @@ PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
 
 /**
  * Jog wheel turn handler
- * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
+ * @param {number} channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
  * @param {number} _control The midi control/note number
  * @param {number} value The midi control value
  * @param {number} _status The midi status byte
@@ -703,7 +703,7 @@ PioneerDDJREV1.cycleTempoRange = function(_channel, _control, value, _status, gr
 /**
  * Hotcue PAD button press handler
  * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
- * @param {number} _control The midi control/note number
+ * @param {number} control The midi control/note number
  * @param {number} value The midi control value
  * @param {number} _status The midi status byte
  * @param {string} group The channel group tag
@@ -715,7 +715,7 @@ PioneerDDJREV1.hotcuePadPress = function(_channel, control, value, _status, grou
 /**
  * Hotcue PAD & SHIFT button press handler
  * @param {number} _channel The midi channel (0x00 = Channel 1..0x0F = Channel 16,)
- * @param {number} _control The midi control/note number
+ * @param {number} control The midi control/note number
  * @param {number} value The midi control value
  * @param {number} _status The midi status byte
  * @param {string} group The channel group tag
