@@ -121,4 +121,16 @@ void WTrackProperty::ensureTrackMenuIsCreated() {
         m_pTrackMenu = make_parented<WTrackMenu>(
                 this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
     }
+
+    // Before and after the loaded tracks file has been removed from disk,
+    // instruct the library to save and restore the current inde for
+    // keyboard/controller navigation.
+    connect(m_pTrackMenu,
+            &WTrackMenu::saveCurrentViewState,
+            this,
+            &WTrackProperty::saveCurrentViewState);
+    connect(m_pTrackMenu,
+            &WTrackMenu::restoreCurrentViewStateOrIndex,
+            this,
+            &WTrackProperty::restoreCurrentViewState);
 }

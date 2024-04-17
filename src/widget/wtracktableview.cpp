@@ -349,7 +349,7 @@ void WTrackTableView::initTrackMenu() {
     // after removing tracks from the view via track menu, restore a usable
     // selection/currentIndex for navigation via keyboard & controller
     connect(m_pTrackMenu,
-            &WTrackMenu::restoreCurrentIndex,
+            &WTrackMenu::restoreCurrentViewStateOrIndex,
             this,
             &WTrackTableView::slotrestoreCurrentIndex);
 }
@@ -464,7 +464,7 @@ void WTrackTableView::slotDeleteTracksFromDisk() {
     saveCurrentIndex();
     m_pTrackMenu->loadTrackModelIndices(indices);
     m_pTrackMenu->slotRemoveFromDisk();
-    // WTrackmenu emits restoreCurrentIndex()
+    // WTrackmenu emits restoreCurrentViewStateOrIndex()
 }
 
 void WTrackTableView::slotUnhide() {
@@ -512,7 +512,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentIndex() if required
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
 }
 
 void WTrackTableView::onSearch(const QString& text) {
