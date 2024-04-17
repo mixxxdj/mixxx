@@ -21,7 +21,15 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
           m_iPlaylistId(kInvalidPlaylistId),
           m_keepHiddenTracks(keepHiddenTracks) {
     connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
-            &PlaylistDAO::tracksChanged,
+            &PlaylistDAO::tracksAdded,
+            this,
+            &PlaylistTableModel::playlistsChanged);
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksMoved,
+            this,
+            &PlaylistTableModel::playlistsChanged);
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksRemoved,
             this,
             &PlaylistTableModel::playlistsChanged);
 }
@@ -359,6 +367,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
             Capability::LoadToSampler |
             Capability::LoadToPreviewDeck |
             Capability::ResetPlayed |
+            Capability::RemoveFromDisk |
             Capability::Analyze;
 
     if (m_iPlaylistId !=
