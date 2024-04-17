@@ -37,7 +37,7 @@
  *      * Scratch Bank Mode Pads
  */
 
-const PioneerDDJREV1 = {};
+var PioneerDDJREV1 = {};
 
 /* Useful constant values */
 PioneerDDJREV1.zero = 0;
