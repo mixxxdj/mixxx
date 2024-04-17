@@ -234,11 +234,11 @@ MC7000.init = function() {
     for (let chanIdx = 1; chanIdx <= 4; chanIdx++) {
         // HotCue Mode LEDs
         for (let cueIdx = 1; cueIdx <= 8; cueIdx++) {
-            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+cueIdx+"_enabled", MC7000.HotCueLED);
+            engine.makeConnection(`[Channel${chanIdx}]`, `hotcue_${cueIdx}_status`, MC7000.HotCueLED);
         }
         // Pitch LEDs
         for (let pitchIdx = 1; pitchIdx <= 8; pitchIdx++) {
-            engine.makeConnection("[Channel"+chanIdx+"]", "hotcue_"+pitchIdx+"_enabled", MC7000.PitchLED);
+            engine.makeConnection(`[Channel${chanIdx}]`, `hotcue_${pitchIdx}_status`, MC7000.PitchLED);
         }
     }
     // Sampler Mode LEDs and Velocity Sampler Mode LEDs
@@ -284,7 +284,7 @@ MC7000.padModeCue = function(channel, control, value, status, group) {
     MC7000.PADMode[deckIndex] = "Cue";
     // change PAD color when switching to Hot Cue Mode
     for (let cueIdx = 1; cueIdx <= 8; cueIdx++) {
-        const hotcueEnabled = engine.getValue(group, "hotcue_" + cueIdx + "_enabled", true);
+        const hotcueEnabled = engine.getValue(group, `hotcue_${cueIdx}_status`);
         midi.sendShortMsg(0x94 + deckIndex, 0x14 + cueIdx - 1, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
     }
 };
@@ -1176,7 +1176,7 @@ MC7000.PitchLED = function(value, group) {
                 if (MC7000.HotcueSelectedGroup[deckIndex] !== 0) { // hotcue selected
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx, MC7000.padColor.pitchoff);
                 } else {
-                    const hotcueEnabled = engine.getValue(group, "hotcue_" + pitchIdx + 1 + "_enabled", true);
+                    const hotcueEnabled = engine.getValue(group, `hotcue_${pitchIdx + 1}_status`);
                     midi.sendShortMsg(0x94 + deckIndex, 0x14 + pitchIdx, hotcueEnabled ? MC7000.padColor.hotcueon : MC7000.padColor.hotcueoff);
                 }
             } else {
