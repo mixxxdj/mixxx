@@ -2,7 +2,7 @@
  * ****************************************************************************
  * * Mixxx mapping script file for the Pioneer DDJ-REV1.
  * * Authors: LauraRozier
- * * Reviewers: 
+ * * Reviewers:
  * * Manual: https://manual.mixxx.org/
  * ****************************************************************************
  *
@@ -24,13 +24,13 @@
 let PioneerDDJREV1 = {};
 
 /* Useful constant values */
-PioneerDDJREV1.zero          = 0;
-PioneerDDJREV1.channelCount  = 4;
-PioneerDDJREV1.padCount      = 8;
-PioneerDDJREV1.fxBankCount   = 2;
+PioneerDDJREV1.zero = 0;
+PioneerDDJREV1.channelCount = 4;
+PioneerDDJREV1.padCount = 8;
+PioneerDDJREV1.fxBankCount = 2;
 PioneerDDJREV1.fxEffectCount = 3;
-PioneerDDJREV1.samplerCount  = 16;
-PioneerDDJREV1.vuAdjust      = 125;
+PioneerDDJREV1.samplerCount = 16;
+PioneerDDJREV1.vuAdjust = 125;
 
 /* Timer IDs */
 PioneerDDJREV1.timers = {};
@@ -51,40 +51,40 @@ PioneerDDJREV1.previewSeekEnabled = false;
 
 /* Jog wheel constants */
 PioneerDDJREV1.vinylMode = true;
-PioneerDDJREV1.alpha     = 1.0 / 8;
-PioneerDDJREV1.beta      = PioneerDDJREV1.alpha / 32;
+PioneerDDJREV1.alpha = 1.0 / 8;
+PioneerDDJREV1.beta = PioneerDDJREV1.alpha / 32;
 
 /* Multiplier for fast seek through track using SHIFT+JOGWHEEL */
 PioneerDDJREV1.fastSeekScale = 150;
-PioneerDDJREV1.bendScale     = 0.8;
+PioneerDDJREV1.bendScale = 0.8;
 
 PioneerDDJREV1.tempoRanges = [0.06, 0.10, 0.16, 0.25];
 
 /* Midi channels */
 PioneerDDJREV1.midiChan = {
-    note:    0x90,
-    ctrl:    0xB0,
+    note: 0x90,
+    ctrl: 0xB0,
     special: 0x9F,
 
     subChan: {
         // n=0x..
-        ch1:        0x00,
-        ch2:        0x01,
-        ch3:        0x02,
-        ch4:        0x03,
+        ch1: 0x00,
+        ch2: 0x01,
+        ch3: 0x02,
+        ch4: 0x03,
         // m=0x..
-        fx1:        0x04,
-        fx2:        0x05,
-        browser:    0x06,
-        master:     0x06,
+        fx1: 0x04,
+        fx2: 0x05,
+        browser: 0x06,
+        master: 0x06,
         // p=0x..
-        deck1:      0x07,
+        deck1: 0x07,
         deck1Shift: 0x08,
-        deck2:      0x09,
+        deck2: 0x09,
         deck2Shift: 0x0A,
-        deck3:      0x0B,
+        deck3: 0x0B,
         deck3Shift: 0x0C,
-        deck4:      0x0D,
+        deck4: 0x0D,
         deck4Shift: 0x0E,
     },
 };
@@ -93,24 +93,24 @@ PioneerDDJREV1.midiChan = {
 PioneerDDJREV1.lights = {
     status: {
         off: 0x00,
-        on:  0x7F
+        on: 0x7F
     },
 
     decks: {
         autoLoopBase: {
             status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x14
+            data1: 0x14
         },
         autoLoopShiftBase: {
             status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x50
+            data1: 0x50
         },
     },
 
     mixer: {
         vuMeterBase: {
             status: PioneerDDJREV1.midiChan.ctrl + PioneerDDJREV1.midiChan.subChan.ch1,
-            data1:  0x02
+            data1: 0x02
         },
     },
 
@@ -118,57 +118,57 @@ PioneerDDJREV1.lights = {
         fx1: {
             slot1: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x70
+                data1: 0x70
             },
             slot1Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x63
+                data1: 0x63
             },
 
             slot2: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x71
+                data1: 0x71
             },
             slot2Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x06
+                data1: 0x06
             },
 
             slot3: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x72
+                data1: 0x72
             },
             slot3Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx1,
-                data1:  0x07
+                data1: 0x07
             },
         },
         fx2: {
             slot1: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x70
+                data1: 0x70
             },
             slot1Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x63
+                data1: 0x63
             },
 
             slot2: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x71
+                data1: 0x71
             },
             slot2Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x06
+                data1: 0x06
             },
 
             slot3: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x72
+                data1: 0x72
             },
             slot3Shift: {
                 status: PioneerDDJREV1.midiChan.note + PioneerDDJREV1.midiChan.subChan.fx2,
-                data1:  0x07
+                data1: 0x07
             },
         },
     },
@@ -185,8 +185,7 @@ PioneerDDJREV1.lights = {
  * @param {boolean} active Indicator on when true; off otherwise
  */
 PioneerDDJREV1.setIndicatorState = function(channel, address, active) {
-    const state = active ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off;
-    midi.sendShortMsg(channel, address, state);
+    midi.sendShortMsg(channel, address, active ? PioneerDDJREV1.lights.status.on : PioneerDDJREV1.lights.status.off);
 };
 
 /**
@@ -240,7 +239,6 @@ PioneerDDJREV1.init = function() {
     for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.fxBankCount; i++) {
         for (let j = PioneerDDJREV1.zero; j < PioneerDDJREV1.fxEffectCount; j++) {
             const effect = `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`;
-
             engine.softTakeover(effect, "meta", true);
             engine.makeConnection(effect, "enabled", PioneerDDJREV1.toggleFxLight);
         }
@@ -262,7 +260,7 @@ PioneerDDJREV1.init = function() {
  * The controller mapping script SHUTDOWN method
  */
 PioneerDDJREV1.shutdown = function() {
-    // Zero out VU meter lights
+    // Zero out VU meter and reloop lights
     for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.channelCount; i++) {
         PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1 + i, PioneerDDJREV1.lights.status.off);
         PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch1 + i, PioneerDDJREV1.lights.status.off);
@@ -286,8 +284,7 @@ PioneerDDJREV1.shutdown = function() {
     // Cleanup FX lights
     for (let i = PioneerDDJREV1.zero; i < PioneerDDJREV1.fxBankCount; i++) {
         for (let j = PioneerDDJREV1.zero; j < PioneerDDJREV1.fxEffectCount; j++) {
-            const effect = `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`;
-            PioneerDDJREV1.toggleFxLight(false, effect);
+            PioneerDDJREV1.toggleFxLight(false, `[EffectRack1_EffectUnit${i + 1}_Effect${j + 1}]`);
         }
     }
 };
@@ -299,21 +296,21 @@ PioneerDDJREV1.shutdown = function() {
  */
 PioneerDDJREV1.vuMeterUpdate = function(value, group) {
     switch (group) {
-        case "[Channel1]":
-            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1, value);
-            break;
+    case "[Channel1]":
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch1, value);
+        break;
 
-        case "[Channel2]":
-            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch2, value);
-            break;
+    case "[Channel2]":
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch2, value);
+        break;
 
-        case "[Channel3]":
-            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch3, value);
-            break;
+    case "[Channel3]":
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch3, value);
+        break;
 
-        case "[Channel4]":
-            PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch4, value);
-            break;
+    case "[Channel4]":
+        PioneerDDJREV1.setVuMeterState(PioneerDDJREV1.midiChan.subChan.ch4, value);
+        break;
     }
 };
 
@@ -324,21 +321,21 @@ PioneerDDJREV1.vuMeterUpdate = function(value, group) {
  */
 PioneerDDJREV1.loopToggle = function(value, group) {
     switch (group) {
-        case "[Channel1]":
-            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch1, value);
-            break;
+    case "[Channel1]":
+        PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch1, value);
+        break;
 
-        case "[Channel2]":
-            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch2, value);
-            break;
+    case "[Channel2]":
+        PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch2, value);
+        break;
 
-        case "[Channel3]":
-            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch3, value);
-            break;
+    case "[Channel3]":
+        PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch3, value);
+        break;
 
-        case "[Channel4]":
-            PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch4, value);
-            break;
+    case "[Channel4]":
+        PioneerDDJREV1.setReloopLight(PioneerDDJREV1.midiChan.subChan.ch4, value);
+        break;
     }
 };
 
@@ -378,47 +375,47 @@ PioneerDDJREV1.trackLoadedLED = function(value, group) {
  */
 PioneerDDJREV1.toggleFxLight = function(value, group) {
     switch (group) {
-        case "[EffectRack1_EffectUnit1_Effect1]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx1.slot1.status,
-                PioneerDDJREV1.lights.fx.fx1.slot1.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit1_Effect1]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx1.slot1.status,
+            PioneerDDJREV1.lights.fx.fx1.slot1.data1,
+            value);
+        break;
 
-        case "[EffectRack1_EffectUnit1_Effect2]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx1.slot2.status,
-                PioneerDDJREV1.lights.fx.fx1.slot2.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit1_Effect2]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx1.slot2.status,
+            PioneerDDJREV1.lights.fx.fx1.slot2.data1,
+            value);
+        break;
 
-        case "[EffectRack1_EffectUnit1_Effect3]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx1.slot3.status,
-                PioneerDDJREV1.lights.fx.fx1.slot3.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit1_Effect3]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx1.slot3.status,
+            PioneerDDJREV1.lights.fx.fx1.slot3.data1,
+            value);
+        break;
 
-        case "[EffectRack1_EffectUnit2_Effect1]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx2.slot1.status,
-                PioneerDDJREV1.lights.fx.fx2.slot1.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit2_Effect1]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx2.slot1.status,
+            PioneerDDJREV1.lights.fx.fx2.slot1.data1,
+            value);
+        break;
 
-        case "[EffectRack1_EffectUnit2_Effect2]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx2.slot2.status,
-                PioneerDDJREV1.lights.fx.fx2.slot2.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit2_Effect2]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx2.slot2.status,
+            PioneerDDJREV1.lights.fx.fx2.slot2.data1,
+            value);
+        break;
 
-        case "[EffectRack1_EffectUnit2_Effect3]":
-            PioneerDDJREV1.setIndicatorState(
-                PioneerDDJREV1.lights.fx.fx2.slot3.status,
-                PioneerDDJREV1.lights.fx.fx2.slot3.data1,
-                value);
-            break;
+    case "[EffectRack1_EffectUnit2_Effect3]":
+        PioneerDDJREV1.setIndicatorState(
+            PioneerDDJREV1.lights.fx.fx2.slot3.status,
+            PioneerDDJREV1.lights.fx.fx2.slot3.data1,
+            value);
+        break;
     }
 };
 
@@ -433,8 +430,8 @@ PioneerDDJREV1.samplerPlayOutputCallbackFunction = function(value, group) {
         return;
     }
 
-    const curPad = group.match(script.samplerRegEx)[1];
-    const data1Addr = 0x30 + ((curPad > PioneerDDJREV1.padCount ? curPad - PioneerDDJREV1.padCount : curPad) - 1);
+    const curPad = group.match(script.samplerRegEx)[1],
+        data1Addr = 0x30 + ((curPad > PioneerDDJREV1.padCount ? curPad - PioneerDDJREV1.padCount : curPad) - 1);
 
     if (curPad <= PioneerDDJREV1.padCount) {
         PioneerDDJREV1.startSamplerBlink(
@@ -529,8 +526,8 @@ PioneerDDJREV1.browseRotate = function(_channel, _control, value) {
     const rotateVal = value === 0x7F ? -1 : 1;
 
     if (PioneerDDJREV1.previewSeekEnabled  && engine.getValue("[PreviewDeck1]", "play")) {
-        const oldPos = engine.getValue("[PreviewDeck1]", "playposition");
-        const newPos = Math.max(0, oldPos + (0.05 * rotateVal));
+        const oldPos = engine.getValue("[PreviewDeck1]", "playposition"),
+            newPos = Math.max(0, oldPos + (0.05 * rotateVal));
         engine.setValue("[PreviewDeck1]", "playposition", newPos);
     } else if (!PioneerDDJREV1.previewSeekEnabled) {
         engine.setValue(
@@ -570,9 +567,8 @@ PioneerDDJREV1.browsePressed = function(_channel, _control, value) {
  * @param {string} group The channel group tag
  */
 PioneerDDJREV1.jogTurn = function(channel, _control, value, _status, group) {
-    const deckNum = channel + 1;
-    // wheel center at 64; <64 rew >64 fwd
-    let newVal = value - 64;
+    const deckNum = channel + 1,
+        newVal = value - 64; // wheel center at 64; <64 rew >64 fwd
 
     if (engine.isScratching(deckNum)) {
         engine.scratchTick(deckNum, newVal);
