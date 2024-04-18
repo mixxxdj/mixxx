@@ -62,10 +62,11 @@ void EngineDeck::processStem(CSAMPLE* pOut, const int iBufferSize) {
     SampleUtil::clear(pOut, iBufferSize);
     const CSAMPLE* pIn = m_stemBuffer.data();
     for (int i = 0; i < iBufferSize; i += mixxx::kEngineChannelOutputCount) {
-        for (int c = 0; c < m_pBuffer->getChannelCount(); c += mixxx::kEngineChannelOutputCount) {
+        for (int chIdx = 0; chIdx < m_pBuffer->getChannelCount();
+                chIdx += mixxx::kEngineChannelOutputCount) {
             // TODO(XXX): apply stem gain or skip muted stem
-            pOut[i] += pIn[stereoChannelCount * i + c];
-            pOut[i + 1] += pIn[stereoChannelCount * i + c + 1];
+            pOut[i] += pIn[stereoChannelCount * i + chIdx];
+            pOut[i + 1] += pIn[stereoChannelCount * i + chIdx + 1];
         }
     }
     // TODO(XXX): process stem DSP

@@ -112,12 +112,12 @@ void EngineBufferScaleRubberBand::onOutputSignalChanged() {
 
     m_pRubberBand.reset();
 
-    for (int c = 0; c < channelCount; c++) {
-        if (m_buffers[c].size() == MAX_BUFFER_LEN) {
+    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
+        if (m_buffers[chIdx].size() == MAX_BUFFER_LEN) {
             continue;
         }
-        m_buffers[c] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
-        m_bufferPtrs[c] = m_buffers[c].data();
+        m_buffers[chIdx] = mixxx::SampleBuffer(MAX_BUFFER_LEN);
+        m_bufferPtrs[chIdx] = m_buffers[chIdx].data();
     }
 
     RubberBandStretcher::Options rubberbandOptions =
@@ -200,10 +200,10 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
         break;
     default: {
         int chCount = getOutputSignal().getChannelCount();
-        for (SINT i = 0; i < frames; ++i) {
+        for (SINT frameIdx = 0; frameIdx < frames; ++frameIdx) {
             for (int channel = 0; channel < chCount; channel++) {
-                m_buffers[channel].data()[i] =
-                        pBuffer[i * chCount + channel];
+                m_buffers[channel].data()[frameIdx] =
+                        pBuffer[frameIdx * chCount + channel];
             }
         }
     } break;

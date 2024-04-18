@@ -90,8 +90,8 @@ double EngineBufferScaleLinear::scaleBuffer(
         SINT iNextSample = getOutputSignal().frames2samples(static_cast<SINT>(ceil(m_dNextFrame)));
         int chCount = getOutputSignal().getChannelCount();
         if (iNextSample + chCount <= m_bufferIntSize) {
-            for (int c = 0; c < chCount; c++) {
-                m_floorSampleOld[c] = m_bufferInt[iNextSample + c];
+            for (int chIdx = 0; chIdx < chCount; chIdx++) {
+                m_floorSampleOld[chIdx] = m_bufferInt[iNextSample + chIdx];
             }
         }
 
@@ -177,8 +177,8 @@ SINT EngineBufferScaleLinear::do_copy(CSAMPLE* buf, SINT buf_size) {
     m_dNextFrame = 0;
     int chCount = getOutputSignal().getChannelCount();
     if (read_samples > chCount - 1) {
-        for (int c = 0; c < chCount; c++) {
-            m_floorSampleOld[c] = buf[read_samples - chCount + c];
+        for (int chIdx = 0; chIdx < chCount; chIdx++) {
+            m_floorSampleOld[chIdx] = buf[read_samples - chCount + chIdx];
         }
     }
     return read_samples;
@@ -229,11 +229,11 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
             m_dNextFrame - floor(m_dNextFrame));
 
     int chCount = getOutputSignal().getChannelCount();
-    std::vector<CSAMPLE> floor_sample(chCount);
-    std::vector<CSAMPLE> ceil_sample(chCount);
+    std::vector<CSAMPLE> floorSample(chCount);
+    std::vector<CSAMPLE> ceilSample(chCount);
 
-    std::fill(floor_sample.begin(), floor_sample.end(), 0.0);
-    std::fill(ceil_sample.begin(), ceil_sample.end(), 0.0);
+    std::fill(floorSample.begin(), floorSample.end(), 0.0);
+    std::fill(ceilSample.begin(), ceilSample.end(), 0.0);
 
     double startFrame = m_dNextFrame;
     SINT i = 0;
@@ -261,23 +261,23 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
             // we have advanced to a new buffer in the previous run,
             // but the floor still points to the old buffer
             // so take the cached sample, this happens on slow rates
-            for (int c = 0; c < chCount; c++) {
-                floor_sample[c] = m_floorSampleOld[c];
-                ceil_sample[c] = m_bufferInt[c];
+            for (int chIdx = 0; chIdx < chCount; chIdx++) {
+                floorSample[chIdx] = m_floorSampleOld[chIdx];
+                ceilSample[chIdx] = m_bufferInt[chIdx];
             }
         } else if (sampleCount + 2 * chCount - 1 < m_bufferIntSize) {
-            // take floor_sample form the buffer of the previous run
-            for (int c = 0; c < chCount; c++) {
-                floor_sample[c] = m_bufferInt[sampleCount + c];
-                ceil_sample[c] = m_bufferInt[sampleCount + chCount + c];
+            // take floorSample form the buffer of the previous run
+            for (int chIdx = 0; chIdx < chCount; chIdx++) {
+                floorSample[chIdx] = m_bufferInt[sampleCount + chIdx];
+                ceilSample[chIdx] = m_bufferInt[sampleCount + chCount + chIdx];
             }
         } else {
-            // if we don't have the ceil_sample in buffer, load some more
+            // if we don't have the ceilSample in buffer, load some more
 
             if (sampleCount + chCount - 1 < m_bufferIntSize) {
-                // take floor_sample form the buffer of the previous run
-                for (int c = 0; c < chCount; c++) {
-                    floor_sample[c] = m_bufferInt[sampleCount + c];
+                // take floorSample form the buffer of the previous run
+                for (int chIdx = 0; chIdx < chCount; chIdx++) {
+                    floorSample[chIdx] = m_bufferInt[sampleCount + chIdx];
                 }
             }
 
@@ -312,14 +312,14 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
                 sampleCount = getOutputSignal().frames2samples(currentFrameFloor);
             } while (sampleCount + 2 * chCount - 1 >= m_bufferIntSize);
 
-            for (int c = 0; c < chCount; c++) {
+            for (int chIdx = 0; chIdx < chCount; chIdx++) {
                 // Now that the buffer is up to date, we can get the value of the sample
                 // at the floor of our position.
                 if (currentFrameFloor >= 0) {
                     // the previous position is in the new buffer
-                    floor_sample[c] = m_bufferInt[sampleCount + c];
+                    floorSample[chIdx] = m_bufferInt[sampleCount + chIdx];
                 }
-                ceil_sample[c] = m_bufferInt[sampleCount + chCount + c];
+                ceilSample[chIdx] = m_bufferInt[sampleCount + chCount + chIdx];
             }
         }
 
@@ -328,11 +328,11 @@ double EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
         CSAMPLE frac = static_cast<CSAMPLE>(m_dCurrentFrame) - currentFrameFloor;
 
         // Perform linear interpolation
-        for (int c = 0; c < chCount; c++) {
-            buf[i + c] = floor_sample[c] + frac * (ceil_sample[c] - floor_sample[c]);
+        for (int chIdx = 0; chIdx < chCount; chIdx++) {
+            buf[i + chIdx] = floorSample[chIdx] + frac * (ceilSample[chIdx] - floorSample[chIdx]);
         }
 
-        m_floorSampleOld = floor_sample;
+        m_floorSampleOld = floorSample;
 
         // increment the index for the next loop
         m_dNextFrame = m_dCurrentFrame + rate_add;

@@ -640,11 +640,12 @@ void SampleUtil::linearCrossfadeUnaryBuffersOut(
     DEBUG_ASSERT(numSamples % channelCount == 0);
     int numFrame = numSamples / channelCount;
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
-    for (int c = 0; c < channelCount; c++) {
+    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
         for (int i = 0; i < numFrame; ++i) {
             const CSAMPLE_GAIN cross_mix = cross_inc * i;
-            pDestSrcFadeOut[i * channelCount + c] *= (CSAMPLE_GAIN_ONE - cross_mix);
-            pDestSrcFadeOut[i * channelCount + c] += pSrcFadeIn[i * channelCount + c] * cross_mix;
+            pDestSrcFadeOut[i * channelCount + chIdx] *= (CSAMPLE_GAIN_ONE - cross_mix);
+            pDestSrcFadeOut[i * channelCount + chIdx] +=
+                    pSrcFadeIn[i * channelCount + chIdx] * cross_mix;
         }
     }
 }
@@ -735,12 +736,12 @@ void SampleUtil::linearCrossfadeUnaryBuffersIn(
         int channelCount) {
     int numFrame = numSamples / channelCount;
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / channelCount);
-    for (int c = 0; c < channelCount; c++) {
+    for (int chIdx = 0; chIdx < channelCount; chIdx++) {
         for (int i = 0; i < numFrame; ++i) {
             const CSAMPLE_GAIN cross_mix = cross_inc * i;
-            pDestSrcFadeIn[i * channelCount + c] *= cross_mix;
-            pDestSrcFadeIn[i * channelCount + c] +=
-                    pSrcFadeOut[i * channelCount + c] *
+            pDestSrcFadeIn[i * channelCount + chIdx] *= cross_mix;
+            pDestSrcFadeIn[i * channelCount + chIdx] +=
+                    pSrcFadeOut[i * channelCount + chIdx] *
                     (CSAMPLE_GAIN_ONE - cross_mix);
         }
     }
@@ -873,16 +874,17 @@ void SampleUtil::copyReverseStereo(CSAMPLE* M_RESTRICT pDest,
 void SampleUtil::copyReverseStem(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numSamples) {
-    for (SINT j = 0; j < numSamples / 8; ++j) {
-        const int endpos = (numSamples - 1) - j * 8;
-        pDest[j * 8] = pSrc[endpos - 7];
-        pDest[j * 8 + 1] = pSrc[endpos - 6];
-        pDest[j * 8 + 2] = pSrc[endpos - 5];
-        pDest[j * 8 + 3] = pSrc[endpos - 4];
-        pDest[j * 8 + 4] = pSrc[endpos - 3];
-        pDest[j * 8 + 5] = pSrc[endpos - 2];
-        pDest[j * 8 + 6] = pSrc[endpos - 1];
-        pDest[j * 8 + 7] = pSrc[endpos];
+    DEBUG_ASSERT(0 == numSamples % 8);
+    for (SINT frameIdx = 0; frameIdx < numSamples / 8; ++frameIdx) {
+        const int endpos = (numSamples - 1) - frameIdx * 8;
+        pDest[frameIdx * 8] = pSrc[endpos - 7];
+        pDest[frameIdx * 8 + 1] = pSrc[endpos - 6];
+        pDest[frameIdx * 8 + 2] = pSrc[endpos - 5];
+        pDest[frameIdx * 8 + 3] = pSrc[endpos - 4];
+        pDest[frameIdx * 8 + 4] = pSrc[endpos - 3];
+        pDest[frameIdx * 8 + 5] = pSrc[endpos - 2];
+        pDest[frameIdx * 8 + 6] = pSrc[endpos - 1];
+        pDest[frameIdx * 8 + 7] = pSrc[endpos];
     }
 }
 
@@ -892,10 +894,10 @@ void SampleUtil::copyReverseUnary(CSAMPLE* M_RESTRICT pDest,
         SINT numSamples,
         int channelCount) {
     DEBUG_ASSERT(numSamples % channelCount == 0);
-    for (SINT j = 0; j < numSamples / channelCount; ++j) {
-        const int endpos = (numSamples - 1) - j * channelCount;
-        for (int c = 0; c < channelCount; c++) {
-            pDest[j * channelCount + c] = pSrc[endpos - channelCount - c + 1];
+    for (SINT frameIdx = 0; frameIdx < numSamples / channelCount; ++frameIdx) {
+        const int endpos = (numSamples - 1) - frameIdx * channelCount;
+        for (int chIdx = 0; chIdx < channelCount; chIdx++) {
+            pDest[frameIdx * channelCount + chIdx] = pSrc[endpos - channelCount - chIdx + 1];
         }
     }
 }
