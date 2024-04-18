@@ -32,23 +32,23 @@ const uint32_t kStemManifestAtomPath[] = {
 /// @param reader The IODevice to search MP4 atom in
 /// @param path The list of atom to traverse in the tree, from top to bottom.
 /// Must be null terminated
-/// @param box_size The size of the box currently under the cursor to focus the
+/// @param boxSize The size of the box currently under the cursor to focus the
 /// search in
 /// @param pathIdx The level of the tree currently search (index of path)
 /// @return the size of the box data if found, -1 otherwise
 uint32_t seekTillAtom(QIODevice& reader,
         const uint32_t path[],
-        uint32_t box_size = 0,
+        uint32_t boxSize = 0,
         uint32_t pathIdx = 0) {
     if (!path[pathIdx]) {
-        return box_size;
+        return boxSize;
     }
 
     uint32_t byteRead = 0;
     char buffer[kAtomHeaderSize];
-    while (!reader.atEnd() || (box_size && byteRead >= box_size)) {
+    while (!reader.atEnd() || (boxSize && byteRead >= boxSize)) {
         reader.read(buffer, kAtomHeaderSize);
-        byteRead += box_size;
+        byteRead += boxSize;
         if (ATOM_TYPE(buffer + 4) == path[pathIdx]) {
             return seekTillAtom(reader, path, ATOM_TYPE(buffer) - kAtomHeaderSize, pathIdx + 1);
         }
@@ -61,8 +61,8 @@ uint32_t seekTillAtom(QIODevice& reader,
 
 // static
 bool StemInfoImporter::isStemFile(
-        const QString& aFileName) {
-    return aFileName.endsWith(kStemFileExtension);
+        const QString& fileName) {
+    return fileName.endsWith(kStemFileExtension);
 }
 
 QList<StemInfo> StemInfoImporter::importStemInfos(
@@ -128,8 +128,8 @@ QList<StemInfo> StemInfoImporter::importStemInfos(
     }
 
     // Extract DSP information
-    // TODO(XXX) DSP only contains limit and a compressor, which aren't
-    // supported by Mixxx yet. parse and implement when supported
+    // TODO(XXX) DSP only contains a limiter and a compressor effect, which
+    // Mixxx doesn't have yet. Parse and implement when supported
 
     file.close();
 

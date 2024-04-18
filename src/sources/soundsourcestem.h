@@ -10,7 +10,7 @@ namespace mixxx {
 class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
   public:
     // streamIdx is the FFmpeg stream id, which may different than stemIdx + 1
-    // because STEm may contain other non audio stream
+    // because STEM may contain other non audio stream
     explicit SoundSourceSingleSTEM(const QUrl& url, unsigned int streamIdx);
 
   protected:

@@ -4,8 +4,7 @@
 
 namespace mixxx {
 
-/// Importer class for StemInfo objects that can correct timing offsets when the
-/// signal info (channel number, sample rate, bitrate) is known.
+/// Importer class for StemInfo objects that contains metadata about the stems of a track.
 class StemInfoImporter {
   public:
     static QList<StemInfo> importStemInfos(
