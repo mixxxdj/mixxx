@@ -5,6 +5,7 @@
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
+#include "util/cmdlineargs.h"
 #include "util/screensaver.h"
 
 namespace {
@@ -129,7 +130,9 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (m_logInput().isDebugEnabled()) {
+    if (CmdlineArgs::Instance()
+                    .getControllerDebug() &&
+            m_logInput().isDebugEnabled()) {
         // Formatted packet display
         QString message = QString("t:%2, %3 bytes:\n")
                                   .arg(timestamp.formatMillisWithUnit(),
