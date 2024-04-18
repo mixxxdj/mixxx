@@ -435,7 +435,6 @@ WWidgetGroup {
   image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background-color: #0f0f0f;
     image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
@@ -1605,7 +1604,8 @@ decks, samplers, mic, aux, fx */
 #FxUnitMixerRight,
 #FxUnitMixerLeft_mini,
 #FxUnitMixerRight_mini {
-  qproperty-layoutAlignment: 'AlignHCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+/*  qproperty-layoutAlignment: 'AlignHCenter';*/
   background-color: #333;
   }
 #FxUnitMixerLeft,
@@ -1818,7 +1818,6 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
     }
     WEffectChainPresetButton:hover {
-      background-color: #151515;
       image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     WEffectChainPresetButton::menu-indicator {

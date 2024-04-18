@@ -37,6 +37,7 @@ SetlogFeature::SetlogFeature(
                           /*keep hidden tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history"),
+                  QStringLiteral("SetlogCountsDurations"),
                   /*keep hidden tracks*/ true),
           m_currentPlaylistId(kInvalidPlaylistId),
           m_yearNodeId(kInvalidPlaylistId),
@@ -136,7 +137,7 @@ void SetlogFeature::deleteAllUnlockedPlaylistsWithFewerTracks() {
     int minTrackCount = m_pConfig->getValue(
             kHistoryMinTracksToKeepConfigKey,
             kHistoryMinTracksToKeepDefault);
-    m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG,
+    m_playlistDao.deleteAllUnlockedPlaylistsWithFewerTracks(PlaylistDAO::PLHT_SET_LOG,
             minTrackCount);
     transaction.commit();
 }
@@ -233,24 +234,24 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
     QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS SetlogCountsDurations "
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
             "  Playlists.date_created AS date_created, "
             "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
-            "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "  max(PlaylistTracks.position) AS count,"
+            "  SUM(library.duration) AS durationSeconds "
             "FROM Playlists "
             "LEFT JOIN PlaylistTracks "
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = %1 "
+            "  WHERE Playlists.hidden = %2 "
             "  GROUP BY Playlists.id")
-                                  .arg(QString::number(PlaylistDAO::HiddenType::PLHT_SET_LOG));
+                                  .arg(m_countsDurationTableName,
+                                          QString::number(PlaylistDAO::PLHT_SET_LOG));
+    ;
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));
@@ -261,7 +262,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("SetlogCountsDurations");
+    playlistTableModel.setTable(m_countsDurationTableName);
     playlistTableModel.setSort(playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
@@ -342,29 +343,6 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     m_pSidebarModel->insertTreeItemRows(std::move(itemList), 0);
 
     return indexFromPlaylistId(selectedId);
-}
-
-QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
-    // Setup the sidebar playlist model
-    // TODO(ronso0) Why not m_playlistDao.getPlaylistName(id) ??
-    QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollectionManager()->internalCollection()->database());
-    playlistTableModel.setTable("Playlists");
-    QString filter = "id=" + QString::number(playlistId);
-    playlistTableModel.setFilter(filter);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-
-    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
-    if (playlistTableModel.rowCount() > 0) {
-        return playlistTableModel.data(playlistTableModel.index(0, nameColumn))
-                .toString();
-    }
-    return QString();
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlistId) {
@@ -739,7 +717,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "slotPlaylistContentOrLockChanged() for"
+    // qDebug() << "SetlogFeature::slotPlaylistContentOrLockChanged() for"
     //          << playlistIds.count() << "playlist(s)";
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
@@ -752,7 +730,7 @@ void SetlogFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistId
 
 void SetlogFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    // qDebug() << "SetlogFeature::slotPlaylistTableRenamed() Id:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_SET_LOG) {
         updateChildModel(QSet<int>{playlistId});
     }
