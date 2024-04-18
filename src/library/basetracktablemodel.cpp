@@ -811,8 +811,9 @@ QVariant BaseTrackTableModel::roleValue(
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
                     return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    // custom precision, set in DlgPrefLibrary
-                    return QString::number(bpm.value(), 'f', s_bpmColumnPrecision);
+                    // Use the locale here to make the display and editor consistent.
+                    // Custom precision, set in DlgPrefLibrary.
+                    return QLocale().toString(bpm.value(), 'f', s_bpmColumnPrecision);
                 }
             } else {
                 return QChar('-');
