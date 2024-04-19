@@ -2,9 +2,8 @@
 
 #include <QOpenGLFunctions>
 
-#include "shaders/coloredtextureshader.h"
-
-class QOpenGLTexture;
+#include "shaders/textureshader.h"
+#include "util/opengltexture2d.h"
 
 namespace allshader {
 class DigitsRenderer;
@@ -21,13 +20,12 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
             float x,
             float y,
             const QString& s,
-            QColor color,
             float devicePixelRatio);
     float height() const;
 
   private:
-    mixxx::ColoredTextureShader m_shader;
-    std::unique_ptr<QOpenGLTexture> m_pTexture;
+    mixxx::TextureShader m_shader;
+    OpenGLTexture2D m_texture;
     float m_offset[13];
     float m_width[12];
 

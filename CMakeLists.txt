@@ -1505,7 +1505,6 @@ if(QOPENGL)
     src/shaders/slipmodeshader.cpp
     src/shaders/patternshader.cpp
     src/shaders/rgbashader.cpp
-    src/shaders/coloredtextureshader.cpp
     src/shaders/rgbshader.cpp
     src/shaders/shader.cpp
     src/shaders/textureshader.cpp

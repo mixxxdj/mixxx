@@ -9,7 +9,6 @@
 #include <QPainter>
 #include <QPainterPath>
 
-#include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 
@@ -35,7 +34,7 @@ void allshader::DigitsRenderer::init() {
 }
 
 float allshader::DigitsRenderer::height() const {
-    return static_cast<float>(m_pTexture->height());
+    return static_cast<float>(m_texture.height());
 }
 
 void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float devicePixelRatio) {
@@ -116,14 +115,13 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
 
     painter.end();
 
-    m_pTexture = createTexture(image);
+    m_texture.setData(image);
 }
 
 float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,
         const QString& s,
-        QColor color,
         float devicePixelRatio) {
     const int n = s.length();
     const float x0 = x;
@@ -151,10 +149,8 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
     const int textureLocation = m_shader.uniformLocation("texture");
     const int positionLocation = m_shader.attributeLocation("position");
     const int texcoordLocation = m_shader.attributeLocation("texcoord");
-    const int colorLocation = m_shader.colorLocation();
 
     m_shader.setUniformValue(matrixLocation, matrix);
-    m_shader.setUniformValue(colorLocation, color);
 
     m_shader.enableAttributeArray(positionLocation);
     m_shader.setAttributeArray(
@@ -165,11 +161,11 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
 
     m_shader.setUniformValue(textureLocation, 0);
 
-    m_pTexture->bind();
+    m_texture.bind();
 
     glDrawArrays(GL_TRIANGLES, 0, posVertices.size());
 
-    m_pTexture->release();
+    m_texture.release();
 
     m_shader.disableAttributeArray(positionLocation);
     m_shader.disableAttributeArray(texcoordLocation);

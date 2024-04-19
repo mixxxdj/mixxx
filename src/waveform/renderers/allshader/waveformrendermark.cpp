@@ -292,12 +292,12 @@ void allshader::WaveformRenderMark::paintGL() {
         const float markHalfWidth = m_playPosMarkTexture.width() / devicePixelRatio / 2.f;
         const float drawOffset = currentMarkPoint - markHalfWidth;
 
-        drawTexture(matrix, drawOffset, 0.f, m_pPlayPosMarkTexture.get());
+        drawTexture(matrix, drawOffset, 0.f, &m_playPosMarkTexture);
     }
 
     if (WaveformWidgetFactory::instance()->getUntilNextMarkerShow() != UntilNextMarkerShow::None) {
         updateUntilMark(playPosition, nextMarkPosition);
-        drawUntilMark(matrix, drawOffset + 20);
+        drawUntilMark(matrix, currentMarkPoint + 20);
     }
 }
 
@@ -316,8 +316,6 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     if (m_timeUntilMark == 0.0) {
         return;
     }
-    const int ialpha = 255;
-
     const float ch = m_digitsRenderer.height() / devicePixelRatio;
 
     float y = untilNextMarkerAlign == Qt::AlignTop ? 0.f
@@ -343,7 +341,6 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
                 x,
                 y,
                 QString::number(m_beatsUntilMark),
-                QColor(255, 255, 255, ialpha),
                 devicePixelRatio);
         if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime) {
             x += w + std::round(static_cast<float>(m_untilNextMarkerSize) * 0.75f);
@@ -360,10 +357,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
                 x,
                 y,
                 timeToString(m_timeUntilMark),
->>>>>>> 13349d0e47 (also show time until marker)
-                QColor(255, 255, 255, ialpha),
                 devicePixelRatio);
->>>>>>> ea0a4d064d (show beats until next marker, using digitsrenderer with digits texture (generated) and fade out during beat duration)
     }
 }
 

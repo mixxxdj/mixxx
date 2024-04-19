@@ -52,8 +52,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
 
     void drawMark(const QMatrix4x4& matrix, const QRectF& rect, QColor color);
     void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
-
-    void updateBeatDistance(double playPosition, double markerPosition);
     void updateUntilMark(double playPosition, double markerPosition);
     void drawUntilMark(const QMatrix4x4& matrix, float x);
 
@@ -61,7 +59,8 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     mixxx::TextureShader m_textureShader;
     OpenGLTexture2D m_playPosMarkTexture;
     DigitsRenderer m_digitsRenderer;
-    int m_beatDistance;
+    int m_beatsUntilMark;
+    double m_timeUntilMark;
     double m_currentBeatPosition;
     double m_nextBeatPosition;
     int m_untilNextMarkerSize;
