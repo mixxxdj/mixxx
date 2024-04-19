@@ -150,8 +150,6 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
     posVertices.reserve(n * 6); // two triangles per character
     texVertices.reserve(n * 6);
 
-    const auto byteArray = s.toUtf8();
-
     for (const auto c : s.toUtf8()) {
         // add vertices for the rectangles in the texture corresponding with each char in QString s
         int index = charToIndex(c);
