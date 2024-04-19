@@ -71,11 +71,6 @@ class WaveformWidgetRenderer {
         return m_audioSamplePerPixel;
     }
 
-    // those function replace at its best sample position to an admissible
-    // sample position according to the current visual resampling
-    // this make mark and signal deterministic
-    void regulateVisualSample(int& sampleIndex) const;
-
     // this "regulate" against visual sampling to make the position in widget
     // stable and deterministic
     // Transform sample index to pixel in track.
@@ -87,12 +82,8 @@ class WaveformWidgetRenderer {
             // 1 pixel off.
             return m_playMarkerPosition * getLength();
         }
-        const double relativePosition = samplePosition / m_trackSamples;
-        return transformPositionInRendererWorld(relativePosition);
-    }
-    // Transform position (percentage of track) to pixel in track.
-    inline double transformPositionInRendererWorld(double position) const {
-        return m_trackPixelCount * (position - m_firstDisplayedPosition);
+        return (samplePosition - m_firstDisplayedPosition * m_trackSamples) /
+                2 / m_audioSamplePerPixel;
     }
 
     int getPlayPosVSample() const {
@@ -104,8 +95,21 @@ class WaveformWidgetRenderer {
     double getZoomFactor() const {
         return m_zoomFactor;
     }
-    double getGain() const {
-        return m_gain;
+    double getGain(bool applyCompensation) const {
+        // m_gain was always multiplied by 2.0, according to a comment:
+        //
+        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
+        //   EnginePregain. See the comment there."
+        //
+        // However, no comment there seems to explain this, and it resulted
+        // in renderers that use the filtered.all data for the amplitude, to
+        // be twice the expected value.
+        // But without this compensation, renderers that use the combined
+        // lo, mid, hi values became much lower than expected. By making this
+        // optional we move the decision to each renderer whether to apply the
+        // compensation or not, in order to have a more similar amplitude across
+        // waveform renderers
+        return applyCompensation ? m_gain * 2.f : m_gain;
     }
     double getTrackSamples() const {
         return m_trackSamples;

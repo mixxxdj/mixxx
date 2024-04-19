@@ -35,13 +35,15 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableChanged(int playlistId) override;
     void slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) override;
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
+    void slotShufflePlaylist();
 
   protected:
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
 
   private:
     QString getRootViewHtml() const override;
+
+    QAction* m_pShufflePlaylistAction;
 };

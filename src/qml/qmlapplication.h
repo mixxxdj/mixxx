@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QApplication>
-#include <QFileSystemWatcher>
 #include <QQmlApplicationEngine>
 
 #include "coreservices.h"
+#include "qmlautoreload.h"
 
 namespace mixxx {
 namespace qml {
@@ -26,7 +26,7 @@ class QmlApplication : public QObject {
     QString m_mainFilePath;
 
     std::unique_ptr<QQmlApplicationEngine> m_pAppEngine;
-    QFileSystemWatcher m_fileWatcher;
+    QmlAutoReload m_autoReload;
 };
 
 } // namespace qml

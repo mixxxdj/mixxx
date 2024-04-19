@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QFileDialog>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
@@ -29,6 +30,7 @@
 #include "skin/skincontrols.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
+#include "util/clipboard.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/font.h"
 #include "util/logger.h"
@@ -179,7 +181,7 @@ CoreServices::~CoreServices() {
 }
 
 void CoreServices::initializeSettings() {
-#ifdef __APPLE__
+#ifdef Q_OS_MACOS
     // TODO: At this point it is too late to provide the same settings path to all components
     // and too early to log errors and give users advises in their system language.
     // Calling this from main.cpp before the QApplication is initialized may cause a crash
@@ -334,6 +336,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     emit initializationProgressUpdate(50, tr("library"));
     CoverArtCache::createInstance();
+    Clipboard::createInstance();
 
     m_pTrackCollectionManager = std::make_shared<TrackCollectionManager>(
             this,
@@ -577,6 +580,8 @@ void CoreServices::finalize() {
 
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
+
+    Clipboard::destroy();
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     // The player manager has to be deleted before the library to ensure

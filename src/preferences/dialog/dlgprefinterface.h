@@ -68,6 +68,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     QString m_colorScheme;
     QString m_colorSchemeOnUpdate;
     QString m_localeOnUpdate;
+    int m_multiSampling;
     mixxx::TooltipsPreference m_tooltipMode;
     double m_dScaleFactor;
     double m_minScaleFactor;

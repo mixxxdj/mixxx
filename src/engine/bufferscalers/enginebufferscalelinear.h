@@ -26,7 +26,7 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
   private:
     void onSampleRateChanged() override {}
 
-    SINT do_scale(CSAMPLE* buf, SINT buf_size);
+    double do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
 
     // The read-ahead manager that we use to fetch samples

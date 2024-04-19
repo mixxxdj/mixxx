@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -52,13 +52,13 @@ endif()
 
 find_path(Shoutidjc_INCLUDE_DIR
   NAMES shoutidjc/shout.h
-  PATHS ${PC_Shout_INCLUDE_DIRS}
+  HINTS ${PC_Shout_INCLUDE_DIRS}
   DOC "Shout include directory")
 mark_as_advanced(Shoutidjc_INCLUDE_DIR)
 
 find_library(Shoutidjc_LIBRARY
   NAMES shout-idjc
-  PATHS ${PC_Shoutidjc_LIBRARY_DIRS}
+  HINTS ${PC_Shoutidjc_LIBRARY_DIRS}
   DOC "Shoutidjc library"
 )
 mark_as_advanced(Shoutidjc_LIBRARY)

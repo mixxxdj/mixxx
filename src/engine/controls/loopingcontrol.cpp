@@ -784,8 +784,24 @@ void LoopingControl::slotLoopRemove() {
     loopInfo.endPosition = mixxx::audio::kInvalidFramePos;
     loopInfo.seekMode = LoopSeekMode::None;
     m_loopInfo.setValue(loopInfo);
+    m_oldLoopInfo = loopInfo;
     m_pCOLoopStartPosition->set(loopInfo.startPosition.toEngineSamplePosMaybeInvalid());
     m_pCOLoopEndPosition->set(loopInfo.endPosition.toEngineSamplePosMaybeInvalid());
+    // The loop cue is stored by BaseTrackPlayerImpl::unloadTrack()
+    // if the loop is valid, else it is removed.
+    // We remove it here right away so the loop is not restored
+    // when the track is loaded to another player in the meantime.
+    auto pLoadedTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pLoadedTrack) {
+        return;
+    }
+    const QList<CuePointer> cuePoints = pLoadedTrack->getCuePoints();
+    for (const auto& pCue : cuePoints) {
+        if (pCue->getType() == mixxx::CueType::Loop && pCue->getHotCue() == Cue::kNoHotCue) {
+            pLoadedTrack->removeCue(pCue);
+            return;
+        }
+    }
 }
 
 void LoopingControl::slotLoopIn(double pressed) {
@@ -865,6 +881,17 @@ void LoopingControl::setLoopOutToCurrentPosition() {
                     quantizedBeatPosition = closestBeatPosition;
                 }
             }
+            // Note: with quantize enabled and playpos AFTER an inactive loop,
+            // the new loop_out might snap to the exact the same position as before.
+            // Then m_oldLoopInfo would be unchanged and process() would not seek back
+            // inside the loop, so we would (re)create and activate a loop
+            // we'd never reach (when playing forward).
+            // Invalidate the old loop end so adjustedPositionInsideAdjustedLoop()
+            // will return a position inside the new/old loop.
+            if (position > quantizedBeatPosition &&
+                    quantizedBeatPosition == m_oldLoopInfo.endPosition) {
+                m_oldLoopInfo.endPosition = mixxx::audio::kInvalidFramePos;
+            }
             position = quantizedBeatPosition;
         }
     }
@@ -876,8 +903,8 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     }
 
     // If the loop-in and out points are set so close that the loop would be
-    //  inaudible (which can happen easily with quantize-to-beat enabled,)
-    //  use the smallest pre-defined beatloop instead (when possible)
+    // inaudible (which can happen easily with quantize-to-beat enabled,)
+    // use the smallest pre-defined beatloop instead (when possible)
     if ((position - loopInfo.startPosition) < kMinimumAudibleLoopSizeFrames) {
         if (quantizedBeatPosition.isValid() && pBeats) {
             position = pBeats->findNthBeat(quantizedBeatPosition, 2);

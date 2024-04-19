@@ -65,7 +65,8 @@ void WaveformRendererRGB::paintGL() {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    // applyCompensation = false, as we scale to match filtered.all
+    getGains(&allGain, false, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
@@ -83,7 +84,8 @@ void WaveformRendererRGB::paintGL() {
     const float high_b = static_cast<float>(m_rgbHighColor_b);
 
     // Effective visual frame for x
-    double xVisualFrame = firstVisualFrame;
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
@@ -139,6 +141,8 @@ void WaveformRendererRGB::paintGL() {
         float maxMid = static_cast<float>(u8maxMid);
         float maxHigh = static_cast<float>(u8maxHigh);
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
+        // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+        // float maxAllChn[2]{unscale(u8maxAllChn[0]), unscale(u8maxAllChn[1])};
 
         // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
         // We take the square root to get the magnitude below.

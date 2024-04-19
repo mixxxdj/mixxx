@@ -100,6 +100,40 @@ bool allowLoadToPlayer(
     return allowLoadTrackIntoPlayingDeck;
 }
 
+// Helper function for DragAndDropHelper::mousePressed and DragAndDropHelper::mouseMoveInitiatesDrag
+bool mouseMoveInitiatesDragHelper(QMouseEvent* pEvent, bool isPress) {
+    if (pEvent->buttons() != Qt::LeftButton) {
+        return false;
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const qreal x = pEvent->position().x();
+    const qreal y = pEvent->position().y();
+#else
+    const qreal x = pEvent->x();
+    const qreal y = pEvent->y();
+#endif
+
+    static qreal pressX{};
+    static qreal pressY{};
+
+    if (isPress) {
+        pressX = x;
+        pressY = y;
+        return false;
+    }
+
+    const qreal threshold = static_cast<qreal>(QApplication::startDragDistance());
+    // X and Y distance since press
+    const qreal dx = x - pressX;
+    const qreal dy = y - pressY;
+
+    // Check if the distance surpasses the threshold. Per Pythagoras Theorem:
+    // distance = sqrt(dx^2 + dy^2)
+    // We can avoid the sqrt by squaring the threshold.
+
+    return dx * dx + dy * dy >= threshold * threshold;
+}
+
 } // anonymous namespace
 
 //static
@@ -174,6 +208,16 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     return true;
+}
+
+// static
+void DragAndDropHelper::mousePressed(QMouseEvent* pEvent) {
+    mouseMoveInitiatesDragHelper(pEvent, true);
+}
+
+// static
+bool DragAndDropHelper::mouseMoveInitiatesDrag(QMouseEvent* pEvent) {
+    return mouseMoveInitiatesDragHelper(pEvent, false);
 }
 
 //static

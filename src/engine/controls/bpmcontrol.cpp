@@ -130,6 +130,14 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotTapFilter,
             Qt::DirectConnection);
 
+    m_pToggleBpmLock = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "bpm_toggle_lock"), false);
+    connect(m_pToggleBpmLock.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotToggleBpmLock,
+            Qt::DirectConnection);
+
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
@@ -305,9 +313,9 @@ double BpmControl::calcSyncedRate(double userTweak) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
     double rate = 1.0;
-    // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->toBool()) {
-        rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
+    double localBpm = m_pLocalBpm->get();
+    if (localBpm != 0.0) {
+        rate = m_dSyncInstantaneousBpm / localBpm;
     }
 
     // If we are not quantized, or there are no beats, or we're leader,
@@ -353,6 +361,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we have all we need to calculate the sync adjustment if any.
     double adjustment = calcSyncAdjustment(userTweak != 0.0);
+    // This can be used to detect pitch shift issues with cloned decks
+    // DEBUG_ASSERT(((rate + userTweak) * adjustment) == 1);
     return (rate + userTweak) * adjustment;
 }
 
@@ -760,7 +770,7 @@ mixxx::audio::FramePos BpmControl::getBeatMatchPosition(
             kLogger.trace() << "BpmControl::getBeatMatchPosition out of date"
                             << thisPrevBeatPosition << thisPosition << thisNextBeatPosition;
         }
-        // This happens if dThisPosition is the target position of a requested
+        // This happens if thisPosition is the target position of a requested
         // seek command.  Get new prev and next beats for the calculation.
         getBeatContext(
                 m_pBeats,
@@ -928,7 +938,9 @@ void BpmControl::slotUpdateEngineBpm(double value) {
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::slotUpdateEngineBpm"
-                        << value << m_pLocalBpm->get() << dRate;
+                        << value << m_pLocalBpm->get() << dRate << frameInfo().currentPosition;
+        // This can be used to detect pitch shift issues with cloned decks
+        // DEBUG_ASSERT(getGroup() != "[Channel1]" || dRate == 1);
     }
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
@@ -1017,6 +1029,18 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     }
 }
 
+void BpmControl::slotToggleBpmLock(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    bool locked = pTrack->isBpmLocked();
+    pTrack->setBpmLocked(!locked);
+}
+
 mixxx::Bpm BpmControl::updateLocalBpm() {
     mixxx::Bpm prevLocalBpm = mixxx::Bpm(m_pLocalBpm->get());
     mixxx::Bpm localBpm;
@@ -1025,16 +1049,16 @@ mixxx::Bpm BpmControl::updateLocalBpm() {
     if (pBeats) {
         if (info.currentPosition.isValid() && info.currentPosition != kInitialPlayPosition) {
             localBpm = pBeats->getBpmAroundPosition(info.currentPosition, kLocalBpmSpan);
-        }
-        if (!localBpm.isValid()) {
-            localBpm = pBeats->getBpmInRange(mixxx::audio::kStartFramePos, info.trackEndPosition);
+            if (!localBpm.isValid()) {
+                localBpm = pBeats->getBpmInRange(
+                        mixxx::audio::kStartFramePos, info.trackEndPosition);
+            }
         }
     }
     if (localBpm != prevLocalBpm) {
         if (kLogger.traceEnabled()) {
             kLogger.trace() << getGroup() << "BpmControl::updateLocalBpm" << localBpm;
         }
-        // FIXME: Should this really update the engine bpm if it's invalid?
         double localBpmValue = mixxx::Bpm::kValueUndefined;
         if (localBpm.isValid()) {
             localBpmValue = localBpm.value();

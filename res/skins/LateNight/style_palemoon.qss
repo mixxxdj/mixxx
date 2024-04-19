@@ -337,11 +337,23 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
+WTrackProperty[selected="true"],
 #BpmTapContainer:hover,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
-  border-radius: 1px;
-}
+  }
+  WTrackProperty:hover[selected="true"],
+  WTrackProperty[selected="true"] {
+    background-color: #181819;
+  }
+  #BpmTap[pressed="true"],
+  WTrackProperty[selected="true"] {
+    border: 1px solid #7d350d;
+/*    border: 1px solid #888;*/
+  }
 
 /* Disabled for now since the hover effect is stuck as soon as the
   track menu is opened.
@@ -1205,6 +1217,7 @@ WLibrarySidebar,
 QToolTip,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
@@ -1674,9 +1687,6 @@ WPushButton#LoopOut[pressed="true"],
 #BeatgridControls WPushButton[pressed="true"]/*,
 #CueDeleteButton[pressed="true"]*/ {
   background-color: #7d350d;
-  }
-  #BpmTap[pressed="true"] {
-   border: 1px solid #7d350d;
   }
 
 /* Red */
@@ -2531,6 +2541,7 @@ WLibraryTextBrowser,
 WLibrarySidebar,
 #SkinSettings,
 WSearchLineEdit,
+WTrackPropertyEditor,
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 #spinBoxTransition,
@@ -2586,22 +2597,28 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #fff;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
-#LibraryBPMSpinBox {
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
   color: #ddd;
   selection-color: #000;
   selection-background-color: #ccc;
-  border: 1px solid #2c454f;
-}
+  border: 1px solid #257b82;
+  border-radius: 0px;
+  }
 
 /* Entire BPM cell */
 /* Lock icon at the left */
@@ -2932,7 +2949,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2971,6 +2988,9 @@ WSearchLineEdit::item {
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -3075,7 +3095,7 @@ QPlainTextEdit QMenu::item:disabled {
     }
 
     WLibrarySidebar QMenu::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   #LibraryPlayedCheckbox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked {
@@ -3113,8 +3133,8 @@ QPlainTextEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,

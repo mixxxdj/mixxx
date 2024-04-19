@@ -114,7 +114,8 @@ void DlgPrefEffects::slotUpdate() {
     m_pHiddenEffectsModel->setList(hiddenEffects);
 
     // No chain preset is selected when the preferences are opened
-    clearChainInfoDisableButtons();
+    clearChainInfo();
+    updateButtons(0);
 
     loadChainPresetLists();
 
@@ -155,18 +156,29 @@ void DlgPrefEffects::clearEffectInfo() {
     effectType->clear();
 }
 
-void DlgPrefEffects::clearChainInfoDisableButtons() {
+void DlgPrefEffects::clearChainInfo() {
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
         m_effectsLabels[i]->setText(QString::number(i + 1) + ": ");
     }
-    chainPresetExportButton->setEnabled(false);
-    chainPresetRenameButton->setEnabled(false);
-    chainPresetDeleteButton->setEnabled(false);
+}
+
+void DlgPrefEffects::updateButtons(int selectedIndices) {
+    // Allow Delete and Export of multiple presets
+    chainPresetDeleteButton->setEnabled(selectedIndices > 0);
+    chainPresetExportButton->setEnabled(selectedIndices > 0);
+    // Enable Rename only for one preset
+    chainPresetRenameButton->setEnabled(selectedIndices == 1);
 }
 
 void DlgPrefEffects::loadChainPresetLists() {
     QStringList chainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getPresetsSorted()) {
+        // Don't show the empty '---' preset.
+        // After pushing the changed preferences list back to the preset manager
+        // it is re-added to the base list.
+        if (pChainPreset->name() == kNoEffectString) {
+            continue;
+        }
         chainPresetNames << pChainPreset->name();
     }
     auto* pModel = dynamic_cast<EffectChainPresetListModel*>(chainListView->model());
@@ -174,9 +186,7 @@ void DlgPrefEffects::loadChainPresetLists() {
 
     QStringList quickEffectChainPresetNames;
     for (const auto& pChainPreset : m_pChainPresetManager->getQuickEffectPresetsSorted()) {
-        // Don't show the empty '---' preset.
-        // After pushing the changed preferences list back to the preset manager
-        // it is re-added to the root list.
+        // Same here, don't show the empty '---' preset.
         if (pChainPreset->name() == kNoEffectString) {
             continue;
         }
@@ -214,12 +224,15 @@ void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selec
     VERIFY_OR_DEBUG_ASSERT(m_pFocusedChainList) {
         return;
     }
-    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
-    // in eventFilter()
     auto* pSelModel = m_pFocusedChainList->selectionModel();
     auto selIndices = pSelModel->selectedIndexes();
+
+    updateButtons(selIndices.count());
+
+    // Clear the info box and return if the index is invalid, e.g. after clearCurrentIndex()
+    // in eventFilter()
     if (selIndices.count() != 1) {
-        clearChainInfoDisableButtons();
+        clearChainInfo();
         return;
     }
 
@@ -230,25 +243,21 @@ void DlgPrefEffects::slotChainPresetSelectionChanged(const QItemSelection& selec
     }
 
     for (int i = 0; i < m_effectsLabels.size(); ++i) {
+        EffectManifestPointer pManifest;
         if (i < pChainPreset->effectPresets().size()) {
             EffectPresetPointer pEffectPreset = pChainPreset->effectPresets().at(i);
             if (!pEffectPreset->isEmpty()) {
-                QString displayName =
-                        m_pBackendManager->getDisplayNameForEffectPreset(
-                                pEffectPreset);
-                // Code uses 0-indexed numbers; users see 1 indexed numbers
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
-            } else {
-                m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
+                pManifest = m_pBackendManager->getManifest(pEffectPreset);
             }
+        }
+        if (pManifest) {
+            QString displayName = pManifest->name();
+            // Code uses 0-indexed numbers; users see 1 indexed numbers
+            m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + displayName);
         } else {
             m_effectsLabels[i]->setText(QString::number(i + 1) + ": " + kNoEffectString);
         }
     }
-
-    chainPresetExportButton->setEnabled(true);
-    chainPresetRenameButton->setEnabled(true);
-    chainPresetDeleteButton->setEnabled(true);
 }
 
 void DlgPrefEffects::slotImportPreset() {

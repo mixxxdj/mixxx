@@ -1,6 +1,7 @@
 #include "soundio/soundmanagerconfig.h"
 
 #include <QRegularExpression>
+#include <QtGlobal>
 
 #include "audio/types.h"
 #include "soundio/sounddevice.h"
@@ -495,7 +496,9 @@ void SoundManagerConfig::loadDefaults(SoundManager* soundManager, unsigned int f
                 m_api = MIXXX_PORTAUDIO_DIRECTSOUND_STRING;
             }
 #endif
-#ifdef __APPLE__
+#ifdef Q_OS_IOS
+            m_api = MIXXX_PORTAUDIO_IOSAUDIO_STRING;
+#elif defined(Q_OS_MACOS)
             m_api = MIXXX_PORTAUDIO_COREAUDIO_STRING;
 #endif
         }

@@ -11,6 +11,7 @@
 #include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
+#include <QtGlobal>
 
 #include "config.h"
 #include "defs_urls.h"
@@ -19,6 +20,7 @@
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
+          m_startAutoDJ(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
@@ -34,18 +36,34 @@ CmdlineArgs::CmdlineArgs()
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see #8090
 #ifdef MIXXX_SETTINGS_PATH
-          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
-#else
-#ifdef __LINUX__
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH))
+#elif defined(__LINUX__)
 #error "We are not ready to switch to XDG folders under Linux"
-#endif
+#elif defined(Q_OS_IOS)
+          // On iOS we intentionally use a user-accessible subdirectory of the sandbox
+          // documents directory rather than the default app data directory. Specifically
+          // we use
+          //
+          //     <sandbox home>/Documents/Library/Application Support/Mixxx
+          //
+          // instead of the default (and hidden)
+          //
+          //     <sandbox home>/Library/Application Support/Mixxx
+          //
+          // This lets the user back up their mixxxdb, add custom controller mappings,
+          // potentially diagnose issues by accessing logs etc. via the native iOS files app.
+          m_settingsPath(
+                  QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)
+                          .append("/Library/Application Support/Mixxx"))
+#else
 
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
                   QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
-                          .append("/")) {
+                          .append("/"))
 #endif
+{
 }
 
 namespace {
@@ -131,6 +149,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString(),
             QStringLiteral("locale"));
     parser.addOption(locale);
+
+    const QCommandLineOption startAutoDJ(QStringLiteral("start-autodj"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Starts Auto DJ when Mixxx is launched.")
+                            : QString());
+    parser.addOption(startAutoDJ);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -324,6 +348,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
 
     if (parser.isSet(locale)) {
         m_locale = parser.value(locale);
+    }
+
+    if (parser.isSet(startAutoDJ)) {
+        m_startAutoDJ = true;
     }
 
     if (parser.isSet(settingsPath)) {

@@ -29,7 +29,7 @@ class LearningUtilsTest : public MixxxTest {
         for (const MidiInputMapping& mapping : haystack) {
             if (mapping.key == needle.key &&
                     mapping.options == needle.options &&
-                    mapping.control == needle.control) {
+                    std::get<ConfigKey>(mapping.control) == std::get<ConfigKey>(needle.control)) {
                 return true;
             }
         }

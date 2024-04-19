@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -50,14 +50,14 @@ endif()
 
 find_path(SndFile_INCLUDE_DIR
   NAMES sndfile.h
-  PATHS ${PC_SndFile_INCLUDE_DIRS}
+  HINTS ${PC_SndFile_INCLUDE_DIRS}
   PATH_SUFFIXES sndfile
   DOC "SndFile include directory")
 mark_as_advanced(SndFile_INCLUDE_DIR)
 
 find_library(SndFile_LIBRARY
   NAMES sndfile sndfile-1
-  PATHS ${PC_SndFile_LIBRARY_DIRS}
+  HINTS ${PC_SndFile_LIBRARY_DIRS}
   DOC "SndFile library"
 )
 mark_as_advanced(SndFile_LIBRARY)

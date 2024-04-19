@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "analyzer/analyzertrack.h"
+#include "control/pollingcontrolproxy.h"
 #include "library/coverart.h"
 #include "library/dao/playlistdao.h"
 #include "library/trackprocessing.h"
@@ -15,7 +16,6 @@
 #include "util/color/rgbcolor.h"
 #include "util/parented_ptr.h"
 
-class ControlProxy;
 class DlgTagFetcher;
 class DlgTrackInfo;
 //class DlgDeleteFilesConfirmation;
@@ -63,6 +63,24 @@ class WTrackMenu : public QMenu {
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
+    // Make all deck track widgets provide the same features.
+    // Used by WTrackProperty, WTrackText & WTrackWidgetGroup.
+    static constexpr WTrackMenu::Features kDeckTrackMenuFeatures{
+            WTrackMenu::Feature::SearchRelated |
+            WTrackMenu::Feature::Playlist |
+            WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Metadata |
+            WTrackMenu::Feature::Reset |
+            WTrackMenu::Feature::Analyze |
+            WTrackMenu::Feature::BPM |
+            WTrackMenu::Feature::Color |
+            WTrackMenu::Feature::RemoveFromDisk |
+            WTrackMenu::Feature::FileBrowser |
+            WTrackMenu::Feature::Properties |
+            WTrackMenu::Feature::UpdateReplayGainFromPregain |
+            WTrackMenu::Feature::FindOnWeb |
+            WTrackMenu::Feature::SelectInLibrary};
+
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
@@ -87,6 +105,7 @@ class WTrackMenu : public QMenu {
     void showDlgTrackInfo(const QString& property = QString());
     // Library management
     void slotRemoveFromDisk();
+    const QString getDeckGroup() const;
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -218,10 +237,6 @@ class WTrackMenu : public QMenu {
     /// deck made the request.
     QString m_deckGroup;
 
-    const ControlProxy* m_pNumSamplers{};
-    const ControlProxy* m_pNumDecks{};
-    const ControlProxy* m_pNumPreviewDecks{};
-
     // Submenus
     QMenu* m_pLoadToMenu{};
     QMenu* m_pDeckMenu{};
@@ -314,6 +329,10 @@ class WTrackMenu : public QMenu {
 
     const UserSettingsPointer m_pConfig;
     Library* const m_pLibrary;
+
+    PollingControlProxy m_pNumSamplers;
+    PollingControlProxy m_pNumDecks;
+    PollingControlProxy m_pNumPreviewDecks;
 
     std::unique_ptr<DlgTrackInfo> m_pDlgTrackInfo;
     std::unique_ptr<DlgTagFetcher> m_pDlgTagFetcher;

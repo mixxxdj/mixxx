@@ -85,6 +85,9 @@ WLibrary,
   }
 
 
+WTrackProperty:hover,
+WTrackProperty:hover[selected="false"],
+WTrackProperty:hover[selected="true"],
 #BpmTapContainer:hover {
   background-color: #151517;
   border-radius: 1px;
@@ -1114,6 +1117,7 @@ WLibrarySidebar,
 QToolTip,
 WLibrarySidebar QMenu,
 WTrackTableViewHeader QMenu,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
@@ -1353,7 +1357,7 @@ WPushButton#PlayIndicator,
 WPushButton#CueDeck,
 #PlayCueMini WPushButton,
 WPushButton#LoopActivate,
-WPushButton#RateControls WPushButton,
+#RateControls WPushButton,
 WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
@@ -1635,26 +1639,50 @@ WPushButton#SamplerExpand[displayValue="0"],
 #Hotcue1 WPushButton {
   image: url(skins:LateNight/classic/buttons/btn__1.svg) no-repeat center center;
   }
-  #Hotcue2 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__2.svg) no-repeat center center;
+  #Hotcue1 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__1_loop.svg) no-repeat center center;
   }
-  #Hotcue3 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__3.svg) no-repeat center center;
+#Hotcue2 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__2.svg) no-repeat center center;
   }
-  #Hotcue4 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__4.svg) no-repeat center center;
+  #Hotcue2 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__2_loop.svg) no-repeat center center;
   }
-  #Hotcue5 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__5.svg) no-repeat center center;
+#Hotcue3 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__3.svg) no-repeat center center;
   }
-  #Hotcue6 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__6.svg) no-repeat center center;
+  #Hotcue3 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__3_loop.svg) no-repeat center center;
   }
-  #Hotcue7 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__7.svg) no-repeat center center;
+#Hotcue4 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__4.svg) no-repeat center center;
   }
-  #Hotcue8 WPushButton {
-    image: url(skins:LateNight/classic/buttons/btn__8.svg) no-repeat center center;
+  #Hotcue4 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__4_loop.svg) no-repeat center center;
+  }
+#Hotcue5 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__5_loop.svg) no-repeat center center;
+  }
+#Hotcue6 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__6_loop.svg) no-repeat center center;
+  }
+#Hotcue7 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__7_loop.svg) no-repeat center center;
+  }
+#Hotcue8 WPushButton {
+  image: url(skins:LateNight/classic/buttons/btn__8.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"] {
+    image: url(skins:LateNight/classic/buttons/btn__8_loop.svg) no-repeat center center;
   }
 
 #SpecialCueButton_intro_start WPushButton {
@@ -2096,7 +2124,13 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
 WLibrarySidebar {
@@ -2107,7 +2141,10 @@ WLibrarySidebar {
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
-#LibraryBPMSpinBox {
+#LibraryBPMSpinBox,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
+WTrackProperty[selected="true"] {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
@@ -2454,7 +2491,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -2497,6 +2534,9 @@ WEffectSelector,
 #MainMenu QMenu::indicator:unchecked:selected,
 WLibrarySidebar QMenu::item:selected,
 WTrackTableViewHeader QMenu::item:selected,
+WTrackTableViewHeader QMenu QCheckBox:selected,
+WTrackTableViewHeader QMenu QCheckBox:focus,
+WTrackTableViewHeader QMenu QCheckBox:hover,
 WTrackMenu::item:selected,
 WTrackMenu QMenu::item:selected,
 WTrackMenu QMenu QCheckBox:selected,
@@ -2571,8 +2611,8 @@ QPlainTextEdit QMenu::item:disabled {
   }
 
   WLibrarySidebar QMenu::indicator:checked,
+  WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
-  WTrackTableViewHeader QMenu::indicator:checked,
   WEffectSelector::indicator:checked,
   WEffectChainPresetSelector::indicator:checked,
   WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
@@ -2635,8 +2675,8 @@ QPlainTextEdit QMenu::item:disabled {
   selected, unchecked items would have a checkmark */
 WLibrarySidebar QMenu::indicator:unchecked,
 WLibrarySidebar QMenu::indicator:unchecked:selected,
-WTrackTableViewHeader QMenu::indicator:unchecked,
-WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:unchecked:selected,
 WEffectSelector::indicator:unchecked,
 WEffectSelector::indicator:unchecked:selected,
 WEffectChainPresetSelector::indicator:unchecked,

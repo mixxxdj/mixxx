@@ -49,6 +49,30 @@ QList<mixxx::FileInfo> DirectoryDAO::loadAllDirectories(
     return allDirs;
 }
 
+QStringList DirectoryDAO::getRootDirStrings() const {
+    DEBUG_ASSERT(m_database.isOpen());
+    const auto statement =
+            QStringLiteral("SELECT %1 FROM %2")
+                    .arg(
+                            kLocationColumn,
+                            kTable);
+    FwdSqlQuery query(
+            m_database,
+            statement);
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        return {};
+    }
+
+    QStringList allDirs;
+    const auto locationIndex = query.fieldIndex(kLocationColumn);
+    while (query.next()) {
+        const auto locationValue =
+                query.fieldValue(locationIndex).toString();
+        allDirs.append(locationValue);
+    }
+    return allDirs;
+}
+
 DirectoryDAO::AddResult DirectoryDAO::addDirectory(
         const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT(m_database.isOpen());
@@ -69,27 +93,25 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
     const auto newCanonicalLocation = newDir.canonicalLocation();
     DEBUG_ASSERT(!newCanonicalLocation.isEmpty());
     QList<mixxx::FileInfo> obsoleteChildDirs;
-    for (auto&& oldDir : loadAllDirectories()) {
-        if (!oldDir.exists() || !oldDir.isDir()) {
-            // Abort to prevent inconsistencies in the database
-            kLogger.warning()
-                    << "Aborting to add"
-                    << newDir.location()
-                    << ": Loaded directory"
-                    << oldDir.location()
-                    << "does not exist or is inaccessible";
-            continue;
-        }
+    // Ignore invalid or missing directories in order to allow adding new dirs
+    // while the list contains e.g. currently unmounted removable drives.
+    // Worst that can happen is that we have orphan tracks in the database that
+    // would be moved to missing after the rescan (which is required anyway after
+    // having added a new dir).
+    for (auto&& oldDir : loadAllDirectories(true /* ignore missing */)) {
         const auto oldCanonicalLocation = oldDir.canonicalLocation();
         DEBUG_ASSERT(!oldCanonicalLocation.isEmpty());
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
                     oldCanonicalLocation,
                     newCanonicalLocation)) {
+            // New dir is a child of an existing dir, return
             return AddResult::AlreadyWatching;
         }
         if (mixxx::FileInfo::isRootSubCanonicalLocation(
                     newCanonicalLocation,
                     oldCanonicalLocation)) {
+            // New dir is the parent of an existing dir. Remove the child from
+            // the dir list.
             obsoleteChildDirs.append(std::move(oldDir));
         }
     }
@@ -99,9 +121,7 @@ DirectoryDAO::AddResult DirectoryDAO::addDirectory(
                     .arg(
                             kTable,
                             kLocationColumn);
-    FwdSqlQuery query(
-            m_database,
-            statement);
+    FwdSqlQuery query(m_database, statement);
     query.bindValue(
             QStringLiteral(":location"),
             newDir.location());
@@ -151,8 +171,13 @@ DirectoryDAO::RemoveResult DirectoryDAO::removeDirectory(
 std::pair<DirectoryDAO::RelocateResult, QList<RelocatedTrack>> DirectoryDAO::relocateDirectory(
         const QString& oldDirectory,
         const QString& newDirectory) const {
+    // Don't verify the old directory with
+    // DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
+    // The path may have been set on another OS and therefore it will not have a
+    //  valid location.
+    // Just work with the QString; in case of an invalid path track relocation
+    // will simply fail if the database query yields no results.
     const mixxx::FileInfo newFileInfo(newDirectory);
-    DEBUG_ASSERT(oldDirectory == mixxx::FileInfo(oldDirectory).location());
     DEBUG_ASSERT(newDirectory == newFileInfo.location());
 
     if (!newFileInfo.exists() || !newFileInfo.isDir()) {
