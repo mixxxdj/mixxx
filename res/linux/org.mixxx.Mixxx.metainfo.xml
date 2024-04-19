@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-15" timestamp="1713206885">
+    <release version="2.4.1" type="development" date="2024-04-19" timestamp="1713558879">
       <description>
  <p>
   Controller Mappings
@@ -123,6 +123,16 @@
    Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
    #12969
   </li>
+  <li>
+   Denon DJ MC7000: Fix redundant argument and migrate to
+   hotcue_x_status
+   #13113
+   #13121
+  </li>
+  <li>
+   Polish fx chain controls
+   #12805
+  </li>
  </ul>
  <p>
   Target Support
@@ -143,6 +153,74 @@
   </li>
  </ul>
  <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Deere: make sampler rows persist
+   #12928
+  </li>
+  <li>
+   Tango: Remove unneeded waveform Singleton
+   #12938
+  </li>
+  <li>
+   Possible crash in customs skins using parallel waveforms
+   #13043
+   #12580
+  </li>
+  <li>
+   Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
+   #13088
+  </li>
+  <li>
+   Tooltips: update 'hotcue' with saved loop features
+   #12875
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Sidebar: show track count and duration of History playlists
+   #12811
+   #13020
+   #13019
+   #12788
+   #12880
+   #12882
+  </li>
+  <li>
+   Computer feature: update removable devices on Linux
+   #12893
+   #12891
+  </li>
+  <li>
+   Playlists: Prevent removing tracks from locked playlists
+   #12927
+  </li>
+  <li>
+   History feature: Fix removing deleted tracks after export
+   #13016
+   #13000
+  </li>
+  <li>
+   BPM display uses decimal separator of selected locale
+   #13067
+   #13051
+  </li>
+  <li>
+   Fix relink directory when migrate between Linux/macOS and Windows
+   #12878
+  </li>
+  <li>
+   Allow adding new directories while watched directories are missing
+   #12937
+   #10481
+  </li>
+ </ul>
+ <p>
   Miscellaneous
  </p>
  <ul>
@@ -153,29 +231,6 @@
   <li>
    Developer Tools: Initially sort controls by group name, ascending
    #12884
-  </li>
-  <li>
-   Library sidebar: show track count and duration of History playlists
-   #12811
-   #13020
-   #13019
-   #12788
-   #12880
-   #12882
-  </li>
-  <li>
-   Library: allow adding new directories while watched directories are missing
-   #12937
-   #10481
-  </li>
-  <li>
-   Computer feature: update removable devices on Linux
-   #12893
-   #12891
-  </li>
-  <li>
-   Playlists: Prevent removing tracks from locked playlists
-   #12927
   </li>
   <li>
    Waveforms: Fix scratching crossing loop boundaries
@@ -192,22 +247,14 @@
    #12963
   </li>
   <li>
-   Library: Fix removing deleted tracks from History playlist after export
-   #13016
-   #13000
-  </li>
-  <li>
    AutoDJ: Fix button state after error message about playing deck 3/4
    #12976
    #12975
   </li>
   <li>
-   Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
-   #13088
-  </li>
-  <li>
-   Deere: Make sampler rows persist
-   #12928
+   Tagfetcher: Cache fetched covers
+   #12301
+   #11084
   </li>
  </ul>
 </description>
