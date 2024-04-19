@@ -59,8 +59,15 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
 
-    StarEditor* editor =
-            new StarEditor(parent, m_pTableView, index, newOption, m_focusBorderColor);
+    StarEditor* editor = new StarEditor(parent,
+            m_pTableView,
+            index,
+            newOption,
+            m_persistentEditorState != PersistentEditor_Opening);
+
+    editor->setObjectName("LibraryStarEditor");
+    editor->ensurePolished();
+
     connect(editor,
             &StarEditor::editingFinished,
             this,
@@ -149,6 +156,7 @@ void StarDelegate::openPersistentRatingEditor(const QModelIndex& index) {
     }
 
     m_persistentEditorState = PersistentEditor_NotOpen;
+    m_persistentEditorState = PersistentEditor_Opening;
     m_pTableView->openPersistentEditor(index);
     m_persistentEditorState = PersistentEditor_Open;
     m_currentEditedCellIndex = index;

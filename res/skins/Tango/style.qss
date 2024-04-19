@@ -2661,6 +2661,8 @@ WTrackTableView {
   WLibrary QPlainTextEdit,
   /* Track label inline editor in decks and samplers */
   WTrackPropertyEditor,
+  #LibraryStarEditor[isKeyboardEditMode="true"],
+  #LibraryStarEditor[isKeyboardEditMode="true"]::item,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
@@ -2670,6 +2672,8 @@ WTrackTableView {
     border-style: solid;
   }
   WLibrary QLineEdit,
+  #LibraryStarEditor[isKeyboardEditMode="true"],
+  #LibraryStarEditor[isKeyboardEditMode="true"]::item,
   #LibraryBPMSpinBox {
     border-color: #555;
   }

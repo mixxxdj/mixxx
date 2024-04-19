@@ -2191,6 +2191,8 @@ WLibrarySidebar {
 /* Table cell in edit mode */
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
+#LibraryStarEditor[isKeyboardEditMode="true"],
+#LibraryStarEditor[isKeyboardEditMode="true"]::item,
 #LibraryBPMSpinBox,
 /* Track label inline editor in decks and samplers */
 WTrackPropertyEditor,

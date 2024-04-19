@@ -23,13 +23,13 @@ StarEditor::StarEditor(QWidget* parent,
         QTableView* pTableView,
         const QModelIndex& index,
         const QStyleOptionViewItem& option,
-        const QColor& focusBorderColor)
+        bool isKeyboardEditMode)
         : QWidget(parent),
           m_pTableView(pTableView),
           m_index(index),
           m_styleOption(option),
-          m_focusBorderColor(focusBorderColor),
-          m_starCount(StarRating::kMinStarCount) {
+          m_starCount(StarRating::kMinStarCount),
+          m_isKeyboardEditMode(isKeyboardEditMode) {
     DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
     installEventFilter(this);
@@ -72,9 +72,10 @@ void StarEditor::paintEvent(QPaintEvent*) {
     painter.setClipRect(m_styleOption.rect);
 
     // Draw standard item with the table view's style
-    QStyle* style = m_pTableView->style();
+    QStyle* style = this->style();
     if (style) {
-        style->drawControl(QStyle::CE_ItemViewItem, &m_styleOption, &painter, m_pTableView);
+        // Overwrite the background and stars rendered by the StarDelegate
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &m_styleOption, &painter, this);
     }
 
     // Set the palette appropriately based on whether the row is selected or
@@ -87,18 +88,14 @@ void StarEditor::paintEvent(QPaintEvent*) {
         cg = QPalette::Inactive;
     }
 
+    painter.save();
     if (m_styleOption.state & QStyle::State_Selected) {
         painter.setBrush(m_styleOption.palette.color(cg, QPalette::HighlightedText));
     } else {
         painter.setBrush(m_styleOption.palette.color(cg, QPalette::Text));
     }
-
     m_starRating.paint(&painter, m_styleOption.rect);
-
-    // Draw a border if the color cell is selected
-    if (m_styleOption.state & QStyle::State_HasFocus) {
-        TableItemDelegate::drawBorder(&painter, m_focusBorderColor, m_styleOption.rect);
-    }
+    painter.restore();
 }
 
 bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
