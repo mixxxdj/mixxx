@@ -3,6 +3,7 @@
 #include <QString>
 #include <QTimer>
 #include <QVector>
+#include <memory>
 
 #include "control/controlpushbutton.h"
 #include "util/fpclassify.h"
