@@ -103,6 +103,98 @@ void StarEditor::paintEvent(QPaintEvent*) {
 
 bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
     switch (event->type()) {
+    case QEvent::KeyPress: {
+        VERIFY_OR_DEBUG_ASSERT(m_isKeyboardEditMode) {
+            // Persistent editors (i.e. those opened using openPersistentEditor)
+            // should not receive keyboard events via their eventFilter, so we
+            // shouldn't normally arrive here - but if we do, just forward the events.
+            return false;
+        }
+
+        // Change rating when certain keys are pressed
+        // while we are in edit mode.
+        QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+        int newRating = m_starRating.starCount();
+        switch (ke->key()) {
+        case Qt::Key_Up:
+        case Qt::Key_Down:
+        case Qt::Key_PageUp:
+        case Qt::Key_PageDown: {
+            // Allow handling of certain keyboard navigation events.
+            // This logic attempts to match the behavior for text editor cells.
+            return false;
+        }
+        case Qt::Key_Home:
+        case Qt::Key_End: {
+            // Only forward Home and End if the Ctrl key is pressed.
+            // This matches the behavior of normal text editor cells.
+            if (ke->modifiers() & Qt::ControlModifier) {
+                return false;
+            }
+            return true;
+        }
+        case Qt::Key_0: {
+            newRating = 0;
+            break;
+        }
+        case Qt::Key_1: {
+            newRating = 1;
+            break;
+        }
+        case Qt::Key_2: {
+            newRating = 2;
+            break;
+        }
+        case Qt::Key_3: {
+            newRating = 3;
+            break;
+        }
+        case Qt::Key_4: {
+            newRating = 4;
+            break;
+        }
+        case Qt::Key_5: {
+            newRating = 5;
+            break;
+        }
+        case Qt::Key_6: {
+            newRating = 6;
+            break;
+        }
+        case Qt::Key_7: {
+            newRating = 7;
+            break;
+        }
+        case Qt::Key_8: {
+            newRating = 8;
+            break;
+        }
+        case Qt::Key_9: {
+            newRating = 9;
+            break;
+        }
+        case Qt::Key_Right:
+        case Qt::Key_Plus: {
+            newRating++;
+            break;
+        }
+        case Qt::Key_Left:
+        case Qt::Key_Minus: {
+            newRating--;
+            break;
+        }
+        }
+        newRating = math_clamp(newRating, StarRating::kMinStarCount, m_starRating.maxStarCount());
+        if (newRating != m_starRating.starCount()) {
+            // Apply star rating if it changed
+            m_starRating.setStarCount(newRating);
+            m_starCount = newRating;
+            update();
+        }
+        // Prevent other keys from being handled as global keyboard shortcuts.
+        // This matches the behavior of the other edit controls.
+        return true;
+    }
     case QEvent::Leave:
     case QEvent::ContextMenu: {
         // Note: it seems with Qt5 we do not reliably get a Leave event when
