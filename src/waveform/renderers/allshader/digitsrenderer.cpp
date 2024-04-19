@@ -15,6 +15,19 @@
 // Render digits using a texture (generated) with digits with blurred dark outline
 
 namespace {
+
+// The texture will contain 12 characters: 10 digits, colon and dot
+constexpr int NUM_CHARS = 12;
+
+// space around chars for blurred dark outline
+constexpr qreal SPACE = 3;
+// extra kerning when rendering chars
+constexpr qreal KERNING = 1;
+
+char indexToChar(int index) {
+    const char* str = "0123456789:.";
+    return str[index];
+}
 int charToIndex(char ch) {
     if (ch >= '0' && ch <= '9') {
         return static_cast<int>(ch - '0');
@@ -22,7 +35,11 @@ int charToIndex(char ch) {
     if (ch == ':') {
         return 10;
     }
-    return 11;
+    if (ch == '.') {
+        return 11;
+    }
+    assert(false);
+    return 11; // fallback to dot
 }
 } // namespace
 
@@ -39,7 +56,6 @@ float allshader::DigitsRenderer::height() const {
 
 void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float devicePixelRatio) {
     QFont font;
-    const char* str = "0123456789:.";
     font.setFamily("Open Sans");
     font.setPixelSize(fontPixelSize);
 
@@ -47,18 +63,18 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
 
     qreal totalTextWidth = 0;
     qreal maxTextHeight = 0;
-    for (int i = 0; i < 12; i++) {
-        assert(charToIndex(str[i]) == i);
-        const QString text(str[i]);
+    for (int i = 0; i < NUM_CHARS; i++) {
+        assert(charToIndex(indexToChar(i)) == i);
+        const QString text(indexToChar(i));
         const auto rect = metrics.tightBoundingRect(text);
         maxTextHeight = std::max(maxTextHeight, rect.height());
-        totalTextWidth += metrics.horizontalAdvance(text) + 6;
+        totalTextWidth += metrics.horizontalAdvance(text) + SPACE + SPACE;
     }
 
     totalTextWidth = std::ceil(totalTextWidth);
 
     QImage image(static_cast<int>(totalTextWidth * devicePixelRatio),
-            static_cast<int>(std::ceil(maxTextHeight + 6) * devicePixelRatio),
+            static_cast<int>(std::ceil(maxTextHeight + SPACE + SPACE) * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(Qt::transparent);
@@ -75,12 +91,12 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
     painter.setPen(pen);
     painter.setFont(font);
     qreal x = 0;
-    for (int i = 0; i < 12; i++) {
-        const QString text(str[i]);
+    for (int i = 0; i < NUM_CHARS; i++) {
+        const QString text(indexToChar(i));
         QPainterPath path;
-        path.addText(QPointF(x + 3, maxTextHeight + 3), font, text);
+        path.addText(QPointF(x + SPACE, maxTextHeight + SPACE), font, text);
         painter.drawPath(path);
-        x += metrics.horizontalAdvance(text) + 6;
+        x += metrics.horizontalAdvance(text) + SPACE + SPACE;
     }
     painter.end();
 
@@ -104,14 +120,15 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
     painter.setFont(font);
 
     x = 0;
-    for (int i = 0; i < 12; i++) {
-        const QString text(str[i]);
-        painter.drawText(QPointF(x + 3, maxTextHeight + 3), text);
+    for (int i = 0; i < NUM_CHARS; i++) {
+        const QString text(indexToChar(i));
+        painter.drawText(QPointF(x + SPACE, maxTextHeight + SPACE), text);
+        // position and width of character at index i in the texture
         m_offset[i] = static_cast<float>(x / totalTextWidth);
-        m_width[i] = static_cast<float>(metrics.horizontalAdvance(text) + 6);
-        x += metrics.horizontalAdvance(text) + 6;
+        m_width[i] = static_cast<float>(metrics.horizontalAdvance(text) + SPACE + SPACE);
+        x += metrics.horizontalAdvance(text) + SPACE + SPACE;
     }
-    m_offset[12] = 1.f;
+    m_offset[NUM_CHARS] = 1.f;
 
     painter.end();
 
@@ -125,6 +142,7 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float devicePixelRatio) {
     const int n = s.length();
     const float x0 = x;
+    const float dx = static_cast<float>(-(SPACE + SPACE) + KERNING);
 
     VertexData posVertices;
     VertexData texVertices;
@@ -132,15 +150,18 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
     posVertices.reserve(n * 6); // two triangles per character
     texVertices.reserve(n * 6);
 
-    for (int i = 0; i < n; i++) {
-        int index = charToIndex(s[i].cell());
+    const auto byteArray = s.toUtf8();
+
+    for (const auto c : s.toUtf8()) {
+        // add vertices for the rectangles in the texture corresponding with each char in QString s
+        int index = charToIndex(c);
 
         texVertices.addRectangle(m_offset[index], 0.f, m_offset[index + 1], 1.f);
         posVertices.addRectangle(x,
                 y,
                 x + m_width[index],
                 y + height() / devicePixelRatio);
-        x += m_width[index] - 5.f;
+        x += m_width[index] + dx;
     }
 
     m_shader.bind();
