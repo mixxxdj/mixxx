@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-15" timestamp="1713205801">
+    <release version="2.4.1" type="development" date="2024-04-15" timestamp="1713206885">
       <description>
  <p>
   Controller Mappings
@@ -155,19 +155,16 @@
    #12884
   </li>
   <li>
-   History: Show track count and duration in sidebar
+   Library sidebar: show track count and duration of History playlists
    #12811
    #13020
    #13019
    #12788
-  </li>
-  <li>
-   Library sidebar: fix History label update
-   #12882
    #12880
+   #12882
   </li>
   <li>
-   Library: allow adding new dirs while we have missing watched dir(s)
+   Library: allow adding new directories while watched directories are missing
    #12937
    #10481
   </li>

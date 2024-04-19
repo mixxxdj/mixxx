@@ -28,13 +28,14 @@
 
 * Remove unnecessary unpolish operation of the style, before polish the new style [#12445](https://github.com/mixxxdj/mixxx/pull/12445)
 * Developer Tools: Initially sort controls by group name, ascending [#12884](https://github.com/mixxxdj/mixxx/pull/12884)
-* History: Show track count and duration in sidebar
+* Library sidebar: show track count and duration of History playlists
   [#12811](https://github.com/mixxxdj/mixxx/pull/12811)
   [#13020](https://github.com/mixxxdj/mixxx/pull/13020)
   [#13019](https://github.com/mixxxdj/mixxx/issues/13019)
   [#12788](https://github.com/mixxxdj/mixxx/issues/12788)
-* Library sidebar: fix History label update [#12882](https://github.com/mixxxdj/mixxx/pull/12882) [#12880](https://github.com/mixxxdj/mixxx/issues/12880)
-* Library: allow adding new dirs while we have missing watched dir(s)
+  [#12880](https://github.com/mixxxdj/mixxx/issues/12880)
+  [#12882](https://github.com/mixxxdj/mixxx/pull/12882)
+* Library: allow adding new directories while watched directories are missing
   [#12937](https://github.com/mixxxdj/mixxx/pull/12937)
   [#10481](https://github.com/mixxxdj/mixxx/issues/10481)
 * Computer feature: update removable devices on Linux [#12893](https://github.com/mixxxdj/mixxx/pull/12893) [#12891](https://github.com/mixxxdj/mixxx/issues/12891)
