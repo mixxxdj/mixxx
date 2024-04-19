@@ -33,6 +33,7 @@ QString SoundSource::getTypeFromUrl(const QUrl& url) {
 //static
 QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     const QString fileSuffix = fileInfo.suffix().toLower().trimmed();
+    const QString normalisedFilename = fileInfo.fileName().toLower().trimmed();
 
     if (fileSuffix == QLatin1String("opus")) {
         // Bypass the insufficient mime type lookup from content for opus files
@@ -52,13 +53,17 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
         // https://mixxx.zulipchat.com/#narrow/stream/109171-development/topic/mimetype.20sometimes.20wrong
         return fileSuffix;
     }
-    if (fileInfo.fileName().toLower().trimmed().endsWith(QLatin1String(".stem.mp4"))) {
+    if (normalisedFilename.endsWith(QLatin1String(".stem.mp4"))) {
         // STEM suffix extends the ".mp4" suffix. This is because stem files are
         // meant to fall back to MP4 decoder, in case a player doesn't have the
         // capability to extract the different stem track. However, we need to
         // detect that early as the file natively looks like a traditional MP4
         // with multiple tracks (audio and video)
         return QLatin1String("stem.mp4");
+    }
+    if (normalisedFilename.endsWith(QLatin1String(".stem.m4a"))) {
+        // STEM suffix may also extends the ".m4a" suffix for the same reason as above
+        return QLatin1String("stem.m4a");
     }
 
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(

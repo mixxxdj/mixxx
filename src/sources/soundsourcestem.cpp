@@ -34,7 +34,7 @@ const Logger kLogger("SoundSourceSTEM");
 const QString SoundSourceProviderSTEM::kDisplayName = QStringLiteral("STEM with FFmpeg");
 
 QStringList SoundSourceProviderSTEM::getSupportedFileTypes() const {
-    return {"stem.mp4"};
+    return {"stem.mp4", "stem.m4a"};
 }
 
 SoundSourceProviderPriority SoundSourceProviderSTEM::getPriorityHint(

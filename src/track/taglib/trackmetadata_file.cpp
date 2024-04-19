@@ -56,7 +56,8 @@ FileType getFileTypeFromFileName(
     }
     if ((QStringLiteral("m4a") == fileSuffix) ||
             (QStringLiteral("m4v") == fileSuffix) ||
-            normalisedFileName.endsWith("stem.mp4")) {
+            normalisedFileName.endsWith("stem.mp4") ||
+            normalisedFileName.endsWith("stem.m4a")) {
         return FileType::MP4;
     }
     if (QStringLiteral("flac") == fileSuffix) {

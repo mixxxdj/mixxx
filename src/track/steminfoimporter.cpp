@@ -18,7 +18,7 @@ namespace {
 
 const mixxx::Logger kLogger("StemInfoImporter");
 constexpr int kSupportedStemVersion = 1;
-const QString kStemFileExtension = QStringLiteral(".stem.mp4");
+const QStringList kStemFileExtensions = {".stem.mp4", ".stem.m4a"};
 
 const uint32_t kAtomHeaderSize = 8; // 4 bytes (unsigned integer) + 4 char
 const uint32_t kStemManifestAtomPath[] = {
@@ -62,7 +62,12 @@ uint32_t seekTillAtom(QIODevice& reader,
 // static
 bool StemInfoImporter::isStemFile(
         const QString& fileName) {
-    return fileName.endsWith(kStemFileExtension);
+    for (const QString& ext : kStemFileExtensions) {
+        if (fileName.endsWith(ext)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 QList<StemInfo> StemInfoImporter::importStemInfos(

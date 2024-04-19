@@ -58,6 +58,7 @@ class SoundSourceProxyTest : public MixxxTest, SoundSourceProviderRegistration {
                 << "-vbr.mp3"
 #ifdef __STEM__
                 << ".stem.mp4"
+                << ".stem.m4a"
 #endif
                 << ".ogg"
                 << ".opus"
@@ -813,6 +814,7 @@ TEST_F(SoundSourceProxyTest, firstSoundTest) {
             {QStringLiteral("cover-test.ogg"), 1166},
 #ifdef __STEM__
             {QStringLiteral("cover-test.stem.mp4"), 1166},
+            {QStringLiteral("cover-test.stem.m4a"), 1166},
 #endif
             {QStringLiteral("cover-test.opus"), 1268},
             {QStringLiteral("cover-test.wav"), 1166},
@@ -1063,6 +1065,7 @@ TEST_F(SoundSourceProxyTest, fileTypeWithCorrespondingSuffix) {
         QStringLiteral("stm"),
 #ifdef __STEM__
         QStringLiteral("stem.mp4"),
+        QStringLiteral("stem.m4a"),
 #endif
         QStringLiteral("wav"),
         QStringLiteral("wma"),
