@@ -108,6 +108,29 @@ ControlObjectScript* ControllerScriptInterfaceLegacy::getControlObjectScript(
     return coScript;
 }
 
+QJSValue ControllerScriptInterfaceLegacy::getSetting(const QString& name) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy) {
+        return QJSValue::UndefinedValue;
+    }
+    if (name.isEmpty()) {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("getSetting called with empty name "
+                               "string, returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
+
+    const auto it = m_pScriptEngineLegacy->m_settings.constFind(name);
+    if (it != m_pScriptEngineLegacy->m_settings.constEnd()) {
+        return it.value();
+    } else {
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral("Unknown controllerSetting (%1) returning undefined")
+                        .arg(name));
+        return QJSValue::UndefinedValue;
+    }
+}
+
 double ControllerScriptInterfaceLegacy::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
@@ -510,7 +533,7 @@ int ControllerScriptInterfaceLegacy::beginTimer(
 void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
-                "Tried to kill Timer \"%1\" that does not exists")
+                "Tried to kill Timer \"%1\" that does not exist")
                                                        .arg(timerId));
         return;
     }

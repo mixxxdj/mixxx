@@ -117,7 +117,15 @@ DlgAbout::DlgAbout()
             << "Milkii Brewster"
             << "djantti"
             << "Eugene Erokhin"
-            << "Ben Duval";
+            << "Ben Duval"
+            << "Nicolau Leal Werneck"
+            << "David Guglielmi"
+            << "Chris H. Meyer"
+            << "Daniel Fernandes"
+            << "Gr&eacute;goire Locqueville"
+            << "grizeldi"
+            << "codingspiderfox"
+            << "Ashnidh Khandelwal";
 
     QStringList specialThanks;
     specialThanks
@@ -299,7 +307,6 @@ DlgAbout::DlgAbout()
             << "Russ Mannex"
             << "Brendan Austin"
             << "Lorenz Drescher"
-            << "David Guglielmi"
             << "James Atwill"
             << "Alex Barker"
             << "Jean Claveau"

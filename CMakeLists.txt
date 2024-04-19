@@ -731,10 +731,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
   src/controllers/controllermappinginfo.cpp
+  src/controllers/legacycontrollersettings.cpp
+  src/controllers/legacycontrollersettingslayout.cpp
   src/controllers/controllermappinginfoenumerator.cpp
   src/controllers/controllermappingtablemodel.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
+  src/controllers/legacycontrollermapping.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -1504,7 +1508,7 @@ if(QOPENGL)
     src/shaders/textureshader.cpp
     src/shaders/unicolorshader.cpp
     src/shaders/vinylqualityshader.cpp
-    src/util/texture.cpp
+    src/util/opengltexture2d.cpp
     src/waveform/renderers/allshader/matrixforwidgetgeometry.cpp
     src/waveform/renderers/allshader/waveformrenderbackground.cpp
     src/waveform/renderers/allshader/waveformrenderbeat.cpp
@@ -1590,6 +1594,21 @@ if(APPLE)
       target_link_libraries(mixxx-lib PRIVATE "-weak_framework iTunesLibrary")
       target_compile_definitions(mixxx-lib PUBLIC __MACOS_ITUNES_LIBRARY__)
     endif()
+  endif()
+
+  option(AU_EFFECTS "Audio Unit (AU) effects integration" ON)
+  if(AU_EFFECTS)
+    target_sources(mixxx-lib PRIVATE
+      src/effects/backends/audiounit/audiounitbackend.mm
+      src/effects/backends/audiounit/audiounitmanager.mm
+      src/effects/backends/audiounit/audiouniteffectprocessor.mm
+      src/effects/backends/audiounit/audiounitmanifest.mm
+    )
+    target_link_libraries(mixxx-lib PRIVATE
+      "-weak_framework AudioToolbox"
+      "-weak_framework AVFAudio"
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __AU_EFFECTS__)
   endif()
 endif()
 
@@ -2070,6 +2089,8 @@ add_executable(mixxx-test
   src/test/colorpalette_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_mapping_validation_test.cpp
+  src/test/controller_mapping_settings_test.cpp
+  src/test/controllers/controller_columnid_regression_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/controlobjectaliastest.cpp
@@ -2594,6 +2615,14 @@ if(IOS)
   target_link_libraries(mixxx-lib PRIVATE "-framework OpenGLES")
   target_compile_definitions(mixxx-lib PUBLIC QT_OPENGL_ES_2)
 else()
+  if(APPLE)
+    # Prefer the system-provided OpenGL framework on macOS to avoid accidentally
+    # linking some other implementation, e.g. /usr/X11R6/lib/libGL.dylib if the
+    # user has XQuartz installed, due to vcpkg setting CMAKE_FIND_FRAMEWORK to
+    # LAST (see https://cmake.org/cmake/help/latest/variable/CMAKE_FIND_FRAMEWORK.html)
+    set(_previous_find_framework ${CMAKE_FIND_FRAMEWORK})
+    set(CMAKE_FIND_FRAMEWORK FIRST)
+  endif()
   set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
   if(EMSCRIPTEN)
@@ -2606,6 +2635,10 @@ else()
     target_link_options(mixxx-lib PUBLIC -sMIN_WEBGL_VERSION=2 -sMAX_WEBGL_VERSION=2 -sFULL_ES2=1)
   else()
     target_link_libraries(mixxx-lib PRIVATE OpenGL::GL)
+  endif()
+  if(APPLE)
+    # Restore the previous CMAKE_FIND_FRAMEWORK value
+    set(CMAKE_FIND_FRAMEWORK ${_previous_find_framework})
   endif()
 endif()
 
@@ -3243,11 +3276,7 @@ target_link_libraries(mixxx-lib PRIVATE SoundTouch::SoundTouch)
 # TagLib
 find_package(TagLib 1.11 REQUIRED)
 if (NOT TagLib_VERSION VERSION_LESS 2.0.0)
-    message(FATAL_ERROR "Installed Taglib ${TagLib_VERSION} is not supported. Use Version >= 1.11 and < 2.0 and its development headers.")
-    # Dear package maintainer: Do not patch away this fatal error
-    # using taglib 2.0.0 will put user data at risk!!
-    # Mixxx is a complex application that needs to be adapted and tested thoroughly
-    # https://github.com/mixxxdj/mixxx/issues/12708
+  message(WARNING "Installed Taglib ${TagLib_VERSION} is not supported and might lead to data loss (https://github.com/mixxxdj/mixxx/issues/12708). Use version >= 1.11 and < 2.0 instead.")
 endif()
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if (QML)

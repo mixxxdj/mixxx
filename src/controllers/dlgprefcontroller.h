@@ -81,7 +81,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
-    QString mappingPathFromIndex(int index) const;
+    QString mappingFilePathFromIndex(int index) const;
     QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     bool saveMapping();

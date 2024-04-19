@@ -35,6 +35,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString doubleClick = tr("Double-click");
+    QString selectedClick = tr("Select and click: Show inline value editor");
     QString scrollWheel = tr("Scroll-wheel");
     QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
@@ -648,9 +649,14 @@ void Tooltips::addStandardTooltips() {
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
                              tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is a loop cue, toggles the loop and jumps to "
+                        "if the loop is behind the play position.")
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
                   << quantizeSnap
+                  << tr("If the play position is inside an active loop, "
+                        "stores the loop as loop cue.")
+                  << " " // add linebreak, '\n' would result in two linebreaks
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
                                 "labels and colors."))
@@ -663,6 +669,10 @@ void Tooltips::addStandardTooltips() {
     add("toggle_recording")
             << tr("Record Mix")
             << tr("Toggle mix recording.");
+
+    add("expand_samplers")
+            << tr("Expand/Collapse Samplers")
+            << tr("Toggle expanded samplers view.");
 
     // Status displays and toggle buttons
     add("recording_duration")
@@ -810,7 +820,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_title")
             << tr("Track Title")
@@ -819,7 +830,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_album")
             << tr("Track Album")
@@ -828,7 +840,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_key")
             //: The musical key of a track
@@ -852,7 +865,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("time")
             << tr("Clock")
