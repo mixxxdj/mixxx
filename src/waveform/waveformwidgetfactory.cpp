@@ -542,6 +542,24 @@ bool WaveformWidgetFactory::setWidgetType(
     return isAcceptable;
 }
 
+bool WaveformWidgetFactory::widgetTypeSupportsUntilNextMarker() const {
+    switch (m_configType) {
+    case WaveformWidgetType::AllShaderRGBWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderLRRGBWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderFilteredWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderSimpleWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderHSVWaveform:
+        return true;
+    default:
+        break;
+    }
+    return false;
+}
+
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
     int empty = findHandleIndexFromType(WaveformWidgetType::EmptyWaveform);
     int desired = findHandleIndexFromType(m_configType);

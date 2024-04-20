@@ -176,6 +176,8 @@ void DlgPrefWaveform::slotUpdate() {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
+    updateEnableUntilNextMarker();
+
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
     endOfTrackWarningTimeSpinBox->setValue(factory->getEndOfTrackWarningTime());
@@ -282,6 +284,16 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     }
     int handleIndex = waveformTypeComboBox->itemData(index).toInt();
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
+
+    updateEnableUntilNextMarker();
+}
+
+void DlgPrefWaveform::updateEnableUntilNextMarker() {
+    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilNextMarker();
+    untilNextMarkerAlignComboBox->setEnabled(enabled);
+    untilNextMarkerShowComboBox->setEnabled(enabled);
+    untilNextMarkerSizeSpinBox->setEnabled(enabled);
+    requiresGLSLLabel->setVisible(!enabled);
 }
 
 void DlgPrefWaveform::slotSetWaveformOverviewType(int index) {

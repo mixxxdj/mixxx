@@ -105,6 +105,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool widgetTypeSupportsUntilNextMarker() const;
 
     void setUntilNextMarkerShow(UntilNextMarkerShow value);
     void setUntilNextMarkerAlign(Qt::Alignment align);

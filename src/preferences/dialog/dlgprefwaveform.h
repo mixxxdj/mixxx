@@ -48,6 +48,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
+    void updateEnableUntilNextMarker();
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;
