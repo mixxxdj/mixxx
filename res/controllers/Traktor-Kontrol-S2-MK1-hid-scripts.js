@@ -600,7 +600,7 @@ class PadButton {
     }
     outputHotcueCallback() {
         let color;
-        const status = engine.getValue(this.deck.channel, "hotcue_" + this.number + "_status");
+        const status = engine.getValue(this.deck.channel, `hotcue_${  this.number  }_status`);
         if (status === 1 || status === 2) {
             color = {green: 0, blue: 0x1F};
         } else {
@@ -652,7 +652,7 @@ class PadButton {
 
         if (padMode === padModes.hotcue) {
             this.connections.push(
-                engine.makeConnection(this.deck.channel, "hotcue_" + this.number + "_status", this.outputHotcueCallback.bind(this)));
+                engine.makeConnection(this.deck.channel, `hotcue_${  this.number  }_status`, this.outputHotcueCallback.bind(this)));
         } else if (padMode === padModes.introOutro) {
             this.connections.push(engine.makeConnection(
                 this.deck.channel, introOutroKeys[this.number-1] + "_enabled", this.outputIntroOutroCallback.bind(this)));
