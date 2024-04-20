@@ -1,6 +1,7 @@
 #include "library/tabledelegates/stardelegate.h"
 
 #include <QTableView>
+#include <QTimer>
 
 #include "library/starrating.h"
 #include "library/tabledelegates/stareditor.h"
@@ -166,6 +167,19 @@ void StarDelegate::closeCurrentPersistentRatingEditor(bool rememberForRestore) {
 void StarDelegate::restorePersistentRatingEditor(const QModelIndex& index) {
     if (m_persistentEditorState == PersistentEditor_ShouldRestore &&
             index.isValid() && m_currentEditedCellIndex == index) {
+        // Avoid race conditions by deferring the restore until
+        // we have returned to the event loop, and the closing of
+        // the current editor has been finished. Otherwise,
+        // the internal state of QAbstractItemView may become
+        // inconsistent.
+        m_persistentEditorState = PersistentEditor_InDeferredRestore;
+        QTimer::singleShot(0, this, &StarDelegate::restorePersistentRatingEditorNow);
+    }
+}
+
+void StarDelegate::restorePersistentRatingEditorNow() {
+    if (m_persistentEditorState == PersistentEditor_InDeferredRestore &&
+            m_currentEditedCellIndex.isValid()) {
         openPersistentRatingEditor(m_currentEditedCellIndex);
     }
 }
