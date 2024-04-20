@@ -210,11 +210,34 @@ void allshader::WaveformRenderMark::paintGL() {
     double nextMarkPosition = std::numeric_limits<double>::max();
 
     for (const auto& pMark : std::as_const(m_marks)) {
+        if (!pMark->isValid()) {
+            continue;
+        }
+
+        const double samplePosition = pMark->getSamplePosition();
+
+        if (samplePosition == Cue::kNoPosition) {
+            continue;
+        }
+
         QOpenGLTexture* pTexture =
                 static_cast<TextureGraphics*>(pMark->m_pGraphics.get())
                         ->texture();
 
-        const double samplePosition = pMark->getSamplePosition();
+        const float currentMarkPoint =
+                std::round(
+                        static_cast<float>(
+                                m_waveformRenderer
+                                        ->transformSamplePositionInRendererWorld(
+                                                samplePosition)) *
+                        devicePixelRatio) /
+                devicePixelRatio;
+        if (pMark->isShowUntilNext() &&
+                samplePosition >= playPosition + 1.0 &&
+                samplePosition < nextMarkPosition) {
+            nextMarkPosition = samplePosition;
+        }
+        const double sampleEndPosition = pMark->getSampleEndPosition();
 
         if (samplePosition != Cue::kNoPosition) {
             const float currentMarkPoint =
@@ -231,12 +254,6 @@ void allshader::WaveformRenderMark::paintGL() {
                 nextMarkPosition = samplePosition;
             }
             const double sampleEndPosition = pMark->getSampleEndPosition();
-
-            // Pixmaps are expected to have the mark stroke at the center,
-            // and preferably have an odd width in order to have the stroke
-            // exactly at the sample position.
-            const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
-            const float drawOffset = currentMarkPoint - markHalfWidth;
 
             bool visible = false;
             // Check if the current point needs to be displayed.
