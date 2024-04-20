@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QAbstractItemView>
+
 #include "library/tabledelegates/tableitemdelegate.h"
 
 class StarDelegate : public TableItemDelegate {
@@ -35,6 +37,8 @@ class StarDelegate : public TableItemDelegate {
     void cursorNotOverAnyCell();
 
   private:
+    void openPersistentRatingEditor(const QModelIndex& index);
+    void closeCurrentPersistentRatingEditor();
     QPersistentModelIndex m_currentEditedCellIndex;
-    bool m_isOneCellInEditMode;
+    bool m_isPersistentEditorOpen;
 };

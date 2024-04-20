@@ -10,7 +10,7 @@
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
-          m_isOneCellInEditMode(false) {
+          m_isPersistentEditorOpen(false) {
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
     connect(pTableView, &QTableView::viewportEntered, this, &StarDelegate::cursorNotOverAnyCell);
 
@@ -86,25 +86,33 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     // QTableView but the code should only be executed on a column with a
     // StarRating.
     if (index.data().canConvert<StarRating>()) {
-        if (m_isOneCellInEditMode) {
-            // Don't close other editors when hovering the stars cell!
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        }
-        m_pTableView->openPersistentEditor(index);
-        m_isOneCellInEditMode = true;
-        m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) {
-        m_isOneCellInEditMode = false;
-        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        m_currentEditedCellIndex = QPersistentModelIndex();
+        openPersistentRatingEditor(index);
+    } else {
+        closeCurrentPersistentRatingEditor();
     }
 }
 
 void StarDelegate::cursorNotOverAnyCell() {
     // Invoked when the mouse cursor is not over any specific cell,
     // or when the mouse cursor has left the table area
-    if (m_isOneCellInEditMode) {
-        m_isOneCellInEditMode = false;
+    closeCurrentPersistentRatingEditor();
+}
+
+void StarDelegate::openPersistentRatingEditor(const QModelIndex& index) {
+    // Close the previously open persistent rating editor
+    if (m_isPersistentEditorOpen) {
+        // Don't close other editors when hovering the stars cell!
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+    }
+
+    m_pTableView->openPersistentEditor(index);
+    m_isPersistentEditorOpen = true;
+    m_currentEditedCellIndex = index;
+}
+
+void StarDelegate::closeCurrentPersistentRatingEditor() {
+    if (m_isPersistentEditorOpen) {
+        m_isPersistentEditorOpen = false;
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QPersistentModelIndex();
     }
