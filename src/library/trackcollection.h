@@ -132,6 +132,9 @@ class TrackCollection : public QObject,
     QList<TrackId> resolveTrackIds(
             const QList<mixxx::FileInfo>& trackFiles,
             TrackDAO::ResolveTrackIdFlags flags);
+    QList<TrackId> resolveTrackIds(
+            const QList<QUrl>& urls,
+            TrackDAO::ResolveTrackIdFlags flags);
     QList<TrackId> resolveTrackIdsFromUrls(
             const QList<QUrl>& urls,
             bool addMissing);

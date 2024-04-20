@@ -214,6 +214,18 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
 }
 
 QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<QUrl>& urls,
+        TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
+            urls,
+            flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
+    return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIds(
         const QList<mixxx::FileInfo>& trackFiles,
         TrackDAO::ResolveTrackIdFlags flags) {
     QList<TrackId> trackIds = m_trackDao.resolveTrackIds(
@@ -228,8 +240,7 @@ QList<TrackId> TrackCollection::resolveTrackIds(
 QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
         const QList<QUrl>& urls,
         bool addMissing) {
-    QList<mixxx::FileInfo> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
-    if (files.isEmpty()) {
+    if (urls.isEmpty()) {
         return QList<TrackId>();
     }
 
@@ -238,7 +249,7 @@ QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
     if (addMissing) {
         flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
     }
-    return resolveTrackIds(files, flags);
+    return resolveTrackIds(urls, flags);
 }
 
 QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(

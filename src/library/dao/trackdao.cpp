@@ -164,11 +164,34 @@ TrackId TrackDAO::getTrackIdByLocation(const QString& location) const {
 }
 
 QList<TrackId> TrackDAO::resolveTrackIds(
+        const QList<QUrl>& urls,
+        ResolveTrackIdFlags flags) {
+    QStringList pathList;
+    pathList.reserve(urls.size());
+    for (const auto& url : urls) {
+        pathList << "(" + SqlStringFormatter::format(m_database, url.toLocalFile()) + ")";
+    }
+
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
         const QList<mixxx::FileInfo>& fileInfos,
         ResolveTrackIdFlags flags) {
-    QList<TrackId> trackIds;
-    trackIds.reserve(fileInfos.size());
+    QStringList pathList;
+    pathList.reserve(fileInfos.size());
+    for (const auto& fileInfo : fileInfos) {
+        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
+    }
 
+    return resolveTrackIds(pathList, flags);
+}
+
+QList<TrackId> TrackDAO::resolveTrackIds(
+        const QStringList& pathList,
+        ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds;
+    trackIds.reserve(pathList.size());
     // Create a temporary database of the paths of all the imported tracks.
     QSqlQuery query(m_database);
     query.prepare(
@@ -178,12 +201,6 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         LOG_FAILED_QUERY(query);
         DEBUG_ASSERT(!"Failed query");
         return trackIds;
-    }
-
-    QStringList pathList;
-    pathList.reserve(fileInfos.size());
-    for (const auto& fileInfo : fileInfos) {
-        pathList << "(" + SqlStringFormatter::format(m_database, fileInfo.location()) + ")";
     }
 
     // Add all the track paths temporary to this database.
@@ -238,12 +255,12 @@ QList<TrackId> TrackDAO::resolveTrackIds(
         while (query.next()) {
             trackIds.append(TrackId(query.value(idColumn)));
         }
-        DEBUG_ASSERT(trackIds.size() <= fileInfos.size());
-        if (trackIds.size() < fileInfos.size()) {
+        DEBUG_ASSERT(trackIds.size() <= pathList.size());
+        if (trackIds.size() < pathList.size()) {
             qDebug() << "TrackDAO::getTrackIds(): Found only"
                      << trackIds.size()
                      << "of"
-                     << fileInfos.size()
+                     << pathList.size()
                      << "tracks in library";
         }
     } else {
