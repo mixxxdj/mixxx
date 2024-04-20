@@ -1041,8 +1041,11 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
         setupConnections(child, viewer->stemControlWidget());
         QDomElement stem = child.firstChildElement("Stem");
         for (int i = 0; i < kMaxSupportedStem; i++) {
+            QString fxGroup = group.chopped(1) + QStringLiteral("Stem") +
+                    QString::number(i + 1) + ']';
             m_pContext->setVariable("StemGroup", group);
             m_pContext->setVariable("StemIdx", QString::number(i + 1));
+            m_pContext->setVariable("StemFxGroup", fxGroup);
             auto widget = parseWidgetGroup(stem);
             setupSize(stem, widget);
             viewer->stemControlWidget()->addControl(widget);
