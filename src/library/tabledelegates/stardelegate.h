@@ -32,6 +32,7 @@ class StarDelegate : public TableItemDelegate {
   private slots:
     void commitAndCloseEditor();
     void cellEntered(const QModelIndex& index);
+    void cursorNotOverAnyCell();
 
   private:
     QPersistentModelIndex m_currentEditedCellIndex;

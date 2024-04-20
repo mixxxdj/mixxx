@@ -6,11 +6,21 @@
 #include "library/tabledelegates/stareditor.h"
 #include "library/tabledelegates/tableitemdelegate.h"
 #include "moc_stardelegate.cpp"
+#include "widget/wtracktableview.h"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),
           m_isOneCellInEditMode(false) {
     connect(pTableView, &QTableView::entered, this, &StarDelegate::cellEntered);
+    connect(pTableView, &QTableView::viewportEntered, this, &StarDelegate::cursorNotOverAnyCell);
+
+    auto pTrackTableView = qobject_cast<WTrackTableView*>(pTableView);
+    if (pTrackTableView) {
+        connect(pTrackTableView,
+                &WTrackTableView::viewportLeaving,
+                this,
+                &StarDelegate::cursorNotOverAnyCell);
+    }
 }
 
 void StarDelegate::paintItem(
@@ -86,6 +96,16 @@ void StarDelegate::cellEntered(const QModelIndex& index) {
     } else if (m_isOneCellInEditMode) {
         m_isOneCellInEditMode = false;
         m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
-        m_currentEditedCellIndex = QModelIndex();
+        m_currentEditedCellIndex = QPersistentModelIndex();
+    }
+}
+
+void StarDelegate::cursorNotOverAnyCell() {
+    // Invoked when the mouse cursor is not over any specific cell,
+    // or when the mouse cursor has left the table area
+    if (m_isOneCellInEditMode) {
+        m_isOneCellInEditMode = false;
+        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        m_currentEditedCellIndex = QPersistentModelIndex();
     }
 }
