@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "engine/bufferscalers/enginebufferscale.h"
+#include "engine/bufferscalers/rubberbandwrapper.h"
 #include "util/samplebuffer.h"
 
 class ReadAheadManager;
@@ -62,7 +63,7 @@ class EngineBufferScaleRubberBand final : public EngineBufferScale {
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;
 
-    std::unique_ptr<RubberBand::RubberBandStretcher> m_pRubberBand;
+    RubberBandWrapper m_rubberBand;
 
     /// The audio buffers samples used to send audio to Rubber Band and to
     /// receive processed audio from Rubber Band. This is needed because Mixxx

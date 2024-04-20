@@ -3245,6 +3245,7 @@ if(RUBBERBAND)
   target_sources(mixxx-lib PRIVATE
     src/effects/backends/builtin/pitchshifteffect.cpp
     src/engine/bufferscalers/enginebufferscalerubberband.cpp
+    src/engine/bufferscalers/rubberbandwrapper.cpp
   )
 endif()
 
