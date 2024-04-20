@@ -150,9 +150,11 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
     posVertices.reserve(n * 6); // two triangles per character
     texVertices.reserve(n * 6);
 
-    for (const auto c : s.toUtf8()) {
+    const QByteArray byteArray = s.toUtf8();
+
+    for (qsizetype i = 0; i < byteArray.size(); i++) {
         // add vertices for the rectangles in the texture corresponding with each char in QString s
-        int index = charToIndex(c);
+        int index = charToIndex(byteArray[i]);
 
         texVertices.addRectangle(m_offset[index], 0.f, m_offset[index + 1], 1.f);
         posVertices.addRectangle(x,
