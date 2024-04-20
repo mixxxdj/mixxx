@@ -82,14 +82,18 @@ void WTrackProperty::updateLabel() {
     setText("");
 }
 
-void WTrackProperty::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
+void WTrackProperty::mousePressEvent(QMouseEvent* pEvent) {
+    DragAndDropHelper::mousePressed(pEvent);
+}
+
+void WTrackProperty::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_pCurrentTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
 
-void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* pEvent) {
+    Q_UNUSED(pEvent);
     if (!m_pCurrentTrack) {
         return;
     }
@@ -98,21 +102,21 @@ void WTrackProperty::mouseDoubleClickEvent(QMouseEvent* event) {
     m_pTrackMenu->showDlgTrackInfo(m_property);
 }
 
-void WTrackProperty::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WTrackProperty::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WTrackProperty::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WTrackProperty::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
 
-void WTrackProperty::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
+void WTrackProperty::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
     if (m_pCurrentTrack) {
         ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
-        // Create the right-click menu
-        m_pTrackMenu->popup(event->globalPos());
+        // Show the right-click menu
+        m_pTrackMenu->popup(pEvent->globalPos());
     }
 }
 
