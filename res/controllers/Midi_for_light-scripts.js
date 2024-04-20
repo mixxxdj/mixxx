@@ -108,8 +108,10 @@ midi_for_light.shutdown = function(id) { // called when the MIDI device is close
         }
     }
     for (const timer of ["vu_meter_timer", "volumeBeatBlock_timer", "crossfader_change_block_timer", "volumebeat_on_delay_timer"]) {
-        engine.stopTimer(midi_for_light[timer]);
-        midi_for_light[timer] = undefined;
+        if (midi_for_light[timer]) {
+            engine.stopTimer(midi_for_light[timer]);
+            midi_for_light[timer] = undefined;
+        }
     }
 };
 
