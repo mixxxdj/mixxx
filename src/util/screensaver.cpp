@@ -182,7 +182,7 @@ const std::array<Inhibitor, 6> kDBusInhibitors = {
                 {.service = QStringLiteral("org.mate.ScreenSaver"),
                         .object_path = QStringLiteral("/org/mate/ScreenSaver"),
                         .interface = QStringLiteral("org.mate.ScreenSaver")},
-                {.service = QStringLiteral("org.xfce.screenSaver"),
+                {.service = QStringLiteral("org.xfce.ScreenSaver"),
                         .object_path = QStringLiteral("/org/xfce/ScreenSaver"),
                         .interface = QStringLiteral("org.xfce.ScreenSaver")}}};
 
@@ -221,33 +221,8 @@ void ScreenSaverHelper::inhibitInternal() {
         uninhibit();
     }
 
-    // Check if the inhibit portal interface is available
-    QDBusInterface iface(kFreeDesktopPortal.service,
-            kFreeDesktopPortal.object_path,
-            kFreeDesktopPortal.interface,
-            QDBusConnection::sessionBus());
-    if (iface.isValid()) {
-        // Portal API: 8 = idle inhibit
-        QDBusReply<QDBusObjectPath> reply = iface.call("Inhibit",
-                "org.mixxx.Mixxx",
-                static_cast<uint32_t>(8),
-                QVariantMap{{"reason", "Mixxx is running"}});
-        if (reply.isValid()) {
-            s_inhibitor = &kFreeDesktopPortal;
-            s_session_handle = reply.value().path();
-            s_enabled = true;
-            qDebug() << "Idle inhibitor" << kFreeDesktopPortal.interface << "enabled";
-            return;
-        } else {
-            qWarning() << "Inhibit for" << kFreeDesktopPortal.interface << "failed: "
-                       << reply.error().message();
-        }
-    } else {
-        qDebug() << "Interface" << kFreeDesktopPortal.interface << "is not valid";
-    }
-
     for (const Inhibitor& inhibitor : kDBusInhibitors) {
-        // Portal unavailable, try to use standard D-Bus idle inhibit interfaces
+        // Iterate through D-Bus idle inhibitors and select the first available
         QDBusInterface iface(inhibitor.service,
                 inhibitor.object_path,
                 inhibitor.interface,
@@ -269,6 +244,34 @@ void ScreenSaverHelper::inhibitInternal() {
             }
         } else {
             qDebug() << "Interface" << inhibitor.interface << "is not valid";
+        }
+    }
+
+    // No standard D-Bus inhibitors found, so check if we're running inside a
+    // Flatpak sandbox and try to use the portal instead
+    if (std::getenv("container") && std::string(std::getenv("container")) == "flatpak") {
+        QDBusInterface iface(kFreeDesktopPortal.service,
+                kFreeDesktopPortal.object_path,
+                kFreeDesktopPortal.interface,
+                QDBusConnection::sessionBus());
+        if (iface.isValid()) {
+            // Portal API: 8 = idle inhibit
+            QDBusReply<QDBusObjectPath> reply = iface.call("Inhibit",
+                    "",
+                    static_cast<uint32_t>(8),
+                    QVariantMap{{"reason", "Mixxx is running"}});
+            if (reply.isValid()) {
+                s_inhibitor = &kFreeDesktopPortal;
+                s_session_handle = reply.value().path();
+                s_enabled = true;
+                qDebug() << "Idle inhibitor" << kFreeDesktopPortal.interface << "enabled";
+                return;
+            } else {
+                qWarning() << "Inhibit for" << kFreeDesktopPortal.interface << "failed: "
+                           << reply.error().message();
+            }
+        } else {
+            qDebug() << "Interface" << kFreeDesktopPortal.interface << "is not valid";
         }
     }
 
