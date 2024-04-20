@@ -67,6 +67,17 @@ float overlappingMarkerIncrement(const float labelRectHeight, const float breadt
     return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
 }
 
+bool isShowUntilNextPositionControl(const QString& positionControl) {
+    // To identify which markers are included in the beat/time until next marker
+    // display, in addition to the hotcues
+    static const QStringList list{{"cue_point",
+            "intro_start_position",
+            "intro_end_position",
+            "outro_start_position",
+            "outro_end_position"}};
+    return list.contains(positionControl);
+}
+
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
@@ -75,14 +86,21 @@ WaveformMark::WaveformMark(const QString& group,
         int priority,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_linePosition{}, m_breadth{}, m_level{}, m_iPriority(priority), m_iHotCue(hotCue) {
+        : m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
     QString positionControl;
     QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
     if (!positionControl.isEmpty()) {

@@ -225,7 +225,9 @@ void allshader::WaveformRenderMark::paintGL() {
                                                     samplePosition, positionType)) *
                             devicePixelRatio) /
                     devicePixelRatio;
-            if (samplePosition >= playPosition + 1.0 && samplePosition < nextMarkPosition) {
+            if (pMark->isShowUntilNext() &&
+                    samplePosition >= playPosition + 1.0 &&
+                    samplePosition < nextMarkPosition) {
                 nextMarkPosition = samplePosition;
             }
             const double sampleEndPosition = pMark->getSampleEndPosition();
