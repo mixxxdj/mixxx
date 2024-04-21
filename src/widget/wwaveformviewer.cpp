@@ -12,6 +12,9 @@
 #include "widget/wcuemenupopup.h"
 #include "widget/wglwidget.h"
 #ifdef __STEM__
+#include <QGuiApplication>
+
+#include "mixxxmainwindow.h"
 #include "widget/wstemcontrol.h"
 
 namespace {
@@ -57,19 +60,48 @@ WWaveformViewer::WWaveformViewer(
 
 #ifdef __STEM__
     connect(m_stemControlWidget.get(), &WStemControlBox::displayedChanged, this, [this](bool) {
-        if (isVisible() && m_stemControlWidget->shouldShow()) {
-            m_stemControlWidget->show();
-        } else {
-            m_stemControlWidget->hide();
-        }
+        adjustStemControl();
     });
+    // TODO alternative to MixxxMainWindow becoming a singleton
+    // for (QWindow* window: QGuiApplication::allWindows()) {
+    //     if (window->objectName() == "MixxxMainWindowClassWindow") {
+    //         m_mainWindow = window;
+    //         m_mainWindow->installEventFilter(this);
+    //         break;
+    //     }
+    // }
+    m_mainWindow = MixxxMainWindow::instance();
+    if (m_mainWindow) {
+        m_mainWindow->installEventFilter(this);
+    }
 #endif
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setFocusPolicy(Qt::NoFocus);
 }
 
+#ifdef __STEM__
+bool WWaveformViewer::eventFilter(QObject*, QEvent* event) {
+    switch (event->type()) {
+    case QEvent::Move:
+    case QEvent::WindowStateChange:
+    case QEvent::Resize:
+        adjustStemControl();
+        break;
+
+    default:
+        break;
+    }
+    return false;
+}
+#endif
+
 WWaveformViewer::~WWaveformViewer() {
+#ifdef __STEM__
+    if (m_mainWindow) {
+        m_mainWindow->removeEventFilter(this);
+    }
+#endif
     //qDebug() << "~WWaveformViewer";
 }
 
@@ -92,22 +124,23 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 #endif
 }
 
-void WWaveformViewer::resizeEvent(QResizeEvent* event) {
-    Q_UNUSED(event);
-    if (m_waveformWidget) {
-        // Note m_waveformWidget is a WaveformWidgetAbstract,
-        // so this calls the method of WaveformWidgetAbstract,
-        // note of the derived waveform widgets which are also
-        // a QWidget, though that will be called directly.
-        m_waveformWidget->resize(width(), height());
-    }
 #ifdef __STEM__
+void WWaveformViewer::adjustStemControl() {
     m_stemControlWidget->resize(m_stemControlWidget->width(), height());
 
-    if (m_stemControlWidget->height() > height()) {
+    if (m_stemControlWidget->height() > height() ||
+            !m_stemControlWidget->shouldShow() ||
+            (m_mainWindow && !m_mainWindow->isVisible())) {
         m_stemControlWidget->hide();
-    } else if (m_stemControlWidget->shouldShow()) {
+    } else if (m_stemControlWidget->shouldShow() &&
+            (m_mainWindow && m_mainWindow->isVisible())) {
         m_stemControlWidget->show();
+        for (QWindow* window : QGuiApplication::allWindows()) {
+            if (window->objectName() == "DlgPreferencesDlgWindow" && window->isActive()) {
+                window->raise();
+                break;
+            }
+        }
     }
 
     switch (m_stemControlWidgetAlignment) {
@@ -118,6 +151,20 @@ void WWaveformViewer::resizeEvent(QResizeEvent* event) {
         m_stemControlWidget->move(mapToGlobal(QPoint(0, 0)));
         break;
     }
+}
+#endif
+
+void WWaveformViewer::resizeEvent(QResizeEvent* event) {
+    Q_UNUSED(event);
+    if (m_waveformWidget) {
+        // Note m_waveformWidget is a WaveformWidgetAbstract,
+        // so this calls the method of WaveformWidgetAbstract,
+        // note of the derived waveform widgets which are also
+        // a QWidget, though that will be called directly.
+        m_waveformWidget->resize(width(), height());
+    }
+#ifdef __STEM__
+    adjustStemControl();
 #endif
 }
 
@@ -135,7 +182,7 @@ void WWaveformViewer::showEvent(QShowEvent* event) {
 void WWaveformViewer::hideEvent(QHideEvent* event) {
     Q_UNUSED(event);
 #ifdef __STEM__
-    m_stemControlWidget->hide();
+    adjustStemControl();
 #endif
 }
 
@@ -290,11 +337,7 @@ void WWaveformViewer::slotTrackLoaded(TrackPointer track) {
     }
 #ifdef __STEM__
     m_stemControlWidget->slotTrackLoaded(track);
-    if (isVisible() && m_stemControlWidget->shouldShow()) {
-        m_stemControlWidget->show();
-    } else {
-        m_stemControlWidget->hide();
-    }
+    adjustStemControl();
 #endif
 }
 
@@ -310,7 +353,7 @@ void WWaveformViewer::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOld
     }
 #ifdef __STEM__
     m_stemControlWidget->slotTrackLoaded(TrackPointer());
-    m_stemControlWidget->hide();
+    adjustStemControl();
 #endif
 }
 

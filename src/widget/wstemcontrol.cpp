@@ -1,9 +1,11 @@
 #include "widget/wstemcontrol.h"
 
+#include <QCoreApplication>
 #include <QDragEnterEvent>
 #include <QEvent>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMainWindow>
 #include <QPalette>
 #include <QPushButton>
 #include <QStyleOption>
@@ -62,8 +64,12 @@ WStemControlBox::WStemControlBox(
 
     setObjectName("StemControlBox");
 
-    setWindowFlag(Qt::ToolTip, true);
-    setWindowFlag(Qt::FramelessWindowHint, true);
+    setWindowFlag(Qt::Sheet);
+    setWindowFlag(Qt::FramelessWindowHint);
+    setWindowFlag(Qt::NoDropShadowWindowHint);
+    setWindowFlag(Qt::WindowDoesNotAcceptFocus);
+
+    // setWindowFlag(Qt::BypassWindowManagerHint); // Make it fly over?
 
     setAttribute(Qt::WA_OpaquePaintEvent);
     setAttribute(Qt::WA_NoSystemBackground);

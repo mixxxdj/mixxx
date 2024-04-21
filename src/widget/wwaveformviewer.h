@@ -47,6 +47,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     WStemControlBox* stemControlWidget() const {
         return m_stemControlWidget.get();
     }
+
+    bool eventFilter(QObject* object, QEvent* event) override;
 #endif
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
@@ -96,6 +98,9 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     WaveformWidgetAbstract* m_waveformWidget;
 #ifdef __STEM__
     std::unique_ptr<WStemControlBox> m_stemControlWidget;
+    QWidget* m_mainWindow;
+
+    void adjustStemControl();
 #endif
 
     StemControlAlignment m_stemControlWidgetAlignment;
