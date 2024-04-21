@@ -46,21 +46,27 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
     case WWT::AllShaderFilteredWaveform:
     case WWT::AllShaderSimpleWaveform:
     case WWT::AllShaderHSVWaveform:
+    case WWT::AllShaderTexturedFiltered:
+    case WWT::AllShaderTexturedRGB:
+    case WWT::AllShaderTexturedStacked:
     case WWT::Count_WaveformwidgetType:
         return waveformType;
     case WWT::QtSimpleWaveform:
     case WWT::GLSimpleWaveform:
         return WaveformWidgetType::AllShaderSimpleWaveform;
     case WWT::GLFilteredWaveform:
-    case WWT::GLSLFilteredWaveform:
         return WaveformWidgetType::AllShaderFilteredWaveform;
+    case WWT::GLSLFilteredWaveform:
+        return WaveformWidgetType::AllShaderTexturedFiltered;
     case WWT::QtWaveform:
     case WWT::RGBWaveform:
     case WWT::GLRGBWaveform:
-    case WWT::GLSLRGBWaveform:
     case WWT::QtRGBWaveform:
-    case WWT::GLSLRGBStackedWaveform:
         return WWT::AllShaderRGBWaveform;
+    case WWT::GLSLRGBWaveform:
+        return WWT::AllShaderTexturedRGB;
+    case WWT::GLSLRGBStackedWaveform:
+        return WWT::AllShaderTexturedStacked;
     case WWT::HSVWaveform:
     case WWT::QtHSVWaveform:
         return WWT::AllShaderHSVWaveform;
