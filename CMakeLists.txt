@@ -1523,6 +1523,7 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
     src/waveform/renderers/allshader/waveformrendererpreroll.cpp
     src/waveform/renderers/allshader/waveformrendererrgb.cpp
+    src/waveform/renderers/allshader/waveformrenderertextured.cpp
     src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
     src/waveform/renderers/allshader/waveformrenderersimple.cpp
     src/waveform/renderers/allshader/waveformrendermark.cpp
@@ -1533,6 +1534,9 @@ if(QOPENGL)
     src/waveform/widgets/allshader/rgbwaveformwidget.cpp
     src/waveform/widgets/allshader/simplewaveformwidget.cpp
     src/waveform/widgets/allshader/waveformwidget.cpp
+    src/waveform/widgets/allshader/waveformwidgettexturedfiltered.cpp
+    src/waveform/widgets/allshader/waveformwidgettexturedrgb.cpp
+    src/waveform/widgets/allshader/waveformwidgettexturedstacked.cpp
     src/widget/openglwindow.cpp
     src/widget/tooltipqopengl.cpp
     src/widget/wglwidgetqopengl.cpp

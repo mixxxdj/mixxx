@@ -29,6 +29,9 @@
 #include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedfiltered.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedrgb.h"
+#include "waveform/widgets/allshader/waveformwidgettexturedstacked.h"
 #else
 #include "waveform/widgets/qthsvwaveformwidget.h"
 #include "waveform/widgets/qtrgbwaveformwidget.h"
@@ -1018,6 +1021,27 @@ void WaveformWidgetFactory::evaluateWidgets() {
             setWaveformVarsByType.operator()<allshader::HSVWaveformWidget>();
             break;
 #endif
+        case WaveformWidgetType::AllShaderTexturedFiltered:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
+            setWaveformVarsByType.operator()<allshader::WaveformWidgetTexturedFiltered>();
+            break;
+#endif
+        case WaveformWidgetType::AllShaderTexturedRGB:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
+            setWaveformVarsByType.operator()<allshader::WaveformWidgetTexturedRGB>();
+            break;
+#endif
+        case WaveformWidgetType::AllShaderTexturedStacked:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
+            setWaveformVarsByType.operator()<allshader::WaveformWidgetTexturedStacked>();
+            break;
+#endif
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -1113,6 +1137,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::AllShaderHSVWaveform:
             widget = new allshader::HSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::AllShaderTexturedFiltered:
+            widget = new allshader::WaveformWidgetTexturedFiltered(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::AllShaderTexturedRGB:
+            widget = new allshader::WaveformWidgetTexturedRGB(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::AllShaderTexturedStacked:
+            widget = new allshader::WaveformWidgetTexturedStacked(viewer->getGroup(), viewer);
             break;
 #else
         case WaveformWidgetType::QtSimpleWaveform:
@@ -1251,6 +1284,9 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
         } else if (WaveformT::useOpenGl()) {
             extras.push_back(QStringLiteral("GL"));
         }
+    }
+    if (WaveformT::useTextureForWaveform()) {
+        extras.push_back(QStringLiteral("Waveform data texture"));
     }
     QString name = WaveformT::getWaveformWidgetName();
     if (extras.isEmpty()) {

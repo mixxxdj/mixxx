@@ -170,6 +170,13 @@ class WaveformWidgetRenderer {
         return renderer;
     }
 
+    template<class T_Renderer, typename T_Arg>
+    inline T_Renderer* addRenderer(T_Arg arg) {
+        T_Renderer* renderer = new T_Renderer(this, arg);
+        m_rendererStack.push_back(renderer);
+        return renderer;
+    }
+
     void setTrack(TrackPointer track);
     void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
