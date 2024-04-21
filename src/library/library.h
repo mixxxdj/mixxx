@@ -115,6 +115,8 @@ class Library: public QObject {
     void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
+    void slotSaveCurrentViewState() const;
+    void slotRestoreCurrentViewState() const;
 
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);

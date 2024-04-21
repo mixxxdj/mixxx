@@ -109,7 +109,8 @@ class WTrackMenu : public QMenu {
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackMenuVisible(bool visible);
-    void restoreCurrentIndex();
+    void saveCurrentViewState();
+    void restoreCurrentViewStateOrIndex();
 
   private slots:
     // File

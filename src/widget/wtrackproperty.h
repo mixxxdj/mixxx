@@ -25,6 +25,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
   signals:
     void trackDropped(const QString& filename, const QString& group) override;
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
+    void saveCurrentViewState();
+    void restoreCurrentViewState();
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);

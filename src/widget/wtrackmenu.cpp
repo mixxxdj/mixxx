@@ -2179,10 +2179,21 @@ void WTrackMenu::slotRemoveFromDisk() {
     // If the operation was initiated from a deck's track menu
     // we'll first stop the deck and eject the track.
     // TODO(ronso0) Consider querying PlayerManager if any of the tracks is loaded
-    // into a (playing?) deck?
+    // into another (playing?) deck?
+    // Also (rare situation) the track we work on might have been replaced (in the deck)
+    // by another one in the mean time (Auto DJ) and we would unnecessarily stop & eject.
+    // Ideally, there would be a PlayerManager instance that does
+    // stopAndEjectAllPlayersWithTrackLoaded(TrackPointer / TrackId)
+    bool restoreViewState = false;
     if (m_pTrack) {
         ControlObject::set(ConfigKey(m_deckGroup, "stop"), 1.0);
         ControlObject::set(ConfigKey(m_deckGroup, "eject"), 1.0);
+        // Try to keep a usable index for navigation if the track is in the
+        // current track view.
+        if (m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
+            restoreViewState = true;
+            emit saveCurrentViewState();
+        }
     }
 
     // Set up and initiate the track batch operation
@@ -2251,8 +2262,10 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (tracksToKeep.isEmpty()) {
-        // All selected tracks could be processed. Finish!
-        emit restoreCurrentIndex();
+        if (m_pTrackModel || restoreViewState) {
+            // All selected tracks could be processed. Finish!
+            emit restoreCurrentViewStateOrIndex();
+        }
         return;
     }
     // Else show a message with a list of tracks that could not be deleted.
@@ -2299,7 +2312,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
@@ -2448,7 +2461,7 @@ void WTrackMenu::slotRemove() {
         return;
     }
     m_pTrackModel->removeTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotHide() {
@@ -2456,7 +2469,7 @@ void WTrackMenu::slotHide() {
         return;
     }
     m_pTrackModel->hideTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotUnhide() {
@@ -2464,7 +2477,7 @@ void WTrackMenu::slotUnhide() {
         return;
     }
     m_pTrackModel->unhideTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotPurge() {
@@ -2472,7 +2485,7 @@ void WTrackMenu::slotPurge() {
         return;
     }
     m_pTrackModel->purgeTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::clearTrackSelection() {
