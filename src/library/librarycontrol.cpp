@@ -1062,9 +1062,22 @@ void LibraryControl::slotEditItem(double v) {
     if (v <= 0) {
         return;
     }
-    WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
-    if (pTrackTableView) {
-        pTrackTableView->editSelectedItem();
+
+    switch (m_focusedWidget) {
+    case FocusWidget::Sidebar: {
+        m_pSidebarWidget->editSelectedItem();
+        break;
+    }
+    case FocusWidget::TracksTable: {
+        WTrackTableView* pTrackTableView = m_pLibraryWidget->getCurrentTrackTableView();
+        if (pTrackTableView) {
+            pTrackTableView->editSelectedItem();
+        }
+        break;
+    }
+    default: {
+        break;
+    }
     }
 }
 
