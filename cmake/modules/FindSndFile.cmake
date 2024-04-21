@@ -43,6 +43,8 @@ The following cache variables may also be set:
 
 #]=======================================================================]
 
+include(IsStaticLibrary)
+
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
   pkg_check_modules(PC_SndFile QUIET sndfile)
@@ -94,5 +96,24 @@ if(SndFile_FOUND)
         INTERFACE_COMPILE_OPTIONS "${PC_SndFile_CFLAGS_OTHER}"
         INTERFACE_INCLUDE_DIRECTORIES "${SndFile_INCLUDE_DIR}"
     )
+    is_static_library(SndFile_IS_STATIC SndFile::sndfile)
+    if(SndFile_IS_STATIC)
+      find_package(FLAC)
+      if(FLAC_FOUND)
+        set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+          FLAC::FLAC
+        )
+      endif()
+
+      # The mpg123 dependency was introduced in libsndfile 1.1.0
+      if(SndFile_VERSION VERSION_GREATER_EQUAL "1.1.0")
+        find_package(mpg123 CONFIG)
+        if(mpg123_FOUND)
+          set_property(TARGET SndFile::sndfile APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+            MPG123::libmpg123
+          )
+        endif()
+      endif()
+    endif()
   endif()
 endif()
