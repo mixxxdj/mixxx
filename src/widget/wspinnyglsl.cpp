@@ -14,6 +14,21 @@ WSpinnyGLSL::WSpinnyGLSL(
         : WSpinnyBase(parent, group, pConfig, pVCMan, pPlayer) {
 }
 
+WSpinnyGLSL::~WSpinnyGLSL() {
+    cleanupGL();
+}
+
+void WSpinnyGLSL::cleanupGL() {
+    makeCurrentIfNeeded();
+    m_bgTexture.destroy();
+    m_maskTexture.destroy();
+    m_fgTextureScaled.destroy();
+    m_ghostTextureScaled.destroy();
+    m_loadedCoverTextureScaled.destroy();
+    m_qTexture.destroy();
+    doneCurrent();
+}
+
 void WSpinnyGLSL::coverChanged() {
     if (isContextValid()) {
         makeCurrentIfNeeded();

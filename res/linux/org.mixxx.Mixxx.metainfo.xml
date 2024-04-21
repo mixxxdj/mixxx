@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-03-13" timestamp="1710284546">
+    <release version="2.5.0" type="development" date="2024-04-19" timestamp="1713558879">
       <description>
  <p>
   Features
@@ -704,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-03-13" timestamp="1710284546">
+    <release version="2.4.1" type="development" date="2024-04-19" timestamp="1713558879">
       <description>
  <p>
   Controller Mappings
@@ -727,6 +727,20 @@
    Traktor S3: Fix mapping crash on macOS
    #12840
   </li>
+  <li>
+   Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
+   #12969
+  </li>
+  <li>
+   Denon DJ MC7000: Fix redundant argument and migrate to
+   hotcue_x_status
+   #13113
+   #13121
+  </li>
+  <li>
+   Polish fx chain controls
+   #12805
+  </li>
  </ul>
  <p>
   Target Support
@@ -738,6 +752,80 @@
    #12847
    #12822
    #12892
+   #13079
+   #12989
+  </li>
+  <li>
+   CMakeLists: Always prefer OpenGL framework on macOS
+   #13080
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Deere: make sampler rows persist
+   #12928
+  </li>
+  <li>
+   Tango: Remove unneeded waveform Singleton
+   #12938
+  </li>
+  <li>
+   Possible crash in customs skins using parallel waveforms
+   #13043
+   #12580
+  </li>
+  <li>
+   Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
+   #13088
+  </li>
+  <li>
+   Tooltips: update 'hotcue' with saved loop features
+   #12875
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Sidebar: show track count and duration of History playlists
+   #12811
+   #13020
+   #13019
+   #12788
+   #12880
+   #12882
+  </li>
+  <li>
+   Computer feature: update removable devices on Linux
+   #12893
+   #12891
+  </li>
+  <li>
+   Playlists: Prevent removing tracks from locked playlists
+   #12927
+  </li>
+  <li>
+   History feature: Fix removing deleted tracks after export
+   #13016
+   #13000
+  </li>
+  <li>
+   BPM display uses decimal separator of selected locale
+   #13067
+   #13051
+  </li>
+  <li>
+   Fix relink directory when migrate between Linux/macOS and Windows
+   #12878
+  </li>
+  <li>
+   Allow adding new directories while watched directories are missing
+   #12937
+   #10481
   </li>
  </ul>
  <p>
@@ -753,12 +841,28 @@
    #12884
   </li>
   <li>
-   History: Show track count and duration in sidebar
-   #12811
+   Waveforms: Fix scratching crossing loop boundaries
+   #13007
   </li>
   <li>
-   Prevent removing tracks from locked playlists
-   #12927
+   Prohibit un-replace when deck is playing
+   #13023
+   #12906
+  </li>
+  <li>
+   Track Properties dialog: Prevent wiping metadata when applying twice quickly
+   #12965
+   #12963
+  </li>
+  <li>
+   AutoDJ: Fix button state after error message about playing deck 3/4
+   #12976
+   #12975
+  </li>
+  <li>
+   Tagfetcher: Cache fetched covers
+   #12301
+   #11084
   </li>
  </ul>
 </description>

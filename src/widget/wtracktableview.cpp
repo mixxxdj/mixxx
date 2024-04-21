@@ -576,7 +576,6 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         return;
     }
     //qDebug() << "MouseMoveEvent";
-    // Iterate over selected rows and append each item's location url to a list.
 
     if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         // Iterate over selected rows and append each item's location url to a list.
