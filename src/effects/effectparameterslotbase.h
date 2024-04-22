@@ -50,6 +50,10 @@ class EffectParameterSlotBase : public QObject {
 
     virtual void setParameter(double value) = 0;
 
+    virtual double neutralPointOnScale() const {
+        return 0.0;
+    }
+
   signals:
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
