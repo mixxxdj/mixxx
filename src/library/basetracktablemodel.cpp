@@ -489,10 +489,6 @@ QVariant BaseTrackTableModel::rawSiblingValue(
         // FIXME: This should never happen but it does. But why??
         return QVariant();
     }
-    VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
-        // Prevent infinite recursion
-        return QVariant();
-    }
     const auto siblingIndex = index.sibling(index.row(), siblingColumn);
     return rawValue(siblingIndex);
 }
