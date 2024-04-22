@@ -643,6 +643,88 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
      </layout>
     </widget>
    </item>
+   <item row="12" column="0">
+    <widget class="QGroupBox" name="CreateStatusFiles">
+      <property name="title">
+       <string>Create Statusfile for each deck</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+      <layout class="QGridLayout" name="CreateStatusFilesLayout">
+
+        <item row="0" column="0">
+          <widget class="QLabel" name="CreateStatusFilesLabel">
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>            
+            <property name="text">
+              <string>Create Statusfile for each deck</string>
+            </property>
+            <property name="buddy">
+              <cstring>Create Statusfile for each deck</cstring>
+            </property>
+          </widget>
+        </item>
+
+        <item row="0" column="1">
+          <widget class="QCheckBox" name="CreateStatusFilesCheckBox">
+            <property name="toolTip">
+         <string>Statusfile:
+If checked, a Statusfile will be created in map with the custom controllermappings. 
+A statusfile is a javascriptfile that contains
+- Track-Artist
+- Track-Title
+- Time
+The Artist and Title can be used for display on the controller-screen.
+The time-field can be used in case you want to control 4 decks with a 2 deck-
+controller. Mixxx reloads the controller mapping each time something changes.
+When a new track is loaded and statusfiles are written, the decks switch to 1 and 2.
+With the time field you can set the focus on the last manipulated decjk (1-2 and 3-4).
+
+So if you ejected a track in deck 4, the focus can stay on deck 4 to load another track.
+The statusfiles need to be included in the header of the xml-file.
+
+Statusfiles are named:
+Status[ChannelX].js, Status[ChannelY].js ... 
+Status[SamplerX].js, Status[SamplerY].js ...
+
+The contents:
+var TrackDeckX = { 
+Artist : "trackartist",
+Title : "tracktitle",
+Time : "12:52:44",
+};
+
+In the beginning of the controller.js file you can load the contents of the Statusfiles
+in a arrays to use them for displaying.
+
+             </string>			
+            </property>
+          </widget>
+        </item>
+
+        <item row="0" column="2">
+          <spacer name="horizontalSpacerstatusfiles">
+            <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+              </sizepolicy>
+            </property>
+          </spacer>
+        </item>  
+      </layout>
+    </widget>
+   </item>
+
+		
    <item row="2" column="0">
     <spacer name="verticalSpacer2">
      <property name="orientation">

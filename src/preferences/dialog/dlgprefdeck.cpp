@@ -74,6 +74,14 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
             this,
             &DlgPrefDeck::slotCueModeCombobox);
 
+// create statusfiles checkbox
+    CreateStatusFilesCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "CreateStatusFiles"), true));			
+	connect(CreateStatusFilesCheckBox,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefDeck::slotToggleCreateStatusFiles);			
+			
     // Track time display configuration
     connect(m_pControlTrackTimeDisplay.get(),
             &ControlObject::valueChanged,
@@ -756,6 +764,10 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "RateTempRight"), m_dRateTempFine);
     m_pConfig->setValue(ConfigKey("[Controls]", "RatePermLeft"), m_dRatePermCoarse);
     m_pConfig->setValue(ConfigKey("[Controls]", "RatePermRight"), m_dRatePermFine);
+
+	m_pConfig->setValue(ConfigKey("[Controls]", "CreateStatusFiles"),
+            m_pConfig->getValue(
+                    ConfigKey("[Controls]", "CreateStatusFiles"), false));						
 }
 
 void DlgPrefDeck::slotNumDecksChanged(double new_count, bool initializing) {
@@ -843,3 +855,9 @@ int DlgPrefDeck::cueDefaultIndexByData(int userData) const {
                << "returning default";
     return 0;
 }
+
+void DlgPrefDeck::slotToggleCreateStatusFiles(int buttonState) {
+    bool enable = buttonState == Qt::Checked;
+    m_pConfig->setValue(ConfigKey("[Controls]", "CreateStatusFiles"),
+            enable);
+}			
