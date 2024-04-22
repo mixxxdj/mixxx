@@ -114,6 +114,7 @@ bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
     if (!pTracksView) {
         return false;
     }
+
     return pTracksView->isTrackInCurrentView(trackId);
 }
 

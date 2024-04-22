@@ -550,6 +550,11 @@ void WTrackTableView::onSearch(const QString& text) {
 void WTrackTableView::onShow() {
 }
 
+void WTrackTableView::mousePressEvent(QMouseEvent* pEvent) {
+    DragAndDropHelper::mousePressed(pEvent);
+    WLibraryTableView::mousePressEvent(pEvent);
+}
+
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is
@@ -567,17 +572,20 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         return;
     }
     //qDebug() << "MouseMoveEvent";
-    // Iterate over selected rows and append each item's location url to a list.
-    QList<QString> locations;
-    const QModelIndexList indices = selectionModel()->selectedRows();
 
-    for (const QModelIndex& index : indices) {
-        if (!index.isValid()) {
-            continue;
+    if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
+        // Iterate over selected rows and append each item's location url to a list.
+        QList<QString> locations;
+        const QModelIndexList indices = selectionModel()->selectedRows();
+
+        for (const QModelIndex& index : indices) {
+            if (!index.isValid()) {
+                continue;
+            }
+            locations.append(trackModel->getTrackLocation(index));
         }
-        locations.append(trackModel->getTrackLocation(index));
+        DragAndDropHelper::dragTrackLocations(locations, this, "library");
     }
-    DragAndDropHelper::dragTrackLocations(locations, this, "library");
 }
 
 // Drag enter event, happens when a dragged item hovers over the track table view

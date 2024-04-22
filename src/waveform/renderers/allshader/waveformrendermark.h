@@ -4,6 +4,7 @@
 
 #include "shaders/rgbashader.h"
 #include "shaders/textureshader.h"
+#include "util/opengltexture2d.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrendermarkbase.h"
 
@@ -44,12 +45,12 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
             QPointF p2,
             QPointF p3);
 
-    mixxx::RGBAShader m_rgbaShader;
-    mixxx::TextureShader m_textureShader;
-    std::unique_ptr<QOpenGLTexture> m_pPlayPosMarkTexture;
-
     void drawMark(const QRectF& rect, QColor color);
     void drawTexture(float x, float y, QOpenGLTexture* texture);
+
+    mixxx::RGBAShader m_rgbaShader;
+    mixxx::TextureShader m_textureShader;
+    OpenGLTexture2D m_playPosMarkTexture;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };

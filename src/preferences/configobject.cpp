@@ -51,7 +51,13 @@ QString computeResourcePathImpl() {
                 }
                 line = in.readLine();
             }
-            DEBUG_ASSERT(QDir(qResourcePath).exists());
+            if (!QDir(qResourcePath).exists()) {
+                reportCriticalErrorAndQuit(
+                        "Resource path listed in " + kCMakeCacheFile +
+                        " does not exist. Did you move the build directory? "
+                        "Hint: Set an alternative resource path with "
+                        "'--resource-path <path>'.");
+            }
         }
 #if defined(__UNIX__)
         else if (mixxxDir.cd(QStringLiteral("../share/mixxx"))) {
