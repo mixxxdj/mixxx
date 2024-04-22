@@ -80,7 +80,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "The pitch shift applied to the sound."));
     pitch->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     pitch->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    pitch->setNeutralPointOnScale(0.0);
+    pitch->setNeutralPointOnScale(0.5);
     pitch->setRange(-1.0, 0.0, 1.0);
 
     EffectManifestParameterPointer range = pManifest->addParameter();
@@ -91,7 +91,7 @@ EffectManifestPointer PitchShiftEffect::getManifest() {
             "The range of the Pitch knob (0 - 2 octaves).\n"));
     range->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
     range->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
-    range->setNeutralPointOnScale(1.0);
+    range->setNeutralPointOnScale(0.5);
     range->setRange(0.0, 1.0, 2.0);
 
     EffectManifestParameterPointer semitonesMode = pManifest->addParameter();
