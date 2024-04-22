@@ -11,6 +11,10 @@ WVuMeterGLSL::WVuMeterGLSL(QWidget* pParent)
         : WVuMeterBase(pParent) {
 }
 
+WVuMeterGLSL::~WVuMeterGLSL() {
+    cleanupGL();
+}
+
 void WVuMeterGLSL::draw() {
     if (shouldRender()) {
         makeCurrentIfNeeded();
@@ -137,6 +141,13 @@ void WVuMeterGLSL::paintGL() {
     m_textureShader.disableAttributeArray(positionLocation);
     m_textureShader.disableAttributeArray(texcoordLocation);
     m_textureShader.release();
+}
+
+void WVuMeterGLSL::cleanupGL() {
+    makeCurrentIfNeeded();
+    m_textureBack.destroy();
+    m_textureVu.destroy();
+    doneCurrent();
 }
 
 void WVuMeterGLSL::drawTexture(QOpenGLTexture* texture,

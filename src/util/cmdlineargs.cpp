@@ -24,6 +24,9 @@ CmdlineArgs::CmdlineArgs()
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
+#ifdef MIXXX_USE_QML
+          m_qml(false),
+#endif
           m_safeMode(false),
           m_useLegacyVuMeter(false),
           m_useLegacySpinny(false),

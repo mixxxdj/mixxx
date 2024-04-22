@@ -17,7 +17,7 @@ class WSpinnyGLSL : public WSpinnyBase, private QOpenGLFunctions {
             UserSettingsPointer pConfig,
             VinylControlManager* pVCMan,
             BaseTrackPlayer* pPlayer);
-    ~WSpinnyGLSL() override = default;
+    ~WSpinnyGLSL() override;
 
   private:
     void draw() override;
@@ -27,6 +27,7 @@ class WSpinnyGLSL : public WSpinnyBase, private QOpenGLFunctions {
     void paintGL() override;
     void resizeGL(int w, int h) override;
     void drawTexture(QOpenGLTexture* texture);
+    void cleanupGL();
     void updateTextures();
 
     void setupVinylSignalQuality() override;
