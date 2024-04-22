@@ -28,6 +28,10 @@ class WKnobComposed : public WWidget {
     void mouseReleaseEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
+    bool m_defaultAngleIsValid;
+    double m_defaultAngle;
+    void setDefaultAngleFromParameterOrReset(double parameter);
+
   private:
     void inputActivity();
     void clear();
@@ -41,10 +45,10 @@ class WKnobComposed : public WWidget {
             double scaleFactor);
     void drawArc(QPainter* pPainter);
 
-    double m_dCurrentAngle;
     PaintablePointer m_pKnob;
     PaintablePointer m_pPixmapBack;
     KnobEventHandler<WKnobComposed> m_handler;
+    double m_dCurrentAngle;
     double m_dMinAngle;
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;

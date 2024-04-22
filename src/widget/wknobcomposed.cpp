@@ -9,6 +9,7 @@
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
+          m_defaultAngleIsValid(false),
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
@@ -65,10 +66,7 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
         if (context.selectBool(node, "ArcRoundCaps", false)) {
             m_arcPenCap = Qt::RoundCap;
         }
-        // ToDo: Make these properties configurable by the connected control.
-        // Example: Meta knobs that are fully dry when centered, or parameters
-        // that work reversed, like microphone ducking or BitCrusher parameters.
-        m_arcUnipolar = context.selectBool(node, "ArcUnipolar", false);
+        m_arcUnipolar = context.selectBool(node, "ArcUnipolar", true);
         m_arcReversed = context.selectBool(node, "ArcReversed", false);
     }
 
@@ -113,6 +111,15 @@ void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) 
     if (fabs(angle - m_dCurrentAngle) > 0.01) {
         // paintEvent updates m_dCurrentAngle
         update();
+    }
+}
+
+void WKnobComposed::setDefaultAngleFromParameterOrReset(double parameter) {
+    if (parameter < 0 || parameter > 1) {
+        m_defaultAngleIsValid = false;
+    } else {
+        m_defaultAngle = std::lerp(m_dMinAngle, m_dMaxAngle, parameter);
+        m_defaultAngleIsValid = true;
     }
 }
 
@@ -182,7 +189,12 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     arcPen.setCapStyle(m_arcPenCap);
 
     pPainter->setPen(arcPen);
-    if (m_arcUnipolar) {
+    if (m_defaultAngleIsValid) {
+        // draw arc from default angle to current angle
+        pPainter->drawArc(rect,
+                static_cast<int>((90 - m_defaultAngle) * 16),
+                static_cast<int>((m_dCurrentAngle - m_defaultAngle) * -16));
+    } else if (m_arcUnipolar) {
         if (m_arcReversed) {
            // draw arc from maxAngle to current position
            pPainter->drawArc(rect,
