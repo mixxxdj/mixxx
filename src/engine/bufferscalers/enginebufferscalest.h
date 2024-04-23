@@ -40,7 +40,7 @@ class EngineBufferScaleST : public EngineBufferScale {
     std::unique_ptr<soundtouch::SoundTouch> m_pSoundTouch;
 
     // Temporary buffer for reading from the RAMAN.
-    mixxx::SampleBuffer buffer_back;
+    mixxx::SampleBuffer m_bufferBack;
 
     // Holds the playback direction.
     bool m_bBackwards;

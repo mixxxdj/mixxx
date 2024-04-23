@@ -3,7 +3,6 @@
 #include <QLabel>
 
 #include "widget/wnumber.h"
-#include "skin/legacy/skincontext.h"
 
 class WNumberDb : public WNumber {
     Q_OBJECT

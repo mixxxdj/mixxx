@@ -1,22 +1,18 @@
 #pragma once
 
-#include <QPainter>
-#include <QTime>
-#include <QVector>
-#include <QtDebug>
-
 #include "track/track_decl.h"
 #include "util/class.h"
-#include "util/performancetimer.h"
 #include "waveform/renderers/waveformmark.h"
-#include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class ControlProxy;
 class VisualPlayPosition;
 class VSyncThread;
+class QPainter;
+class WaveformRendererAbstract;
 
 class WaveformWidgetRenderer {
   public:
@@ -24,6 +20,11 @@ class WaveformWidgetRenderer {
     static const double s_waveformMaxZoom;
     static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
+
+    struct WaveformMarkOnScreen {
+        WaveformMarkPointer m_pMark;
+        int m_offsetOnScreen;
+    };
 
   public:
     explicit WaveformWidgetRenderer(const QString& group);
@@ -39,9 +40,13 @@ class WaveformWidgetRenderer {
     const QString& getGroup() const {
         return m_group;
     }
+
     const TrackPointer& getTrackInfo() const {
         return m_pTrack;
     }
+
+    ConstWaveformPointer getWaveform() const;
+
     /// Get cue mark at a point on the waveform widget.
     WaveformMarkPointer getCueMarkAtPoint(QPoint point) const;
 
@@ -66,21 +71,19 @@ class WaveformWidgetRenderer {
         return m_audioSamplePerPixel;
     }
 
-    // those function replace at its best sample position to an admissible
-    // sample position according to the current visual resampling
-    // this make mark and signal deterministic
-    void regulateVisualSample(int& sampleIndex) const;
-
     // this "regulate" against visual sampling to make the position in widget
     // stable and deterministic
     // Transform sample index to pixel in track.
     inline double transformSamplePositionInRendererWorld(double samplePosition) const {
-        const double relativePosition = samplePosition / m_trackSamples;
-        return transformPositionInRendererWorld(relativePosition);
-    }
-    // Transform position (percentage of track) to pixel in track.
-    inline double transformPositionInRendererWorld(double position) const {
-        return m_trackPixelCount * (position - m_firstDisplayedPosition);
+        if (std::abs(samplePosition - m_truePosSample) < 1.f) {
+            // When asked for the sample position that corresponds with the play
+            // marker, return the play market pixel position. This avoids a rare
+            // rounding issue where a marker at that sample position would be
+            // 1 pixel off.
+            return m_playMarkerPosition * getLength();
+        }
+        return (samplePosition - m_firstDisplayedPosition * m_trackSamples) /
+                2 / m_audioSamplePerPixel;
     }
 
     int getPlayPosVSample() const {
@@ -92,10 +95,23 @@ class WaveformWidgetRenderer {
     double getZoomFactor() const {
         return m_zoomFactor;
     }
-    double getGain() const {
-        return m_gain;
+    double getGain(bool applyCompensation) const {
+        // m_gain was always multiplied by 2.0, according to a comment:
+        //
+        //   "This gain adjustment compensates for an arbitrary /2 gain chop in
+        //   EnginePregain. See the comment there."
+        //
+        // However, no comment there seems to explain this, and it resulted
+        // in renderers that use the filtered.all data for the amplitude, to
+        // be twice the expected value.
+        // But without this compensation, renderers that use the combined
+        // lo, mid, hi values became much lower than expected. By making this
+        // optional we move the decision to each renderer whether to apply the
+        // compensation or not, in order to have a more similar amplitude across
+        // waveform renderers
+        return applyCompensation ? m_gain * 2.f : m_gain;
     }
-    int getTrackSamples() const {
+    double getTrackSamples() const {
         return m_trackSamples;
     }
 
@@ -103,7 +119,8 @@ class WaveformWidgetRenderer {
         return m_alphaBeatGrid;
     }
 
-    void resize(int width, int height, float devicePixelRatio);
+    virtual void resizeRenderer(int width, int height, float devicePixelRatio);
+
     int getHeight() const {
         return m_height;
     }
@@ -137,7 +154,7 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
-    void setMarkPositions(const QMap<WaveformMarkPointer, int>& markPositions) {
+    void setMarkPositions(const QList<WaveformMarkOnScreen>& markPositions) {
         m_markPositions = markPositions;
     }
 
@@ -153,6 +170,10 @@ class WaveformWidgetRenderer {
     }
 
     void setPassThroughEnabled(bool enabled);
+
+    bool shouldOnlyDrawBackground() const {
+        return m_trackSamples <= 0.0 || m_playPos == -1;
+    }
 
   protected:
     const QString m_group;
@@ -173,7 +194,6 @@ class WaveformWidgetRenderer {
     double m_zoomFactor;
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
-    double m_audioVisualRatio;
 
     int m_alphaBeatGrid;
 
@@ -183,11 +203,10 @@ class WaveformWidgetRenderer {
     int m_playPosVSample;
     int m_totalVSamples;
     ControlProxy* m_pRateRatioCO;
-    double m_rateRatio;
     ControlProxy* m_pGainControlObject;
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
-    int m_trackSamples;
+    double m_trackSamples;
     double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 
@@ -203,7 +222,7 @@ class WaveformWidgetRenderer {
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;
-    QMap<WaveformMarkPointer, int> m_markPositions;
+    QList<WaveformMarkOnScreen> m_markPositions;
     // draw play position indicator triangles
     void drawPlayPosmarker(QPainter* painter);
     void drawTriangle(QPainter* painter,
@@ -215,4 +234,5 @@ private:
 
     bool m_passthroughEnabled;
     double m_playPos;
+    double m_truePosSample;
 };

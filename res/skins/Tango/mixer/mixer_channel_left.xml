@@ -35,16 +35,16 @@ Variables:
                 <SizePolicy>max,min</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-                  <Template src="skin:../Tango/mixer/eq_knob_left.xml"><!-- High EQ -->
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- High EQ -->
                     <SetVariable name="FxParameter">3</SetVariable>
                   </Template>
-                  <Template src="skin:../Tango/mixer/eq_knob_left.xml"><!-- Mid EQ -->
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- Mid EQ -->
                     <SetVariable name="FxParameter">2</SetVariable>
                   </Template>
-                  <Template src="skin:../Tango/mixer/eq_knob_left.xml"><!-- Low EQ -->
+                  <Template src="skins:Tango/mixer/eq_knob_left.xml"><!-- Low EQ -->
                     <SetVariable name="FxParameter">1</SetVariable>
                   </Template>
-                  <Template src="skin:../Tango/mixer/quick_fx_knob_left.xml"/><!-- Quick Effect -->
+                  <Template src="skins:Tango/mixer/quick_fx_knob_left.xml"/><!-- Quick Effect -->
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
@@ -61,8 +61,8 @@ Variables:
                     <Size>34f,89min</Size>
                     <ObjectName>VolumeSlider</ObjectName>
                     <TooltipId>channel_volume</TooltipId>
-                    <Slider scalemode="STRETCH">skin:../Tango/knobs_sliders/volume_scale.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">skin:../Tango/knobs_sliders/volume_handle.svg</Handle>
+                    <Slider scalemode="STRETCH">skins:Tango/knobs_sliders/volume_scale.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">skins:Tango/knobs_sliders/volume_handle.svg</Handle>
                     <Horizontal>false</Horizontal>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -70,7 +70,7 @@ Variables:
                   </SliderComposed><!-- /Volume slider -->
 
                   <!-- Gain knob, centered below Volume slider -->
-                  <Template src="skin:../Tango/controls/knob_textless.xml">
+                  <Template src="skins:Tango/controls/knob_textless.xml">
                     <SetVariable name="ObjectName">GainKnob</SetVariable>
                     <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">34f,30f</SetVariable>
@@ -111,7 +111,7 @@ Variables:
         <ObjectName>AlignCenter</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:../Tango/mixer/vumeter_mixer.xml"/>
+          <Template src="skins:Tango/mixer/vumeter_mixer.xml"/>
 
           <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
@@ -121,8 +121,8 @@ Variables:
             <Layout>stacked</Layout>
             <Children>
               <!-- Greyed out if no headphone device is configured -->
-              <Template src="skin:../Tango/helpers/pfl_cover.xml"/>
-              <Template src="skin:../Tango/controls/button_2state.xml">
+              <Template src="skins:Tango/helpers/pfl_cover.xml"/>
+              <Template src="skins:Tango/controls/button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>
                 <SetVariable name="Size">24f,24f</SetVariable>

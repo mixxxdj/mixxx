@@ -1,7 +1,6 @@
 #pragma once
 #include <QDomElement>
 
-#include "effects/backends/effectmanifest.h"
 #include "effects/defs.h"
 #include "effects/presets/effectparameterpreset.h"
 
@@ -15,7 +14,6 @@ class EffectPreset {
     EffectPreset(const QDomElement& element);
     EffectPreset(const EffectSlotPointer pEffectSlot);
     EffectPreset(const EffectManifestPointer pManifest);
-    ~EffectPreset();
 
     const QDomElement toXml(QDomDocument* doc) const;
 
@@ -38,6 +36,15 @@ class EffectPreset {
     const QList<EffectParameterPreset>& getParameterPresets() const {
         return m_effectParameterPresets;
     }
+
+    /// updates all of the parameters of `this` with the parameters
+    /// of `preset`.
+    /// The operation is not symmetric:
+    /// Parameters which are present on `preset` but not on `this` will
+    /// not be added to `this`
+    /// Parameters present on `this` but not `preset` will keep their previous
+    /// settings
+    void updateParametersFrom(const EffectPreset& preset);
 
   private:
     QString m_id;

@@ -1,27 +1,12 @@
-//
-// C++ Interface: woverview
-//
-// Description:
-//
-//
-// Author: Tue Haste Andersen <haste@diku.dk>, (C) 2003
-//
-// Copyright: See COPYING file that comes with this distribution
-//
-//
 #pragma once
 
 #include <QColor>
 #include <QList>
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPixmap>
 
 #include "analyzer/analyzerprogress.h"
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -32,12 +17,15 @@
 #include "widget/wwidget.h"
 
 class PlayerManager;
-class PainterScope;
+;
+class QDomNode;
+class SkinContext;
 
 class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
+    virtual void initWithTrack(TrackPointer pTrack);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
@@ -76,6 +64,16 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     ConstWaveformPointer getWaveform() const {
         return m_pWaveform;
+    }
+
+    double getTrackSamples() const {
+        if (m_trackLoaded) {
+            return m_trackSamplesControl->get();
+        } else {
+            // Ignore the value, because the engine can still have the old track
+            // during loading
+            return 0.0;
+        }
     }
 
     QImage m_waveformSourceImage;
@@ -181,10 +179,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_dimBrightThreshold;
     QLabel* m_pPassthroughLabel;
 
-    // All WaveformMarks
     WaveformMarkSet m_marks;
-    // List of visible WaveformMarks sorted by the order they appear in the track
-    QList<WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;

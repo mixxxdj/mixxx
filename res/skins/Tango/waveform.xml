@@ -140,7 +140,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <Size>f,f</Size>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_1state_right.xml">
+                  <Template src="skins:Tango/controls/button_1state_right.xml">
                     <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                     <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
                     <SetVariable name="Size">24f,49f</SetVariable>
@@ -156,7 +156,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">BeatgridEarlier</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -165,7 +165,7 @@ Variables:
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
-                  <Template src="skin:../Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -180,7 +180,7 @@ Variables:
                 <Layout>vertical</Layout>
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
-                  <Template src="skin:../Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">BeatgridLater</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -189,7 +189,7 @@ Variables:
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
-                  <Template src="skin:../Tango/controls/button_1state.xml">
+                  <Template src="skins:Tango/controls/button_1state.xml">
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">BeatgridSlower</SetVariable>
                     <SetVariable name="Size">28f,24f</SetVariable>
@@ -208,7 +208,7 @@ Variables:
                     <Layout>vertical</Layout>
                     <SizePolicy>f,f</SizePolicy>
                     <Children>
-                      <Template src="skin:../Tango/controls/button_1state_right.xml">
+                      <Template src="skins:Tango/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
                         <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>
@@ -216,7 +216,7 @@ Variables:
                         <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
                       </Template>
                       <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-                      <Template src="skin:../Tango/controls/button_1state_right.xml">
+                      <Template src="skins:Tango/controls/button_1state_right.xml">
                         <SetVariable name="TooltipId">shift_cues_later</SetVariable>
                         <SetVariable name="ObjectName">HotcuesLater</SetVariable>
                         <SetVariable name="Size">24f,24f</SetVariable>

@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/parametriceqeffect.h"
 
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 
 namespace {
 constexpr int kBandCount = 2;
@@ -22,10 +23,10 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     pManifest->setAuthor("The Mixxx Team");
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
-            "An gentle 2-band parametric equalizer based on biquad filters.\n"
+            "A gentle 2-band parametric equalizer based on biquad filters.\n"
             "It is designed as a complement to the steep mixing equalizers."));
     pManifest->setEffectRampsFromDry(true);
-    pManifest->setIsMasterEQ(true);
+    pManifest->setIsMainEQ(true);
 
     EffectManifestParameterPointer gain1 = pManifest->addParameter();
     gain1->setId("gain1");
@@ -119,7 +120,7 @@ ParametricEQEffectGroupState::ParametricEQEffectGroupState(
     }
 }
 
-void ParametricEQEffectGroupState::setFilters(int sampleRate) {
+void ParametricEQEffectGroupState::setFilters(mixxx::audio::SampleRate sampleRate) {
     for (int i = 0; i < kBandCount; i++) {
         m_bands[i]->setFrequencyCorners(
                 sampleRate, m_oldCenter[i], m_oldQ[i], m_oldGain[i]);
@@ -134,9 +135,6 @@ void ParametricEQEffect::loadEngineEffectParameters(
     m_pPotGain.append(parameters.value("gain2"));
     m_pPotQ.append(parameters.value("q2"));
     m_pPotCenter.append(parameters.value("center2"));
-}
-
-ParametricEQEffect::~ParametricEQEffect() {
 }
 
 void ParametricEQEffect::processChannel(

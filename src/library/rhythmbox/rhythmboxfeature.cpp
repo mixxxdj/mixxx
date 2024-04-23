@@ -1,8 +1,8 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include <QMessageBox>
 #include <QStringList>
 #include <QUrl>
+#include <QtConcurrent>
 #include <QtDebug>
 
 #include "library/baseexternalplaylistmodel.h"
@@ -20,31 +20,35 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
           m_cancelImport(false) {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm";
-    m_trackSource = QSharedPointer<BaseTrackCache>(
-            new BaseTrackCache(m_pTrackCollection,
-                    tableName, idColumn, columns, false));
-    QStringList searchColumns;
-    searchColumns << "artist"
-                  << "album"
-                  << "location"
-                  << "comment"
-                  << "title"
-                  << "genre";
-    m_trackSource->setSearchColumns(searchColumns);
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "year",
+            "genre",
+            "tracknumber",
+            "location",
+            "comment",
+            "rating",
+            "duration",
+            "bitrate",
+            "bpm"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "location",
+            "comment",
+            "title",
+            "genre"};
+
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
+            m_pTrackCollection,
+            tableName,
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
 
     m_pRhythmboxTrackModel = new BaseExternalTrackModel(this,
             pLibrary->trackCollectionManager(),
@@ -90,8 +94,9 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(this,
+std::unique_ptr<BaseSqlTableModel>
+RhythmboxFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<BaseExternalPlaylistModel>(this,
             m_pLibrary->trackCollectionManager(),
             "mixxx.db.model.rhythmbox_playlist",
             "rhythmbox_playlists",

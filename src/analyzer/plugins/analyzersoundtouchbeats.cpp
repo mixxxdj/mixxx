@@ -3,7 +3,6 @@
 #include <soundtouch/BPMDetect.h>
 
 #include "analyzer/constants.h"
-#include "util/sample.h"
 
 namespace mixxx {
 

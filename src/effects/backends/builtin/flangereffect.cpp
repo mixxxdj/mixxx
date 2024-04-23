@@ -1,7 +1,7 @@
 #include "effects/backends/builtin/flangereffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "util/math.h"
 
 namespace {
@@ -106,10 +106,6 @@ void FlangerEffect::loadEngineEffectParameters(
     m_pRegenParameter = parameters.value("regen");
     m_pMixParameter = parameters.value("mix");
     m_pTripletParameter = parameters.value("triplet");
-}
-
-FlangerEffect::~FlangerEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void FlangerEffect::processChannel(

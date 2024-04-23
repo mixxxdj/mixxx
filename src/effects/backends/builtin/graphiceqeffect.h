@@ -2,22 +2,20 @@
 
 #include <QMap>
 
-#include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
-#include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/defs.h"
-#include "util/sample.h"
 #include "util/types.h"
+
+class EngineFilterBiquad1LowShelving;
+class EngineFilterBiquad1Peaking;
+class EngineFilterBiquad1HighShelving;
 
 class GraphicEQEffectGroupState : public EffectState {
   public:
     GraphicEQEffectGroupState(const mixxx::EngineParameters& engineParameters);
-    virtual ~GraphicEQEffectGroupState();
+    ~GraphicEQEffectGroupState() override;
 
-    void setFilters(int sampleRate);
+    void setFilters(mixxx::audio::SampleRate sampleRate);
 
     EngineFilterBiquad1LowShelving* m_low;
     QList<EngineFilterBiquad1Peaking*> m_bands;
@@ -32,7 +30,7 @@ class GraphicEQEffectGroupState : public EffectState {
 class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
   public:
     GraphicEQEffect() = default;
-    virtual ~GraphicEQEffect();
+    ~GraphicEQEffect() override = default;
 
     static QString getId();
     static EffectManifestPointer getManifest();

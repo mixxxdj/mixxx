@@ -1,6 +1,8 @@
 #include "library/dao/settingsdao.h"
 
-#include <QtSql>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QSqlRecord>
 
 #include "util/assert.h"
 #include "util/logger.h"

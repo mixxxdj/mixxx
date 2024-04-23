@@ -1,7 +1,5 @@
 #include "ringdelaybuffer.h"
 
-#include <span>
-
 #include "util/math.h"
 #include "util/sample.h"
 

@@ -2,8 +2,10 @@
 
 #include <QPainter>
 
-#include "util/timer.h"
+#include "moc_woverviewrgb.cpp"
+#include "util/colorcomponents.h"
 #include "util/math.h"
+#include "util/timer.h"
 #include "waveform/waveform.h"
 
 WOverviewRGB::WOverviewRGB(
@@ -15,7 +17,7 @@ WOverviewRGB::WOverviewRGB(
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
-    ScopedTimer t("WOverviewRGB::drawNextPixmapPart");
+    ScopedTimer t(u"WOverviewRGB::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart()";
 
@@ -27,7 +29,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
     }
 
     const int dataSize = pWaveform->getDataSize();
-    if (dataSize == 0) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    const double trackSamples = getTrackSamples();
+    if (dataSize <= 0 || audioVisualRatio <= 0 || trackSamples <= 0) {
         return false;
     }
 
@@ -36,11 +40,16 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // by total_gain
         // We keep full range waveform data to scale it on paint
         m_waveformSourceImage = QImage(
-                dataSize / 2,
-                static_cast<int>(2 * 255 * m_devicePixelRatio),
+                static_cast<int>(trackSamples / audioVisualRatio / 2) + 1,
+                2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
+        if (dataSize / 2 != m_waveformSourceImage.width()) {
+            qWarning() << "Track duration has changed since last analysis"
+                       << m_waveformSourceImage.width() << "!=" << dataSize / 2;
+        }
     }
+    DEBUG_ASSERT(!m_waveformSourceImage.isNull());
 
     // Always multiple of 2
     const int waveformCompletion = pWaveform->getCompletion();
@@ -66,14 +75,14 @@ bool WOverviewRGB::drawNextPixmapPart() {
 
     QColor color;
 
-    qreal lowColor_r, lowColor_g, lowColor_b;
-    m_signalColors.getRgbLowColor().getRgbF(&lowColor_r, &lowColor_g, &lowColor_b);
+    float lowColor_r, lowColor_g, lowColor_b;
+    getRgbF(m_signalColors.getRgbLowColor(), &lowColor_r, &lowColor_g, &lowColor_b);
 
-    qreal midColor_r, midColor_g, midColor_b;
-    m_signalColors.getRgbMidColor().getRgbF(&midColor_r, &midColor_g, &midColor_b);
+    float midColor_r, midColor_g, midColor_b;
+    getRgbF(m_signalColors.getRgbMidColor(), &midColor_r, &midColor_g, &midColor_b);
 
-    qreal highColor_r, highColor_g, highColor_b;
-    m_signalColors.getRgbHighColor().getRgbF(&highColor_r, &highColor_g, &highColor_b);
+    float highColor_r, highColor_g, highColor_b;
+    getRgbF(m_signalColors.getRgbHighColor(), &highColor_r, &highColor_g, &highColor_b);
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
@@ -82,28 +91,28 @@ bool WOverviewRGB::drawNextPixmapPart() {
         unsigned char right = pWaveform->getAll(currentCompletion + 1);
 
         // Retrieve "raw" LMH values from waveform
-        qreal low = static_cast<qreal>(pWaveform->getLow(currentCompletion));
-        qreal mid = static_cast<qreal>(pWaveform->getMid(currentCompletion));
-        qreal high = static_cast<qreal>(pWaveform->getHigh(currentCompletion));
+        float low = static_cast<float>(pWaveform->getLow(currentCompletion));
+        float mid = static_cast<float>(pWaveform->getMid(currentCompletion));
+        float high = static_cast<float>(pWaveform->getHigh(currentCompletion));
 
         // Do matrix multiplication
-        qreal red = low * lowColor_r + mid * midColor_r + high * highColor_r;
-        qreal green = low * lowColor_g + mid * midColor_g + high * highColor_g;
-        qreal blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
+        float red = low * lowColor_r + mid * midColor_r + high * highColor_r;
+        float green = low * lowColor_g + mid * midColor_g + high * highColor_g;
+        float blue = low * lowColor_b + mid * midColor_b + high * highColor_b;
 
         // Normalize and draw
-        qreal max = math_max3(red, green, blue);
+        float max = math_max3(red, green, blue);
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(QPointF(currentCompletion / 2, -left * m_devicePixelRatio),
-                             QPointF(currentCompletion / 2, 0));
+            painter.drawLine(QPointF(currentCompletion / 2, -left),
+                    QPointF(currentCompletion / 2, 0));
         }
 
         // Retrieve "raw" LMH values from waveform
-        low = static_cast<qreal>(pWaveform->getLow(currentCompletion + 1));
-        mid = static_cast<qreal>(pWaveform->getMid(currentCompletion + 1));
-        high = static_cast<qreal>(pWaveform->getHigh(currentCompletion + 1));
+        low = static_cast<float>(pWaveform->getLow(currentCompletion + 1));
+        mid = static_cast<float>(pWaveform->getMid(currentCompletion + 1));
+        high = static_cast<float>(pWaveform->getHigh(currentCompletion + 1));
 
         // Do matrix multiplication
         red = low * lowColor_r + mid * midColor_r + high * highColor_r;
@@ -116,7 +125,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(QPointF(currentCompletion / 2, 0),
-                             QPointF(currentCompletion / 2, right * m_devicePixelRatio));
+                    QPointF(currentCompletion / 2, right));
         }
     }
 

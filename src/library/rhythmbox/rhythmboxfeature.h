@@ -2,41 +2,40 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QStringListModel>
-#include <QXmlStreamReader>
-#include <QtConcurrentRun>
-#include <QtSql>
 
 #include "library/baseexternallibraryfeature.h"
-#include "library/trackcollection.h"
-#include "library/treeitemmodel.h"
 #include "util/parented_ptr.h"
 
 class BaseExternalTrackModel;
 class BaseExternalPlaylistModel;
+class QXmlStreamReader;
+class BaseTrackCache;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
  public:
     RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig);
-    virtual ~RhythmboxFeature();
+    ~RhythmboxFeature() override;
     static bool isSupported();
 
-    QVariant title();
+    QVariant title() override;
 
-    TreeItemModel* sidebarModel() const;
+    TreeItemModel* sidebarModel() const override;
     // processes the music collection
     TreeItem* importMusicCollection();
     // processes the playlist entries
     TreeItem* importPlaylists();
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
+    void activate() override;
+    void activateChild(const QModelIndex& index) override;
     void onTrackCollectionLoaded();
 
+  protected:
+    std::unique_ptr<BaseSqlTableModel> createPlaylistModelForPlaylist(
+            const QString& playlist) override;
+
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist);
     // Removes all rows from a given table
     void clearTable(const QString& table_name);
     // reads the properties of a track and executes a SQL statement
@@ -55,6 +54,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QFutureWatcher<TreeItem*> m_track_watcher;
     QFuture<TreeItem*> m_track_future;
     parented_ptr<TreeItemModel> m_pSidebarModel;
+    // TODO: Wrap this flag in `std::atomic` (as in `ITunesFeature`)
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;

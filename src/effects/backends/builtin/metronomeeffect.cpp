@@ -1,9 +1,8 @@
 #include "metronomeeffect.h"
 
-#include <QtDebug>
-
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "metronomeclick.h"
-#include "util/experiment.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -49,9 +48,6 @@ void MetronomeEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pBpmParameter = parameters.value("bpm");
     m_pSyncParameter = parameters.value("sync");
-}
-
-MetronomeEffect::~MetronomeEffect() {
 }
 
 void MetronomeEffect::processChannel(

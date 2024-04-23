@@ -1,14 +1,7 @@
 #pragma once
 
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QWheelEvent>
-#include <QWidget>
-
 #include "skin/legacy/skincontext.h"
-#include "util/widgetrendertimer.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wimagestore.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
@@ -64,7 +57,6 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
-    WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };

@@ -22,11 +22,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/labeler@main
+      - uses: actions/labeler@v5.0.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-          # This works around bug https://github.com/actions/labeler/issues/104.
-          # The workaround was proposed here:
-          # https://github.com/wesnoth/wesnoth/commit/958c82d0867568057caaf58356502ec8c87d8366
-          sync-labels: ""
+          sync-labels: false

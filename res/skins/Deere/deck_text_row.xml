@@ -106,7 +106,7 @@
 
                           <!-- We allow to hide the current BPM info in the skin settings,
                                 display just a label with asterixes instead.
-                                See https://bugs.launchpad.net/mixxx/+bug/722889 -->
+                                See https://github.com/mixxxdj/mixxx/issues/5783 -->
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
                             <Children>
@@ -190,6 +190,10 @@
                                     <SetVariable name="right_connection_control"><Variable name="group"/>,shift_cues_later_small</SetVariable>
                                   </Template>
                                 </Children>
+                                <Connection>
+                                  <ConfigKey>[Skin],timing_shift_buttons</ConfigKey>
+                                  <BindProperty>visible</BindProperty>
+                                </Connection>
                               </WidgetGroup>
 
                               <Template src="skin:left_right_1state_button.xml">

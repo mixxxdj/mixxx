@@ -1,12 +1,12 @@
 #pragma once
 
 #include <QMetaMethod>
-#include <QNetworkAccessManager>
-#include <QNetworkReply>
 #include <QUrl>
 
 #include "util/assert.h"
 #include "util/qt.h"
+
+class QNetworkAccessManager;
 
 namespace mixxx {
 

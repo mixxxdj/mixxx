@@ -1,12 +1,20 @@
 #pragma once
 
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzertrack.h"
-#include "audio/frame.h"
 #include "preferences/usersettings.h"
 #include "util/span.h"
 
-class CuePointer;
+class AnalyzerTrack;
+class Track;
+
+namespace mixxx {
+namespace audio {
+
+class FramePos;
+class SampleRate;
+
+} // namespace audio
+} // namespace mixxx
 
 class AnalyzerSilence : public Analyzer {
   public:
@@ -15,10 +23,15 @@ class AnalyzerSilence : public Analyzer {
 
     bool initialize(const AnalyzerTrack& track,
             mixxx::audio::SampleRate sampleRate,
-            SINT totalSamples) override;
-    bool processSamples(const CSAMPLE* pIn, SINT iLen) override;
+            SINT frameLength) override;
+    bool processSamples(const CSAMPLE* pIn, SINT count) override;
     void storeResults(TrackPointer pTrack) override;
     void cleanup() override;
+
+    static void setupMainAndIntroCue(Track* pTrack,
+            mixxx::audio::FramePos firstSoundPosition,
+            UserSettings* pConfig);
+    static void setupOutroCue(Track* pTrack, mixxx::audio::FramePos lastSoundPosition);
 
     /// returns the index of the first sample in the buffer that is above -60 dB
     /// or samples.size() if no sample is found
@@ -37,7 +50,7 @@ class AnalyzerSilence : public Analyzer {
 
   private:
     UserSettingsPointer m_pConfig;
-    SINT m_iFramesProcessed;
-    SINT m_iSignalStart;
-    SINT m_iSignalEnd;
+    SINT m_framesProcessed;
+    SINT m_signalStart;
+    SINT m_signalEnd;
 };

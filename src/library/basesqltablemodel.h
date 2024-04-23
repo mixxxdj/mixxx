@@ -88,9 +88,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             const QVariant& value,
             int role) final;
 
-    void setTable(const QString& tableName, const QString& trackIdColumn,
-                  const QStringList& tableColumns,
-                  QSharedPointer<BaseTrackCache> trackSource);
+    void setTable(QString tableName,
+            QString trackIdColumn,
+            QStringList tableColumns,
+            QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderProperties() override;
     virtual void initSortColumnMapping();
 

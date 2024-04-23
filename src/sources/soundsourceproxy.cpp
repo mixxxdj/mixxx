@@ -1,6 +1,5 @@
 #include "sources/soundsourceproxy.h"
 
-#include <QApplication>
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QRegularExpression>
@@ -38,11 +37,9 @@
 #include "sources/soundsourcemediafoundation.h"
 #endif
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "track/globaltrackcache.h"
 #include "track/track.h"
-#include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/regex.h"
 
@@ -395,6 +392,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
                 kLogger.warning()
                         << "Failed to update stream info from audio "
                            "source before exporting metadata";
+                return ExportTrackMetadataResult::Failed;
             }
         }
         pSoundSource = proxy.m_pSoundSource;
@@ -549,7 +547,7 @@ SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
         bool resetMissingTagMetadata) {
     if (!trackFileAccess.info().checkFileExists()) {
         // Silently ignore missing files to avoid spaming the log:
-        // https://bugs.launchpad.net/mixxx/+bug/1875237
+        // https://github.com/mixxxdj/mixxx/issues/9944
         return importTrackMetadataAndCoverImageUnavailable();
     }
     TrackPointer pTrack;
@@ -801,7 +799,7 @@ SoundSourceProxy::UpdateTrackFromSourceResult SoundSourceProxy::updateTrackFromS
                 << "Parsing missing"
                 << (splitArtistTitle ? "artist/title" : "title")
                 << "from file name:"
-                << fileInfo;
+                << fileInfo.location();
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
                     fileInfo.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded

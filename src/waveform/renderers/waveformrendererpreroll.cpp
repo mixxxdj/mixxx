@@ -1,15 +1,13 @@
-#include <QBrush>
-#include <QPen>
-#include <QPainter>
-#include <QPolygonF>
-
 #include "waveform/renderers/waveformrendererpreroll.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include <QBrush>
+#include <QPainter>
+#include <QPen>
+#include <QPolygonF>
+
 #include "util/painterscope.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "widget/wskincolor.h"
 
 WaveformRendererPreroll::WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer)
   : WaveformRendererAbstract(waveformWidgetRenderer) {
@@ -20,15 +18,15 @@ WaveformRendererPreroll::~WaveformRendererPreroll() {
 
 void WaveformRendererPreroll::setup(
         const QDomNode& node, const SkinContext& context) {
-    m_color.setNamedColor(context.selectString(node, "SignalColor"));
+    m_color = QColor(context.selectString(node, "SignalColor"));
     m_color = WSkinColor::getCorrectColor(m_color);
 }
 
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
 
-    const TrackPointer track = m_waveformRenderer->getTrackInfo();
-    if (!track) {
+    const TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
+    if (!pTrack) {
         return;
     }
 

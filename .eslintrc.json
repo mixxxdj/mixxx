@@ -1,5 +1,9 @@
 {
-  "extends": [ "eslint:recommended", "plugin:jsdoc/recommended" ],
+  "extends": [ "eslint:recommended",
+               "plugin:jsdoc/recommended",
+               "plugin:diff/diff"],
+
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 7,
     "sourceType": "script"
@@ -7,7 +11,7 @@
   "env": {
     "es6": true
   },
-  "plugins": [ "jsdoc" ],
+  "plugins": [ "jsdoc", "@typescript-eslint" ],
   "settings": {
     "jsdoc": {
       "preferredTypes": {
@@ -80,6 +84,7 @@
     "object-curly-spacing": "warn",
     "prefer-const": "warn",
     "prefer-regex-literals": "warn",
+    "prefer-template": "warn",
     "quotes": [ "warn", "double" ],
     "require-atomic-updates": "error",
     "semi": "warn",
@@ -93,6 +98,13 @@
     "console": "readonly"
   },
   "overrides": [
+   {
+       "files": [ "res/controllers/*.d.ts" ],
+       "extends": [ "plugin:@typescript-eslint/recommended" ],
+       "rules": {
+         "no-unused-vars": "off"
+       }
+    },
     {
       "files": [ "**/*.mjs" ],
       "parserOptions": {

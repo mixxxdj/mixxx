@@ -1,10 +1,8 @@
 #pragma once
 
-#include <QFileInfo>
 #include <QList>
 #include <QObject>
 #include <QSet>
-#include <QSqlDatabase>
 #include <QString>
 
 #include "library/dao/dao.h"
@@ -15,7 +13,6 @@
 #include "util/class.h"
 #include "util/memory.h"
 
-class FwdSqlQuery;
 class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
@@ -23,7 +20,6 @@ class CueDAO;
 class LibraryHashDAO;
 
 namespace mixxx {
-
 class FileInfo;
 class TrackRecord;
 
@@ -199,9 +195,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
                                         QSet<TrackId>* pTracksChanged);
 
     // Callback for GlobalTrackCache
-    mixxx::FileAccess relocateCachedTrack(
-            TrackId trackId,
-            mixxx::FileAccess fileAccess) override;
+    mixxx::FileAccess relocateCachedTrack(TrackId trackId) override;
 
     CueDAO& m_cueDao;
     MacroDAO m_macroDao;

@@ -1,7 +1,7 @@
 function NK2() {}
 NK2.debug=0;//set debug level
 NK2.LEDflasheson=true;//false disables led flash timers for debugging purposes
-NK2.numDecks=8;//set to 8 for all [Channels], to 4 for 4 [Channels] and 4 [Samplers], and to 2 for 2 [Channels] and 6 [Samplers]
+NK2.numDecks=4;//set to 4 for 4 [Channels] and 4 [Samplers], and to 2 for 2 [Channels] and 6 [Samplers]
 //############################################################################
 //defaults
 //############################################################################
@@ -36,9 +36,7 @@ NK2.leftButton={"trdown":0x3A,"trup":0x3B,"cycle":0x2E,"mset":0x3C,"mdown":0x3D,
 NK2.faders={0x00:1,0x01:2,0x02:3,0x03:4,0x04:5,0x05:6,0x06:7,0x07:8};
 
 //initialize decks
-if (NK2.numDecks==8){
-    NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Channel3]",4:"[Channel4]",5:"[Channel5]",6:"[Channel6]",7:"[Channel7]",8:"[Channel8]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (8 decks, 0 samplers)
-}else if (NK2.numDecks==4){
+if (NK2.numDecks==4){
     NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Channel3]",4:"[Channel4]",5:"[Sampler1]",6:"[Sampler2]",7:"[Sampler3]",8:"[Sampler4]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (4 decks, 4 samplers)
 }else if (NK2.numDecks==2){
     NK2.Deck={1:"[Channel1]",2:"[Channel2]",3:"[Sampler1]",4:"[Sampler2]",5:"[Sampler3]",6:"[Sampler4]",7:"[Sampler5]",8:"[Sampler6]"};//list of decks, applied to each strip - 8 strips, 8 decks.  (2 decks, 6 samplers)
@@ -61,11 +59,17 @@ NK2.beatloopLengths=new Array(0.03125,0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 
 
 NK2.init = function init() { // called when the device is opened & set up
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
-    engine.setValue("[Master]", "num_decks", NK2.numDecks);
+    engine.setValue("[App]", "num_decks", NK2.numDecks);
+
+    const numSam = NK2.numDecks === 2 ? 6 : 4;
+    if (engine.getValue("[App]", "num_samplers") < numSam) {
+        engine.setValue("[App]", "num_samplers", numSam);
+    }
+
     NK2.setup()
 
     NK2.updateLEDs();
-    print("decks: "+engine.getValue("[Master]", "num_decks"))
+    print("decks: "+engine.getValue("[App]", "num_decks"))
     };
 
 NK2.shutdown = function shutdown() {
@@ -94,7 +98,7 @@ NK2.bankSelect = function bankSelect(deck, bank) {
     }else if (NK2.curNSMR=="R"){
         NK2.LEDBankIndicator=NK2.Rbutton[NK2.curDeck];
     }
-    if (NK2.LEDflasheson===true){engine.stopTimer(NK2.LEDtimer);NK2.LEDtimer=engine.beginTimer(750, "NK2.indicatorLEDs()");}//start timer for LED indicator flasher
+    if (NK2.LEDflasheson===true) { engine.stopTimer(NK2.LEDtimer); NK2.LEDtimer=engine.beginTimer(750, NK2.indicatorLEDs); }//start timer for LED indicator flasher
     NK2.updateLEDs();
 };
 
@@ -290,7 +294,7 @@ NK2.indicatorLEDs = function indicatorLEDs(value,group,control){
     NK2.flashon=0;
     NK2.flashcount=0;
 
-    NK2.flashTimer=engine.beginTimer(100, "NK2.flashIndicators()");
+    NK2.flashTimer=engine.beginTimer(100, NK2.flashIndicators);
     return true;
 };
 
@@ -508,9 +512,9 @@ NK2.toggleBinaryControlAll = function toggleBinaryControlAll(control){
 NK2.wavezoomAll = function wavezoomAll(value){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
 
-    var range=6-1;
+    const range=10-1;
     var newValue=Math.round(1+((value/127)*range));
-    if (newValue>6)newValue=6;
+    if (newValue>10) { newValue=10; }
     if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
         for (var i=1; i<9; i++){
@@ -524,9 +528,9 @@ NK2.wavezoomDeck = function wavezoomDeck(value, group){
     if (NK2.debug>2){print("##function: "+NK2.getFunctionName())};
     if (group=="default"){group=NK2.Deck[NK2.curDeck];};
 
-    var range=6-1;
+    const range=10-1;
     var newValue=Math.round(1+((value/127)*range));
-    if (newValue>6)newValue=6;
+    if (newValue>10) { newValue=10; }
     if (newValue<1)newValue=1;
     if (NK2.lastwavevalue!=value){
         engine.setValue(group, "waveform_zoom", newValue);
@@ -598,7 +602,7 @@ NK2.cueClear = function cueClear(cue, control){//clear hotcue - OR move hotcue t
     if(engine.getValue(NK2.Deck[NK2.curDeck], "hotcue_"+cue+"_enabled")!=true){//hotcue not set - prepare to move next hotcue pressed to this button
         NK2.cueMoveToNum=cue;
         engine.stopTimer(NK2.cueMoveIndicator);
-        NK2.cueMoveIndicator=engine.beginTimer(100, "NK2.cueMoveIndicatorLEDs("+control+")");//start timer for LED indicator flasher showing the button we're moving to
+        NK2.cueMoveIndicator=engine.beginTimer(100, () => NK2.cueMoveIndicatorLEDs(control));//start timer for LED indicator flasher showing the button we're moving to
         return true;
     }
 
@@ -707,7 +711,7 @@ NK2.reloopButton = function reloopButton(value) {
         engine.stopTimer(NK2.reloopTimer);
         NK2.loopbuttonDown=true;
         NK2.doreloop=true;
-        NK2.reloopTimer = engine.beginTimer(500, "NK2.disablereloop()", true);
+        NK2.reloopTimer = engine.beginTimer(500, NK2.disablereloop, true);
         } else {//button was released
         NK2.loopbuttonDown=false;
         if (NK2.doreloop===true) {engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 1);engine.setValue(NK2.Deck[NK2.curDeck], "reloop_exit", 0);};
@@ -725,7 +729,7 @@ NK2.loopin = function loopin(value) {
         engine.stopTimer(NK2.loopinTimer);
         NK2.loopinbuttonDown=true;
         NK2.doloopin=true;
-        NK2.loopinTimer = engine.beginTimer(500, "NK2.disableloopin()", true);
+        NK2.loopinTimer = engine.beginTimer(500, NK2.disableloopin, true);
         } else {//button was released
         NK2.loopinbuttonDown=false;
         if (NK2.doloopin===true) {engine.setValue(NK2.Deck[NK2.curDeck], "loop_in", 1);engine.setValue(NK2.Deck[NK2.curDeck], "loop_in", 0);};
@@ -743,7 +747,7 @@ NK2.loopout = function loopout(value) {
         engine.stopTimer(NK2.loopoutTimer);
         NK2.loopoutbuttonDown=true;
         NK2.doloopout=true;
-        NK2.loopoutTimer = engine.beginTimer(500, "NK2.disableloopout()", true);
+        NK2.loopoutTimer = engine.beginTimer(500, NK2.disableloopout, true);
         } else {//button was released
         NK2.loopoutbuttonDown=false;
         if (NK2.doloopout===true) {engine.setValue(NK2.Deck[NK2.curDeck], "loop_out", 1);engine.setValue(NK2.Deck[NK2.curDeck], "loop_out", 0);};
@@ -876,7 +880,7 @@ NK2.testleds=function testleds(){//sends LED on messages to all
     if (NK2.testLED>=127){return false; }
     NK2.testLED++
     midi.sendShortMsg(0xB0, NK2.testLED, 0x7F);
-    NK2.LEDtimer=engine.beginTimer(100, "NK2.testleds()", true);
+    NK2.LEDtimer=engine.beginTimer(100, NK2.testleds, true);
 }
 
 //############################################################################

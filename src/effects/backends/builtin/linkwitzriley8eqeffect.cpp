@@ -1,11 +1,16 @@
 #include "effects/backends/builtin/linkwitzriley8eqeffect.h"
 
 #include "effects/backends/builtin/equalizer_util.h"
-#include "util/math.h"
+#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
+#include "engine/effects/engineeffectparameter.h"
+#include "engine/filters/enginefilterlinkwitzriley8.h"
+#include "util/defs.h"
 
-static constexpr unsigned int kStartupSamplerate = 44100;
-static constexpr unsigned int kStartupLoFreq = 246;
-static constexpr unsigned int kStartupHiFreq = 2484;
+namespace {
+constexpr unsigned int kStartupLoFreq = 246;
+constexpr unsigned int kStartupHiFreq = 2484;
+} // namespace
 
 // static
 QString LinkwitzRiley8EQEffect::getId() {
@@ -37,17 +42,17 @@ LinkwitzRiley8EQEffectGroupState::LinkwitzRiley8EQEffectGroupState(
           old_low(1.0),
           old_mid(1.0),
           old_high(1.0),
-          m_oldSampleRate(kStartupSamplerate),
+          m_oldSampleRate(engineParameters.sampleRate()),
           m_loFreq(kStartupLoFreq),
           m_hiFreq(kStartupHiFreq) {
-    m_pLowBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pMidBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pHighBuf = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLowBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pMidBuf = SampleUtil::alloc(kMaxEngineSamples);
+    m_pHighBuf = SampleUtil::alloc(kMaxEngineSamples);
 
-    m_low1 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupLoFreq);
-    m_high1 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupLoFreq);
-    m_low2 = new EngineFilterLinkwitzRiley8Low(kStartupSamplerate, kStartupHiFreq);
-    m_high2 = new EngineFilterLinkwitzRiley8High(kStartupSamplerate, kStartupHiFreq);
+    m_low1 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupLoFreq);
+    m_high1 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupLoFreq);
+    m_low2 = new EngineFilterLinkwitzRiley8Low(engineParameters.sampleRate(), kStartupHiFreq);
+    m_high2 = new EngineFilterLinkwitzRiley8High(engineParameters.sampleRate(), kStartupHiFreq);
 }
 
 LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
@@ -60,16 +65,17 @@ LinkwitzRiley8EQEffectGroupState::~LinkwitzRiley8EQEffectGroupState() {
     SampleUtil::free(m_pHighBuf);
 }
 
-void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq, int highFreq) {
+void LinkwitzRiley8EQEffectGroupState::setFilters(
+        mixxx::audio::SampleRate sampleRate, int lowFreq, int highFreq) {
     m_low1->setFrequencyCorners(sampleRate, lowFreq);
     m_high1->setFrequencyCorners(sampleRate, lowFreq);
     m_low2->setFrequencyCorners(sampleRate, highFreq);
     m_high2->setFrequencyCorners(sampleRate, highFreq);
 }
 
-LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
-    m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
-    m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect()
+        : m_pLoFreqCorner(kMixerProfile, kLowEqFrequency),
+          m_pHiFreqCorner(kMixerProfile, kHighEqFrequency) {
 }
 
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
@@ -83,8 +89,6 @@ void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
 }
 
 LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
-    delete m_pLoFreqCorner;
-    delete m_pHiFreqCorner;
 }
 
 void LinkwitzRiley8EQEffect::processChannel(
@@ -108,10 +112,10 @@ void LinkwitzRiley8EQEffect::processChannel(
     }
 
     if (pState->m_oldSampleRate != engineParameters.sampleRate() ||
-            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner->get())) ||
-            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner->get()))) {
-        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner->get());
-        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner->get());
+            (pState->m_loFreq != static_cast<int>(m_pLoFreqCorner.get())) ||
+            (pState->m_hiFreq != static_cast<int>(m_pHiFreqCorner.get()))) {
+        pState->m_loFreq = static_cast<int>(m_pLoFreqCorner.get());
+        pState->m_hiFreq = static_cast<int>(m_pHiFreqCorner.get());
         pState->m_oldSampleRate = engineParameters.sampleRate();
         pState->setFilters(engineParameters.sampleRate(), pState->m_loFreq, pState->m_hiFreq);
     }

@@ -10,7 +10,7 @@
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
+#include "library/missing_hidden/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
@@ -69,35 +69,36 @@ TraktorFeature::TraktorFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_cancelImport(false) {
     QString tableName = "traktor_library";
     QString idColumn = "id";
-    QStringList columns;
-    columns << "id"
-            << "artist"
-            << "title"
-            << "album"
-            << "year"
-            << "genre"
-            << "tracknumber"
-            << "location"
-            << "comment"
-            << "rating"
-            << "duration"
-            << "bitrate"
-            << "bpm"
-            << "key";
-    m_trackSource = QSharedPointer<BaseTrackCache>(new BaseTrackCache(
+    QStringList columns = {
+            "id",
+            "artist",
+            "title",
+            "album",
+            "year",
+            "genre",
+            "tracknumber",
+            "location",
+            "comment",
+            "rating",
+            "duration",
+            "bitrate",
+            "bpm",
+            "key"};
+    QStringList searchColumns = {
+            "artist",
+            "album",
+            "location",
+            "comment",
+            "title",
+            "genre"};
+
+    m_trackSource = QSharedPointer<BaseTrackCache>::create(
             pLibrary->trackCollectionManager()->internalCollection(),
             tableName,
-            idColumn,
-            columns,
-            false));
-    QStringList searchColumns;
-    searchColumns << "artist"
-                  << "album"
-                  << "location"
-                  << "comment"
-                  << "title"
-                  << "genre";
-    m_trackSource->setSearchColumns(searchColumns);
+            std::move(idColumn),
+            std::move(columns),
+            std::move(searchColumns),
+            false);
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(
@@ -134,8 +135,9 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    TraktorPlaylistModel* pModel = new TraktorPlaylistModel(
+std::unique_ptr<BaseSqlTableModel>
+TraktorFeature::createPlaylistModelForPlaylist(const QString& playlist) {
+    auto pModel = std::make_unique<TraktorPlaylistModel>(
             this, m_pLibrary->trackCollectionManager(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
@@ -511,7 +513,7 @@ void TraktorFeature::parsePlaylistEntries(
     }
 
     //playlist_id = id_query.lastInsertId().toInt();
-    int playlist_id = -1;
+    int playlist_id = kInvalidPlaylistId;
     const int idColumn = id_query.record().indexOf("id");
     while (id_query.next()) {
         playlist_id = id_query.value(idColumn).toInt();

@@ -14,7 +14,7 @@ Variables:
         <SizePolicy>max,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:../Tango/controls/button_2state_display.xml">
+          <Template src="skins:Tango/controls/button_2state_display.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>
             <SetVariable name="ObjectName">LoopIndicator</SetVariable>
             <SetVariable name="Size">30f,40me</SetVariable>

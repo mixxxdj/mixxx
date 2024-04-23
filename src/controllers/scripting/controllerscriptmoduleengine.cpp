@@ -1,5 +1,7 @@
 #include "controllers/scripting/controllerscriptmoduleengine.h"
 
+#include <QJSEngine>
+
 #include "moc_controllerscriptmoduleengine.cpp"
 
 ControllerScriptModuleEngine::ControllerScriptModuleEngine(
@@ -32,7 +34,7 @@ bool ControllerScriptModuleEngine::initialize() {
     }
 
     QJSValue initFunction = mod.property("init");
-    if (!executeFunction(initFunction)) {
+    if (!executeFunction(&initFunction)) {
         shutdown();
         return false;
     }
@@ -47,6 +49,6 @@ bool ControllerScriptModuleEngine::initialize() {
 }
 
 void ControllerScriptModuleEngine::shutdown() {
-    executeFunction(m_shutdownFunction);
+    executeFunction(&m_shutdownFunction);
     ControllerScriptEngineBase::shutdown();
 }

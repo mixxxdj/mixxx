@@ -1,15 +1,13 @@
 #include "waveform/renderers/glvsynctestrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/performancetimer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLWaveformRenderer(waveformWidgetRenderer),
+        : GLWaveformRendererSignal(waveformWidgetRenderer),
           m_drawcount(0) {
 }
 
@@ -26,36 +24,40 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    maybeInitializeGL();
-
     PerformanceTimer timer;
     //mixxx::Duration t5, t6, t7, t8, t9, t10, t11, t12, t13;
 
-
     timer.start();
 
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }
 
-    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return;
+    }
+
+    double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() *
+            trackSamples / audioVisualRatio;
+    double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() *
+            trackSamples / audioVisualRatio;
 
     const int firstIndex = int(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;

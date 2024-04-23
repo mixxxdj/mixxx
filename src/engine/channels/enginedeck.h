@@ -3,19 +3,12 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
-#include "control/controlpushbutton.h"
-#include "engine/engineobject.h"
 #include "engine/channels/enginechannel.h"
-#include "util/circularbuffer.h"
-
 #include "soundio/soundmanagerutil.h"
 
-class EngineBuffer;
 class EnginePregain;
 class EngineBuffer;
-class EngineMaster;
-class EngineVuMeter;
-class EngineEffectsManager;
+class EngineMixer;
 class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
@@ -24,7 +17,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineDeck(
             const ChannelHandleAndGroup& handleGroup,
             UserSettingsPointer pConfig,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             bool primaryDeck);
@@ -32,6 +25,16 @@ class EngineDeck : public EngineChannel, public AudioDestination {
 
     void process(CSAMPLE* pOutput, const int iBufferSize) override;
     void collectFeatures(GroupFeatureState* pGroupFeatures) const override;
+
+    // postProcessLocalBpm() is called on all decks to update the localBpm after
+    // process() is done. Updated localBpms for all decks are required for the
+    // postProcess() step, to avoid issues with the order they are processed.
+    // It cannot be done during process() because it relies that the localBpm
+    // of all decks are on their old values.
+    void postProcessLocalBpm() override;
+
+    // Update beat distances, sync modes, and other values that are only known
+    // after all other processing is done.
     void postProcess(const int iBufferSize) override;
 
     // TODO(XXX) This hack needs to be removed.
@@ -43,7 +46,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // configured input to be processed. This is run in the callback thread of
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
-    // concurrent with EngineMaster processing.
+    // concurrent with EngineMixer processing.
     void receiveBuffer(const AudioInput& input,
             const CSAMPLE* pBuffer,
             unsigned int nFrames) override;

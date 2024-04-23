@@ -1,14 +1,11 @@
 #pragma once
 
-#include <QWidget>
+#include <memory>
 
-#include "control/controlproxy.h"
-#include "preferences/colorpaletteeditor.h"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefcolorsdlg.h"
 #include "preferences/usersettings.h"
-#include "util/parented_ptr.h"
 
 class DlgReplaceCueColor;
 class Library;
@@ -24,6 +21,7 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
+    /// Loads the config keys and sets the widgets in the dialog to match
     void slotUpdate() override;
     /// Called when the user clicks the global "Apply" button.
     void slotApply() override;
@@ -43,8 +41,6 @@ class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     void slotEditHotcuePaletteClicked();
 
   private:
-    /// Loads the config keys and sets the widgets in the dialog to match
-    void loadSettings();
     void openColorPaletteEditor(
             const QString& paletteName,
             bool editHotcuePalette);

@@ -1,6 +1,5 @@
 #include "controllers/midi/legacymidicontrollermapping.h"
 
-#include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 
 bool LegacyMidiControllerMapping::saveMapping(const QString& fileName) const {
@@ -20,6 +19,13 @@ void LegacyMidiControllerMapping::addInputMapping(uint16_t key, const MidiInputM
 void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
     m_inputMappings.remove(key);
     setDirty(true);
+}
+
+bool LegacyMidiControllerMapping::removeInputMapping(
+        uint16_t key, const MidiInputMapping& mapping) {
+    auto result = m_inputMappings.remove(key, mapping);
+    setDirty(true);
+    return result > 0;
 }
 
 const QMultiHash<uint16_t, MidiInputMapping>&
@@ -59,4 +65,9 @@ void LegacyMidiControllerMapping::setOutputMappings(
         m_outputMappings.unite(mappings);
         setDirty(true);
     }
+}
+void LegacyMidiControllerMapping::removeInputHandlerMappings() {
+    m_inputMappings.removeIf([](std::pair<const uint16_t&, MidiInputMapping&> it) {
+        return !std::holds_alternative<ConfigKey>(it.second.control);
+    });
 }

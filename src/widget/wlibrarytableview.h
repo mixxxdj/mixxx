@@ -1,16 +1,15 @@
 #pragma once
 
 #include <QCache>
-#include <QFont>
-#include <QItemSelectionModel>
 #include <QString>
 #include <QTableView>
 
+#include "library/library_decl.h"
 #include "library/libraryview.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
-class TrackModel;
+class QFont;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
@@ -52,12 +51,18 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// @param optional: index, otherwise row/column member vars are used
     void restoreCurrentIndex(const QModelIndex& index = QModelIndex());
 
+    void dataChanged(
+            const QModelIndex& topLeft,
+            const QModelIndex& bottomRight,
+            const QVector<int>& roles = QVector<int>()) override;
+
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
+    FocusWidget setLibraryFocus(FocusWidget newFocus);
 
   public slots:
     void setTrackTableFont(const QFont& font);

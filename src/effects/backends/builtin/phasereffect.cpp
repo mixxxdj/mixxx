@@ -1,6 +1,7 @@
 #include "effects/backends/builtin/phasereffect.h"
 
-#include <QDebug>
+#include "effects/backends/effectmanifest.h"
+#include "engine/effects/engineeffectparameter.h"
 
 namespace {
 constexpr unsigned int updateCoef = 32;
@@ -111,10 +112,6 @@ void PhaserEffect::loadEngineEffectParameters(
     m_pRangeParameter = parameters.value("range");
     m_pTripletParameter = parameters.value("triplet");
     m_pStereoParameter = parameters.value("stereo");
-}
-
-PhaserEffect::~PhaserEffect() {
-    //qDebug() << debugString() << "destroyed";
 }
 
 void PhaserEffect::processChannel(

@@ -1,13 +1,11 @@
 #include "wfindonwebmenu.h"
 
-#include <QDesktopServices>
 #include <QMenu>
-#include <QUrlQuery>
 #include <QtDebug>
 
+#include "moc_wfindonwebmenu.cpp"
 #include "track/track.h"
-#include "util/parented_ptr.h"
-#include "util/widgethelper.h"
+#include "util/desktophelper.h"
 
 WFindOnWebMenu::WFindOnWebMenu(QWidget* parent)
         : QMenu(tr("Find on Web"), parent) {
@@ -38,8 +36,8 @@ QString WFindOnWebMenu::composeSearchQuery(
 }
 
 void WFindOnWebMenu::openInBrowser(const QUrl& url) {
-    if (!QDesktopServices::openUrl(url)) {
-        qWarning() << "QDesktopServices::openUrl() failed for " << url;
+    if (!mixxx::DesktopHelper::openUrl(url)) {
+        qWarning() << "DesktopHelper::openUrl() failed for " << url;
         DEBUG_ASSERT(false);
     }
 }

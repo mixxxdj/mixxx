@@ -3,15 +3,17 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-#include "library/bpmdelegate.h"
-#include "library/colordelegate.h"
 #include "library/coverartcache.h"
-#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
-#include "library/locationdelegate.h"
-#include "library/previewbuttondelegate.h"
-#include "library/stardelegate.h"
 #include "library/starrating.h"
+#include "library/tabledelegates/bpmdelegate.h"
+#include "library/tabledelegates/colordelegate.h"
+#include "library/tabledelegates/coverartdelegate.h"
+#include "library/tabledelegates/locationdelegate.h"
+#include "library/tabledelegates/multilineeditdelegate.h"
+#include "library/tabledelegates/playcountdelegate.h"
+#include "library/tabledelegates/previewbuttondelegate.h"
+#include "library/tabledelegates/stardelegate.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -19,6 +21,7 @@
 #include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/clipboard.h"
 #include "util/datetime.h"
 #include "util/db/sqlite.h"
 #include "util/logger.h"
@@ -92,6 +95,32 @@ QSqlDatabase cloneDatabase(
 
 } // anonymous namespace
 
+// static
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionDefault;
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionMinimum;
+constexpr int BaseTrackTableModel::kBpmColumnPrecisionMaximum;
+
+int BaseTrackTableModel::s_bpmColumnPrecision =
+        kBpmColumnPrecisionDefault;
+
+// static
+void BaseTrackTableModel::setBpmColumnPrecision(int precision) {
+    VERIFY_OR_DEBUG_ASSERT(precision >= BaseTrackTableModel::kBpmColumnPrecisionMinimum) {
+        precision = BaseTrackTableModel::kBpmColumnPrecisionMinimum;
+    }
+    VERIFY_OR_DEBUG_ASSERT(precision <= BaseTrackTableModel::kBpmColumnPrecisionMaximum) {
+        precision = BaseTrackTableModel::kBpmColumnPrecisionMaximum;
+    }
+    s_bpmColumnPrecision = precision;
+}
+
+bool BaseTrackTableModel::s_bApplyPlayedTrackColor =
+        kApplyPlayedTrackColorDefault;
+
+void BaseTrackTableModel::setApplyPlayedTrackColor(bool apply) {
+    s_bApplyPlayedTrackColor = apply;
+}
+
 //static
 QStringList BaseTrackTableModel::defaultTableColumns() {
     return kDefaultTableColumns;
@@ -105,7 +134,8 @@ BaseTrackTableModel::BaseTrackTableModel(
           TrackModel(cloneDatabase(pTrackCollectionManager), settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-          m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity) {
+          m_backgroundColorOpacity(WLibrary::kDefaultTrackTableBackgroundColorOpacity),
+          m_playedInactiveColor(QColor::fromRgb(WTrackTableView::kDefaultPlayedInactiveColorHex)) {
     connect(&pTrackCollectionManager->internalCollection()->getTrackDAO(),
             &TrackDAO::forceModelUpdate,
             this,
@@ -114,6 +144,13 @@ BaseTrackTableModel::BaseTrackTableModel(
             &PlayerInfo::trackChanged,
             this,
             &BaseTrackTableModel::slotTrackChanged);
+    CoverArtCache* pCache = CoverArtCache::instance();
+    if (pCache) {
+        connect(pCache,
+                &CoverArtCache::coverFound,
+                this,
+                &BaseTrackTableModel::slotCoverFound);
+    }
 }
 
 void BaseTrackTableModel::initTableColumnsAndHeaderProperties(
@@ -344,6 +381,59 @@ int BaseTrackTableModel::columnCount(const QModelIndex& parent) const {
     return countValidColumnHeaders();
 }
 
+void BaseTrackTableModel::cutTracks(const QModelIndexList& indices) {
+    copyTracks(indices);
+    removeTracks(indices);
+}
+
+void BaseTrackTableModel::copyTracks(const QModelIndexList& indices) const {
+    Clipboard::start();
+    for (const QModelIndex& index : indices) {
+        if (index.isValid()) {
+            Clipboard::add(QUrl::fromLocalFile(getTrackLocation(index)));
+        }
+    }
+    Clipboard::finish();
+}
+
+QList<int> BaseTrackTableModel::pasteTracks(const QModelIndex& insertionIndex) {
+    // Don't paste into locked playlists and crates or into into History
+    if (isLocked() || !hasCapabilities(TrackModel::Capability::ReceiveDrops)) {
+        return QList<int>{};
+    }
+
+    int insertionPos = 0;
+    const QList<QUrl> urls = Clipboard::urls();
+    const QList<TrackId> trackIds = m_pTrackCollectionManager->resolveTrackIdsFromUrls(urls, true);
+    if (!trackIds.isEmpty()) {
+        addTracksWithTrackIds(insertionIndex, trackIds, &insertionPos);
+    }
+
+    QList<int> rows;
+    for (const auto& trackId : trackIds) {
+        const auto trackRows = getTrackRows(trackId);
+        for (int trackRow : trackRows) {
+            if (insertionPos == 0) {
+                rows.append(trackRow);
+            } else {
+                int pos =
+                        index(
+                                trackRow,
+                                fieldIndex(ColumnCache::
+                                                COLUMN_PLAYLISTTRACKSTABLE_POSITION))
+                                .data()
+                                .toInt();
+                // trackRows includes all instances in the table of the pasted
+                // tracks. We only want to select the ones we just inserted
+                if (pos >= insertionPos && pos < insertionPos + trackIds.size()) {
+                    rows.append(trackRow);
+                }
+            }
+        }
+    }
+    return rows;
+}
+
 bool BaseTrackTableModel::isColumnHiddenByDefault(
         int column) {
     return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST) ||
@@ -369,13 +459,26 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return nullptr;
     }
     m_backgroundColorOpacity = pTableView->getBackgroundColorOpacity();
+    // This is the color used for the text of played tracks.
+    // data() uses this to compose the ForegroundRole QBrush if 'played' is checked.
+    m_playedInactiveColor = pTableView->getPlayedInactiveColor();
+    connect(pTableView,
+            &WTrackTableView::playedInactiveColorChanged,
+            this,
+            [this](QColor col) {
+                m_playedInactiveColor = col;
+            });
     if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
         return new StarDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pTableView);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+        return new PlayCountDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
+    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT)) {
+        return new MultiLineEditDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
@@ -419,6 +522,16 @@ QVariant BaseTrackTableModel::data(
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
         bgColor.setAlphaF(static_cast<float>(m_backgroundColorOpacity));
         return QBrush(bgColor);
+    } else if (role == Qt::ForegroundRole && s_bApplyPlayedTrackColor) {
+        // Custom text color for played tracks
+        auto playedRaw = rawSiblingValue(
+                index,
+                ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+        if (!playedRaw.isNull() &&
+                playedRaw.canConvert<bool>() &&
+                playedRaw.toBool()) {
+            return QVariant::fromValue(m_playedInactiveColor);
+        }
     }
 
     // Only retrieve a value for supported roles
@@ -426,7 +539,8 @@ QVariant BaseTrackTableModel::data(
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
             role != Qt::ToolTipRole &&
-            role != kDataExportRole) {
+            role != kDataExportRole &&
+            role != Qt::TextAlignmentRole) {
         return QVariant();
     }
 
@@ -524,17 +638,23 @@ QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
     unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
             pViewScreen->availableGeometry().height() *
             kRelativeHeightOfCoverartToolTip);
-    // Get image from cover art cache
-    CoverArtCache* pCache = CoverArtCache::instance();
-    QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
-            absoluteHeightOfCoverartToolTip); // Height also used as default for the width, in assumption that covers are squares
-    pixmap = pCache->tryLoadCover(this,
-            getCoverInfo(index),
-            absoluteHeightOfCoverartToolTip,
-            CoverArtCache::Loading::NoSignal);
+    const auto coverInfo = getCoverInfo(index);
+    if (!coverInfo.hasImage()) {
+        return QPixmap();
+    }
+    m_toolTipIndex = index;
+    QPixmap pixmap = CoverArtCache::getCachedCover(
+            coverInfo,
+            absoluteHeightOfCoverartToolTip);
     if (pixmap.isNull()) {
-        // Cache miss -> Don't show a tooltip
-        return QVariant();
+        // Cache miss -> Don't show a tooltip, refresh cache
+        // Height used for the width, in assumption that covers are squares
+        CoverArtCache::requestUncachedCover(
+                this,
+                coverInfo,
+                absoluteHeightOfCoverartToolTip);
+        //: Tooltip text on the cover art column shown when the cover is read from disk
+        return tr("Fetching image ...");
     }
     QByteArray data;
     QBuffer buffer(&data);
@@ -571,6 +691,9 @@ QVariant BaseTrackTableModel::roleValue(
             break;
         }
         M_FALLTHROUGH_INTENDED;
+    // NOTE: for export we need to fall through to Qt::DisplayRole,
+    // so do not add any other role cases here, or the export
+    // will be empty
     case Qt::DisplayRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
@@ -624,7 +747,7 @@ QVariant BaseTrackTableModel::roleValue(
             VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
                 return QVariant();
             }
-            return QString("(%1)").arg(timesPlayed);
+            return QString::number(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED: {
@@ -688,7 +811,9 @@ QVariant BaseTrackTableModel::roleValue(
                 if (role == Qt::ToolTipRole || role == kDataExportRole) {
                     return QString::number(bpm.value(), 'f', 4);
                 } else {
-                    return QString::number(bpm.value(), 'f', 1);
+                    // Use the locale here to make the display and editor consistent.
+                    // Custom precision, set in DlgPrefLibrary.
+                    return QLocale().toString(bpm.value(), 'f', s_bpmColumnPrecision);
                 }
             } else {
                 return QChar('-');
@@ -836,6 +961,21 @@ QVariant BaseTrackTableModel::roleValue(
         } else {
             // Undecidable
             return Qt::PartiallyChecked;
+        }
+    }
+    // Right align BPM, duration and bitrate so big/small values can easily be
+    // spotted by length (number of digits)
+    case Qt::TextAlignmentRole: {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
+        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION:
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
+            // We need to cast to int due to a bug similar to
+            // https://bugreports.qt.io/browse/QTBUG-67582
+            return static_cast<int>(Qt::AlignVCenter | Qt::AlignRight);
+        }
+        default:
+            return QVariant(); // default AlignLeft for all other columns
         }
     }
     default:
@@ -1064,3 +1204,15 @@ bool BaseTrackTableModel::updateTrackMood(
     return m_pTrackCollectionManager->updateTrackMood(pTrack, mood);
 }
 #endif // __EXTRA_METADATA__
+
+void BaseTrackTableModel::slotCoverFound(
+        const QObject* pRequester,
+        const CoverInfo& coverInfo,
+        const QPixmap& pixmap) {
+    Q_UNUSED(pixmap);
+    if (pRequester != this ||
+            getTrackLocation(m_toolTipIndex) != coverInfo.trackLocation) {
+        return;
+    }
+    emit dataChanged(m_toolTipIndex, m_toolTipIndex, {Qt::ToolTipRole});
+}

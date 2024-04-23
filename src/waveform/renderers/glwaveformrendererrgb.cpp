@@ -1,13 +1,9 @@
 #include "waveform/renderers/glwaveformrendererrgb.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
 namespace {
 const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
@@ -15,7 +11,7 @@ const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLWaveformRenderer(waveformWidgetRenderer) {
+        : GLWaveformRendererSignal(waveformWidgetRenderer) {
 }
 
 GLWaveformRendererRGB::~GLWaveformRendererRGB() {
@@ -25,32 +21,35 @@ void GLWaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
 void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    maybeInitializeGL();
-
-    TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    ConstWaveformPointer pWaveform = m_waveformRenderer->getWaveform();
+    if (pWaveform.isNull()) {
         return;
     }
 
-    ConstWaveformPointer waveform = pTrack->getWaveform();
-    if (waveform.isNull()) {
+    const double audioVisualRatio = pWaveform->getAudioVisualRatio();
+    if (audioVisualRatio <= 0) {
         return;
     }
 
-    const int dataSize = waveform->getDataSize();
+    const int dataSize = pWaveform->getDataSize();
     if (dataSize <= 1) {
         return;
     }
 
-    const WaveformData* data = waveform->data();
+    const WaveformData* data = pWaveform->data();
     if (data == nullptr) {
         return;
     }
 
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    if (trackSamples <= 0) {
+        return;
+    }
+
     auto firstVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getFirstDisplayedPosition() * dataSize);
+            m_waveformRenderer->getFirstDisplayedPosition() * trackSamples / audioVisualRatio);
     auto lastVisualIndex = static_cast<GLfloat>(
-            m_waveformRenderer->getLastDisplayedPosition() * dataSize);
+            m_waveformRenderer->getLastDisplayedPosition() * trackSamples / audioVisualRatio);
     const auto lineWidth = static_cast<GLfloat>(
             (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5);
 
@@ -68,7 +67,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    getGains(&allGain, true, &lowGain, &midGain, &highGain);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);

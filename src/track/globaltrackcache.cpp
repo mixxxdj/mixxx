@@ -336,20 +336,16 @@ void GlobalTrackCache::relocateTracks(
             ++i) {
         const QString oldCanonicalLocation = i->first;
         Track* plainPtr = i->second->getPlainPtr();
-        auto fileAccess = plainPtr->getFileAccess();
-        TrackRef trackRef = TrackRef::fromFileInfo(
-                fileAccess.info(),
-                plainPtr->getId());
+        const mixxx::FileInfo fileInfo = plainPtr->getFileInfo();
+        TrackRef trackRef = TrackRef::fromFileInfo(fileInfo, plainPtr->getId());
         if (!trackRef.hasCanonicalLocation() && trackRef.hasId() && pRelocator) {
-            auto relocatedFileAccess = pRelocator->relocateCachedTrack(
-                    trackRef.getId(),
-                    fileAccess);
-            if (fileAccess.info() != relocatedFileAccess.info()) {
+            auto relocatedFileAccess = pRelocator->relocateCachedTrack(trackRef.getId());
+            if (relocatedFileAccess.info().hasLocation() &&
+                    fileInfo != relocatedFileAccess.info()) {
                 plainPtr->relocate(relocatedFileAccess);
                 trackRef = TrackRef::fromFileInfo(
                         relocatedFileAccess.info(),
                         trackRef.getId());
-                fileAccess = std::move(relocatedFileAccess);
             }
         }
         if (!trackRef.hasCanonicalLocation()) {

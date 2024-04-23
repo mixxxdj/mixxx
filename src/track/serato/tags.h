@@ -84,7 +84,7 @@ class SeratoTags final {
         return m_seratoMarkers2.dump(fileType);
     }
 
-    CueInfoImporterPointer importCueInfos() const;
+    std::unique_ptr<CueInfoImporter> createCueInfoImporter() const;
     BeatsImporterPointer importBeats() const;
 
     QList<CueInfo> getCueInfos() const;

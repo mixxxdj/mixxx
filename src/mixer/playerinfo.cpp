@@ -1,7 +1,6 @@
 // Helper class to have easy access
 #include "mixer/playerinfo.h"
 
-#include "control/controlobject.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"

@@ -7,6 +7,7 @@
 #include <QStringRef>
 #include <cstring>
 #include <cwchar>
+#include <limits>
 
 #include "util/assert.h"
 
@@ -71,32 +72,16 @@ inline std::size_t wcsnlen_s(
 #endif
 }
 
-/// Convert a wide-character C string to QString.
+/// @brief Convert a wide-character C string to QString.
 ///
-/// We cannot use Qts wchar_t functions, since they may work or not
-/// depending on the '/Zc:wchar_t-' build flag in the Qt configs
-/// on Windows build.
-///
-/// See also: QString::fromWCharArray()
+/// @param wcs wchar_t c-string
+/// @param maxLen maximum length of the string in case `wcs` is not null-terminated
 inline QString convertWCStringToQString(
         const wchar_t* wcs,
-        std::size_t len) {
-    if (!wcs) {
-        DEBUG_ASSERT(len == 0);
-        return QString();
-    }
-    DEBUG_ASSERT(wcsnlen_s(wcs, len) == len);
-    const auto ilen = static_cast<int>(len);
-    DEBUG_ASSERT(ilen >= 0); // unsigned -> signed
-    switch (sizeof(wchar_t)) {
-    case sizeof(char16_t):
-        return QString::fromUtf16(reinterpret_cast<const char16_t*>(wcs), ilen);
-    case sizeof(char32_t):
-        return QString::fromUcs4(reinterpret_cast<const char32_t*>(wcs), ilen);
-    default:
-        DEBUG_ASSERT(!"unsupported character type");
-        return QString();
-    }
+        std::size_t maxLen) {
+    // ensure we don't "overflow" from the `static_cast<int>`
+    DEBUG_ASSERT(maxLen <= std::numeric_limits<int>::max());
+    return QString::fromWCharArray(wcs, static_cast<int>(wcsnlen_s(wcs, maxLen)));
 }
 
 } // namespace mixxx

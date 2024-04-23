@@ -2,6 +2,7 @@
 
 #include <QRegExp>
 
+#include "moc_macrocontrol.cpp"
 #include "track/track.h"
 
 namespace {
@@ -85,7 +86,8 @@ void MacroControl::process(const double dRate,
         const int iBufferSize) {
     Q_UNUSED(dRate);
     if (m_queuedJumpTarget.value() >= 0) {
-        // if a cue press doesn't change the position, notifySeek isn't called, thus m_queuedJumpTarget isn't reset
+        // if a cue press doesn't change the position, notifySeek isn't called,
+        // thus m_queuedJumpTarget isn't reset
         if (getStatus() == Status::Armed) {
             // start the recording on a cue press even when there is no jump
             notifySeek(currentPosition);
@@ -192,7 +194,9 @@ void MacroControl::stop() {
 }
 
 bool MacroControl::updateRecording() {
-    //qCDebug(macroLoggingCategory) << QThread::currentThread() << QTime::currentTime() << "Update recording status:" << getStatus() << "recording:" << isRecording();
+    // qCDebug(macroLoggingCategory) << QThread::currentThread() <<
+    // QTime::currentTime() << "Update recording status:" << getStatus() <<
+    // "recording:" << isRecording();
     VERIFY_OR_DEBUG_ASSERT(isRecording()) {
         return false;
     }
@@ -225,7 +229,9 @@ bool MacroControl::stopRecording() {
         if (m_pMacro->getLabel().isEmpty()) {
             // Automatically set the start position in seconds as label
             // if there is no user-defined one
-            auto secPos = m_pMacro->getStart() / frameInfo().sampleRate;
+            auto sampleRate = frameInfo().sampleRate;
+            auto secPos = (sampleRate != 0) ? m_pMacro->getStart() / sampleRate
+                                            : mixxx::audio::FramePos(0);
             m_pMacro->setLabel(QString::number(secPos.value(), 'f', 2));
         }
         setStatus(Status::Recorded);

@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include "engine/enginebuffer.h"
-#include "engine/enginemaster.h"
+#include "engine/enginemixer.h"
 #include "macro_test.h"
 #include "track/track.h"
 

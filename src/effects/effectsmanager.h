@@ -28,19 +28,27 @@ class EffectsManager {
     void setup();
     void addDeck(const ChannelHandleAndGroup& deckHandleGroup);
 
+    void loadDefaultEqsAndQuickEffects();
+
     EffectChainPointer getEffectChain(const QString& group) const;
     EqualizerEffectChainPointer getEqualizerEffectChain(
             const QString& deckGroupName) const {
         return m_equalizerEffectChains.value(deckGroupName);
     }
+    QuickEffectChainPointer getQuickEffectChain(
+            const QString& deckGroupName) const {
+        return m_quickEffectChains.value(deckGroupName);
+    }
     EffectChainPointer getStandardEffectChain(int unitNumber) const;
     EffectChainPointer getOutputEffectChain() const;
 
     EngineEffectsManager* getEngineEffectsManager() const {
-        return m_pEngineEffectsManager;
+        // Must only be called from Engine classes which have a shorter
+        // lifetime than this EffectsManager. See CoreServices::finalize()
+        return m_pEngineEffectsManager.get();
     }
 
-    const ChannelHandle getMasterHandle() const {
+    const ChannelHandle getMainHandle() const {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
 
@@ -79,6 +87,7 @@ class EffectsManager {
     void addQuickEffectChain(const ChannelHandleAndGroup& deckHandleGroup);
 
     void readEffectsXml();
+    void readEffectsXmlSingleDeck(const QString& deckGroup);
     void saveEffectsXml();
 
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
@@ -95,7 +104,7 @@ class EffectsManager {
     EffectsBackendManagerPointer m_pBackendManager;
     std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
 
-    EngineEffectsManager* m_pEngineEffectsManager;
+    std::unique_ptr<EngineEffectsManager> m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectPresetManagerPointer m_pEffectPresetManager;
@@ -105,6 +114,11 @@ class EffectsManager {
     // TODO: replace these with effect parameters that are hidden by default
     ControlPotmeter m_loEqFreq;
     ControlPotmeter m_hiEqFreq;
+
+    // This is set true when setup() is run. Then, the initial decks (their EQ
+    // and QuickEffect chains) have been initialized, either with defaults or the
+    // previous state read from effects.xml
+    bool m_initializedFromEffectsXml;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

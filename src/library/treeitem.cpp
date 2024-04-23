@@ -1,5 +1,7 @@
 #include "library/treeitem.h"
 
+#include "util/make_const_iterator.h"
+
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
  * TreeItems are used by the TreeItemModel class to display tree
@@ -56,16 +58,16 @@ TreeItem* TreeItem::child(int row) const {
     return m_children[row];
 }
 
-void TreeItem::insertChild(int row, TreeItem* pChild) {
+void TreeItem::insertChild(int row, std::unique_ptr<TreeItem> pChild) {
     DEBUG_ASSERT(pChild);
     DEBUG_ASSERT(!pChild->m_pParent);
     DEBUG_ASSERT(!pChild->m_pFeature ||
             pChild->m_pFeature == m_pFeature);
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
-    m_children.insert(row, pChild);
     pChild->m_pParent = this;
     pChild->initFeatureRecursively(m_pFeature);
+    m_children.insert(row, pChild.release()); // transfer ownership
 }
 
 void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
@@ -76,15 +78,9 @@ void TreeItem::initFeatureRecursively(LibraryFeature* pFeature) {
     }
     DEBUG_ASSERT(!m_pFeature);
     m_pFeature = pFeature;
-    for (auto* pChild : qAsConst(m_children)) {
+    for (auto* pChild : std::as_const(m_children)) {
         pChild->initFeatureRecursively(pFeature);
     }
-}
-
-TreeItem* TreeItem::appendChild(
-        std::unique_ptr<TreeItem> pChild) {
-    insertChild(m_children.size(), pChild.get()); // transfer ownership
-    return pChild.release();
 }
 
 TreeItem* TreeItem::appendChild(
@@ -93,22 +89,16 @@ TreeItem* TreeItem::appendChild(
     auto pNewChild = std::make_unique<TreeItem>(
             std::move(label),
             std::move(data));
-    return appendChild(std::move(pNewChild));
+    TreeItem* pRet = pNewChild.get();
+    insertChild(m_children.size(), std::move(pNewChild));
+    return pRet;
 }
 
-void TreeItem::removeChild(int row) {
-    DEBUG_ASSERT(row >= 0);
-    DEBUG_ASSERT(row < m_children.size());
-    delete m_children.takeAt(row);
-}
-
-void TreeItem::insertChildren(int row, QList<TreeItem*>& children) {
+void TreeItem::insertChildren(int row, std::vector<std::unique_ptr<TreeItem>>&& children) {
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
-    while (!children.isEmpty()) {
-        TreeItem* pChild = children.front();
-        insertChild(row++, pChild);
-        children.pop_front();
+    for (auto&& pChild : children) {
+        insertChild(row++, std::move(pChild));
     }
 }
 
@@ -117,6 +107,6 @@ void TreeItem::removeChildren(int row, int count) {
     DEBUG_ASSERT(count <= m_children.size());
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= (m_children.size() - count));
-    qDeleteAll(m_children.begin() + row, m_children.begin() + (row + count));
-    m_children.erase(m_children.begin() + row, m_children.begin() + (row + count));
+    qDeleteAll(m_children.constBegin() + row, m_children.constBegin() + (row + count));
+    constErase(&m_children, m_children.constBegin() + row, m_children.constBegin() + (row + count));
 }

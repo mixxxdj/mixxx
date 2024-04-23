@@ -2,16 +2,17 @@
 
 #include <QSharedPointer>
 #include <QWidget>
-#include <memory>
 
 #include "library/export/dlglibraryexport.h"
-#include "library/export/engineprimeexportrequest.h"
 #include "library/trackset/crate/crateid.h"
 #include "preferences/usersettings.h"
 #include "util/optional.h"
 #include "util/parented_ptr.h"
 
 class TrackCollectionManager;
+namespace mixxx {
+struct EnginePrimeExportRequest;
+} // Namespace mixxx
 
 namespace mixxx {
 

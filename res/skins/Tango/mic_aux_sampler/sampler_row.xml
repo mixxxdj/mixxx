@@ -15,19 +15,19 @@ Variables:
         <SizePolicy>me,me</SizePolicy>
         <Children>
             <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler1"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler2"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler3"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler4"/></SetVariable>
           </Template>
         </Children>
@@ -45,8 +45,9 @@ Variables:
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
-              <Template src="skin:../Tango/controls/button_2state_persist.xml">
+              <Template src="skins:Tango/controls/button_2state_persist.xml">
                 <SetVariable name="ObjectName">SamplersMiniMaxi</SetVariable>
+                <SetVariable name="TooltipId">expand_samplers</SetVariable>
                 <SetVariable name="Size">20f,30me</SetVariable>
                 <SetVariable name="ConfigKey">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
               </Template>
@@ -63,19 +64,19 @@ Variables:
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler5"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler6"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler7"/></SetVariable>
           </Template>
             <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
-          <Template src="skin:../Tango/mic_aux_sampler/sampler.xml">
+          <Template src="skins:Tango/mic_aux_sampler/sampler.xml">
             <SetVariable name="samNum"><Variable name="sampler8"/></SetVariable>
           </Template>
         </Children>

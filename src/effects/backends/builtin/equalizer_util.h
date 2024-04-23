@@ -70,6 +70,6 @@ class EqualizerUtil {
 
     static QString adjustFrequencyShelvesTip() {
         return QObject::tr(
-                "To adjust frequency shelves, go to Preferences -> Equalizers.");
+                "To adjust frequency shelves, go to Preferences -> Mixer.");
     }
 };

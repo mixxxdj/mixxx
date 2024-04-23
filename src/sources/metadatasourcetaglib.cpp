@@ -1,14 +1,13 @@
 #include "sources/metadatasourcetaglib.h"
 
-#include <taglib/opusfile.h>
-#include <taglib/vorbisfile.h>
+#include <opusfile.h>
+#include <vorbisfile.h>
 
 #include <QFile>
-#include <QFileInfo>
-#include <QThread>
 #include <memory>
 
 #include "track/taglib/trackmetadata.h"
+#include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
 #include "util/safelywritablefile.h"
 
@@ -92,14 +91,17 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         kLogger.warning()
                 << "Nothing to import"
                 << "from file" << m_fileName
-                << "with type" << m_fileType;
+                << "of type" << m_fileType;
         return afterImport(ImportResult::Unavailable);
     }
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "Importing"
-                        << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
+                        << ((pTrackMetadata && pCoverImage)
+                                           ? "track metadata and cover art"
+                                           : (pTrackMetadata ? "track metadata"
+                                                             : "cover art"))
                         << "from file" << m_fileName
-                        << "with type" << m_fileType;
+                        << "of type" << m_fileType;
     }
 
     // Rationale: If a file contains different types of tags only
@@ -132,7 +134,7 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
             // Note (TagLib 1.1.11): TagLib::MPEG::File::tag() returns a
             // valid pointer even if neither an ID3v2 nor an ID3v1 tag is
             // present!
-            // See also: https://bugs.launchpad.net/mixxx/+bug/1865957
+            // See also: https://github.com/mixxxdj/mixxx/issues/9891
             const TagLib::Tag* pTag = file.tag();
             if (pTag) {
                 taglib::importTrackMetadataFromTag(pTrackMetadata, *pTag);
@@ -462,7 +464,7 @@ class OggTagSaver : public TagSaver {
         (TAGLIB_PATCH_VERSION == 1)
         // TagLib 1.11.1 suffers from a serious bug that corrupts OGG files
         // when writing tags: https://github.com/taglib/taglib/issues/864
-        // Launchpad issue: https://bugs.launchpad.net/mixxx/+bug/1833190
+        // Launchpad issue: https://github.com/mixxxdj/mixxx/issues/9680
         Q_UNUSED(pFile);
         Q_UNUSED(trackMetadata);
         kLogger.warning() << "Skipping export of metadata into Ogg file due to "
@@ -617,12 +619,10 @@ class AiffTagSaver : public TagSaver {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
-    // NOTE(uklotzde): Log unconditionally (with debug level) to
-    // identify files in the log file that might have caused a
-    // crash while exporting metadata.
-    kLogger.debug() << "Exporting track metadata"
-                    << "into file" << m_fileName
-                    << "with type" << m_fileType;
+    // Modifying an external file is a potentially dangerous operation.
+    // If this operation unexpectedly crashes or corrupts data we need
+    // to identify the file that is affected.
+    kLogger.info() << "Exporting track metadata into file:" << m_fileName;
 
     SafelyWritableFile safelyWritableFile(m_fileName,
             SafelyWritableFile::SafetyMode::Edit);

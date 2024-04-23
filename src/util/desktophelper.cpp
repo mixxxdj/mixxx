@@ -8,8 +8,8 @@
 #include <QProcess>
 
 #ifdef Q_OS_LINUX
-#include <QtDBus/QtDBus>
 #include <QFileInfo>
+#include <QtDBus>
 #endif
 
 namespace {
@@ -19,7 +19,7 @@ const QString kSelectInXfce = "xf";
 QString sSelectInFileBrowserCommand;
 
 QString getSelectInFileBrowserCommand() {
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
     return "open -R";
 #elif defined(Q_OS_WIN)
     return "explorer.exe /select,";
@@ -90,12 +90,16 @@ bool selectInXfce(const QString& path) {
 #endif
 
 void selectViaCommand(const QString& path) {
+#if defined(Q_OS_IOS) || defined(Q_OS_WASM)
+    qWarning() << "Starting process (" << path << ") is not supported on iOS or the web!";
+#else
     QStringList arguments = sSelectInFileBrowserCommand.split(" ");
     // No escaping required because QProcess bypasses the shell
     arguments.append(QDir::toNativeSeparators(path));
     QString program = arguments.takeFirst();
     qDebug() << "Calling:" << program << arguments;
     QProcess::startDetached(program, arguments);
+#endif
 }
 
 } // anonymous namespace
@@ -147,7 +151,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 
         // We cannot select, just open the parent folder
         QDir dir = dirPath;
-        while (!dir.exists() && dirPath.size()) {
+        while (!dir.exists() && !dirPath.isEmpty()) {
             // Note: dir.cdUp() does not work for not existing dirs
             dirPath = removeChildDir(dirPath);
             dir.setPath(dirPath);
@@ -165,10 +169,24 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         dirPath = dir.absolutePath();
         qDebug() << "opening:" << dirPath;
         if (!openedDirs.contains(dirPath)) {
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+            openUrl(QUrl::fromLocalFile(dirPath));
             openedDirs.insert(dirPath);
         }
     }
+}
+
+bool DesktopHelper::openUrl(const QUrl& url) {
+#ifdef Q_OS_IOS
+    QUrl urlToOpen = url;
+    // Open files and folders in the iOS Files app
+    // See https://stackoverflow.com/q/46499842
+    if (urlToOpen.scheme() == "file") {
+        urlToOpen.setScheme("shareddocuments");
+    }
+    return QDesktopServices::openUrl(urlToOpen);
+#else
+    return QDesktopServices::openUrl(url);
+#endif
 }
 
 } // namespace mixxx

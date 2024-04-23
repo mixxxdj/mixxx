@@ -4,8 +4,8 @@
 #pragma once
 
 #include "widget/wlabel.h"
-#include "skin/legacy/skincontext.h"
-#include "recording/recordingmanager.h"
+
+class RecordingManager;
 
 class WRecordingDuration: public WLabel {
     Q_OBJECT

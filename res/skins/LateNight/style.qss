@@ -9,7 +9,6 @@ WNumber, WNumberPos,
 WPushButton,
 WKey,
 WTime,
-WTrackText,
 WTrackProperty,
 WRecordingDuration,
 QSpinBox,
@@ -89,6 +88,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackPropertyEditor,
 QLineEdit QMenu,
 WCoverArtMenu,
 QLabel#labelRecPrefix,
@@ -191,6 +191,7 @@ WSearchLineEdit::item:selected,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
+  qproperty-alignment: AlignCenter;
 }
 
 WPushButton,
@@ -244,6 +245,7 @@ WBeatSpinBox,
 #BpmTextSmall,
 #FxUnitLabel,
 #SamplerTitle,
+WTrackPropertyEditor,
 WTime,
 WRecordingDuration {
   font-size: 16px;
@@ -285,13 +287,6 @@ WRecordingDuration {
   text-align: right;
 }
 
-#KnobLabel,
-#FxKnobLabel,
-#FxButtonLabel {
-  qproperty-alignment: 'AlignLeft | AlignVCenter';
-}
-
-
 WTrackTableViewHeader::item {
   /* Don't set a font size to pick up the system font size. */
   border-bottom: 1px solid #000;
@@ -307,6 +302,11 @@ WTrackTableViewHeader::item {
     padding: 0 0.15em;
   }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryBPMButton::item,
+#LibraryPlayedCheckbox::item {
+  border: 0px;
+}
 
 #HotcueButton {
   /* ronso0
@@ -453,6 +453,13 @@ WSpinny { /*
 #RateSliderBoxCompactSync {
   margin-left: 5px;
 }
+
+WTrackProperty,
+WTrackProperty[selected="false"] {
+  background-color: transparent;
+  border: 0px solid transparent;
+  border-radius: 1px;
+}
 /************** Decks  ********************************************************/
 
 
@@ -493,17 +500,17 @@ WSpinny { /*
   }
 
 #VuMeterBox,
-#VuMeterBoxMasterSingle {
+#VuMeterBoxMainSingle {
   /* gap in between clipping and Vu level */
   qproperty-layoutSpacing: 2;
 }
 #VuMeterBox,
-#VuMeterBoxMaster {
+#VuMeterBoxMain {
   /* (black) groove around Vu widgets */
   padding: 1px;
 }
-#VuMeterBoxMaster {
-  /* gap in between Master lft/right Vu
+#VuMeterBoxMain {
+  /* gap in between Main lft/right Vu
   qproperty-layoutSpacing: 1; */
   }
   #VuMeterBoxFull {
@@ -513,8 +520,8 @@ WSpinny { /*
   }
   #VuMeterChannel_2Decks,
   #VuMeterChannel_4Decks,
-  #VuMeterMaster_2Decks,
-  #VuMeterMaster_4Decks {
+  #VuMeterMain_2Decks,
+  #VuMeterMain_4Decks {
     qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
     }
 
@@ -531,16 +538,16 @@ WSpinny { /*
       qproperty-layoutAlignment: 'AlignCenter';
     }
 
-#MixerMasterHeadphone {
+#MixerMainHeadphone {
   }
-  #MasterControls,
+  #MainControls,
   #HeadphoneControls {
     qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
     }
     #BoothLabelBox {
       qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
     }
-  #MasterHeadphoneSeparator {
+  #MainHeadphoneSeparator {
   }
 
 /************** Mixer  ********************************************************/
@@ -847,14 +854,15 @@ WEffectChainPresetButton::menu-indicator {
       min-width: 40px;
     }
 
+/* Extra declaration for QRadioButton otherwise it shows up with wrong colors in
+   Linux with Gnome */
 #LibraryFeatureControls QLabel,
 #LibraryFeatureControls QRadioButton {
   background: transparent;
 }
-
-/* Additional space for QRadionButtons */
-#LibraryFeatureControls QRadioButton {
-  margin: 2px 3px 2px 3px;
+#LibraryFeatureControls QRadioButton::indicator {
+  width: 18px;
+  height: 18px;
   }
   /* Push 'New' radio button away from corner */
   QRadioButton#radioButtonRecentlyAdded {

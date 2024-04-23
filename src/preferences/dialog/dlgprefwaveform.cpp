@@ -131,6 +131,8 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
+
+    setScrollSafeGuardForAllInputWidgets(this);
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -140,9 +142,9 @@ void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
     if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
-        openGlStatusIcon->setText(factory->getOpenGLVersion());
+        openGlStatusData->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
+        openGlStatusData->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
     // The combobox holds a list of [handle name, handle index]
@@ -219,8 +221,8 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);
 
-    // 30FPS is the default
-    frameRateSlider->setValue(30);
+    // 60FPS is the default
+    frameRateSlider->setValue(60);
     endOfTrackWarningTimeSlider->setValue(30);
 
     // Waveform caching enabled.

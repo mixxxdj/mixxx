@@ -35,6 +35,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString doubleClick = tr("Double-click");
+    QString selectedClick = tr("Select and click: Show inline value editor");
     QString scrollWheel = tr("Scroll-wheel");
     QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
@@ -88,32 +89,32 @@ void Tooltips::addStandardTooltips() {
             << resetWithRightAndDoubleClick;
 
     QString clippingHelp = tr("(too loud for the hardware and is being distorted).");
-    add("channel_PeakIndicator")
+    add("channel_peak_indicator")
             << tr("Channel Peak Indicator")
             << tr("Indicates when the signal on the channel is clipping,")
             << clippingHelp;
 
-    add("channel_PeakIndicatorL")
+    add("channel_peak_indicator_left")
             << tr("Channel L Peak Indicator")
             << tr("Indicates when the left signal on the channel is clipping,")
             << clippingHelp;
 
-    add("channel_PeakIndicatorR")
+    add("channel_peak_indicator_right")
             << tr("Channel R Peak Indicator")
             << tr("Indicates when the right signal on the channel is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicator")
+    add("main_peak_indicator")
             << tr("Main Output Peak Indicator")
             << tr("Indicates when the signal on the main output is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicatorL")
+    add("main_peak_indicator_left")
             << tr("Main Output L Peak Indicator")
             << tr("Indicates when the left signal on the main output is clipping,")
             << clippingHelp;
 
-    add("master_PeakIndicatorR")
+    add("main_peak_indicator_right")
             << tr("Main Output R Peak Indicator")
             << tr("Indicates when the right signal on the main output is clipping,")
             << clippingHelp;
@@ -134,7 +135,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Microphone Volume Meter")
             << tr("Shows the current microphone volume.");
 
-    add("microphone_PeakIndicator")
+    add("microphone_peak_indicator")
             << tr("Microphone Peak Indicator")
             << tr("Indicates when the signal on the microphone is clipping,")
             << clippingHelp;
@@ -143,7 +144,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Auxiliary Volume Meter")
             << tr("Shows the current auxiliary volume.");
 
-    add("auxiliary_PeakIndicator")
+    add("auxiliary_peak_indicator")
             << tr("Auxiliary Peak Indicator")
             << tr("Indicates when the signal on the auxiliary is clipping,")
             << clippingHelp;
@@ -152,7 +153,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Sampler Volume Meter")
             << tr("Shows the current sampler volume.");
 
-    add("sampler_PeakIndicator")
+    add("sampler_peak_indicator")
             << tr("Sampler Peak Indicator")
             << tr("Indicates when the signal on the sampler is clipping,")
             << clippingHelp;
@@ -161,16 +162,16 @@ void Tooltips::addStandardTooltips() {
             << tr("Preview Deck Volume Meter")
             << tr("Shows the current Preview Deck volume.");
 
-    add("preview_PeakIndicator")
+    add("preview_peak_indicator")
             << tr("Preview Deck Peak Indicator")
             << tr("Indicates when the signal on the Preview Deck is clipping,")
             << clippingHelp;
 
-    add("master_VuMeterL")
+    add("main_VuMeterL")
             << tr("Main Channel L Volume Meter")
             << tr("Shows the current volume for the left channel of the main output.");
 
-    add("master_VuMeterR")
+    add("main_VuMeterR")
             << tr("Main Channel R Volume Meter")
             << tr("Shows the current volume for the right channel of the main output.");
 
@@ -180,12 +181,12 @@ void Tooltips::addStandardTooltips() {
             << resetWithRightAndDoubleClick;
 
     // Legacy control.
-    add("master_volume")
+    add("main_volume")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
             << resetWithRightAndDoubleClick;
 
-    add("master_gain")
+    add("main_gain")
             << tr("Main Output Gain")
             << tr("Adjusts the main output gain.")
             << resetWithRightAndDoubleClick;
@@ -323,29 +324,45 @@ void Tooltips::addStandardTooltips() {
             << tr("Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.")
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
-    QString changeAmount = tr("Change the step-size in the Preferences -> Interface menu.");
+    QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
+    QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
+
     add("rate_perm_up_rate_perm_up_small")
-            << tr("Raise Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch higher in small steps."))
+            << tr("Speed Up")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Raises the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
 
     add("rate_perm_down_rate_perm_down_small")
-            << tr("Lower Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch lower."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch lower in small steps."))
+            << tr("Slow Down")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Lowers the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
 
     add("rate_temp_up_rate_temp_up_small")
-            << tr("Raise Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch higher while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch higher (small amount) while active."))
+            << tr("Speed Up Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed higher while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
-            << tr("Lower Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch lower while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch lower (small amount) while active."))
+            << tr("Slow Down Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed lower while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed lower (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("filterLow")
@@ -534,7 +551,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Mute")
             << tr("Mutes the selected channel's audio in the main output.");
 
-    add("master_enable")
+    add("main_enable")
             << tr("Main mix enable")
             << tr("Hold or short click for latching to "
                   "mix this input into the main output.");
@@ -578,7 +595,9 @@ void Tooltips::addStandardTooltips() {
 
     add("sync_leader")
             << tr("Enable Sync Leader")
-            << tr("When enabled, this device will serve as the sync leader for all other decks.");
+            << tr("When enabled, this device will serve as the sync leader for all other decks.")
+            << tr("This is relevant when a dynamic tempo track is loaded to a sync leader deck."
+                  "In that case, other synced devices will adopt the changing tempo.");
 
     add("rate")
             << tr("Speed Control")
@@ -619,16 +638,25 @@ void Tooltips::addStandardTooltips() {
             << tr("Repeat")
             << tr("When active the track will repeat if you go past the end or reverse before the start.");
 
-    add("eject")
-            << tr("Eject")
-            << tr("Ejects track from the player.");
+    add("eject") << tr("Eject") << tr("Ejects track from the player.")
+                 << tr("Un-ejects when no track is loaded, i.e. reloads the "
+                       "track that was ejected last (of any deck).")
+                 << QString("%1: %2").arg(doubleClick,
+                            "Reloads the last replaced track. "
+                            "If no track is loaded reloads the second-last "
+                            "ejected track.");
 
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
                              tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is a loop cue, toggles the loop and jumps to "
+                        "if the loop is behind the play position.")
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
                   << quantizeSnap
+                  << tr("If the play position is inside an active loop, "
+                        "stores the loop as loop cue.")
+                  << " " // add linebreak, '\n' would result in two linebreaks
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
                                 "labels and colors."))
@@ -641,6 +669,10 @@ void Tooltips::addStandardTooltips() {
     add("toggle_recording")
             << tr("Record Mix")
             << tr("Toggle mix recording.");
+
+    add("expand_samplers")
+            << tr("Expand/Collapse Samplers")
+            << tr("Toggle expanded samplers view.");
 
     // Status displays and toggle buttons
     add("recording_duration")
@@ -788,7 +820,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_title")
             << tr("Track Title")
@@ -797,7 +830,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_album")
             << tr("Track Album")
@@ -806,13 +840,23 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_key")
             //: The musical key of a track
             << tr("Track Key")
             << tr("Displays the musical key of the loaded track.")
             << trackTags;
+
+    add("track_comment")
+            << tr("Track Comment")
+            << tr("Displays the comment tag of the loaded track.")
+            << trackTags + "\n"
+            << dropTracksHere
+            << dragItem
+            << QString("%1: %2").arg(doubleClick, trackProperties)
+            << QString("%1: %2").arg(rightClick, trackMenu);
 
     add("text")
             << tr("Track Artist/Title")
@@ -821,7 +865,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("time")
             << tr("Clock")
@@ -941,7 +986,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Route the headphone channel through this effect unit.")
             << effectsWithinUnit;
 
-    add("EffectUnit_master_enabled")
+    add("EffectUnit_main_enabled")
             << tr("Assign Effect Unit")
             << tr("Route the main mix through this effect unit.")
             << effectsWithinUnit;

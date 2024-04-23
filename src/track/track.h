@@ -12,6 +12,7 @@
 #include "track/macro.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
+#include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility/qmutex.h"
 #include "util/fileaccess.h"
 #include "util/memory.h"
@@ -78,14 +79,10 @@ class Track : public QObject {
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QDateTime sourceSynchronizedAt READ getSourceSynchronizedAt STORED false)
 
-    mixxx::FileAccess getFileAccess() const {
-        // Copying QFileInfo is thread-safe due to implicit sharing,
-        // i.e. no locking needed.
-        return m_fileAccess;
-    }
     mixxx::FileInfo getFileInfo() const {
-        // Copying QFileInfo is thread-safe due to implicit sharing,
+        // Copying mixxx::FileInfo based on QFileInfo is thread-safe due to implicit sharing,
         // i.e. no locking needed.
+        static_assert(mixxx::FileInfo::isQFileInfo());
         return m_fileAccess.info();
     }
 
@@ -93,10 +90,11 @@ class Track : public QObject {
 
     // Returns absolute path to the file, including the filename.
     QString getLocation() const {
-        if (!m_fileAccess.info().hasLocation()) {
+        const auto fileInfo = getFileInfo();
+        if (!fileInfo.hasLocation()) {
             return {};
         }
-        return m_fileAccess.info().location();
+        return fileInfo.location();
     }
 
     /// Set the file type
@@ -110,14 +108,10 @@ class Track : public QObject {
     // Get number of channels
     int getChannels() const;
 
-    // Get sample rate
     mixxx::audio::SampleRate getSampleRate() const;
 
-    // Sets the bitrate
     void setBitrate(int);
-    // Returns the bitrate
     int getBitrate() const;
-    // Returns the bitrate as a string
     QString getBitrateText() const;
 
     void setDuration(mixxx::Duration duration);
@@ -145,9 +139,7 @@ class Track : public QObject {
     }
     bool trySetBpm(mixxx::Bpm bpm);
 
-    // Returns BPM
     double getBpm() const;
-    // Returns BPM as a string
     QString getBpmText() const {
         return mixxx::Bpm::displayValueText(getBpm());
     }
@@ -157,7 +149,6 @@ class Track : public QObject {
     void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
-    // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
     // Adjust ReplayGain by multiplying the given gain amount.
     void adjustReplayGainFromPregain(double);
@@ -178,47 +169,35 @@ class Track : public QObject {
     void setDateAdded(const QDateTime& dateAdded);
     QDateTime getDateAdded() const;
 
-    // Getter/Setter methods for metadata
-    // Return title
     QString getTitle() const;
-    // Set title
     void setTitle(const QString&);
-    // Return artist
     QString getArtist() const;
-    // Set artist
     void setArtist(const QString&);
-    // Return album
     QString getAlbum() const;
-    // Set album
     void setAlbum(const QString&);
-    // Return album artist
     QString getAlbumArtist() const;
-    // Set album artist
     void setAlbumArtist(const QString&);
-    // Return Year
+
+    // Returns the content of the year library column.
+    // This was original only the four digit (gregorian) calendar year of the release date
+    // but allows to store any user string. Now it is altenatively used as
+    // recording date/time in the ISO 8601 yyyy-MM-ddTHH:mm:ss format tunkated at any point,
+    // following the TDRC ID3v2.4 frame or if not exists, TYER + TDAT.
     QString getYear() const;
-    // Set year
     void setYear(const QString&);
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
-    // Sets the track color
     void setColor(const mixxx::RgbColor::optional_t&);
-    // Returns the user comment
     QString getComment() const;
-    // Sets the user comment
     void setComment(const QString&);
-    // Clear comment
     void clearComment() {
         setComment(QString());
     }
-    // Return composer
     QString getComposer() const;
-    // Set composer
     void setComposer(const QString&);
-    // Return grouping
     QString getGrouping() const;
-    // Set grouping
     void setGrouping(const QString&);
+
     // Return track number/total
     QString getTrackNumber() const;
     QString getTrackTotal() const;
@@ -267,6 +246,8 @@ class Track : public QObject {
     }
     // Sets played status and increments or decrements the play count
     void updatePlayCounter(bool bPlayed = true);
+    // Sets played status but leaves play count untouched
+    void updatePlayedStatusKeepPlayCount(bool bPlayed);
 
     // Only required for the times_played property
     int getTimesPlayed() const {
@@ -277,18 +258,13 @@ class Track : public QObject {
         return getPlayCounter().getLastPlayedAt();
     }
 
-    // Returns rating
     int getRating() const;
-    // Sets rating
     void setRating(int);
-    /// Resets the rating
     void resetRating() {
         setRating(mixxx::TrackRecord::kNoRating);
     }
 
-    // Get URL for track
     QString getURL() const;
-    // Set URL for track
     void setURL(const QString& url);
 
     /// Separator between artist and title string that is
@@ -303,7 +279,7 @@ class Track : public QObject {
     /// any metadata in file tags. Otherwise just the title (even if it is empty).
     QString getTitleInfo() const;
 
-    ConstWaveformPointer getWaveform() const;
+    const ConstWaveformPointer& getWaveform() const;
     void setWaveform(ConstWaveformPointer pWaveform);
 
     ConstWaveformPointer getWaveformSummary() const;
@@ -323,18 +299,21 @@ class Track : public QObject {
             mixxx::CueType type,
             int hotCueIndex,
             mixxx::audio::FramePos startPosition,
-            mixxx::audio::FramePos endPosition);
+            mixxx::audio::FramePos endPosition,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor);
     CuePointer createAndAddCue(
             mixxx::CueType type,
             int hotCueIndex,
             double startPositionSamples,
-            double endPositionSamples) {
+            double endPositionSamples,
+            mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor) {
         return createAndAddCue(type,
                 hotCueIndex,
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
                         startPositionSamples),
                 mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
-                        endPositionSamples));
+                        endPositionSamples),
+                color);
     }
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
@@ -358,7 +337,7 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     ImportStatus importCueInfos(
-            mixxx::CueInfoImporterPointer pCueInfoImporter);
+            std::unique_ptr<mixxx::CueInfoImporter> pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
     bool isDirty() const;
@@ -463,6 +442,7 @@ class Track : public QObject {
     // adjusted in the opposite direction to compensate (no audible change).
     void replayGainAdjusted(const mixxx::ReplayGain&);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
+    void ratingUpdated(int rating);
     void cuesUpdated();
     void loopRemove();
     void analyzed();
@@ -551,6 +531,8 @@ class Track : public QObject {
     bool mergeExtraMetadataFromSource(
             const mixxx::TrackMetadata& importedMetadata);
 
+    bool exportSeratoMetadata();
+
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
             const SyncTrackMetadataParams& syncParams);
@@ -591,12 +573,12 @@ class Track : public QObject {
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
 
-    //Visual waveform data
+    // Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
-    mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
+    std::unique_ptr<mixxx::CueInfoImporter> m_pCueInfoImporterPending;
 
     friend class TrackDAO;
     void setHeaderParsedFromTrackDAO(bool headerParsed) {

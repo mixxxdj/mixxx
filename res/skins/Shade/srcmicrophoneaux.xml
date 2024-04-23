@@ -20,7 +20,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Microphone<Variable name="micnum"/>],enabled</ConfigKey>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],input_configured</ConfigKey>
               <!--BindProperty>visible</BindProperty-->
             </Connection>
           </WidgetGroup>
@@ -34,7 +34,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],enabled</ConfigKey>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],input_configured</ConfigKey>
               <!--BindProperty>visible</BindProperty-->
             </Connection>
           </WidgetGroup>

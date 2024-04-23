@@ -4,14 +4,10 @@
 #include <QSortFilterProxyModel>
 #include <QObject>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QPoint>
 #include <QString>
 
 #include "preferences/usersettings.h"
 #include "library/browse/browsetablemodel.h"
-#include "library/browse/foldertreemodel.h"
 #include "library/libraryfeature.h"
 #include "library/proxytrackmodel.h"
 
@@ -21,6 +17,8 @@
 class Library;
 class TrackCollection;
 class WLibrarySidebar;
+class QModelIndex;
+class FolderTreeModel;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
@@ -28,7 +26,7 @@ class BrowseFeature : public LibraryFeature {
     BrowseFeature(Library* pLibrary,
             UserSettingsPointer pConfig,
             RecordingManager* pRecordingManager);
-    virtual ~BrowseFeature();
+    ~BrowseFeature() override;
 
     QVariant title() override;
 
@@ -37,6 +35,8 @@ class BrowseFeature : public LibraryFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* sidebarModel() const override;
+
+    void releaseBrowseThread();
 
   public slots:
     void slotAddQuickLink();
@@ -69,6 +69,9 @@ class BrowseFeature : public LibraryFeature {
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
     QAction* m_pAddtoLibraryAction;
+
+    // Caution: Make sure this is reset whenever the library tree is updated,
+    // so that the internalPointer() does not become dangling
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;

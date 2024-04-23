@@ -9,9 +9,7 @@
 #include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
-#include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
-#include "util/sample.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
@@ -137,104 +135,78 @@ CueControl::CueControl(const QString& group,
 CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueMode;
-    delete m_pCueSet;
-    delete m_pCueClear;
-    delete m_pCueGoto;
-    delete m_pCueGotoAndPlay;
-    delete m_pCuePlay;
-    delete m_pCueGotoAndStop;
-    delete m_pCuePreview;
-    delete m_pCueCDJ;
-    delete m_pCueDefault;
-    delete m_pPlayStutter;
-    delete m_pCueIndicator;
-    delete m_pPlayIndicator;
-    delete m_pPlayLatched;
-    delete m_pIntroStartPosition;
-    delete m_pIntroStartEnabled;
-    delete m_pIntroStartSet;
-    delete m_pIntroStartClear;
-    delete m_pIntroStartActivate;
-    delete m_pIntroEndPosition;
-    delete m_pIntroEndEnabled;
-    delete m_pIntroEndSet;
-    delete m_pIntroEndClear;
-    delete m_pIntroEndActivate;
-    delete m_pOutroStartPosition;
-    delete m_pOutroStartEnabled;
-    delete m_pOutroStartSet;
-    delete m_pOutroStartClear;
-    delete m_pOutroStartActivate;
-    delete m_pOutroEndPosition;
-    delete m_pOutroEndEnabled;
-    delete m_pOutroEndSet;
-    delete m_pOutroEndClear;
-    delete m_pOutroEndActivate;
-    delete m_pVinylControlEnabled;
-    delete m_pVinylControlMode;
-    delete m_pHotcueFocus;
-    delete m_pHotcueFocusColorPrev;
-    delete m_pHotcueFocusColorNext;
     qDeleteAll(m_hotcueControls);
 }
 
 void CueControl::createControls() {
-    m_pCueSet = new ControlPushButton(ConfigKey(m_group, "cue_set"));
+    m_pCueSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_set"));
     m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
-    m_pCueClear = new ControlPushButton(ConfigKey(m_group, "cue_clear"));
+    m_pCueClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_clear"));
     m_pCueClear->setButtonMode(ControlPushButton::TRIGGER);
-    m_pCueGoto = new ControlPushButton(ConfigKey(m_group, "cue_goto"));
-    m_pCueGotoAndPlay = new ControlPushButton(ConfigKey(m_group, "cue_gotoandplay"));
-    m_pCuePlay = new ControlPushButton(ConfigKey(m_group, "cue_play"));
-    m_pCueGotoAndStop = new ControlPushButton(ConfigKey(m_group, "cue_gotoandstop"));
-    m_pCuePreview = new ControlPushButton(ConfigKey(m_group, "cue_preview"));
-    m_pCueCDJ = new ControlPushButton(ConfigKey(m_group, "cue_cdj"));
-    m_pCueDefault = new ControlPushButton(ConfigKey(m_group, "cue_default"));
-    m_pPlayStutter = new ControlPushButton(ConfigKey(m_group, "play_stutter"));
+    m_pCueGoto = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_goto"));
+    m_pCueGotoAndPlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_gotoandplay"));
+    m_pCuePlay = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_play"));
+    m_pCueGotoAndStop = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_gotoandstop"));
+    m_pCuePreview = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_preview"));
+    m_pCueCDJ = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_cdj"));
+    m_pCueDefault = std::make_unique<ControlPushButton>(ConfigKey(m_group, "cue_default"));
+    m_pPlayStutter = std::make_unique<ControlPushButton>(ConfigKey(m_group, "play_stutter"));
 
-    m_pPlayLatched = new ControlObject(ConfigKey(m_group, "play_latched"));
+    m_pPlayLatched = std::make_unique<ControlObject>(ConfigKey(m_group, "play_latched"));
     m_pPlayLatched->setReadOnly();
 
-    m_pCueIndicator = new ControlIndicator(ConfigKey(m_group, "cue_indicator"));
-    m_pPlayIndicator = new ControlIndicator(ConfigKey(m_group, "play_indicator"));
+    m_pCueIndicator = std::make_unique<ControlIndicator>(ConfigKey(m_group, "cue_indicator"));
+    m_pPlayIndicator = std::make_unique<ControlIndicator>(ConfigKey(m_group, "play_indicator"));
 
-    m_pIntroStartPosition = new ControlObject(ConfigKey(m_group, "intro_start_position"));
+    m_pIntroStartPosition = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "intro_start_position"));
     m_pIntroStartPosition->set(Cue::kNoPosition);
-    m_pIntroStartEnabled = new ControlObject(ConfigKey(m_group, "intro_start_enabled"));
+    m_pIntroStartEnabled = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "intro_start_enabled"));
     m_pIntroStartEnabled->setReadOnly();
-    m_pIntroStartSet = new ControlPushButton(ConfigKey(m_group, "intro_start_set"));
-    m_pIntroStartClear = new ControlPushButton(ConfigKey(m_group, "intro_start_clear"));
-    m_pIntroStartActivate = new ControlPushButton(ConfigKey(m_group, "intro_start_activate"));
-    m_pIntroEndPosition = new ControlObject(ConfigKey(m_group, "intro_end_position"));
+    m_pIntroStartSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "intro_start_set"));
+    m_pIntroStartClear = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "intro_start_clear"));
+    m_pIntroStartActivate = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "intro_start_activate"));
+    m_pIntroEndPosition = std::make_unique<ControlObject>(ConfigKey(m_group, "intro_end_position"));
     m_pIntroEndPosition->set(Cue::kNoPosition);
-    m_pIntroEndEnabled = new ControlObject(ConfigKey(m_group, "intro_end_enabled"));
+    m_pIntroEndEnabled = std::make_unique<ControlObject>(ConfigKey(m_group, "intro_end_enabled"));
     m_pIntroEndEnabled->setReadOnly();
-    m_pIntroEndSet = new ControlPushButton(ConfigKey(m_group, "intro_end_set"));
-    m_pIntroEndClear = new ControlPushButton(ConfigKey(m_group, "intro_end_clear"));
-    m_pIntroEndActivate = new ControlPushButton(ConfigKey(m_group, "intro_end_activate"));
+    m_pIntroEndSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "intro_end_set"));
+    m_pIntroEndClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "intro_end_clear"));
+    m_pIntroEndActivate = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "intro_end_activate"));
 
-    m_pOutroStartPosition = new ControlObject(ConfigKey(m_group, "outro_start_position"));
+    m_pOutroStartPosition = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "outro_start_position"));
     m_pOutroStartPosition->set(Cue::kNoPosition);
-    m_pOutroStartEnabled = new ControlObject(ConfigKey(m_group, "outro_start_enabled"));
+    m_pOutroStartEnabled = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "outro_start_enabled"));
     m_pOutroStartEnabled->setReadOnly();
-    m_pOutroStartSet = new ControlPushButton(ConfigKey(m_group, "outro_start_set"));
-    m_pOutroStartClear = new ControlPushButton(ConfigKey(m_group, "outro_start_clear"));
-    m_pOutroStartActivate = new ControlPushButton(ConfigKey(m_group, "outro_start_activate"));
-    m_pOutroEndPosition = new ControlObject(ConfigKey(m_group, "outro_end_position"));
+    m_pOutroStartSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "outro_start_set"));
+    m_pOutroStartClear = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "outro_start_clear"));
+    m_pOutroStartActivate = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "outro_start_activate"));
+    m_pOutroEndPosition = std::make_unique<ControlObject>(ConfigKey(m_group, "outro_end_position"));
     m_pOutroEndPosition->set(Cue::kNoPosition);
-    m_pOutroEndEnabled = new ControlObject(ConfigKey(m_group, "outro_end_enabled"));
+    m_pOutroEndEnabled = std::make_unique<ControlObject>(ConfigKey(m_group, "outro_end_enabled"));
     m_pOutroEndEnabled->setReadOnly();
-    m_pOutroEndSet = new ControlPushButton(ConfigKey(m_group, "outro_end_set"));
-    m_pOutroEndClear = new ControlPushButton(ConfigKey(m_group, "outro_end_clear"));
-    m_pOutroEndActivate = new ControlPushButton(ConfigKey(m_group, "outro_end_activate"));
+    m_pOutroEndSet = std::make_unique<ControlPushButton>(ConfigKey(m_group, "outro_end_set"));
+    m_pOutroEndClear = std::make_unique<ControlPushButton>(ConfigKey(m_group, "outro_end_clear"));
+    m_pOutroEndActivate = std::make_unique<ControlPushButton>(
+            ConfigKey(m_group, "outro_end_activate"));
 
-    m_pVinylControlEnabled = new ControlProxy(m_group, "vinylcontrol_enabled");
-    m_pVinylControlMode = new ControlProxy(m_group, "vinylcontrol_mode");
+    m_pVinylControlEnabled = std::make_unique<ControlProxy>(m_group, "vinylcontrol_enabled");
+    m_pVinylControlMode = std::make_unique<ControlProxy>(m_group, "vinylcontrol_mode");
 
-    m_pHotcueFocus = new ControlObject(ConfigKey(m_group, "hotcue_focus"));
+    m_pHotcueFocus = std::make_unique<ControlObject>(ConfigKey(m_group, "hotcue_focus"));
     setHotcueFocusIndex(Cue::kNoHotCue);
-    m_pHotcueFocusColorPrev = new ControlObject(ConfigKey(m_group, "hotcue_focus_color_prev"));
-    m_pHotcueFocusColorNext = new ControlObject(ConfigKey(m_group, "hotcue_focus_color_next"));
+    m_pHotcueFocusColorPrev = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "hotcue_focus_color_prev"));
+    m_pHotcueFocusColorNext = std::make_unique<ControlObject>(
+            ConfigKey(m_group, "hotcue_focus_color_next"));
 
     // Create hotcue controls
     for (int i = 0; i < m_iNumHotCues; ++i) {
@@ -245,132 +217,132 @@ void CueControl::createControls() {
 
 void CueControl::connectControls() {
     // Main Cue controls
-    connect(m_pCueSet,
+    connect(m_pCueSet.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueSet,
             Qt::DirectConnection);
-    connect(m_pCueClear,
+    connect(m_pCueClear.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueClear,
             Qt::DirectConnection);
-    connect(m_pCueGoto,
+    connect(m_pCueGoto.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueGoto,
             Qt::DirectConnection);
-    connect(m_pCueGotoAndPlay,
+    connect(m_pCueGotoAndPlay.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueGotoAndPlay,
             Qt::DirectConnection);
-    connect(m_pCuePlay,
+    connect(m_pCuePlay.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cuePlay,
             Qt::DirectConnection);
-    connect(m_pCueGotoAndStop,
+    connect(m_pCueGotoAndStop.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueGotoAndStop,
             Qt::DirectConnection);
-    connect(m_pCuePreview,
+    connect(m_pCuePreview.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cuePreview,
             Qt::DirectConnection);
-    connect(m_pCueCDJ,
+    connect(m_pCueCDJ.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueCDJ,
             Qt::DirectConnection);
-    connect(m_pCueDefault,
+    connect(m_pCueDefault.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::cueDefault,
             Qt::DirectConnection);
-    connect(m_pPlayStutter,
+    connect(m_pPlayStutter.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::playStutter,
             Qt::DirectConnection);
 
-    connect(m_pIntroStartSet,
+    connect(m_pIntroStartSet.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introStartSet,
             Qt::DirectConnection);
-    connect(m_pIntroStartClear,
+    connect(m_pIntroStartClear.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introStartClear,
             Qt::DirectConnection);
-    connect(m_pIntroStartActivate,
+    connect(m_pIntroStartActivate.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introStartActivate,
             Qt::DirectConnection);
-    connect(m_pIntroEndSet,
+    connect(m_pIntroEndSet.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introEndSet,
             Qt::DirectConnection);
-    connect(m_pIntroEndClear,
+    connect(m_pIntroEndClear.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introEndClear,
             Qt::DirectConnection);
-    connect(m_pIntroEndActivate,
+    connect(m_pIntroEndActivate.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::introEndActivate,
             Qt::DirectConnection);
 
-    connect(m_pOutroStartSet,
+    connect(m_pOutroStartSet.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroStartSet,
             Qt::DirectConnection);
-    connect(m_pOutroStartClear,
+    connect(m_pOutroStartClear.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroStartClear,
             Qt::DirectConnection);
-    connect(m_pOutroStartActivate,
+    connect(m_pOutroStartActivate.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroStartActivate,
             Qt::DirectConnection);
-    connect(m_pOutroEndSet,
+    connect(m_pOutroEndSet.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroEndSet,
             Qt::DirectConnection);
-    connect(m_pOutroEndClear,
+    connect(m_pOutroEndClear.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroEndClear,
             Qt::DirectConnection);
-    connect(m_pOutroEndActivate,
+    connect(m_pOutroEndActivate.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::outroEndActivate,
             Qt::DirectConnection);
 
-    connect(m_pHotcueFocusColorPrev,
+    connect(m_pHotcueFocusColorPrev.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::hotcueFocusColorPrev,
             Qt::DirectConnection);
-    connect(m_pHotcueFocusColorNext,
+    connect(m_pHotcueFocusColorNext.get(),
             &ControlObject::valueChanged,
             this,
             &CueControl::hotcueFocusColorNext,
             Qt::DirectConnection);
 
     // Hotcue controls
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         connect(pControl, &HotcueControl::hotcuePositionChanged,
                 this, &CueControl::hotcuePositionChanged,
                 Qt::DirectConnection);
@@ -428,35 +400,35 @@ void CueControl::connectControls() {
 }
 
 void CueControl::disconnectControls() {
-    disconnect(m_pCueSet, nullptr, this, nullptr);
-    disconnect(m_pCueClear, nullptr, this, nullptr);
-    disconnect(m_pCueGoto, nullptr, this, nullptr);
-    disconnect(m_pCueGotoAndPlay, nullptr, this, nullptr);
-    disconnect(m_pCuePlay, nullptr, this, nullptr);
-    disconnect(m_pCueGotoAndStop, nullptr, this, nullptr);
-    disconnect(m_pCuePreview, nullptr, this, nullptr);
-    disconnect(m_pCueCDJ, nullptr, this, nullptr);
-    disconnect(m_pCueDefault, nullptr, this, nullptr);
-    disconnect(m_pPlayStutter, nullptr, this, nullptr);
+    disconnect(m_pCueSet.get(), nullptr, this, nullptr);
+    disconnect(m_pCueClear.get(), nullptr, this, nullptr);
+    disconnect(m_pCueGoto.get(), nullptr, this, nullptr);
+    disconnect(m_pCueGotoAndPlay.get(), nullptr, this, nullptr);
+    disconnect(m_pCuePlay.get(), nullptr, this, nullptr);
+    disconnect(m_pCueGotoAndStop.get(), nullptr, this, nullptr);
+    disconnect(m_pCuePreview.get(), nullptr, this, nullptr);
+    disconnect(m_pCueCDJ.get(), nullptr, this, nullptr);
+    disconnect(m_pCueDefault.get(), nullptr, this, nullptr);
+    disconnect(m_pPlayStutter.get(), nullptr, this, nullptr);
 
-    disconnect(m_pIntroStartSet, nullptr, this, nullptr);
-    disconnect(m_pIntroStartClear, nullptr, this, nullptr);
-    disconnect(m_pIntroStartActivate, nullptr, this, nullptr);
-    disconnect(m_pIntroEndSet, nullptr, this, nullptr);
-    disconnect(m_pIntroEndClear, nullptr, this, nullptr);
-    disconnect(m_pIntroEndActivate, nullptr, this, nullptr);
+    disconnect(m_pIntroStartSet.get(), nullptr, this, nullptr);
+    disconnect(m_pIntroStartClear.get(), nullptr, this, nullptr);
+    disconnect(m_pIntroStartActivate.get(), nullptr, this, nullptr);
+    disconnect(m_pIntroEndSet.get(), nullptr, this, nullptr);
+    disconnect(m_pIntroEndClear.get(), nullptr, this, nullptr);
+    disconnect(m_pIntroEndActivate.get(), nullptr, this, nullptr);
 
-    disconnect(m_pOutroStartSet, nullptr, this, nullptr);
-    disconnect(m_pOutroStartClear, nullptr, this, nullptr);
-    disconnect(m_pOutroStartActivate, nullptr, this, nullptr);
-    disconnect(m_pOutroEndSet, nullptr, this, nullptr);
-    disconnect(m_pOutroEndClear, nullptr, this, nullptr);
-    disconnect(m_pOutroEndActivate, nullptr, this, nullptr);
+    disconnect(m_pOutroStartSet.get(), nullptr, this, nullptr);
+    disconnect(m_pOutroStartClear.get(), nullptr, this, nullptr);
+    disconnect(m_pOutroStartActivate.get(), nullptr, this, nullptr);
+    disconnect(m_pOutroEndSet.get(), nullptr, this, nullptr);
+    disconnect(m_pOutroEndClear.get(), nullptr, this, nullptr);
+    disconnect(m_pOutroEndActivate.get(), nullptr, this, nullptr);
 
-    disconnect(m_pHotcueFocusColorPrev, nullptr, this, nullptr);
-    disconnect(m_pHotcueFocusColorNext, nullptr, this, nullptr);
+    disconnect(m_pHotcueFocusColorPrev.get(), nullptr, this, nullptr);
+    disconnect(m_pHotcueFocusColorNext.get(), nullptr, this, nullptr);
 
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         disconnect(pControl, nullptr, this, nullptr);
     }
 }
@@ -512,7 +484,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
 
         updateCurrentlyPreviewingIndex(Cue::kNoHotCue);
 
-        for (const auto& pControl : qAsConst(m_hotcueControls)) {
+        for (const auto& pControl : std::as_const(m_hotcueControls)) {
             detachCue(pControl);
         }
 
@@ -526,6 +498,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(Cue::kNoPosition);
         m_pOutroEndEnabled->forceSet(0.0);
+        m_n60dBSoundStartPosition.setValue(Cue::kNoPosition);
         setHotcueFocusIndex(Cue::kNoHotCue);
         m_pLoadedTrack.reset();
         m_usedSeekOnLoadPosition.setValue(mixxx::audio::kStartFramePos);
@@ -663,7 +636,7 @@ void CueControl::loadCuesFromTrack() {
             }
 
             int hotcue = pCue->getHotCue();
-            HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
+            HotcueControl* pControl = m_hotcueControls.value(hotcue, nullptr);
 
             // Cue's hotcue doesn't have a hotcue control.
             if (pControl == nullptr) {
@@ -688,6 +661,14 @@ void CueControl::loadCuesFromTrack() {
             active_hotcues.insert(hotcue);
             break;
         }
+        case mixxx::CueType::N60dBSound: {
+            Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
+            m_n60dBSoundStartPosition.setValue(pos.startPosition.toEngineSamplePos());
+            break;
+        }
+        case mixxx::CueType::Beat:
+        case mixxx::CueType::Jump:
+        case mixxx::CueType::Invalid:
         default:
             break;
         }
@@ -839,6 +820,16 @@ void CueControl::quantizeChanged(double v) {
     }
 }
 
+mixxx::RgbColor CueControl::colorFromConfig(const ConfigKey& configKey) {
+    auto hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    int colorIndex = m_pConfig->getValue(configKey, -1);
+    if (colorIndex < 0 || colorIndex >= hotcueColorPalette.size()) {
+        return hotcueColorPalette.defaultColor();
+    }
+    return hotcueColorPalette.at(colorIndex);
+};
+
 void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode mode) {
     //qDebug() << "CueControl::hotcueSet" << value;
 
@@ -854,7 +845,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
     // Note: the cue is just detached from the hotcue control
     // It remains in the database for later use
     // TODO: find a rule, that allows us to delete the cue as well
-    // https://bugs.launchpad.net/mixxx/+bug/1653276
+    // https://github.com/mixxxdj/mixxx/issues/8740
     hotcueClear(pControl, value);
 
     mixxx::audio::FramePos cueStartPosition;
@@ -863,7 +854,25 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     bool loopEnabled = m_pLoopEnabled->toBool();
     if (mode == HotcueSetMode::Auto) {
-        mode = loopEnabled ? HotcueSetMode::Loop : HotcueSetMode::Cue;
+        if (loopEnabled) {
+            // Don't create a hotcue at loop start if there is one already.
+            // This allows to set a hotuce inside an active, saved loop with
+            // 'hotcue_X_activate'.
+            auto* pSavedLoopControl = m_pCurrentSavedLoopControl.loadAcquire();
+            if (pSavedLoopControl &&
+                    pSavedLoopControl->getPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopStartPosition->get()) &&
+                    pSavedLoopControl->getEndPosition() ==
+                            mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(
+                                    m_pLoopEndPosition->get())) {
+                mode = HotcueSetMode::Cue;
+            } else {
+                mode = HotcueSetMode::Loop;
+            }
+        } else {
+            mode = HotcueSetMode::Cue;
+        }
     }
 
     switch (mode) {
@@ -915,34 +924,32 @@ void CueControl::hotcueSet(HotcueControl* pControl, double value, HotcueSetMode 
 
     int hotcueIndex = pControl->getHotcueIndex();
 
-    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
-            cueType,
-            hotcueIndex,
-            cueStartPosition,
-            cueEndPosition);
-
-    // TODO(XXX) deal with spurious signals
-    attachCue(pCue, pControl);
-
+    mixxx::RgbColor color = mixxx::PredefinedColorPalettes::kDefaultCueColor;
     if (cueType == mixxx::CueType::Loop) {
         ConfigKey autoLoopColorsKey("[Controls]", "auto_loop_colors");
         if (getConfig()->getValue(autoLoopColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultLoopColor);
+            color = colorFromConfig(ConfigKey("[Controls]", "LoopDefaultColorIndex"));
         }
     } else {
         ConfigKey autoHotcueColorsKey("[Controls]", "auto_hotcue_colors");
         if (getConfig()->getValue(autoHotcueColorsKey, false)) {
-            auto hotcueColorPalette =
-                    m_colorPaletteSettings.getHotcueColorPalette();
-            pCue->setColor(hotcueColorPalette.colorForHotcueIndex(hotcueIndex));
+            color = m_colorPaletteSettings.getHotcueColorPalette().colorForHotcueIndex(hotcueIndex);
         } else {
-            pCue->setColor(mixxx::PredefinedColorPalettes::kDefaultCueColor);
+            color = colorFromConfig(ConfigKey("[Controls]", "HotcueDefaultColorIndex"));
         }
     }
+
+    CuePointer pCue = m_pLoadedTrack->createAndAddCue(
+            cueType,
+            hotcueIndex,
+            cueStartPosition,
+            cueEndPosition,
+            color);
+
+    // TODO(XXX) deal with spurious signals
+    attachCue(pCue, pControl);
 
     if (cueType == mixxx::CueType::Loop) {
         setCurrentSavedLoopControlAndActivate(pControl);
@@ -1265,19 +1272,11 @@ void CueControl::hintReader(gsl::not_null<HintVector*> pHintList) {
     // this is called from the engine thread
     // it is no locking required, because m_hotcueControl is filled during the
     // constructor and getPosition()->get() is a ControlObject
-    for (const auto& pControl : qAsConst(m_hotcueControls)) {
+    for (const auto& pControl : std::as_const(m_hotcueControls)) {
         appendCueHint(pHintList, pControl->getPosition(), Hint::Type::HotCue);
     }
 
-    TrackPointer pLoadedTrack = m_pLoadedTrack;
-    if (pLoadedTrack) {
-        CuePointer pN60dBSound =
-                pLoadedTrack->findCueByType(mixxx::CueType::N60dBSound);
-        if (pN60dBSound) {
-            const mixxx::audio::FramePos frame = pN60dBSound->getPosition();
-            appendCueHint(pHintList, frame, Hint::Type::FirstSound);
-        }
-    }
+    appendCueHint(pHintList, m_n60dBSoundStartPosition.getValue(), Hint::Type::FirstSound);
     appendCueHint(pHintList, m_pIntroStartPosition->get(), Hint::Type::IntroStart);
     appendCueHint(pHintList, m_pIntroEndPosition->get(), Hint::Type::IntroEnd);
     appendCueHint(pHintList, m_pOutroStartPosition->get(), Hint::Type::OutroStart);
@@ -2269,10 +2268,7 @@ bool CueControl::isTrackAtIntroCue() {
 }
 
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
-    int configValue =
-            getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
-                    static_cast<int>(SeekOnLoadMode::IntroStart));
-    return static_cast<SeekOnLoadMode>(configValue);
+    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), SeekOnLoadMode::IntroStart);
 }
 
 void CueControl::hotcueFocusColorPrev(double value) {
@@ -2469,8 +2465,7 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     m_pHotcueStatus->setReadOnly();
 
     // Add an alias for the legacy hotcue_X_enabled CO
-    ControlDoublePrivate::insertAlias(keyForControl(QStringLiteral("enabled")),
-            keyForControl(QStringLiteral("status")));
+    m_pHotcueStatus->addAlias(keyForControl(QStringLiteral("enabled")));
 
     m_hotcueType = std::make_unique<ControlObject>(keyForControl(QStringLiteral("type")));
     m_hotcueType->setReadOnly();
@@ -2480,11 +2475,6 @@ HotcueControl::HotcueControl(const QString& group, int hotcueIndex)
     m_hotcueColor->connectValueChangeRequest(
             this,
             &HotcueControl::slotHotcueColorChangeRequest,
-            Qt::DirectConnection);
-    connect(m_hotcueColor.get(),
-            &ControlObject::valueChanged,
-            this,
-            &HotcueControl::slotHotcueColorChanged,
             Qt::DirectConnection);
 
     m_hotcueSet = std::make_unique<ControlPushButton>(keyForControl(QStringLiteral("set")));
@@ -2653,15 +2643,12 @@ void HotcueControl::slotHotcueEndPositionChanged(double newEndPosition) {
     emit hotcueEndPositionChanged(this, newEndPosition);
 }
 
-void HotcueControl::slotHotcueColorChangeRequest(double color) {
-    if (color < 0 || color > 0xFFFFFF) {
-        qWarning() << "slotHotcueColorChanged got invalid value:" << color;
+void HotcueControl::slotHotcueColorChangeRequest(double newColor) {
+    if (newColor < 0 || newColor > 0xFFFFFF) {
+        qWarning() << "slotHotcueColorChangeRequest got invalid value:" << newColor;
         return;
     }
-    m_hotcueColor->setAndConfirm(color);
-}
-
-void HotcueControl::slotHotcueColorChanged(double newColor) {
+    // qDebug() << "HotcueControl::slotHotcueColorChangeRequest" << newColor;
     if (!m_pCue) {
         return;
     }
@@ -2672,7 +2659,7 @@ void HotcueControl::slotHotcueColorChanged(double newColor) {
     }
 
     m_pCue->setColor(*color);
-    emit hotcueColorChanged(this, newColor);
+    m_hotcueColor->setAndConfirm(newColor);
 }
 
 mixxx::audio::FramePos HotcueControl::getPosition() const {
@@ -2688,6 +2675,7 @@ void HotcueControl::setCue(const CuePointer& pCue) {
     Cue::StartAndEndPositions pos = pCue->getStartAndEndPosition();
     setPosition(pos.startPosition);
     setEndPosition(pos.endPosition);
+    // qDebug() << "HotcueControl::setCue";
     setColor(pCue->getColor());
     setStatus((pCue->getType() == mixxx::CueType::Invalid)
                     ? HotcueControl::Status::Empty
@@ -2702,10 +2690,12 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 }
 
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
+    // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
-        m_hotcueColor->set(*newColor);
+        m_hotcueColor->setAndConfirm(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code

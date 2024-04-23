@@ -58,15 +58,15 @@
             <Children>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="side">_left</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_peak_indicator_left</SetVariable>
               </Template>
               <Template src="skin:vumeter_v.xml">
                 <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="side">_right</SetVariable>
                 <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
-                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_peak_indicator_right</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
@@ -173,7 +173,7 @@
                       <Template src="skin:vumeter_v.xml">
                         <SetVariable name="group"><Variable name="group"/></SetVariable>
                         <SetVariable name="tooltip_meter">channel_VuMeter</SetVariable>
-                        <SetVariable name="tooltip_clip">channel_PeakIndicator</SetVariable>
+                        <SetVariable name="tooltip_clip">channel_peak_indicator</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
@@ -183,7 +183,7 @@
                     <MinimumSize>40,50</MinimumSize>
                     <MaximumSize>40,-1</MaximumSize>
                     <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+                    <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
                     <Horizontal>false</Horizontal>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,volume</ConfigKey>
@@ -250,7 +250,7 @@
                     <MinimumSize>40,50</MinimumSize>
                     <MaximumSize>40,-1</MaximumSize>
                     <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
-                    <Handle scalemode="STRETCH_ASPECT">handle-vertical-orange.svg</Handle>
+                    <Handle scalemode="STRETCH_ASPECT">handle-volume-deck<Variable name="i"/>.svg</Handle>
                     <Horizontal>false</Horizontal>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,volume</ConfigKey>

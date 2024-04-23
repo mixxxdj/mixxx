@@ -31,13 +31,13 @@
          <bool>false</bool>
         </property>
         <property name="buddy">
-         <cstring>VinylGain</cstring>
+         <cstring>SliderVinylGain</cstring>
         </property>
        </widget>
       </item>
 
       <item>
-       <widget class="QSlider" name="VinylGain">
+       <widget class="QSlider" name="SliderVinylGain">
         <property name="minimum">
          <number>0</number>
         </property>
@@ -572,7 +572,7 @@
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
-     <layout class="QGridLayout">
+     <layout class="QHBoxLayout" name="signalQualityLayout">
      </layout>
     </widget>
    </item>
@@ -677,5 +677,20 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
+ <tabstops>
+  <tabstop>SliderVinylGain</tabstop>
+  <tabstop>ComboBoxVinylType1</tabstop>
+  <tabstop>ComboBoxVinylSpeed1</tabstop>
+  <tabstop>LeadinTime1</tabstop>
+  <tabstop>ComboBoxVinylType2</tabstop>
+  <tabstop>ComboBoxVinylSpeed2</tabstop>
+  <tabstop>LeadinTime2</tabstop>
+  <tabstop>ComboBoxVinylType3</tabstop>
+  <tabstop>ComboBoxVinylSpeed3</tabstop>
+  <tabstop>LeadinTime3</tabstop>
+  <tabstop>ComboBoxVinylType4</tabstop>
+  <tabstop>ComboBoxVinylSpeed4</tabstop>
+  <tabstop>LeadinTime4</tabstop>
+ </tabstops>
  <connections/>
 </ui>

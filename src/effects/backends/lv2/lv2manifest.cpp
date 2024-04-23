@@ -88,7 +88,7 @@ LV2Manifest::LV2Manifest(LilvWorld* world,
                     }
                 } else { // Try to extract the custom unit symbol string
                     LilvNode* customUnit =
-                            lilv_world_get(world, unit, properties["unit_symbol"], NULL);
+                            lilv_world_get(world, unit, properties["unit_symbol"], nullptr);
                     if (customUnit) {
                         // Accepted custom units needs to be 'whitelisted' in
                         // EffectManifestParameter::lv2UnitToUnitsHint and added to

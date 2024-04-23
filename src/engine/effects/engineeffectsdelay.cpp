@@ -1,5 +1,6 @@
 #include "engine/effects/engineeffectsdelay.h"
 
+#include "moc_engineeffectsdelay.cpp"
 #include "util/rampingvalue.h"
 #include "util/sample.h"
 
@@ -9,6 +10,10 @@ EngineEffectsDelay::EngineEffectsDelay()
           m_delayBufferWritePos(0) {
     m_pDelayBuffer = SampleUtil::alloc(kDelayBufferSize);
     SampleUtil::clear(m_pDelayBuffer, kDelayBufferSize);
+}
+
+EngineEffectsDelay::~EngineEffectsDelay() {
+    SampleUtil::free(m_pDelayBuffer);
 }
 
 void EngineEffectsDelay::process(CSAMPLE* pInOut,

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "controllers/controllerenumerator.h"
+#include "preferences/usersettings.h"
 
 struct libusb_context;
 

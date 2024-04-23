@@ -3,10 +3,8 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include <QPixmap>
 #include <QStyleOption>
 #include <QStylePainter>
-#include <QTouchEvent>
 #include <QtDebug>
 
 #include "control/controlbehavior.h"
@@ -14,6 +12,7 @@
 #include "control/controlpushbutton.h"
 #include "moc_wpushbutton.cpp"
 #include "util/debug.h"
+#include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
 
 WPushButton::WPushButton(QWidget* pParent)
@@ -156,9 +155,13 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             switch (m_leftButtonMode) {
                 case ControlPushButton::PUSH:
                 case ControlPushButton::POWERWINDOW:
+                leftConnection->setEmitOption(
+                        ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+                break;
                 case ControlPushButton::LONGPRESSLATCHING:
                     leftConnection->setEmitOption(
                             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
+                    m_pLongPressLatching = std::make_unique<LongPressLatching>(this);
                     break;
                 case ControlPushButton::TOGGLE:
                 case ControlPushButton::TRIGGER:
@@ -195,9 +198,13 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
                 if (m_rightButtonMode != ControlPushButton::PUSH &&
                         m_rightButtonMode != ControlPushButton::TOGGLE &&
                         m_rightButtonMode != ControlPushButton::TRIGGER) {
-                    SKIN_WARNING(node, context)
-                            << "WPushButton::setup: Connecting a Pushbutton not in PUSH, TRIGGER or TOGGLE mode is not implemented\n"
-                            << "Please consider to set <RightClickIsPushButton>true</RightClickIsPushButton>";
+                    SKIN_WARNING(node,
+                            context,
+                            "WPushButton::setup: Connecting a Pushbutton not "
+                            "in PUSH, TRIGGER or TOGGLE mode is not "
+                            "implemented\n Please consider to set "
+                            "<RightClickIsPushButton>true</"
+                            "RightClickIsPushButton>");
                 }
             }
         }
@@ -280,12 +287,6 @@ void WPushButton::setPixmapBackground(const PixmapSource& source,
 void WPushButton::restyleAndRepaint() {
     emit displayValueChanged(readDisplayValue());
 
-    // According to http://stackoverflow.com/a/3822243 this is the least
-    // expensive way to restyle just this widget.
-    // Since we expect button connections to not change at high frequency we
-    // don't try to detect whether things have changed for WPushButton, we just
-    // re-render.
-    style()->unpolish(this);
     style()->polish(this);
 
     // These calls don't always trigger the repaint, so call it explicitly.
@@ -305,17 +306,21 @@ void WPushButton::onConnectedControlChanged(double dParameter, double dValue) {
 
 void WPushButton::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
+    paintOnDevice(nullptr);
+}
+
+void WPushButton::paintOnDevice(QPaintDevice* pd) {
     QStyleOption option;
     option.initFrom(this);
-    QStylePainter p(this);
-    p.drawPrimitive(QStyle::PE_Widget, option);
+    std::unique_ptr<QStylePainter> p(pd ? new QStylePainter(pd, this) : new QStylePainter(this));
+    p->drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_iNoStates == 0) {
         return;
     }
 
     if (m_pPixmapBack) {
-        m_pPixmapBack->draw(rect(), &p);
+        m_pPixmapBack->draw(rect(), p.get());
     }
 
     const QVector<PaintablePointer>& pixmaps = m_bPressed ?
@@ -338,7 +343,7 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     PaintablePointer pPixmap = pixmaps.at(idx);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
-        pPixmap->draw(rect(), &p);
+        pPixmap->draw(rect(), p.get());
     }
 
     QString text = m_text.at(idx);
@@ -351,7 +356,11 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 //        int textWidth = width() - lPad - rPad;
 //        QRect textRect = rect().adjust(x1, y1, x2, y2);
         QString elidedText = metrics.elidedText(text, m_elideMode, width());
-        p.drawText(rect(), m_align.at(idx), elidedText);
+        p->drawText(rect(), m_align.at(idx), elidedText);
+    }
+
+    if (pd == nullptr && m_pLongPressLatching) {
+        m_pLongPressLatching->paint(p.get(), m_clickTimer.remainingTime());
     }
 }
 
@@ -398,12 +407,16 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle through the states
             emitValue = getControlParameterLeft();
+            const auto oldValue = emitValue;
             if (!util_isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
             }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
+                if (oldValue == 0.0 && m_pLongPressLatching) {
+                    m_pLongPressLatching->start();
+                }
             }
         }
         setControlParameterLeftDown(emitValue);
@@ -457,6 +470,10 @@ void WPushButton::focusOutEvent(QFocusEvent* e) {
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
+
+    if (m_pLongPressLatching) {
+        m_pLongPressLatching->stop();
+    }
 
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
@@ -522,4 +539,53 @@ void WPushButton::fillDebugTooltip(QStringList* debug) {
             .arg(ControlPushButton::buttonModeToString(m_leftButtonMode))
            << QString("RightButtonMode: %1")
             .arg(ControlPushButton::buttonModeToString(m_rightButtonMode));
+}
+
+void WPushButton::updateSlot() {
+    update();
+}
+
+WPushButton::LongPressLatching::LongPressLatching(WPushButton* pButton)
+        : m_pButton(pButton) {
+    // To animate the long press latching
+    connect(&m_animTimer, &QTimer::timeout, m_pButton, &WPushButton::updateSlot);
+}
+
+void WPushButton::LongPressLatching::paint(QPainter* p, int remainingTime) {
+    if (m_animTimer.isActive()) {
+        // Animate the long press latching by capturing the off state in a pixmap
+        // and gradually draw less of it over the duration of the long press latching.
+
+        remainingTime = std::max(0, remainingTime);
+
+        if (remainingTime == 0) {
+            m_animTimer.stop();
+        } else {
+            qreal x = m_pButton->width() * static_cast<qreal>(remainingTime) /
+                    static_cast<qreal>(ControlPushButtonBehavior::
+                                    kLongPressLatchingTimeMillis);
+            p->drawPixmap(QPointF(m_pButton->width() - x, 0),
+                    m_preLongPressPixmap,
+                    QRectF((m_pButton->width() - x) * m_pButton->devicePixelRatio(),
+                            0,
+                            x * m_pButton->devicePixelRatio(),
+                            m_pButton->height() * m_pButton->devicePixelRatio()));
+        }
+    }
+}
+
+void WPushButton::LongPressLatching::start() {
+    // Capture pixmap with the off state ...
+    m_preLongPressPixmap = QPixmap(static_cast<int>(m_pButton->width() *
+                                           m_pButton->devicePixelRatio()),
+            static_cast<int>(
+                    m_pButton->height() * m_pButton->devicePixelRatio()));
+    m_preLongPressPixmap.setDevicePixelRatio(m_pButton->devicePixelRatio());
+    m_pButton->paintOnDevice(&m_preLongPressPixmap);
+    // ... and start the long press latching animation
+    m_animTimer.start(1000 / 60);
+}
+
+void WPushButton::LongPressLatching::stop() {
+    m_animTimer.stop();
 }

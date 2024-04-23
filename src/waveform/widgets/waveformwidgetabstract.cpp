@@ -1,7 +1,7 @@
-#include <QWidget>
-#include <QtDebug>
+#include "waveform/widgets/waveformwidgetabstract.h"
 
-#include "nonglwaveformwidgetabstract.h"
+#include <QWidget>
+
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
@@ -43,5 +43,5 @@ void WaveformWidgetAbstract::resize(int width, int height) {
         m_widget->resize(width, height);
         devicePixelRatio = m_widget->devicePixelRatioF();
     }
-    WaveformWidgetRenderer::resize(width, height, static_cast<float>(devicePixelRatio));
+    resizeRenderer(width, height, static_cast<float>(devicePixelRatio));
 }

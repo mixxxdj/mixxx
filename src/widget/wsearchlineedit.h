@@ -1,18 +1,18 @@
 #pragma once
 
 #include <QComboBox>
-#include <QCompleter>
-#include <QDomNode>
-#include <QEvent>
 #include <QTimer>
-#include <QToolButton>
 
 #include "library/library_decl.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 #include "widget/wbasewidget.h"
 
+class QDomNode;
 class SkinContext;
+class QCompleter;
+class QEvent;
+class QToolButton;
 
 class WSearchLineEdit : public QComboBox, public WBaseWidget {
     Q_OBJECT
@@ -90,6 +90,8 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
     void updateCompleter();
     void deleteSelectedComboboxItem();
     void deleteSelectedListItem();
+    void triggerSearchDebounced();
+    bool hasSelectedText() const;
 
     inline int findCurrentTextIndex() {
         return findData(currentText(), Qt::DisplayRole);
@@ -106,8 +108,6 @@ class WSearchLineEdit : public QComboBox, public WBaseWidget {
 
     parented_ptr<QCompleter> m_completer;
     parented_ptr<QToolButton> const m_clearButton;
-
-    int m_innerHeight;
 
     QTimer m_debouncingTimer;
     QTimer m_saveTimer;

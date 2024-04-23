@@ -1,5 +1,15 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_mp4.h"
 
+#include "track/taglib/trackmetadata_common.h"
 #include "track/tracknumbers.h"
 #include "util/logger.h"
 
@@ -205,15 +215,15 @@ void importTrackMetadataFromTag(
         pTrackMetadata->refTrackInfo().setBpm(Bpm{});
     }
 
-    QString key;
+    QString keyText;
     if (readAtom(tag,
                 kAtomKeyInitialKey,
-                &key) || // preferred (conforms to MixedInKey, Serato, Traktor)
+                &keyText) || // preferred (conforms to MixedInKey, Serato, Traktor)
             readAtom(tag,
                     kAtomKeyAlternativeKey,
-                    &key) || // alternative (conforms to Rapid Evolution)
+                    &keyText) || // alternative (conforms to Rapid Evolution)
             resetMissingTagMetadata) {
-        pTrackMetadata->refTrackInfo().setKey(key);
+        pTrackMetadata->refTrackInfo().setKeyText(keyText);
     }
 
     QString trackGain;
@@ -424,10 +434,10 @@ bool exportTrackMetadataIntoTag(
     }
     writeAtom(pTag, kAtomKeyBpm, toTString(formatBpm(trackMetadata)));
 
-    const TagLib::String key =
-            toTString(trackMetadata.getTrackInfo().getKey());
-    writeAtom(pTag, kAtomKeyInitialKey, key);      // preferred
-    updateAtom(pTag, kAtomKeyAlternativeKey, key); // alternative
+    const TagLib::String keyText =
+            toTString(trackMetadata.getTrackInfo().getKeyText());
+    writeAtom(pTag, kAtomKeyInitialKey, keyText);      // preferred
+    updateAtom(pTag, kAtomKeyAlternativeKey, keyText); // alternative
 
     writeAtom(pTag, kAtomKeyReplayGainTrackGain, toTString(formatTrackGain(trackMetadata)));
     writeAtom(pTag, kAtomKeyReplayGainTrackPeak, toTString(formatTrackPeak(trackMetadata)));
@@ -507,3 +517,7 @@ bool exportTrackMetadataIntoTag(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

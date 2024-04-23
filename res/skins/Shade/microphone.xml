@@ -11,12 +11,12 @@
       **********************************************
       -->
       <StatusLight>
-        <TooltipId>microphone_PeakIndicator</TooltipId>
+        <TooltipId>microphone_peak_indicator</TooltipId>
         <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
         <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
         <Pos>82,6</Pos>
         <Connection>
-          <ConfigKey>[Microphone<Variable name="micnum"/>],PeakIndicator</ConfigKey>
+          <ConfigKey>[Microphone<Variable name="micnum"/>],peak_indicator</ConfigKey>
         </Connection>
       </StatusLight>
 
@@ -39,7 +39,7 @@
             <PeakFallTime>50</PeakFallTime>
             <PeakFallStep>2</PeakFallStep>
             <Connection>
-              <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],vu_meter</ConfigKey>
             </Connection>
           </VuMeter>
         </Children>

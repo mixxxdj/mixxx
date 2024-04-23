@@ -351,6 +351,9 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
         QNetworkReply::NetworkError errorCode,
         const QString& errorString,
         const mixxx::network::WebResponseWithContent& responseWithContent) {
+    // TODO(XXX) Handle the error better for Cover Art Archive Links.
+    Q_UNUSED(errorCode);
+    Q_UNUSED(errorString);
     Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
@@ -358,7 +361,6 @@ void TagFetcher::slotCoverArtArchiveLinksTaskNetworkError(
         return;
     }
 
-    // (TODO) Handle the error better for Cover Art Archive Links.
     emit coverArtLinkNotFound();
     terminate();
 }
@@ -380,7 +382,7 @@ void TagFetcher::slotCoverArtArchiveLinksTaskFailed(
             -1);
 }
 
-void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(
+void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(const QUuid& albumReleaseId,
         const QList<QString>& allUrls) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_pCoverArtArchiveLinksTask.get() != sender()) {
@@ -391,14 +393,16 @@ void TagFetcher::slotCoverArtArchiveLinksTaskSucceeded(
     auto pTrack = std::move(m_pTrack);
     terminate();
 
-    emit coverArtArchiveLinksAvailable(std::move(allUrls));
+    emit coverArtArchiveLinksAvailable(std::move(albumReleaseId),
+            std::move(allUrls));
 }
 
-void TagFetcher::startFetchCoverArtImage(
+void TagFetcher::startFetchCoverArtImage(const QUuid& albumReleaseId,
         const QString& coverArtUrl) {
     m_pCoverArtArchiveImageTask = make_parented<mixxx::CoverArtArchiveImageTask>(
             &m_network,
             coverArtUrl,
+            albumReleaseId,
             this);
 
     connect(m_pCoverArtArchiveImageTask,
@@ -422,7 +426,8 @@ void TagFetcher::startFetchCoverArtImage(
             kCoverArtArchiveImageTimeoutMilis);
 }
 
-void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QByteArray& coverArtBytes) {
+void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QUuid& albumReleaseId,
+        const QByteArray& coverArtBytes) {
     if (m_pCoverArtArchiveImageTask.get() != sender()) {
         // stray call from an already aborted try
         return;
@@ -431,7 +436,8 @@ void TagFetcher::slotCoverArtArchiveImageTaskSucceeded(const QByteArray& coverAr
     auto pTrack = std::move(m_pTrack);
     terminate();
 
-    emit coverArtImageFetchAvailable(coverArtBytes);
+    emit coverArtImageFetchAvailable(std::move(albumReleaseId),
+            coverArtBytes);
 }
 
 void TagFetcher::slotCoverArtArchiveImageTaskAborted() {

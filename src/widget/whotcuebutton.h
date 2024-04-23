@@ -1,11 +1,7 @@
 #pragma once
 
-#include <QDomNode>
-#include <QMouseEvent>
 #include <QString>
-#include <QWidget>
 
-#include "skin/legacy/skincontext.h"
 #include "util/parented_ptr.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wpushbutton.h"
@@ -16,6 +12,13 @@ class WHotcueButton : public WPushButton {
     WHotcueButton(const QString& group, QWidget* pParent);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
+
+    ConfigKey getLeftClickConfigKey() {
+        return createConfigKey(QStringLiteral("activate"));
+    }
+    ConfigKey getClearConfigKey() {
+        return createConfigKey(QStringLiteral("clear"));
+    }
 
     Q_PROPERTY(bool light MEMBER m_bCueColorIsLight);
     Q_PROPERTY(bool dark MEMBER m_bCueColorIsDark);

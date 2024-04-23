@@ -194,10 +194,12 @@ int sock_stalled (int error)
 }
 
 
+#ifdef HAVE_GETADDRINFO
 static int sock_connect_pending (int error)
 {
     return error == EINPROGRESS || error == EALREADY;
 }
+#endif
 
 /* sock_valid_socket
 **
@@ -262,7 +264,7 @@ int sock_set_blocking(sock_t sock, int block)
 #ifdef __MINGW32__
     u_long varblock = 1;
 #else
-    int varblock = 1;
+    u_long varblock = 1;
 #endif
 #endif
 
@@ -786,7 +788,7 @@ int sock_try_connection (sock_t sock, const char *hostname, unsigned int port)
         return -1;
     }
 
-    memcpy(&server.sin_addr, &sin.sin_addr, sizeof(struct sockaddr_in));
+    memcpy(&server.sin_addr, &sin.sin_addr, sizeof(IN_ADDR));
 
     server.sin_family = AF_INET;
     server.sin_port = htons((short)port);

@@ -1,6 +1,5 @@
 #include "controllers/controllermappinginfo.h"
 
-#include "controllers/defs_controllers.h"
 #include "util/xml.h"
 
 MappingInfo::MappingInfo()

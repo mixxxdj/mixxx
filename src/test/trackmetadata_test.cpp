@@ -82,7 +82,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
     pOldTrackInfo->setComposer("old composer");
     pOldTrackInfo->setGenre("old genre");
     pOldTrackInfo->setGrouping("old grouping");
-    pOldTrackInfo->setKey("1A");
+    pOldTrackInfo->setKeyText("1A");
     pOldTrackInfo->setReplayGain(mixxx::ReplayGain(0.1, 1));
     pOldTrackInfo->setTitle("old title");
     pOldTrackInfo->setTrackNumber("1");
@@ -120,7 +120,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
 #if defined(__EXTRA_METADATA__)
     pNewTrackInfo->setISRC("isrc");
 #endif // __EXTRA_METADATA__
-    pNewTrackInfo->setKey("1A");
+    pNewTrackInfo->setKeyText("1A");
 #if defined(__EXTRA_METADATA__)
     pNewTrackInfo->setLanguage("language");
     pNewTrackInfo->setLyricist("lyricist");
@@ -177,7 +177,7 @@ TEST_F(TrackMetadataTest, mergeExtraMetadataFromSource) {
 #if defined(__EXTRA_METADATA__)
     EXPECT_EQ(pNewTrackInfo->getISRC(), pMergedTrackInfo->getISRC());
 #endif // __EXTRA_METADATA__
-    EXPECT_EQ(pOldTrackInfo->getKey(), pMergedTrackInfo->getKey());
+    EXPECT_EQ(pOldTrackInfo->getKeyText(), pMergedTrackInfo->getKeyText());
 #if defined(__EXTRA_METADATA__)
     EXPECT_EQ(pNewTrackInfo->getLanguage(), pMergedTrackInfo->getLanguage());
     EXPECT_EQ(pNewTrackInfo->getLyricist(), pMergedTrackInfo->getLyricist());
