@@ -1276,7 +1276,7 @@ void EngineBuffer::processSlip(int iBufferSize) {
     // Increment slip position even if it was just toggled -- this ensures the position is correct.
     if (enabled) {
         // `iBufferSize` originates from `SoundManager::onDeviceOutputCallback`
-        // and is always a multiple of 2, so we can safely use integer division
+        // and is always a multiple of channel count, so we can safely use integer division
         // to find the number of frames per buffer here.
         //
         // TODO: Check if we can replace `iBufferSize` with the number of
