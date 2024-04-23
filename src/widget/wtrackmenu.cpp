@@ -302,7 +302,10 @@ void WTrackMenu::createActions() {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
         // This is just for having the shortcut displayed next to the action in the menu.
         // The actual keypress is handled in WTrackTableView::keyPressEvent().
-        m_pHideAct->setShortcut(hideRemoveKeySequence);
+        // Note: don't show the hotkey for more than one action
+        if (!featureIsEnabled(Feature::Remove)) {
+            m_pHideAct->setShortcut(hideRemoveKeySequence);
+        }
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
         m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
@@ -1001,9 +1004,9 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
-        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-            m_pHideAct->setEnabled(!locked);
-        }
+        // Note: Hide action is enabled regardless the locked state.
+        // Like in Tracks, in locked playlists A confirmation dialog pops up:
+        // "Hiding track ... will remove it from the following playlists: ..."
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             m_pUnhideAct->setEnabled(!locked);
         }
