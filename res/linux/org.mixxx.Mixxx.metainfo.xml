@@ -96,12 +96,26 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-04-19" timestamp="1713558879">
+    <release version="2.4.1" type="development" date="2024-04-23" timestamp="1713855934">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
+  <li>
+   Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
+   #12969
+  </li>
+  <li>
+   Denon DJ MC6000MK2: Fix mapping of filter knob/button
+   #13166
+  </li>
+  <li>
+   Denon DJ MC7000: Fix redundant argument and migrate to
+   hotcue_x_status
+   #13113
+   #13121
+  </li>
   <li>
    Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
    #12932
@@ -116,22 +130,16 @@
    #12876
   </li>
   <li>
+   Traktor S2 Mk1: fix warnings
+   #13145
+  </li>
+  <li>
    Traktor S3: Fix mapping crash on macOS
    #12840
   </li>
   <li>
-   Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
-   #12969
-  </li>
-  <li>
-   Denon DJ MC7000: Fix redundant argument and migrate to
-   hotcue_x_status
-   #13113
-   #13121
-  </li>
-  <li>
-   Polish fx chain controls
-   #12805
+   Controller I/O table: sort action column by display string
+   #13039
   </li>
  </ul>
  <p>
@@ -165,9 +173,10 @@
    #12938
   </li>
   <li>
-   Possible crash in customs skins using parallel waveforms
+   Prevent possible crash in customs skins using parallel waveforms
    #13043
    #12580
+   #13136
   </li>
   <li>
    Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
@@ -176,6 +185,14 @@
   <li>
    Tooltips: update 'hotcue' with saved loop features
    #12875
+  </li>
+  <li>
+   Animate long press latching of sync button
+   #12990
+  </li>
+  <li>
+   Polish fx chain controls
+   #12805
   </li>
  </ul>
  <p>
@@ -219,6 +236,31 @@
    #12937
    #10481
   </li>
+  <li>
+   Require a minimum movement before initiating the drag&amp;drop of tracks
+   #13135
+   #12902
+  </li>
+  <li>
+   iTunes/Serato/Traktor/Rhythmbox: Print error if library file could not be opened
+   #13012
+  </li>
+  <li>
+   Playlists: improve table update after deleting (purging) track files
+   #13127
+  </li>
+  <li>
+   Fix Color column width issue
+   #12852
+  </li>
+  <li>
+   Tracks: select track row when clicking the preview button (only when starting preview)
+   #12791
+  </li>
+  <li>
+   Library track menu: show Hide action also in Playlist &amp; Crates
+   #11901
+  </li>
  </ul>
  <p>
   Miscellaneous
@@ -255,6 +297,24 @@
    Tagfetcher: Cache fetched covers
    #12301
    #11084
+  </li>
+  <li>
+   Avoid beats iterator being one off and DEBUG_ASSERT in Beats::iteratorFrom
+   #13150
+   #13149
+  </li>
+  <li>
+   Show hint if resource path in CMakeCache.txt does not exist
+   #12929
+  </li>
+  <li>
+   Always calculate the auto value for colorful console output
+   #13153
+  </li>
+  <li>
+   Fix FLAC recording on macOS and Windows
+   #10880
+   #13154
   </li>
  </ul>
 </description>
