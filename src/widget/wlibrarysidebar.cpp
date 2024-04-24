@@ -184,10 +184,6 @@ void WLibrarySidebar::renameSelectedItem() {
     if (!selIndex.isValid()) {
         return;
     }
-    if (isExpanded(selIndex)) {
-        // Root views / knots can not be renamed
-        return;
-    }
     emit renameItem(selIndex);
     return;
 }
