@@ -1065,7 +1065,7 @@ void LibraryControl::slotEditItem(double v) {
 
     switch (m_focusedWidget) {
     case FocusWidget::Sidebar: {
-        m_pSidebarWidget->editSelectedItem();
+        m_pSidebarWidget->renameSelectedItem();
         break;
     }
     case FocusWidget::TracksTable: {
