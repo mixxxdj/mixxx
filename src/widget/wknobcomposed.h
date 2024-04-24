@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "skin/legacy/skincontext.h"
 #include "widget/knobeventhandler.h"
 #include "widget/wpixmapstore.h"
@@ -28,9 +30,8 @@ class WKnobComposed : public WWidget {
     void mouseReleaseEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
-    bool m_defaultAngleIsValid;
-    double m_defaultAngle;
-    void setDefaultAngleFromParameterOrReset(double parameter);
+    std::optional<double> m_defaultAngle;
+    void setDefaultAngleFromParameterOrReset(std::optional<double> parameter);
 
   private:
     void inputActivity();

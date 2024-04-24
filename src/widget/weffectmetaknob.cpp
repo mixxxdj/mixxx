@@ -38,8 +38,7 @@ void WEffectMetaKnob::effectChanged() {
                 pManifest->name(),
                 pManifest->description()));
     } else {
-        // This makes drawArc() fall back to drawing from center (if Reverse is not set)
-        setDefaultAngleFromParameterOrReset(-1);
+        setDefaultAngleFromParameterOrReset(std::nullopt);
         setBaseTooltip("");
     }
     update();

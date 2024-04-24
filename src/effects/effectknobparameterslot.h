@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <optional>
 
 #include "effects/effectparameterslotbase.h"
 #include "util/class.h"
@@ -38,7 +39,7 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
 
     void setParameter(double value) override;
 
-    double neutralPointOnScale() const override;
+    std::optional<double> neutralPointOnScale() const override;
 
   private slots:
     // Solely for handling control changes

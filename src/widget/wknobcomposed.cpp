@@ -9,7 +9,7 @@
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
         : WWidget(pParent),
-          m_defaultAngleIsValid(false),
+          m_defaultAngle(std::nullopt),
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
@@ -114,12 +114,13 @@ void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) 
     }
 }
 
-void WKnobComposed::setDefaultAngleFromParameterOrReset(double parameter) {
-    if (parameter < 0 || parameter > 1) {
-        m_defaultAngleIsValid = false;
+void WKnobComposed::setDefaultAngleFromParameterOrReset(std::optional<double> parameter) {
+    // TODO(xxx) Use m_defaultAngle->value() as soon as
+    // AppleClang 10.13+ is used.
+    if (!parameter.has_value() || *parameter < 0 || *parameter > 1) {
+        m_defaultAngle = std::nullopt;
     } else {
-        m_defaultAngle = std::lerp(m_dMinAngle, m_dMaxAngle, parameter);
-        m_defaultAngleIsValid = true;
+        m_defaultAngle = std::lerp(m_dMinAngle, m_dMaxAngle, *parameter);
     }
 }
 
@@ -189,11 +190,13 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     arcPen.setCapStyle(m_arcPenCap);
 
     pPainter->setPen(arcPen);
-    if (m_defaultAngleIsValid) {
+    if (m_defaultAngle.has_value()) {
         // draw arc from default angle to current angle
         pPainter->drawArc(rect,
-                static_cast<int>((90 - m_defaultAngle) * 16),
-                static_cast<int>((m_dCurrentAngle - m_defaultAngle) * -16));
+                // TODO(xxx) Use m_defaultAngle->value() as soon as
+                // AppleClang 10.13+ is used.
+                static_cast<int>((90 - *m_defaultAngle) * 16),
+                static_cast<int>((m_dCurrentAngle - *m_defaultAngle) * -16));
     } else if (m_arcUnipolar) {
         if (m_arcReversed) {
            // draw arc from maxAngle to current position
