@@ -93,6 +93,11 @@ bool OpenGLWindow::event(QEvent* pEv) {
             return result;
         }
 
+        if (t == QEvent::FocusIn) {
+            pEv->ignore();
+            return false; // clazy:exclude=base-class-event
+        }
+
         // Send all remaining events to the widget that owns the window
         // container widget that contains this QOpenGLWindow. With this mouse
         // events, keyboard events, etc all arrive as intended, including the
