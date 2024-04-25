@@ -134,6 +134,14 @@ void StarDelegate::cursorNotOverAnyCell() {
 }
 
 void StarDelegate::openPersistentRatingEditor(const QModelIndex& index) {
+    // Qt6: Check whether a non-persistent editor exists at index.
+    // QTableView::closePersistentEditor() would also close
+    // a non-persistent editor, so we have to make sure to
+    // not call it if an editor already exists.
+    if (m_pTableView->indexWidget(index)) {
+        return;
+    }
+
     // Close the previously open persistent rating editor
     if (m_persistentEditorState == PersistentEditor_Open) {
         // Don't close other editors when hovering the stars cell!
