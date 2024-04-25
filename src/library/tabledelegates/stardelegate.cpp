@@ -68,7 +68,7 @@ void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
 void StarDelegate::commitAndCloseEditor() {
     StarEditor* editor = qobject_cast<StarEditor*>(sender());
     emit commitData(editor);
-    emit closeEditor(editor);
+    emit closeEditor(editor, QAbstractItemDelegate::SubmitModelCache);
 }
 
 void StarDelegate::cellEntered(const QModelIndex& index) {
