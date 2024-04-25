@@ -12,6 +12,9 @@
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
+    // Set the tooltip flag to prevent this window/widget from getting
+    // keyboard focus on click.
+    setFlag(Qt::ToolTip);
 }
 
 OpenGLWindow::~OpenGLWindow() {
