@@ -124,6 +124,18 @@ void WKnobComposed::setDefaultAngleFromParameterOrReset(std::optional<double> pa
     }
 }
 
+void WKnobComposed::resizeEvent(QResizeEvent* re) {
+    Q_UNUSED(re);
+    // In order to always draw the arcs undistorted we set up
+    // a quadratic target rectangle regardless of the widget's
+    // width-to-height ratio.
+    qreal centerX = width() / 2.0 + m_dKnobCenterXOffset;
+    qreal centerY = height() / 2.0 + m_dKnobCenterYOffset;
+    QPointF topLeft = QPointF((centerX - m_dArcRadius), (centerY - m_dArcRadius));
+    QPointF bottomRight = QPointF((centerX + m_dArcRadius), (centerY + m_dArcRadius));
+    m_rect = QRectF(topLeft, bottomRight);
+}
+
 void WKnobComposed::paintEvent(QPaintEvent* e) {
     Q_UNUSED(e);
     QStyleOption option;
@@ -164,14 +176,9 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
 }
 
 void WKnobComposed::drawArc(QPainter* pPainter) {
-    // In order to always draw the arcs undistorted we set up
-    // a quadratic target rectangle regardless of the widget's
-    // width-to-height ratio.
-    qreal centerX = width() / 2.0 + m_dKnobCenterXOffset;
-    qreal centerY = height() / 2.0 + m_dKnobCenterYOffset;
-    QPointF topLeft = QPointF((centerX - m_dArcRadius), (centerY - m_dArcRadius));
-    QPointF bottomRight = QPointF((centerX + m_dArcRadius), (centerY + m_dArcRadius));
-    QRectF rect = QRectF(topLeft, bottomRight);
+    if (!m_rect.isValid()) {
+        return;
+    }
 
     // draw background arc
     if (m_dArcBgThickness > 0.0) {
@@ -179,7 +186,7 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
         arcBgPen.setWidthF(m_dArcBgThickness);
         arcBgPen.setCapStyle(m_arcPenCap);
         pPainter->setPen(arcBgPen);
-        pPainter->drawArc(rect,
+        pPainter->drawArc(m_rect,
                 static_cast<int>((90 - m_dMinAngle) * 16),
                 static_cast<int>((m_dMinAngle - m_dMaxAngle) * 16));
     }
@@ -192,7 +199,7 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     pPainter->setPen(arcPen);
     if (m_defaultAngle.has_value()) {
         // draw arc from default angle to current angle
-        pPainter->drawArc(rect,
+        pPainter->drawArc(m_rect,
                 // TODO(xxx) Use m_defaultAngle->value() as soon as
                 // AppleClang 10.13+ is used.
                 static_cast<int>((90 - *m_defaultAngle) * 16),
@@ -200,18 +207,18 @@ void WKnobComposed::drawArc(QPainter* pPainter) {
     } else if (m_arcUnipolar) {
         if (m_arcReversed) {
            // draw arc from maxAngle to current position
-           pPainter->drawArc(rect,
-                   static_cast<int>((90 - m_dCurrentAngle) * 16),
-                   static_cast<int>((m_dMaxAngle - m_dCurrentAngle) * -16));
+            pPainter->drawArc(m_rect,
+                    static_cast<int>((90 - m_dCurrentAngle) * 16),
+                    static_cast<int>((m_dMaxAngle - m_dCurrentAngle) * -16));
         } else {
             // draw arc from minAngle to current position
-            pPainter->drawArc(rect,
+            pPainter->drawArc(m_rect,
                     static_cast<int>((90 - m_dMinAngle) * 16),
                     static_cast<int>((m_dCurrentAngle - m_dMinAngle) * -16));
         }
     } else {
         // draw arc from center to current position
-        pPainter->drawArc(rect, 90 * 16, static_cast<int>(m_dCurrentAngle * -16));
+        pPainter->drawArc(m_rect, 90 * 16, static_cast<int>(m_dCurrentAngle * -16));
     }
 }
 

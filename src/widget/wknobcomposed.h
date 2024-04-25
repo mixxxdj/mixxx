@@ -28,6 +28,7 @@ class WKnobComposed : public WWidget {
     void mousePressEvent(QMouseEvent *e) override;
     void mouseDoubleClickEvent(QMouseEvent* e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
+    void resizeEvent(QResizeEvent* /*unused*/) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
     std::optional<double> m_defaultAngle;
@@ -62,6 +63,7 @@ class WKnobComposed : public WWidget {
     bool m_arcUnipolar;
     bool m_arcReversed;
     Qt::PenCapStyle m_arcPenCap;
+    QRectF m_rect;
 
     friend class KnobEventHandler<WKnobComposed>;
 };
