@@ -67,7 +67,7 @@ TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
     CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, kMaxEngineSamples);
 
     // Instruct the mock to claim it is active, main and not PFL.
@@ -93,7 +93,7 @@ TEST_F(EngineMixerTest, SingleChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -111,7 +111,7 @@ TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
 
     // Pretend that the channel processed the buffer by stuffing it with 1.0's
     CSAMPLE* pChannelBuffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannelBuffer, 0.1f, kMaxEngineSamples);
 
     // Instruct the mock to claim it is active, not main and PFL
@@ -137,7 +137,7 @@ TEST_F(EngineMixerTest, SingleChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output is empty.
     assertMainBufferMatchesGolden(testName);
@@ -160,7 +160,7 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
     CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
 
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
     SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
 
@@ -208,7 +208,7 @@ TEST_F(EngineMixerTest, TwoChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -231,7 +231,7 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
     CSAMPLE* pChannel1Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test1]"));
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
 
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
     SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
 
@@ -279,7 +279,7 @@ TEST_F(EngineMixerTest, TwoChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -306,7 +306,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
     CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
 
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
     SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
     SampleUtil::fill(pChannel3Buffer, 0.3f, kMaxEngineSamples);
@@ -376,7 +376,7 @@ TEST_F(EngineMixerTest, ThreeChannelOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);
@@ -403,7 +403,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
     CSAMPLE* pChannel2Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test2]"));
     CSAMPLE* pChannel3Buffer = const_cast<CSAMPLE*>(m_pEngineMixer->getChannelBuffer("[Test3]"));
 
-    // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
+    // We assume it uses kMaxEngineSamples. This should probably be fixed.
     SampleUtil::fill(pChannel1Buffer, 0.1f, kMaxEngineSamples);
     SampleUtil::fill(pChannel2Buffer, 0.2f, kMaxEngineSamples);
     SampleUtil::fill(pChannel3Buffer, 0.3f, kMaxEngineSamples);
@@ -473,7 +473,7 @@ TEST_F(EngineMixerTest, ThreeChannelPFLOutputWorks) {
             .Times(1)
             .WillOnce(Return());
 
-    m_pEngineMixer->process(kMaxEngineSamples);
+    m_pEngineMixer->process(kMaxEngineSamples, std::chrono::microseconds(0));
 
     // Check that the main output contains the sum of the channel data.
     assertMainBufferMatchesGolden(testName);

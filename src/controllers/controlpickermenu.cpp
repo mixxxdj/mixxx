@@ -331,6 +331,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Decrease internal Leader BPM by 0.1"),
             pSyncMenu);
     pSyncMenu->addSeparator();
+    addControl("[AbletonLink]",
+            "sync_enabled",
+            tr("Link button"),
+            tr("Joins or disconnect from Ableton Link session"),
+            pSyncMenu);
+    addControl("[AbletonLink]",
+            "num_peers",
+            tr("Ableton Link number of peers"),
+            tr("Number of connected Ableton Link peers"),
+            pSyncMenu);
+
+    pSyncMenu->addSeparator();
     addDeckAndSamplerControl("sync_leader",
             tr("Sync Leader"),
             tr("Sync mode 3-state toggle / indicator (Off, Soft Leader, "
@@ -1603,8 +1615,8 @@ void ControlPickerMenu::addPlayerControl(const QString& control,
                 samplersInMenu = 0;
             }
             samplersInMenu++;
-        }
     }
+}
 }
 
 void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
@@ -1614,21 +1626,21 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
         bool microphoneControls,
         bool auxControls,
         bool addReset) {
-    parented_ptr<QMenu> pControlMenu = make_parented<QMenu>(controlTitle, pMenu);
-    pMenu->addMenu(pControlMenu);
+parented_ptr<QMenu> pControlMenu = make_parented<QMenu>(controlTitle, pMenu);
+pMenu->addMenu(pControlMenu);
 
-    parented_ptr<QMenu> pResetControlMenu = nullptr;
-    QString resetControl = QString("%1_set_default").arg(control);
-    if (addReset) {
-        QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
-        pResetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
-        pMenu->addMenu(pResetControlMenu);
-    }
+parented_ptr<QMenu> pResetControlMenu = nullptr;
+QString resetControl = QString("%1_set_default").arg(control);
+if (addReset) {
+    QString resetHelpText = QString("%1 (%2)").arg(controlTitle, m_resetStr);
+    pResetControlMenu = make_parented<QMenu>(resetHelpText, pMenu);
+    pMenu->addMenu(pResetControlMenu);
+}
 
     if (microphoneControls) {
-        const int kNumMicrophones = static_cast<int>(
-                ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_microphones"))));
-        for (int i = 1; i <= kNumMicrophones; ++i) {
+    const int kNumMicrophones = static_cast<int>(
+            ControlObject::get(ConfigKey(kAppGroup, QStringLiteral("num_microphones"))));
+    for (int i = 1; i <= kNumMicrophones; ++i) {
             QString prefix = m_microphoneStr.arg(i);
             QString group = PlayerManager::groupForMicrophone(i - 1);
             addSingleControl(group,
@@ -1650,7 +1662,7 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
                         prefix,
                         prefix);
             }
-        }
+    }
     }
 
     const int kNumAuxiliaries = static_cast<int>(

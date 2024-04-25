@@ -270,9 +270,11 @@ const CSAMPLE* EngineMixer::getSidechainBuffer() const {
     return m_sidechainMix.data();
 }
 
-void EngineMixer::processChannels(int iBufferSize) {
+void EngineMixer::processChannels(int iBufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachsDac) {
     // Update internal sync lock rate.
-    m_pEngineSync->onCallbackStart(m_sampleRate, iBufferSize);
+    m_pEngineSync->onCallbackStart(
+            m_sampleRate, iBufferSize, absTimeWhenPrevOutputBufferReachsDac);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
     m_activeBusChannels[EngineChannel::CENTER].clear();
@@ -391,7 +393,7 @@ void EngineMixer::processChannels(int iBufferSize) {
 
     // After local bpms are updated, trigger the rest of the post-processing
     // which ensures that all channels are updating certain values at the
-    // same point in time. This prevents sync from failing depending on
+    // same point in time.  This prevents sync from failing depending on
     // if the sync target was processed before or after the sync origin.
     for (int i = activeChannelsStartIndex;
             i < m_activeChannels.size(); ++i) {
@@ -399,9 +401,9 @@ void EngineMixer::processChannels(int iBufferSize) {
     }
 }
 
-void EngineMixer::process(const int iBufferSize) {
+void EngineMixer::process(const int iBufferSize,
+        std::chrono::microseconds absTimeWhenPrevOutputBufferReachsDac) {
     DEBUG_ASSERT(iBufferSize <= static_cast<int>(kMaxEngineSamples));
-
     static bool haveSetName = false;
     if (!haveSetName) {
         QThread::currentThread()->setObjectName("Engine");
@@ -423,7 +425,7 @@ void EngineMixer::process(const int iBufferSize) {
     }
 
     // Prepare all channels for output
-    processChannels(iBufferSize);
+    processChannels(iBufferSize, absTimeWhenPrevOutputBufferReachsDac);
 
     // Compute headphone mix
     // Head phone left/right mix

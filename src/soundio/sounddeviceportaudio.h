@@ -3,6 +3,8 @@
 #include <portaudio.h>
 
 #include <QString>
+#include <ableton/Link.hpp>
+#include <ableton/link/HostTimeFilter.hpp>
 #include <memory>
 
 #include "control/pollingcontrolproxy.h"
@@ -10,6 +12,7 @@
 #include "soundio/soundmanagerconfig.h"
 #include "util/duration.h"
 #include "util/fifo.h"
+#include "util/movinginterquartilemean.h"
 #include "util/performancetimer.h"
 
 class SoundManager;
@@ -84,4 +87,8 @@ class SoundDevicePortAudio : public SoundDevice {
     int m_invalidTimeInfoCount;
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
+
+    ableton::link::HostTimeFilter<ableton::link::platform::Clock> m_hostTimeFilter;
+    double m_cummulatedBufferTime;
+    MovingInterquartileMean m_meanOutputLatency;
 };

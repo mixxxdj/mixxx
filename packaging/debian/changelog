@@ -278,7 +278,7 @@ mixxx (1.6.0~beta1-1) unstable; urgency=low
   * debian/control:
       - build depend on libqt4-dev and scons
 
- -- Free Ekanayaka <freee@debian.org>  Thu, 27 Dec 2007 09:53:41 +0000
+ -- Free Ekanayaka <free@debian.org>  Thu, 27 Dec 2007 09:53:41 +0000
 
 mixxx (1.6.0beta1-0ubuntu1) gutsy; urgency=low
 
