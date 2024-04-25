@@ -29,6 +29,7 @@ StarEditor::StarEditor(QWidget* parent,
           m_index(index),
           m_styleOption(option),
           m_starCount(StarRating::kMinStarCount),
+          m_starCountToSave(StarRating::kInvalidStarCount),
           m_isKeyboardEditMode(isKeyboardEditMode) {
     DEBUG_ASSERT(m_pTableView);
     setMouseTracking(true);
@@ -197,10 +198,23 @@ bool StarEditor::eventFilter(QObject* obj, QEvent* event) {
         // Note: it seems with Qt5 we do not reliably get a Leave event when
         // invoking the track menu via right click, so reset the rating now.
         // The event is forwarded to parent QTableView.
+        m_starCountToSave = StarRating::kInvalidStarCount;
         resetRating();
         break;
     }
+    case QEvent::MouseButtonPress: {
+        // Workaround: The MouseButtonPress can cause a focus change that might
+        // cause a database reload, which then overwrites m_starRating before
+        // the MouseButtonRelease event has a chance to commit the new value
+        // to the model.
+        m_starCountToSave = m_starRating.starCount();
+        break;
+    }
     case QEvent::MouseButtonRelease: {
+        if (m_starCountToSave != StarRating::kInvalidStarCount) {
+            m_starRating.setStarCount(m_starCountToSave);
+            m_starCountToSave = StarRating::kInvalidStarCount;
+        }
         emit editingFinished();
         break;
     }
