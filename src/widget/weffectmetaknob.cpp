@@ -34,7 +34,7 @@ void WEffectMetaKnob::effectChanged() {
 
     if (pManifest) {
         setDefaultAngleFromParameterOrReset(pManifest->metaknobDefault());
-        setBaseTooltip(QString("%1\n%2").arg(
+        setBaseTooltip(QStringLiteral("%1\n%2").arg(
                 pManifest->name(),
                 pManifest->description()));
     } else {
