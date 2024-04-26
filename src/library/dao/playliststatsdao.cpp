@@ -85,3 +85,43 @@ QList<PlaylistStatsDAO::PlaylistSummary> PlaylistStatsDAO::getPlaylistSummaries(
     }
     return playlistSummaries;
 }
+
+PlaylistStatsDAO::PlaylistSummary PlaylistStatsDAO::getPlaylistSummary(const int playlistId) {
+    // This queries the temporary id/count/duration table that was has been created
+    // by preparePlaylistSummaryTable.
+    // TODO: the features' createPlaylistLabels() (updated each time playlists are added/removed)
+    VERIFY_OR_DEBUG_ASSERT(m_database.tables(QSql::Views).contains(m_countsDurationTableName)) {
+        qWarning() << "PlaylistStatsDAO: view" << m_countsDurationTableName
+                   << "does not exist! Can't fetch label for playlist" << playlistId;
+        return PlaylistSummary();
+    }
+    QSqlTableModel playlistTableModel(this, m_database);
+    playlistTableModel.setTable(m_countsDurationTableName);
+    const QString filter = "id=" + QString::number(playlistId);
+    playlistTableModel.setFilter(filter);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int countColumn = record.indexOf("count");
+    int durationColumn = record.indexOf("durationSeconds");
+
+    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
+    if (playlistTableModel.rowCount() > 0) {
+        QString name =
+                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
+                        .toString();
+        int count = playlistTableModel
+                            .data(playlistTableModel.index(0, countColumn))
+                            .toInt();
+        int duration =
+                playlistTableModel
+                        .data(playlistTableModel.index(0, durationColumn))
+                        .toInt();
+
+        return PlaylistSummary(playlistId, name, count, duration);
+    }
+    return PlaylistSummary();
+}

@@ -50,6 +50,9 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
     /// Returns the name, track count and total duration of all playlists.
     QList<PlaylistSummary> getPlaylistSummaries();
 
+    /// Returns the name, track count and total duration of the given playlist.
+    PlaylistSummary getPlaylistSummary(const int playlistId);
+
   private:
     QString m_countsDurationTableName;
     DISALLOW_COPY_AND_ASSIGN(PlaylistStatsDAO);

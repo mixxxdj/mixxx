@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QList>
 
+#include "library/dao/playliststatsdao.h"
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
@@ -716,37 +717,16 @@ QString BasePlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // by the features' createPlaylistLabels() (updated each time playlists are added/removed)
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
-    VERIFY_OR_DEBUG_ASSERT(database.tables(QSql::Views).contains(m_countsDurationTableName)) {
-        qWarning() << "BasePlaylistFeature: view" << m_countsDurationTableName
-                   << "does not exist! Can't fetch label for playlist" << playlistId;
-        return QString();
-    }
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable(m_countsDurationTableName);
-    const QString filter = "id=" + QString::number(playlistId);
-    playlistTableModel.setFilter(filter);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
 
-    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
-    if (playlistTableModel.rowCount() > 0) {
-        QString name =
-                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
-                        .toString();
-        int count = playlistTableModel
-                            .data(playlistTableModel.index(0, countColumn))
-                            .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(0, durationColumn))
-                        .toInt();
-        return createPlaylistLabel(name, count, duration);
+    PlaylistStatsDAO playlistStatsDao(
+            m_countsDurationTableName,
+            PlaylistDAO::PLHT_NOT_HIDDEN);
+
+    playlistStatsDao.initialize(database);
+
+    auto playlistInfo = playlistStatsDao.getPlaylistSummary(playlistId);
+    if (!playlistInfo.isEmpty()) {
+        return createPlaylistLabel(playlistInfo.name, playlistInfo.count, playlistInfo.duration);
     }
     return QString();
 }
