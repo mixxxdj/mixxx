@@ -41,14 +41,12 @@ BasePlaylistFeature::BasePlaylistFeature(
         PlaylistTableModel* pModel,
         const QString& rootViewName,
         const QString& iconName,
-        const QString& countsDurationTableName,
         bool keepHiddenTracks)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName, iconName),
           m_playlistDao(pLibrary->trackCollectionManager()
                                 ->internalCollection()
                                 ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel),
-          m_countsDurationTableName(countsDurationTableName),
           m_keepHiddenTracks(keepHiddenTracks) {
     pModel->setParent(this);
 
@@ -715,14 +713,10 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 QString BasePlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // This queries the temporary id/count/duration table that was has been created
     // by the features' createPlaylistLabels() (updated each time playlists are added/removed)
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-    PlaylistStatsDAO playlistStatsDao(
-            m_countsDurationTableName,
-            PlaylistDAO::PLHT_NOT_HIDDEN);
-
-    playlistStatsDao.initialize(database);
+    PlaylistStatsDAO& playlistStatsDao =
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_NOT_HIDDEN);
 
     auto playlistInfo = playlistStatsDao.getPlaylistSummary(playlistId);
     if (!playlistInfo.isEmpty()) {

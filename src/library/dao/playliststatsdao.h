@@ -13,7 +13,7 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
     PlaylistStatsDAO(const QString& countsDurationTableName,
-            const PlaylistDAO::HiddenType hiddenType);
+            const PlaylistDAO::HiddenType playlistType);
     ~PlaylistStatsDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override;

@@ -11,6 +11,7 @@
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/playliststatsdao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackset/crate/cratestorage.h"
 #include "preferences/usersettings.h"
@@ -59,6 +60,24 @@ class TrackCollection : public QObject,
     PlaylistDAO& getPlaylistDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
+    }
+    PlaylistStatsDAO& getPlaylistStatsDAO(PlaylistDAO::HiddenType playlistType) {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        switch (playlistType) {
+        case PlaylistDAO::PLHT_NOT_HIDDEN: {
+            return m_playlistStatsDao;
+        }
+        case PlaylistDAO::PLHT_SET_LOG: {
+            return m_setlogStatsDao;
+        }
+        case PlaylistDAO::PLHT_AUTO_DJ:
+        case PlaylistDAO::PLHT_UNKNOWN:
+        default: {
+            // This can only ever happen due to a coding error
+            DEBUG_ASSERT(false);
+            return m_playlistStatsDao;
+        }
+        }
     }
     const DirectoryDAO& getDirectoryDAO() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -169,6 +188,8 @@ class TrackCollection : public QObject,
     QSqlDatabase m_database;
 
     PlaylistDAO m_playlistDao;
+    PlaylistStatsDAO m_playlistStatsDao;
+    PlaylistStatsDAO m_setlogStatsDao;
     CrateStorage m_crates;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;

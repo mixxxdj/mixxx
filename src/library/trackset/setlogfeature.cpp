@@ -38,7 +38,6 @@ SetlogFeature::SetlogFeature(
                           /*keep hidden tracks*/ true),
                   QStringLiteral("SETLOGHOME"),
                   QStringLiteral("history"),
-                  QStringLiteral("SetlogCountsDurations"),
                   /*keep hidden tracks*/ true),
           m_currentPlaylistId(kInvalidPlaylistId),
           m_yearNodeId(kInvalidPlaylistId),
@@ -231,15 +230,10 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // qDebug() << "SetlogFeature::constructChildModel() selected:" << selectedId;
     // Setup the sidebar playlist model
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-    PlaylistStatsDAO playlistStatsDao(
-            m_countsDurationTableName,
-            PlaylistDAO::PLHT_SET_LOG);
-
-    playlistStatsDao.initialize(database);
-    playlistStatsDao.preparePlaylistSummaryTable();
+    PlaylistStatsDAO& playlistStatsDao =
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_SET_LOG);
 
     // Nice to have: restore previous expanded/collapsed state of YEAR items
     clearChildModel();

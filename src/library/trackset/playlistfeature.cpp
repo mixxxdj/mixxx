@@ -26,8 +26,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME"),
-                  QStringLiteral("playlist"),
-                  QStringLiteral("PlaylistsCountsDurations")) {
+                  QStringLiteral("playlist")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
@@ -120,17 +119,12 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 }
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-
-    PlaylistStatsDAO playlistStatsDao(
-            m_countsDurationTableName,
-            PlaylistDAO::PLHT_NOT_HIDDEN);
-
-    playlistStatsDao.initialize(database);
-    playlistStatsDao.preparePlaylistSummaryTable();
-
     // Setup the sidebar playlist model
+    PlaylistStatsDAO& playlistStatsDao =
+            m_pLibrary->trackCollectionManager()
+                    ->internalCollection()
+                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_NOT_HIDDEN);
+
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     for (auto playlistInfo : playlistStatsDao.getPlaylistSummaries()) {
         BasePlaylistFeature::IdAndLabel idAndLabel;

@@ -11,13 +11,14 @@
 #include "util/math.h"
 
 PlaylistStatsDAO::PlaylistStatsDAO(const QString& countsDurationTableName,
-        const PlaylistDAO::HiddenType hiddenType)
+        const PlaylistDAO::HiddenType playlistType)
         : m_countsDurationTableName(countsDurationTableName),
-          m_hiddenType(hiddenType) {
+          m_hiddenType(playlistType) {
 }
 
 void PlaylistStatsDAO::initialize(const QSqlDatabase& database) {
     DAO::initialize(database);
+    preparePlaylistSummaryTable();
 }
 
 void PlaylistStatsDAO::preparePlaylistSummaryTable() {

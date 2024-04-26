@@ -26,7 +26,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             PlaylistTableModel* pModel,
             const QString& rootViewName,
             const QString& iconName,
-            const QString& countsDurationTableName,
             bool keepHiddenTracks = false);
     ~BasePlaylistFeature() override = default;
 
@@ -117,7 +116,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
-    const QString m_countsDurationTableName;
 
   private slots:
     void slotTrackSelected(TrackId trackId);
