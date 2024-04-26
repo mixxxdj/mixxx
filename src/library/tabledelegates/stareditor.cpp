@@ -40,9 +40,13 @@ QSize StarEditor::sizeHint() const {
 }
 
 void StarEditor::paintEvent(QPaintEvent*) {
-    // If a StarEditor is open, by definition the mouse is hovering over us.
-    m_styleOption.state |= QStyle::State_MouseOver;
     m_styleOption.rect = rect();
+
+    if (underMouse()) {
+        m_styleOption.state |= QStyle::State_MouseOver;
+    } else {
+        m_styleOption.state &= ~QStyle::State_MouseOver;
+    }
 
     QItemSelectionModel* selectionModel = m_pTableView->selectionModel();
     if (selectionModel) {
