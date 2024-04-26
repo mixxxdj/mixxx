@@ -10,8 +10,10 @@
 #include "util/make_const_iterator.h"
 #include "util/math.h"
 
-PlaylistStatsDAO::PlaylistStatsDAO(const QString& countsDurationTableName)
-        : m_countsDurationTableName(countsDurationTableName) {
+PlaylistStatsDAO::PlaylistStatsDAO(const QString& countsDurationTableName,
+        const PlaylistDAO::HiddenType hiddenType)
+        : m_countsDurationTableName(countsDurationTableName),
+          m_hiddenType(hiddenType) {
 }
 
 void PlaylistStatsDAO::initialize(const QSqlDatabase& database) {
@@ -19,16 +21,28 @@ void PlaylistStatsDAO::initialize(const QSqlDatabase& database) {
 }
 
 void PlaylistStatsDAO::preparePlaylistSummaryTable() {
+    // If true, deleted tracks should still be counted
+    // towards the track count and duration totals.
+    // If false, treat deleted tracks as if they weren't there.
+    bool includeDeleted = m_hiddenType == PlaylistDAO::PLHT_SET_LOG;
+
     QString queryString = QStringLiteral(
             "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
+            "  Playlists.date_created AS date_created, "
             "  LOWER(Playlists.name) AS sort_name, "
-            "  COUNT(case library.mixxx_deleted when 0 then 1 else null end) "
+            "  IF(%3, "
+            "    max(PlaylistTracks.position),"
+            "    COUNT(case library.mixxx_deleted "
+            "      when 0 then 1 else null end)) "
             "    AS count, "
-            "  SUM(case library.mixxx_deleted "
-            "    when 0 then library.duration else 0 end) AS durationSeconds "
+            "  IF(%3, "
+            "    SUM(library.duration), "
+            "    SUM(case library.mixxx_deleted "
+            "      when 0 then library.duration else 0 end)) "
+            "    AS durationSeconds "
             "FROM Playlists "
             "LEFT JOIN PlaylistTracks "
             "  ON PlaylistTracks.playlist_id = Playlists.id "
@@ -37,8 +51,9 @@ void PlaylistStatsDAO::preparePlaylistSummaryTable() {
             "  WHERE Playlists.hidden = %2 "
             "  GROUP BY Playlists.id")
                                   .arg(m_countsDurationTableName,
-                                          QString::number(
-                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
+                                          QString::number(m_hiddenType),
+                                          includeDeleted ? "true" : "false");
+
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));
@@ -52,6 +67,10 @@ QList<PlaylistStatsDAO::PlaylistSummary> PlaylistStatsDAO::getPlaylistSummaries(
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_database);
     playlistTableModel.setTable(m_countsDurationTableName);
+    if (m_hiddenType == PlaylistDAO::PLHT_SET_LOG) {
+        // TODO: Can we remove this special handling for the SetLog?
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
+    }
     playlistTableModel.select();
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
@@ -59,6 +78,7 @@ QList<PlaylistStatsDAO::PlaylistSummary> PlaylistStatsDAO::getPlaylistSummaries(
     QSqlRecord record = playlistTableModel.record();
     int nameColumn = record.indexOf("name");
     int idColumn = record.indexOf("id");
+    int createdColumn = record.indexOf("date_created");
     int countColumn = record.indexOf("count");
     int durationColumn = record.indexOf("durationSeconds");
 
@@ -72,16 +92,19 @@ QList<PlaylistStatsDAO::PlaylistSummary> PlaylistStatsDAO::getPlaylistSummaries(
                 playlistTableModel
                         .data(playlistTableModel.index(row, nameColumn))
                         .toString();
-        int count =
+        QDateTime dateCreated =
                 playlistTableModel
-                        .data(playlistTableModel.index(row, countColumn))
-                        .toInt();
+                        .data(playlistTableModel.index(row, createdColumn))
+                        .toDateTime();
+        int count = playlistTableModel
+                            .data(playlistTableModel.index(row, countColumn))
+                            .toInt();
         int duration =
                 playlistTableModel
                         .data(playlistTableModel.index(row, durationColumn))
                         .toInt();
 
-        playlistSummaries.append(PlaylistSummary(id, name, count, duration));
+        playlistSummaries.append(PlaylistSummary(id, name, dateCreated, count, duration));
     }
     return playlistSummaries;
 }
@@ -106,6 +129,7 @@ PlaylistStatsDAO::PlaylistSummary PlaylistStatsDAO::getPlaylistSummary(const int
     QSqlRecord record = playlistTableModel.record();
     int nameColumn = record.indexOf("name");
     int countColumn = record.indexOf("count");
+    int createdColumn = record.indexOf("date_created");
     int durationColumn = record.indexOf("durationSeconds");
 
     DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
@@ -113,6 +137,10 @@ PlaylistStatsDAO::PlaylistSummary PlaylistStatsDAO::getPlaylistSummary(const int
         QString name =
                 playlistTableModel.data(playlistTableModel.index(0, nameColumn))
                         .toString();
+        QDateTime dateCreated =
+                playlistTableModel
+                        .data(playlistTableModel.index(0, createdColumn))
+                        .toDateTime();
         int count = playlistTableModel
                             .data(playlistTableModel.index(0, countColumn))
                             .toInt();
@@ -121,7 +149,7 @@ PlaylistStatsDAO::PlaylistSummary PlaylistStatsDAO::getPlaylistSummary(const int
                         .data(playlistTableModel.index(0, durationColumn))
                         .toInt();
 
-        return PlaylistSummary(playlistId, name, count, duration);
+        return PlaylistSummary(playlistId, name, dateCreated, count, duration);
     }
     return PlaylistSummary();
 }

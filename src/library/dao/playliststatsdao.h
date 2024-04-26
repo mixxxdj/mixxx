@@ -1,16 +1,19 @@
 #pragma once
 
+#include <QDateTime>
 #include <QList>
 #include <QObject>
 
 #include "library/dao/dao.h"
+#include "library/dao/playlistdao.h"
 #include "track/trackid.h"
 #include "util/class.h"
 
 class PlaylistStatsDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
-    PlaylistStatsDAO(const QString& countsDurationTableName);
+    PlaylistStatsDAO(const QString& countsDurationTableName,
+            const PlaylistDAO::HiddenType hiddenType);
     ~PlaylistStatsDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override;
@@ -19,16 +22,19 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
         PlaylistSummary()
                 : hasValue(false),
                   name(),
+                  dateCreated(),
                   count(0),
                   duration(0) {
         }
         PlaylistSummary(const int playlistId,
                 const QString& name,
+                const QDateTime& dateCreated,
                 int count,
                 int duration)
                 : hasValue(true),
                   playlistId(playlistId),
                   name(name),
+                  dateCreated(dateCreated),
                   count(count),
                   duration(duration) {
         }
@@ -40,6 +46,7 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
         bool hasValue;
         int playlistId;
         QString name;
+        QDateTime dateCreated;
         int count;
         int duration;
     };
@@ -55,5 +62,6 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
 
   private:
     QString m_countsDurationTableName;
+    PlaylistDAO::HiddenType m_hiddenType;
     DISALLOW_COPY_AND_ASSIGN(PlaylistStatsDAO);
 };

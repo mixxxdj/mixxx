@@ -123,7 +123,10 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     QSqlDatabase database =
             m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
-    PlaylistStatsDAO playlistStatsDao(m_countsDurationTableName);
+    PlaylistStatsDAO playlistStatsDao(
+            m_countsDurationTableName,
+            PlaylistDAO::PLHT_NOT_HIDDEN);
+
     playlistStatsDao.initialize(database);
     playlistStatsDao.preparePlaylistSummaryTable();
 
