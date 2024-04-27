@@ -220,6 +220,8 @@ class AutoDJProcessor : public QObject {
     void playerEmpty(DeckAttributes* pDeck);
     void playerRateChanged(DeckAttributes* pDeck);
 
+    void playlistTracksChanged();
+
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
     void controlShuffle(double value);
@@ -296,6 +298,9 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
+
+    ControlObject* m_pTracksRemaining;
+    ControlObject* m_pTimeRemaining;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
