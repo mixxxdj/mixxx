@@ -55,6 +55,7 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
+#include "widget/wnumberduration.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
 #include "widget/woverviewhsv.h"
@@ -558,6 +559,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseLabelWidget<WNumber>(node));
     } else if (nodeName == "NumberDb") {
         result = wrapWidget(parseLabelWidget<WNumberDb>(node));
+    } else if (nodeName == "NumberDuration") {
+        result = wrapWidget(parseLabelWidget<WNumberDuration>(node));
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
     } else if (nodeName == "Knob") {
