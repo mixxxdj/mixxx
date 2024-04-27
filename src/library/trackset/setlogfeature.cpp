@@ -231,9 +231,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // qDebug() << "SetlogFeature::constructChildModel() selected:" << selectedId;
     // Setup the sidebar playlist model
     PlaylistStatsDAO& playlistStatsDao =
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_SET_LOG);
+            m_pLibrary->trackCollectionManager()->internalCollection()->getPlaylistStatsDAO();
 
     // Nice to have: restore previous expanded/collapsed state of YEAR items
     clearChildModel();
@@ -242,7 +240,8 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Generous estimate (number of years the db is used ;))
     itemList.reserve(kNumToplevelHistoryEntries + 15);
     int numEntries = 0;
-    for (auto playlistInfo : playlistStatsDao.getPlaylistSummaries()) {
+    for (const auto& playlistInfo :
+            playlistStatsDao.getPlaylistSummaries(PlaylistDAO::PLHT_SET_LOG)) {
         int id = playlistInfo.playlistId;
         QString label = createPlaylistLabel(
                 playlistInfo.name, playlistInfo.count, playlistInfo.duration);

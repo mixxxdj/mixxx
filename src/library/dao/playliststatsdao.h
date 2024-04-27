@@ -12,8 +12,7 @@
 class PlaylistStatsDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
-    PlaylistStatsDAO(const QString& countsDurationTableName,
-            const PlaylistDAO::HiddenType playlistType);
+    PlaylistStatsDAO();
     ~PlaylistStatsDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override;
@@ -54,14 +53,14 @@ class PlaylistStatsDAO : public QObject, public virtual DAO {
     /// Prepares the table view used by getPlaylistSummary.
     void preparePlaylistSummaryTable();
 
-    /// Returns the name, track count and total duration of all playlists.
-    QList<PlaylistSummary> getPlaylistSummaries();
+    /// Returns the name, track count and total duration
+    /// of all playlists of the given type.
+    QList<PlaylistSummary> getPlaylistSummaries(PlaylistDAO::HiddenType playlistType);
 
     /// Returns the name, track count and total duration of the given playlist.
     PlaylistSummary getPlaylistSummary(const int playlistId);
 
   private:
     QString m_countsDurationTableName;
-    PlaylistDAO::HiddenType m_hiddenType;
     DISALLOW_COPY_AND_ASSIGN(PlaylistStatsDAO);
 };

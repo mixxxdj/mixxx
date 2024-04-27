@@ -121,12 +121,11 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     // Setup the sidebar playlist model
     PlaylistStatsDAO& playlistStatsDao =
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_NOT_HIDDEN);
+            m_pLibrary->trackCollectionManager()->internalCollection()->getPlaylistStatsDAO();
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
-    for (auto playlistInfo : playlistStatsDao.getPlaylistSummaries()) {
+    for (const auto& playlistInfo : playlistStatsDao.getPlaylistSummaries(
+                 PlaylistDAO::PLHT_NOT_HIDDEN)) {
         BasePlaylistFeature::IdAndLabel idAndLabel;
         idAndLabel.id = playlistInfo.playlistId;
         idAndLabel.label = createPlaylistLabel(

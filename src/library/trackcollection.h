@@ -61,23 +61,9 @@ class TrackCollection : public QObject,
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
     }
-    PlaylistStatsDAO& getPlaylistStatsDAO(PlaylistDAO::HiddenType playlistType) {
+    PlaylistStatsDAO& getPlaylistStatsDAO() {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-        switch (playlistType) {
-        case PlaylistDAO::PLHT_NOT_HIDDEN: {
-            return m_playlistStatsDao;
-        }
-        case PlaylistDAO::PLHT_SET_LOG: {
-            return m_setlogStatsDao;
-        }
-        case PlaylistDAO::PLHT_AUTO_DJ:
-        case PlaylistDAO::PLHT_UNKNOWN:
-        default: {
-            // This can only ever happen due to a coding error
-            DEBUG_ASSERT(false);
-            return m_playlistStatsDao;
-        }
-        }
+        return m_playlistStatsDao;
     }
     const DirectoryDAO& getDirectoryDAO() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -189,7 +175,6 @@ class TrackCollection : public QObject,
 
     PlaylistDAO m_playlistDao;
     PlaylistStatsDAO m_playlistStatsDao;
-    PlaylistStatsDAO m_setlogStatsDao;
     CrateStorage m_crates;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;

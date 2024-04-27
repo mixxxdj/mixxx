@@ -711,12 +711,9 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 QString BasePlaylistFeature::fetchPlaylistLabel(int playlistId) {
-    // This queries the temporary id/count/duration table that was has been created
-    // by the features' createPlaylistLabels() (updated each time playlists are added/removed)
+    // Query the temporary id/count/duration table
     PlaylistStatsDAO& playlistStatsDao =
-            m_pLibrary->trackCollectionManager()
-                    ->internalCollection()
-                    ->getPlaylistStatsDAO(PlaylistDAO::PLHT_NOT_HIDDEN);
+            m_pLibrary->trackCollectionManager()->internalCollection()->getPlaylistStatsDAO();
 
     auto playlistInfo = playlistStatsDao.getPlaylistSummary(playlistId);
     if (!playlistInfo.isEmpty()) {

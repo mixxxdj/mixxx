@@ -18,10 +18,6 @@ mixxx::Logger kLogger("TrackCollection");
 TrackCollection::TrackCollection(
         QObject* parent, const UserSettingsPointer& pConfig)
         : QObject(parent),
-          m_playlistStatsDao(QStringLiteral("PlaylistsCountsDurations"),
-                  PlaylistDAO::PLHT_NOT_HIDDEN),
-          m_setlogStatsDao(QStringLiteral("SetlogCountsDurations"),
-                  PlaylistDAO::PLHT_SET_LOG),
           m_analysisDao(pConfig),
           m_trackDao(m_cueDao,
                   m_playlistDao,
@@ -85,7 +81,6 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
     m_playlistStatsDao.initialize(database);
-    m_setlogStatsDao.initialize(database);
     m_cueDao.initialize(database);
     m_directoryDao.initialize(database);
     m_analysisDao.initialize(database);
