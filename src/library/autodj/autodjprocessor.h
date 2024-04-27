@@ -156,14 +156,14 @@ class AutoDJProcessor : public QObject {
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
-    double getIntroStartSecond(DeckAttributes* pDeck);
-    double getIntroEndSecond(DeckAttributes* pDeck);
-    double getOutroStartSecond(DeckAttributes* pDeck);
-    double getOutroEndSecond(DeckAttributes* pDeck);
-    double getFirstSoundSecond(DeckAttributes* pDeck);
-    double getLastSoundSecond(DeckAttributes* pDeck);
-    double getEndSecond(DeckAttributes* pDeck);
-    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
+    double getIntroStartSecond(TrackOrDeckAttributes* pDeck);
+    double getIntroEndSecond(TrackOrDeckAttributes* pDeck);
+    double getOutroStartSecond(TrackOrDeckAttributes* pDeck);
+    double getOutroEndSecond(TrackOrDeckAttributes* pDeck);
+    double getFirstSoundSecond(TrackOrDeckAttributes* pDeck);
+    double getLastSoundSecond(TrackOrDeckAttributes* pDeck);
+    double getEndSecond(TrackOrDeckAttributes* pDeck);
+    double framePositionToSeconds(mixxx::audio::FramePos position, TrackOrDeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
@@ -171,12 +171,12 @@ class AutoDJProcessor : public QObject {
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
     void calculateTransitionImpl(
-            DeckAttributes* pFromDeck,
-            DeckAttributes* pToDeck,
+            TrackOrDeckAttributes* pFromDeck,
+            TrackOrDeckAttributes* pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(
-            DeckAttributes* pFromDeck,
-            DeckAttributes* pToDeck,
+            TrackOrDeckAttributes* pFromDeck,
+            TrackOrDeckAttributes* pToDeck,
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
