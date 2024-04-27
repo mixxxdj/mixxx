@@ -131,7 +131,9 @@ AutoDJProcessor::AutoDJProcessor(
           m_skipNext(ConfigKey(kControlGroup, QStringLiteral("skip_next"))),
           m_addRandomTrack(ConfigKey(kControlGroup, QStringLiteral("add_random_track"))),
           m_fadeNow(ConfigKey(kControlGroup, QStringLiteral("fade_now"))),
-          m_enabledAutoDJ(ConfigKey(kControlGroup, QStringLiteral("enabled"))) {
+          m_enabledAutoDJ(ConfigKey(kControlGroup, QStringLiteral("enabled"))),
+          m_queueRemainingTracks(ConfigKey(kControlGroup, QStringLiteral("queue_tracks"))),
+          m_queueRemainingDuration(ConfigKey(kControlGroup, QStringLiteral("queue_duration"))) {
     m_pAutoDJTableModel = make_parented<PlaylistTableModel>(
             this, pTrackCollectionManager, "mixxx.db.model.autodj");
     m_pAutoDJTableModel->selectPlaylist(iAutoDJPlaylistId);
@@ -151,6 +153,11 @@ AutoDJProcessor::AutoDJProcessor(
     m_enabledAutoDJ.connectValueChangeRequest(this,
             &AutoDJProcessor::controlEnableChangeRequest);
 
+    connect(m_pAutoDJTableModel,
+            &PlaylistTableModel::playlistTracksChanged,
+            this,
+            &AutoDJProcessor::playlistTracksChanged);
+
     connect(pPlayerManager,
             &PlayerManagerInterface::numberOfDecksChanged,
             this,
@@ -166,6 +173,9 @@ AutoDJProcessor::AutoDJProcessor(
     m_transitionMode = m_pConfig->getValue(
             ConfigKey(kPreferenceGroup, kTransitionModePreferenceName),
             TransitionMode::FullIntroOutro);
+
+    // Calculate the initial values for track count and time remaining
+    playlistTracksChanged();
 }
 
 void AutoDJProcessor::slotNumberOfDecksChanged(int decks) {
@@ -194,6 +204,11 @@ void AutoDJProcessor::setCrossfader(double value) {
         value *= -1.0;
     }
     m_coCrossfader.set(value);
+}
+
+void AutoDJProcessor::playlistTracksChanged() {
+    m_queueRemainingTracks.set(m_pAutoDJTableModel->rowCount());
+    m_queueRemainingDuration.set(m_pAutoDJTableModel->getTotalDuration().toDoubleSeconds());
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
