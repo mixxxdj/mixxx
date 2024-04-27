@@ -4,6 +4,8 @@
 #include "control/controlpushbutton.h"
 #include "engine/channels/enginedeck.h"
 #include "library/playlisttablemodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjprocessor.cpp"
@@ -235,6 +237,14 @@ AutoDJProcessor::AutoDJProcessor(
             &PlaylistTableModel::playlistTracksChanged,
             this,
             &AutoDJProcessor::playlistTracksChanged);
+    connect(pTrackCollectionManager->internalCollection(),
+            &TrackCollection::tracksChanged,
+            this,
+            &AutoDJProcessor::tracksChanged);
+    connect(pTrackCollectionManager->internalCollection(),
+            &TrackCollection::multipleTracksChanged,
+            this,
+            &AutoDJProcessor::multipleTracksChanged);
 
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.
@@ -299,6 +309,43 @@ void AutoDJProcessor::setCrossfader(double value) {
 
 void AutoDJProcessor::playlistTracksChanged() {
     m_pTracksRemaining->set(m_pAutoDJTableModel->rowCount());
+    updateRemainingTime();
+}
+
+void AutoDJProcessor::tracksChanged(const QSet<TrackId>& tracks) {
+    Q_UNUSED(tracks);
+    updateRemainingTime();
+}
+
+void AutoDJProcessor::multipleTracksChanged() {
+    updateRemainingTime();
+}
+
+void AutoDJProcessor::updateRemainingTime() {
+    // The following data points are used as inputs for the "remaining time"
+    // calculation, and should therefore trigger a recalculation:
+    //
+    //     * The list of tracks in the Auto DJ playlist (both
+    //       the set of tracks and their order are important).
+    //
+    //       We subscribe to PlaylistTableModel::tracksChanged
+    //       to receive the relevant notifications.
+    //
+    //     * The AutoDJ transition mode and transition time settings.
+    //       We will be notified via ::setTransitionMode
+    //       and ::setTransitionTime, respectively.
+    //
+    //     * The Intro, Outro & N60dBSound cues of all tracks
+    //       that are contained in the Auto DJ queue.
+    //
+    //       We subscribe to TrackCollection::tracksChanged
+    //       and TrackCollection::multipleTracksChanged to
+    //       receive notifications about possible changes.
+    //
+    //       As of now, we do not filter the notifications,
+    //       and simply trigger a recalculation when ANY
+    //       track has changed.
+    //
     m_pTimeRemaining->set(calculateRemainingTime().toDoubleSeconds());
 }
 
@@ -1847,6 +1894,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
             // User has changed the orientation, disable Auto DJ
             toggleAutoDJ(false);
             emit autoDJError(ADJ_NOT_TWO_DECKS);
+            updateRemainingTime();
             return;
         }
         if (pLeftDeck->isPlaying()) {
@@ -1856,6 +1904,10 @@ void AutoDJProcessor::setTransitionTime(int time) {
             calculateTransition(pRightDeck, pLeftDeck, false);
         }
     }
+
+    // Recalculate the duration of the Auto DJ playlist,
+    // which may have been affected by the transition time change
+    updateRemainingTime();
 }
 
 void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
@@ -1864,7 +1916,9 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     m_transitionMode = newMode;
 
     if (m_eState != ADJ_IDLE) {
-        // We don't want to recalculate a running transition
+        // We don't want to recalculate a running transition,
+        // only the remaining queue play time
+        updateRemainingTime();
         return;
     }
 
@@ -1876,6 +1930,7 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         // User has changed the orientation, disable Auto DJ
         toggleAutoDJ(false);
         emit autoDJError(ADJ_NOT_TWO_DECKS);
+        updateRemainingTime();
         return;
     }
 
@@ -1897,6 +1952,10 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
         // user has manually started the other deck or stopped both.
         // don't know what to do.
     }
+
+    // Recalculate the duration of the Auto DJ playlist,
+    // which may have been affected by the transition mode change
+    updateRemainingTime();
 }
 
 DeckAttributes* AutoDJProcessor::getLeftDeck() {

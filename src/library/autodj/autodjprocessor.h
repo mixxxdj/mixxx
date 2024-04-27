@@ -8,6 +8,7 @@
 #include "engine/channels/enginechannel.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/class.h"
 #include "util/duration.h"
 
@@ -277,6 +278,9 @@ class AutoDJProcessor : public QObject {
     void playerRateChanged(DeckAttributes* pDeck);
 
     void playlistTracksChanged();
+    void tracksChanged(const QSet<TrackId>& tracks);
+    void multipleTracksChanged();
+    void updateRemainingTime();
 
     void controlEnableChangeRequest(double value);
     void controlFadeNow(double value);
