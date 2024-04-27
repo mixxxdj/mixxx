@@ -1,5 +1,7 @@
 #include "widget/wnumberduration.h"
 
+#include <QTime>
+
 #include "control/controlproxy.h"
 #include "moc_wnumberduration.cpp"
 #include "util/duration.h"
@@ -24,41 +26,46 @@ void WNumberDuration::setup(const QDomNode& node, const SkinContext& context) {
     } else if (formatString == "traditional_coarse") {
         m_displayFormat = TrackTime::DisplayFormat::TRADITIONAL_COARSE;
     } else {
-        m_displayFormat = TrackTime::DisplayFormat::TRADITIONAL;
+        m_displayFormatString = formatString;
     }
 }
 
 // Reimplementing WNumber::setValue
 void WNumberDuration::setValue(double dSeconds) {
-    QString (*timeFormat)(double dSeconds, mixxx::Duration::Precision precision);
+    const double dSecondsAbs = abs(dSeconds);
 
-    if (m_displayFormat == TrackTime::DisplayFormat::KILO_SECONDS) {
-        timeFormat = &mixxx::Duration::formatKiloSeconds;
+    QString fmt;
+    if (!m_displayFormatString.isNull() && !m_displayFormatString.isEmpty()) {
+        // A more detailed format string was specified,
+        // pass it on to QTime for formatting
+
+        // NOTE: QTime() constructs a 'null' object,
+        // but we need 'zero' here.
+        QTime t = QTime(0, 0).addMSecs(static_cast<int>(
+                dSeconds * mixxx::Duration::kMillisPerSecond));
+
+        fmt = t.toString(m_displayFormatString);
+    } else if (m_displayFormat == TrackTime::DisplayFormat::KILO_SECONDS) {
+        fmt = mixxx::Duration::formatKiloSeconds(dSecondsAbs);
     } else if (m_displayFormat == TrackTime::DisplayFormat::SECONDS_LONG) {
-        timeFormat = &mixxx::Duration::formatSecondsLong;
+        fmt = mixxx::Duration::formatSecondsLong(dSecondsAbs);
     } else if (m_displayFormat == TrackTime::DisplayFormat::SECONDS) {
-        timeFormat = &mixxx::Duration::formatSeconds;
+        fmt = mixxx::Duration::formatSeconds(dSecondsAbs);
+    } else if (m_displayFormat == TrackTime::DisplayFormat::TRADITIONAL_COARSE) {
+        fmt = mixxx::Duration::formatTime(
+                dSecondsAbs, mixxx::Duration::Precision::CENTISECONDS);
     } else {
-        timeFormat = &mixxx::Duration::formatTime;
+        fmt = mixxx::Duration::formatTime(dSecondsAbs);
     }
 
-    mixxx::Duration::Precision precision;
-    if (m_displayFormat != TrackTime::DisplayFormat::TRADITIONAL_COARSE) {
-        precision = mixxx::Duration::Precision::CENTISECONDS;
-    } else {
-        precision = mixxx::Duration::Precision::SECONDS;
-    }
-
-    QString formattedValue;
-    if (dSeconds >= 0.0) {
-        formattedValue = timeFormat(dSeconds, precision);
-    } else {
-        formattedValue = QLatin1String("-") % timeFormat(-dSeconds, precision);
+    // Prepend "-" for negative durations
+    if (dSeconds < 0.0) {
+        fmt = QLatin1String("-") % fmt;
     }
 
     if (m_skinText.contains("%1")) {
-        setText(m_skinText.arg(formattedValue));
+        setText(m_skinText.arg(fmt));
     } else {
-        setText(m_skinText + formattedValue);
+        setText(m_skinText + fmt);
     }
 }

@@ -19,4 +19,5 @@ class WNumberDuration : public WNumber {
 
   private:
     TrackTime::DisplayFormat m_displayFormat;
+    QString m_displayFormatString;
 };
