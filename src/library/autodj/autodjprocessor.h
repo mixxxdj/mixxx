@@ -41,8 +41,19 @@ class TrackOrDeckAttributes : public QObject {
     }
 };
 
+class FadeableTrackOrDeckAttributes : public TrackOrDeckAttributes {
+    Q_OBJECT
+  public:
+    FadeableTrackOrDeckAttributes();
+    virtual ~FadeableTrackOrDeckAttributes();
+
+    double startPos;     // Set in toDeck nature
+    double fadeBeginPos; // set in fromDeck nature
+    double fadeEndPos;   // set in fromDeck nature
+};
+
 /// Exposes the attributes of a track from the Auto DJ queue
-class TrackAttributes : public TrackOrDeckAttributes {
+class TrackAttributes : public FadeableTrackOrDeckAttributes {
     Q_OBJECT
   public:
     TrackAttributes(TrackPointer pTrack);
@@ -65,7 +76,7 @@ class TrackAttributes : public TrackOrDeckAttributes {
 };
 
 /// Exposes the attributes of the track loaded in a certain player deck
-class DeckAttributes : public TrackOrDeckAttributes {
+class DeckAttributes : public FadeableTrackOrDeckAttributes {
     Q_OBJECT
   public:
     DeckAttributes(int index,
@@ -165,9 +176,6 @@ class DeckAttributes : public TrackOrDeckAttributes {
   public:
     int index;
     QString group;
-    double startPos;     // Set in toDeck nature
-    double fadeBeginPos; // set in fromDeck nature
-    double fadeEndPos;   // set in fromDeck nature
     bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
@@ -319,12 +327,13 @@ class AutoDJProcessor : public QObject {
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
-    void calculateTransition(DeckAttributes* pFromDeck,
+    void calculateTransition(
+            DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(
-            DeckAttributes* pFromDeck,
-            DeckAttributes* pToDeck,
+            FadeableTrackOrDeckAttributes& fromTrack,
+            FadeableTrackOrDeckAttributes& toTrack,
             double fromDeckSecond,
             double fadeEndSecond,
             double toDeckStartSecond);
