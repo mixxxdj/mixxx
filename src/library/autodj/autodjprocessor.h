@@ -32,6 +32,7 @@ class TrackOrDeckAttributes : public QObject {
     virtual mixxx::audio::FramePos outroEndPosition() const = 0;
     virtual mixxx::audio::SampleRate sampleRate() const = 0;
     virtual mixxx::audio::FramePos trackEndPosition() const = 0;
+    virtual double playPosition() const = 0;
     virtual double rateRatio() const = 0;
 
     virtual TrackPointer getLoadedTrack() const = 0;
@@ -50,6 +51,8 @@ class FadeableTrackOrDeckAttributes : public TrackOrDeckAttributes {
     double startPos;     // Set in toDeck nature
     double fadeBeginPos; // set in fromDeck nature
     double fadeEndPos;   // set in fromDeck nature
+    double fadeDurationSeconds;
+    bool isFromDeck;
 };
 
 /// Exposes the attributes of a track from the Auto DJ queue
@@ -65,6 +68,7 @@ class TrackAttributes : public FadeableTrackOrDeckAttributes {
     virtual mixxx::audio::FramePos outroEndPosition() const override;
     virtual mixxx::audio::SampleRate sampleRate() const override;
     virtual mixxx::audio::FramePos trackEndPosition() const override;
+    virtual double playPosition() const override;
     virtual double rateRatio() const override;
 
     TrackPointer getLoadedTrack() const override {
@@ -103,7 +107,7 @@ class DeckAttributes : public FadeableTrackOrDeckAttributes {
         m_play.set(1.0);
     }
 
-    double playPosition() const {
+    double playPosition() const override {
         return m_playPos.get();
     }
 
@@ -176,7 +180,6 @@ class DeckAttributes : public FadeableTrackOrDeckAttributes {
   public:
     int index;
     QString group;
-    bool isFromDeck;
     bool loading; // The data is inconsistent during loading a deck
 
   private:
@@ -330,6 +333,10 @@ class AutoDJProcessor : public QObject {
     void calculateTransition(
             DeckAttributes* pFromDeck,
             DeckAttributes* pToDeck,
+            bool seekToStartPoint);
+    void calculateTransitionImpl(
+            FadeableTrackOrDeckAttributes& pFromDeck,
+            FadeableTrackOrDeckAttributes& pToDeck,
             bool seekToStartPoint);
     void useFixedFadeTime(
             FadeableTrackOrDeckAttributes& fromTrack,
