@@ -299,7 +299,50 @@ void AutoDJProcessor::setCrossfader(double value) {
 
 void AutoDJProcessor::playlistTracksChanged() {
     m_pTracksRemaining->set(m_pAutoDJTableModel->rowCount());
-    m_pTimeRemaining->set(m_pAutoDJTableModel->getTotalDuration().toDoubleSeconds());
+    m_pTimeRemaining->set(calculateRemainingTime().toDoubleSeconds());
+}
+
+mixxx::Duration AutoDJProcessor::calculateRemainingTime() {
+    if (m_transitionMode == TransitionMode::FullIntroOutro ||
+            m_transitionMode == TransitionMode::FadeAtOutroStart ||
+            m_transitionMode == TransitionMode::FixedSkipSilence) {
+        // The transition time between two tracks depends on both
+        // tracks for some transition modes
+        TrackPointer previousTrack;
+
+        double durationTotal = 0.0;
+        const int numOfTracks = m_pAutoDJTableModel->rowCount();
+        for (int i = 0; i < numOfTracks; i++) {
+            TrackPointer track = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(i, 0));
+            if (previousTrack) {
+                TrackAttributes fromTrack(previousTrack);
+                TrackAttributes toTrack(track);
+                calculateTransitionImpl(fromTrack, toTrack, true);
+                durationTotal += track->getDuration() - fromTrack.fadeDurationSeconds;
+            } else {
+                // TODO: Take the transition between an already playing deck
+                //       and the top of the Auto DJ queue into account?
+                durationTotal += track->getDuration();
+            }
+            previousTrack = track;
+        }
+
+        return mixxx::Duration::fromSeconds(durationTotal);
+    } else {
+        // This is the simplest case of the tracks' actual play time
+        // being equal to their duration minus the fixed fade time.
+        // No fade time is applied to the last track.
+        int numTracks = m_pAutoDJTableModel->rowCount();
+        if (numTracks >= 2) {
+            // A negative transition time causes silence to be inserted
+            // between the tracks, which is accurately reflected here
+            // as an increase of the total playtime.
+            return m_pAutoDJTableModel->getTotalDuration() -
+                    mixxx::Duration::fromSeconds((numTracks - 1) * m_transitionTime);
+        } else {
+            return m_pAutoDJTableModel->getTotalDuration();
+        }
+    }
 }
 
 AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
