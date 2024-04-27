@@ -1147,7 +1147,7 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
     calculateTransition(fromDeck, getOtherDeck(fromDeck), false);
 }
 
-double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getIntroStartSecond(TrackOrDeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
     const mixxx::audio::FramePos introStartPosition = pDeck->introStartPosition();
     const mixxx::audio::FramePos introEndPosition = pDeck->introEndPosition();
@@ -1166,7 +1166,7 @@ double AutoDJProcessor::getIntroStartSecond(DeckAttributes* pDeck) {
     return framePositionToSeconds(introStartPosition, pDeck);
 }
 
-double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getIntroEndSecond(TrackOrDeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
     const mixxx::audio::FramePos introEndPosition = pDeck->introEndPosition();
     if (!introEndPosition.isValid() || introEndPosition > trackEndPosition) {
@@ -1179,7 +1179,7 @@ double AutoDJProcessor::getIntroEndSecond(DeckAttributes* pDeck) {
     return framePositionToSeconds(introEndPosition, pDeck);
 }
 
-double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getOutroStartSecond(TrackOrDeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
     const mixxx::audio::FramePos outroStartPosition = pDeck->outroStartPosition();
     if (!outroStartPosition.isValid() || outroStartPosition > trackEndPosition) {
@@ -1192,7 +1192,7 @@ double AutoDJProcessor::getOutroStartSecond(DeckAttributes* pDeck) {
     return framePositionToSeconds(outroStartPosition, pDeck);
 }
 
-double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getOutroEndSecond(TrackOrDeckAttributes* pDeck) {
     const mixxx::audio::FramePos trackEndPosition = pDeck->trackEndPosition();
     const mixxx::audio::FramePos outroStartPosition = pDeck->outroStartPosition();
     const mixxx::audio::FramePos outroEndPosition = pDeck->outroEndPosition();
@@ -1220,7 +1220,7 @@ double AutoDJProcessor::getOutroEndSecond(DeckAttributes* pDeck) {
     return framePositionToSeconds(outroEndPosition, pDeck);
 }
 
-double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getFirstSoundSecond(TrackOrDeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
@@ -1243,7 +1243,7 @@ double AutoDJProcessor::getFirstSoundSecond(DeckAttributes* pDeck) {
     return 0.0;
 }
 
-double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getLastSoundSecond(TrackOrDeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
@@ -1266,7 +1266,7 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     return framePositionToSeconds(trackEndPosition, pDeck);
 }
 
-double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
+double AutoDJProcessor::getEndSecond(TrackOrDeckAttributes* pDeck) {
     TrackPointer pTrack = pDeck->getLoadedTrack();
     if (!pTrack) {
         return 0.0;
@@ -1277,7 +1277,7 @@ double AutoDJProcessor::getEndSecond(DeckAttributes* pDeck) {
 }
 
 double AutoDJProcessor::framePositionToSeconds(
-        mixxx::audio::FramePos position, DeckAttributes* pDeck) {
+        mixxx::audio::FramePos position, TrackOrDeckAttributes* pDeck) {
     mixxx::audio::SampleRate sampleRate = pDeck->sampleRate();
     if (!sampleRate.isValid() || !position.isValid()) {
         return 0.0;
@@ -1329,8 +1329,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 }
 
 void AutoDJProcessor::calculateTransitionImpl(
-        DeckAttributes* pFromDeck,
-        DeckAttributes* pToDeck,
+        TrackOrDeckAttributes* pFromDeck,
+        TrackOrDeckAttributes* pToDeck,
         bool seekToStartPoint) {
     // ===================================
     // Check for tracks that are too short
@@ -1589,8 +1589,8 @@ void AutoDJProcessor::calculateTransitionImpl(
 }
 
 void AutoDJProcessor::useFixedFadeTime(
-        DeckAttributes* pFromDeck,
-        DeckAttributes* pToDeck,
+        TrackOrDeckAttributes* pFromDeck,
+        TrackOrDeckAttributes* pToDeck,
         double fromDeckSecond,
         double fadeEndSecond,
         double toDeckStartSecond) {
