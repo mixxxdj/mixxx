@@ -7,6 +7,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/playlisttablemodel.h"
+#include "library/proxytrackmodel.h"
 #include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -33,6 +34,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
                   pLibrary,
                   parent->getTrackTableBackgroundColorOpacity())),
           m_bShowButtonText(parent->getShowButtonText()),
+          m_pProxyTableModel(nullptr),
           m_pAutoDJTableModel(nullptr) {
     setupUi(this);
 
@@ -78,7 +80,15 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
 
     // We do _NOT_ take ownership of this from AutoDJProcessor.
     m_pAutoDJTableModel = m_pAutoDJProcessor->getTableModel();
-    m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
+
+    // Wrap the table model so users can search it without
+    // messing up the table view for the AutoDJProcessor.
+    m_pProxyTableModel = new ProxyTrackModel(
+            m_pAutoDJTableModel,
+            /* handle searches*/ true);
+
+    // Use the proxy model for the displayed table & searches
+    m_pTrackTableView->loadTrackModel(m_pProxyTableModel);
 
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
@@ -232,6 +242,7 @@ DlgAutoDJ::~DlgAutoDJ() {
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
     delete m_pTrackTableView;
+    delete m_pProxyTableModel;
 }
 
 void DlgAutoDJ::setupActionButton(QPushButton* pButton,
@@ -245,12 +256,15 @@ void DlgAutoDJ::setupActionButton(QPushButton* pButton,
 
 void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
+    m_pProxyTableModel->select();
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
-    // Do not allow filtering the Auto DJ playlist, because
-    // Auto DJ will work from the filtered table
-    Q_UNUSED(text);
+    m_pTrackTableView->onSearch(text);
+}
+
+const QString DlgAutoDJ::currentSearch() const {
+    return m_pProxyTableModel->currentSearch();
 }
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {
