@@ -21,7 +21,51 @@ class PlayerManagerInterface;
 class BaseTrackPlayer;
 typedef QList<QModelIndex> QModelIndexList;
 
-class DeckAttributes : public QObject {
+class TrackOrDeckAttributes : public QObject {
+    Q_OBJECT
+  public:
+    virtual ~TrackOrDeckAttributes();
+
+    virtual mixxx::audio::FramePos introStartPosition() const = 0;
+    virtual mixxx::audio::FramePos introEndPosition() const = 0;
+    virtual mixxx::audio::FramePos outroStartPosition() const = 0;
+    virtual mixxx::audio::FramePos outroEndPosition() const = 0;
+    virtual mixxx::audio::SampleRate sampleRate() const = 0;
+    virtual mixxx::audio::FramePos trackEndPosition() const = 0;
+    virtual double rateRatio() const = 0;
+
+    virtual TrackPointer getLoadedTrack() const = 0;
+
+    bool isEmpty() const {
+        return !getLoadedTrack();
+    }
+};
+
+/// Exposes the attributes of a track from the Auto DJ queue
+class TrackAttributes : public TrackOrDeckAttributes {
+    Q_OBJECT
+  public:
+    TrackAttributes(TrackPointer pTrack);
+    virtual ~TrackAttributes();
+
+    virtual mixxx::audio::FramePos introStartPosition() const override;
+    virtual mixxx::audio::FramePos introEndPosition() const override;
+    virtual mixxx::audio::FramePos outroStartPosition() const override;
+    virtual mixxx::audio::FramePos outroEndPosition() const override;
+    virtual mixxx::audio::SampleRate sampleRate() const override;
+    virtual mixxx::audio::FramePos trackEndPosition() const override;
+    virtual double rateRatio() const override;
+
+    TrackPointer getLoadedTrack() const override {
+        return m_pTrack;
+    }
+
+  private:
+    TrackPointer m_pTrack;
+};
+
+/// Exposes the attributes of the track loaded in a certain player deck
+class DeckAttributes : public TrackOrDeckAttributes {
     Q_OBJECT
   public:
     DeckAttributes(int index,
@@ -64,35 +108,35 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
-    mixxx::audio::FramePos introStartPosition() const {
+    mixxx::audio::FramePos introStartPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introStartPos.get());
     }
 
-    mixxx::audio::FramePos introEndPosition() const {
+    mixxx::audio::FramePos introEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_introEndPos.get());
     }
 
-    mixxx::audio::FramePos outroStartPosition() const {
+    mixxx::audio::FramePos outroStartPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroStartPos.get());
     }
 
-    mixxx::audio::FramePos outroEndPosition() const {
+    mixxx::audio::FramePos outroEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_outroEndPos.get());
     }
 
-    mixxx::audio::SampleRate sampleRate() const {
+    mixxx::audio::SampleRate sampleRate() const override {
         return mixxx::audio::SampleRate::fromDouble(m_sampleRate.get());
     }
 
-    mixxx::audio::FramePos trackEndPosition() const {
+    mixxx::audio::FramePos trackEndPosition() const override {
         return mixxx::audio::FramePos::fromEngineSamplePosMaybeInvalid(m_trackSamples.get());
     }
 
-    double rateRatio() const {
+    double rateRatio() const override {
         return m_rateRatio.get();
     }
 
-    TrackPointer getLoadedTrack() const;
+    TrackPointer getLoadedTrack() const override;
 
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
@@ -263,14 +307,15 @@ class AutoDJProcessor : public QObject {
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
-    double getIntroStartSecond(DeckAttributes* pDeck);
-    double getIntroEndSecond(DeckAttributes* pDeck);
-    double getOutroStartSecond(DeckAttributes* pDeck);
-    double getOutroEndSecond(DeckAttributes* pDeck);
-    double getFirstSoundSecond(DeckAttributes* pDeck);
-    double getLastSoundSecond(DeckAttributes* pDeck);
-    double getEndSecond(DeckAttributes* pDeck);
-    double framePositionToSeconds(mixxx::audio::FramePos position, DeckAttributes* pDeck);
+    double getIntroStartSecond(const TrackOrDeckAttributes& track);
+    double getIntroEndSecond(const TrackOrDeckAttributes& track);
+    double getOutroStartSecond(const TrackOrDeckAttributes& track);
+    double getOutroEndSecond(const TrackOrDeckAttributes& track);
+    double getFirstSoundSecond(const TrackOrDeckAttributes& track);
+    double getLastSoundSecond(const TrackOrDeckAttributes& track);
+    double getEndSecond(const TrackOrDeckAttributes& track);
+    double framePositionToSeconds(mixxx::audio::FramePos position,
+            const TrackOrDeckAttributes& track);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
