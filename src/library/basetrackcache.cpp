@@ -14,6 +14,19 @@ namespace {
 
 constexpr bool sDebug = false;
 
+QList<int> columnNamesToIndices(const QStringList& columnNames, const ColumnCache& columnCache) {
+    QList<int> indices;
+    indices.reserve(columnNames.size());
+    for (const QString& columnName : columnNames) {
+        auto index = columnCache.fieldIndex(columnName);
+        if (index < 0) {
+            continue;
+        }
+        qDebug() << "columnNameToIndex" << columnName << "=>" << index;
+        indices.append(index);
+    }
+    return indices;
+}
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
@@ -27,8 +40,11 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_columnCount(columns.size()),
           m_columnsJoined(columns.join(",")),
           m_columnCache(std::move(columns)),
+          m_searchColumnNames(std::move(searchColumns)),
+          m_searchColumns(columnNamesToIndices(
+                  m_searchColumnNames, m_columnCache)),
           m_pQueryParser(std::make_unique<SearchQueryParser>(
-                  pTrackCollection, std::move(searchColumns))),
+                  pTrackCollection, m_searchColumnNames)),
           m_bIndexBuilt(false),
           m_bIsCaching(isCaching),
           m_database(pTrackCollection->database()) {
@@ -435,6 +451,14 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
         }
     }
     return result;
+}
+
+const QList<int>& BaseTrackCache::searchColumnsByIndex() const {
+    return m_searchColumns;
+}
+
+const QStringList& BaseTrackCache::searchColumnsByName() const {
+    return m_searchColumnNames;
 }
 
 void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,

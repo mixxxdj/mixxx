@@ -36,6 +36,19 @@ const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
 const QString kModelName = "table:";
 
+QList<int> columnNamesToIndices(
+        const QStringList& columnNames, const BaseSqlTableModel& tableModel) {
+    QList<int> indices;
+    indices.reserve(columnNames.size());
+    for (const QString& columnName : columnNames) {
+        auto index = tableModel.fieldIndex(columnName);
+        if (index < 0) {
+            continue;
+        }
+        indices.append(index);
+    }
+    return indices;
+}
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(
@@ -154,6 +167,13 @@ void BaseSqlTableModel::initSortColumnMapping() {
         m_sortColumnIdByColumnIndex.insert(
                 m_columnIndexBySortColumnId[static_cast<int>(sortColumn)],
                 sortColumn);
+    }
+}
+
+void BaseSqlTableModel::initSearchColumns() {
+    if (m_trackSource) {
+        m_searchColumns = columnNamesToIndices(
+                m_trackSource->searchColumnsByName(), *this);
     }
 }
 
@@ -351,6 +371,7 @@ void BaseSqlTableModel::setTable(QString tableName,
     m_tableName = std::move(tableName);
     m_idColumn = std::move(idColumn);
     m_tableColumns = std::move(tableColumns);
+    m_searchColumns.clear();
 
     if (m_trackSource) {
         disconnect(m_trackSource.data(),
@@ -376,6 +397,7 @@ void BaseSqlTableModel::setTable(QString tableName,
 
     initTableColumnsAndHeaderProperties(m_tableColumns);
     initSortColumnMapping();
+    initSearchColumns();
 
     m_bInitialized = true;
 }
@@ -420,6 +442,10 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     }
     setSearch(searchText, extraFilter);
     select();
+}
+
+const QList<int>& BaseSqlTableModel::searchColumns() const {
+    return m_searchColumns;
 }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
