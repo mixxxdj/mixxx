@@ -353,7 +353,7 @@ void WTrackTableView::initTrackMenu() {
     // after removing tracks from the view via track menu, restore a usable
     // selection/currentIndex for navigation via keyboard & controller
     connect(m_pTrackMenu,
-            &WTrackMenu::restoreCurrentIndex,
+            &WTrackMenu::restoreCurrentViewStateOrIndex,
             this,
             &WTrackTableView::slotrestoreCurrentIndex);
 }
@@ -468,7 +468,7 @@ void WTrackTableView::slotDeleteTracksFromDisk() {
     saveCurrentIndex();
     m_pTrackMenu->loadTrackModelIndices(indices);
     m_pTrackMenu->slotRemoveFromDisk();
-    // WTrackmenu emits restoreCurrentIndex()
+    // WTrackmenu emits restoreCurrentViewStateOrIndex()
 }
 
 void WTrackTableView::slotUnhide() {
@@ -516,7 +516,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentIndex() if required
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -1140,20 +1140,33 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 
     TrackModel::Capability cap;
-    // Hide is the primary action if allowed. Else we test for remove capability
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-        cap = TrackModel::Capability::Hide;
-    } else if (pTrackModel->isLocked()) { // Locked playlists and crates
-        return;
-    }
+    // Remove is the primary action if allowed (playlists and crates).
+    // Else we test for remove capability.
+    // In the track menu the hotkey is shown for 'Remove ..' actions, or if there
+    // is no remove action, for 'Hide ..'. Hence, to match the hotkey, do Hide
+    // only if the track model doesn't support any Remove actions.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
         cap = TrackModel::Capability::Remove;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
         cap = TrackModel::Capability::RemoveCrate;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
         cap = TrackModel::Capability::RemovePlaylist;
-    } else {
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
+        cap = TrackModel::Capability::Hide;
+    } else { // Locked playlists and crates
         return;
+    }
+
+    switch (cap) {
+    case TrackModel::Capability::Remove:
+    case TrackModel::Capability::RemoveCrate:
+    case TrackModel::Capability::RemovePlaylist: {
+        if (pTrackModel->isLocked()) {
+            return;
+        }
+    default:
+        break;
+    }
     }
 
     if (pTrackModel->getRequireConfirmationToHideRemoveTracks()) {

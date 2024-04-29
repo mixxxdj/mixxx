@@ -348,7 +348,8 @@ QString parseCrate(
     if (!Sandbox::askForAccess(&fileInfo) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
-                   << " for reading.";
+                   << " for reading:"
+                   << crateFile.errorString();
         return QString();
     }
 
