@@ -7,6 +7,12 @@
 #include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 
+namespace {
+const ConfigKey kHotcueDefaultColorIndexConfigKey("[Controls]", "HotcueDefaultColorIndex");
+const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorIndex");
+const ConfigKey kJumpDefaultColorIndexConfigKey("[Controls]", "jump_default_color_index");
+} // namespace
+
 void CueTypePushButton::mousePressEvent(QMouseEvent* e) {
     if (e->type() == QEvent::MouseButtonPress && e->button() == Qt::RightButton) {
         emit rightClicked();
@@ -15,10 +21,53 @@ void CueTypePushButton::mousePressEvent(QMouseEvent* e) {
     QPushButton::mousePressEvent(e);
 }
 
+void WCueMenuPopup::updateTypeAndColorIfDefault(mixxx::CueType newType) {
+    auto hotcueColorPalette =
+            m_colorPaletteSettings.getHotcueColorPalette();
+    int colorIndex;
+    switch (m_pCue->getType()) {
+    default:
+        colorIndex = m_pConfig->getValue(kHotcueDefaultColorIndexConfigKey, -1);
+        break;
+    case mixxx::CueType::Loop:
+        colorIndex = m_pConfig->getValue(kLoopDefaultColorIndexConfigKey, -1);
+        break;
+    case mixxx::CueType::Jump:
+        colorIndex = m_pConfig->getValue(kJumpDefaultColorIndexConfigKey, -1);
+        break;
+    }
+    auto defaultColor =
+            (colorIndex < 0 || colorIndex >= hotcueColorPalette.size())
+            ? hotcueColorPalette.defaultColor()
+            : hotcueColorPalette.at(colorIndex);
+    m_pCue->setType(newType);
+    if (m_pCue->getColor() != defaultColor) {
+        return;
+    }
+    switch (newType) {
+    default:
+        colorIndex = m_pConfig->getValue(kHotcueDefaultColorIndexConfigKey, -1);
+        break;
+    case mixxx::CueType::Loop:
+        colorIndex = m_pConfig->getValue(kLoopDefaultColorIndexConfigKey, -1);
+        break;
+    case mixxx::CueType::Jump:
+        colorIndex = m_pConfig->getValue(kJumpDefaultColorIndexConfigKey, -1);
+        break;
+    }
+    if (colorIndex < 0 || colorIndex >= hotcueColorPalette.size()) {
+        m_pCue->setColor(hotcueColorPalette.defaultColor());
+    } else {
+        m_pCue->setColor(hotcueColorPalette.at(colorIndex));
+    }
+}
+
 WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
         : QWidget(parent),
+          m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),
           m_pBeatLoopSize(ControlFlag::AllowMissingOrInvalid),
+          m_pBeatJumpSize(ControlFlag::AllowMissingOrInvalid),
           m_pPlayPos(ControlFlag::AllowMissingOrInvalid),
           m_pTrackSample(ControlFlag::AllowMissingOrInvalid),
           m_pQuantizeEnabled(ControlFlag::AllowMissingOrInvalid) {
@@ -59,6 +108,13 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     m_pDeleteCue->setObjectName("CueDeleteButton");
     connect(m_pDeleteCue.get(), &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
+    m_pStandardCue = std::make_unique<QPushButton>("", this);
+    m_pStandardCue->setToolTip(
+            tr("Toggle this cue type to normal cue if not."));
+    m_pStandardCue->setObjectName("CueStandardButton");
+    m_pStandardCue->setCheckable(true);
+    connect(m_pStandardCue.get(), &QPushButton::clicked, this, &WCueMenuPopup::slotStandardCue);
+
     m_pSavedLoopCue = std::make_unique<CueTypePushButton>(this);
     m_pSavedLoopCue->setToolTip(
             tr("Toggle this cue type between normal cue and saved loop") +
@@ -77,6 +133,28 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             this,
             &WCueMenuPopup::slotSavedLoopCueManual);
 
+    m_pSavedJumpCue = std::make_unique<CueTypePushButton>(this);
+    m_pSavedJumpCue->setToolTip(
+            tr("Toggle this cue type between normal cue and saved jump, to \n"
+               "the current play position or the current beatjump size ") +
+            "\n\n" +
+            tr("Left-click: Toggle this cue type to saved beatjump, using \n"
+               "the current play position if not previous destination was known. \nIf "
+               "the play position is the cue position, uses the current beatjump size") +
+            "\n" +
+            tr("Right-click: Set the current play position as the jump \n"
+               "destination and make the cue a saved jump if not"));
+    m_pSavedJumpCue->setObjectName("CueSavedJumpButton");
+    m_pSavedJumpCue->setCheckable(true);
+    connect(m_pSavedJumpCue.get(),
+            &CueTypePushButton::clicked,
+            this,
+            &WCueMenuPopup::slotSavedJumpCueAuto);
+    connect(m_pSavedJumpCue.get(),
+            &CueTypePushButton::rightClicked,
+            this,
+            &WCueMenuPopup::slotSavedJumpCueManual);
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber.get());
     pLabelLayout->addStretch(1);
@@ -89,8 +167,11 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
 
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue.get());
+    pRightLayout->addWidget(m_pStandardCue.get());
     pRightLayout->addStretch(1);
     pRightLayout->addWidget(m_pSavedLoopCue.get());
+    pRightLayout->addStretch(1);
+    pRightLayout->addWidget(m_pSavedJumpCue.get());
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addLayout(pLeftLayout);
@@ -114,6 +195,10 @@ void WCueMenuPopup::setTrackCueGroup(
 
     if (m_pBeatLoopSize.getKey().group != group) {
         m_pBeatLoopSize = PollingControlProxy(group, "beatloop_size");
+    }
+
+    if (m_pBeatJumpSize.getKey().group != group) {
+        m_pBeatJumpSize = PollingControlProxy(group, "beatjump_size");
     }
 
     if (m_pPlayPos.getKey().group != group) {
@@ -147,17 +232,26 @@ void WCueMenuPopup::slotUpdate() {
             positionText = mixxx::Duration::formatTime(startPositionSeconds, mixxx::Duration::Precision::CENTISECONDS);
             if (pos.endPosition.isValid() && m_pCue->getType() != mixxx::CueType::HotCue) {
                 double endPositionSeconds = pos.endPosition.value() / m_pTrack->getSampleRate();
-                positionText = QString("%1 - %2").arg(
-                    positionText,
-                    mixxx::Duration::formatTime(endPositionSeconds, mixxx::Duration::Precision::CENTISECONDS)
-                );
+                positionText =
+                        QString("%1 %2 %3")
+                                .arg(positionText,
+                                        m_pCue->getType() ==
+                                                        mixxx::CueType::Loop
+                                                ? "-"
+                                                : "->",
+                                        mixxx::Duration::formatTime(
+                                                endPositionSeconds,
+                                                mixxx::Duration::Precision::
+                                                        CENTISECONDS));
             }
         }
         m_pCuePosition->setText(positionText);
 
         m_pEditLabel->setText(m_pCue->getLabel());
         m_pColorPicker->setSelectedColor(m_pCue->getColor());
+        m_pStandardCue->setChecked(m_pCue->getType() == mixxx::CueType::HotCue);
         m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
+        m_pSavedJumpCue->setChecked(m_pCue->getType() == mixxx::CueType::Jump);
     } else {
         m_pTrack.reset();
         m_pCue.reset();
@@ -198,6 +292,19 @@ void WCueMenuPopup::slotDeleteCue() {
     hide();
 }
 
+void WCueMenuPopup::slotStandardCue() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    if (m_pCue->getType() != mixxx::CueType::HotCue) {
+        updateTypeAndColorIfDefault(mixxx::CueType::HotCue);
+    }
+    slotUpdate();
+}
+
 void WCueMenuPopup::slotSavedLoopCueAuto() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
@@ -208,26 +315,29 @@ void WCueMenuPopup::slotSavedLoopCueAuto() {
     VERIFY_OR_DEBUG_ASSERT(m_pBeatLoopSize.valid()) {
         return;
     }
-    if (m_pCue->getType() == mixxx::CueType::Loop) {
-        m_pCue->setType(mixxx::CueType::HotCue);
-    } else {
-        auto cueStartEnd = m_pCue->getStartAndEndPosition();
-        if (!cueStartEnd.endPosition.isValid() ||
-                cueStartEnd.endPosition <= cueStartEnd.startPosition) {
-            double beatloopSize = m_pBeatLoopSize.get();
-            const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
-            if (beatloopSize <= 0 || !pBeats) {
-                return;
-            }
-            auto position = pBeats->findNBeatsFromPosition(
-                    cueStartEnd.startPosition, beatloopSize);
-            if (position <= m_pCue->getPosition()) {
-                return;
-            }
-            m_pCue->setEndPosition(position);
-        }
-        m_pCue->setType(mixxx::CueType::Loop);
+    auto cueStartEnd = m_pCue->getStartAndEndPosition();
+    // If we are changing the cue type from a jump, we need to permute the positions
+    if (m_pCue->getType() == mixxx::CueType::Jump) {
+        auto endPosition = cueStartEnd.endPosition;
+        cueStartEnd.endPosition = cueStartEnd.startPosition;
+        cueStartEnd.startPosition = endPosition;
+        m_pCue->setStartAndEndPosition(cueStartEnd.startPosition, cueStartEnd.endPosition);
     }
+    if (!cueStartEnd.endPosition.isValid() ||
+            cueStartEnd.endPosition <= cueStartEnd.startPosition) {
+        double beatloopSize = m_pBeatLoopSize.get();
+        const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+        if (beatloopSize <= 0 || !pBeats) {
+            return;
+        }
+        auto position = pBeats->findNBeatsFromPosition(
+                cueStartEnd.startPosition, beatloopSize);
+        if (position <= m_pCue->getPosition()) {
+            return;
+        }
+        m_pCue->setEndPosition(position);
+    }
+    updateTypeAndColorIfDefault(mixxx::CueType::Loop);
     slotUpdate();
 }
 
@@ -238,8 +348,13 @@ void WCueMenuPopup::slotSavedLoopCueManual() {
     VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pBeatLoopSize.valid()) {
-        return;
+    // If we are changing the cue type from a jump, we need to permute the positions
+    if (m_pCue->getType() == mixxx::CueType::Jump) {
+        auto cueStartEnd = m_pCue->getStartAndEndPosition();
+        auto endPosition = cueStartEnd.endPosition;
+        cueStartEnd.endPosition = cueStartEnd.startPosition;
+        cueStartEnd.startPosition = endPosition;
+        m_pCue->setStartAndEndPosition(cueStartEnd.startPosition, cueStartEnd.endPosition);
     }
     const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     auto position = mixxx::audio::FramePos::fromEngineSamplePos(
@@ -255,7 +370,75 @@ void WCueMenuPopup::slotSavedLoopCueManual() {
         return;
     }
     m_pCue->setEndPosition(position);
-    m_pCue->setType(mixxx::CueType::Loop);
+    updateTypeAndColorIfDefault(mixxx::CueType::Loop);
+    slotUpdate();
+}
+
+void WCueMenuPopup::slotSavedJumpCueAuto() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pBeatJumpSize.valid()) {
+        return;
+    }
+    auto cueStartEnd = m_pCue->getStartAndEndPosition();
+    // If we are changing the cue type from a loop, we need to permute the position
+    if (m_pCue->getType() == mixxx::CueType::Loop) {
+        auto endPosition = cueStartEnd.endPosition;
+        cueStartEnd.endPosition = cueStartEnd.startPosition;
+        cueStartEnd.startPosition = endPosition;
+    }
+    if (!cueStartEnd.endPosition.isValid()) {
+        double beatjumpSize = m_pBeatJumpSize.get();
+        const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+        if (beatjumpSize <= 0 || !pBeats) {
+            return;
+        }
+        auto position = pBeats->findNBeatsFromPosition(
+                cueStartEnd.startPosition, -beatjumpSize);
+        if (position == cueStartEnd.startPosition) {
+            return;
+        }
+        cueStartEnd.endPosition = position;
+    }
+    m_pCue->setStartAndEndPosition(cueStartEnd.startPosition, cueStartEnd.endPosition);
+    updateTypeAndColorIfDefault(mixxx::CueType::Jump);
+    slotUpdate();
+}
+
+void WCueMenuPopup::slotSavedJumpCueManual() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    auto cueStartEnd = m_pCue->getStartAndEndPosition();
+    // If we are changing the cue type from a loop, we need to permute the position
+    if (m_pCue->getType() == mixxx::CueType::Loop) {
+        auto endPosition = cueStartEnd.endPosition;
+        cueStartEnd.endPosition = cueStartEnd.startPosition;
+        cueStartEnd.startPosition = endPosition;
+    }
+    const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+    auto position = mixxx::audio::FramePos::fromEngineSamplePos(
+            m_pPlayPos.get() * m_pTrackSample.get());
+    if (m_pQuantizeEnabled.toBool() && pBeats) {
+        mixxx::audio::FramePos nextBeatPosition, prevBeatPosition;
+        pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false);
+        position = (nextBeatPosition - position > position - prevBeatPosition)
+                ? prevBeatPosition
+                : nextBeatPosition;
+    }
+    if (position == cueStartEnd.startPosition) {
+        return;
+    }
+    cueStartEnd.endPosition = position;
+    m_pCue->setStartAndEndPosition(cueStartEnd.startPosition, cueStartEnd.endPosition);
+    updateTypeAndColorIfDefault(mixxx::CueType::Jump);
     slotUpdate();
 }
 
