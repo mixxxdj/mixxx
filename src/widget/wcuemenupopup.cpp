@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+#include "control/controlobject.h"
 #include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 
@@ -40,6 +41,14 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     m_pDeleteCue->setObjectName("CueDeleteButton");
     connect(m_pDeleteCue, &QPushButton::clicked, this, &WCueMenuPopup::slotDeleteCue);
 
+    m_pSavedLoopCue = new QPushButton("", this);
+    m_pSavedLoopCue->setToolTip(
+            tr("Toggle this cue type between normal cue and saved loop, using "
+               "the current beatloop size"));
+    m_pSavedLoopCue->setObjectName("CueSavedLoopButton");
+    m_pSavedLoopCue->setCheckable(true);
+    connect(m_pSavedLoopCue, &QPushButton::clicked, this, &WCueMenuPopup::slotSavedLoopCue);
+
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber);
     pLabelLayout->addStretch(1);
@@ -53,6 +62,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     QVBoxLayout* pRightLayout = new QVBoxLayout();
     pRightLayout->addWidget(m_pDeleteCue);
     pRightLayout->addStretch(1);
+    pRightLayout->addWidget(m_pSavedLoopCue);
 
     QHBoxLayout* pMainLayout = new QHBoxLayout();
     pMainLayout->addLayout(pLeftLayout);
@@ -65,11 +75,19 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     layout()->activate();
 }
 
-void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) {
-    if (pTrack && pCue) {
-        m_pTrack = pTrack;
-        m_pCue = pCue;
+void WCueMenuPopup::setTrackCueGroup(
+        TrackPointer pTrack, const CuePointer& pCue, const QString& group) {
+    m_pTrack = pTrack;
+    m_pCue = pCue;
 
+    if (!m_pBeatLoopSize || m_pBeatLoopSize->getKey().group != group) {
+        m_pBeatLoopSize = std::make_unique<ControlProxy>(group, "beatloop_size", this);
+    }
+    slotUpdate();
+}
+
+void WCueMenuPopup::slotUpdate() {
+    if (m_pTrack && m_pCue) {
         int hotcueNumber = m_pCue->getHotCue();
         QString hotcueNumberText = "";
         if (hotcueNumber != Cue::kNoHotCue) {
@@ -95,6 +113,7 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) 
 
         m_pEditLabel->setText(m_pCue->getLabel());
         m_pColorPicker->setSelectedColor(m_pCue->getColor());
+        m_pSavedLoopCue->setChecked(m_pCue->getType() == mixxx::CueType::Loop);
     } else {
         m_pTrack.reset();
         m_pCue.reset();
@@ -104,7 +123,6 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) 
         m_pColorPicker->setSelectedColor(std::nullopt);
     }
 }
-
 void WCueMenuPopup::slotEditLabel() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
@@ -133,6 +151,32 @@ void WCueMenuPopup::slotDeleteCue() {
     }
     m_pTrack->removeCue(m_pCue);
     hide();
+}
+
+void WCueMenuPopup::slotSavedLoopCue() {
+    VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pTrack != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_pBeatLoopSize != nullptr) {
+        return;
+    }
+    if (m_pCue->getType() == mixxx::CueType::Loop) {
+        m_pCue->setType(mixxx::CueType::HotCue);
+        m_pCue->setEndPosition(mixxx::audio::FramePos());
+    } else {
+        double beatloopSize = m_pBeatLoopSize->get();
+        const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
+        if (beatloopSize <= 0 || !pBeats) {
+            m_pCue->setEndPosition(mixxx::audio::FramePos());
+            return;
+        }
+        m_pCue->setEndPosition(pBeats->findNBeatsFromPosition(m_pCue->getPosition(), beatloopSize));
+        m_pCue->setType(mixxx::CueType::Loop);
+    }
+    slotUpdate();
 }
 
 void WCueMenuPopup::closeEvent(QCloseEvent* event) {

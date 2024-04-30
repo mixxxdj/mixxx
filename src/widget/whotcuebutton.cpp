@@ -121,7 +121,7 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
                 pTrack->removeCue(pHotCue);
                 return;
             }
-            m_pCueMenuPopup->setTrackAndCue(pTrack, pHotCue);
+            m_pCueMenuPopup->setTrackCueGroup(pTrack, pHotCue, m_group);
             // use the bottom left corner as starting point for popup
             m_pCueMenuPopup->popup(mapToGlobal(QPoint(0, height())));
         }

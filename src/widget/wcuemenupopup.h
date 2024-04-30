@@ -7,8 +7,11 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
+#include "util/parented_ptr.h"
 #include "util/widgethelper.h"
 #include "widget/wcolorpicker.h"
+
+class ControlProxy;
 
 class WCueMenuPopup : public QWidget {
     Q_OBJECT
@@ -23,7 +26,7 @@ class WCueMenuPopup : public QWidget {
         delete m_pDeleteCue;
     }
 
-    void setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue);
+    void setTrackCueGroup(TrackPointer pTrack, const CuePointer& pCue, const QString& group);
 
     void setColorPalette(const ColorPalette& palette) {
         if (m_pColorPicker != nullptr) {
@@ -52,10 +55,13 @@ class WCueMenuPopup : public QWidget {
   private slots:
     void slotEditLabel();
     void slotDeleteCue();
+    void slotUpdate();
+    void slotSavedLoopCue();
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
     ColorPaletteSettings m_colorPaletteSettings;
+    std::unique_ptr<ControlProxy> m_pBeatLoopSize;
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
@@ -64,6 +70,7 @@ class WCueMenuPopup : public QWidget {
     QLineEdit* m_pEditLabel;
     WColorPicker* m_pColorPicker;
     QPushButton* m_pDeleteCue;
+    QPushButton* m_pSavedLoopCue;
 
   protected:
     void closeEvent(QCloseEvent* event) override;

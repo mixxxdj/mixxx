@@ -2043,6 +2043,27 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   /* has no effect
   padding: 0px; */
 }
+#CueSavedLoopButton {  /*
+  padding: 3px 6px; */
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop.svg);
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  It's a tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 42px;
+  border-width: 2px;
+  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  /* has no effect
+  padding: 0px; */
+}
+#CueSavedLoopButton:pressed, WCueMenuPopup #CueSavedLoopButton:checked {
+  background-color: #db0000;
+  outline: none;
+  /* not applied: */
+  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop_active.svg);
+}
 
 #CueLabelEdit {
   border: 1px solid #f0bb2b;

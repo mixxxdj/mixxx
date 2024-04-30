@@ -2478,6 +2478,32 @@ WTrackMenu QMenu QCheckBox::indicator {
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
 }
+#CueSavedLoopButton {
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 26px;
+  height: 44px;
+  border: 1px solid #666;
+  background-color: #333;
+  border-radius: 2px;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_loop_beatjump_off.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
+#CueSavedLoopButton:checked {
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  tall button, about the same height as cue number + label edit box */
+  width: 26px;
+  height: 44px;
+  border: 1px solid #666;
+  background-color: #ff7b00;
+  border-radius: 2px;
+  qproperty-icon: url(skin:/../Tango/buttons/btn_loop_beatjump_on.svg);
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
 #CueLabelEdit {
   border: 1px solid #ff6600;
   border-radius: 0px;
