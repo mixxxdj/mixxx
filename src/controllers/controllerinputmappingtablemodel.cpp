@@ -227,9 +227,9 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                     VERIFY_OR_DEBUG_ASSERT(del) {
                     return QString();
                     }
-                    return del->displayText(QVariant::fromValue(mapping.control), QLocale());
+                    return del->displayText(QVariant::fromValue(*control), QLocale());
                 }
-                return QVariant::fromValue(mapping.control);
+                return QVariant::fromValue(*control);
             }
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
