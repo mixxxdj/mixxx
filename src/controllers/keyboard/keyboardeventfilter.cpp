@@ -7,16 +7,26 @@
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
-KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
+KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
+        QLocale& locale,
         QObject* parent,
         const char* name)
         : QObject(parent),
 #ifndef __APPLE__
           m_altPressedWithoutKey(false),
 #endif
-          m_pKbdConfigObject(nullptr) {
+          m_pConfig(pConfig),
+          m_locale(locale),
+          m_enabled(false) {
     setObjectName(name);
-    setKeyboardConfig(pKbdConfigObject);
+
+    // get enabled state
+    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
+        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
+    }
+    m_enabled = pConfig->getValue<bool>(ConfigKey("[Keyboard]", "Enabled"));
+
+    createKeyboardConfig();
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
@@ -44,6 +54,12 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         }
 
         QKeySequence ks = getKeySeq(ke);
+
+        // If inactive, return after logging the key event in getKeySeq()
+        if (!isEnabled()) {
+            return true;
+        }
+
         if (!ks.isEmpty()) {
 #ifndef __APPLE__
             m_altPressedWithoutKey = false;
@@ -189,15 +205,43 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
+void KeyboardEventFilter::setEnabled(bool enabled) {
+    m_enabled = enabled;
+    m_pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(enabled));
+}
+
+void KeyboardEventFilter::createKeyboardConfig() {
+    // Read keyboard configuration and set kdbConfig object in WWidget
+    // Check first in user's Mixxx directory
+    QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    if (QFile::exists(keyboardFile)) {
+        qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
+    } else {
+        // check if a default keyboard exists
+        QString resourcePath = m_pConfig->getResourcePath();
+        keyboardFile = QString(resourcePath).append("keyboard/");
+        keyboardFile += m_locale.name();
+        keyboardFile += ".kbd.cfg";
+        if (!QFile::exists(keyboardFile)) {
+            qDebug() << keyboardFile << " not found, using en_US.kbd.cfg";
+            keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+            if (!QFile::exists(keyboardFile)) {
+                qDebug() << keyboardFile << " not found, starting without shortcuts";
+                keyboardFile = "";
+            }
+        } else {
+            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
+        }
+    }
+
     // Keyboard configs are a surjection from ConfigKey to key sequence. We
     // invert the mapping to create an injection from key sequence to
     // ConfigKey. This allows a key sequence to trigger multiple controls in
     // Mixxx.
-    m_keySequenceToControlHash = pKbdConfigObject->transpose();
-    m_pKbdConfigObject = pKbdConfigObject;
+    m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(keyboardFile);
+    m_keySequenceToControlHash = m_pKbdConfig->transpose();
 }
 
-ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfigObject;
+std::shared_ptr<ConfigObject<ConfigValueKbd>> KeyboardEventFilter::getKeyboardConfig() {
+    return m_pKbdConfig;
 }
