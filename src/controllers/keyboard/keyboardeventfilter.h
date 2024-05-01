@@ -42,6 +42,13 @@ class KeyboardEventFilter : public QObject {
     void clearWidgets();
     const QString buildShortcutString(const QString& shortcut, const QString& cmd) const;
 
+    void registerMenuBarActionSetShortcut(
+            QAction* pAction,
+            const ConfigKey& command,
+            const QString& defaultShortcut);
+    void clearMenuBarActions();
+    void updateMenuBarActionShortcuts();
+
   public slots:
     void reloadKeyboardConfig();
 
@@ -92,6 +99,10 @@ class KeyboardEventFilter : public QObject {
     bool m_enabled;
 
     QFileSystemWatcher m_fileWatcher;
+
+    // Actions in the menu bar
+    // Value pair is the ConfigKey and the default QKeySequence (as QString).
+    QHash<QAction*, std::pair<ConfigKey, QString>> m_menuBarActions;
 
     // Widgets that have mappable connections, registered by LegacySkinParser
     // during skin construction.
