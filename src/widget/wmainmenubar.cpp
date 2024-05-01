@@ -514,8 +514,12 @@ void WMainMenuBar::initialize() {
 
     QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
-    bool keyboardShortcutsEnabled = m_pConfig->getValueString(
-        ConfigKey("[Keyboard]", "Enabled")) == "1";
+    // Note: use the same default value in KeyboardEventFilter ctor so that this
+    // action and KeyboardEventFilter are in sync.
+    bool keyboardShortcutsEnabled =
+            m_pConfig->getValue(ConfigKey(QStringLiteral("[Keyboard]"),
+                                        QStringLiteral("Enabled")),
+                    true);
     auto* pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
     pOptionsKeyboard->setShortcut(
         QKeySequence(m_pKbdConfig->getValue(

@@ -383,8 +383,6 @@ CoreServices::~CoreServices() {
 
     // Tear down remaining stuff that was initialized in the constructor.
     CLEAR_AND_CHECK_DELETED(m_pKeyboardEventFilter);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfig);
-    CLEAR_AND_CHECK_DELETED(m_pKbdConfigEmpty);
 
     if (m_cmdlineArgs.getDeveloper()) {
         StatsManager::destroy();
@@ -801,64 +799,21 @@ void CoreServices::initializeQMLSingletons() {
 
 void CoreServices::initializeKeyboard() {
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
-    QString resourcePath = pConfig->getResourcePath();
+    const QLocale locale = inputLocale();
+    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(pConfig, locale);
+}
 
-    // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
-    }
-
-    // Read keyboard configuration and set kdbConfig object in WWidget
-    // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
-
-    // Empty keyboard configuration
-    m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
-
-    if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
-    } else {
-        // Default to the locale for the main input method (e.g. keyboard).
-        QLocale locale = inputLocale();
-
-        // check if a default keyboard exists
-        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
-        defaultKeyboard += locale.name();
-        defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
-
-        if (!QFile::exists(defaultKeyboard)) {
-            qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
-            if (!QFile::exists(defaultKeyboard)) {
-                qDebug() << defaultKeyboard << " not found, starting without shortcuts";
-                defaultKeyboard = "";
-            }
-        }
-        m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(defaultKeyboard);
-    }
-
-    // TODO(XXX) leak pKbdConfig, KeyboardEventFilter owns it? Maybe roll all keyboard
-    // initialization into KeyboardEventFilter
-    // Workaround for today: KeyboardEventFilter calls delete
-    bool keyboardShortcutsEnabled = pConfig->getValue<bool>(
-            ConfigKey("[Keyboard]", "Enabled"));
-    m_pKeyboardEventFilter = std::make_shared<KeyboardEventFilter>(
-            keyboardShortcutsEnabled ? m_pKbdConfig.get() : m_pKbdConfigEmpty.get());
+std::shared_ptr<ConfigObject<ConfigValueKbd>> CoreServices::getKeyboardConfig() const {
+    return m_pKeyboardEventFilter->getKeyboardConfig();
 }
 
 void CoreServices::slotOptionsKeyboard(bool toggle) {
-    UserSettingsPointer pConfig = m_pSettingsManager->settings();
     if (toggle) {
-        //qDebug() << "Enable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfig.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
+        qDebug() << "Enable keyboard shortcuts/mappings";
     } else {
-        //qDebug() << "Disable keyboard shortcuts/mappings";
-        m_pKeyboardEventFilter->setKeyboardConfig(m_pKbdConfigEmpty.get());
-        pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(0));
+        qDebug() << "Disable keyboard shortcuts/mappings";
     }
+    m_pKeyboardEventFilter->setEnabled(toggle);
 }
 
 bool CoreServices::initializeDatabase() {

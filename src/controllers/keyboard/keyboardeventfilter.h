@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QLocale>
 #include <QMultiHash>
 #include <QObject>
 
@@ -14,19 +15,24 @@ class QKeyEvent;
 class KeyboardEventFilter : public QObject {
     Q_OBJECT
   public:
-    KeyboardEventFilter(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
-                        QObject *parent = nullptr, const char* name = nullptr);
+    KeyboardEventFilter(UserSettingsPointer pConfig,
+            const QLocale& locale,
+            QObject* pParent = nullptr);
     virtual ~KeyboardEventFilter();
 
     bool eventFilter(QObject* obj, QEvent* e);
 
-    // Set the keyboard config object. KeyboardEventFilter does NOT take
-    // ownership of pKbdConfigObject.
-    void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
-    ConfigObject<ConfigValueKbd>* getKeyboardConfig();
+    std::shared_ptr<ConfigObject<ConfigValueKbd>> getKeyboardConfig() const {
+        return m_pKbdConfig;
+    };
 
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
+
+    void setEnabled(bool enabled);
+    bool isEnabled() {
+        return m_enabled;
+    }
 
 #ifndef __APPLE__
   signals:
@@ -60,10 +66,18 @@ class KeyboardEventFilter : public QObject {
                     return keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable();
                 });
     }
+
+    void createKeyboardConfig();
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
+
+    UserSettingsPointer m_pConfig;
     // Pointer to keyboard config object
-    ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
+    std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
+    QLocale m_locale;
+    bool m_enabled;
+
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };

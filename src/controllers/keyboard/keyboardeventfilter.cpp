@@ -7,16 +7,24 @@
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
-KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-        QObject* parent,
-        const char* name)
-        : QObject(parent),
+KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
+        const QLocale& locale,
+        QObject* pParent)
+        : QObject(pParent),
 #ifndef __APPLE__
           m_altPressedWithoutKey(false),
 #endif
-          m_pKbdConfigObject(nullptr) {
-    setObjectName(name);
-    setKeyboardConfig(pKbdConfigObject);
+          m_pConfig(pConfig),
+          m_locale(locale),
+          m_enabled(false) {
+    // Get the enabled state.
+    // Note: use the same default value in WMainMenuBar so that the action and
+    // our bool are in sync.
+    m_enabled = m_pConfig->getValue(ConfigKey(QStringLiteral("[Keyboard]"),
+                                            QStringLiteral("Enabled")),
+            true);
+
+    createKeyboardConfig();
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
@@ -28,26 +36,31 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // because we might not get Key Release events.
         m_qActiveKeyList.clear();
     } else if (e->type() == QEvent::KeyPress) {
-        QKeyEvent* ke = (QKeyEvent *)e;
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty (const 1) http://doc.qt.nokia.com/4.7/qkeyevent.html#nativeScanCode
         // We may loose the release event if a the shift key is pressed later
         // and there is character shift like "1" -> "!"
-        int keyId = ke->key();
+        int keyId = pKE->key();
 #else
-        int keyId = ke->nativeScanCode();
+        int keyId = pKE->nativeScanCode();
 #endif
 
         if (shouldSkipHeldKey(keyId)) {
             return true;
         }
 
-        QKeySequence ks = getKeySeq(ke);
+        QKeySequence ks = getKeySeq(pKE);
         if (!ks.isEmpty()) {
 #ifndef __APPLE__
             m_altPressedWithoutKey = false;
 #endif
+            // If inactive, return after logging the key event in getKeySeq()
+            if (!isEnabled()) {
+                return false;
+            }
+
             ConfigValueKbd ksv(ks);
             // Check if a shortcut is defined
             bool result = false;
@@ -55,22 +68,27 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             for (auto it = m_keySequenceToControlHash.constFind(ksv);
                  it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
-                if (configKey.group != "[KeyboardShortcuts]") {
-                    ControlObject* control = ControlObject::getControl(configKey);
-                    if (control) {
-                        //qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
-                        // Add key to active key list
-                        m_qActiveKeyList.append(KeyDownInformation(
-                            keyId, ke->modifiers(), control));
-                        // Since setting the value might cause us to go down
-                        // a route that would eventually clear the active
-                        // key list, do that last.
-                        control->setValueFromMidi(MidiOpCode::NoteOn, 1);
-                        result = true;
-                    } else {
-                        qDebug() << "Warning: Keyboard key is configured for nonexistent control:"
-                                 << configKey.group << configKey.item;
-                    }
+
+                if (configKey.group == QStringLiteral("[KeyboardShortcuts]")) {
+                    // We don't handle menubar shortcuts here
+                    continue;
+                }
+
+                ControlObject* pControl = ControlObject::getControl(configKey);
+                if (pControl) {
+                    // qDebug() << configKey << "MidiOpCode::NoteOn" << 1;
+                    // Add key to active key list
+                    m_qActiveKeyList.append(KeyDownInformation(
+                            keyId, pKE->modifiers(), pControl));
+                    // Since setting the value might cause us to go down
+                    // a route that would eventually clear the active
+                    // key list, do that last.
+                    pControl->setValueFromMidi(MidiOpCode::NoteOn, 1);
+                    result = true;
+                } else {
+                    qWarning() << "Key" << keyId
+                               << "is configured for nonexistent control:"
+                               << configKey.group << configKey.item;
                 }
             }
             return result;
@@ -79,14 +97,14 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             // getKeySeq() returns empty string if the press was a modifier only
             // On most system Alt sends Alt + Qt::Key_Alt, but with Qt 6.9 (on Linux)
             // this changed apparently so that it's just Qt::Key_Alt
-            if (((ke->modifiers() & Qt::AltModifier) || ke->key() == Qt::Key_Alt) &&
+            if (((pKE->modifiers() & Qt::AltModifier) || pKE->key() == Qt::Key_Alt) &&
                     !m_altPressedWithoutKey) {
                 m_altPressedWithoutKey = true;
             }
 #endif
         }
     } else if (e->type() == QEvent::KeyRelease) {
-        QKeyEvent* ke = (QKeyEvent*)e;
+        QKeyEvent* pKE = static_cast<QKeyEvent*>(e);
 
 #ifndef __APPLE__
         // QAction hotkeys are consumed by the object that created them, e.g.
@@ -94,7 +112,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // However, it may happen that we receive a RELEASE event for an Alt+key
         // combo for which no KEYPRESS was registered.
         // So react only to Alt-only releases.
-        if (m_altPressedWithoutKey && ke->key() == Qt::Key_Alt) {
+        if (m_altPressedWithoutKey && pKE->key() == Qt::Key_Alt) {
             emit altPressedWithoutKeys();
         }
         m_altPressedWithoutKey = false;
@@ -102,11 +120,10 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
 
 #ifdef __APPLE__
         // On Mac OSX the nativeScanCode is empty
-        int keyId = ke->key();
+        int keyId = pKE->key();
 #else
-        int keyId = ke->nativeScanCode();
+        int keyId = pKE->nativeScanCode();
 #endif
-        bool autoRepeat = ke->isAutoRepeat();
 
         //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
 
@@ -115,13 +132,15 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         // OS X apparently doesn't deliver KeyRelease events when you are
         // holding Ctrl. So release all key-presses that were triggered with
         // Ctrl.
-        if (ke->key() == Qt::Key_Control) {
+        if (pKE->key() == Qt::Key_Control) {
             clearModifiers = Qt::ControlModifier;
         }
 #endif
 
+        bool autoRepeat = pKE->isAutoRepeat();
         bool matched = false;
-        // Run through list of active keys to see if the released key is active
+        // Run through list of active keys to see if the released key is active.
+        // Start from end because we may remove the current item.
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
             ControlObject* pControl = keyDownInfo.pControl;
@@ -141,7 +160,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
         return matched;
     } else if (e->type() == QEvent::KeyboardLayoutChange) {
         // This event is not fired on ubunty natty, why?
-        // TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
+        // TODO: find a way to support KeyboardLayoutChange
+        // https://github.com/mixxxdj/mixxx/issues/6424
         //qDebug() << "QEvent::KeyboardLayoutChange";
     }
     return false;
@@ -189,15 +209,45 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     return k;
 }
 
-void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {
-    // Keyboard configs are a surjection from ConfigKey to key sequence. We
-    // invert the mapping to create an injection from key sequence to
-    // ConfigKey. This allows a key sequence to trigger multiple controls in
-    // Mixxx.
-    m_keySequenceToControlHash = pKbdConfigObject->transpose();
-    m_pKbdConfigObject = pKbdConfigObject;
+void KeyboardEventFilter::setEnabled(bool enabled) {
+    if (enabled) {
+        qDebug() << "Enable keyboard shortcuts/mappings";
+    } else {
+        qDebug() << "Disable keyboard shortcuts/mappings";
+    }
+    m_enabled = enabled;
+    m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
 }
 
-ConfigObject<ConfigValueKbd>* KeyboardEventFilter::getKeyboardConfig() {
-    return m_pKbdConfigObject;
+void KeyboardEventFilter::createKeyboardConfig() {
+    // Read keyboard configuration and set kdbConfig object in WWidget
+    // Check first in user's Mixxx directory
+    QString keyboardFile = QDir(m_pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
+    if (QFile::exists(keyboardFile)) {
+        qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
+    } else {
+        // check if a default keyboard exists
+        QString resourcePath = m_pConfig->getResourcePath();
+        keyboardFile = QString(resourcePath).append("keyboard/");
+        keyboardFile += m_locale.name();
+        keyboardFile += ".kbd.cfg";
+        if (!QFile::exists(keyboardFile)) {
+            qDebug() << keyboardFile << " not found, using en_US.kbd.cfg";
+            keyboardFile = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
+            if (!QFile::exists(keyboardFile)) {
+                qDebug() << keyboardFile << " not found, starting without shortcuts";
+                keyboardFile = "";
+            }
+        } else {
+            qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
+        }
+    }
+
+    // Read the keyboard configuration file and set m_pKbdConfig.
+    // Keyboard configs are a surjection from ConfigKey to key sequence.
+    // We invert the mapping to create an injection from key sequence to
+    // ConfigKey. This allows a key sequence to trigger multiple controls in
+    // Mixxx.
+    m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(keyboardFile);
+    m_keySequenceToControlHash = m_pKbdConfig->transpose();
 }
