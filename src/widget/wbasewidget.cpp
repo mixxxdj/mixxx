@@ -1,12 +1,13 @@
 #include "widget/wbasewidget.h"
 
-#include "widget/controlwidgetconnection.h"
 #include "util/cmdlineargs.h"
 #include "util/debug.h"
+#include "widget/controlwidgetconnection.h"
 
 WBaseWidget::WBaseWidget(QWidget* pWidget)
         : m_pDisplayConnection(nullptr),
-          m_pWidget(pWidget) {
+          m_pWidget(pWidget),
+          m_showKeyboardShortcuts(false) {
 }
 
 WBaseWidget::~WBaseWidget() = default;
@@ -138,13 +139,24 @@ void WBaseWidget::setControlParameterRightUp(double v) {
     }
 }
 
+void WBaseWidget::updateBaseTooltipOptShortcuts() {
+    QString tooltip;
+    tooltip += m_baseTooltip;
+    if (m_showKeyboardShortcuts && !m_shortcutTooltip.isEmpty()) {
+        tooltip += "\n";
+        tooltip += m_shortcutTooltip;
+    }
+    m_baseTooltipOptShortcuts = tooltip;
+    m_pWidget->setToolTip(tooltip);
+}
+
 void WBaseWidget::updateTooltip() {
     // If we are in developer mode, expand the tooltip.
     if (CmdlineArgs::Instance().getDeveloper()) {
         QStringList debug;
         fillDebugTooltip(&debug);
 
-        QString base = baseTooltip();
+        const QString base = baseTooltipOptShortcuts();
         if (!base.isEmpty()) {
             debug.append(QStringLiteral("Tooltip: \"%1\"").arg(base));
         }

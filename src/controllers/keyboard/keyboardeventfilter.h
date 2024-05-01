@@ -1,15 +1,19 @@
 #pragma once
 
+#include <QFileSystemWatcher>
 #include <QLocale>
 #include <QMultiHash>
 #include <QObject>
 
 #include "control/controlobject.h"
 #include "preferences/configobject.h"
+#include "util/autofilereloader.h"
 
 class ControlObject;
 class QEvent;
 class QKeyEvent;
+class WBaseWidget;
+class WSearchLineEdit;
 
 // This class provides handling of keyboard events.
 class KeyboardEventFilter : public QObject {
@@ -34,10 +38,23 @@ class KeyboardEventFilter : public QObject {
         return m_enabled;
     }
 
-#ifndef __APPLE__
+    void registerShortcutWidget(WBaseWidget* pWidget);
+    void updateWidgetShortcuts();
+    void clearWidgets();
+    QString buildShortcutString(const QString& shortcut, const QString& cmd) const;
+
+    void registerSearchBar(WSearchLineEdit* pSearchBar);
+    void updateSearchBarShortcuts();
+
+  public slots:
+    void reloadKeyboardConfig();
+
   signals:
+#ifndef __APPLE__
     void altPressedWithoutKeys();
 #endif
+    // We're only the relay here: CoreServices -> this -> WBaseWidget
+    void shortcutsEnabled(bool enabled);
 
   private:
     struct KeyDownInformation {
@@ -69,6 +86,8 @@ class KeyboardEventFilter : public QObject {
 
     void createKeyboardConfig();
 
+    QString localizeShortcutKeys(const QString& shortcut) const;
+
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
 
@@ -77,6 +96,13 @@ class KeyboardEventFilter : public QObject {
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     QLocale m_locale;
     bool m_enabled;
+
+    AutoFileReloader m_autoReloader;
+
+    // Widgets that have mappable connections, registered by LegacySkinParser
+    // during skin construction.
+    QList<WBaseWidget*> m_widgets;
+    WSearchLineEdit* m_pSearchBar;
 
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;

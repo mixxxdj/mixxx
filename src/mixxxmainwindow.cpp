@@ -486,6 +486,10 @@ MixxxMainWindow::~MixxxMainWindow() {
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
+    // Clear widget pointer list and destroy all update connections before we
+    // delete the main widget (ie. all WBaseWidgets) to prevent KeyboardEventFilter
+    // accessing dangling pointers.
+    m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
     m_pCentralWidget = nullptr;
     QPointer<QWidget> pSkin(centralWidget());
     setCentralWidget(nullptr);
@@ -1325,6 +1329,11 @@ void MixxxMainWindow::rebootMixxxView() {
     m_pMenuBar->onNewSkinAboutToLoad();
 
     if (m_pCentralWidget) {
+        // Clear widget pointer list and destroy all update connections before
+        // we delete the main widget (ie. all WBaseWidgets) to prevent
+        // KeyboardEventFilter accessing dangling pointers, just in case a
+        // shortcuts/tooltip update is triggered while we re/load a skin.
+        m_pCoreServices->getKeyboardEventFilter()->clearWidgets();
         m_pCentralWidget->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;

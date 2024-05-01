@@ -6,6 +6,8 @@
 
 #include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
+#include "widget/wbasewidget.h"
+#include "widget/wsearchlineedit.h"
 
 namespace {
 const QString mappingFilePath(const QString& dir, const QString& fileName) {
@@ -22,7 +24,8 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
 #endif
           m_pConfig(pConfig),
           m_locale(locale),
-          m_enabled(false) {
+          m_enabled(false),
+          m_autoReloader(RuntimeLoggingCategory(QStringLiteral("kbd_auto_reload"))) {
     // Get the enabled state.
     // Note: use the same default value in WMainMenuBar so that the action and
     // our bool are in sync.
@@ -31,6 +34,12 @@ KeyboardEventFilter::KeyboardEventFilter(UserSettingsPointer pConfig,
             true);
 
     createKeyboardConfig();
+
+    // For watching the currently loaded mapping file
+    connect(&m_autoReloader,
+            &AutoFileReloader::fileChanged,
+            this,
+            &KeyboardEventFilter::reloadKeyboardConfig);
 }
 
 KeyboardEventFilter::~KeyboardEventFilter() {
@@ -223,18 +232,125 @@ void KeyboardEventFilter::setEnabled(bool enabled) {
     }
     m_enabled = enabled;
     m_pConfig->setValue(ConfigKey("[Keyboard]", "Enabled"), enabled);
+    // Shortcuts may be toggled off and on again to make Mixxx discover a new
+    // Custom.kbd.cfg, so reload now.
+    // Note: the other way around (removing a loaded Custom.kbd.cfg) is covered
+    // by the auto-reloader and we'll try to load a built-in mapping then.
+    if (enabled) {
+        reloadKeyboardConfig();
+    }
+    // Update widget tooltips
+    emit shortcutsEnabled(enabled);
+}
+
+void KeyboardEventFilter::registerShortcutWidget(WBaseWidget* pWidget) {
+    m_widgets.append(pWidget);
+
+    // Tell widgets to reconstruct tooltips when option is toggled.
+    // WBaseWidget is not a QObject, need to use a lambda
+    connect(this,
+            &KeyboardEventFilter::shortcutsEnabled,
+            this,
+            [pWidget](bool enabled) {
+                pWidget->toggleKeyboardShortcutHints(enabled);
+            });
+}
+
+void KeyboardEventFilter::updateWidgetShortcuts() {
+    qDebug() << "Update widget shortcuts";
+    QStringList shortcutHints;
+    for (auto* pWidget : std::as_const(m_widgets)) {
+        QString keyString;
+        shortcutHints.clear();
+        const QList<std::pair<ConfigKey, QString>> controlsCommands =
+                pWidget->getShortcutControlsAndCommands();
+        for (const auto& [control, command] : controlsCommands) {
+            keyString = m_pKbdConfig->getValueString(control);
+            if (!keyString.isEmpty()) {
+                shortcutHints.append(buildShortcutString(keyString, command));
+            }
+        }
+        // might be empty to clear the previous tooltip
+        pWidget->setShortcutTooltip(shortcutHints.join(QStringLiteral("\n")));
+    }
+    // Update widget tooltips (WBaseWidget handles no-ops).
+    emit shortcutsEnabled(m_enabled);
+}
+
+void KeyboardEventFilter::clearWidgets() {
+    disconnect();
+    m_widgets.clear();
+    m_pSearchBar = nullptr;
+}
+
+void KeyboardEventFilter::registerSearchBar(WSearchLineEdit* pSearchBar) {
+    m_pSearchBar = pSearchBar;
+}
+
+void KeyboardEventFilter::updateSearchBarShortcuts() {
+    if (m_pSearchBar == nullptr) {
+        return;
+    }
+
+    // Translate shortcuts to native text
+    QString searchInCurrentViewShortcut =
+            localizeShortcutKeys(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInCurrentView"),
+                    "Ctrl+f"));
+    QString searchInAllTracksShortcut =
+            localizeShortcutKeys(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]",
+                            "LibraryMenu_SearchInAllTracks"),
+                    "Ctrl+Shift+F"));
+
+    m_pSearchBar->setupToolTip(searchInCurrentViewShortcut, searchInAllTracksShortcut);
+}
+
+/// Translate shortcut to native text
+QString KeyboardEventFilter::localizeShortcutKeys(const QString& shortcut) const {
+    return QKeySequence(shortcut, QKeySequence::PortableText)
+            .toString(QKeySequence::NativeText);
+}
+
+QString KeyboardEventFilter::buildShortcutString(
+        const QString& shortcut, const QString& cmd) const {
+    VERIFY_OR_DEBUG_ASSERT(!shortcut.isEmpty()) {
+        return QString();
+    }
+
+    QString shortcutTooltip(tr("Shortcut"));
+    if (!cmd.isEmpty()) {
+        shortcutTooltip += " ";
+        shortcutTooltip += cmd;
+    }
+    shortcutTooltip += ": ";
+    shortcutTooltip += localizeShortcutKeys(shortcut);
+    return shortcutTooltip;
+}
+
+void KeyboardEventFilter::reloadKeyboardConfig() {
+    createKeyboardConfig();
+    updateWidgetShortcuts();
+    updateSearchBarShortcuts();
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {
-    // Read keyboard configuration and set kdbConfig object in WWidget
+    // Remove the previously watched file.
+    // Could be the user mapping has been removed and we'll need to switch
+    // to the built-in default mapping.
+    m_autoReloader.clear();
+
     // Check first in user's Mixxx directory
     QString keyboardFile = mappingFilePath(m_pConfig->getSettingsPath(), QStringLiteral("Custom"));
     if (QFile::exists(keyboardFile)) {
         qDebug() << "Found and will use custom keyboard mapping" << keyboardFile;
     } else {
         // check if a default keyboard exists
-        const QString resourcePath = m_pConfig->getResourcePath() + QStringLiteral("keyboard/");
-        keyboardFile = mappingFilePath(resourcePath, m_locale.name());
+        const QString resourcePath = m_pConfig->getResourcePath();
+        keyboardFile = QString(resourcePath).append("keyboard/");
+        keyboardFile += m_locale.name();
+        keyboardFile += ".kbd.cfg";
         if (QFile::exists(keyboardFile)) {
             qDebug() << "Found and will use default keyboard mapping" << keyboardFile;
         } else {
@@ -245,6 +361,10 @@ void KeyboardEventFilter::createKeyboardConfig() {
                 keyboardFile = "";
             }
         }
+    }
+    if (!keyboardFile.isEmpty()) {
+        // Watch the loaded file for changes.
+        m_autoReloader.addPath(keyboardFile);
     }
 
     // Read the keyboard configuration file and set m_pKbdConfig.
