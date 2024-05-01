@@ -10,6 +10,7 @@
 #include "preferences/usersettings.h"
 
 class QAction;
+class KeyboardEventFilter;
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
@@ -34,8 +35,9 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                 ConfigObject<ConfigValueKbd>* pKbdConfig);
+    WMainMenuBar(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<KeyboardEventFilter> pKbd);
 
   public slots:
     void onLibraryScanStarted();
@@ -93,7 +95,7 @@ class WMainMenuBar : public QMenuBar {
 
     UserSettingsPointer m_pConfig;
     QAction* m_pViewKeywheel;
-    ConfigObject<ConfigValueKbd>* m_pKbdConfig;
+    std::shared_ptr<KeyboardEventFilter> m_pKeyboard;
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
 };
