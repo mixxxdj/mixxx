@@ -1,5 +1,6 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+#include <QAction>
 #include <QEvent>
 #include <QKeyEvent>
 #include <QtDebug>
@@ -329,10 +330,43 @@ QString KeyboardEventFilter::buildShortcutString(
     return shortcutTooltip;
 }
 
+void KeyboardEventFilter::registerMenuBarActionSetShortcut(QAction* pAction,
+        const ConfigKey& cfgKey,
+        const QString& defaultShortcut) {
+    VERIFY_OR_DEBUG_ASSERT(pAction) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(cfgKey.isValid()) {
+        return;
+    }
+    // TODO Allow clearing the shortcut so it can be used for something else ??
+    m_menuBarActions.emplace(pAction, std::make_pair(cfgKey, defaultShortcut));
+    pAction->setShortcut(QKeySequence(m_pKbdConfig->getValue(cfgKey, defaultShortcut)));
+    pAction->setShortcutContext(Qt::ApplicationShortcut);
+}
+
+void KeyboardEventFilter::clearMenuBarActions() {
+    m_menuBarActions.clear();
+}
+
+void KeyboardEventFilter::updateMenuBarActionShortcuts() {
+    QHashIterator<QAction*, std::pair<ConfigKey, QString>> it(m_menuBarActions);
+    while (it.hasNext()) {
+        it.next();
+        auto* pAction = it.key();
+        VERIFY_OR_DEBUG_ASSERT(pAction) {
+            continue;
+        }
+        const QString keyStr = m_pKbdConfig->getValue(it.value().first, it.value().second);
+        pAction->setShortcut(QKeySequence(keyStr));
+    }
+}
+
 void KeyboardEventFilter::reloadKeyboardConfig() {
     createKeyboardConfig();
     updateWidgetShortcuts();
     updateSearchBarShortcuts();
+    updateMenuBarActionShortcuts();
 }
 
 void KeyboardEventFilter::createKeyboardConfig() {
