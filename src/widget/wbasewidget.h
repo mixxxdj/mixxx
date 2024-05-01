@@ -1,8 +1,10 @@
 #pragma once
 
+#include <QList>
 #include <QString>
 #include <QWidget>
-#include <QList>
+
+#include "preferences/configobject.h"
 
 class ControlWidgetPropertyConnection;
 class ControlParameterWidgetConnection;
@@ -20,22 +22,52 @@ class WBaseWidget {
 
     void appendBaseTooltip(const QString& tooltip) {
         m_baseTooltip.append(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void prependBaseTooltip(const QString& tooltip) {
         m_baseTooltip.prepend(tooltip);
-        m_pWidget->setToolTip(m_baseTooltip);
+        updateBaseTooltipOptShortcuts();
     }
 
     void setBaseTooltip(const QString& tooltip) {
         m_baseTooltip = tooltip;
-        m_pWidget->setToolTip(tooltip);
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void setShortcutTooltip(const QString& tooltip, bool enabled) {
+        m_shortcutTooltip = tooltip;
+        m_showKeyboardShortcuts = enabled;
+        updateBaseTooltipOptShortcuts();
     }
 
     QString baseTooltip() const {
         return m_baseTooltip;
     }
+
+    QString shortcutHints() const {
+        return m_shortcutTooltip;
+    }
+
+    QString baseTooltipOptShortcuts() const {
+        return m_baseTooltipOptShortcuts;
+    }
+
+    void setShortcutKeys(const QList<std::pair<ConfigKey, QString>>& cfgKeys) {
+        m_shortcutKeys = cfgKeys;
+    }
+
+    const QList<std::pair<ConfigKey, QString>> getShortcutKeys() {
+        return m_shortcutKeys;
+    }
+
+    /// Append/remove shortcuts hint when shortcuts are toggled
+    void toggleKeyboardShortcutHints(bool enabled) {
+        m_showKeyboardShortcuts = enabled;
+        updateBaseTooltipOptShortcuts();
+    }
+
+    void updateBaseTooltipOptShortcuts();
 
     void addLeftConnection(ControlParameterWidgetConnection* pConnection);
     void addRightConnection(ControlParameterWidgetConnection* pConnection);
@@ -59,7 +91,6 @@ class WBaseWidget {
     inline const QList<ControlParameterWidgetConnection*>& leftConnections() const {
         return m_leftConnections;
     };
-
 
   protected:
     // Whenever a connected control is changed, onConnectedControlChanged is
@@ -95,7 +126,13 @@ class WBaseWidget {
 
   private:
     QWidget* m_pWidget;
+
     QString m_baseTooltip;
+    QString m_shortcutTooltip;
+    QString m_baseTooltipOptShortcuts;
+    QList<std::pair<ConfigKey, QString>> m_shortcutKeys;
+
+    bool m_showKeyboardShortcuts;
 
     friend class ControlParameterWidgetConnection;
 };

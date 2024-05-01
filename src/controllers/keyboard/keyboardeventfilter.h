@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileSystemWatcher>
 #include <QLocale>
 #include <QMultiHash>
 #include <QObject>
@@ -10,6 +11,7 @@
 class ControlObject;
 class QEvent;
 class QKeyEvent;
+class WBaseWidget;
 
 // This class provides handling of keyboard events.
 class KeyboardEventFilter : public QObject {
@@ -34,6 +36,18 @@ class KeyboardEventFilter : public QObject {
     bool isEnabled() {
         return m_enabled;
     }
+
+    void registerShortcutWidget(WBaseWidget* pWidget);
+    void updateWidgetShortcuts();
+    void clearWidgets();
+    const QString buildShortcutString(const QString& shortcut, const QString& cmd) const;
+
+  public slots:
+    void reloadKeyboardConfig();
+
+  signals:
+    // We're only the relay here: CoreServices -> this -> WBaseWidget
+    void shortcutsEnabled(bool enabled);
 
   private:
     struct KeyDownInformation {
@@ -69,6 +83,12 @@ class KeyboardEventFilter : public QObject {
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     QLocale m_locale;
     bool m_enabled;
+
+    QFileSystemWatcher m_fileWatcher;
+
+    // Widgets that have mappable connections, registered by LegacySkinParser
+    // during skin construction.
+    QList<WBaseWidget*> m_widgets;
 
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
