@@ -327,29 +327,29 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 
     QMenu menu(m_pSidebarWidget);
 
-    // If this a QuickLink show only the Remove action
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
+        // This is a QuickLink
         menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
         menu.exec(globalPos);
         onLazyChildExpandation(index);
         return;
     }
 
-    // If path is in the QuickLinks list show only the Remove action
-    foreach (const QString& str, m_quickLinkList) {
-        if (str == path) {
-            menu.addAction(m_pRemoveQuickLinkAction);
-            menu.exec(globalPos);
-            onLazyChildExpandation(index);
-            return;
-        }
-     }
+    if (m_quickLinkList.contains(path)) {
+        // Path is in the Quick Link list
+        menu.addAction(m_pRemoveQuickLinkAction);
+        menu.addAction(m_pRefreshDirTreeAction);
+        menu.exec(globalPos);
+        onLazyChildExpandation(index);
+        return;
+    }
 
-     menu.addAction(m_pAddQuickLinkAction);
-     menu.addAction(m_pAddtoLibraryAction);
-     menu.addAction(m_pRefreshDirTreeAction);
-     menu.exec(globalPos);
-     onLazyChildExpandation(index);
+    menu.addAction(m_pAddQuickLinkAction);
+    menu.addAction(m_pAddtoLibraryAction);
+    menu.addAction(m_pRefreshDirTreeAction);
+    menu.exec(globalPos);
+    onLazyChildExpandation(index);
 }
 
 namespace {
