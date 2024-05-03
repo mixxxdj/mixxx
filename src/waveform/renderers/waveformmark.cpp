@@ -70,12 +70,15 @@ float overlappingMarkerIncrement(const float labelRectHeight, const float breadt
 bool isShowUntilNextPositionControl(const QString& positionControl) {
     // To identify which markers are included in the beat/time until next marker
     // display, in addition to the hotcues
-    static const QStringList list{{"cue_point",
-            "intro_start_position",
-            "intro_end_position",
-            "outro_start_position",
-            "outro_end_position"}};
-    return list.contains(positionControl);
+    using namespace Qt::Literals::StringLiterals;
+    constexpr std::array list = {"cue_point"_L1,
+        "intro_start_position"_L1,
+        "intro_end_position"_L1,
+        "outro_start_position"_L1,
+        "outro_end_position"_L1};
+    return std::any_of(list.cbegin(), list.cend(), [positionControl](auto& view) {
+        return view == positionControl;
+    });
 }
 
 } // anonymous namespace

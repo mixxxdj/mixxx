@@ -46,16 +46,14 @@ class TextureGraphics : public WaveformMark::Graphics {
 // that updateMarkImages should not be called immediately.
 
 namespace {
-QString timeToString(double t) {
-    int hundreds = std::lround(t * 100.0);
-    int seconds = hundreds / 100;
-    hundreds -= seconds * 100;
+QString timeSecToString(double timeSec) {
+    int hundredths = std::lround(timeSec * 100.0);
+    int seconds = hundredths / 100;
+    hundredths -= seconds * 100;
     int minutes = seconds / 60;
     seconds -= minutes * 60;
 
-    return QString::number(minutes) + (seconds < 10 ? ":0" : ":") +
-            QString::number(seconds) + (hundreds < 10 ? ".0" : ".") +
-            QString::number(hundreds);
+    return QString::asprintf("%d:%02d.%02d", minutes, seconds, hundredths);
 }
 
 } // namespace
@@ -375,7 +373,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
         m_digitsRenderer.draw(matrix,
                 x,
                 y,
-                timeToString(m_timeUntilMark),
+                timeSecToString(m_timeUntilMark),
                 devicePixelRatio);
     }
 }

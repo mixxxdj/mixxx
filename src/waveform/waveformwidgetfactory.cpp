@@ -1283,8 +1283,7 @@ QSurfaceFormat WaveformWidgetFactory::getSurfaceFormat(UserSettingsPointer confi
 void WaveformWidgetFactory::setUntilNextMarkerShow(UntilNextMarkerShow value) {
     m_untilNextMarkerShow = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilNextMarkerShow"),
-                static_cast<int>(m_untilNextMarkerShow));
+        m_config->setValue<UntilNextMarkerShow>(ConfigKey("[Waveform]", "UntilNextMarkerShow"), m_untilNextMarkerShow);
     }
 }
 void WaveformWidgetFactory::setUntilNextMarkerAlign(Qt::Alignment align) {
