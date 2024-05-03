@@ -242,6 +242,7 @@ class AutoDJProcessor : public QObject {
     // every time)
     double getCrossfader() const;
     void setCrossfader(double value);
+    void setCrossfaderToIdle(double value);
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)

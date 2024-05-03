@@ -8,6 +8,14 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
+    // Whether to reset the crossfader to neutral when not fading
+    ResetFaderToNeutralOnIdleCheckBox->setChecked(m_pConfig->getValue(
+            ConfigKey("[Auto DJ]", "ResetFaderToNeutralOnIdle"), false));
+    connect(ResetFaderToNeutralOnIdleCheckBox,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefAutoDJ::slotToggleResetFaderToNeutralOnIdle);
+
     // The minimum available for randomly-selected tracks
     MinimumAvailableSpinBox->setValue(
             m_pConfig->getValue(
@@ -152,6 +160,11 @@ void DlgPrefAutoDJ::slotToggleRequeueIgnore(int buttonState) {
     bool checked = buttonState == Qt::Checked;
     m_pConfig->setValue(ConfigKey("[Auto DJ]", "UseIgnoreTimeBuff"), checked);
     RequeueIgnoreTimeEdit->setEnabled(checked);
+}
+
+void DlgPrefAutoDJ::slotToggleResetFaderToNeutralOnIdle(int buttonState) {
+    bool checked = buttonState == Qt::Checked;
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", "ResetFaderToNeutralOnIdle"), checked);
 }
 
 void DlgPrefAutoDJ::slotSetRequeueIgnoreTime(const QTime& a_rTime) {
