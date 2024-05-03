@@ -722,8 +722,6 @@ void Library::searchTracksInCollection(const QString& query) {
         return;
     }
     m_pMixxxLibraryFeature->searchAndActivate(query);
-    emit switchToView(m_sTrackViewName);
-    m_pSidebarModel->activateDefaultSelection();
 }
 
 #ifdef __ENGINEPRIME__
