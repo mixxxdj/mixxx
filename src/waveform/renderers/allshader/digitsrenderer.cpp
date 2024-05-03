@@ -103,13 +103,13 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
 
     // Apply Gaussian blur to dark outline
 
-    QGraphicsBlurEffect* blur = new QGraphicsBlurEffect; // ownership passed to item
+    auto blur = std::make_unique<QGraphicsBlurEffect>();
     blur->setBlurRadius(3);
 
     QGraphicsScene scene;
     QGraphicsPixmapItem item;
     item.setPixmap(QPixmap::fromImage(image));
-    item.setGraphicsEffect(blur);
+    item.setGraphicsEffect(blur.release());
     scene.addItem(&item);
 
     image.fill(Qt::transparent);

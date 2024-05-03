@@ -68,8 +68,8 @@ allshader::WaveformRenderMark::WaveformRenderMark(
 }
 
 bool allshader::WaveformRenderMark::init() {
-    m_pTimeRemainingControl.reset(new ControlProxy(
-            m_waveformRenderer->getGroup(), "time_remaining"));
+    m_pTimeRemainingControl = std::make_unique<ControlProxy>(
+            m_waveformRenderer->getGroup(), "time_remaining");
     return true;
 }
 
