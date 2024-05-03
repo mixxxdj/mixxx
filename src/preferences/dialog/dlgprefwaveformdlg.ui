@@ -501,7 +501,7 @@ Select from different types of displays for the waveform, which differ primarily
       <widget class="QComboBox" name="untilNextMarkerAlignComboBox"/>
      </item>
      <item row="13" column="1">
-      <widget class="QLabel" name="untilNextMarkerSizeLabel">
+      <widget class="QLabel" name="untilMarkTextPixelSizeLabel">
        <property name="text">
         <string>Size</string>
        </property>
@@ -509,12 +509,12 @@ Select from different types of displays for the waveform, which differ primarily
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
        </property>
        <property name="buddy">
-        <cstring>untilNextMarkerSizeSpinBox</cstring>
+        <cstring>untilMarkTextPixelSizeSpinBox</cstring>
        </property>
       </widget>
      </item>
      <item row="13" column="2">
-      <widget class="QSpinBox" name="untilNextMarkerSizeSpinBox">
+      <widget class="QSpinBox" name="untilMarkTextPixelSizeSpinBox">
        <property name="toolTip">
         <string/>
        </property>

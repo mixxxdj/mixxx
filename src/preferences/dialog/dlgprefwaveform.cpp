@@ -150,10 +150,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotSetUntilNextMarkerAlign);
-    connect(untilNextMarkerSizeSpinBox,
+    connect(untilMarkTextPixelSizeSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
-            &DlgPrefWaveform::slotSetUntilNextMarkerSize);
+            &DlgPrefWaveform::slotSetUntilMarkTextPixelSize);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -199,7 +199,7 @@ void DlgPrefWaveform::slotUpdate() {
     untilNextMarkerAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilNextMarkerAlignIndex(
                     factory->getUntilNextMarkerAlign()));
-    untilNextMarkerSizeSpinBox->setValue(factory->getUntilNextMarkerSize());
+    untilMarkTextPixelSizeSpinBox->setValue(factory->getUntilMarkTextPixelSize());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -292,7 +292,7 @@ void DlgPrefWaveform::updateEnableUntilNextMarker() {
     const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilNextMarker();
     untilNextMarkerAlignComboBox->setEnabled(enabled);
     untilNextMarkerShowComboBox->setEnabled(enabled);
-    untilNextMarkerSizeSpinBox->setEnabled(enabled);
+    untilMarkTextPixelSizeSpinBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
 
@@ -364,8 +364,8 @@ void DlgPrefWaveform::slotSetUntilNextMarkerAlign(int index) {
             WaveformWidgetFactory::toUntilNextMarkerAlign(index));
 }
 
-void DlgPrefWaveform::slotSetUntilNextMarkerSize(int value) {
-    WaveformWidgetFactory::instance()->setUntilNextMarkerSize(value);
+void DlgPrefWaveform::slotSetUntilMarkTextPixelSize(int value) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextPixelSize(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

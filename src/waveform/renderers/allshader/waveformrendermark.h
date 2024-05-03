@@ -63,7 +63,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     double m_timeUntilMark;
     double m_currentBeatPosition;
     double m_nextBeatPosition;
-    int m_untilNextMarkerSize;
+    int m_untilMarkTextPixelSize;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;

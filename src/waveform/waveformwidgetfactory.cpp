@@ -113,7 +113,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_overviewNormalized(false),
           m_untilNextMarkerShow(UntilNextMarkerShow::None),
           m_untilNextMarkerAlign(Qt::AlignVCenter),
-          m_untilNextMarkerSize(24),
+          m_untilMarkTextPixelSize(24),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -412,9 +412,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilNextMarkerAlign(toUntilNextMarkerAlign(
             m_config->getValue(ConfigKey("[Waveform]", "UntilNextMarkerAlign"),
                     toUntilNextMarkerAlignIndex(m_untilNextMarkerAlign))));
-    setUntilNextMarkerSize(
-            m_config->getValue(ConfigKey("[Waveform]", "UntilNextMarkerSize"),
-                    m_untilNextMarkerSize));
+    setUntilMarkTextPixelSize(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPixelSize"),
+                    m_untilMarkTextPixelSize));
 
     return true;
 }
@@ -1293,10 +1293,11 @@ void WaveformWidgetFactory::setUntilNextMarkerAlign(Qt::Alignment align) {
                 toUntilNextMarkerAlignIndex(m_untilNextMarkerAlign));
     }
 }
-void WaveformWidgetFactory::setUntilNextMarkerSize(int value) {
-    m_untilNextMarkerSize = value;
+void WaveformWidgetFactory::setUntilMarkTextPixelSize(int value) {
+    m_untilMarkTextPixelSize = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilNextMarkerSize"), m_untilNextMarkerSize);
+        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPixelSize"),
+                m_untilMarkTextPixelSize);
     }
 }
 

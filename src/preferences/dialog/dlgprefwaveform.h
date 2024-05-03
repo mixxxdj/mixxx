@@ -40,7 +40,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetPlayMarkerPosition(int position);
     void slotSetUntilNextMarkerShow(int index);
     void slotSetUntilNextMarkerAlign(int index);
-    void slotSetUntilNextMarkerSize(int value);
+    void slotSetUntilMarkTextPixelSize(int value);
   signals:
     void reloadUserInterface();
 

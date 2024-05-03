@@ -109,7 +109,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void setUntilNextMarkerShow(UntilNextMarkerShow value);
     void setUntilNextMarkerAlign(Qt::Alignment align);
-    void setUntilNextMarkerSize(int value);
+    void setUntilMarkTextPixelSize(int value);
 
     UntilNextMarkerShow getUntilNextMarkerShow() const {
         return m_untilNextMarkerShow;
@@ -117,8 +117,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     Qt::Alignment getUntilNextMarkerAlign() const {
         return m_untilNextMarkerAlign;
     }
-    int getUntilNextMarkerSize() const {
-        return m_untilNextMarkerSize;
+    int getUntilMarkTextPixelSize() const {
+        return m_untilMarkTextPixelSize;
     }
 
     static Qt::Alignment toUntilNextMarkerAlign(int index);
@@ -222,7 +222,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     UntilNextMarkerShow m_untilNextMarkerShow;
     Qt::Alignment m_untilNextMarkerAlign;
-    int m_untilNextMarkerSize;
+    int m_untilMarkTextPixelSize;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
