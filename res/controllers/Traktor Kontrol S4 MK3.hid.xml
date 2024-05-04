@@ -220,7 +220,7 @@
                 default="false"
                 label="Main gain is handled by the Mixxx built-in mixer">
                 <description>
-                    When enabled, the master potentiometer on top right column of the mixer will drive the main gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
+                    When enabled, the master potentiometer on top right column of the mixer will drive both the main gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
                 </description>
             </option>
             <option
@@ -229,7 +229,7 @@
                 default="false"
                 label="Booth gain is handled by the Mixxx built-in mixer">
                 <description>
-                    When enabled, the booth potentiometer on right column of the mixer will drive the booth gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
+                    When enabled, the booth potentiometer on right column of the mixer will drive both the booth gain of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could result in undesired clipping if enabled when using the hardware audio outputs.
                 </description>
             </option>
             <option
@@ -238,7 +238,7 @@
                 default="false"
                 label="Headphone gain and cue mix is handled by the Mixxx built-in mixer">
                 <description>
-                    When enabled, the headphone volume and cue potentiometers on bottom right column of the mixer will drive the headphone controls of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but will create conflict if enabled when using the hardware outputs.
+                    When enabled, the headphone volume and cue potentiometers on bottom right column of the mixer will drive both the headphone controls of the Mixxx internal mixer as well as the hardware built-in mixer in the device. This is useful if you aren't relying on the hardware output, but could create undesirable clipping if enabled when using the hardware audio outputs.
                 </description>
             </option>
         </group>
