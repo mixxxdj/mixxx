@@ -73,7 +73,7 @@ class LegacyControllerMappingFileHandler {
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
 #ifdef MIXXX_USE_QML
-    // Maximum target frame per request for a a screen controller
+    // Maximum target frame per request for a screen controller
     static constexpr int s_maxTargetFps = 240;
     // Maximum time allowed for a screen to run a splash off animation
     static constexpr int s_maxSplashOffDuration = 3000;

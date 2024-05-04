@@ -462,10 +462,10 @@ void CoreServices::initialize(QApplication* pApp) {
     m_isInitialized = true;
 
 #ifdef MIXXX_USE_QML
-    initializeQMLSignletons();
+    initializeQMLSingletons();
 }
 
-void CoreServices::initializeQMLSignletons() {
+void CoreServices::initializeQMLSingletons() {
     // Any uncreateable non-singleton types registered here require
     // arguments that we don't want to expose to QML directly. Instead, they
     // can be retrieved by member properties or methods from the singleton

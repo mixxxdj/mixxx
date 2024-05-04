@@ -64,7 +64,7 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
                     bool reversedColorse,
                     bool rawData),
             (override));
-    MOCK_METHOD(void, addLibraryDirectory, (const QFileInfo& dirinfo, bool builtin), (override));
+    MOCK_METHOD(void, addModule, (const QFileInfo& dirinfo, bool builtin), (override));
 
     std::shared_ptr<LegacyControllerMapping> clone() const override {
         throw std::runtime_error("not implemented");
@@ -104,7 +104,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseSimpleMapping) {
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     false));
     EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
-    EXPECT_CALL(*mapping, addLibraryDirectory(_, _)).Times(0);
+    EXPECT_CALL(*mapping, addModule(_, _)).Times(0);
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -152,7 +152,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseScreenMapping) {
                     std::endian::little,
                     false,
                     false));
-    EXPECT_CALL(*mapping, addLibraryDirectory(QFileInfo("/dummy/path/foobar"), false));
+    EXPECT_CALL(*mapping, addModule(QFileInfo("/dummy/path/foobar"), false));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -630,8 +630,8 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
 }
 
 TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraBoolPropertiesDefinition) {
-    QStringList kFalseValue = {"false", "FALse", "no", "nope", "maybe"};
-    QStringList kTrueValue = {"true", "trUe", "1", "yes"};
+    QStringList kFalseValue = {"false", "FALse", "no", "yes", "nope", "maybe"};
+    QStringList kTrueValue = {"true", "trUe", "1"};
     QDomDocument doc;
     std::shared_ptr<MockLegacyControllerMapping> mapping;
 
@@ -927,7 +927,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseHybridMapping) {
                     std::endian::little,
                     false,
                     false));
-    EXPECT_CALL(*mapping, addLibraryDirectory(QFileInfo("/dummy/path/foobar"), false));
+    EXPECT_CALL(*mapping, addModule(QFileInfo("/dummy/path/foobar"), false));
 
     addScriptFilesToMapping(
             doc.documentElement(),

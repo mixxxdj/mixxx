@@ -47,11 +47,11 @@ void ControllerScreenPreview::updateFrame(
     for (uint i = 0; i < frameDurationHistoryLength; i++) {
         durationSinceLastFrame += static_cast<double>(m_frameDurationHistory[i]);
     }
-    durationSinceLastFrame /= (double)frameDurationHistoryLength;
+    durationSinceLastFrame /= static_cast<double>(frameDurationHistoryLength);
 
     if (durationSinceLastFrame > 0.0) {
         m_pStat->setText(QString("<i>FPS: %0/%1</i>")
-                                 .arg((int)(1000.0 / durationSinceLastFrame))
+                                 .arg(static_cast<int>(1000.0 / durationSinceLastFrame))
                                  .arg(m_screenInfo.target_fps));
     }
     m_pFrame->setPixmap(QPixmap::fromImage(frame));

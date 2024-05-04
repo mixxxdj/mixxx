@@ -52,9 +52,9 @@ QFileInfo findLibraryPath(
 
 /// @brief Parse a string that contain a boolean value in human representation
 /// @param value the string containing the boolean setting
-/// @return true for string value "yes", "true" and "1", false otherwise
+/// @return true for string value "true" and "1", false otherwise
 bool parseHumanBoolean(const QString& value) {
-    return value == QStringLiteral("yes") || value == QStringLiteral("true") ||
+    return value == QStringLiteral("true") ||
             value == QStringLiteral("1");
 }
 #endif
@@ -294,7 +294,9 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
                     file,
                     LegacyControllerMapping::ScriptFileInfo::Type::QML);
 #else
-            kLogger.warning() << "Unsupported render scene. Mixxx isn't built with QML support";
+            kLogger.warning()
+                    << "Unsupported render scene for file" << file.filePath()
+                    << ". Mixxx isn't built with QML support";
             return;
 #endif
         } else {
@@ -380,7 +382,7 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         QString libFilename = qmlLibrary.attribute("path", "");
         QFileInfo path = findLibraryPath(mapping, libFilename, systemMappingsPath);
         kLogger.debug() << "Adding QML directory " << libFilename;
-        mapping->addLibraryDirectory(path);
+        mapping->addModule(path);
         qmlLibrary = qmlLibrary.nextSiblingElement("library");
     }
 #endif

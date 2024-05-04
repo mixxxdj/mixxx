@@ -427,7 +427,7 @@ QString DlgPrefController::mappingFileLinks(
     }
 
 #ifdef MIXXX_USE_QML
-    for (const auto& qmlLibrary : pMapping->getLibraryDirectories()) {
+    for (const auto& qmlLibrary : pMapping->getModules()) {
         QString scriptFileLink = coloredLinkString(
                 m_pLinkColor,
                 qmlLibrary.dirinfo.fileName(),

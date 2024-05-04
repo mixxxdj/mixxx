@@ -221,16 +221,16 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
 }
 
 #ifdef MIXXX_USE_QML
-void ControllerScriptEngineLegacy::setLibraryDirectories(
-        const QList<LegacyControllerMapping::QMLModuleInfo>& directories) {
+void ControllerScriptEngineLegacy::setModulePaths(
+        const QList<LegacyControllerMapping::QMLModuleInfo>& modules) {
     const QStringList paths = m_fileWatcher.files();
     if (!paths.isEmpty()) {
         m_fileWatcher.removePaths(paths);
     }
 
-    m_libraryDirectories = directories;
+    m_modules = modules;
 }
-void ControllerScriptEngineLegacy::setInfoScrens(
+void ControllerScriptEngineLegacy::setInfoScreens(
         const QList<LegacyControllerMapping::ScreenInfo>& screens) {
     m_rootItems.clear();
     m_renderingScreens.clear();
@@ -353,7 +353,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 #ifdef MIXXX_USE_QML
     if (m_bQmlMode) {
         for (const LegacyControllerMapping::QMLModuleInfo& module :
-                std::as_const(m_libraryDirectories)) {
+                std::as_const(m_modules)) {
             auto path = module.dirinfo.absoluteFilePath();
             QDirIterator it(path,
                     QStringList() << "*.qml",
@@ -367,7 +367,7 @@ bool ControllerScriptEngineLegacy::initialize() {
             pQmlEngine->addImportPath(path);
             qCWarning(m_logger) << pQmlEngine->importPathList();
         }
-    } else if (!m_libraryDirectories.isEmpty()) {
+    } else if (!m_modules.isEmpty()) {
         qCWarning(m_logger) << "Controller mapping has QML library definitions but no "
                                "QML files to use it. Ignoring.";
     }

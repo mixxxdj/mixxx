@@ -51,8 +51,8 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             const QList<std::shared_ptr<AbstractLegacyControllerSetting>>& settings);
 
 #ifdef MIXXX_USE_QML
-    void setLibraryDirectories(const QList<LegacyControllerMapping::QMLModuleInfo>& scripts);
-    void setInfoScrens(const QList<LegacyControllerMapping::ScreenInfo>& scripts);
+    void setModulePaths(const QList<LegacyControllerMapping::QMLModuleInfo>& scripts);
+    void setInfoScreens(const QList<LegacyControllerMapping::ScreenInfo>& scripts);
     void setResourcePath(const QString& resourcePath) {
         m_resourcePath = resourcePath;
     }
@@ -108,7 +108,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QHash<QString, std::shared_ptr<ControllerRenderingEngine>> m_renderingScreens;
     QHash<QString, std::shared_ptr<QQuickItem>> m_rootItems;
     QHash<QString, TransformScreenFrameFunction> m_transformScreenFrameFunctions;
-    QList<LegacyControllerMapping::QMLModuleInfo> m_libraryDirectories;
+    QList<LegacyControllerMapping::QMLModuleInfo> m_modules;
     QList<LegacyControllerMapping::ScreenInfo> m_infoScreens;
     QString m_resourcePath{"."};
 #endif

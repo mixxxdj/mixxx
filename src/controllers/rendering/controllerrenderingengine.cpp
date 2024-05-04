@@ -373,7 +373,7 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
     if (CmdlineArgs::Instance()
                     .getControllerDebug()) {
         auto endOfRender = mixxx::Time::elapsed();
-        kLogger.debug() << "Fame took "
+        kLogger.debug() << "Frame took "
                         << (endOfRender - m_nextFrameStart).formatMillisWithUnit()
                         << " and frame has" << frame.size() << "bytes";
     }

@@ -212,17 +212,17 @@ class LegacyControllerMapping {
 
 #ifdef MIXXX_USE_QML
     /// Adds a custom QML module file to the list of controller modules for this mapping.
-    /// @param dirinfo A FileInfo of the directory or QML module
+    /// @param dirInfo A FileInfo of the directory or QML module
     /// @param builtin If this is true, the script won't be written to the XML
-    virtual void addLibraryDirectory(const QFileInfo& dirinfo,
+    virtual void addModule(const QFileInfo& dirInfo,
             bool builtin = false) {
         m_modules.append(QMLModuleInfo(
-                dirinfo,
+                dirInfo,
                 builtin));
         setDirty(true);
     }
 
-    const QList<QMLModuleInfo>& getLibraryDirectories() const {
+    const QList<QMLModuleInfo>& getModules() const {
         return m_modules;
     }
 

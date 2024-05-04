@@ -116,7 +116,7 @@ class CoreServices : public QObject {
     void initializeScreensaverManager();
     void initializeLogging();
 #ifdef MIXXX_USE_QML
-    void initializeQMLSignletons();
+    void initializeQMLSingletons();
 #endif
 
     /// Tear down CoreServices that were previously initialized by `initialize()`.
