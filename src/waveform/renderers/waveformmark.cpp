@@ -72,10 +72,10 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
     // display, in addition to the hotcues
     using namespace Qt::Literals::StringLiterals;
     constexpr std::array list = {"cue_point"_L1,
-        "intro_start_position"_L1,
-        "intro_end_position"_L1,
-        "outro_start_position"_L1,
-        "outro_end_position"_L1};
+            "intro_start_position"_L1,
+            "intro_end_position"_L1,
+            "outro_start_position"_L1,
+            "outro_end_position"_L1};
     return std::any_of(list.cbegin(), list.cend(), [positionControl](auto& view) {
         return view == positionControl;
     });
