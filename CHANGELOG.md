@@ -34,6 +34,7 @@
 
 * Deere: make sampler rows persist [#12928](https://github.com/mixxxdj/mixxx/pull/12928)
 * Tango: Remove unneeded waveform Singleton [#12938](https://github.com/mixxxdj/mixxx/pull/12938)
+* Tango 64: fix Main VU meter
 * Prevent possible crash in customs skins using parallel waveforms
   [#13043](https://github.com/mixxxdj/mixxx/pull/13043)
   [#12580](https://github.com/mixxxdj/mixxx/issues/12580)

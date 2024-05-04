@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-05-01" timestamp="1714553275">
+    <release version="2.4.1" type="development" date="2024-05-01" timestamp="1714573883">
       <description>
  <p>
   Controller Mappings
@@ -175,6 +175,9 @@
   <li>
    Tango: Remove unneeded waveform Singleton
    #12938
+  </li>
+  <li>
+   Tango 64: fix Main VU meter
   </li>
   <li>
    Prevent possible crash in customs skins using parallel waveforms
