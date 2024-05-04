@@ -1222,6 +1222,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 QLineEdit QMenu,
@@ -1359,7 +1360,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
@@ -1377,7 +1378,9 @@ WEffectChainPresetSelector QAbstractScrollArea,
   color: #444;
 }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
 #PassthroughButton[displayValue="1"],
@@ -1450,7 +1453,7 @@ QPushButton#pushButtonRecording:checked {
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
-WPushButton#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #SyncDeck[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector:!editable,
@@ -1463,7 +1466,9 @@ WEffectSelector:!editable,
   }
   /*
   WPushButton#BpmTap[displayValue="1"], */
-  WPushButton#VinylButton[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="1"],
+  WPushButton#VinylStatus[displayValue="2"],
+  WPushButton#VinylStatus[displayValue="3"],
   #SyncDeck[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
   #KeyMatchReset[pressed="true"],
@@ -1663,7 +1668,6 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"],
 #MicDucking[value="2"],
-#VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
 #BroadcastButton[displayValue="4"], /* warning */
 QPushButton#pushButtonAutoDJ:checked,
@@ -1699,6 +1703,7 @@ QPushButton#pushButtonRecording:checked,
 /* Green for Fx toggles, QuickEffect + Fx12 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
 #FxUnit2 #FxToggleButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #438225;
   }
@@ -1710,7 +1715,7 @@ QPushButton#pushButtonRecording:checked,
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"],
+#FxUnit4 #FxToggleButton[displayValue="1"]
 WBeatSpinBox::up-button:pressed,
 WBeatSpinBox::down-button:pressed,
 #spinBoxTransition::up-button:pressed,
@@ -1799,7 +1804,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Yellow */
 #RecFeedback[displayValue="1"],     /* initialize recording */
-#BroadcastButton[displayValue="1"] {  /* connecting */
+#BroadcastButton[displayValue="1"], /* connecting */
+WPushButton#VinylStatus[displayValue="2"] {  /* blinks when the needle reaches the end of the record */
   background-color: #d09300;
 }
 
@@ -1807,9 +1813,10 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #395579;
 }
 
-/* pink */
-#BroadcastButton[displayValue="3"], /* failure */
-#RecFeedback[displayValue="3"] {
+/* pink for error / failure / warning */
+#BroadcastButton[displayValue="3"],
+#RecFeedback[displayValue="3"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
@@ -1849,7 +1856,14 @@ WPushButton#CrossfaderButton[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"] {
   background-color: transparent;
 }
 
@@ -2957,6 +2971,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,

@@ -96,28 +96,12 @@ EffectManifestPointer EffectsBackendManager::getManifest(
     return pEffectsBackend->getManifest(id);
 }
 
-const QString EffectsBackendManager::getDisplayNameForEffectPreset(
-        EffectPresetPointer pPreset) const {
-    // "---" id displayed when no effect is loaded
-    QString displayName(kNoEffectString);
-    if (!pPreset || pPreset->isEmpty()) {
-        return displayName;
-    }
-
-    bool manifestFound = false;
-    for (const auto& pManifest : std::as_const(m_manifests)) {
-        if (pManifest->id() == pPreset->id() &&
-                pManifest->backendType() == pPreset->backendType()) {
-            displayName = pManifest->name();
-            manifestFound = true;
-            break;
-        }
-    }
-    if (!manifestFound) {
+EffectManifestPointer EffectsBackendManager::getManifest(EffectPresetPointer pPreset) const {
+    EffectManifestPointer pManifest = getManifest(pPreset->id(), pPreset->backendType());
+    if (!pManifest) {
         qWarning() << "Failed to find manifest for effect preset " << pPreset->id();
-        DEBUG_ASSERT(false);
     }
-    return displayName;
+    return pManifest;
 }
 
 std::unique_ptr<EffectProcessor> EffectsBackendManager::createProcessor(

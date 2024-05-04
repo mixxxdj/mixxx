@@ -171,18 +171,26 @@ QUrl DlgPrefLibrary::helpUrl() const {
     return QUrl(MIXXX_MANUAL_LIBRARY_URL);
 }
 
-void DlgPrefLibrary::initializeDirList() {
+void DlgPrefLibrary::populateDirList() {
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
     m_dirListModel.clear();
     const auto rootDirs = m_pLibrary->trackCollectionManager()
                                   ->internalCollection()
-                                  ->loadRootDirs();
-    for (const mixxx::FileInfo& rootDir : rootDirs) {
-        // mark missing/invalid dirs with a warning icon, add a tooltip
-        auto* pDirItem = new QStandardItem(rootDir.location());
-        if (!rootDir.exists() || !rootDir.isDir()) {
+                                  ->getRootDirStrings();
+    for (const QString& rootDir : rootDirs) {
+        auto* pDirItem = new QStandardItem(rootDir);
+        // Note: constructing a FileInfo from a path string added in another
+        // will create issues: on Windows, if that path doesn't start with
+        // '[drive letter]:' it'll get prefixed with 'C:'; if on Linux the path
+        // starts with '[drive letter]:' the working dir's path is prepended.
+        // In both cases this is obviously wrong and directory/track relocation
+        // will fail since the database has no tracks with constructed prefix.
+        // Let's use QStrings for the roundtrip. The FileInfo is just for
+        // validation and eventually adding the warning icon.
+        const mixxx::FileInfo fileInfo(rootDir);
+        if (!fileInfo.exists() || !fileInfo.isDir()) {
             pDirItem->setIcon(QIcon(kWarningIconPath));
             pDirItem->setToolTip(tr("Item is not a directory or directory is missing"));
         }
@@ -232,7 +240,7 @@ void DlgPrefLibrary::slotResetToDefaults() {
 }
 
 void DlgPrefLibrary::slotUpdate() {
-    initializeDirList();
+    populateDirList();
     checkBox_library_scan->setChecked(m_pConfig->getValue(
             kRescanOnStartupConfigKey, false));
 

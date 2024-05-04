@@ -4,7 +4,6 @@
 #include <QPainterPath>
 
 #include "util/colorcomponents.h"
-#include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/rgbadata.h"
 #include "waveform/renderers/allshader/vertexdata.h"
@@ -20,15 +19,16 @@
 // then used as textures to be drawn with a GLSL shader.
 
 class TextureGraphics : public WaveformMark::Graphics {
-    std::unique_ptr<QOpenGLTexture> m_pTexture;
-
   public:
-    TextureGraphics(std::unique_ptr<QOpenGLTexture>&& pTexture)
-            : m_pTexture{std::move(pTexture)} {
+    TextureGraphics(const QImage& image) {
+        m_texture.setData(image);
     }
-    QOpenGLTexture* texture() const {
-        return m_pTexture.get();
+    QOpenGLTexture* texture() {
+        return &m_texture;
     }
+
+  private:
+    OpenGLTexture2D m_texture;
 };
 
 // Both allshader::WaveformRenderMark and the non-GL ::WaveformRenderMark derive
@@ -252,10 +252,12 @@ void allshader::WaveformRenderMark::paintGL() {
                     devicePixelRatio) /
             devicePixelRatio;
 
-    const float markHalfWidth = m_pPlayPosMarkTexture->width() / devicePixelRatio / 2.f;
-    const float drawOffset = currentMarkPoint - markHalfWidth;
+    if (m_playPosMarkTexture.isStorageAllocated()) {
+        const float markHalfWidth = m_playPosMarkTexture.width() / devicePixelRatio / 2.f;
+        const float drawOffset = currentMarkPoint - markHalfWidth;
 
-    drawTexture(drawOffset, 0.f, m_pPlayPosMarkTexture.get());
+        drawTexture(drawOffset, 0.f, &m_playPosMarkTexture);
+    }
 }
 
 // Generate the texture used to draw the play position marker.
@@ -322,7 +324,7 @@ void allshader::WaveformRenderMark::updatePlayPosMarkTexture() {
     }
     painter.end();
 
-    m_pPlayPosMarkTexture = createTexture(image);
+    m_playPosMarkTexture.setData(image);
 }
 
 void allshader::WaveformRenderMark::drawTriangle(QPainter* painter,
@@ -347,5 +349,5 @@ void allshader::WaveformRenderMark::resizeGL(int, int) {
 
 void allshader::WaveformRenderMark::updateMarkImage(WaveformMarkPointer pMark) {
     pMark->m_pGraphics = std::make_unique<TextureGraphics>(
-            createTexture(pMark->generateImage(m_waveformRenderer->getDevicePixelRatio())));
+            pMark->generateImage(m_waveformRenderer->getDevicePixelRatio()));
 }

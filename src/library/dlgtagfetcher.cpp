@@ -213,7 +213,7 @@ void DlgTagFetcher::init() {
     connect(&m_tagFetcher,
             &TagFetcher::coverArtImageFetchAvailable,
             this,
-            &DlgTagFetcher::slotLoadBytesToLabel);
+            &DlgTagFetcher::slotLoadFetchedCoverArt);
 
     connect(&m_tagFetcher,
             &TagFetcher::coverArtLinkNotFound,
@@ -257,6 +257,8 @@ void DlgTagFetcher::loadTrack(const TrackPointer& pTrack) {
     tags->clear();
 
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{}, QPixmap{});
+
+    m_coverCache.clear();
 
     m_pTrack = pTrack;
     if (!m_pTrack) {
@@ -567,12 +569,21 @@ void DlgTagFetcher::tagSelected() {
     m_data.m_selectedTag = tagIndex;
 
     m_fetchedCoverArtByteArrays.clear();
-    m_pWFetchedCoverArtLabel->loadData(QByteArray());
     m_pWFetchedCoverArtLabel->setCoverArt(CoverInfo{},
             QPixmap(CoverArtUtils::defaultCoverLocation()));
 
     const mixxx::musicbrainz::TrackRelease& trackRelease = m_data.m_tags[tagIndex];
     QUuid selectedTagAlbumId = trackRelease.albumReleaseId;
+
+    // Check if we already fetched the cover for this release earlier
+    QString cacheKey = selectedTagAlbumId.toString();
+    auto it = m_coverCache.constFind(cacheKey);
+    if (it != m_coverCache.constEnd()) {
+        QPixmap pix = it.value();
+        loadPixmapToLabel(pix);
+        return;
+    }
+
     statusMessage->setVisible(false);
 
     loadingProgressBar->setFormat(tr("Looking for cover art"));
@@ -594,10 +605,11 @@ void DlgTagFetcher::slotCoverFound(
     }
 }
 
-void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
-    DlgPrefLibrary::CoverArtFetcherQuality fetcherQuality =
-            m_pConfig->getValue(mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
-                    DlgPrefLibrary::CoverArtFetcherQuality::Medium);
+void DlgTagFetcher::slotStartFetchCoverArt(const QUuid& albumReleaseId,
+        const QList<QString>& allUrls) {
+    const int fetcherQuality = m_pConfig->getValue(
+            mixxx::library::prefs::kCoverArtFetcherQualityConfigKey,
+            static_cast<int>(DlgPrefLibrary::CoverArtFetcherQuality::Medium));
 
     // Cover art links task can retrieve us variable number of links with different cover art sizes
     // Every single successful response has 2 links.
@@ -617,35 +629,48 @@ void DlgTagFetcher::slotStartFetchCoverArt(const QList<QString>& allUrls) {
         return;
     }
 
-    if (allUrls.size() > static_cast<int>(fetcherQuality)) {
-        getCoverArt(allUrls.at(static_cast<int>(fetcherQuality)));
+    // TODO(ronso0) Check if we already fetched the cover for the preferred resolution
+
+    QString coverUrl;
+    if (allUrls.size() > fetcherQuality) {
+        coverUrl = allUrls.at(fetcherQuality);
     } else {
-        getCoverArt(allUrls.last());
+        coverUrl = allUrls.last();
     }
+    getCoverArt(albumReleaseId, coverUrl);
 }
 
-void DlgTagFetcher::slotLoadBytesToLabel(const QByteArray& data) {
+void DlgTagFetcher::slotLoadFetchedCoverArt(const QUuid& albumReleaseId,
+        const QByteArray& data) {
     QPixmap fetchedCoverArtPixmap;
     fetchedCoverArtPixmap.loadFromData(data);
+
+    // Bytes to be eventually applied as track cover art
+    m_fetchedCoverArtByteArrays = data;
+
+    // Cache the fetched cover image
+    m_coverCache.insert(albumReleaseId.toString(), fetchedCoverArtPixmap);
+    loadPixmapToLabel(fetchedCoverArtPixmap);
+}
+
+void DlgTagFetcher::loadPixmapToLabel(const QPixmap& pixmap) {
     CoverInfo coverInfo;
+    coverInfo.type = CoverInfo::NONE;
     coverInfo.source = CoverInfo::USER_SELECTED;
 
     loadingProgressBar->setVisible(false);
     statusMessage->clear();
     statusMessage->setVisible(true);
 
-    m_fetchedCoverArtByteArrays = data;
-    m_pWFetchedCoverArtLabel->loadData(
-            m_fetchedCoverArtByteArrays); // This data loaded because for full size.
-    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, fetchedCoverArtPixmap);
+    m_pWFetchedCoverArtLabel->setCoverArt(coverInfo, pixmap);
 
-    checkBoxCover->setEnabled(!data.isNull());
+    checkBoxCover->setEnabled(!pixmap.isNull());
 }
 
-void DlgTagFetcher::getCoverArt(const QString& url) {
+void DlgTagFetcher::getCoverArt(const QUuid& albumReleaseId, const QString& url) {
     loadingProgressBar->setFormat(tr("Cover art found, receiving image."));
     loadingProgressBar->setValue(kPercentForCoverArtImageTask);
-    m_tagFetcher.startFetchCoverArtImage(url);
+    m_tagFetcher.startFetchCoverArtImage(albumReleaseId, url);
 }
 
 void DlgTagFetcher::slotCoverArtLinkNotFound() {

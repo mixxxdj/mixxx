@@ -2,6 +2,7 @@
 
 #include "engine/channels/enginechannel.h"
 #include "mixer/baseplayer.h"
+#include "preferences/colorpalettesettings.h"
 #include "preferences/usersettings.h"
 #include "track/replaygain.h"
 #include "track/track_decl.h"
@@ -14,14 +15,15 @@
 class EngineMixer;
 class ControlObject;
 class ControlProxy;
+class ControlEncoder;
 class EffectsManager;
 class QString;
 class EngineDeck;
 
 constexpr int kUnreplaceDelay = 500;
 
-// Interface for not leaking implementation details of BaseTrackPlayer into the
-// rest of Mixxx. Also makes testing a lot easier.
+/// Interface for not leaking implementation details of BaseTrackPlayer into the
+/// rest of Mixxx. Also makes testing a lot easier.
 class BaseTrackPlayer : public BasePlayer {
     Q_OBJECT
   public:
@@ -40,15 +42,14 @@ class BaseTrackPlayer : public BasePlayer {
     virtual bool isTrackMenuControlAvailable() {
         return false;
     };
-    virtual void ensureStarControlsArePrepared(){};
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
     virtual void slotCloneFromGroup(const QString& group) = 0;
     virtual void slotCloneDeck() = 0;
     virtual void slotEjectTrack(double) = 0;
-    virtual void slotSetTrackRating(int){};
     virtual void slotSetAndConfirmTrackMenuControl(bool){};
+    virtual void slotTrackRatingChangeRequest(int){};
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -58,7 +59,6 @@ class BaseTrackPlayer : public BasePlayer {
     void noVinylControlInputConfigured();
     void trackRatingChanged(int rating);
     void trackMenuChangeRequest(bool show);
-    void trackRatingChangeRequest(int change);
 };
 
 class BaseTrackPlayerImpl : public BaseTrackPlayer {
@@ -88,12 +88,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     /// PushButtons persist skin reload, connected widgets don't, i.e. the
     /// connection is removed on skin reload and available again afterwards.
     bool isTrackMenuControlAvailable() final;
-
-    /// Controls to change the star rating.
-    /// Created on request only, because we need them only when there is
-    /// a star rating widget for this player.
-    void ensureStarControlsArePrepared() final;
-
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
@@ -109,9 +103,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     /// to compensate so there is no audible change in volume.
     void slotAdjustReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
-    void slotSetTrackRating(int rating) final;
+    void slotTrackColorSelector(int steps);
+
     /// Called via signal from WTrackProperty. Just set and confirm as requested.
     void slotSetAndConfirmTrackMenuControl(bool visible) final;
+    /// Slot for change signals from WStarRating (absolute values)
+    void slotTrackRatingChangeRequest(int rating) final;
     void slotPlayToggled(double);
 
   private slots:
@@ -122,6 +119,8 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotLoadTrackFromDeck(double deck);
     void slotLoadTrackFromSampler(double sampler);
     void slotTrackColorChangeRequest(double value);
+    /// Slot for change signals from up/down controls (relative values)
+    void slotTrackRatingChangeRequestRelative(int change);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
     void slotWaveformZoomUp(double pressed);
@@ -162,6 +161,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // Track color control
     std::unique_ptr<ControlObject> m_pTrackColor;
+    std::unique_ptr<ControlPushButton> m_pTrackColorPrev;
+    std::unique_ptr<ControlPushButton> m_pTrackColorNext;
+    std::unique_ptr<ControlEncoder> m_pTrackColorSelect;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;

@@ -6,6 +6,7 @@
 
 #include "shaders/patternshader.h"
 #include "util/class.h"
+#include "util/opengltexture2d.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 #include "waveform/renderers/allshader/waveformrenderer.h"
 
@@ -37,7 +38,7 @@ class allshader::WaveformRendererPreroll : public allshader::WaveformRenderer {
     QColor m_color;
     float m_markerBreadth{};
     float m_markerLength{};
-    std::unique_ptr<QOpenGLTexture> m_pTexture;
+    OpenGLTexture2D m_texture;
 
     bool m_isSlipRenderer;
 

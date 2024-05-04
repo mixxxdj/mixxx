@@ -353,7 +353,7 @@ void WTrackTableView::initTrackMenu() {
     // after removing tracks from the view via track menu, restore a usable
     // selection/currentIndex for navigation via keyboard & controller
     connect(m_pTrackMenu,
-            &WTrackMenu::restoreCurrentIndex,
+            &WTrackMenu::restoreCurrentViewStateOrIndex,
             this,
             &WTrackTableView::slotrestoreCurrentIndex);
 }
@@ -468,7 +468,7 @@ void WTrackTableView::slotDeleteTracksFromDisk() {
     saveCurrentIndex();
     m_pTrackMenu->loadTrackModelIndices(indices);
     m_pTrackMenu->slotRemoveFromDisk();
-    // WTrackmenu emits restoreCurrentIndex()
+    // WTrackmenu emits restoreCurrentViewStateOrIndex()
 }
 
 void WTrackTableView::slotUnhide() {
@@ -516,7 +516,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     // Create the right-click menu
     m_pTrackMenu->popup(event->globalPos());
-    // WTrackmenu emits restoreCurrentIndex() if required
+    // WTrackmenu emits restoreCurrentViewStateOrIndex() if required
 }
 
 void WTrackTableView::onSearch(const QString& text) {
@@ -576,7 +576,6 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
         return;
     }
     //qDebug() << "MouseMoveEvent";
-    // Iterate over selected rows and append each item's location url to a list.
 
     if (DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         // Iterate over selected rows and append each item's location url to a list.
@@ -639,15 +638,15 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event) {
-    TrackModel* trackModel = getTrackModel();
+    TrackModel* pTrackModel = getTrackModel();
 
     // We only do things to the TrackModel in this method so if we don't have
     // one we should just bail.
-    if (!trackModel) {
+    if (!pTrackModel) {
         return;
     }
 
-    if (!event->mimeData()->hasUrls() || trackModel->isLocked()) {
+    if (!event->mimeData()->hasUrls() || pTrackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -677,105 +676,26 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
 
     // Drag and drop within this widget (track reordering)
     if (event->source() == this &&
-            trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
         // Note the above code hides an ambiguous case when a
         // playlist is empty. For that reason, we can't factor that
         // code out to be common for both internal reordering
         // and external drag-and-drop. With internal reordering,
         // you can't have an empty playlist. :)
 
-        //qDebug() << "track reordering" << __FILE__ << __LINE__;
-
-        // Save a list of row (just plain ints) so we don't get screwed over
+        // Save a list of rows (just plain ints) so we don't get screwed over
         // when the QModelIndexes all become invalid (eg. after moveTrack()
         // or addTrack())
-        const QModelIndexList indices = getSelectedRows();
-
-        QList<int> selectedRows;
-        for (const QModelIndex& idx : indices) {
-            selectedRows.append(idx.row());
-        }
-
-        // Note: The biggest subtlety in the way I've done this track reordering code
-        // is that as soon as we've moved ANY track, all of our QModelIndexes probably
-        // get screwed up. The starting point for the logic below is to say screw it to
-        // the QModelIndexes, and just keep a list of row numbers to work from. That
-        // ends up making the logic simpler and the behavior totally predictable,
-        // which lets us do nice things like "restore" the selection model.
-
-        // The model indices are sorted so that we remove the tracks from the table
-        // in ascending order. This is necessary because if track A is above track B in
-        // the table, and you remove track A, the model index for track B will change.
-        // Sorting the indices first means we don't have to worry about this.
-        //std::sort(m_selectedIndices.begin(), m_selectedIndices.end(), std::greater<QModelIndex>());
-        std::sort(selectedRows.begin(), selectedRows.end());
-        int maxRow = 0;
-        int minRow = 0;
-        if (!selectedRows.isEmpty()) {
-            maxRow = selectedRows.last();
-            minRow = selectedRows.first();
-        }
-
-        // Destination row, if destIndex is invalid we set it to last row + 1
-        int destRow = destIndex.row() < 0 ? model()->rowCount() : destIndex.row();
-
-        int selectedRowCount = selectedRows.count();
-        int selectionRestoreStartRow = destRow;
-
-        // Adjust first row of new selection
-        if (destRow >= minRow && destRow <= maxRow) {
-            // If you drag a contiguous selection of multiple tracks and drop
-            // them somewhere inside that same selection, do nothing.
+        QList<int> selectedRows = getSelectedRowNumbers();
+        if (selectedRows.isEmpty()) {
             return;
-        } else {
-            if (destRow < minRow) {
-                // If we're moving the tracks _up_,
-                // then reverse the order of the row selection
-                // to make the algorithm below work as it is
-                std::sort(selectedRows.begin(),
-                      selectedRows.end(),
-                      std::greater<int>());
-            } else {
-               if (destRow > maxRow) {
-                   // If we're moving the tracks _down_,
-                   // adjust the first row to reselect
-                   selectionRestoreStartRow =
-                        selectionRestoreStartRow - selectedRowCount;
-                }
-            }
         }
 
-        // For each row that needs to be moved...
-        while (!selectedRows.isEmpty()) {
-            int movedRow = selectedRows.takeFirst(); // Remember it's row index
-            // Move it
-            trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
-
-            // Move the row indices for rows that got bumped up
-            // into the void we left, or down because of the new spot
-            // we're taking.
-            for (int i = 0; i < selectedRows.count(); i++) {
-                if ((selectedRows[i] > movedRow) && (
-                    (destRow > selectedRows[i]) )) {
-                    selectedRows[i] = selectedRows[i] - 1;
-                } else if ((selectedRows[i] < movedRow) &&
-                            (destRow < selectedRows[i])) {
-                    selectedRows[i] = selectedRows[i] + 1;
-                }
-            }
-        }
-
-
-        // Highlight the moved rows again (restoring the selection)
-        //QModelIndex newSelectedIndex = destIndex;
-        for (int i = 0; i < selectedRowCount; i++) {
-            this->selectionModel()->select(model()->index(selectionRestoreStartRow + i, 0),
-                                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
-        }
+        moveRows(selectedRows, destIndex.row());
     } else { // Drag and drop inside Mixxx is only for few rows, bulks happen here
         // Reset the selected tracks (if you had any tracks highlighted, it
         // clears them)
-        this->selectionModel()->clear();
+        selectionModel()->clear();
 
         // Have to do this here because the index is invalid after
         // addTrack
@@ -807,18 +727,19 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             for (const auto& fileInfo : trackFileInfos) {
                 trackLocations.append(fileInfo.location());
             }
-            numNewRows = trackModel->addTracks(destIndex, trackLocations);
+            numNewRows = pTrackModel->addTracks(destIndex, trackLocations);
             DEBUG_ASSERT(numNewRows >= 0);
             DEBUG_ASSERT(numNewRows <= trackFileInfos.size());
         }
 
         // Create the selection, but only if the track model supports
         // reordering. (eg. crates don't support reordering/indexes)
-        if (trackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+        if (pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            // TODO Also set current index to have good starting point for navigation?
             for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
-                this->selectionModel()->select(model()->index(i, 0),
-                                               QItemSelectionModel::Select |
-                                               QItemSelectionModel::Rows);
+                selectionModel()->select(model()->index(i, 0),
+                        QItemSelectionModel::Select |
+                                QItemSelectionModel::Rows);
             }
         }
     }
@@ -835,6 +756,16 @@ QModelIndexList WTrackTableView::getSelectedRows() const {
         return {};
     }
     return pSelectionModel->selectedRows();
+}
+
+QList<int> WTrackTableView::getSelectedRowNumbers() const {
+    QModelIndexList indices = getSelectedRows();
+    QList<int> selectedRows;
+    for (const QModelIndex& idx : indices) {
+        selectedRows.append(idx.row());
+    }
+    std::sort(selectedRows.begin(), selectedRows.end());
+    return selectedRows;
 }
 
 TrackModel* WTrackTableView::getTrackModel() const {
@@ -884,13 +815,14 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
         return;
     }
 
+    const auto prevIdx = currentIndex();
+
     const QList<int> rows = trackModel->pasteTracks(index);
     if (rows.empty()) {
         return;
     }
 
     updateGeometries();
-
     const auto lastVisibleRow = rowAt(height());
 
     // Use selectRow to scroll to the first or last pasted row. We would use
@@ -902,11 +834,189 @@ void WTrackTableView::pasteTracks(const QModelIndex& index) {
         selectRow(rows.front());
     }
 
+    const auto idx = prevIdx.siblingAtRow(rows.back());
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (pSelectionModel && idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx,
+                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
+    }
+
     // Select all the rows that we pasted
     for (const auto row : rows) {
         selectionModel()->select(model()->index(row, 0),
                 QItemSelectionModel::Select | QItemSelectionModel::Rows);
     }
+}
+
+void WTrackTableView::moveRows(QList<int> selectedRowsIn, int destRow) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (!pTrackModel) {
+        return;
+    }
+    if (selectedRowsIn.isEmpty()) {
+        return;
+    }
+
+    // Note(RRyan/Max Linke):
+    // The biggest subtlety in the way I've done this track reordering code
+    // is that as soon as we've moved ANY track, all of our QModelIndexes probably
+    // get screwed up. The starting point for the logic below is to say screw
+    // the QModelIndexes, and just keep a list of row numbers to work from.
+    // That ends up making the logic simpler and the behavior totally predictable,
+    // which lets us do nice things like "restore" the selection model.
+
+    // The model indices are sorted so that we remove the tracks from the table
+    // in ascending order. This is necessary because if track A is above track B in
+    // the table, and you remove track A, the model index for track B will change.
+    // Sorting the indices first means we don't have to worry about this.
+    QList<int> selectedRows = std::move(selectedRowsIn);
+
+    // An invalid destination row means we're supposed to move the selection to the end.
+    // Happens when we drop tracks into the void below the last track.
+    destRow = destRow < 0 ? model()->rowCount() : destRow;
+    // Required for refocusing the correct column and restoring the selection
+    // after we moved. Use 0 if the index is invalid for some reason.
+    int idxCol = std::max(0, currentIndex().column());
+    int selectedRowCount = selectedRows.count();
+    int selectionRestoreStartRow = destRow;
+    int firstSelRow = selectedRows.first();
+    int lastSelRow = selectedRows.last();
+
+    if (destRow == firstSelRow && selectedRowCount == 1) {
+        return; // no-op
+    }
+
+    // Adjust first row of new selection
+    if (destRow >= firstSelRow && destRow <= lastSelRow) {
+        // Destination is inside the selection.
+        if (selectedRowCount == lastSelRow - firstSelRow + 1) {
+            // If we drag a contiguous selection of multiple tracks and drop them
+            // somewhere inside that same selection, we obviously have nothing to do.
+            // This is also a good way to abort accidental drags.
+            return;
+        }
+        // Non-continuous selection:
+        if (destRow == firstSelRow) {
+            // Consolidate selection at first selected row.
+            // Remove consecutive rows (they are already in place) until we find
+            // the first gap in the selection.
+            // Use the row after that continuous part as destination.
+            while (destRow == firstSelRow) {
+                selectedRows.removeFirst();
+                firstSelRow = selectedRows.first();
+                destRow++;
+            }
+        } else {
+            return;
+        }
+    }
+
+    if (destRow < firstSelRow) {
+        // If we're moving the tracks UP, reverse the order of the row selection
+        // to make the algorithm below work as it is
+        std::sort(selectedRows.begin(),
+                selectedRows.end(),
+                std::greater<int>());
+    } else { // Down
+        if (destRow > lastSelRow) {
+            // If we're moving the tracks DOWN, adjust the first row to reselect
+            selectionRestoreStartRow =
+                    selectionRestoreStartRow - selectedRowCount;
+        }
+    }
+
+    // For each row that needs to be moved...
+    while (!selectedRows.isEmpty()) {
+        int movedRow = selectedRows.takeFirst(); // Remember it's row index
+        // Move it
+        pTrackModel->moveTrack(model()->index(movedRow, 0), model()->index(destRow, 0));
+
+        // Move the row indices for rows that got bumped up
+        // into the void we left, or down because of the new spot
+        // we're taking.
+        for (int i = 0; i < selectedRows.count(); i++) {
+            if ((selectedRows[i] > movedRow) && ((destRow > selectedRows[i]))) {
+                selectedRows[i] = selectedRows[i] - 1;
+            } else if ((selectedRows[i] < movedRow) &&
+                    (destRow < selectedRows[i])) {
+                selectedRows[i] = selectedRows[i] + 1;
+            }
+        }
+    }
+
+    // Set current index.
+    // TODO If we moved down, pick the last selected row?
+    // int idxRow = destRow < firstSelRow
+    //         ? selectionRestoreStartRow
+    //         : selectionRestoreStartRow + selectedRowCount - 1;
+    const auto idx = model()->index(selectionRestoreStartRow, idxCol);
+    QItemSelectionModel* pSelectionModel = selectionModel();
+    if (pSelectionModel && idx.isValid()) {
+        pSelectionModel->setCurrentIndex(idx,
+                QItemSelectionModel::SelectCurrent | QItemSelectionModel::Select);
+    }
+
+    // Select the moved rows (restore previous selection)
+    for (int i = 0; i < selectedRowCount; i++) {
+        selectionModel()->select(model()->index(selectionRestoreStartRow + i, idxCol),
+                QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
+}
+
+void WTrackTableView::moveSelectedTracks(QKeyEvent* event) {
+    QList<int> selectedRows = getSelectedRowNumbers();
+    if (selectedRows.isEmpty()) {
+        return;
+    }
+
+    bool up = event->key() == Qt::Key_Up;
+    bool pageUp = event->key() == Qt::Key_PageUp;
+    bool down = event->key() == Qt::Key_Down;
+    bool pageDown = event->key() == Qt::Key_PageDown;
+    bool top = event->key() == Qt::Key_Home;
+    bool bottom = event->key() == Qt::Key_End;
+
+    // Check if we have a continuous selection.
+    int firstSelRow = selectedRows.first();
+    int lastSelRow = selectedRows.last();
+    int rowCount = model()->rowCount();
+    bool continuous = selectedRows.length() == lastSelRow - firstSelRow + 1;
+    if (continuous &&
+            (((up || pageUp || top) && firstSelRow == 0) ||
+                    ((down || pageDown || bottom) && lastSelRow == rowCount - 1))) {
+        // Continuous selection with no more rows to skip in the desired
+        // direction, further Up/Down would wrap around the current index.
+        // Ignore.
+        return;
+    }
+
+    int destRow = 0;
+    if (top) {
+        destRow = 0;
+    } else if (bottom || ((bottom || down || pageDown) && lastSelRow == rowCount - 1)) {
+        // In case of End or non-continuous and lastSelRow already at the end
+        // we simply paste at the end by invalidating the index.
+        destRow = -1;
+    } else if (up || pageUp) {
+        // currentIndex can be anywhere inside or outside the selection.
+        // Set it top or bottom of the selection, then pass through the key event
+        // to get us the desired destination index.
+        setCurrentIndex(model()->index(firstSelRow, currentIndex().column()));
+        QTableView::keyPressEvent(event);
+        destRow = currentIndex().row();
+    } else {
+        // Same when moving down.
+        setCurrentIndex(model()->index(lastSelRow, currentIndex().column()));
+        QTableView::keyPressEvent(event);
+        destRow = currentIndex().row() + 1;
+        if (pageDown && destRow >= rowCount) {
+            // PageDown hit the end of the list. Explicitly paste at the
+            destRow = -1;
+        } else {
+        }
+    }
+
+    moveRows(selectedRows, destRow);
 }
 
 void WTrackTableView::keyPressEvent(QKeyEvent* event) {
@@ -940,8 +1050,8 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
     default:
         break;
     }
-    TrackModel* trackModel = getTrackModel();
-    if (trackModel && !trackModel->isLocked()) {
+    TrackModel* pTrackModel = getTrackModel();
+    if (pTrackModel && !pTrackModel->isLocked()) {
         if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
             removeSelectedTracks();
             return;
@@ -956,6 +1066,17 @@ void WTrackTableView::keyPressEvent(QKeyEvent* event) {
         }
         if (event->matches(QKeySequence::Paste)) {
             pasteTracks(currentIndex());
+            return;
+        }
+        if (event->modifiers().testFlag(Qt::AltModifier) &&
+                (event->key() == Qt::Key_Up ||
+                        event->key() == Qt::Key_Down ||
+                        event->key() == Qt::Key_PageUp ||
+                        event->key() == Qt::Key_PageDown ||
+                        event->key() == Qt::Key_Home ||
+                        event->key() == Qt::Key_End) &&
+                pTrackModel->hasCapabilities(TrackModel::Capability::Reorder)) {
+            moveSelectedTracks(event);
             return;
         }
         if (event->key() == Qt::Key_Escape) {
@@ -1019,20 +1140,33 @@ void WTrackTableView::hideOrRemoveSelectedTracks() {
     }
 
     TrackModel::Capability cap;
-    // Hide is the primary action if allowed. Else we test for remove capability
-    if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-        cap = TrackModel::Capability::Hide;
-    } else if (pTrackModel->isLocked()) { // Locked playlists and crates
-        return;
-    }
+    // Remove is the primary action if allowed (playlists and crates).
+    // Else we test for remove capability.
+    // In the track menu the hotkey is shown for 'Remove ..' actions, or if there
+    // is no remove action, for 'Hide ..'. Hence, to match the hotkey, do Hide
+    // only if the track model doesn't support any Remove actions.
     if (pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
         cap = TrackModel::Capability::Remove;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
         cap = TrackModel::Capability::RemoveCrate;
     } else if (pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
         cap = TrackModel::Capability::RemovePlaylist;
-    } else {
+    } else if (pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
+        cap = TrackModel::Capability::Hide;
+    } else { // Locked playlists and crates
         return;
+    }
+
+    switch (cap) {
+    case TrackModel::Capability::Remove:
+    case TrackModel::Capability::RemoveCrate:
+    case TrackModel::Capability::RemovePlaylist: {
+        if (pTrackModel->isLocked()) {
+            return;
+        }
+    default:
+        break;
+    }
     }
 
     if (pTrackModel->getRequireConfirmationToHideRemoveTracks()) {

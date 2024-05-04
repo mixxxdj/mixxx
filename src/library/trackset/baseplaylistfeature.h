@@ -26,6 +26,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
             PlaylistTableModel* pModel,
             const QString& rootViewName,
             const QString& iconName,
+            const QString& countsDurationTableName,
             bool keepHiddenTracks = false);
     ~BasePlaylistFeature() override = default;
 
@@ -81,7 +82,6 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     virtual void updateChildModel(const QSet<int>& playlistIds);
     virtual void clearChildModel();
-    virtual QString fetchPlaylistLabel(int playlistId) = 0;
 
     /// borrows pChild which must not be null, TODO: use gsl::not_null
     virtual void decorateChild(TreeItem* pChild, int playlistId) = 0;
@@ -117,6 +117,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
 
     PlaylistTableModel* m_pPlaylistTableModel;
     QSet<int> m_playlistIdsOfSelectedTrack;
+    const QString m_countsDurationTableName;
 
   private slots:
     void slotTrackSelected(TrackId trackId);
@@ -127,6 +128,7 @@ class BasePlaylistFeature : public BaseTrackSetFeature {
     void connectPlaylistDAO();
     virtual QString getRootViewHtml() const = 0;
     void markTreeItem(TreeItem* pTreeItem);
+    QString fetchPlaylistLabel(int playlistId);
 
     TrackId m_selectedTrackId;
 

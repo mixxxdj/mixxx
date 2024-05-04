@@ -6,13 +6,12 @@
 #include <array>
 
 #include "skin/legacy/skincontext.h"
-#include "util/texture.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "widget/wskincolor.h"
 
 namespace {
-std::unique_ptr<QOpenGLTexture> generateTexture(float markerLength,
+QImage drawPrerollImage(float markerLength,
         float markerBreadth,
         float devicePixelRatio,
         QColor color) {
@@ -54,7 +53,7 @@ std::unique_ptr<QOpenGLTexture> generateTexture(float markerLength,
     painter.drawPath(path);
     painter.end();
 
-    return createTexture(image);
+    return image;
 }
 } // anonymous namespace
 
@@ -127,13 +126,13 @@ void WaveformRendererPreroll::paintGL() {
         // has changed size last time.
         m_markerLength = markerLength;
         m_markerBreadth = markerBreadth;
-        m_pTexture = generateTexture(m_markerLength,
+        m_texture.setData(drawPrerollImage(m_markerLength,
                 m_markerBreadth,
                 m_waveformRenderer->getDevicePixelRatio(),
-                m_color);
+                m_color));
     }
 
-    if (!m_pTexture) {
+    if (!m_texture.isStorageAllocated()) {
         return;
     }
 
@@ -153,7 +152,7 @@ void WaveformRendererPreroll::paintGL() {
     m_shader.setUniformValue(matrixLocation, matrix);
     m_shader.setUniformValue(textureLocation, 0);
 
-    m_pTexture->bind();
+    m_texture.bind();
 
     const float end = m_waveformRenderer->getLength();
 
@@ -198,7 +197,7 @@ void WaveformRendererPreroll::paintGL() {
                 (end - x) / markerLength);
     }
 
-    m_pTexture->release();
+    m_texture.release();
 
     m_shader.disableAttributeArray(positionLocation);
     m_shader.disableAttributeArray(texcoordLocation);
