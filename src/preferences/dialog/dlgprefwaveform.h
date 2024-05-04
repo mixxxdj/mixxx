@@ -38,8 +38,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
-    void slotSetUntilNextMarkerShow(int index);
-    void slotSetUntilNextMarkerAlign(int index);
+    void slotSetUntilMarkShowBeats(bool checked);
+    void slotSetUntilMarkShowTime(bool checked);
+    void slotSetUntilMarkAlign(int index);
     void slotSetUntilMarkTextPixelSize(int value);
   signals:
     void reloadUserInterface();
@@ -48,7 +49,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
-    void updateEnableUntilNextMarker();
+    void updateEnableUntilMark();
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

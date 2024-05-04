@@ -312,15 +312,17 @@ void allshader::WaveformRenderMark::paintGL() {
         drawTexture(matrix, drawOffset, 0.f, &m_playPosMarkTexture);
     }
 
-    if (WaveformWidgetFactory::instance()->getUntilNextMarkerShow() != UntilNextMarkerShow::None) {
+    if (WaveformWidgetFactory::instance()->getUntilMarkShowBeats() ||
+            WaveformWidgetFactory::instance()->getUntilMarkShowTime()) {
         updateUntilMark(playPosition, nextMarkPosition);
         drawUntilMark(matrix, currentMarkPoint + 20);
     }
 }
 
 void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, float x) {
-    const auto untilNextMarkerShow = WaveformWidgetFactory::instance()->getUntilNextMarkerShow();
-    const auto untilNextMarkerAlign = WaveformWidgetFactory::instance()->getUntilNextMarkerAlign();
+    const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
+    const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
+    const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const int untilMarkTextPixelSize =
@@ -336,41 +338,34 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     }
     const float ch = m_digitsRenderer.height() / devicePixelRatio;
 
-    float y = untilNextMarkerAlign == Qt::AlignTop ? 0.f
-            : untilNextMarkerAlign == Qt::AlignBottom
+    float y = untilMarkAlign == Qt::AlignTop ? 0.f
+            : untilMarkAlign == Qt::AlignBottom
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
-        if (untilNextMarkerAlign != Qt::AlignTop) {
+    if (untilMarkShowBeats && untilMarkShowTime) {
+        if (untilMarkAlign != Qt::AlignTop) {
             y -= ch;
         }
     } else {
-        if (untilNextMarkerAlign != Qt::AlignTop && untilNextMarkerAlign != Qt::AlignBottom) {
+        if (untilMarkAlign != Qt::AlignTop && untilMarkAlign != Qt::AlignBottom) {
             // center
             y -= ch / 2.f;
         }
     }
 
-    if (untilNextMarkerShow == UntilNextMarkerShow::Beats ||
-            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime ||
-            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
-        const float w = m_digitsRenderer.draw(matrix,
+    if (untilMarkShowBeats) {
+        m_digitsRenderer.draw(matrix,
                 x,
                 y,
                 QString::number(m_beatsUntilMark),
                 devicePixelRatio);
-        if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime) {
-            x += w + std::round(static_cast<float>(m_untilMarkTextPixelSize) * 0.75f);
-        }
-        if (untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
+        if (untilMarkShowTime) {
             y += ch;
         }
     }
 
-    if (untilNextMarkerShow == UntilNextMarkerShow::Time ||
-            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTime ||
-            untilNextMarkerShow == UntilNextMarkerShow::BeatsAndTimeMultiline) {
+    if (untilMarkShowTime) {
         m_digitsRenderer.draw(matrix,
                 x,
                 y,

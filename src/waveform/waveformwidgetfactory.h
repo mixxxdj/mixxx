@@ -55,14 +55,6 @@ class WaveformWidgetHolder {
 
 //########################################
 
-enum class UntilNextMarkerShow {
-    None,
-    Beats,
-    Time,
-    BeatsAndTime,
-    BeatsAndTimeMultiline
-};
-
 class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFactory> {
     Q_OBJECT
   public:
@@ -105,24 +97,28 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
         return findHandleIndexFromType(m_type);
     }
     int findHandleIndexFromType(WaveformWidgetType::Type type);
-    bool widgetTypeSupportsUntilNextMarker() const;
+    bool widgetTypeSupportsUntilMark() const;
 
-    void setUntilNextMarkerShow(UntilNextMarkerShow value);
-    void setUntilNextMarkerAlign(Qt::Alignment align);
+    void setUntilMarkShowBeats(bool value);
+    void setUntilMarkShowTime(bool value);
+    void setUntilMarkAlign(Qt::Alignment align);
     void setUntilMarkTextPixelSize(int value);
 
-    UntilNextMarkerShow getUntilNextMarkerShow() const {
-        return m_untilNextMarkerShow;
+    bool getUntilMarkShowBeats() const {
+        return m_untilMarkShowBeats;
     }
-    Qt::Alignment getUntilNextMarkerAlign() const {
-        return m_untilNextMarkerAlign;
+    bool getUntilMarkShowTime() const {
+        return m_untilMarkShowTime;
+    }
+    Qt::Alignment getUntilMarkAlign() const {
+        return m_untilMarkAlign;
     }
     int getUntilMarkTextPixelSize() const {
         return m_untilMarkTextPixelSize;
     }
 
-    static Qt::Alignment toUntilNextMarkerAlign(int index);
-    static int toUntilNextMarkerAlignIndex(Qt::Alignment align);
+    static Qt::Alignment toUntilMarkAlign(int index);
+    static int toUntilMarkAlignIndex(Qt::Alignment align);
 
     /// Returns the desired surface format for the OpenGLWindow
     static QSurfaceFormat getSurfaceFormat(UserSettingsPointer config = nullptr);
@@ -220,8 +216,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
-    UntilNextMarkerShow m_untilNextMarkerShow;
-    Qt::Alignment m_untilNextMarkerAlign;
+    bool m_untilMarkShowBeats;
+    bool m_untilMarkShowTime;
+    Qt::Alignment m_untilMarkAlign;
     int m_untilMarkTextPixelSize;
 
     bool m_openGlAvailable;

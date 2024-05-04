@@ -41,16 +41,10 @@ DlgPrefWaveform::DlgPrefWaveform(
         defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
-    // Populate untilNextMarker options
-    untilNextMarkerShowComboBox->addItem(tr("None"));
-    untilNextMarkerShowComboBox->addItem(tr("Beats"));
-    untilNextMarkerShowComboBox->addItem(tr("Time"));
-    untilNextMarkerShowComboBox->addItem(tr("Beats + Time"));
-    untilNextMarkerShowComboBox->addItem(tr("Beats + Time (multi-line)"));
-
-    untilNextMarkerAlignComboBox->addItem(tr("Top"));
-    untilNextMarkerAlignComboBox->addItem(tr("Center"));
-    untilNextMarkerAlignComboBox->addItem(tr("Bottom"));
+    // Populate untilMark options
+    untilMarkAlignComboBox->addItem(tr("Top"));
+    untilMarkAlignComboBox->addItem(tr("Center"));
+    untilMarkAlignComboBox->addItem(tr("Bottom"));
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
@@ -142,14 +136,18 @@ DlgPrefWaveform::DlgPrefWaveform(
             &QSlider::valueChanged,
             this,
             &DlgPrefWaveform::slotSetPlayMarkerPosition);
-    connect(untilNextMarkerShowComboBox,
+    connect(untilMarkShowBeatsCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowBeats);
+    connect(untilMarkShowTimeCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetUntilMarkShowTime);
+    connect(untilMarkAlignComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
-            &DlgPrefWaveform::slotSetUntilNextMarkerShow);
-    connect(untilNextMarkerAlignComboBox,
-            QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this,
-            &DlgPrefWaveform::slotSetUntilNextMarkerAlign);
+            &DlgPrefWaveform::slotSetUntilMarkAlign);
     connect(untilMarkTextPixelSizeSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
@@ -176,7 +174,7 @@ void DlgPrefWaveform::slotUpdate() {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
 
-    updateEnableUntilNextMarker();
+    updateEnableUntilMark();
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -194,11 +192,11 @@ void DlgPrefWaveform::slotUpdate() {
     beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
     beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
-    untilNextMarkerShowComboBox->setCurrentIndex(
-            static_cast<int>(factory->getUntilNextMarkerShow()));
-    untilNextMarkerAlignComboBox->setCurrentIndex(
-            WaveformWidgetFactory::toUntilNextMarkerAlignIndex(
-                    factory->getUntilNextMarkerAlign()));
+    untilMarkShowBeatsCheckBox->setChecked(factory->getUntilMarkShowBeats());
+    untilMarkShowTimeCheckBox->setChecked(factory->getUntilMarkShowTime());
+    untilMarkAlignComboBox->setCurrentIndex(
+            WaveformWidgetFactory::toUntilMarkAlignIndex(
+                    factory->getUntilMarkAlign()));
     untilMarkTextPixelSizeSpinBox->setValue(factory->getUntilMarkTextPixelSize());
 
     // By default we set RGB woverview = "2"
@@ -285,13 +283,14 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     int handleIndex = waveformTypeComboBox->itemData(index).toInt();
     WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(handleIndex);
 
-    updateEnableUntilNextMarker();
+    updateEnableUntilMark();
 }
 
-void DlgPrefWaveform::updateEnableUntilNextMarker() {
-    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilNextMarker();
-    untilNextMarkerAlignComboBox->setEnabled(enabled);
-    untilNextMarkerShowComboBox->setEnabled(enabled);
+void DlgPrefWaveform::updateEnableUntilMark() {
+    const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark();
+    untilMarkShowBeatsCheckBox->setEnabled(enabled);
+    untilMarkShowTimeCheckBox->setEnabled(enabled);
+    untilMarkAlignComboBox->setEnabled(enabled);
     untilMarkTextPixelSizeSpinBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
@@ -354,14 +353,17 @@ void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
     WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
-void DlgPrefWaveform::slotSetUntilNextMarkerShow(int index) {
-    WaveformWidgetFactory::instance()->setUntilNextMarkerShow(
-            static_cast<UntilNextMarkerShow>(index));
+void DlgPrefWaveform::slotSetUntilMarkShowBeats(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowBeats(checked);
 }
 
-void DlgPrefWaveform::slotSetUntilNextMarkerAlign(int index) {
-    WaveformWidgetFactory::instance()->setUntilNextMarkerAlign(
-            WaveformWidgetFactory::toUntilNextMarkerAlign(index));
+void DlgPrefWaveform::slotSetUntilMarkShowTime(bool checked) {
+    WaveformWidgetFactory::instance()->setUntilMarkShowTime(checked);
+}
+
+void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
+    WaveformWidgetFactory::instance()->setUntilMarkAlign(
+            WaveformWidgetFactory::toUntilMarkAlign(index));
 }
 
 void DlgPrefWaveform::slotSetUntilMarkTextPixelSize(int value) {
