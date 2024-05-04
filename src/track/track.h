@@ -336,7 +336,7 @@ class Track : public QObject {
         // lock thread-unsafe copy constructors of QList
         return m_stemInfo;
     }
-    // Setter is only available internally. See setStemPointsWhileLocked
+    // Setter is only available internally. See setStemInfosWhileLocked
 #endif
 
     enum class ImportStatus {
@@ -514,7 +514,7 @@ class Track : public QObject {
 #ifdef __STEM__
     /// Sets stem info and returns a boolean to indicate if stems were updated.
     /// Only supposed to be called while the caller guards this a lock.
-    bool setStemPointsWhileLocked(const QList<StemInfo>& stemInfo);
+    bool setStemInfosWhileLocked(const QList<StemInfo>& stemInfo);
 
     /// Imports pending stem info from a stemInfoImporter and returns a boolean to
     /// indicate if stems were updated. Only supposed to be called while the

@@ -1297,7 +1297,7 @@ bool Track::importPendingCueInfosWhileLocked() {
 }
 
 #ifdef __STEM__
-bool Track::setStemPointsWhileLocked(const QList<StemInfo>& stemInfos) {
+bool Track::setStemInfosWhileLocked(const QList<StemInfo>& stemInfos) {
     m_stemInfo = stemInfos;
     return true;
 }
@@ -1307,7 +1307,7 @@ bool Track::importPendingStemInfosWhileLocked() {
             mixxx::StemInfoImporter::importStemInfos(
                     getLocation());
 
-    return setStemPointsWhileLocked(stemInfos);
+    return setStemInfosWhileLocked(stemInfos);
 }
 #endif
 
@@ -1732,7 +1732,7 @@ void Track::updateStreamInfoFromSource(
     const bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
     const bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();
 #ifdef __STEM__
-    const bool importStemInfos = mixxx::StemInfoImporter::isStemFile(getLocation());
+    const bool importStemInfos = mixxx::StemInfoImporter::maybeStemFile(getLocation());
 #endif
 
     if (!importBeats && !importCueInfos

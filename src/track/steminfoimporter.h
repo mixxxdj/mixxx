@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QMimeType>
+
 #include "track/steminfo.h"
 
 namespace mixxx {
@@ -10,7 +12,10 @@ class StemInfoImporter {
     static QList<StemInfo> importStemInfos(
             const QString& filePath);
 
-    static bool isStemFile(
+    static bool maybeStemFile(
+            const QString& aFileName, QMimeType mimeType = QMimeType());
+
+    static bool hasStemAtom(
             const QString& aFileName);
 };
 
