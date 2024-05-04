@@ -80,7 +80,7 @@ bool isShowUntilNextPositionControl(const QString& positionControl) {
             "outro_start_position"_L1,
             "outro_end_position"_L1};
 #else
-    constexpr std::array list = {QLatin1String{"cue_point"},
+    const std::array list = {QLatin1String{"cue_point"},
             QLatin1String{"intro_start_position"},
             QLatin1String{"intro_end_position"},
             QLatin1String{"outro_start_position"},
