@@ -290,7 +290,9 @@ void DlgPrefWaveform::updateEnableUntilMark() {
     const bool enabled = WaveformWidgetFactory::instance()->widgetTypeSupportsUntilMark();
     untilMarkShowBeatsCheckBox->setEnabled(enabled);
     untilMarkShowTimeCheckBox->setEnabled(enabled);
+    untilMarkAlignLabel->setEnabled(enabled);
     untilMarkAlignComboBox->setEnabled(enabled);
+    untilMarkTextPixelSizeLabel->setEnabled(enabled);
     untilMarkTextPixelSizeSpinBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
