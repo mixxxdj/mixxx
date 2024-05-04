@@ -493,6 +493,16 @@ void allshader::WaveformRenderMark::updateUntilMark(
     auto itB = trackBeats->iteratorFrom(
             mixxx::audio::FramePos::fromEngineSamplePos(nextMarkPosition));
 
+    // itB is the beat at or after the nextMarkPosition.
+    if (itB->toEngineSamplePos() > nextMarkPosition) {
+        // if itB is after nextMarkPosition, the previous beat might be closer
+        // and it the one we are interested in
+        if (nextMarkPosition - (itB - 1)->toEngineSamplePos() <
+                itB->toEngineSamplePos() - nextMarkPosition) {
+            itB--;
+        }
+    }
+
     if (std::abs(itA->toEngineSamplePos() - playPosition) < 1) {
         m_currentBeatPosition = itA->toEngineSamplePos();
         m_beatsUntilMark = std::distance(itA, itB);
