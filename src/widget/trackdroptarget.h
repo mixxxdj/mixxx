@@ -22,8 +22,8 @@ class TrackDropTarget {
         emit trackDropped(filename, group); // clazy:exclude=incorrect-emit
     }
 
-    virtual bool handleDragAndDropEventFromWindow(QEvent* event) {
-        Q_UNUSED(event);
+    virtual bool handleDragAndDropEventFromWindow(QEvent* pEvent) {
+        Q_UNUSED(pEvent);
         return false;
     }
 
