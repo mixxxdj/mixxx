@@ -24,13 +24,13 @@ constexpr qreal SPACE = 3;
 // extra kerning when rendering chars
 constexpr qreal KERNING = 1;
 
-char indexToChar(int index) {
-    const char* str = "0123456789:.";
+constexpr char indexToChar(int index) {
+	constexpr char str[] = "0123456789:.";
     return str[index];
 }
-int charToIndex(QChar ch) {
-    int value = ch.digitValue();
-    if (value != -1) {
+constexpr int charToIndex(QChar ch) {
+    int value = ch.toLatin1() - '0';
+    if (value >= 0 && value <= 9) {
         return value;
     }
     if (ch == ':') {
@@ -39,7 +39,7 @@ int charToIndex(QChar ch) {
     if (ch == '.') {
         return 11;
     }
-    assert(false);
+    DEBUG_ASSERT(false);
     return 11; // fallback to dot
 }
 } // namespace
