@@ -28,7 +28,9 @@ class SeratoTags final {
     }
 
     static double guessTimingOffsetMillis(
-            const QString& filePath, const audio::SignalInfo& signalInfo);
+            const QString& filePath,
+            const QString& fileType,
+            const audio::SignalInfo& signalInfo);
 
     bool isEmpty() const {
         return m_seratoBeatGrid.isEmpty() && m_seratoMarkers.isEmpty() &&
