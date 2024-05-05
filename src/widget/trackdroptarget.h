@@ -1,8 +1,7 @@
 #pragma once
 
+#include <QEvent>
 #include <QString>
-
-class QEvent;
 
 /// Mixin to mark a widget as a drop target for tracks.
 ///
@@ -23,7 +22,7 @@ class TrackDropTarget {
     }
 
     virtual bool handleDragAndDropEventFromWindow(QEvent* pEvent) {
-        Q_UNUSED(pEvent);
+        pEvent->ignore();
         return false;
     }
 
