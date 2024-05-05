@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-04-23" timestamp="1713855934">
+    <release version="2.5.0" type="development" date="2024-05-01" timestamp="1714573883">
       <description>
  <p>
   Features
@@ -704,7 +704,7 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-04-23" timestamp="1713855934">
+    <release version="2.4.1" type="development" date="2024-05-01" timestamp="1714573883">
       <description>
  <p>
   Controller Mappings
@@ -767,6 +767,10 @@
    CMakeLists: Always prefer OpenGL framework on macOS
    #13080
   </li>
+  <li>
+   Use capitalized Mixxx in Windows installer and start menu
+   #13178
+  </li>
  </ul>
  <p>
   Skins
@@ -779,6 +783,9 @@
   <li>
    Tango: Remove unneeded waveform Singleton
    #12938
+  </li>
+  <li>
+   Tango 64: fix Main VU meter
   </li>
   <li>
    Prevent possible crash in customs skins using parallel waveforms
@@ -801,6 +808,11 @@
   <li>
    Polish fx chain controls
    #12805
+  </li>
+  <li>
+   Waveforms: draw loop gradient at the correct position
+   #13061
+   #13060
   </li>
  </ul>
  <p>
@@ -848,6 +860,7 @@
    Require a minimum movement before initiating the drag&amp;drop of tracks
    #13135
    #12902
+   #12979
   </li>
   <li>
    iTunes/Serato/Traktor/Rhythmbox: Print error if library file could not be opened
@@ -923,6 +936,11 @@
    Fix FLAC recording on macOS and Windows
    #10880
    #13154
+  </li>
+  <li>
+   LV Mix EQ: Fix pops when enabling in effect rack
+   #13055
+   #13073
   </li>
  </ul>
 </description>
