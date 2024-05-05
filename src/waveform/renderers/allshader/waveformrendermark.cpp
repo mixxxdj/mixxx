@@ -325,7 +325,6 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     const bool untilMarkShowBeats = WaveformWidgetFactory::instance()->getUntilMarkShowBeats();
     const bool untilMarkShowTime = WaveformWidgetFactory::instance()->getUntilMarkShowTime();
     const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
-    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
     const auto untilMarkTextPointSize =
             WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
