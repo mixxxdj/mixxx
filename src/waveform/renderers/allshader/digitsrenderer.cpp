@@ -94,8 +94,6 @@ void allshader::DigitsRenderer::updateTexture(
             totalTextWidth += metrics.horizontalAdvance(text) + SPACE + SPACE;
         }
         heightWithPadding = std::ceil(maxTextHeight + SPACE + SPACE);
-        qDebug() << "XXXXXX" << retry << maxHeight << maxTextHeight
-                 << heightWithPadding << fontPointSize;
         if (!retry && heightWithPadding > maxHeight) {
             // We need to adjust the font size. Only do this once.
             fontPointSize *= maxHeight / static_cast<float>(heightWithPadding);
