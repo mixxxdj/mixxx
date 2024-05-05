@@ -82,9 +82,11 @@ void allshader::WaveformRenderMark::initializeGL() {
     // Will create textures so requires OpenGL context
     updateMarkImages();
     updatePlayPosMarkTexture();
-    m_untilMarkTextPixelSize = WaveformWidgetFactory::instance()->getUntilMarkTextPixelSize();
-    m_digitsRenderer.generateTexture(
-            m_untilMarkTextPixelSize, m_waveformRenderer->getDevicePixelRatio());
+    const auto untilMarkTextPointSize =
+            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+            getMaxHeightForText(),
+            m_waveformRenderer->getDevicePixelRatio());
 }
 
 void allshader::WaveformRenderMark::drawTexture(
@@ -325,25 +327,25 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     const auto untilMarkAlign = WaveformWidgetFactory::instance()->getUntilMarkAlign();
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
 
-    const int untilMarkTextPixelSize =
-            WaveformWidgetFactory::instance()->getUntilMarkTextPixelSize();
-    if (untilMarkTextPixelSize != m_untilMarkTextPixelSize) {
-        m_untilMarkTextPixelSize = untilMarkTextPixelSize;
-        m_digitsRenderer.generateTexture(m_untilMarkTextPixelSize,
-                m_waveformRenderer->getDevicePixelRatio());
-    }
+    const auto untilMarkTextPointSize =
+            WaveformWidgetFactory::instance()->getUntilMarkTextPointSize();
+    m_digitsRenderer.updateTexture(untilMarkTextPointSize,
+            getMaxHeightForText(),
+            m_waveformRenderer->getDevicePixelRatio());
 
     if (m_timeUntilMark == 0.0) {
         return;
     }
-    const float ch = m_digitsRenderer.height() / devicePixelRatio;
+    const float ch = m_digitsRenderer.height();
 
     float y = untilMarkAlign == Qt::AlignTop ? 0.f
             : untilMarkAlign == Qt::AlignBottom
             ? m_waveformRenderer->getBreadth() - ch
             : m_waveformRenderer->getBreadth() / 2.f;
 
-    if (untilMarkShowBeats && untilMarkShowTime) {
+    bool multiLine = untilMarkShowBeats && untilMarkShowTime && ch * 2.f < getMaxHeightForText();
+
+    if (multiLine) {
         if (untilMarkAlign != Qt::AlignTop) {
             y -= ch;
         }
@@ -355,13 +357,14 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
     }
 
     if (untilMarkShowBeats) {
-        m_digitsRenderer.draw(matrix,
+        const auto w = m_digitsRenderer.draw(matrix,
                 x,
                 y,
-                QString::number(m_beatsUntilMark),
-                devicePixelRatio);
-        if (untilMarkShowTime) {
+                QString::number(m_beatsUntilMark));
+        if (multiLine) {
             y += ch;
+        } else {
+            x += w + ch * 0.75f;
         }
     }
 
@@ -369,8 +372,7 @@ void allshader::WaveformRenderMark::drawUntilMark(const QMatrix4x4& matrix, floa
         m_digitsRenderer.draw(matrix,
                 x,
                 y,
-                timeSecToString(m_timeUntilMark),
-                devicePixelRatio);
+                timeSecToString(m_timeUntilMark));
     }
 }
 
@@ -519,4 +521,8 @@ void allshader::WaveformRenderMark::updateUntilMark(
     m_timeUntilMark = std::max(0.0,
             remainingTime * (nextMarkPosition - playPosition) /
                     (endPosition - playPosition));
+}
+
+float allshader::WaveformRenderMark::getMaxHeightForText() const {
+    return m_waveformRenderer->getBreadth() / 3;
 }

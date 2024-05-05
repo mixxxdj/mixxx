@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QPainterPath>
 
+#include "./util/assert.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
 #include "waveform/renderers/allshader/vertexdata.h"
 
@@ -52,30 +53,64 @@ void allshader::DigitsRenderer::init() {
 }
 
 float allshader::DigitsRenderer::height() const {
-    return static_cast<float>(m_texture.height());
+    return m_height;
 }
 
-void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float devicePixelRatio) {
-    QFont font;
-    font.setFamily("Open Sans");
-    font.setPixelSize(fontPixelSize);
-
-    QFontMetricsF metrics{font};
-
-    qreal totalTextWidth = 0;
-    qreal maxTextHeight = 0;
-    for (int i = 0; i < NUM_CHARS; i++) {
-        assert(charToIndex(indexToChar(i)) == i);
-        const QString text(indexToChar(i));
-        const auto rect = metrics.tightBoundingRect(text);
-        maxTextHeight = std::max(maxTextHeight, rect.height());
-        totalTextWidth += metrics.horizontalAdvance(text) + SPACE + SPACE;
+void allshader::DigitsRenderer::updateTexture(
+        float fontPointSize, float maxHeight, float devicePixelRatio) {
+    // Check if we need to update the texture: when the requested font size
+    // changes, or when the max height is too small for the current font size or
+    // different from the max height we previously adjusted the font size for.
+    if (fontPointSize == m_fontPointSize && maxHeight >= m_height &&
+            (m_adjustedForMaxHeight == 0.f ||
+                    maxHeight == m_adjustedForMaxHeight)) {
+        return;
     }
+
+    m_fontPointSize = fontPointSize;
+    m_adjustedForMaxHeight = 0.f;
+
+    QFont font;
+    QFontMetricsF metrics{font};
+    font.setFamily("Open Sans");
+    qreal totalTextWidth;
+    qreal maxTextHeight;
+    qreal heightWithPadding;
+
+    bool retry = false;
+    do {
+        font.setPointSizeF(fontPointSize);
+
+        metrics = QFontMetricsF{font};
+
+        totalTextWidth = 0;
+        maxTextHeight = 0;
+
+        for (int i = 0; i < NUM_CHARS; i++) {
+            assert(charToIndex(indexToChar(i)) == i);
+            const QString text(indexToChar(i));
+            const auto rect = metrics.tightBoundingRect(text);
+            maxTextHeight = std::max(maxTextHeight, rect.height());
+            totalTextWidth += metrics.horizontalAdvance(text) + SPACE + SPACE;
+        }
+        heightWithPadding = std::ceil(maxTextHeight + SPACE + SPACE);
+        qDebug() << "XXXXXX" << retry << maxHeight << maxTextHeight
+                 << heightWithPadding << fontPointSize;
+        if (!retry && heightWithPadding > maxHeight) {
+            // We need to adjust the font size. Only do this once.
+            fontPointSize *= maxHeight / static_cast<float>(heightWithPadding);
+            m_adjustedForMaxHeight = maxHeight;
+            retry = true;
+        } else {
+            retry = false;
+        }
+    } while (retry);
+    m_height = std::min(static_cast<float>(heightWithPadding), maxHeight);
 
     totalTextWidth = std::ceil(totalTextWidth);
 
     QImage image(static_cast<int>(totalTextWidth * devicePixelRatio),
-            static_cast<int>(std::ceil(maxTextHeight + SPACE + SPACE) * devicePixelRatio),
+            static_cast<int>(m_height * devicePixelRatio),
             QImage::Format_ARGB32_Premultiplied);
     image.setDevicePixelRatio(devicePixelRatio);
     image.fill(Qt::transparent);
@@ -139,8 +174,7 @@ void allshader::DigitsRenderer::generateTexture(int fontPixelSize, float deviceP
 float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         float x,
         float y,
-        const QString& s,
-        float devicePixelRatio) {
+        const QString& s) {
     const int n = s.length();
     const float x0 = x;
     const float dx = static_cast<float>(-(SPACE + SPACE) + KERNING);
@@ -158,7 +192,7 @@ float allshader::DigitsRenderer::draw(const QMatrix4x4& matrix,
         posVertices.addRectangle(x,
                 y,
                 x + m_width[index],
-                y + height() / devicePixelRatio);
+                y + height());
         x += m_width[index] + dx;
     }
 

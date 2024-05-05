@@ -54,6 +54,7 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     void drawTexture(const QMatrix4x4& matrix, float x, float y, QOpenGLTexture* texture);
     void updateUntilMark(double playPosition, double markerPosition);
     void drawUntilMark(const QMatrix4x4& matrix, float x);
+    float getMaxHeightForText() const;
 
     mixxx::RGBAShader m_rgbaShader;
     mixxx::TextureShader m_textureShader;
@@ -63,7 +64,6 @@ class allshader::WaveformRenderMark : public ::WaveformRenderMarkBase,
     double m_timeUntilMark;
     double m_currentBeatPosition;
     double m_nextBeatPosition;
-    int m_untilMarkTextPixelSize;
     std::unique_ptr<ControlProxy> m_pTimeRemainingControl;
 
     bool m_isSlipRenderer;

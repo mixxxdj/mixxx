@@ -102,7 +102,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setUntilMarkShowBeats(bool value);
     void setUntilMarkShowTime(bool value);
     void setUntilMarkAlign(Qt::Alignment align);
-    void setUntilMarkTextPixelSize(int value);
+    void setUntilMarkTextPointSize(int value);
 
     bool getUntilMarkShowBeats() const {
         return m_untilMarkShowBeats;
@@ -113,8 +113,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     Qt::Alignment getUntilMarkAlign() const {
         return m_untilMarkAlign;
     }
-    int getUntilMarkTextPixelSize() const {
-        return m_untilMarkTextPixelSize;
+    int getUntilMarkTextPointSize() const {
+        return m_untilMarkTextPointSize;
     }
 
     static Qt::Alignment toUntilMarkAlign(int index);
@@ -219,7 +219,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_untilMarkShowBeats;
     bool m_untilMarkShowTime;
     Qt::Alignment m_untilMarkAlign;
-    int m_untilMarkTextPixelSize;
+    int m_untilMarkTextPointSize;
 
     bool m_openGlAvailable;
     bool m_openGlesAvailable;

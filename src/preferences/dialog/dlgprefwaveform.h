@@ -41,7 +41,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetUntilMarkShowBeats(bool checked);
     void slotSetUntilMarkShowTime(bool checked);
     void slotSetUntilMarkAlign(int index);
-    void slotSetUntilMarkTextPixelSize(int value);
+    void slotSetUntilMarkTextPointSize(int value);
   signals:
     void reloadUserInterface();
 

@@ -148,10 +148,10 @@ DlgPrefWaveform::DlgPrefWaveform(
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotSetUntilMarkAlign);
-    connect(untilMarkTextPixelSizeSpinBox,
+    connect(untilMarkTextPointSizeSpinBox,
             QOverload<int>::of(&QSpinBox::valueChanged),
             this,
-            &DlgPrefWaveform::slotSetUntilMarkTextPixelSize);
+            &DlgPrefWaveform::slotSetUntilMarkTextPointSize);
 
     setScrollSafeGuardForAllInputWidgets(this);
 }
@@ -197,7 +197,7 @@ void DlgPrefWaveform::slotUpdate() {
     untilMarkAlignComboBox->setCurrentIndex(
             WaveformWidgetFactory::toUntilMarkAlignIndex(
                     factory->getUntilMarkAlign()));
-    untilMarkTextPixelSizeSpinBox->setValue(factory->getUntilMarkTextPixelSize());
+    untilMarkTextPointSizeSpinBox->setValue(factory->getUntilMarkTextPointSize());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -292,8 +292,8 @@ void DlgPrefWaveform::updateEnableUntilMark() {
     untilMarkShowTimeCheckBox->setEnabled(enabled);
     untilMarkAlignLabel->setEnabled(enabled);
     untilMarkAlignComboBox->setEnabled(enabled);
-    untilMarkTextPixelSizeLabel->setEnabled(enabled);
-    untilMarkTextPixelSizeSpinBox->setEnabled(enabled);
+    untilMarkTextPointSizeLabel->setEnabled(enabled);
+    untilMarkTextPointSizeSpinBox->setEnabled(enabled);
     requiresGLSLLabel->setVisible(!enabled);
 }
 
@@ -368,8 +368,8 @@ void DlgPrefWaveform::slotSetUntilMarkAlign(int index) {
             WaveformWidgetFactory::toUntilMarkAlign(index));
 }
 
-void DlgPrefWaveform::slotSetUntilMarkTextPixelSize(int value) {
-    WaveformWidgetFactory::instance()->setUntilMarkTextPixelSize(value);
+void DlgPrefWaveform::slotSetUntilMarkTextPointSize(int value) {
+    WaveformWidgetFactory::instance()->setUntilMarkTextPointSize(value);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

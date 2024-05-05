@@ -15,12 +15,11 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
     ~DigitsRenderer();
 
     void init();
-    void generateTexture(int fontPixelSize, float devicePixelRatio);
+    void updateTexture(float fontPointSize, float maxHeight, float devicePixelRatio);
     float draw(const QMatrix4x4& matrix,
             float x,
             float y,
-            const QString& s,
-            float devicePixelRatio);
+            const QString& s);
     float height() const;
 
   private:
@@ -28,6 +27,8 @@ class allshader::DigitsRenderer : public QOpenGLFunctions {
     OpenGLTexture2D m_texture;
     float m_offset[13];
     float m_width[12];
-
+    float m_fontPointSize{};
+    float m_height{};
+    float m_adjustedForMaxHeight{};
     DISALLOW_COPY_AND_ASSIGN(DigitsRenderer);
 };

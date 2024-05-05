@@ -114,7 +114,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_untilMarkShowBeats(false),
           m_untilMarkShowTime(false),
           m_untilMarkAlign(Qt::AlignVCenter),
-          m_untilMarkTextPixelSize(24),
+          m_untilMarkTextPointSize(24),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
           m_openGLShaderAvailable(false),
@@ -431,9 +431,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     setUntilMarkAlign(toUntilMarkAlign(
             m_config->getValue(ConfigKey("[Waveform]", "UntilMarkAlign"),
                     toUntilMarkAlignIndex(m_untilMarkAlign))));
-    setUntilMarkTextPixelSize(
-            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPixelSize"),
-                    m_untilMarkTextPixelSize));
+    setUntilMarkTextPointSize(
+            m_config->getValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
+                    m_untilMarkTextPointSize));
 
     return true;
 }
@@ -1322,11 +1322,11 @@ void WaveformWidgetFactory::setUntilMarkAlign(Qt::Alignment align) {
                 toUntilMarkAlignIndex(m_untilMarkAlign));
     }
 }
-void WaveformWidgetFactory::setUntilMarkTextPixelSize(int value) {
-    m_untilMarkTextPixelSize = value;
+void WaveformWidgetFactory::setUntilMarkTextPointSize(int value) {
+    m_untilMarkTextPointSize = value;
     if (m_config) {
-        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPixelSize"),
-                m_untilMarkTextPixelSize);
+        m_config->setValue(ConfigKey("[Waveform]", "UntilMarkTextPointSize"),
+                m_untilMarkTextPointSize);
     }
 }
 
