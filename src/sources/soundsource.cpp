@@ -56,7 +56,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
     if (
-            // STEM files will be detected as normal MP4 se we check if the file
+            // STEM files will be detected as normal MP4, so we check if the file
             // is looking like a MP4
             StemInfoImporter::maybeStemFile(fileInfo.filePath(), mimeType) &&
             // If yes, we search a STEM atom and assume they are valid STEM file

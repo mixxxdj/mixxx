@@ -3448,7 +3448,7 @@ endif()
 default_option(STEM "STEM file support" "FFMPEG_FOUND;FFMPEG")
 if (STEM)
   if(NOT FFMPEG)
-    message(FATAL_ERROR "FFMPEG was not enabled")
+    message(FATAL_ERROR "STEM requires that also FFMPEG is enabled")
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __STEM__)
   target_compile_definitions(mixxx-test PUBLIC __STEM__)
@@ -3456,10 +3456,13 @@ if (STEM)
     src/test/stemtest.cpp
     src/test/steminfotest.cpp
   )
+  target_precompile_headers(mixxx-lib PUBLIC
+    src/track/steminfo.h
+  )
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
-    src/track/steminfo.cpp # TODO precompiled header?
+    src/track/steminfo.cpp
   )
 endif()
 

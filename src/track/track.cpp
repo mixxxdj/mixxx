@@ -1297,8 +1297,8 @@ bool Track::importPendingCueInfosWhileLocked() {
 }
 
 #ifdef __STEM__
-bool Track::setStemInfosWhileLocked(const QList<StemInfo>& stemInfos) {
-    m_stemInfo = stemInfos;
+bool Track::setStemInfosWhileLocked(QList<StemInfo> stemInfos) {
+    m_stemInfo = std::move(stemInfos);
     return true;
 }
 
