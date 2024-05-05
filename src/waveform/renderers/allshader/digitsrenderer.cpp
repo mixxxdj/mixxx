@@ -26,7 +26,7 @@ constexpr qreal SPACE = 3;
 constexpr qreal KERNING = 1;
 
 constexpr char indexToChar(int index) {
-	constexpr char str[] = "0123456789:.";
+    constexpr char str[] = "0123456789:.";
     return str[index];
 }
 constexpr int charToIndex(QChar ch) {
