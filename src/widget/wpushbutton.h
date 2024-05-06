@@ -7,6 +7,7 @@
 
 #include "control/controlpushbutton.h"
 #include "util/fpclassify.h"
+#include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 
@@ -90,7 +91,7 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
-    void paintOnDevice(QPaintDevice* pd);
+    void paintOnDevice(QPaintDevice* pd, int idx);
 
     // True, if the button is currently pressed
     bool m_bPressed;
@@ -121,13 +122,14 @@ class WPushButton : public WWidget {
     class LongPressLatching {
       public:
         LongPressLatching(WPushButton* pButton);
-        void paint(QPainter* p, int remainingTime);
+        void paint(QPainter* p);
         void start();
         void stop();
 
       private:
         WPushButton* m_pButton;
         QPixmap m_preLongPressPixmap;
+        PerformanceTimer m_sinceStart;
         QTimer m_animTimer;
     };
 
