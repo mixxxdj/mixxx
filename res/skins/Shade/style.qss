@@ -108,6 +108,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -538,12 +539,25 @@ WTrackTableView {
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
     border: 1px solid #656d75;
+  }
+  WTrackPropertyEditor {
+    font-size: 13px;
+    border-width: 1px;
+    border-style: solid;
+  }
+  #TitleEjectRow WTrackPropertyEditor {
+    margin-top: 4px;
   }
 
   /* BPM lock icon in the library "BPM" column. */
@@ -660,6 +674,7 @@ WLibrarySidebar {
   Defined by SearchBox	*/
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   #LibraryContainer WLibraryTextBrowser:focus {

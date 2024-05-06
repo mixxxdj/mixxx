@@ -130,6 +130,14 @@ BpmControl::BpmControl(const QString& group,
             this, &BpmControl::slotTapFilter,
             Qt::DirectConnection);
 
+    m_pBpmLock = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "bpmlock"), false);
+    m_pBpmLock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pBpmLock->connectValueChangeRequest(
+            this,
+            &BpmControl::slotToggleBpmLock,
+            Qt::DirectConnection);
+
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
@@ -975,6 +983,10 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     resetSyncAdjustment();
 }
 
+void BpmControl::trackBpmLockChanged(bool locked) {
+    m_pBpmLock->setAndConfirm(locked);
+}
+
 void BpmControl::notifySeek(mixxx::audio::FramePos position) {
     updateBeatDistance(position);
 }
@@ -1019,6 +1031,17 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
             pTrack->trySetBeats(*translatedBeats);
         }
     }
+}
+
+void BpmControl::slotToggleBpmLock(double v) {
+    Q_UNUSED(v);
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    bool locked = pTrack->isBpmLocked();
+    pTrack->setBpmLocked(!locked);
+    // The pushbutton is updated in trackBpmLockChanged() via bpmLockChanged() signal.
 }
 
 mixxx::Bpm BpmControl::updateLocalBpm() {

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QUuid>
+
 #include "network/webtask.h"
 
 namespace mixxx {
@@ -11,11 +13,12 @@ class CoverArtArchiveImageTask : public network::WebTask {
     CoverArtArchiveImageTask(
             QNetworkAccessManager* pNetworkAccessManager,
             const QString& coverArtLink,
+            const QUuid& albumReleaseId,
             QObject* pParent = nullptr);
     ~CoverArtArchiveImageTask() override = default;
 
   signals:
-    void succeeded(
+    void succeeded(const QUuid& albumReleaseId,
             const QByteArray& coverArtImageBytes);
 
     void failed(
@@ -39,7 +42,8 @@ class CoverArtArchiveImageTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-    QString m_coverArtUrl;
+    const QString m_coverArtUrl;
+    const QUuid m_albumReleaseId;
 
     QByteArray coverArtImageBytes;
 };

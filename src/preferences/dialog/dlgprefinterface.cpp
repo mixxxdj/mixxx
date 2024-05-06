@@ -202,6 +202,9 @@ DlgPrefInterface::DlgPrefInterface(
     } else
 #endif
     {
+#ifdef MIXXX_USE_QML
+        m_multiSampling = 0;
+#endif
         multiSamplingLabel->hide();
         multiSamplingComboBox->hide();
     }

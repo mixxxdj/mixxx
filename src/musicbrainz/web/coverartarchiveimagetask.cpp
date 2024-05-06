@@ -24,11 +24,13 @@ QNetworkRequest createNetworkRequest(const QString& coverArtUrl) {
 CoverArtArchiveImageTask::CoverArtArchiveImageTask(
         QNetworkAccessManager* pNetworkAccessManager,
         const QString& coverArtLink,
+        const QUuid& albumReleaseId,
         QObject* pParent)
         : network::WebTask(
                   pNetworkAccessManager,
                   pParent),
-          m_coverArtUrl(coverArtLink) {
+          m_coverArtUrl(coverArtLink),
+          m_albumReleaseId(albumReleaseId) {
 }
 
 QNetworkReply* CoverArtArchiveImageTask::doStartNetworkRequest(
@@ -83,7 +85,7 @@ void CoverArtArchiveImageTask::emitSucceeded(
         deleteLater();
         return;
     }
-    emit succeeded(coverArtImageBytes);
+    emit succeeded(m_albumReleaseId, coverArtImageBytes);
 }
 
 void CoverArtArchiveImageTask::emitFailed(

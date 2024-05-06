@@ -230,21 +230,23 @@ void WCoverArt::resizeEvent(QResizeEvent* /*unused*/) {
     m_defaultCoverScaled = scaledCoverArt(m_defaultCover);
 }
 
-void WCoverArt::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
+void WCoverArt::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
     if (m_loadedTrack) {
         m_pMenu->setCoverArt(m_lastRequestedCover);
-        m_pMenu->popup(event->globalPos());
+        m_pMenu->popup(pEvent->globalPos());
     }
 }
 
-void WCoverArt::mousePressEvent(QMouseEvent* event) {
+void WCoverArt::mousePressEvent(QMouseEvent* pEvent) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::LeftButton) {
-        event->accept();
+    DragAndDropHelper::mousePressed(pEvent);
+
+    if (pEvent->buttons() == Qt::LeftButton) {
+        pEvent->accept();
         // do nothing if left button is pressed,
         // wait for button release
         m_clickTimer.setSingleShot(true);
@@ -252,12 +254,13 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
     }
 }
 
-void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
+void WCoverArt::mouseReleaseEvent(QMouseEvent* pEvent) {
     if (!m_bEnable) {
         return;
     }
 
-    if (event->button() == Qt::LeftButton && m_loadedTrack &&
+    if (pEvent->button() == Qt::LeftButton &&
+            m_loadedTrack &&
             m_clickTimer.isActive()) { // init/close fullsize cover
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
@@ -271,29 +274,29 @@ void WCoverArt::mouseReleaseEvent(QMouseEvent* event) {
     } // else it was a long leftclick or a right click that's already been processed
 }
 
-void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
-    if ((event->buttons().testFlag(Qt::LeftButton)) && m_loadedTrack) {
+void WCoverArt::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_loadedTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         DragAndDropHelper::dragTrack(m_loadedTrack, this, m_group);
     }
 }
 
-void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
+void WCoverArt::dragEnterEvent(QDragEnterEvent* pEvent) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
     if (!m_group.isEmpty()) {
-        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+        DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
     } else {
-        event->ignore();
+        pEvent->ignore();
     }
 }
 
-void WCoverArt::dropEvent(QDropEvent *event) {
+void WCoverArt::dropEvent(QDropEvent* pEvent) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
     if (!m_group.isEmpty()) {
-        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+        DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
     } else {
-        event->ignore();
+        pEvent->ignore();
     }
 }
 

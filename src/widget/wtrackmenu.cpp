@@ -46,7 +46,9 @@
 #include "widget/wcoverartmenu.h"
 #include "widget/wfindonwebmenu.h"
 #include "widget/wsearchrelatedtracksmenu.h"
+// WStarRating is required for DlgTrackInfo
 #include "widget/wstarrating.h"
+#include "widget/wstarratingaction.h"
 
 constexpr WTrackMenu::Features WTrackMenu::kDeckTrackMenuFeatures;
 
@@ -312,7 +314,10 @@ void WTrackMenu::createActions() {
         m_pHideAct = new QAction(tr("Hide from Library"), this);
         // This is just for having the shortcut displayed next to the action in the menu.
         // The actual keypress is handled in WTrackTableView::keyPressEvent().
-        m_pHideAct->setShortcut(hideRemoveKeySequence);
+        // Note: don't show the hotkey for more than one action
+        if (!featureIsEnabled(Feature::Remove)) {
+            m_pHideAct->setShortcut(hideRemoveKeySequence);
+        }
         connect(m_pHideAct, &QAction::triggered, this, &WTrackMenu::slotHide);
 
         m_pUnhideAct = new QAction(tr("Unhide from Library"), this);
@@ -335,6 +340,13 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
+        m_pStarRatingAction = new WStarRatingAction(this);
+        m_pStarRatingAction->setObjectName("RatingAction");
+        connect(m_pStarRatingAction,
+                &WStarRatingAction::ratingSet,
+                this,
+                &WTrackMenu::slotSetRating);
+
         m_pPropertiesAct = new QAction(tr("Properties"), this);
         // This is just for having the shortcut displayed next to the action
         // when the menu is invoked from the tracks table.
@@ -607,6 +619,10 @@ void WTrackMenu::setupActions() {
         addMenu(m_pBPMMenu);
     }
 
+    if (featureIsEnabled(Feature::Properties)) {
+        addAction(m_pStarRatingAction);
+    }
+
     if (featureIsEnabled(Feature::Color)) {
         m_pColorMenu->addAction(m_pColorPickerAction);
         addMenu(m_pColorMenu);
@@ -736,6 +752,39 @@ std::pair<bool, bool> WTrackMenu::getTrackBpmLockStates() const {
         }
     }
     return std::pair<bool, bool>(anyBpmLocked, anyBpmNotLocked);
+}
+
+int WTrackMenu::getCommonTrackRating() const {
+    VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
+        return 0;
+    }
+    int commonRating;
+    if (m_pTrackModel) {
+        const int column =
+                m_pTrackModel->fieldIndex(LIBRARYTABLE_RATING);
+        commonRating = m_trackIndexList.first()
+                               .sibling(m_trackIndexList.first().row(), column)
+                               .data()
+                               .value<StarRating>()
+                               .starCount();
+        for (const auto& trackIndex : m_trackIndexList) {
+            const auto otherRating =
+                    trackIndex.sibling(trackIndex.row(), column)
+                            .data()
+                            .value<StarRating>()
+                            .starCount();
+            if (commonRating != otherRating) {
+                // Multiple, different ratings
+                return 0;
+            }
+        }
+    } else {
+        if (!m_pTrack) {
+            return 0;
+        }
+        commonRating = m_pTrack->getRating();
+    }
+    return commonRating;
 }
 
 std::optional<std::optional<mixxx::RgbColor>> WTrackMenu::getCommonTrackColor() const {
@@ -1011,9 +1060,9 @@ void WTrackMenu::updateMenus() {
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
         bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
-        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
-            m_pHideAct->setEnabled(!locked);
-        }
+        // Note: Hide action is enabled regardless the locked state.
+        // Like in Tracks, in locked playlists A confirmation dialog pops up:
+        // "Hiding track ... will remove it from the following playlists: ..."
         if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             m_pUnhideAct->setEnabled(!locked);
         }
@@ -1040,7 +1089,11 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Properties)) {
-        // m_pPropertiesAct->setEnabled(singleTrackSelected);
+        // Might be needed to resize Menu to fit the star rating
+        // QResizeEvent resizeEvent(QSize(), m_pStarRatingAction->sizeHint());
+        // qApp->sendEvent(m_pStarRatingAction, &resizeEvent);
+        m_pStarRatingAction->setRating(getCommonTrackRating());
+
         m_pPropertiesAct->setEnabled(true);
     }
 
@@ -1628,6 +1681,41 @@ void WTrackMenu::lockBpm(bool lock) {
 
 namespace {
 
+class SetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
+  public:
+    explicit SetRatingTrackPointerOperation(const int rating)
+            : m_rating(rating) {
+    }
+
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setRating(m_rating);
+    }
+
+    const int m_rating;
+};
+
+} // anonymous namespace
+
+void WTrackMenu::slotSetRating(int rating) {
+    if (!mixxx::TrackRecord::isValidRating(rating)) {
+        return;
+    }
+
+    const auto progressLabelText =
+            tr("Setting rating of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            SetRatingTrackPointerOperation(rating);
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+
+    hide();
+}
+
+namespace {
+
 class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
     explicit SetColorTrackPointerOperation(const mixxx::RgbColor::optional_t& color)
@@ -2190,10 +2278,21 @@ void WTrackMenu::slotRemoveFromDisk() {
     // If the operation was initiated from a deck's track menu
     // we'll first stop the deck and eject the track.
     // TODO(ronso0) Consider querying PlayerManager if any of the tracks is loaded
-    // into a (playing?) deck?
+    // into another (playing?) deck?
+    // Also (rare situation) the track we work on might have been replaced (in the deck)
+    // by another one in the mean time (Auto DJ) and we would unnecessarily stop & eject.
+    // Ideally, there would be a PlayerManager instance that does
+    // stopAndEjectAllPlayersWithTrackLoaded(TrackPointer / TrackId)
+    bool restoreViewState = false;
     if (m_pTrack) {
         ControlObject::set(ConfigKey(m_deckGroup, "stop"), 1.0);
         ControlObject::set(ConfigKey(m_deckGroup, "eject"), 1.0);
+        // Try to keep a usable index for navigation if the track is in the
+        // current track view.
+        if (m_pLibrary->isTrackIdInCurrentLibraryView(m_pTrack->getId())) {
+            restoreViewState = true;
+            emit saveCurrentViewState();
+        }
     }
 
     // Set up and initiate the track batch operation
@@ -2262,8 +2361,10 @@ void WTrackMenu::slotRemoveFromDisk() {
 
     const QList<QString> tracksToKeep(trackOperator.getTracksToKeep());
     if (tracksToKeep.isEmpty()) {
-        // All selected tracks could be processed. Finish!
-        emit restoreCurrentIndex();
+        if (m_pTrackModel || restoreViewState) {
+            // All selected tracks could be processed. Finish!
+            emit restoreCurrentViewStateOrIndex();
+        }
         return;
     }
     // Else show a message with a list of tracks that could not be deleted.
@@ -2310,7 +2411,7 @@ void WTrackMenu::slotRemoveFromDisk() {
     // Required for being able to close the dialog
     connect(closeBtn, &QPushButton::clicked, &dlgNotDeleted, &QDialog::close);
     dlgNotDeleted.exec();
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotShowDlgTrackInfo() {
@@ -2484,7 +2585,7 @@ void WTrackMenu::slotRemove() {
         return;
     }
     m_pTrackModel->removeTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotHide() {
@@ -2492,7 +2593,7 @@ void WTrackMenu::slotHide() {
         return;
     }
     m_pTrackModel->hideTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotUnhide() {
@@ -2500,7 +2601,7 @@ void WTrackMenu::slotUnhide() {
         return;
     }
     m_pTrackModel->unhideTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::slotPurge() {
@@ -2508,7 +2609,7 @@ void WTrackMenu::slotPurge() {
         return;
     }
     m_pTrackModel->purgeTracks(getTrackIndices());
-    emit restoreCurrentIndex();
+    emit restoreCurrentViewStateOrIndex();
 }
 
 void WTrackMenu::clearTrackSelection() {

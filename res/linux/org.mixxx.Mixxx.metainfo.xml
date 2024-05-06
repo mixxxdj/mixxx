@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.5.0" type="development" date="2024-03-18" timestamp="1710747808">
+    <release version="2.5.0" type="development" date="2024-04-23" timestamp="1713855934">
       <description>
  <p>
   Features
@@ -704,19 +704,50 @@
  </ul>
 </description>
     </release>
-    <release version="2.4.1" type="development" date="2024-03-18" timestamp="1710747808">
+    <release version="2.4.1" type="development" date="2024-04-23" timestamp="1713855934">
       <description>
  <p>
   Controller Mappings
  </p>
  <ul>
   <li>
-   Pioneer DDJ-FLX4 mapping improvements
+   Behringer DDM4000 &amp; BCR2000: Fix exception in JS code
+   #12969
+  </li>
+  <li>
+   Denon DJ MC6000MK2: Fix mapping of filter knob/button
+   #13166
+  </li>
+  <li>
+   Denon DJ MC7000: Fix redundant argument and migrate to
+   hotcue_x_status
+   #13113
+   #13121
+  </li>
+  <li>
+   Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
+   #12932
+  </li>
+  <li>
+   Pioneer DDJ-FLX4: Add waveform zoom and other mapping improvements
+   #12896
    #12842
+  </li>
+  <li>
+   Traktor Kontrol F1: Fixes for hid-parser and related script
+   #12876
+  </li>
+  <li>
+   Traktor S2 Mk1: fix warnings
+   #13145
   </li>
   <li>
    Traktor S3: Fix mapping crash on macOS
    #12840
+  </li>
+  <li>
+   Controller I/O table: sort action column by display string
+   #13039
   </li>
  </ul>
  <p>
@@ -728,6 +759,170 @@
    #12853
    #12847
    #12822
+   #12892
+   #13079
+   #12989
+  </li>
+  <li>
+   CMakeLists: Always prefer OpenGL framework on macOS
+   #13080
+  </li>
+ </ul>
+ <p>
+  Skins
+ </p>
+ <ul>
+  <li>
+   Deere: make sampler rows persist
+   #12928
+  </li>
+  <li>
+   Tango: Remove unneeded waveform Singleton
+   #12938
+  </li>
+  <li>
+   Prevent possible crash in customs skins using parallel waveforms
+   #13043
+   #12580
+   #13136
+  </li>
+  <li>
+   Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed
+   #13088
+  </li>
+  <li>
+   Tooltips: update 'hotcue' with saved loop features
+   #12875
+  </li>
+  <li>
+   Animate long press latching of sync button
+   #12990
+  </li>
+  <li>
+   Polish fx chain controls
+   #12805
+  </li>
+ </ul>
+ <p>
+  Library
+ </p>
+ <ul>
+  <li>
+   Sidebar: show track count and duration of History playlists
+   #12811
+   #13020
+   #13019
+   #12788
+   #12880
+   #12882
+  </li>
+  <li>
+   Computer feature: update removable devices on Linux
+   #12893
+   #12891
+  </li>
+  <li>
+   Playlists: Prevent removing tracks from locked playlists
+   #12927
+  </li>
+  <li>
+   History feature: Fix removing deleted tracks after export
+   #13016
+   #13000
+  </li>
+  <li>
+   BPM display uses decimal separator of selected locale
+   #13067
+   #13051
+  </li>
+  <li>
+   Fix relink directory when migrate between Linux/macOS and Windows
+   #12878
+  </li>
+  <li>
+   Allow adding new directories while watched directories are missing
+   #12937
+   #10481
+  </li>
+  <li>
+   Require a minimum movement before initiating the drag&amp;drop of tracks
+   #13135
+   #12902
+  </li>
+  <li>
+   iTunes/Serato/Traktor/Rhythmbox: Print error if library file could not be opened
+   #13012
+  </li>
+  <li>
+   Playlists: improve table update after deleting (purging) track files
+   #13127
+  </li>
+  <li>
+   Fix Color column width issue
+   #12852
+  </li>
+  <li>
+   Tracks: select track row when clicking the preview button (only when starting preview)
+   #12791
+  </li>
+  <li>
+   Library track menu: show Hide action also in Playlist &amp; Crates
+   #11901
+  </li>
+ </ul>
+ <p>
+  Miscellaneous
+ </p>
+ <ul>
+  <li>
+   Remove unnecessary unpolish operation of the style, before polish the new style
+   #12445
+  </li>
+  <li>
+   Developer Tools: Initially sort controls by group name, ascending
+   #12884
+  </li>
+  <li>
+   Waveforms: Fix scratching crossing loop boundaries
+   #13007
+  </li>
+  <li>
+   Prohibit un-replace when deck is playing
+   #13023
+   #12906
+  </li>
+  <li>
+   Track Properties dialog: Prevent wiping metadata when applying twice quickly
+   #12965
+   #12963
+  </li>
+  <li>
+   AutoDJ: Fix button state after error message about playing deck 3/4
+   #12976
+   #12975
+  </li>
+  <li>
+   Tagfetcher: Cache fetched covers
+   #12301
+   #11084
+  </li>
+  <li>
+   Avoid beats iterator being one off and DEBUG_ASSERT in Beats::iteratorFrom
+   #13150
+   #13149
+  </li>
+  <li>
+   Show hint if resource path in CMakeCache.txt does not exist
+   #12929
+  </li>
+  <li>
+   Always calculate the auto value for colorful console output
+   #13153
+  </li>
+  <li>
+   Fix FLAC recording on macOS and Windows
+   #10880
+   #13154
   </li>
  </ul>
 </description>
@@ -2019,7 +2214,7 @@
    #12458
   </li>
   <li>
-   change SKIN_WARNING to show the skin file:line first, then c++ context
+   Change SKIN_WARNING to show the skin file and line first, then c++ context
    #12253
   </li>
   <li>

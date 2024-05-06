@@ -93,27 +93,31 @@ void WTrackWidgetGroup::paintEvent(QPaintEvent* pe) {
     }
 }
 
-void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons().testFlag(Qt::LeftButton) && m_pCurrentTrack) {
+void WTrackWidgetGroup::mousePressEvent(QMouseEvent* pEvent) {
+    DragAndDropHelper::mousePressed(pEvent);
+}
+
+void WTrackWidgetGroup::mouseMoveEvent(QMouseEvent* pEvent) {
+    if (m_pCurrentTrack && DragAndDropHelper::mouseMoveInitiatesDrag(pEvent)) {
         DragAndDropHelper::dragTrack(m_pCurrentTrack, this, m_group);
     }
 }
 
-void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* event) {
-    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
+void WTrackWidgetGroup::dragEnterEvent(QDragEnterEvent* pEvent) {
+    DragAndDropHelper::handleTrackDragEnterEvent(pEvent, m_group, m_pConfig);
 }
 
-void WTrackWidgetGroup::dropEvent(QDropEvent* event) {
-    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+void WTrackWidgetGroup::dropEvent(QDropEvent* pEvent) {
+    DragAndDropHelper::handleTrackDropEvent(pEvent, *this, m_group, m_pConfig);
 }
 
-void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* event) {
-    event->accept();
+void WTrackWidgetGroup::contextMenuEvent(QContextMenuEvent* pEvent) {
+    pEvent->accept();
     if (m_pCurrentTrack) {
         ensureTrackMenuIsCreated();
         m_pTrackMenu->loadTrack(m_pCurrentTrack, m_group);
         // Create the right-click menu
-        m_pTrackMenu->popup(event->globalPos());
+        m_pTrackMenu->popup(pEvent->globalPos());
     }
 }
 

@@ -213,7 +213,7 @@ void DlgTrackInfoMulti::init() {
     // This is necessary to pass on mouseMove events to WStarRating
     m_pWStarRating->setMouseTracking(true);
     connect(m_pWStarRating,
-            &WStarRating::ratingChanged,
+            &WStarRating::ratingChangeRequest,
             this,
             &DlgTrackInfoMulti::slotStarRatingChanged);
 
@@ -658,9 +658,11 @@ void DlgTrackInfoMulti::trackColorDialogSetColorStyleButton(
 }
 
 void DlgTrackInfoMulti::slotStarRatingChanged(int rating) {
-    m_starRatingModified = true;
-    m_pWStarRating->slotSetRating(rating);
-    m_newRating = rating;
+    if (!m_pLoadedTracks.isEmpty() && mixxx::TrackRecord::isValidRating(rating)) {
+        m_starRatingModified = true;
+        m_pWStarRating->slotSetRating(rating);
+        m_newRating = rating;
+    }
 }
 
 void DlgTrackInfoMulti::updateCoverArtFromTracks() {

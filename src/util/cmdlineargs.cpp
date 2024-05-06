@@ -18,18 +18,44 @@
 #include "sources/soundsourceproxy.h"
 #include "util/assert.h"
 
+namespace {
+
+bool calcUseColorsAuto() {
+    // see https://no-color.org/
+    if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
+        return false;
+    } else {
+#ifndef __WINDOWS__
+        if (isatty(fileno(stderr))) {
+            return true;
+        }
+#else
+        if (_isatty(_fileno(stderr))) {
+            return true;
+        }
+#endif
+    }
+    return false;
+}
+
+} // namespace
+
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
+          m_startAutoDJ(false),
           m_controllerDebug(false),
           m_controllerAbortOnWarning(false),
           m_developer(false),
+#ifdef MIXXX_USE_QML
+          m_qml(false),
+#endif
           m_safeMode(false),
           m_useLegacyVuMeter(false),
           m_useLegacySpinny(false),
           m_debugAssertBreak(false),
           m_settingsPathSet(false),
           m_scaleFactor(1.0),
-          m_useColors(false),
+          m_useColors(calcUseColorsAuto()),
           m_parseForUserFeedbackRequired(false),
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
@@ -148,6 +174,12 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
                             : QString(),
             QStringLiteral("locale"));
     parser.addOption(locale);
+
+    const QCommandLineOption startAutoDJ(QStringLiteral("start-autodj"),
+            forUserFeedback ? QCoreApplication::translate("CmdlineArgs",
+                                      "Starts Auto DJ when Mixxx is launched.")
+                            : QString());
+    parser.addOption(startAutoDJ);
 
     // An option with a value
     const QCommandLineOption settingsPath(QStringLiteral("settings-path"),
@@ -343,6 +375,10 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
         m_locale = parser.value(locale);
     }
 
+    if (parser.isSet(startAutoDJ)) {
+        m_startAutoDJ = true;
+    }
+
     if (parser.isSet(settingsPath)) {
         m_settingsPath = parser.value(settingsPath);
         if (!m_settingsPath.endsWith("/")) {
@@ -415,26 +451,11 @@ bool CmdlineArgs::parse(const QStringList& arguments, CmdlineArgs::ParseMode mod
     }
 
     // set colors
-    if (parser.value(color).compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
-        // see https://no-color.org/
-        if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
-            m_useColors = false;
-        } else {
-#ifndef __WINDOWS__
-            if (isatty(fileno(stderr))) {
-                m_useColors = true;
-            }
-#else
-            if (_isatty(_fileno(stderr))) {
-                m_useColors = true;
-            }
-#endif
-        }
-    } else if (parser.value(color).compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
+    if (parser.value(color).compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
         m_useColors = true;
     } else if (parser.value(color).compare(QLatin1String("never"), Qt::CaseInsensitive) == 0) {
         m_useColors = false;
-    } else {
+    } else if (parser.value(color).compare(QLatin1String("auto"), Qt::CaseInsensitive) != 0) {
         fputs("Unknown argument for for color.\n", stdout);
     }
 
