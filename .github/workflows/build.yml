@@ -131,7 +131,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.5
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -484,7 +484,7 @@ jobs:
     if: always()
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.4
+        uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0
 
