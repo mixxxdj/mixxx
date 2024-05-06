@@ -43,8 +43,11 @@ class TextureGraphics : public WaveformMark::Graphics {
 // The boolean argument for the WaveformRenderMarkBase constructor indicates
 // that updateMarkImages should not be called immediately.
 
-allshader::WaveformRenderMark::WaveformRenderMark(WaveformWidgetRenderer* waveformWidget)
-        : ::WaveformRenderMarkBase(waveformWidget, false) {
+allshader::WaveformRenderMark::WaveformRenderMark(
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
+        : WaveformRenderMarkBase(waveformWidget, false),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 void allshader::WaveformRenderMark::initializeGL() {
@@ -153,6 +156,14 @@ void allshader::WaveformRenderMark::drawMark(const QRectF& rect, QColor color) {
 }
 
 void allshader::WaveformRenderMark::paintGL() {
+    if (m_isSlipRenderer && !m_waveformRenderer->isSlipActive()) {
+        return;
+    }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
+    bool slipActive = m_waveformRenderer->isSlipActive();
+
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     QList<WaveformWidgetRenderer::WaveformMarkOnScreen> marksOnScreen;
 
@@ -160,6 +171,10 @@ void allshader::WaveformRenderMark::paintGL() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Will create textures so requires OpenGL context
+    for (const auto& pMark : std::as_const(m_marks)) {
+        pMark->setBreadth(slipActive ? m_waveformRenderer->getBreadth() / 2
+                                     : m_waveformRenderer->getBreadth());
+    }
     updateMarkImages();
 
     for (const auto& pMark : std::as_const(m_marks)) {
@@ -174,7 +189,7 @@ void allshader::WaveformRenderMark::paintGL() {
                             static_cast<float>(
                                     m_waveformRenderer
                                             ->transformSamplePositionInRendererWorld(
-                                                    samplePosition)) *
+                                                    samplePosition, positionType)) *
                             devicePixelRatio) /
                     devicePixelRatio;
             const double sampleEndPosition = pMark->getSampleEndPosition();
@@ -190,7 +205,11 @@ void allshader::WaveformRenderMark::paintGL() {
             if (drawOffset > -markHalfWidth &&
                     drawOffset < m_waveformRenderer->getLength() +
                                     markHalfWidth) {
-                drawTexture(drawOffset, 0, pTexture);
+                drawTexture(drawOffset,
+                        !m_isSlipRenderer && slipActive
+                                ? m_waveformRenderer->getBreadth() / 2
+                                : 0,
+                        pTexture);
                 visible = true;
             }
 
@@ -201,7 +220,7 @@ void allshader::WaveformRenderMark::paintGL() {
                         float>(
                         m_waveformRenderer
                                 ->transformSamplePositionInRendererWorld(
-                                        sampleEndPosition));
+                                        sampleEndPosition, positionType));
 
                 if (visible || currentMarkEndPoint > 0) {
                     QColor color = pMark->fillColor();
