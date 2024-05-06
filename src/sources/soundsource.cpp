@@ -55,6 +55,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
     }
     QMimeType mimeType = QMimeDatabase().mimeTypeForFile(
             fileInfo, QMimeDatabase::MatchContent);
+#ifdef __STEM__
     if (
             // STEM files will be detected as normal MP4, so we check if the file
             // is looking like a MP4
@@ -64,6 +65,7 @@ QString SoundSource::getTypeFromFile(const QFileInfo& fileInfo) {
             StemInfoImporter::hasStemAtom(fileInfo.filePath())) {
         return QLatin1String("stem.mp4");
     }
+#endif
 
     // According to the documentation mimeTypeForFile always returns a valid
     // type, using the generic type application/octet-stream as a fallback.

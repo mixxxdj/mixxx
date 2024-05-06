@@ -1331,7 +1331,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 set(MIXXX_COMMON_PRECOMPILED_HEADER
   src/util/assert.h
 )
-target_precompile_headers(mixxx-lib PUBLIC
+set(MIXXX_LIB_PRECOMPILED_HEADER
   src/audio/frame.h
   src/audio/signalinfo.h
   src/audio/streaminfo.h
@@ -1487,7 +1487,6 @@ target_precompile_headers(mixxx-lib PUBLIC
   src/util/workerthread.h
   src/util/workerthreadscheduler.h
   src/util/xml.h
-  ${MIXXX_COMMON_PRECOMPILED_HEADER}
 )
 if (NOT QML)
   target_sources(mixxx-lib PRIVATE
@@ -2183,7 +2182,6 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
   src/util/moc_included_test.cpp
 )
-target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 find_package(GTest CONFIG REQUIRED)
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
 target_link_libraries(mixxx-test PRIVATE mixxx-lib mixxx-gitinfostore GTest::gtest GTest::gmock)
@@ -3456,9 +3454,7 @@ if (STEM)
     src/test/stemtest.cpp
     src/test/steminfotest.cpp
   )
-  target_precompile_headers(mixxx-lib PUBLIC
-    src/track/steminfo.h
-  )
+  list(APPEND MIXXX_LIB_PRECOMPILED_HEADER src/track/steminfo.h)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcestem.cpp
     src/track/steminfoimporter.cpp
@@ -3801,6 +3797,12 @@ if(WAVPACK)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
   target_link_libraries(mixxx-lib PRIVATE WavPack::wavpack)
 endif()
+
+target_precompile_headers(mixxx-lib PUBLIC
+  ${MIXXX_LIB_PRECOMPILED_HEADER}
+  ${MIXXX_COMMON_PRECOMPILED_HEADER}
+)
+target_precompile_headers(mixxx-test REUSE_FROM mixxx-lib)
 
 # Configure file with build options
 file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
