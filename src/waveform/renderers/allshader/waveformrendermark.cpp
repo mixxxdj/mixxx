@@ -59,7 +59,8 @@ QString timeSecToString(double timeSec) {
 } // namespace
 
 allshader::WaveformRenderMark::WaveformRenderMark(
-        WaveformWidgetRenderer* waveformWidget)
+        WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
         : ::WaveformRenderMarkBase(waveformWidget, false),
           m_beatsUntilMark(0),
           m_timeUntilMark(0.0),
@@ -197,11 +198,11 @@ void allshader::WaveformRenderMark::paintGL() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Will create textures so requires OpenGL context
     for (const auto& pMark : std::as_const(m_marks)) {
         pMark->setBreadth(slipActive ? m_waveformRenderer->getBreadth() / 2
                                      : m_waveformRenderer->getBreadth());
     }
+    // Will create textures so requires OpenGL context
     updateMarkImages();
 
     QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, false);
@@ -239,63 +240,53 @@ void allshader::WaveformRenderMark::paintGL() {
         }
         const double sampleEndPosition = pMark->getSampleEndPosition();
 
-        if (samplePosition != Cue::kNoPosition) {
-            const float currentMarkPoint =
-                    std::round(
-                            static_cast<float>(
-                                    m_waveformRenderer
-                                            ->transformSamplePositionInRendererWorld(
-                                                    samplePosition, positionType)) *
-                            devicePixelRatio) /
-                    devicePixelRatio;
-            if (pMark->isShowUntilNext() &&
-                    samplePosition >= playPosition + 1.0 &&
-                    samplePosition < nextMarkPosition) {
-                nextMarkPosition = samplePosition;
-            }
-            const double sampleEndPosition = pMark->getSampleEndPosition();
+        // Pixmaps are expected to have the mark stroke at the center,
+        // and preferably have an odd width in order to have the stroke
+        // exactly at the sample position.
+        const float markHalfWidth = pTexture->width() / devicePixelRatio / 2.f;
+        const float drawOffset = currentMarkPoint - markHalfWidth;
 
-            bool visible = false;
-            // Check if the current point needs to be displayed.
-            if (drawOffset > -markHalfWidth &&
-                    drawOffset < m_waveformRenderer->getLength() +
-                                    markHalfWidth) {
-                drawTexture(drawOffset,
-                        !m_isSlipRenderer && slipActive
-                                ? m_waveformRenderer->getBreadth() / 2
-                                : 0,
-                        pTexture);
+        bool visible = false;
+        // Check if the current point needs to be displayed.
+        if (drawOffset > -markHalfWidth &&
+                drawOffset < m_waveformRenderer->getLength() +
+                                markHalfWidth) {
+            drawTexture(matrix,
+                    drawOffset,
+                    !m_isSlipRenderer && slipActive
+                            ? m_waveformRenderer->getBreadth() / 2
+                            : 0,
+                    pTexture);
+            visible = true;
+        }
+
+        // Check if the range needs to be displayed.
+        if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
+            DEBUG_ASSERT(samplePosition < sampleEndPosition);
+            const float currentMarkEndPoint = static_cast<
+                    float>(
+                    m_waveformRenderer
+                            ->transformSamplePositionInRendererWorld(
+                                    sampleEndPosition, positionType));
+
+            if (visible || currentMarkEndPoint > 0) {
+                QColor color = pMark->fillColor();
+                color.setAlphaF(0.4f);
+
+                drawMark(matrix,
+                        QRectF(QPointF(currentMarkPoint, 0),
+                                QPointF(currentMarkEndPoint,
+                                        m_waveformRenderer
+                                                ->getBreadth())),
+                        color);
                 visible = true;
             }
+        }
 
-            // Check if the range needs to be displayed.
-            if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
-                DEBUG_ASSERT(samplePosition < sampleEndPosition);
-                const float currentMarkEndPoint = static_cast<
-                        float>(
-                        m_waveformRenderer
-                                ->transformSamplePositionInRendererWorld(
-                                        sampleEndPosition, positionType));
-
-                if (visible || currentMarkEndPoint > 0) {
-                    QColor color = pMark->fillColor();
-                    color.setAlphaF(0.4f);
-
-                    drawMark(matrix,
-                            QRectF(QPointF(currentMarkPoint, 0),
-                                    QPointF(currentMarkEndPoint,
-                                            m_waveformRenderer
-                                                    ->getBreadth())),
-                            color);
-                    visible = true;
-                }
-            }
-
-            if (visible) {
-                marksOnScreen.append(
-                        WaveformWidgetRenderer::WaveformMarkOnScreen{
-                                pMark, static_cast<int>(drawOffset)});
-            }
+        if (visible) {
+            marksOnScreen.append(
+                    WaveformWidgetRenderer::WaveformMarkOnScreen{
+                            pMark, static_cast<int>(drawOffset)});
         }
     }
     m_waveformRenderer->setMarkPositions(marksOnScreen);

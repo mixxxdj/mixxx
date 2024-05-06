@@ -68,8 +68,9 @@ class WaveformWidgetRenderer {
         return m_lastDisplayedPosition[type];
     }
 
-    double getTruePosSample() const {
-        return m_truePosSample;
+    double getTruePosSample(::WaveformRendererAbstract::PositionSource type =
+                                    ::WaveformRendererAbstract::Play) const {
+        return m_truePosSample[type];
     }
 
     void setZoom(double zoom);
