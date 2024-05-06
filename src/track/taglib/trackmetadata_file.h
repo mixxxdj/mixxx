@@ -16,16 +16,29 @@ class TrackMetadata;
 
 namespace taglib {
 
+// This enum is aligned with TagLib_File_Type form the TagLib C binding
 enum class FileType {
-    Unknown,
-    AIFF,
+    Unknown = -1,
+    MPEG = 0,
+    OggVorbis,
     FLAC,
-    MP3,
+    MPC,
+    OggFlac,
+    WavPack,
+    Speex,
+    TrueAudio,
     MP4,
-    OGG,
-    OPUS,
+    ASF,
+    AIFF,
     WAV,
-    WV
+    APE,
+    IT,
+    Mod,
+    S3M,
+    XM,
+    Opus,
+    DSF,
+    DSDIFF
 };
 
 QDebug operator<<(QDebug debug, FileType fileType);

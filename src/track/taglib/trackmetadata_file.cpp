@@ -51,7 +51,7 @@ FileType getFileTypeFromFileName(
     DEBUG_ASSERT(!fileName.isEmpty());
     const QString fileSuffix(fileName.section(QChar('.'), -1).toLower().trimmed());
     if (QStringLiteral("mp3") == fileSuffix) {
-        return FileType::MP3;
+        return FileType::MPEG;
     }
     if ((QStringLiteral("m4a") == fileSuffix) || (QStringLiteral("m4v") == fileSuffix)) {
         return FileType::MP4;
@@ -60,16 +60,16 @@ FileType getFileTypeFromFileName(
         return FileType::FLAC;
     }
     if (QStringLiteral("ogg") == fileSuffix) {
-        return FileType::OGG;
+        return FileType::OggVorbis;
     }
     if (QStringLiteral("opus") == fileSuffix) {
-        return FileType::OPUS;
+        return FileType::Opus;
     }
     if (QStringLiteral("wav") == fileSuffix) {
         return FileType::WAV;
     }
     if (QStringLiteral("wv") == fileSuffix) {
-        return FileType::WV;
+        return FileType::WavPack;
     }
     if (fileSuffix.startsWith(QStringLiteral("aif"))) {
         return FileType::AIFF;
