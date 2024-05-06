@@ -43,6 +43,16 @@ constexpr int charToIndex(QChar ch) {
     DEBUG_ASSERT(false);
     return 11; // fallback to dot
 }
+constexpr bool checkCharToIndex() {
+    for (int i = 0; i < NUM_CHARS; i++) {
+        if (charToIndex(indexToChar(i)) != i) {
+            return false;
+        }
+    }
+    return true;
+}
+static_assert(checkCharToIndex());
+
 } // namespace
 
 allshader::DigitsRenderer::~DigitsRenderer() = default;
@@ -87,7 +97,6 @@ void allshader::DigitsRenderer::updateTexture(
         maxTextHeight = 0;
 
         for (int i = 0; i < NUM_CHARS; i++) {
-            assert(charToIndex(indexToChar(i)) == i);
             const QString text(indexToChar(i));
             const auto rect = metrics.tightBoundingRect(text);
             maxTextHeight = std::max(maxTextHeight, rect.height());
