@@ -43,8 +43,8 @@ enum class FileType {
 
 QDebug operator<<(QDebug debug, FileType fileType);
 
-// Deduce the TagLib file type from the file name
-FileType getFileTypeFromFileName(const QString& fileName);
+// Deduce enum FileType from the fileType String
+FileType stringToEnumFileType(const QString& fileType);
 
 #ifdef _WIN32
 static_assert(sizeof(wchar_t) == sizeof(QChar), "wchar_t is not the same size than QChar");
