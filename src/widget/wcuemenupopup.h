@@ -2,8 +2,10 @@
 
 #include <QLabel>
 #include <QLineEdit>
+#include <QMouseEvent>
 #include <QPushButton>
 
+#include "control/pollingcontrolproxy.h"
 #include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
@@ -12,6 +14,21 @@
 #include "widget/wcolorpicker.h"
 
 class ControlProxy;
+
+// Custom PushButton which emit a custom signal when right-clicked
+class CueTypePushButton : public QPushButton {
+    Q_OBJECT
+  public:
+    explicit CueTypePushButton(QWidget* parent = 0)
+            : QPushButton(parent) {
+    }
+
+  protected:
+    void mousePressEvent(QMouseEvent* e) override;
+
+  signals:
+    void rightClicked();
+};
 
 class WCueMenuPopup : public QWidget {
     Q_OBJECT
@@ -57,11 +74,15 @@ class WCueMenuPopup : public QWidget {
     void slotDeleteCue();
     void slotUpdate();
     void slotSavedLoopCue();
+    void slotAdjustSavedLoopCue();
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
     ColorPaletteSettings m_colorPaletteSettings;
-    std::unique_ptr<ControlProxy> m_pBeatLoopSize;
+    PollingControlProxy m_pBeatLoopSize;
+    PollingControlProxy m_pPlayPos;
+    PollingControlProxy m_pTrackSample;
+    PollingControlProxy m_pQuantizeEnabled;
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
@@ -70,7 +91,7 @@ class WCueMenuPopup : public QWidget {
     QLineEdit* m_pEditLabel;
     WColorPicker* m_pColorPicker;
     QPushButton* m_pDeleteCue;
-    QPushButton* m_pSavedLoopCue;
+    CueTypePushButton* m_pSavedLoopCue;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
