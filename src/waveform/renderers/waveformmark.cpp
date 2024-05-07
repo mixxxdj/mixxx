@@ -310,14 +310,10 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     // Determine mark text.
     if (getHotCue() >= 0) {
-        constexpr int kMaxCueLabelLength = 23;
         if (!label.isEmpty()) {
             label.prepend(": ");
         }
         label.prepend(QString::number(getHotCue() + 1));
-        if (label.size() > kMaxCueLabelLength) {
-            label = label.left(kMaxCueLabelLength - 3) + "...";
-        }
     }
 
     const bool useIcon = m_iconPath != "";
