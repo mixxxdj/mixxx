@@ -78,9 +78,11 @@ WaveformMark::WaveformMark(const QString& group,
         : m_linePosition{}, m_breadth{}, m_level{}, m_iPriority(priority), m_iHotCue(hotCue) {
     QString positionControl;
     QString endPositionControl;
+    QString typeControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        typeControl = "hotcue_" + QString::number(hotCue + 1) + "_type";
     } else {
         positionControl = context.selectString(node, "Control");
     }
@@ -90,6 +92,7 @@ WaveformMark::WaveformMark(const QString& group,
     }
     if (!endPositionControl.isEmpty()) {
         m_pEndPositionCO = std::make_unique<ControlProxy>(group, endPositionControl);
+        m_pTypeCO = std::make_unique<ControlProxy>(group, typeControl);
     }
 
     QString visibilityControl = context.selectString(node, "VisibilityControl");
