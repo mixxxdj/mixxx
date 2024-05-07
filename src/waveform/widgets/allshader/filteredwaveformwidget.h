@@ -13,12 +13,9 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderFilteredWaveform;
+        return WaveformWidgetType::Filtered;
     }
 
-    static inline QString getWaveformWidgetName() {
-        return tr("Filtered");
-    }
     static constexpr bool useOpenGl() {
         return true;
     }

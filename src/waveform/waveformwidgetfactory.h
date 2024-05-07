@@ -22,13 +22,21 @@ class VisualsManager;
 class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
+    WaveformWidgetAbstractHandle(WaveformWidgetType::Type type,
+            QList<WaveformWidgetBackend::Backend> backends)
+            : m_type(type), m_backends(std::move(backends)) {
+    }
 
     WaveformWidgetType::Type getType() const { return m_type;}
-    QString getDisplayName() const { return m_displayString;}
+    const QList<WaveformWidgetBackend::Backend>& getBackend() const {
+        return m_backends;
+    }
+
+    QString getDisplayName() const;
 
   private:
     WaveformWidgetType::Type m_type;
-    QString m_displayString;
+    QList<WaveformWidgetBackend::Backend> m_backends;
 
     friend class WaveformWidgetFactory;
 };
@@ -157,9 +165,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
-
-    WaveformWidgetType::Type autoChooseWidgetType() const;
-
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
@@ -194,7 +199,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int findIndexOf(WWaveformViewer* viewer) const;
 
     WaveformWidgetType::Type findTypeFromHandleIndex(int index);
-    QString getDisplayNameFromType(WaveformWidgetType::Type type);
 
     //All type of available widgets
 
@@ -230,6 +234,13 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
+
+    WaveformWidgetAbstract* createFilteredWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createHSVWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createRGBWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createStackedWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createSimpleWaveformWidget(WWaveformViewer* viewer);
+    WaveformWidgetAbstract* createVSyncTestWaveformWidget(WWaveformViewer* viewer);
 
     //Debug
     PerformanceTimer m_time;

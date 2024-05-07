@@ -26,6 +26,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private slots:
     void slotSetFrameRate(int frameRate);
     void slotSetWaveformType(int index);
+    void slotSetWaveformAcceleration(bool checked);
     void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);

@@ -7,9 +7,10 @@ class QtHSVWaveformWidget : public GLWaveformWidgetAbstract {
   public:
     virtual ~QtHSVWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtHSVWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::HSV;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("HSV") + " - Qt"; }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }

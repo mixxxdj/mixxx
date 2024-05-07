@@ -13,12 +13,9 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderRGBWaveform;
+        return WaveformWidgetType::RGB;
     }
 
-    static inline QString getWaveformWidgetName() {
-        return tr("RGB");
-    }
     static constexpr bool useOpenGl() {
         return true;
     }

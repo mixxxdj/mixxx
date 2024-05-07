@@ -75,7 +75,7 @@ const QRegularExpression openGLVersionRegex(QStringLiteral("^(\\d+)\\.(\\d+).*$"
 ///////////////////////////////////////////
 
 WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
-    : m_type(WaveformWidgetType::Count_WaveformwidgetType) {
+        : m_type(WaveformWidgetType::Count_WaveformWidgetType) {
 }
 
 ///////////////////////////////////////////
@@ -102,8 +102,8 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         // Set an empty waveform initially. We will set the correct one when skin load finishes.
         // Concretely, we want to set a non-GL waveform when loading the skin so that the window
         // loads correctly.
-        : m_type(WaveformWidgetType::EmptyWaveform),
-          m_configType(WaveformWidgetType::EmptyWaveform),
+        : m_type(WaveformWidgetType::Empty),
+          m_configType(WaveformWidgetType::Empty),
           m_config(nullptr),
           m_skipRender(false),
           m_frameRate(60),
@@ -381,7 +381,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     // Store the widget type on m_configType for later initialization.
     // We will initialize the objects later because of a problem with GL on QT 5.14.2 on Windows
     if (!ok || !setWidgetType(type, &m_configType)) {
-        setWidgetType(autoChooseWidgetType(), &m_configType);
+        setWidgetType(WaveformWidgetType::RGB, &m_configType);
     }
 
     for (int i = 0; i < FilterCount; i++) {
@@ -552,7 +552,7 @@ bool WaveformWidgetFactory::setWidgetType(
     // check if type is acceptable
     int index = findHandleIndexFromType(type);
     bool isAcceptable = index > -1;
-    *pCurrentType = isAcceptable ? type : WaveformWidgetType::EmptyWaveform;
+    *pCurrentType = isAcceptable ? type : WaveformWidgetType::Empty;
     if (m_config) {
         m_configType = *pCurrentType;
         m_config->setValue(
@@ -563,15 +563,13 @@ bool WaveformWidgetFactory::setWidgetType(
 
 bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
     switch (m_configType) {
-    case WaveformWidgetType::AllShaderRGBWaveform:
+    case WaveformWidgetType::RGB:
         return true;
-    case WaveformWidgetType::AllShaderLRRGBWaveform:
+    case WaveformWidgetType::Filtered:
         return true;
-    case WaveformWidgetType::AllShaderFilteredWaveform:
+    case WaveformWidgetType::Simple:
         return true;
-    case WaveformWidgetType::AllShaderSimpleWaveform:
-        return true;
-    case WaveformWidgetType::AllShaderHSVWaveform:
+    case WaveformWidgetType::HSV:
         return true;
     default:
         break;
@@ -580,7 +578,7 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
 }
 
 bool WaveformWidgetFactory::setWidgetTypeFromConfig() {
-    int empty = findHandleIndexFromType(WaveformWidgetType::EmptyWaveform);
+    int empty = findHandleIndexFromType(WaveformWidgetType::Empty);
     int desired = findHandleIndexFromType(m_configType);
     if (desired == -1) {
         qDebug() << "WaveformWidgetFactory::setWidgetTypeFromConfig"
@@ -596,7 +594,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex, bool force)
         qDebug() << "WaveformWidgetFactory::setWidgetTypeFromHandle"
                     " - invalid handle --> using 'EmptyWaveform'";
         // fallback empty type
-        setWidgetType(WaveformWidgetType::EmptyWaveform);
+        setWidgetType(WaveformWidgetType::Empty);
         return false;
     }
 
@@ -863,200 +861,290 @@ void WaveformWidgetFactory::slotFrameSwapped() {
 #endif
 }
 
-WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
-    if (isOpenGlShaderAvailable()) {
-#ifndef MIXXX_USE_QOPENGL
-        return WaveformWidgetType::GLSLRGBWaveform;
-#else
-        return WaveformWidgetType::AllShaderRGBWaveform;
-#endif
-    }
-    if (isOpenGlAvailable() || isOpenGlesAvailable()) {
-        return WaveformWidgetType::GLRGBWaveform;
-    }
-    return WaveformWidgetType::RGBWaveform;
-}
-
 void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
-    for (int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++) {
-        QString widgetName;
-        bool useOpenGl;
-        bool useOpenGles;
-        bool useOpenGLShaders;
-        WaveformWidgetCategory category;
-
+    QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend::Backend>> collectedHandles;
+    for (int type = WaveformWidgetType::Empty;
+            type < WaveformWidgetType::Count_WaveformWidgetType;
+            type++) {
         // this lambda needs its type specified explicitly,
         // requiring it to be called with via `.operator()<WaveformT>()`
+        collectedHandles.insert(static_cast<WaveformWidgetType::Type>(type),
+                QList<WaveformWidgetBackend::Backend>());
         auto setWaveformVarsByType = [&]<typename WaveformT>() {
-            widgetName = buildWidgetDisplayName<WaveformT>();
-            useOpenGl = WaveformT::useOpenGl();
-            useOpenGles = WaveformT::useOpenGles();
-            useOpenGLShaders = WaveformT::useOpenGLShaders();
-            category = WaveformT::category();
+            bool useOpenGl = WaveformT::useOpenGl();
+            bool useOpenGles = WaveformT::useOpenGles();
+            bool useOpenGLShaders = WaveformT::useOpenGLShaders();
+            WaveformWidgetCategory category = WaveformT::category();
+            WaveformWidgetBackend::Backend backend = WaveformWidgetBackend::None;
+
+            bool active = true;
+            if (isOpenGlAvailable()) {
+                if (useOpenGles && !useOpenGl) {
+                    active = false;
+                } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                    active = false;
+                }
+            } else if (isOpenGlesAvailable()) {
+                if (useOpenGl && !useOpenGles) {
+                    active = false;
+                } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                    active = false;
+                }
+            } else {
+                // No sufficient GL support
+                if (useOpenGles || useOpenGl || useOpenGLShaders) {
+                    active = false;
+                }
+            }
+
+            if (category == WaveformWidgetCategory::DeveloperOnly &&
+                    !CmdlineArgs::Instance().getDeveloper()) {
+                active = false;
+            }
+#ifdef MIXXX_USE_QOPENGL
+            else if (category == WaveformWidgetCategory::AllShader) {
+                backend = WaveformWidgetBackend::AllShader;
+            }
+#endif
+            else if (category == WaveformWidgetCategory::Legacy && useOpenGLShaders) {
+                backend = WaveformWidgetBackend::GLSL;
+            } else if (category == WaveformWidgetCategory::Legacy) {
+                backend = WaveformWidgetBackend::GL;
+            }
+
+            if (active) {
+                collectedHandles[static_cast<WaveformWidgetType::Type>(type)].push_back(backend);
+            }
         };
 
         switch(type) {
-        case WaveformWidgetType::EmptyWaveform:
+        case WaveformWidgetType::Empty:
             setWaveformVarsByType.operator()<EmptyWaveformWidget>();
             break;
-        case WaveformWidgetType::SoftwareSimpleWaveform:
-            continue; // //TODO(vrince):
-        case WaveformWidgetType::SoftwareWaveform:
-#ifdef __APPLE__
-            // Don't offer the simple renderers on macOS, they do not work with skins
-            // that load GL widgets (spinnies, waveforms) in singletons.
-            // Also excluded in enum WaveformWidgetType
-            // https://bugs.launchpad.net/bugs/1928772
-            continue;
-#else
-            setWaveformVarsByType.operator()<SoftwareWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::HSVWaveform:
-#ifdef __APPLE__
-            continue;
-#else
-            setWaveformVarsByType.operator()<HSVWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::RGBWaveform:
-#ifdef __APPLE__
-            continue;
-#else
-            setWaveformVarsByType.operator()<RGBWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::QtSimpleWaveform:
+        case WaveformWidgetType::Simple:
+            setWaveformVarsByType.operator()<GLSimpleWaveformWidget>();
 #ifdef MIXXX_USE_QOPENGL
-            continue;
+            setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
 #else
             setWaveformVarsByType.operator()<QtSimpleWaveformWidget>();
             break;
 #endif
-        case WaveformWidgetType::QtWaveform:
+        case WaveformWidgetType::Filtered:
+#ifndef __APPLE__
+            // Don't offer the simple renderers on macOS, they do not work with skins
+            // that load GL widgets (spinnies, waveforms) in singletons.
+            // Also excluded in enum WaveformWidgetType
+            // https://bugs.launchpad.net/bugs/1928772
+            setWaveformVarsByType.operator()<SoftwareWaveformWidget>();
+#endif
+            setWaveformVarsByType.operator()<GLWaveformWidget>();
+            setWaveformVarsByType.operator()<GLSLFilteredWaveformWidget>();
 #ifdef MIXXX_USE_QOPENGL
-            continue;
+            setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
 #else
             setWaveformVarsByType.operator()<QtWaveformWidget>();
-            break;
 #endif
-        case WaveformWidgetType::GLSimpleWaveform:
-            setWaveformVarsByType.operator()<GLSimpleWaveformWidget>();
             break;
-        case WaveformWidgetType::GLFilteredWaveform:
-            setWaveformVarsByType.operator()<GLWaveformWidget>();
-            break;
-        case WaveformWidgetType::GLSLFilteredWaveform:
-            setWaveformVarsByType.operator()<GLSLFilteredWaveformWidget>();
-            break;
-        case WaveformWidgetType::GLSLRGBWaveform:
-            setWaveformVarsByType.operator()<GLSLRGBWaveformWidget>();
-            break;
-        case WaveformWidgetType::GLSLRGBStackedWaveform:
-            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
-            break;
-        case WaveformWidgetType::GLVSyncTest:
+        case WaveformWidgetType::VSyncTest:
             setWaveformVarsByType.operator()<GLVSyncTestWidget>();
-            break;
-        case WaveformWidgetType::GLRGBWaveform:
-            setWaveformVarsByType.operator()<GLRGBWaveformWidget>();
-            break;
-        case WaveformWidgetType::QtVSyncTest:
-#ifdef MIXXX_USE_QOPENGL
-            continue;
-#else
+#ifndef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<QtVSyncTestWidget>();
 #endif
             break;
-        case WaveformWidgetType::QtHSVWaveform:
-#ifdef MIXXX_USE_QOPENGL
-            continue;
-#else
-            setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
-            break;
+        case WaveformWidgetType::RGB:
+            setWaveformVarsByType.operator()<GLSLRGBWaveformWidget>();
+            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
+            setWaveformVarsByType.operator()<GLRGBWaveformWidget>();
+#ifndef __APPLE__
+            // Don't offer the simple renderers on macOS, they do not work with skins
+            // that load GL widgets (spinnies, waveforms) in singletons.
+            // Also excluded in enum WaveformWidgetType
+            // https://bugs.launchpad.net/bugs/1928772
+            setWaveformVarsByType.operator()<RGBWaveformWidget>();
 #endif
-        case WaveformWidgetType::QtRGBWaveform:
 #ifdef MIXXX_USE_QOPENGL
-            continue;
+            setWaveformVarsByType.operator()<allshader::RGBWaveformWidget>();
 #else
             setWaveformVarsByType.operator()<QtRGBWaveformWidget>();
-            break;
 #endif
-        case WaveformWidgetType::AllShaderRGBWaveform:
-#ifndef MIXXX_USE_QOPENGL
-            continue;
-#else
-            setWaveformVarsByType.operator()<allshader::RGBWaveformWidget>();
             break;
+        case WaveformWidgetType::HSV:
+#ifndef __APPLE__
+            // Don't offer the simple renderers on macOS, they do not work with skins
+            // that load GL widgets (spinnies, waveforms) in singletons.
+            // Also excluded in enum WaveformWidgetType
+            // https://bugs.launchpad.net/bugs/1928772
+            setWaveformVarsByType.operator()<HSVWaveformWidget>();
 #endif
-        case WaveformWidgetType::AllShaderLRRGBWaveform:
-#ifndef MIXXX_USE_QOPENGL
-            continue;
-#else
-            setWaveformVarsByType.operator()<allshader::LRRGBWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::AllShaderFilteredWaveform:
-#ifndef MIXXX_USE_QOPENGL
-            continue;
-#else
-            setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::AllShaderSimpleWaveform:
-#ifndef MIXXX_USE_QOPENGL
-            continue;
-#else
-            setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
-            break;
-#endif
-        case WaveformWidgetType::AllShaderHSVWaveform:
-#ifndef MIXXX_USE_QOPENGL
-            continue;
-#else
+#ifdef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<allshader::HSVWaveformWidget>();
-            break;
+#else
+            setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
 #endif
+        case WaveformWidgetType::Stacked:
+            setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
+            break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
         }
-
-        bool active = true;
-        if (isOpenGlAvailable()) {
-            if (useOpenGles && !useOpenGl) {
-                active = false;
-            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
-                active = false;
-            }
-        } else if (isOpenGlesAvailable()) {
-            if (useOpenGl && !useOpenGles) {
-                active = false;
-            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
-                active = false;
-            }
-        } else {
-            // No sufficient GL support
-            if (useOpenGles || useOpenGl || useOpenGLShaders) {
-                active = false;
-            }
-        }
-
-        if (category == WaveformWidgetCategory::DeveloperOnly &&
-                !CmdlineArgs::Instance().getDeveloper()) {
-            active = false;
-        }
-
-        if (active) {
-            // add new handle for each available widget type
-            WaveformWidgetAbstractHandle handle;
-            handle.m_displayString = widgetName;
-            handle.m_type = static_cast<WaveformWidgetType::Type>(type);
-
-            m_waveformWidgetHandles.push_back(handle);
-        }
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    for (auto [type, backends] : collectedHandles.asKeyValueRange()) {
+#else
+    QHashIterator<WaveformWidgetType::Type,
+            QList<WaveformWidgetBackend::Backend>>
+            handleIter(collectedHandles);
+    while (handleIter.hasNext()) {
+        handleIter.next();
+        auto& type = handleIter.key();
+        auto& backends = handleIter.value();
+#endif
+        m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends));
+    }
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
+        WWaveformViewer* viewer) {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    int backend = m_config->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            isOpenGlAvailable() || isOpenGlesAvailable()
+                    ?
+#ifdef MIXXX_USE_QOPENGL
+                    WaveformWidgetBackend::AllShader
+#else
+                    WaveformWidgetBackend::GL
+#endif
+                    : WaveformWidgetBackend::None);
+
+    switch (backend) {
+    case WaveformWidgetBackend::GL:
+        return new GLWaveformWidget(viewer->getGroup(), viewer);
+    case WaveformWidgetBackend::GLSL:
+        return new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
+#ifdef MIXXX_USE_QOPENGL
+    case WaveformWidgetBackend::AllShader:
+        return new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer);
+#else
+    case WaveformWidgetBackend::Qt:
+        return new QtWaveformWidget(viewer->getGroup(), viewer);
+#endif
+    default:
+        return new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+    }
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveformViewer* viewer) {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    int backend = m_config->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            isOpenGlAvailable() || isOpenGlesAvailable()
+                    ?
+#ifdef MIXXX_USE_QOPENGL
+                    WaveformWidgetBackend::AllShader
+#else
+                    WaveformWidgetBackend::GL
+#endif
+                    : WaveformWidgetBackend::None);
+
+    switch (backend) {
+#ifdef MIXXX_USE_QOPENGL
+    case WaveformWidgetBackend::AllShader:
+        return new allshader::HSVWaveformWidget(viewer->getGroup(), viewer);
+#endif
+    default:
+        return new HSVWaveformWidget(viewer->getGroup(), viewer);
+    }
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveformViewer* viewer) {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    int backend = m_config->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            isOpenGlAvailable() || isOpenGlesAvailable()
+                    ?
+#ifdef MIXXX_USE_QOPENGL
+                    WaveformWidgetBackend::AllShader
+#else
+                    WaveformWidgetBackend::GL
+#endif
+                    : WaveformWidgetBackend::None);
+
+    switch (backend) {
+    case WaveformWidgetBackend::GL:
+        return new GLRGBWaveformWidget(viewer->getGroup(), viewer);
+    case WaveformWidgetBackend::GLSL:
+        return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
+#ifdef MIXXX_USE_QOPENGL
+    case WaveformWidgetBackend::AllShader:
+        return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
+#else
+    case WaveformWidgetBackend::Qt:
+        return new QtRGBWaveformWidget(viewer->getGroup(), viewer);
+#endif
+    default:
+        return new RGBWaveformWidget(viewer->getGroup(), viewer);
+    }
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createStackedWaveformWidget(
+        WWaveformViewer* viewer) {
+    return new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWaveformViewer* viewer) {
+    // On the UI, hardware acceleration is a boolean (0 => software rendering, 1
+    // => hardware acceleration), but in the setting, we keep the granularity so
+    // in case of issue when we release, we can communicate workaround on
+    // editing the INI file to target a specific rendering backend. If no
+    // complains come back, we can convert this safely to a backend eventually.
+    int backend = m_config->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            isOpenGlAvailable() || isOpenGlesAvailable()
+                    ?
+#ifdef MIXXX_USE_QOPENGL
+                    WaveformWidgetBackend::AllShader
+#else
+                    WaveformWidgetBackend::GL
+#endif
+                    : WaveformWidgetBackend::None);
+
+    switch (backend) {
+#ifdef MIXXX_USE_QOPENGL
+    case WaveformWidgetBackend::GL:
+        return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
+    default:
+        return new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
+#else
+    case WaveformWidgetBackend::Qt:
+        return new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
+    default:
+        return new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
+#endif
+    }
+}
+
+WaveformWidgetAbstract* WaveformWidgetFactory::createVSyncTestWaveformWidget(
+        WWaveformViewer* viewer) {
+#ifdef MIXXX_USE_QOPENGL
+    return new GLVSyncTestWidget(viewer->getGroup(), viewer);
+#else
+    return new QtVSyncTest(viewer->getGroup(), viewer);
+#endif
 }
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
@@ -1064,82 +1152,36 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
     WaveformWidgetAbstract* widget = nullptr;
     if (viewer) {
         if (CmdlineArgs::Instance().getSafeMode()) {
-            type = WaveformWidgetType::EmptyWaveform;
+            type = WaveformWidgetType::Empty;
         }
 
         switch(type) {
-        case WaveformWidgetType::SoftwareWaveform:
-            widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::Simple:
+            widget = createSimpleWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::HSVWaveform:
-            widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::Filtered:
+            widget = createFilteredWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::RGBWaveform:
-            widget = new RGBWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::HSV:
+            widget = createHSVWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::GLSimpleWaveform:
-            widget = new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::VSyncTest:
+            widget = createVSyncTestWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::GLFilteredWaveform:
-            widget = new GLWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::RGB:
+            widget = createRGBWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::GLRGBWaveform:
-            widget = new GLRGBWaveformWidget(viewer->getGroup(), viewer);
+        case WaveformWidgetType::Stacked:
+            widget = createStackedWaveformWidget(viewer);
             break;
-        case WaveformWidgetType::GLSLFilteredWaveform:
-            widget = new GLSLFilteredWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::GLSLRGBWaveform:
-            widget = new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::GLSLRGBStackedWaveform:
-            widget = new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::GLVSyncTest:
-            widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
-            break;
-#ifdef MIXXX_USE_QOPENGL
-        case WaveformWidgetType::AllShaderRGBWaveform:
-            widget = new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::AllShaderLRRGBWaveform:
-            widget = new allshader::LRRGBWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::AllShaderFilteredWaveform:
-            widget = new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::AllShaderSimpleWaveform:
-            widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::AllShaderHSVWaveform:
-            widget = new allshader::HSVWaveformWidget(viewer->getGroup(), viewer);
-            break;
-#else
-        case WaveformWidgetType::QtSimpleWaveform:
-            widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtWaveform:
-            widget = new QtWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtVSyncTest:
-            widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtHSVWaveform:
-            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::QtRGBWaveform:
-            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
-            break;
-#endif
-        default:
-        //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
         //case WaveformWidgetType::EmptyWaveform:
+        default:
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             break;
         }
         widget->castToQWidget();
         if (!widget->isValid()) {
-            qWarning() << "failed to init WafeformWidget" << type << "fall back to \"Empty\"";
+            qWarning() << "failed to init WaveformWidget" << type << "fall back to \"Empty\"";
             delete widget;
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             widget->castToQWidget();
@@ -1205,7 +1247,7 @@ void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString>>* p
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int index) {
-    WaveformWidgetType::Type type = WaveformWidgetType::Count_WaveformwidgetType;
+    WaveformWidgetType::Type type = WaveformWidgetType::Count_WaveformWidgetType;
     if (index >= 0 && index < m_waveformWidgetHandles.size()) {
         type = m_waveformWidgetHandles[index].m_type;
     }
@@ -1223,40 +1265,26 @@ int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type
     return index;
 }
 
-QString WaveformWidgetFactory::getDisplayNameFromType(WaveformWidgetType::Type type) {
-    for (const auto& handle : std::as_const(m_waveformWidgetHandles)) {
-        if (handle.m_type == type) {
-            return handle.m_displayString;
-        }
+// Static
+QString WaveformWidgetAbstractHandle::getDisplayName() const {
+    switch (m_type) {
+    case WaveformWidgetType::Empty:
+        return QObject::tr("Empty");
+    case WaveformWidgetType::Simple:
+        return QObject::tr("Simple");
+    case WaveformWidgetType::Filtered:
+        return QObject::tr("Filtered");
+    case WaveformWidgetType::HSV:
+        return QObject::tr("HSV");
+    case WaveformWidgetType::VSyncTest:
+        return QObject::tr("VSyncTest");
+    case WaveformWidgetType::RGB:
+        return QObject::tr("RGB");
+    case WaveformWidgetType::Stacked:
+        return QObject::tr("Stacked");
+    default:
+        return QObject::tr("Unknown");
     }
-    return QString();
-}
-
-template<typename WaveformT>
-QString WaveformWidgetFactory::buildWidgetDisplayName() const {
-    const bool isLegacy = WaveformT::category() == WaveformWidgetCategory::Legacy;
-    QStringList extras;
-    if (isLegacy) {
-        extras.push_back(tr("legacy"));
-    }
-    if (isOpenGlesAvailable()) {
-        if (WaveformT::useOpenGLShaders()) {
-            extras.push_back(QStringLiteral("GLSL ES"));
-        } else if (WaveformT::useOpenGles()) {
-            extras.push_back(QStringLiteral("GLES"));
-        }
-    } else if (isOpenGlAvailable()) {
-        if (WaveformT::useOpenGLShaders()) {
-            extras.push_back(QStringLiteral("GLSL"));
-        } else if (WaveformT::useOpenGl()) {
-            extras.push_back(QStringLiteral("GL"));
-        }
-    }
-    QString name = WaveformT::getWaveformWidgetName();
-    if (extras.isEmpty()) {
-        return name;
-    }
-    return QStringLiteral("%1 (%2)").arg(name, extras.join(QStringLiteral(", ")));
 }
 
 // static

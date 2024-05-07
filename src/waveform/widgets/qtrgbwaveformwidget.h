@@ -7,7 +7,9 @@ class QtRGBWaveformWidget : public GLWaveformWidgetAbstract {
   public:
     virtual ~QtRGBWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtRGBWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::RGB;
+    }
 
     static inline QString getWaveformWidgetName() { return tr("RGB") + " - Qt"; }
     static inline bool useOpenGl() { return true; }

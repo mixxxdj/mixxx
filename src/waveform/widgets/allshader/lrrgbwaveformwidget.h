@@ -9,16 +9,14 @@ namespace allshader {
 class LRRGBWaveformWidget;
 }
 
+/// This waveform type isn't used anymore!
 class allshader::LRRGBWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderLRRGBWaveform;
+        return WaveformWidgetType::RGB;
     }
 
-    static inline QString getWaveformWidgetName() {
-        return tr("RGB L/R");
-    }
     static constexpr bool useOpenGl() {
         return true;
     }

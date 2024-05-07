@@ -9,9 +9,10 @@ class RGBWaveformWidget : public NonGLWaveformWidgetAbstract {
   public:
     virtual ~RGBWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::RGBWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::RGB;
+    }
 
-    static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return false; }
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }

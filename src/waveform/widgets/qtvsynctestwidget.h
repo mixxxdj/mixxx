@@ -8,7 +8,9 @@ class QtVSyncTestWidget : public GLWaveformWidgetAbstract {
     QtVSyncTestWidget(const QString& group, QWidget* parent);
     virtual ~QtVSyncTestWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtVSyncTest; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::VSyncTest;
+    }
 
     static inline QString getWaveformWidgetName() { return tr("VSyncTest") + " - Qt"; }
     static inline bool useOpenGl() { return true; }

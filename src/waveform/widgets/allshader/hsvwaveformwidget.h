@@ -13,12 +13,9 @@ class allshader::HSVWaveformWidget final : public allshader::WaveformWidget {
     Q_OBJECT
   public:
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::AllShaderHSVWaveform;
+        return WaveformWidgetType::HSV;
     }
 
-    static inline QString getWaveformWidgetName() {
-        return tr("HSV");
-    }
     static constexpr bool useOpenGl() {
         return true;
     }

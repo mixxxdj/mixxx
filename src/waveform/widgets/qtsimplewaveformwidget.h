@@ -8,8 +8,9 @@ class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     QtSimpleWaveformWidget(const QString& group, QWidget* parent);
     virtual ~QtSimpleWaveformWidget();
 
-
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform; }
+    virtual WaveformWidgetType::Type getType() const {
+        return WaveformWidgetType::Simple;
+    }
 
     static inline QString getWaveformWidgetName() {
         return tr("Simple") + "- Qt";

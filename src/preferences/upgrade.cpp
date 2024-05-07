@@ -32,40 +32,21 @@ Upgrade::~Upgrade() {
 
 namespace {
 // mapping to proactively move users to the new all-shader waveform types
-WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformType) {
+void upgradeToAllShaders(WaveformWidgetType::Type* waveformType,
+        WaveformWidgetBackend::Backend* waveformBackend) {
+    if (*waveformBackend == WaveformWidgetBackend::AllShader) {
+        return;
+    }
     // TODO: convert `WaveformWidgetType::Type` to an enum class then shorten more `using enum ...`
     using WWT = WaveformWidgetType;
-    switch (waveformType) {
-    case WWT::EmptyWaveform:
-    case WWT::SoftwareSimpleWaveform:
-    case WWT::SoftwareWaveform:
-    case WWT::GLVSyncTest:
-    case WWT::QtVSyncTest:
-    case WWT::AllShaderRGBWaveform:
-    case WWT::AllShaderLRRGBWaveform:
-    case WWT::AllShaderFilteredWaveform:
-    case WWT::AllShaderSimpleWaveform:
-    case WWT::AllShaderHSVWaveform:
-    case WWT::Count_WaveformwidgetType:
-        return waveformType;
-    case WWT::QtSimpleWaveform:
-    case WWT::GLSimpleWaveform:
-        return WaveformWidgetType::AllShaderSimpleWaveform;
-    case WWT::GLFilteredWaveform:
-    case WWT::GLSLFilteredWaveform:
-        return WaveformWidgetType::AllShaderFilteredWaveform;
-    case WWT::QtWaveform:
-    case WWT::RGBWaveform:
-    case WWT::GLRGBWaveform:
-    case WWT::GLSLRGBWaveform:
-    case WWT::QtRGBWaveform:
-    case WWT::GLSLRGBStackedWaveform:
-        return WWT::AllShaderRGBWaveform;
-    case WWT::HSVWaveform:
-    case WWT::QtHSVWaveform:
-        return WWT::AllShaderHSVWaveform;
+    switch (*waveformType) {
+    case WWT::Empty:
+    case WWT::VSyncTest:
+        // Not supported by AllShader
+        return;
+    default:
+        *waveformBackend = WaveformWidgetBackend::AllShader;
     }
-    return WWT::AllShaderRGBWaveform;
 }
 
 VSyncThread::VSyncMode upgradeDeprecatedVSyncModes(int configVSyncMode) {
@@ -514,15 +495,21 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     configVersion.startsWith("2.4.0-"))) {
         // Proactively move users to an all-shader waveform widget type and set the
         // framerate to 60 fps
-        bool ok = false;
+        bool okType = false, okBackend = false;
         auto waveformType =
                 config->getValueString(ConfigKey("[Waveform]", "WaveformType"))
-                        .toInt(&ok);
-        if (ok) {
+                        .toInt(&okType);
+        auto waveformBackend =
+                config->getValueString(ConfigKey("[Waveform]", "use_hardware_acceleration"))
+                        .toInt(&okBackend);
+        if (okType && okBackend) {
+            upgradeToAllShaders(
+                    (WaveformWidgetType::Type*)&waveformType,
+                    (WaveformWidgetBackend::Backend*)&waveformBackend);
             config->set(ConfigKey("[Waveform]", "WaveformType"),
-                    ConfigValue(upgradeToAllShaders(
-                            static_cast<WaveformWidgetType::Type>(
-                                    waveformType))));
+                    ConfigValue(waveformType));
+            config->set(ConfigKey("[Waveform]", "use_hardware_acceleration"),
+                    ConfigValue(waveformBackend));
         }
         config->set(ConfigKey("[Waveform]", "FrameRate"), ConfigValue(60));
 
