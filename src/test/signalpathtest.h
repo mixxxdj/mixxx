@@ -28,9 +28,12 @@
 #include "util/memory.h"
 #include "util/sample.h"
 #include "util/types.h"
+#include "waveform/visualsmanager.h"
 
-using ::testing::Return;
+class EngineSync;
+
 using ::testing::_;
+using ::testing::Return;
 
 #define EXPECT_FRAMEPOS_EQ(pos1, pos2)                    \
     EXPECT_EQ((pos1).isValid(), (pos2).isValid());        \
@@ -149,6 +152,11 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer getTestTrack() const {
+        return Track::newTemporary(mixxx::FileAccess(mixxx::FileInfo(kTrackLocationTest)));
+    }
+
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
         if (pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
@@ -176,7 +184,8 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer,
+    void assertBufferMatchesReference(
+            const CSAMPLE* pBuffer,
             const int iBufferSize,
             const QString& reference_title,
             const double delta = .0001) {
@@ -240,9 +249,10 @@ class BaseSignalPathTest : public MixxxTest, SoundSourceProviderRegistration {
         m_pEngineMixer->process(kProcessBufferSize);
     }
 
+    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
-    std::unique_ptr<mixxx::ControlIndicatorTimer> m_pControlIndicatorTimer;
+
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMixer* m_pEngineMixer;
