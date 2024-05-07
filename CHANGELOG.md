@@ -34,6 +34,11 @@
 * fix: incorrect reboot required notification on preference updates [#13058](https://github.com/mixxxdj/mixxx/pull/13058)
 * Effects: Add backend for Audio Unit (AU) plugins on macOS [#12112](https://github.com/mixxxdj/mixxx/pull/12112)
 
+### Waevforms
+
+* SlipMode waveform visual for RGB GLSL [#13002](https://github.com/mixxxdj/mixxx/pull/13002)
+* Show beats and time until next marker in the waveform [#12994](https://github.com/mixxxdj/mixxx/pull/12994)
+
 ### Controller Mappings
 
 * Pioneer DDJ-FLX4: mapping improvements [#12842](https://github.com/mixxxdj/mixxx/pull/12842)
@@ -53,13 +58,16 @@
   [#13046](https://github.com/mixxxdj/mixxx/pull/13046)
   [#13057](https://github.com/mixxxdj/mixxx/pull/13057)
   [#13045](https://github.com/mixxxdj/mixxx/pull/13045)
-* Registering MIDI Input Handlers From Javascript [#12781](https://github.com/mixxxdj/mixxx/pull/12781)
+* Registering MIDI Input Handlers From Javascript
+  [#12781](https://github.com/mixxxdj/mixxx/pull/12781)
+  [#13089](https://github.com/mixxxdj/mixxx/pull/13089)
 * Add Track colour palette cycling controls `track_color_next` and `track_color_prev` to library, decks and samplers
   [#13066](https://github.com/mixxxdj/mixxx/pull/13066)
   [#12905](https://github.com/mixxxdj/mixxx/issues/12905)
-* Add tempo lock control `bpm_toggle_lock` to decks and samplers
+* Add tempo lock control `bpmlock` to decks and samplers
   [#13041](https://github.com/mixxxdj/mixxx/pull/13041)
   [#13038](https://github.com/mixxxdj/mixxx/issues/13038)
+  [#13199](https://github.com/mixxxdj/mixxx/pull/13199)
 * Controller IO table: Fix display text for Action/control delegate [#13188](https://github.com/mixxxdj/mixxx/pull/13188)
 
 ### Library
@@ -70,6 +78,10 @@
 * Playlists: move tracks with Alt + Up/Down/PageUp/PageDown/Home/End
   [#13092](https://github.com/mixxxdj/mixxx/pull/13092)
   [#10826](https://github.com/mixxxdj/mixxx/issues/10826)
+
+### Skins
+
+* LateNight: Merge vinyl control toggle and status light [#12947](https://github.com/mixxxdj/mixxx/pull/12947)
 
 ### Experimental QML Skin
 
@@ -255,6 +267,7 @@
   [#13162](https://github.com/mixxxdj/mixxx/pull/13162)
   [#13163](https://github.com/mixxxdj/mixxx/pull/13163)
   [#13187](https://github.com/mixxxdj/mixxx/pull/13187)
+  [#13217](https://github.com/mixxxdj/mixxx/pull/13217)
 
 ## [2.4.1](https://github.com/mixxxdj/mixxx/milestone/41?closed=1) (2024-05-08)
 
