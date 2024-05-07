@@ -118,41 +118,42 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 
+// static
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
-    QString modseq;
-    QKeySequence k;
-
-    // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
-
-    if (e->modifiers() & Qt::ShiftModifier) {
-        modseq += "Shift+";
-    }
-
-    if (e->modifiers() & Qt::ControlModifier) {
-        modseq += "Ctrl+";
-    }
-
-    if (e->modifiers() & Qt::AltModifier) {
-        modseq += "Alt+";
-    }
-
-    if (e->modifiers() & Qt::MetaModifier) {
-        modseq += "Meta+";
-    }
-
     if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
-        // Do not act on Modifier only
-        // avoid returning "khmer vowel sign ie (U+17C0)"
-        return k;
+        // Do not act on Modifier only, avoid returning "khmer vowel sign ie (U+17C0)"
+        return {};
     }
-
-    QString keyseq = QKeySequence(e->key()).toString();
-    k = QKeySequence(modseq + keyseq);
 
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qDebug() << "keyboard press: " << k.toString();
+        QString modseq;
+        QKeySequence k;
+        if (e->modifiers() & Qt::ShiftModifier) {
+            modseq += "Shift+";
+        }
+        if (e->modifiers() & Qt::ControlModifier) {
+            modseq += "Ctrl+";
+        }
+        if (e->modifiers() & Qt::AltModifier) {
+            modseq += "Alt+";
+        }
+        if (e->modifiers() & Qt::MetaModifier) {
+            modseq += "Meta+";
+        }
+        QString keyseq = QKeySequence(e->key()).toString();
+        k = QKeySequence(modseq + keyseq);
+        if (e->type() == QEvent::KeyPress) {
+            qDebug() << "keyboard press: " << k.toString();
+        } else if (e->type() == QEvent::KeyRelease) {
+            qDebug() << "keyboard release: " << k.toString();
+        }
     }
-    return k;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return QKeySequence(e->modifiers() | e->key());
+#else
+    return QKeySequence(e->modifiers() + e->key());
+#endif
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

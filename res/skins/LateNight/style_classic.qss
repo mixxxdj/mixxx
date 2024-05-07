@@ -1202,7 +1202,8 @@ WBeatSpinBox, #spinBoxTransition,
 #MainMenu::item,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"], /* off */
+#VinylCueButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
@@ -1213,7 +1214,9 @@ WBeatSpinBox, #spinBoxTransition,
   color: #d2d2d1;
   }
 
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled (green bg) */
+WPushButton#VinylStatus[displayValue="2"], /* end of record (blinking yellow bg) */
+WPushButton#VinylStatus[displayValue="3"], /* needle skip detected (pink bg) */
 #PassthroughButton[displayValue="1"],
 #VinylCueButton[displayValue="1"],
 #VinylCueButton[displayValue="2"],
@@ -1294,7 +1297,7 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skins:LateNight/classic/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 WPushButton#FxAssignButton1[displayValue="0"],
-#VinylButton[displayValue="0"],
+WPushButton#VinylStatus[displayValue="0"],
 #KeyMatchReset[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #SyncDeck[displayValue="0"],
@@ -1307,7 +1310,9 @@ WEffectSelector:!editable,
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
   }
-WPushButton#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"],
+WPushButton#VinylStatus[displayValue="3"],
 WPushButton#FxAssignButton1[displayValue="1"],
 #KeyMatchReset[pressed="true"],
 #GuiToggleButton[displayValue="1"],
@@ -1468,6 +1473,7 @@ QPushButton#pushButtonRecording:checked {
 WPushButton#QuickEffectButton[displayValue="1"],
 #FxAssignButton1[displayValue="1"],
 #FxAssignButton2[displayValue="1"],
+WPushButton#VinylStatus[displayValue="1"], /* enabled, OK */
 #BroadcastButton[displayValue="2"] {
   background-color: #659f08;
 }
@@ -1494,14 +1500,15 @@ QPushButton#pushButtonRepeatPlaylist:checked {
   background-color: #888;
 }
 
+/* pink for error / warning*/
 #BroadcastButton[displayValue="3"],
-#BroadcastButton[displayValue="4"] {
-  /* pink */
+#BroadcastButton[displayValue="4"],
+WPushButton#VinylStatus[displayValue="3"] { /* needle skip detected */
   background-color: #f856e7;
 }
 
 /* Golden */
-#VinylButton[displayValue="1"],
+WPushButton#VinylStatus[displayValue="2"], /* blinks when the needle reaches the end of the record */
 #PassthroughButton[displayValue="1"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -1604,7 +1611,14 @@ WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot {
+#RecDot,
+/* transparent buttons, 0-4 (max button state we have currently) */
+/* currently used for VINYL overlay */
+WPushButton#Blank[value="0"],
+WPushButton#Blank[value="1"],
+WPushButton#Blank[value="2"],
+WPushButton#Blank[value="3"],
+WPushButton#Blank[value="4"] {
   background-color: transparent;
 }
 

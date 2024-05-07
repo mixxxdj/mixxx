@@ -158,7 +158,7 @@ void BasePlaylistFeature::connectPlaylistDAO() {
             this,
             &BasePlaylistFeature::slotPlaylistTableChanged);
     connect(&m_playlistDao,
-            &PlaylistDAO::tracksChanged,
+            &PlaylistDAO::playlistContentChanged,
             this,
             &BasePlaylistFeature::slotPlaylistContentOrLockChanged);
     connect(&m_playlistDao,

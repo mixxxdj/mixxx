@@ -89,6 +89,9 @@ class WaveformMark {
         }
         return m_pVisibleCO->toBool();
     }
+    bool isShowUntilNext() const {
+        return m_showUntilNext;
+    }
 
     template<typename Receiver, typename Slot>
     void connectVisibleChanged(Receiver receiver, Slot slot) const {
@@ -174,6 +177,9 @@ class WaveformMark {
 
     int m_iPriority;
     int m_iHotCue;
+
+    // Whether this marker is used in the show beats/time until next marker display.
+    bool m_showUntilNext;
 
     QColor m_fillColor;
     QColor m_borderColor;
