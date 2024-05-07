@@ -41,11 +41,16 @@
   [#13136](https://github.com/mixxxdj/mixxx/pull/13136)
 * Slider tooltip: consider orientation for up/down shortcut tooltips + add support for WKnobComposed [#13088](https://github.com/mixxxdj/mixxx/pull/13088)
 * Tooltips: update 'hotcue' with saved loop features [#12875](https://github.com/mixxxdj/mixxx/pull/12875)
-* Animate long press latching of sync button [#12990](https://github.com/mixxxdj/mixxx/pull/12990)
+* Animate long press latching of sync button
+  [#12990](https://github.com/mixxxdj/mixxx/pull/12990)
+  [#13212](https://github.com/mixxxdj/mixxx/pull/13212)
 * Polish fx chain controls [#12805](https://github.com/mixxxdj/mixxx/pull/12805)
 * Waveforms: draw loop gradient at the correct position
   [#13061](https://github.com/mixxxdj/mixxx/pull/13061)
   [#13060](https://github.com/mixxxdj/mixxx/issues/13060)
+* Waveform / spinnies: don't take keyboard focus on click
+  [#13174](https://github.com/mixxxdj/mixxx/pull/13174)
+  [#13211](https://github.com/mixxxdj/mixxx/pull/13211)
 
 ### Library
 
@@ -78,6 +83,7 @@
 * Tracks: select track row when clicking the preview button (only when starting preview)
   [#12791](https://github.com/mixxxdj/mixxx/pull/12791)
 * Library track menu: show Hide action also in Playlist & Crates [#11901](https://github.com/mixxxdj/mixxx/pull/11901)
+* iTunes: Obtain FileAccess before accessing iTunes XML [#13013](https://github.com/mixxxdj/mixxx/pull/13013)
 
 ### Miscellaneous
 

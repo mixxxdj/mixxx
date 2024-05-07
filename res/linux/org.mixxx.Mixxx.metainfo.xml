@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-05-01" timestamp="1714573883">
+    <release version="2.4.1" type="development" date="2024-05-07" timestamp="1715034555">
       <description>
  <p>
   Controller Mappings
@@ -196,6 +196,7 @@
   <li>
    Animate long press latching of sync button
    #12990
+   #13212
   </li>
   <li>
    Polish fx chain controls
@@ -205,6 +206,11 @@
    Waveforms: draw loop gradient at the correct position
    #13061
    #13060
+  </li>
+  <li>
+   Waveform / spinnies: don't take keyboard focus on click
+   #13174
+   #13211
   </li>
  </ul>
  <p>
@@ -273,6 +279,10 @@
   <li>
    Library track menu: show Hide action also in Playlist &amp; Crates
    #11901
+  </li>
+  <li>
+   iTunes: Obtain FileAccess before accessing iTunes XML
+   #13013
   </li>
  </ul>
  <p>
