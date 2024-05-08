@@ -42,11 +42,12 @@ const print = function(message) {
     console.log(message);
 };
 
-// eslint-disable-next-line no-unused-vars
-const printObject = function(obj, maxdepth) {
-    console.log(stringifyObject(obj, maxdepth));
+const arrayContains = function(array, elem) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] === elem) { return true; }
+    }
+    return false;
 };
-
 
 const stringifyObject = function(obj, maxdepth, checked, prefix) {
     if (!maxdepth) { maxdepth = 2; }
@@ -72,12 +73,9 @@ const stringifyObject = function(obj, maxdepth, checked, prefix) {
     return obj;
 };
 
-
-const arrayContains = function(array, elem) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i] === elem) { return true; }
-    }
-    return false;
+// eslint-disable-next-line no-unused-vars
+const printObject = function(obj, maxdepth) {
+    console.log(stringifyObject(obj, maxdepth));
 };
 
 // ----------------- Generic functions ---------------------
@@ -155,9 +153,9 @@ class script {
         engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
     }
     static midiDebug(channel, control, value, status, group) {
-        console.log("Script.midiDebug - channel: 0x" + channel.toString(16) +
-            " control: 0x" + control.toString(16) + " value: 0x" + value.toString(16) +
-            " status: 0x" + status.toString(16) + " group: " + group);
+        console.log(`Script.midiDebug - channel: 0x${  channel.toString(16)
+        } control: 0x${  control.toString(16)  } value: 0x${  value.toString(16)
+        } status: 0x${  status.toString(16)  } group: ${  group}`);
     }
     // Returns the deck number of a "ChannelN" or "SamplerN" group
     static deckFromGroup(group) {
@@ -385,7 +383,7 @@ class script {
     // TODO: Is this still useful now that MidiController.cpp properly handles these?
     static midiPitch(LSB, MSB, status) {
         if ((status & 0xF0) !== 0xE0) { // Mask the upper nybble so we can check the opcode regardless of the channel
-            console.log("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: " + status);
+            console.log(`Script.midiPitch: Error, not a MIDI pitch (0xEn) message: ${  status}`);
             return false;
         }
         const value = (MSB << 7) | LSB; // Construct the 14-bit number
@@ -542,7 +540,7 @@ class bpm {
         }
         const average = sum / this.tap.length;
 
-        const group = "[Channel" + deck + "]";
+        const group = `[Channel${  deck  }]`;
 
         // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
         // was supposed to return the tracks bpm (which it did before the change).
