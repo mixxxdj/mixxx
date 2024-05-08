@@ -25,16 +25,16 @@
 
 namespace {
 #ifdef MIXXX_USE_QML
-QByteArray kScreenTransformFunctionUntypedSignature =
+const QByteArray kScreenTransformFunctionUntypedSignature =
         QMetaObject::normalizedSignature(
                 "transformFrame(QVariant,QVariant)");
-QByteArray kScreenTransformFunctionTypedSignature =
+const QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
 
 template<class T>
 void delete_later(T* screen) {
     screen->deleteLater();
-};
+}
 #endif
 } // anonymous namespace
 
@@ -427,9 +427,11 @@ bool ControllerScriptEngineLegacy::initialize() {
         }
 
         while (!availableScreens.isEmpty()) {
-            std::shared_ptr<ControllerRenderingEngine> orphanScreen(
-                    nullptr, &delete_later<ControllerRenderingEngine>);
-            availableScreens.take(availableScreens.firstKey()).swap(orphanScreen);
+            auto pScreen = availableScreens.take(availableScreens.firstKey());
+            VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
+                    !pScreen->isRunning() || pScreen->stop()) {
+                qCWarning(m_logger) << "Unable to stop the screen";
+            };
         }
     }
     if (sceneBindingHasFailure) {
@@ -482,7 +484,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 }
 
 #ifdef MIXXX_USE_QML
-void ControllerScriptEngineLegacy::extractTranformFunction(
+void ControllerScriptEngineLegacy::extractTransformFunction(
         const QMetaObject* metaObject, const QString& screenIdentifier) {
     VERIFY_OR_DEBUG_ASSERT(metaObject) {
         qCWarning(m_logger)
@@ -538,7 +540,7 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
     }
     const QMetaObject* metaObject = pScene->metaObject();
 
-    extractTranformFunction(metaObject, screenIdentifier);
+    extractTransformFunction(metaObject, screenIdentifier);
 
     connect(pScreen.get(),
             &ControllerRenderingEngine::frameRendered,

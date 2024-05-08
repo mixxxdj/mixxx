@@ -189,10 +189,10 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
 }
 
 void ControllerRenderingEngine::finish() {
-    m_isValid = false;
     disconnect(this);
 
     const auto lock = lockMutex(&s_glMutex);
+    m_isValid = false;
 
     if (m_context && m_context->isValid()) {
         disconnect(m_context.get(),

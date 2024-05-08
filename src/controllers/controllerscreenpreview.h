@@ -9,7 +9,6 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 
-
 /// Widget to preview controller screen, used in preference window. This is
 /// useful to help when developing new screen layout, without inducing any wear
 /// and tear on a hardware device, or allow testing when not owning a device

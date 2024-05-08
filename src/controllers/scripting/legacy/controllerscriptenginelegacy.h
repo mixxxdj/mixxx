@@ -82,7 +82,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
             const LegacyControllerMapping::ScriptFileInfo& qmlFile,
             const QString& screenIdentifier,
             std::shared_ptr<ControllerRenderingEngine> pScreen);
-    void extractTranformFunction(const QMetaObject* metaObject, const QString& screenIdentifier);
+    void extractTransformFunction(const QMetaObject* metaObject, const QString& screenIdentifier);
 
     std::shared_ptr<QQuickItem> loadQMLFile(
             const LegacyControllerMapping::ScriptFileInfo& qmlScript,

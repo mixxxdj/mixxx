@@ -68,6 +68,9 @@ class ControllerRenderingEngine : public QObject {
             const QDateTime& timestamp);
     void setupRequested(std::shared_ptr<QQmlEngine> engine);
     void stopRequested();
+    /// @brief Request the screen thread to send a frame to the device
+    /// @param controller the controller to send the frame to
+    /// @param frame the frame data, ready to be sent
     void sendRequested(Controller* controller, const QByteArray& frame);
 
   private:

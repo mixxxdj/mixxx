@@ -1,4 +1,5 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
+
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "util/logger.h"
