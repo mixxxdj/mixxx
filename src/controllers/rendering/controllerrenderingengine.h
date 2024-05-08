@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QObject>
 #include <QWaitCondition>
+#include <chrono>
 
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/scripting/controllerscriptenginebase.h"
@@ -72,7 +73,7 @@ class ControllerRenderingEngine : public QObject {
   private:
     virtual void prepare();
 
-    mixxx::Duration m_nextFrameStart;
+    std::chrono::time_point<std::chrono::steady_clock> m_nextFrameStart;
 
     LegacyControllerMapping::ScreenInfo m_screenInfo;
 

@@ -6,15 +6,20 @@
 #include "moc_controllerscreenpreview.cpp"
 #include "util/time.h"
 
+namespace {
+/// Number of sample frame timestamp sample to perform a smooth average FPS label.
+constexpr double kFrameSmoothAverageFactor = 5;
+} // namespace
+
+using Clock = std::chrono::steady_clock;
+using TimePoint = std::chrono::time_point<Clock>;
+
 ControllerScreenPreview::ControllerScreenPreview(
         QWidget* parent, const LegacyControllerMapping::ScreenInfo& screen)
         : QWidget(parent),
           m_screenInfo(screen),
           m_pFrame(make_parented<QLabel>(this)),
-          m_pStat(make_parented<QLabel>("- FPS", this)),
-          m_frameDurationHistoryIdx(0),
-          m_lastFrameTimestamp(mixxx::Time::elapsed()) {
-    std::fill(m_frameDurationHistory.begin(), m_frameDurationHistory.end(), 0);
+          m_pStat(make_parented<QLabel>(tr("FPS: n/a"), this)) {
     m_pFrame->setFixedSize(screen.size);
     setMaximumWidth(screen.size.width());
     m_pStat->setAlignment(Qt::AlignRight);
@@ -22,14 +27,14 @@ ControllerScreenPreview::ControllerScreenPreview(
     auto* pBottomLayout = new QHBoxLayout();
     pLayout->addWidget(m_pFrame);
     pBottomLayout->addWidget(make_parented<QLabel>(
-            QString("\"<i>%0</i>\"")
+            QStringLiteral("\"<i>%0</i>\"")
                     .arg(m_screenInfo.identifier.isEmpty()
-                                    ? QStringLiteral("Unnamed")
+                                    ? tr("Unnamed")
                                     : m_screenInfo.identifier),
             this));
     pBottomLayout->addWidget(m_pStat);
-    pLayout->addItem(pBottomLayout);
-    pLayout->addItem(new QSpacerItem(
+    pLayout->addLayout(pBottomLayout);
+    pLayout->addSpacerItem(new QSpacerItem(
             1, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
 }
 void ControllerScreenPreview::updateFrame(
@@ -37,23 +42,29 @@ void ControllerScreenPreview::updateFrame(
     if (m_screenInfo.identifier != screen.identifier) {
         return;
     }
-    size_t frameDurationHistoryLength = sizeof(m_frameDurationHistory) / sizeof(uint);
-    auto currentTimestamp = mixxx::Time::elapsed();
-    m_frameDurationHistory[m_frameDurationHistoryIdx++] =
-            (currentTimestamp - m_lastFrameTimestamp).toIntegerMillis();
-    m_frameDurationHistoryIdx %= frameDurationHistoryLength;
-
-    double durationSinceLastFrame = 0.0;
-    for (uint i = 0; i < frameDurationHistoryLength; i++) {
-        durationSinceLastFrame += static_cast<double>(m_frameDurationHistory[i]);
-    }
-    durationSinceLastFrame /= static_cast<double>(frameDurationHistoryLength);
-
-    if (durationSinceLastFrame > 0.0) {
-        m_pStat->setText(QString("<i>FPS: %0/%1</i>")
-                                 .arg(static_cast<int>(1000.0 / durationSinceLastFrame))
-                                 .arg(m_screenInfo.target_fps));
-    }
     m_pFrame->setPixmap(QPixmap::fromImage(frame));
+
+    auto currentTimestamp = Clock::now();
+    if (m_lastFrameTimestamp == TimePoint()) {
+        m_lastFrameTimestamp = currentTimestamp;
+        return;
+    }
+
+    if (m_averageFrameDuration == 0) {
+        m_averageFrameDuration =
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                        currentTimestamp - m_lastFrameTimestamp)
+                        .count();
+    } else {
+        m_averageFrameDuration = std::lerp(m_averageFrameDuration,
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                        currentTimestamp - m_lastFrameTimestamp)
+                        .count(),
+                1.0 / kFrameSmoothAverageFactor);
+    }
     m_lastFrameTimestamp = currentTimestamp;
+    m_pStat->setText(tr("<i>FPS: %0/%1</i>")
+                             .arg(QString::number(static_cast<int>(
+                                          1000 / m_averageFrameDuration)),
+                                     QString::number(m_screenInfo.target_fps)));
 }

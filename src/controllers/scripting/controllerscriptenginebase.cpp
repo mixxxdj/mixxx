@@ -245,10 +245,8 @@ void ControllerScriptEngineBase::showQMLExceptionDialog(
     if (filename.isEmpty()) {
         filename = QStringLiteral("<passed code>");
     }
-    QString errorText = QString("Uncaught exception: %1:%2: %3")
-                                .arg(filename)
-                                .arg(error.line())
-                                .arg(error.description());
+    QString errorText = QStringLiteral("Uncaught exception: %1:%2: %3")
+                                .arg(filename, QString::number(error.line()), error.description());
 
     qCWarning(m_logger) << "ControllerScriptHandlerBase:" << errorText;
 

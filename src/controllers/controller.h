@@ -139,7 +139,7 @@ class Controller : public QObject {
     const RuntimeLoggingCategory m_logInput;
     const RuntimeLoggingCategory m_logOutput;
 
-  public slots:
+  public:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
     virtual void sendBytes(const QByteArray& data) = 0;
@@ -159,6 +159,8 @@ class Controller : public QObject {
     }
 
   private:
+    /// Controllers have multiple ownership over an engine.
+    /// A ControllerScriptEngine must not own a controller.
     std::shared_ptr<ControllerScriptEngineLegacy> m_pScriptEngineLegacy;
 
     // Verbose and unique description of device type, defaults to empty

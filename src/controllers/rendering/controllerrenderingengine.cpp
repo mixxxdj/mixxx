@@ -19,10 +19,14 @@
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
 #include "util/time.h"
+#include "util/timer.h"
 
 namespace {
 const mixxx::Logger kLogger("ControllerRenderingEngine");
 } // anonymous namespace
+
+using Clock = std::chrono::steady_clock;
+using TimePoint = std::chrono::time_point<Clock>;
 
 QMutex ControllerRenderingEngine::s_glMutex = QMutex();
 
@@ -66,7 +70,12 @@ void ControllerRenderingEngine::prepare() {
     m_pThread = std::make_unique<QThread>();
     m_pThread->setObjectName("ControllerScreenRenderer");
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+    DEBUG_ASSERT(moveToThread(m_pThread.get()));
+#else
     moveToThread(m_pThread.get());
+#endif
+
     connect(this,
             &ControllerRenderingEngine::setupRequested,
             this,
@@ -85,15 +94,15 @@ void ControllerRenderingEngine::prepare() {
 
 ControllerRenderingEngine::~ControllerRenderingEngine() {
     VERIFY_OR_DEBUG_ASSERT(!m_fbo) {
-        kLogger.warning() << "The ControllerEngine is being deleted but hasn't been "
-                             "cleaned up. Brace for impact";
+        kLogger.critical() << "The ControllerEngine is being deleted but hasn't been "
+                              "cleaned up. Brace for impact";
     };
 }
 
 void ControllerRenderingEngine::start() {
     VERIFY_OR_DEBUG_ASSERT(!thread()->isFinished() && !thread()->isInterruptionRequested()) {
-        kLogger.warning() << "Render thread has or ir about to terminate. Cannot "
-                             "start this render anymore.";
+        kLogger.critical() << "Render thread has or is about to terminate. Cannot "
+                              "start this render anymore.";
         return;
     }
     QCoreApplication::postEvent(this, new QEvent(QEvent::UpdateRequest));
@@ -104,6 +113,10 @@ bool ControllerRenderingEngine::isRunning() const {
 
 void ControllerRenderingEngine::requestSetup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_isValid = false;
+    VERIFY_OR_DEBUG_ASSERT(qmlEngine) {
+        kLogger.critical() << "No QML engine was passed!";
+        return;
+    }
     VERIFY_OR_DEBUG_ASSERT(QThread::currentThread() != thread()) {
         kLogger.warning() << "Unable to setup OpenGL rendering context from the same "
                              "thread as the render object";
@@ -126,7 +139,7 @@ void ControllerRenderingEngine::requestSend(Controller* controller, const QByteA
 
 void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     QSurfaceFormat format;
-    format.setSamples(16);
+    format.setSamples(m_screenInfo.msaa);
     format.setDepthBufferSize(16);
     format.setStencilBufferSize(8);
 
@@ -142,8 +155,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     connect(m_context.get(),
             &QOpenGLContext::aboutToBeDestroyed,
             this,
-            &ControllerRenderingEngine::finish,
-            Qt::BlockingQueuedConnection);
+            &ControllerRenderingEngine::finish);
 
     m_offscreenSurface = std::make_unique<QOffscreenSurface>();
     m_offscreenSurface->setFormat(m_context->format());
@@ -208,6 +220,7 @@ void ControllerRenderingEngine::finish() {
 }
 
 void ControllerRenderingEngine::renderFrame() {
+    ScopedTimer t(u"ControllerRenderingEngine::renderFrame");
     if (!m_isValid) {
         DEBUG_ASSERT(!"Trying to render frame on an invalid engine");
         return;
@@ -234,6 +247,7 @@ void ControllerRenderingEngine::renderFrame() {
     };
 
     if (!m_fbo) {
+        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::initFBO");
         VERIFY_OR_DEBUG_ASSERT(QOpenGLFramebufferObject::hasOpenGLFramebufferObjects()) {
             kLogger.warning() << "OpenGL doesn't support FBO";
             lock.unlock();
@@ -276,7 +290,7 @@ void ControllerRenderingEngine::renderFrame() {
         m_quickWindow->setGeometry(0, 0, m_screenInfo.size.width(), m_screenInfo.size.height());
     }
 
-    m_nextFrameStart = mixxx::Time::elapsed();
+    m_nextFrameStart = Clock::now();
 
     m_renderControl->beginFrame();
 
@@ -286,16 +300,19 @@ void ControllerRenderingEngine::renderFrame() {
 
     m_renderControl->polishItems();
 
-    VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
-        kLogger.warning() << "Couldn't sync the render control.";
-        lock.unlock();
-        finish();
-        if (m_pControllerEngine) {
-            m_pControllerEngine->resume();
-        }
+    {
+        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::sync");
+        VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
+            kLogger.warning() << "Couldn't sync the render control.";
+            lock.unlock();
+            finish();
+            if (m_pControllerEngine) {
+                m_pControllerEngine->resume();
+            }
 
-        return;
-    };
+            return;
+        };
+    }
 
     if (m_pControllerEngine) {
         m_pControllerEngine->resume();
@@ -332,13 +349,16 @@ void ControllerRenderingEngine::renderFrame() {
     // Flush any remaining GL errors
     while (m_context->functions()->glGetError()) {
     }
-    m_context->functions()->glReadPixels(0,
-            0,
-            m_screenInfo.size.width(),
-            m_screenInfo.size.height(),
-            m_GLDataFormat,
-            m_GLDataType,
-            fboImage.bits());
+    {
+        ScopedTimer t(u"ControllerRenderingEngine::renderFrame::glReadPixels");
+        m_context->functions()->glReadPixels(0,
+                0,
+                m_screenInfo.size.width(),
+                m_screenInfo.size.height(),
+                m_GLDataFormat,
+                m_GLDataType,
+                fboImage.bits());
+    }
     glError = m_context->functions()->glGetError();
     VERIFY_OR_DEBUG_ASSERT(glError == GL_NO_ERROR) {
         kLogger.warning() << "GLError: " << glError;
@@ -366,31 +386,36 @@ bool ControllerRenderingEngine::stop() {
 }
 
 void ControllerRenderingEngine::send(Controller* controller, const QByteArray& frame) {
+    ScopedTimer t(u"ControllerRenderingEngine::send");
     if (!frame.isEmpty()) {
         controller->sendBytes(frame);
     }
 
     if (CmdlineArgs::Instance()
                     .getControllerDebug()) {
-        auto endOfRender = mixxx::Time::elapsed();
-        kLogger.debug() << "Frame took "
-                        << (endOfRender - m_nextFrameStart).formatMillisWithUnit()
-                        << " and frame has" << frame.size() << "bytes";
+        auto endOfRender = Clock::now();
+        kLogger.debug()
+                << "Frame took "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(
+                           endOfRender - m_nextFrameStart)
+                           .count()
+                << "milliseconds and frame has" << frame.size() << "bytes";
     }
 
-    m_nextFrameStart += mixxx::Duration::fromSeconds(1.0 / (double)m_screenInfo.target_fps);
+    m_nextFrameStart += std::chrono::milliseconds(1000 / m_screenInfo.target_fps);
 
-    auto durationToWaitBeforeFrame = (m_nextFrameStart - mixxx::Time::elapsed());
-    auto msecToWaitBeforeFrame = durationToWaitBeforeFrame.toIntegerMillis();
+    auto durationToWaitBeforeFrame =
+            std::chrono::duration_cast<std::chrono::milliseconds>(
+                    m_nextFrameStart - Clock::now());
 
-    if (msecToWaitBeforeFrame > 0) {
+    if (durationToWaitBeforeFrame > std::chrono::milliseconds(0)) {
         if (CmdlineArgs::Instance()
                         .getControllerDebug()) {
             kLogger.debug() << "Waiting for "
-                            << durationToWaitBeforeFrame.formatMillisWithUnit()
-                            << " before rendering next frame";
+                            << durationToWaitBeforeFrame.count()
+                            << "milliseconds before rendering next frame";
         }
-        QTimer::singleShot(msecToWaitBeforeFrame,
+        QTimer::singleShot(durationToWaitBeforeFrame,
                 Qt::PreciseTimer,
                 this,
                 &ControllerRenderingEngine::renderFrame);
@@ -400,6 +425,8 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
 }
 
 bool ControllerRenderingEngine::event(QEvent* event) {
+    // In case there is a request for update (e.g using QWindow::requestUpdate),
+    // we emit the signal to request rendering using the engine
     if (event->type() == QEvent::UpdateRequest) {
         renderFrame();
         return true;

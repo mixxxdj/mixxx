@@ -99,27 +99,10 @@ class LegacyControllerMapping {
     };
 
     struct ScreenInfo {
-        ScreenInfo(const QString& aIdentifier,
-                const QSize& aSize,
-                uint aTargetFps,
-                uint aSplashOff,
-                QImage::Format aPixelFormat,
-                std::endian anEndian,
-                bool isReversedColor,
-                bool isRawData)
-                : identifier(aIdentifier),
-                  size(aSize),
-                  target_fps(aTargetFps),
-                  splash_off(aSplashOff),
-                  pixelFormat(aPixelFormat),
-                  endian(anEndian),
-                  reversedColor(isReversedColor),
-                  rawData(isRawData) {
-        }
-
         QString identifier;
         QSize size;
         uint target_fps;
+        uint msaa;
         uint splash_off;
         QImage::Format pixelFormat;
         std::endian endian;
@@ -230,6 +213,7 @@ class LegacyControllerMapping {
     /// @param identifier The screen identifier
     /// @param size the size of the screen
     /// @param targetFps the maximum FPS to render
+    /// @param msaa the MSAA value to use for render
     /// @param splashoff the rendering grace time given when the screen is requested to shutdown
     /// @param pixelFormat the pixel encoding format
     /// @param endian the pixel endian format
@@ -238,19 +222,21 @@ class LegacyControllerMapping {
     virtual void addScreenInfo(const QString& identifier,
             const QSize& size,
             uint targetFps,
+            uint msaa,
             uint splashoff,
             QImage::Format pixelFormat,
             std::endian endian,
             bool reversedColor,
             bool rawData) {
-        m_screens.append(ScreenInfo(identifier,
+        m_screens.append(ScreenInfo{identifier,
                 size,
                 targetFps,
+                msaa,
                 splashoff,
                 pixelFormat,
                 endian,
                 reversedColor,
-                rawData));
+                rawData});
         setDirty(true);
     }
 

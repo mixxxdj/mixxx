@@ -30,6 +30,11 @@ QByteArray kScreenTransformFunctionUntypedSignature =
                 "transformFrame(QVariant,QVariant)");
 QByteArray kScreenTransformFunctionTypedSignature =
         QMetaObject::normalizedSignature("transformFrame(QVariant,QDateTime)");
+
+template<class T>
+void delete_later(T* screen) {
+    screen->deleteLater();
+};
 #endif
 } // anonymous namespace
 
@@ -422,8 +427,9 @@ bool ControllerScriptEngineLegacy::initialize() {
         }
 
         while (!availableScreens.isEmpty()) {
-            auto orphanScreen = availableScreens.take(availableScreens.firstKey());
-            std::move(orphanScreen)->deleteLater();
+            std::shared_ptr<ControllerRenderingEngine> orphanScreen(
+                    nullptr, &delete_later<ControllerRenderingEngine>);
+            availableScreens.take(availableScreens.firstKey()).swap(orphanScreen);
         }
     }
     if (sceneBindingHasFailure) {
@@ -457,7 +463,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 
 #ifdef MIXXX_USE_QML
     setCanPause(true);
-    for (const auto& pScreen : qAsConst(m_renderingScreens)) {
+    for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         pScreen->start();
     }
 #endif
@@ -675,7 +681,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     setCanPause(false);
     // Wait till the splash off animation has finished rendering
     uint maxSplashOffDuration = 0;
-    for (const auto& pScreen : qAsConst(m_renderingScreens)) {
+    for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         if (!pScreen->isRunning()) {
             continue;
         }
@@ -690,7 +696,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     }
 
     m_rootItems.clear();
-    for (const auto& pScreen : qAsConst(m_renderingScreens)) {
+    for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
             qCWarning(m_logger) << "Unable to stop the screen";

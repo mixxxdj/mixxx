@@ -1,7 +1,4 @@
 #include "controllers/legacycontrollermappingfilehandler.h"
-
-#include <QStringBuilder>
-
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "util/logger.h"
@@ -52,10 +49,9 @@ QFileInfo findLibraryPath(
 
 /// @brief Parse a string that contain a boolean value in human representation
 /// @param value the string containing the boolean setting
-/// @return true for string value "true" and "1", false otherwise
+/// @return true for string value "true", false otherwise
 bool parseHumanBoolean(const QString& value) {
-    return value == QStringLiteral("true") ||
-            value == QStringLiteral("1");
+    return value == QStringLiteral("true");
 }
 #endif
 
@@ -318,16 +314,24 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
     while (!screen.isNull()) {
         QString identifier = screen.attribute("identifier", "");
         uint targetFps = screen.attribute("targetFps", "30").toUInt();
+        uint msaa = screen.attribute("msaa", "1").toUInt();
         QString pixelFormatName = screen.attribute("pixelType", "RBG");
         QString endianName = screen.attribute("endian", "little");
-        QString reversedColor = screen.attribute("reversed", "false").toLower().trimmed();
-        QString rawData = screen.attribute("raw", "false").toLower().trimmed();
+        bool reversedColor = parseHumanBoolean(
+                screen.attribute("reversed", "false").toLower().trimmed());
+        bool rawData = parseHumanBoolean(screen.attribute("raw", "false").toLower().trimmed());
         uint splashOff = screen.attribute("splashoff", "0").toUInt();
 
         if (!targetFps || targetFps > s_maxTargetFps) {
             kLogger.warning()
                     << "Invalid target FPS. Target FPS must be between 1 and"
                     << s_maxTargetFps;
+            return;
+        }
+        if (!msaa || msaa > s_maxMsaa) {
+            kLogger.warning()
+                    << "Invalid MSAA value. MSAA value must be between 1 and"
+                    << s_maxMsaa;
             return;
         }
 
@@ -366,11 +370,12 @@ void LegacyControllerMappingFileHandler::addScriptFilesToMapping(
         mapping->addScreenInfo(identifier,
                 QSize(width, height),
                 targetFps,
+                msaa,
                 splashOff,
                 pixelFormat,
                 endian,
-                parseHumanBoolean(reversedColor),
-                parseHumanBoolean(rawData));
+                reversedColor,
+                rawData);
         screen = screen.nextSiblingElement("screen");
     }
     // Build a list of QML files to load

@@ -302,7 +302,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping.options.testFlag(MidiOption::Script)) {
         auto pEngine = getScriptEngine();
-        if (!pEngine) {
+        if (pEngine == nullptr) {
             return;
         }
 
@@ -596,7 +596,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     // Custom script handler
     if (mapping.options.testFlag(MidiOption::Script)) {
         auto pEngine = getScriptEngine();
-        if (!pEngine) {
+        if (pEngine == nullptr) {
             return;
         }
         pEngine->handleIncomingData(data);

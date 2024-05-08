@@ -3,13 +3,12 @@
 #include <QLabel>
 #include <QWidget>
 #include <array>
+#include <chrono>
 
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 
-/// Number of sample frame timestamp sample to calculate FPS label.
-constexpr int kFrameHistorySize = 5;
 
 /// Widget to preview controller screen, used in preference window. This is
 /// useful to help when developing new screen layout, without inducing any wear
@@ -30,8 +29,7 @@ class ControllerScreenPreview : public QWidget {
 
     parented_ptr<QLabel> m_pFrame;
     parented_ptr<QLabel> m_pStat;
-    uint8_t m_frameDurationHistoryIdx;
-    std::array<uint, kFrameHistorySize> m_frameDurationHistory;
 
-    mixxx::Duration m_lastFrameTimestamp;
+    double m_averageFrameDuration;
+    std::chrono::time_point<std::chrono::steady_clock> m_lastFrameTimestamp;
 };

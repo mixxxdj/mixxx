@@ -68,7 +68,7 @@ class DlgPrefController : public DlgPreferencePage {
     // Onboard screen controller
     void slotShowPreviewScreens(std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine);
     // Wrapper used on shutdown
-    void slotShowPreviewScreens() {
+    void slotClearPreviewScreens() {
         slotShowPreviewScreens(nullptr);
     }
 #endif

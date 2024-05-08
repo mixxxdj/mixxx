@@ -75,6 +75,8 @@ class LegacyControllerMappingFileHandler {
 #ifdef MIXXX_USE_QML
     // Maximum target frame per request for a screen controller
     static constexpr int s_maxTargetFps = 240;
+    // Maximum MSAA value that can be used
+    static constexpr int s_maxMsaa = 16;
     // Maximum time allowed for a screen to run a splash off animation
     static constexpr int s_maxSplashOffDuration = 3000;
 #endif

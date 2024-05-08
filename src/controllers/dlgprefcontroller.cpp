@@ -120,12 +120,11 @@ DlgPrefController::DlgPrefController(
         connect(m_pController,
                 &Controller::engineStarted,
                 this,
-                QOverload<std::shared_ptr<ControllerScriptEngineLegacy>>::of(
-                        &DlgPrefController::slotShowPreviewScreens));
+                &DlgPrefController::slotShowPreviewScreens);
         connect(m_pController,
                 &Controller::engineStopped,
                 this,
-                QOverload<>::of(&DlgPrefController::slotShowPreviewScreens));
+                &DlgPrefController::slotClearPreviewScreens);
     }
 #endif
 
@@ -874,6 +873,9 @@ void DlgPrefController::initTableView(QTableView* pTable) {
 void DlgPrefController::slotShowPreviewScreens(
         std::shared_ptr<ControllerScriptEngineLegacy> scriptEngine) {
     QLayoutItem* pItem;
+    VERIFY_OR_DEBUG_ASSERT(m_ui.groupBoxScreens->layout()) {
+        return;
+    }
     while ((pItem = m_ui.groupBoxScreens->layout()->takeAt(0)) != nullptr) {
         delete pItem->widget();
         delete pItem;
@@ -891,7 +893,7 @@ void DlgPrefController::slotShowPreviewScreens(
 
     auto screens = m_pMapping->getInfoScreens();
 
-    for (const LegacyControllerMapping::ScreenInfo& screen : qAsConst(screens)) {
+    for (const LegacyControllerMapping::ScreenInfo& screen : std::as_const(screens)) {
         ControllerScreenPreview* pPreviewScreen =
                 new ControllerScreenPreview(m_ui.groupBoxScreens, screen);
         m_ui.groupBoxScreens->layout()->addWidget(pPreviewScreen);
