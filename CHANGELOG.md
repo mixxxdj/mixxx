@@ -29,7 +29,7 @@
 * Add command line option `--start-autodj` to start Auto DJ immediately after Mixxx start.
   [#13017](https://github.com/mixxxdj/mixxx/pull/13017)
   [#10189](https://github.com/mixxxdj/mixxx/issues/10189)
-* Allow to edit trrack title and artist directkly within the decks via a delayed double-click
+* Allow to edit track title and artist directly within the decks via a delayed double-click
   [#11755](https://github.com/mixxxdj/mixxx/pull/11755)
 * fix: incorrect reboot required notification on preference updates [#13058](https://github.com/mixxxdj/mixxx/pull/13058)
 * Effects: Add backend for Audio Unit (AU) plugins on macOS [#12112](https://github.com/mixxxdj/mixxx/pull/12112)
