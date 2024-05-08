@@ -33,8 +33,8 @@ EffectsManager::EffectsManager(
 
     m_pBackendManager = EffectsBackendManagerPointer(new EffectsBackendManager());
 
-    auto [pRequestPipe, pResponsePipe] = TwoWayMessagePipe<EffectsRequest*,
-            EffectsResponse>::makeTwoWayMessagePipe(kEffectMessagePipeFifoSize,
+    auto [pRequestPipe, pResponsePipe] = makeTwoWayMessagePipe<EffectsRequest*,
+            EffectsResponse>(kEffectMessagePipeFifoSize,
             kEffectMessagePipeFifoSize);
 
     m_pMessenger = EffectsMessengerPointer(new EffectsMessenger(
