@@ -33,16 +33,17 @@ class MockRenderingEngine : public ControllerRenderingEngine {
 
 TEST_F(ControllerRenderingEngineTest, createValidRendererWithSupportedTypes) {
     for (auto pixelFormat : supportedPixelFormat()) {
-        MockRenderingEngine screenTest(LegacyControllerMapping::ScreenInfo(
+        MockRenderingEngine screenTest(LegacyControllerMapping::ScreenInfo{
                 "",               // identifier
                 QSize(0, 0),      // size
                 10,               // target_fps
+                1,                // msaa
                 10,               // splash_off
                 pixelFormat,      // pixelFormat
                 std::endian::big, // endian
                 false,            // reversedColor
                 false             // rawData
-                ));
+        });
         EXPECT_TRUE(screenTest.isValid());
         EXPECT_TRUE(screenTest.stop());
     }

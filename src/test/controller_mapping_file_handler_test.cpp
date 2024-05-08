@@ -58,6 +58,7 @@ class MockLegacyControllerMapping : public LegacyControllerMapping {
             (const QString& identifier,
                     const QSize& size,
                     uint targetFps,
+                    uint msaa,
                     uint splashoff,
                     QImage::Format pixelFormat,
                     std::endian endian,
@@ -103,7 +104,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseSimpleMapping) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     false));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_CALL(*mapping, addModule(_, _)).Times(0);
 
     addScriptFilesToMapping(
@@ -147,6 +148,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseScreenMapping) {
             addScreenInfo(QString("main"),
                     QSize(480, 360),
                     20,
+                    1,
                     2000,
                     QImage::Format_RGBA8888,
                     std::endian::little,
@@ -179,7 +181,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, 20, _, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, 20, _, _, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -204,7 +206,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
                     .arg(s_maxTargetFps));
@@ -233,7 +235,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
 
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
@@ -263,7 +265,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
 
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
@@ -293,7 +295,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
 
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
@@ -325,7 +327,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingSize) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, QSize(10, 10), _, _, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, QSize(10, 10), _, _, _, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -350,7 +352,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingSize) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Invalid screen size. Screen size must have a width and height above 1 pixel");
@@ -378,7 +380,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingSize) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Invalid screen size. Screen size must have a width and height above 1 pixel");
@@ -406,7 +408,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingSize) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Invalid screen size. Screen size must have a width and height above 1 pixel");
@@ -434,7 +436,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingSize) {
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Invalid screen size. Screen size must have a width and height above 1 pixel");
@@ -469,7 +471,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, QImage::Format_RGB888, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, QImage::Format_RGB888, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -493,7 +495,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, QImage::Format_RGB16, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, QImage::Format_RGB16, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -517,7 +519,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Unsupported pixel format \"FOOBAR\"");
@@ -545,7 +547,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, std::endian::little, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, std::endian::little, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -569,7 +571,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, std::endian::little, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, std::endian::little, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -593,7 +595,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, std::endian::big, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, std::endian::big, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -617,7 +619,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingBitFormatDefinition)
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(
             QtWarningMsg,
             "Unknown endian format \"enormous\"");
@@ -656,7 +658,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraBoolPropertiesD
                         _, // gmock seems unable to assert QFileInfo
                         LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                         true));
-        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, false, _));
+        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, false, _));
 
         addScriptFilesToMapping(
                 doc.documentElement(),
@@ -683,7 +685,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraBoolPropertiesD
                         _, // gmock seems unable to assert QFileInfo
                         LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                         true));
-        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, true, _));
+        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, true, _));
 
         addScriptFilesToMapping(
                 doc.documentElement(),
@@ -711,7 +713,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraBoolPropertiesD
                         _, // gmock seems unable to assert QFileInfo
                         LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                         true));
-        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, false));
+        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, false));
 
         addScriptFilesToMapping(
                 doc.documentElement(),
@@ -738,7 +740,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraBoolPropertiesD
                         _, // gmock seems unable to assert QFileInfo
                         LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                         true));
-        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, true));
+        EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, true));
 
         addScriptFilesToMapping(
                 doc.documentElement(),
@@ -768,7 +770,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, 0, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, 0, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -792,7 +794,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, 500, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, 500, _, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -816,7 +818,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, s_maxSplashOffDuration, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, s_maxSplashOffDuration, _, _, _, _));
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid splashoff duration. Splashoff duration must "
@@ -847,7 +849,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, 0, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, 0, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -871,7 +873,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _, // gmock seems unable to assert QFileInfo
                     LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT,
                     true));
-    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, 0, _, _, _, _));
+    EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, 0, _, _, _, _));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -922,6 +924,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, canParseHybridMapping) {
             addScreenInfo(QString("main"),
                     QSize(480, 360),
                     20,
+                    1,
                     2000,
                     QImage::Format_RGBA8888,
                     std::endian::little,

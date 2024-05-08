@@ -668,16 +668,17 @@ class MockScreenRender : public ControllerRenderingEngine {
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
     SETUP_LOG_CAPTURE();
-    LegacyControllerMapping::ScreenInfo dummyScreen(
+    LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                   // identifier
             QSize(0, 0),          // size
             10,                   // target_fps
+            1,                    // msaa
             10,                   // splash_off
             QImage::Format_RGB16, // pixelFormat
             std::endian::big,     // endian
             false,                // rawData
             false                 // reversedColor
-    );
+    };
     QImage dummyFrame;
     // Allocate screen on the heap as it need to outlive the this function,
     // since the engine will take ownership of it
@@ -706,16 +707,17 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     SETUP_LOG_CAPTURE();
-    LegacyControllerMapping::ScreenInfo dummyScreen(
+    LegacyControllerMapping::ScreenInfo dummyScreen{
             "",                   // identifier
             QSize(0, 0),          // size
             10,                   // target_fps
+            1,                    // msaa
             10,                   // splash_off
             QImage::Format_RGB16, // pixelFormat
             std::endian::big,     // endian
             false,                // reversedColor
             true                  // rawData
-    );
+    };
     QImage dummyFrame;
     // Allocate screen on the heap as it need to outlive the this function,
     // since the engine will take ownership of it
