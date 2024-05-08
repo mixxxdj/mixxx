@@ -194,11 +194,13 @@ void ControllerScriptEngineBase::setCanPause(bool canPause) {
                 &ControllerScriptEngineBase::doPause);
 
         m_isPaused = false;
-        m_isPausedCondition.wakeAll();
+        m_pauseCount = 0;
+        m_isPausedCondition.wakeOne();
     }
 }
 bool ControllerScriptEngineBase::pause() {
     const auto lock = lockMutex(&m_pauseMutex);
+    m_pauseCount++;
 
     if (m_canPause && !m_isPaused) {
         emit pauseRequested();
@@ -207,6 +209,7 @@ bool ControllerScriptEngineBase::pause() {
     while (m_canPause && !m_isPaused) {
         if (!m_isPausedCondition.wait(&m_pauseMutex, 1000)) {
             qCWarning(m_logger) << "Pause request timed out!";
+            m_pauseCount--;
             return false;
         }
     }
@@ -214,20 +217,22 @@ bool ControllerScriptEngineBase::pause() {
 }
 void ControllerScriptEngineBase::resume() {
     const auto lock = lockMutex(&m_pauseMutex);
-
-    m_isPaused = false;
-    m_isPausedCondition.wakeAll();
+    if (m_pauseCount > 0) {
+        m_pauseCount--;
+    }
+    m_isPaused = m_pauseCount > 0;
+    m_isPausedCondition.wakeOne();
 }
 void ControllerScriptEngineBase::doPause() {
     const auto lock = lockMutex(&m_pauseMutex);
-
-    m_isPaused = true;
-    m_isPausedCondition.wakeAll();
+    m_isPaused = m_pauseCount > 0;
+    m_isPausedCondition.wakeOne();
 
     while (m_canPause && m_isPaused) {
         VERIFY_OR_DEBUG_ASSERT(m_isPausedCondition.wait(&m_pauseMutex, 1000)) {
             qCWarning(m_logger) << "Main GUI pause timed out!";
             m_isPaused = false;
+            m_pauseCount = 0;
         };
     }
     m_isPausedCondition.wakeAll();

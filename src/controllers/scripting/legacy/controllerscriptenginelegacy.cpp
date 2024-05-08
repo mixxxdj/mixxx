@@ -21,6 +21,8 @@
 #ifdef MIXXX_USE_QML
 #include "util/assert.h"
 #include "util/cmdlineargs.h"
+
+using Clock = std::chrono::steady_clock;
 #endif
 
 namespace {
@@ -254,7 +256,7 @@ void ControllerScriptEngineLegacy::setScriptFiles(
 
 #ifdef MIXXX_USE_QML
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
-        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::QML) {
+        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
             setQMLMode(true);
             return;
         }
@@ -315,7 +317,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                     ->setObjectName(
                             QString("CtrlScreen_%1").arg(screen.identifier));
             availableScreens.value(screen.identifier)
-                    ->requestSetup(
+                    ->requestEngineSetup(
                             std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
@@ -383,7 +385,7 @@ bool ControllerScriptEngineLegacy::initialize() {
 #endif
     for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
 #ifdef MIXXX_USE_QML
-        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::JAVASCRIPT) {
+        if (script.type == LegacyControllerMapping::ScriptFileInfo::Type::Javascript) {
 #endif
             if (!evaluateScriptFile(script.file)) {
                 shutdown();
@@ -569,21 +571,19 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
     if (CmdlineArgs::Instance().getControllerPreviewScreens()) {
         QImage screenDebug(frame);
 
-        if (screeninfo.endian != std::endian::native) {
-            switch (screeninfo.endian) {
-            case std::endian::big:
-                qFromBigEndian<ushort>(frame.constBits(),
-                        frame.sizeInBytes() / 2,
-                        screenDebug.bits());
-                break;
-            case std::endian::little:
-                qFromLittleEndian<ushort>(frame.constBits(),
-                        frame.sizeInBytes() / 2,
-                        screenDebug.bits());
-                break;
-            default:
-                break;
-            }
+        switch (screeninfo.endian) {
+        case LegacyControllerMapping::ScreenInfo::ColorEndian::Big:
+            qFromBigEndian<ushort>(frame.constBits(),
+                    frame.sizeInBytes() / 2,
+                    screenDebug.bits());
+            break;
+        case LegacyControllerMapping::ScreenInfo::ColorEndian::Little:
+            qFromLittleEndian<ushort>(frame.constBits(),
+                    frame.sizeInBytes() / 2,
+                    screenDebug.bits());
+            break;
+        default:
+            break;
         }
         if (screeninfo.reversedColor) {
             screenDebug.rgbSwap();
@@ -597,7 +597,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
             m_transformScreenFrameFunctions[screeninfo.identifier];
 
     if (!tranformMethod.method.isValid() && screeninfo.rawData) {
-        m_renderingScreens[screeninfo.identifier]->requestSend(m_pController, input);
+        m_renderingScreens[screeninfo.identifier]->requestSendingFrameData(m_pController, input);
         return;
     }
 
@@ -667,7 +667,7 @@ void ControllerScriptEngineLegacy::handleScreenFrame(
         m_pController->sendBytes(returnedValue.view<QByteArray>());
     }
 
-    m_renderingScreens[screeninfo.identifier]->requestSend(
+    m_renderingScreens[screeninfo.identifier]->requestSendingFrameData(
             m_pController, transformedFrame);
 }
 #endif
@@ -682,19 +682,20 @@ void ControllerScriptEngineLegacy::shutdown() {
 #ifdef MIXXX_USE_QML
     setCanPause(false);
     // Wait till the splash off animation has finished rendering
-    uint maxSplashOffDuration = 0;
+    std::chrono::milliseconds maxSplashOffDuration{};
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         if (!pScreen->isRunning()) {
             continue;
         }
-        maxSplashOffDuration = qMax(maxSplashOffDuration, pScreen->info().splash_off);
+        maxSplashOffDuration = std::max(maxSplashOffDuration, pScreen->info().splash_off);
     }
 
-    auto splashOffDeadline = mixxx::Duration::fromMillis(maxSplashOffDuration) +
-            mixxx::Time::elapsed();
-    while (splashOffDeadline > mixxx::Time::elapsed()) {
+    auto splashOffDeadline = Clock::now() + maxSplashOffDuration;
+    while (splashOffDeadline > Clock::now()) {
         QCoreApplication::processEvents(QEventLoop::WaitForMoreEvents,
-                (splashOffDeadline - mixxx::Time::elapsed()).toIntegerMillis());
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                        splashOffDeadline - Clock::now())
+                        .count());
     }
 
     m_rootItems.clear();
@@ -803,7 +804,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
             qmlScript.type !=
-                    LegacyControllerMapping::ScriptFileInfo::Type::QML) {
+                    LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
         return std::shared_ptr<QQuickItem>(nullptr);
     }
 

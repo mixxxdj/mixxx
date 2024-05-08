@@ -32,7 +32,7 @@ class ControllerRenderingEngine : public QObject {
 
     bool event(QEvent* event) override;
 
-    const QSize& size() const {
+    QSize screenSize() const {
         return m_screenInfo.size;
     }
 
@@ -42,6 +42,7 @@ class ControllerRenderingEngine : public QObject {
 
     bool isRunning() const;
 
+    // pointer lives as long as the `ControllerRenderingEngine` instance it is retrieved from.
     QQuickWindow* quickWindow() const {
         return m_quickWindow.get();
     }
@@ -51,8 +52,8 @@ class ControllerRenderingEngine : public QObject {
     }
 
   public slots:
-    virtual void requestSend(Controller* controller, const QByteArray& frame);
-    void requestSetup(std::shared_ptr<QQmlEngine> qmlEngine);
+    virtual void requestSendingFrameData(Controller* controller, const QByteArray& frame);
+    void requestEngineSetup(std::shared_ptr<QQmlEngine> qmlEngine);
     void start();
     virtual bool stop();
 
@@ -66,12 +67,12 @@ class ControllerRenderingEngine : public QObject {
     void frameRendered(const LegacyControllerMapping::ScreenInfo& screeninfo,
             QImage frame,
             const QDateTime& timestamp);
-    void setupRequested(std::shared_ptr<QQmlEngine> engine);
+    void engineSetupRequested(std::shared_ptr<QQmlEngine> engine);
     void stopRequested();
     /// @brief Request the screen thread to send a frame to the device
     /// @param controller the controller to send the frame to
     /// @param frame the frame data, ready to be sent
-    void sendRequested(Controller* controller, const QByteArray& frame);
+    void sendFrameDataRequested(Controller* controller, const QByteArray& frame);
 
   private:
     virtual void prepare();
@@ -99,8 +100,4 @@ class ControllerRenderingEngine : public QObject {
     QMutex m_mutex;
 
     ControllerScriptEngineBase* m_pControllerEngine;
-
-    // This static mutex is used to ensure exclusive access to OpenGL operation
-    // from each of the ControllerRenderingEngine instances
-    static QMutex s_glMutex;
 };

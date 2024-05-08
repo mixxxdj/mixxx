@@ -102,6 +102,7 @@ class ControllerScriptEngineBase : public QObject {
     /// QMLApplication, which isn't the case here)
     QWaitCondition m_isPausedCondition;
     QMutex m_pauseMutex;
+    int m_pauseCount{0};
     bool m_isPaused{false};
     bool m_canPause{false};
 

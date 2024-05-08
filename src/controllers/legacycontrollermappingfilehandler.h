@@ -7,11 +7,14 @@
 #include <QImage>
 #include <QMap>
 #include <bit>
+
+#include "controllers/legacycontrollermapping.h"
+#else
+class LegacyControllerMapping;
 #endif
 
 class QFileInfo;
 class QDir;
-class LegacyControllerMapping;
 class LegacyControllerSettingsLayoutContainer;
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
@@ -72,15 +75,6 @@ class LegacyControllerMappingFileHandler {
 
     bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
-#ifdef MIXXX_USE_QML
-    // Maximum target frame per request for a screen controller
-    static constexpr int s_maxTargetFps = 240;
-    // Maximum MSAA value that can be used
-    static constexpr int s_maxMsaa = 16;
-    // Maximum time allowed for a screen to run a splash off animation
-    static constexpr int s_maxSplashOffDuration = 3000;
-#endif
-
   private:
     /// @brief Recursively parse setting definition and layout information
     /// within a setting node
@@ -99,8 +93,15 @@ class LegacyControllerMappingFileHandler {
             const QDir& systemMappingPath) = 0;
 
 #ifdef MIXXX_USE_QML
+  public:
     static QMap<QString, QImage::Format> kSupportedPixelFormat;
-    static QMap<QString, std::endian> kEndianFormat;
+    static QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian> kEndianFormat;
+    // Maximum target frame per request for a screen controller
+    static const int s_maxTargetFps = 240;
+    // Maximum MSAA value that can be used
+    static const int s_maxMsaa = 16;
+    // Maximum time allowed for a screen to run a splash off animation
+    static const int s_maxSplashOffDuration = 3000;
 
     friend class ControllerRenderingEngineTest;
 #endif

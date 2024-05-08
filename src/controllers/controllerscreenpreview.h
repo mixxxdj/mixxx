@@ -30,5 +30,6 @@ class ControllerScreenPreview : public QWidget {
     parented_ptr<QLabel> m_pStat;
 
     double m_averageFrameDuration;
-    std::chrono::time_point<std::chrono::steady_clock> m_lastFrameTimestamp;
+    using Clock = std::chrono::steady_clock;
+    Clock::time_point m_lastFrameTimestamp;
 };

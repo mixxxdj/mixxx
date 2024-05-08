@@ -433,7 +433,7 @@ QString DlgPrefController::mappingFileLinks(
                 qmlLibrary.dirinfo.absoluteFilePath());
         if (!qmlLibrary.dirinfo.exists()) {
             scriptFileLink +=
-                    tr(" (missing)");
+                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
         } else if (qmlLibrary.dirinfo.absoluteFilePath().startsWith(
                            systemMappingPath)) {
             scriptFileLink += builtinFileSuffix;

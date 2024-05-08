@@ -663,28 +663,31 @@ class MockScreenRender : public ControllerRenderingEngine {
   public:
     MockScreenRender(const LegacyControllerMapping::ScreenInfo& info)
             : ControllerRenderingEngine(info, nullptr){};
-    MOCK_METHOD(void, requestSend, (Controller * controller, const QByteArray& frame), (override));
+    MOCK_METHOD(void,
+            requestSendingFrameData,
+            (Controller * controller, const QByteArray& frame),
+            (override));
 };
 
 TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
     SETUP_LOG_CAPTURE();
     LegacyControllerMapping::ScreenInfo dummyScreen{
-            "",                   // identifier
-            QSize(0, 0),          // size
-            10,                   // target_fps
-            1,                    // msaa
-            10,                   // splash_off
-            QImage::Format_RGB16, // pixelFormat
-            std::endian::big,     // endian
-            false,                // rawData
-            false                 // reversedColor
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // rawData
+            false                                                  // reversedColor
     };
     QImage dummyFrame;
     // Allocate screen on the heap as it need to outlive the this function,
     // since the engine will take ownership of it
     std::shared_ptr<MockScreenRender> pDummyRender =
             std::make_shared<MockScreenRender>(dummyScreen);
-    EXPECT_CALL(*pDummyRender, requestSend(_, _)).Times(0);
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, _)).Times(0);
     EXPECT_LOG_MSG(QtWarningMsg,
             "Could not find a valid transform function but the screen doesn't "
             "accept raw data. Aborting screen rendering.");
@@ -708,22 +711,22 @@ TEST_F(ControllerScriptEngineLegacyTest, screenWontSentRawDataIfNotConfigured) {
 TEST_F(ControllerScriptEngineLegacyTest, screenWillSentRawDataIfConfigured) {
     SETUP_LOG_CAPTURE();
     LegacyControllerMapping::ScreenInfo dummyScreen{
-            "",                   // identifier
-            QSize(0, 0),          // size
-            10,                   // target_fps
-            1,                    // msaa
-            10,                   // splash_off
-            QImage::Format_RGB16, // pixelFormat
-            std::endian::big,     // endian
-            false,                // reversedColor
-            true                  // rawData
+            "",                                                    // identifier
+            QSize(0, 0),                                           // size
+            10,                                                    // target_fps
+            1,                                                     // msaa
+            std::chrono::milliseconds(10),                         // splash_off
+            QImage::Format_RGB16,                                  // pixelFormat
+            LegacyControllerMapping::ScreenInfo::ColorEndian::Big, // endian
+            false,                                                 // reversedColor
+            true                                                   // rawData
     };
     QImage dummyFrame;
     // Allocate screen on the heap as it need to outlive the this function,
     // since the engine will take ownership of it
     std::shared_ptr<MockScreenRender> pDummyRender =
             std::make_shared<MockScreenRender>(dummyScreen);
-    EXPECT_CALL(*pDummyRender, requestSend(_, QByteArray()));
+    EXPECT_CALL(*pDummyRender, requestSendingFrameData(_, QByteArray()));
 
     transformScreenFrameFunctions().insert(
             dummyScreen.identifier,

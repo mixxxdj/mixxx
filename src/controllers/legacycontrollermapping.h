@@ -9,6 +9,7 @@
 #include <QList>
 #include <QString>
 #include <bit>
+#include <chrono>
 #include <memory>
 
 #include "controllers/legacycontrollersettings.h"
@@ -55,10 +56,10 @@ class LegacyControllerMapping {
     virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
 
     struct ScriptFileInfo {
-        enum Type {
-            JAVASCRIPT,
+        enum class Type {
+            Javascript,
 #ifdef MIXXX_USE_QML
-            QML,
+            Qml,
 #endif
         };
 
@@ -99,15 +100,26 @@ class LegacyControllerMapping {
     };
 
     struct ScreenInfo {
-        QString identifier;
-        QSize size;
-        uint target_fps;
-        uint msaa;
-        uint splash_off;
-        QImage::Format pixelFormat;
-        std::endian endian;
-        bool reversedColor;
-        bool rawData;
+        // Defining a custom enum here as std::endian contains `native` which is
+        // confusing and will have unpredictable behaviour depending of the
+        // platform.
+        enum class ColorEndian {
+            Big = __ORDER_BIG_ENDIAN__,
+            Little = __ORDER_LITTLE_ENDIAN__,
+        };
+
+        QString identifier; // The screen identifier
+        QSize size;         // the size of the screen
+        uint target_fps;    // the maximum FPS to render
+        uint msaa;          // the MSAA value to use for render
+        std::chrono::milliseconds
+                splash_off;         // the rendering grace time given when the screen is
+                                    // requested to shutdown
+        QImage::Format pixelFormat; // the pixel encoding format
+        ColorEndian endian;         // the pixel endian format
+        bool reversedColor;         // whether or not the RGB is swapped BGR
+        bool rawData;               // whether or not the screen is allowed to receive bare
+                                    // data, not transformed
     };
 #endif
 
@@ -121,7 +133,7 @@ class LegacyControllerMapping {
     virtual void addScriptFile(const QString& name,
             const QString& identifier,
             const QFileInfo& file,
-            ScriptFileInfo::Type type = ScriptFileInfo::Type::JAVASCRIPT,
+            ScriptFileInfo::Type type = ScriptFileInfo::Type::Javascript,
             bool builtin = false) {
         ScriptFileInfo info;
         info.name = name;
@@ -223,9 +235,9 @@ class LegacyControllerMapping {
             const QSize& size,
             uint targetFps,
             uint msaa,
-            uint splashoff,
+            std::chrono::milliseconds splashoff,
             QImage::Format pixelFormat,
-            std::endian endian,
+            LegacyControllerMapping::ScreenInfo::ColorEndian endian,
             bool reversedColor,
             bool rawData) {
         m_screens.append(ScreenInfo{identifier,

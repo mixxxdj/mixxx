@@ -8,11 +8,10 @@
 
 namespace {
 /// Number of sample frame timestamp sample to perform a smooth average FPS label.
-constexpr double kFrameSmoothAverageFactor = 5;
+constexpr double kFrameSmoothAverageFactor = 20;
 } // namespace
 
 using Clock = std::chrono::steady_clock;
-using TimePoint = std::chrono::time_point<Clock>;
 
 ControllerScreenPreview::ControllerScreenPreview(
         QWidget* parent, const LegacyControllerMapping::ScreenInfo& screen)
@@ -45,19 +44,19 @@ void ControllerScreenPreview::updateFrame(
     m_pFrame->setPixmap(QPixmap::fromImage(frame));
 
     auto currentTimestamp = Clock::now();
-    if (m_lastFrameTimestamp == TimePoint()) {
+    if (m_lastFrameTimestamp == Clock::time_point()) {
         m_lastFrameTimestamp = currentTimestamp;
         return;
     }
 
     if (m_averageFrameDuration == 0) {
         m_averageFrameDuration =
-                std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::duration_cast<std::chrono::microseconds>(
                         currentTimestamp - m_lastFrameTimestamp)
                         .count();
     } else {
         m_averageFrameDuration = std::lerp(m_averageFrameDuration,
-                std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::duration_cast<std::chrono::microseconds>(
                         currentTimestamp - m_lastFrameTimestamp)
                         .count(),
                 1.0 / kFrameSmoothAverageFactor);
@@ -65,6 +64,6 @@ void ControllerScreenPreview::updateFrame(
     m_lastFrameTimestamp = currentTimestamp;
     m_pStat->setText(tr("<i>FPS: %0/%1</i>")
                              .arg(QString::number(static_cast<int>(
-                                          1000 / m_averageFrameDuration)),
+                                          1000000 / m_averageFrameDuration)),
                                      QString::number(m_screenInfo.target_fps)));
 }
