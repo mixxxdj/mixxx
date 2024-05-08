@@ -14,6 +14,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -198,12 +199,20 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #ccc;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;

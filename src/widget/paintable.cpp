@@ -1,6 +1,11 @@
+#include "widget/paintable.h"
+
 #include <QFile>
 #include <QFileInfo>
+#include <QPainter>
+#include <QPixmap>
 #include <QString>
+#include <QSvgRenderer>
 #include <QtDebug>
 
 #include "util/math.h"

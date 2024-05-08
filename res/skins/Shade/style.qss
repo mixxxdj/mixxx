@@ -108,6 +108,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -526,18 +527,37 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #c9c9c9;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
     border: 1px solid #656d75;
+  }
+  WTrackPropertyEditor {
+    font-size: 13px;
+    border-width: 1px;
+    border-style: solid;
+  }
+  #TitleEjectRow WTrackPropertyEditor {
+    margin-top: 4px;
   }
 
   /* BPM lock icon in the library "BPM" column. */
@@ -654,6 +674,7 @@ WLibrarySidebar {
   Defined by SearchBox	*/
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   #LibraryContainer WLibraryTextBrowser:focus {

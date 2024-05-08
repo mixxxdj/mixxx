@@ -72,3 +72,4 @@ void EngineEffectsDelay::process(CSAMPLE* pInOut,
         // ALAC/CAF has been added in version 1.0.26
         QStringLiteral("caf"),
 void EngineFilter::process(CSAMPLE* pInOut, const int iBufferSize)
+    // Note(RRyan/Max Linke):

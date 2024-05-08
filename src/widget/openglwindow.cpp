@@ -12,6 +12,15 @@
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
         : m_pWidget(pWidget) {
     setFormat(WaveformWidgetFactory::getSurfaceFormat());
+#ifdef __EMSCRIPTEN__
+    // This is required to ensure that QOpenGLWindows have no minimum size (When
+    // targeting WebAssembly, the widgets will otherwise always have a minimum
+    // width and minimum height of 100 pixels).
+    setFlag(Qt::FramelessWindowHint);
+#endif
+    // Set the tooltip flag to prevent this window/widget from getting
+    // keyboard focus on click.
+    setFlag(Qt::ToolTip);
 }
 
 OpenGLWindow::~OpenGLWindow() {

@@ -19,7 +19,7 @@
 #include <portaudio.h>
 #include <sndfile.h>
 #include <soundtouch/SoundTouch.h>
-#include <taglib/taglib.h>
+#include <taglib.h>
 #include <vorbis/codec.h>
 
 #include "util/gitinfostore.h"
@@ -78,6 +78,8 @@ QString VersionStore::platform() {
     QString base = QStringLiteral("FreeBSD");
 #elif defined(__BSD__)
     QString base = QStringLiteral("BSD");
+#elif defined(__EMSCRIPTEN__)
+    QString base = QStringLiteral("Emscripten");
 #else
     QString base = QStringLiteral("Unknown OS");
 #endif
@@ -104,6 +106,10 @@ QString VersionStore::platform() {
         defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
         defined(_M_PPC)
     base.append(" PowerPC");
+#elif defined(__wasm32__)
+    base.append(" Wasm32");
+#elif defined(__wasm__)
+    base.append(" Wasm");
 #endif
 
     return base;

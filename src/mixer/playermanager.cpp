@@ -458,12 +458,7 @@ void PlayerManager::addDeckInner() {
 }
 
 void PlayerManager::loadSamplers() {
-    // This is only called by CoreServices during startup to restore
-    // samplers from the previous session.
-    // We don't want it to create more players than necessary.
-    bool dontCreateEmptySamplers = true;
-    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig),
-            dontCreateEmptySamplers);
+    m_pSamplerBank->loadSamplerBankFromPath(getDefaultSamplerPath(m_pConfig));
 }
 
 void PlayerManager::addSampler() {
@@ -700,6 +695,16 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
             // load was pressed twice quickly while [Controls],CloneDeckOnLoadDoubleTap is TRUE,
             // so clone another playing deck instead of loading the selected track
             clone = true;
+        }
+    } else if (isPreviewDeckGroup(group) && play) {
+        // This extends/overrides the behaviour of [PreviewDeckN],LoadSelectedTrackAndPlay:
+        // if the track is already loaded, toggle play/pause.
+        if (pTrack == pPlayer->getLoadedTrack()) {
+            auto* pPlay =
+                    ControlObject::getControl(ConfigKey(group, QStringLiteral("play")));
+            double newPlay = pPlay->toBool() ? 0.0 : 1.0;
+            pPlay->set(newPlay);
+            return;
         }
     }
 

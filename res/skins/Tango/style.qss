@@ -62,6 +62,8 @@ WEffectChainPresetSelector QAbstractScrollArea,
 WEffectChainPresetButton QMenu,
 WEffectChainPresetButton QMenu QCheckBox,
 WSearchLineEdit QAbstractScrollArea,
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 /* With 'Ubuntu' font the header section titles would always be top-aligned... */
@@ -433,7 +435,6 @@ WWidgetGroup {
   image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background-color: #0f0f0f;
     image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
@@ -790,8 +791,15 @@ WLabel#TrackComment {
   #PlayPositionMini {
     padding: 0px 1px 0px 0px;
     }
-    #PlayPosition:hover, #PlayPositionMini:hover {
+    #PlayPosition:hover,
+    #PlayPositionMini:hover,
+    WTrackProperty:hover,
+    WTrackProperty:hover[selected="false"],
+    WTrackProperty[selected="true"] {
       border: 1px solid #ccc;
+    }
+    WTrackProperty:hover[selected="true"] {
+      border: 1px solid #fff;
     }
   #TrackTitleMini {
     padding: 0px 0px 0px 1px;
@@ -1596,7 +1604,8 @@ decks, samplers, mic, aux, fx */
 #FxUnitMixerRight,
 #FxUnitMixerLeft_mini,
 #FxUnitMixerRight_mini {
-  qproperty-layoutAlignment: 'AlignHCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+/*  qproperty-layoutAlignment: 'AlignHCenter';*/
   background-color: #333;
   }
 #FxUnitMixerLeft,
@@ -1809,7 +1818,6 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
     }
     WEffectChainPresetButton:hover {
-      background-color: #151515;
       image: url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
     }
     WEffectChainPresetButton::menu-indicator {
@@ -2305,6 +2313,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,
@@ -2615,18 +2624,31 @@ WTrackTableView QCheckBox:focus {
   for Color and Cover Art cells, 1px solid, sharp corners.
   See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #fff;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
   WLibrary QPlainTextEdit,
+  /* Track label inline editor in decks and samplers */
+  WTrackPropertyEditor,
   #LibraryBPMSpinBox {
     color: #ddd;
     background-color: #0f0f0f;
     selection-color: #000;
     selection-background-color: #ccc;
-    border: 1px solid #555;
+    border-width: 1px;
+    border-style: solid;
+  }
+  WLibrary QLineEdit,
+  #LibraryBPMSpinBox {
+    border-color: #555;
   }
 
 WLibrarySidebar {
@@ -2640,6 +2662,7 @@ WLibrarySidebar {
   Shift WSearchLineEdit instead */
   margin: 0px;
   }
+  WTrackPropertyEditor,
   WTrackTableView:focus,
   WLibrarySidebar:focus,
   WTrackTableView:focus,

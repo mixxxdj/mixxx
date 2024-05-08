@@ -40,6 +40,9 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+  signals:
+    void beforeShutdown();
+
   protected:
     virtual void shutdown();
 
@@ -63,4 +66,5 @@ class ControllerScriptEngineBase : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
     friend class ColorMapperJSProxy;
+    friend class MidiControllerTest;
 };

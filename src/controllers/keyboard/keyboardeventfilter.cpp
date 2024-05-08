@@ -147,6 +147,7 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
     return false;
 }
 
+// static
 QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
     QKeySequence k;
 
@@ -186,7 +187,12 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
             qDebug() << "keyboard release: " << k.toString();
         }
     }
-    return k;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    return QKeySequence(e->modifiers() | e->key());
+#else
+    return QKeySequence(e->modifiers() + e->key());
+#endif
 }
 
 void KeyboardEventFilter::setKeyboardConfig(ConfigObject<ConfigValueKbd>* pKbdConfigObject) {

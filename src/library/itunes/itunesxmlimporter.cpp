@@ -66,7 +66,8 @@ ITunesImport ITunesXMLImporter::importLibrary() {
     bool isMusicFolderLocatedAfterTracks = false;
 
     if (!m_xmlFile.open(QIODevice::ReadOnly)) {
-        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath;
+        qWarning() << "Could not open iTunes music collection XML at " << m_xmlFilePath
+                   << ":" << m_xmlFile.errorString();
         return iTunesImport;
     }
 

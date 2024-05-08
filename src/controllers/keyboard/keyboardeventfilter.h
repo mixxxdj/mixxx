@@ -25,6 +25,9 @@ class KeyboardEventFilter : public QObject {
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
+    // Returns a valid QString with modifier keys from a QKeyEvent
+    static QKeySequence getKeySeq(QKeyEvent* e);
+
 #ifndef __APPLE__
   signals:
     void altPressedWithoutKeys();
@@ -47,9 +50,6 @@ class KeyboardEventFilter : public QObject {
     bool m_altPressedWithoutKey;
 #endif
 
-    // Returns a valid QString with modifier keys from a QKeyEvent
-    QKeySequence getKeySeq(QKeyEvent *e);
-
     // Run through list of active keys to see if the pressed key is already active
     // and is not a control that repeats when held.
     bool shouldSkipHeldKey(int keyId) {
@@ -60,7 +60,6 @@ class KeyboardEventFilter : public QObject {
                     return keyDownInfo.keyId == keyId && !keyDownInfo.pControl->getKbdRepeatable();
                 });
     }
-
     // List containing keys which is currently pressed
     QList<KeyDownInformation> m_qActiveKeyList;
     // Pointer to keyboard config object

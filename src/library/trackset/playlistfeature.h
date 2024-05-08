@@ -38,7 +38,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotShufflePlaylist();
 
   protected:
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
     QList<IdAndLabel> createPlaylistLabels();
     QModelIndex constructChildModel(int selectedId);
