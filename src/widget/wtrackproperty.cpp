@@ -226,20 +226,30 @@ void WTrackProperty::ensureTrackMenuIsCreated() {
             this, m_pConfig, m_pLibrary, WTrackMenu::kDeckTrackMenuFeatures);
 
     // The show control exists only for main decks.
-    if (!m_isMainDeck) {
-        return;
+    if (m_isMainDeck) {
+        // When a track menu for this deck is shown/hidden via contextMenuEvent
+        // or pushbutton, it emits trackMenuVisible(bool).
+        // The pushbutton is created in BaseTrackPlayer which, on value change requests,
+        // also emits a signal which is connected to our slotShowTrackMenuChangeRequest().
+        connect(m_pTrackMenu,
+                &WTrackMenu::trackMenuVisible,
+                this,
+                [this](bool visible) {
+                    ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
+                            visible ? 1.0 : 0.0);
+                });
     }
-    // When a track menu for this deck is shown/hidden via contextMenuEvent
-    // or pushbutton, it emits trackMenuVisible(bool).
-    // The pushbutton is created in BaseTrackPlayer which, on value change requests,
-    // also emits a signal which is connected to our slotShowTrackMenuChangeRequest().
+    // Before and after the loaded tracks file has been removed from disk,
+    // instruct the library to save and restore the current index for
+    // keyboard/controller navigation.
     connect(m_pTrackMenu,
-            &WTrackMenu::trackMenuVisible,
+            &WTrackMenu::saveCurrentViewState,
             this,
-            [this](bool visible) {
-                ControlObject::set(ConfigKey(m_group, kShowTrackMenuKey),
-                        visible ? 1.0 : 0.0);
-            });
+            &WTrackProperty::saveCurrentViewState);
+    connect(m_pTrackMenu,
+            &WTrackMenu::restoreCurrentViewStateOrIndex,
+            this,
+            &WTrackProperty::restoreCurrentViewState);
 }
 
 /// This slot handles show/hide requests originating from both pushbutton changes

@@ -94,6 +94,7 @@ class BpmControl : public EngineControl {
     double getRateRatio() const;
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
+    void trackBpmLockChanged(bool locked);
     void notifySeek(mixxx::audio::FramePos position) override;
 
   private slots:
@@ -146,7 +147,7 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeatsLater;
     ControlEncoder* m_pTranslateBeatsMove;
 
-    std::unique_ptr<ControlPushButton> m_pToggleBpmLock;
+    std::unique_ptr<ControlPushButton> m_pBpmLock;
 
     // The current effective BPM of the engine
     ControlLinPotmeter* m_pEngineBpm;

@@ -745,6 +745,18 @@ bool Library::isTrackIdInCurrentLibraryView(const TrackId& trackId) {
     }
 }
 
+void Library::slotSaveCurrentViewState() const {
+    if (m_pLibraryWidget) {
+        return m_pLibraryWidget->saveCurrentViewState();
+    }
+}
+
+void Library::slotRestoreCurrentViewState() const {
+    if (m_pLibraryWidget) {
+        return m_pLibraryWidget->restoreCurrentViewState();
+    }
+}
+
 LibraryTableModel* Library::trackTableModel() const {
     VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
         return nullptr;

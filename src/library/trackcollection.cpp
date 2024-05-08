@@ -380,7 +380,7 @@ bool TrackCollection::purgeTracks(
     }
     // TODO(XXX): Move reversible actions inside transaction
     m_cueDao.deleteCuesForTracks(trackIds);
-    m_playlistDao.removeTracksFromPlaylists(trackIds);
+    m_playlistDao.removeTracksFromPlaylists(trackIds, true);
     m_analysisDao.deleteAnalyses(trackIds);
 
     // Post-processing

@@ -13,7 +13,7 @@ class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     Q_OBJECT
   public:
     explicit WVuMeterGLSL(QWidget* pParent = nullptr);
-    ~WVuMeterGLSL() override = default;
+    ~WVuMeterGLSL() override;
 
   private:
     OpenGLTexture2D m_textureBack;
@@ -22,6 +22,7 @@ class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
 
     void draw() override;
     void initializeGL() override;
+    void cleanupGL();
     void paintGL() override;
     void drawTexture(QOpenGLTexture* texture, const QRectF& sourceRect, const QRectF& targetRect);
 };

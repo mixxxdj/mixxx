@@ -11,6 +11,7 @@
 #include "widget/wbasewidget.h"
 
 class LibraryView;
+class WTrackTableView;
 class TrackId;
 class QDomNode;
 class SkinContext;
@@ -31,12 +32,15 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     bool registerView(const QString& name, QWidget* view);
 
     LibraryView* getActiveView() const;
-
+    WTrackTableView* getCurrentTrackTableView() const;
     // This returns true if the current view is or has a WTracksTableView and
     // contains trackId, otherwise false.
     // This is primarily used to disable the "Select track in library" track menu action
     // to avoid unintended behaviour if the current view has no tracks table.
     bool isTrackInCurrentView(const TrackId& trackId);
+
+    void saveCurrentViewState() const;
+    void restoreCurrentViewState() const;
 
     // Alpha value for row color background
     static constexpr double kDefaultTrackTableBackgroundColorOpacity = 0.125; // 12.5% opacity

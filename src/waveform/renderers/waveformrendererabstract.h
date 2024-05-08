@@ -15,6 +15,13 @@ class WaveformRendererAbstract;
 
 class WaveformRendererAbstract {
   public:
+    /// The type of cursor for which the waveform is rendered
+    ///  Play: the play cursor is the area of focus for the renderer
+    ///  Slip: the slip cursor is the area of focus for the renderer
+    enum PositionSource {
+        Play,
+        Slip
+    };
     explicit WaveformRendererAbstract(
             WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
