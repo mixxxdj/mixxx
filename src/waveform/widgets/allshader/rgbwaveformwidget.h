@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/class.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 class WaveformWidgetFactory;
@@ -34,7 +35,9 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
     void paintEvent(QPaintEvent* event) override;
 
   private:
-    RGBWaveformWidget(const QString& group, QWidget* parent);
+    RGBWaveformWidget(const QString& group,
+            QWidget* parent,
+            int options = WaveformRendererSignalBase::None);
     friend class ::WaveformWidgetFactory;
 
     DISALLOW_COPY_AND_ASSIGN(RGBWaveformWidget);

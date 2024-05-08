@@ -12,19 +12,19 @@
 
 namespace allshader {
 
-RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent)
+RGBWaveformWidget::RGBWaveformWidget(const QString& group, QWidget* parent, int options)
         : WaveformWidget(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
-    addRenderer<WaveformRendererRGB>();
+    addRenderer<WaveformRendererRGB>(::WaveformRendererAbstract::Play, options);
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
     // The following renderer will add an overlay waveform if a slip is in progress
     addRenderer<WaveformRendererSlipMode>();
     addRenderer<WaveformRendererPreroll>(::WaveformRendererAbstract::Slip);
-    addRenderer<WaveformRendererRGB>(::WaveformRendererAbstract::Slip);
+    addRenderer<WaveformRendererRGB>(::WaveformRendererAbstract::Slip, options);
     addRenderer<WaveformRenderBeat>(::WaveformRendererAbstract::Slip);
     addRenderer<WaveformRenderMark>(::WaveformRendererAbstract::Slip);
 

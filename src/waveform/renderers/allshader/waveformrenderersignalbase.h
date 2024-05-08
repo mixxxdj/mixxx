@@ -15,6 +15,11 @@ class WaveformRendererSignalBase;
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
                                               public allshader::WaveformRendererAbstract {
   public:
+    enum Options {
+        None = 0,
+        SplitStereoSignal = 0x1,
+    };
+
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
 
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);

@@ -24,9 +24,9 @@
 #include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
 #ifdef MIXXX_USE_QOPENGL
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/allshader/filteredwaveformwidget.h"
 #include "waveform/widgets/allshader/hsvwaveformwidget.h"
-#include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
 #else
@@ -1090,8 +1090,14 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     case WaveformWidgetBackend::GLSL:
         return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
-    case WaveformWidgetBackend::AllShader:
-        return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer);
+    case WaveformWidgetBackend::AllShader: {
+        int options = allshader::WaveformRendererSignalBase::None;
+        if (m_config->getValue(
+                    ConfigKey("[Waveform]", "split_stereo_signal"), false)) {
+            options |= allshader::WaveformRendererSignalBase::SplitStereoSignal;
+        }
+        return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer, options);
+    }
 #else
     case WaveformWidgetBackend::Qt:
         return new QtRGBWaveformWidget(viewer->getGroup(), viewer);
