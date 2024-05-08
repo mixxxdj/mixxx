@@ -1,10 +1,10 @@
 #pragma once
 #include <QDomNode>
 #include <QImage>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "track/cue.h"
-#include "util/memory.h"
 #include "waveform/waveformmarklabel.h"
 
 class SkinContext;

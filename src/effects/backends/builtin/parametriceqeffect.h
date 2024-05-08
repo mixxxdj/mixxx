@@ -1,13 +1,13 @@
 #pragma once
 
 #include <QMap>
+#include <memory>
 #include <vector>
 
 #include "audio/types.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/filters/enginefilterbiquad1.h"
 #include "util/class.h"
-#include "util/memory.h"
 #include "util/types.h"
 
 // The ParametricEQEffect models the mid bands from a SSL Black EQ (242)

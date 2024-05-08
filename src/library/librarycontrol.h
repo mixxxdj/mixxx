@@ -1,10 +1,10 @@
 #pragma once
 
 #include <QObject>
+#include <memory>
 
 #include "control/controlproxy.h"
 #include "library/library_decl.h"
-#include "util/memory.h"
 
 class ControlEncoder;
 class ControlObject;
