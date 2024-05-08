@@ -127,15 +127,6 @@ const colorCodeToObject = function(colorCode) {
 
 // @ts-ignore Same identifier for class and instance needed for backward compatibility
 class script {
-    constructor() {
-        // ----------------- Common regular expressions --------------------------
-        this.samplerRegEx = /^\[Sampler(\d+)\]$/;
-        this.channelRegEx = /^\[Channel(\d+)\]$/;
-        this.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/;
-        this.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/;
-        this.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/;
-        this.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/;
-    }
 
     // @deprecated Use script.midiDebug() instead
     static debug(channel, control, value, status, group) {
@@ -458,6 +449,14 @@ class script {
 this.script = script;
 
 // ----------------- Mapping constants ---------------------
+
+// Common regular expressions
+script.samplerRegEx = Object.freeze(/^\[Sampler(\d+)\]$/);
+script.channelRegEx = Object.freeze(/^\[Channel(\d+)\]$/);
+script.eqRegEx = Object.freeze(/^\[EqualizerRack1_(\[.*\])_Effect1\]$/);
+script.quickEffectRegEx = Object.freeze(/^\[QuickEffectRack1_(\[.*\])\]$/);
+script.effectUnitRegEx = Object.freeze(/^\[EffectRack1_EffectUnit(\d+)\]$/);
+script.individualEffectRegEx = Object.freeze(/^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/);
 
 // Library column value, which can be used to interact with the CO for "[Library] sort_column"
 script.LIBRARY_COLUMNS = Object.freeze({
