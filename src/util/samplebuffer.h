@@ -102,6 +102,8 @@ class SampleBuffer final {
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value);
 
+    /// Deprecated: use std::span<const CSAMPLE>, SampleBuffer::span() const and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
     class ReadableSlice {
       public:
         ReadableSlice()
@@ -143,6 +145,8 @@ class SampleBuffer final {
         SINT m_length;
     };
 
+    /// Deprecated: use std::span<CSAMPLE>, SampleBuffer::span() and
+    /// mixxx::spanutil::spanFromPtrLen from util/span.h instead.
     class WritableSlice {
       public:
         WritableSlice()
