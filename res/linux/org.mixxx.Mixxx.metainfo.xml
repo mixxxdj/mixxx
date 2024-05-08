@@ -96,7 +96,7 @@
   Do not edit it manually.
   -->
   <releases>
-    <release version="2.4.1" type="development" date="2024-05-07" timestamp="1715034555">
+    <release version="2.4.1" type="development" date="2024-05-07" timestamp="1715059475">
       <description>
  <p>
   Controller Mappings
@@ -119,6 +119,14 @@
   <li>
    Hercules Inpulse 200: Configure shift-browser knob to scroll the library (quick)
    #12932
+  </li>
+  <li>
+   Nintendo Wii Remote: Fix hid script regarding addOutput
+   #12973
+  </li>
+  <li>
+   Pioneer CDJ: Fix hid script regarding addOutput
+   #12973
   </li>
   <li>
    Pioneer DDJ-FLX4: Add waveform zoom and other mapping improvements
@@ -343,6 +351,9 @@
    LV Mix EQ: Fix pops when enabling in effect rack
    #13055
    #13073
+  </li>
+  <li>
+   Fix hid addOutput
   </li>
  </ul>
 </description>
