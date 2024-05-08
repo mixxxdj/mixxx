@@ -49,8 +49,8 @@ jobs:
               -DQT6=ON
               -DQML=OFF
               -DWAVPACK=ON
-              -DVCPKG_TARGET_TRIPLET=x64-osx-min1015-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015-release
+              -DVCPKG_TARGET_TRIPLET=x64-osx-min1100-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -75,7 +75,7 @@ jobs:
               -DQML=OFF
               -DWAVPACK=ON
               -DVCPKG_TARGET_TRIPLET=arm64-osx-min1100-release
-              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1015-release
+              -DVCPKG_DEFAULT_HOST_TRIPLET=x64-osx-min1100-release
             # TODO: Fix this broken test on macOS
             crosscompile: true
             cpack_generator: DragNDrop
@@ -134,7 +134,7 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.5
         with:
           # This is necessary for making `git describe` work.
           fetch-depth: 0
@@ -473,7 +473,7 @@ jobs:
 
       - name: "Upload GitHub Actions artifacts"
         if: matrix.artifacts_path != null
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.3.3
         with:
           name: ${{ matrix.artifacts_name }}
           path: ${{ matrix.artifacts_path }}
@@ -487,7 +487,7 @@ jobs:
     if: always()
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.5
         with:
           fetch-depth: 0
 

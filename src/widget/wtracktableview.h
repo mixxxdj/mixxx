@@ -52,6 +52,8 @@ class WTrackTableView : public WLibraryTableView {
     void cutSelectedTracks();
     void copySelectedTracks();
     void pasteTracks(const QModelIndex& index);
+    void moveRows(QList<int> selectedRows, int destRow);
+    void moveSelectedTracks(QKeyEvent* event);
     void selectTracksById(const QList<TrackId>& tracks, int prevColumn);
 
     double getBackgroundColorOpacity() const {
@@ -134,8 +136,10 @@ class WTrackTableView : public WLibraryTableView {
     // when dragging.
     void mouseMoveEvent(QMouseEvent *pEvent) override;
 
-    // Returns the list of selected rows, or an empty list if none are selected.
+    // Returns the list of selected row indices, or an empty list if none are selected.
     QModelIndexList getSelectedRows() const;
+    // Returns the list of selected row numbers, or an empty list if none are selected.
+    QList<int> getSelectedRowNumbers() const;
 
     // Returns the current TrackModel, or returns NULL if none is set.
     TrackModel* getTrackModel() const;

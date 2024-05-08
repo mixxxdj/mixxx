@@ -31,6 +31,9 @@ Variables:
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#FF4300</PlayPosColor>
         <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
+        <SlipBorderOutlineColor><Variable name="SlipBorderOutlineColor"/></SlipBorderOutlineColor>
+        <SlipBorderTopOutlineSize><Variable name="SlipBorderTopOutlineSize"/></SlipBorderTopOutlineSize>
+        <SlipBorderBottomOutlineSize><Variable name="SlipBorderBottomOutlineSize"/></SlipBorderBottomOutlineSize>
         <DefaultMark>
           <Align>bottom|right</Align>
           <Color>#666666</Color>

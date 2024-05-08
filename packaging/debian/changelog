@@ -1,3 +1,9 @@
+mixxx (2.4.0-1~focal) focal; urgency=medium
+
+  * Build of 2.4.0
+
+ -- RJ Skerry-Ryan <rryan@mixxx.org>  Thu, 15 Feb 2024 23:55:01 +0000
+
 mixxx (2.3.6-1~bionic) bionic; urgency=medium
 
   * Build of 2.3.6

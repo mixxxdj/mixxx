@@ -61,6 +61,8 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
     void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
     void setAndConfirmTrackMenuControl(bool visible);
     void selectedStateChanged(bool state);
+    void saveCurrentViewState();
+    void restoreCurrentViewState();
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);

@@ -14,9 +14,10 @@ inline float math_pow2(float x) {
 }
 } // namespace
 
-WaveformRendererRGB::WaveformRendererRGB(
-        WaveformWidgetRenderer* waveformWidget)
-        : WaveformRendererSignalBase(waveformWidget) {
+WaveformRendererRGB::WaveformRendererRGB(WaveformWidgetRenderer* waveformWidget,
+        ::WaveformRendererAbstract::PositionSource type)
+        : WaveformRendererSignalBase(waveformWidget),
+          m_isSlipRenderer(type == ::WaveformRendererAbstract::Slip) {
 }
 
 void WaveformRendererRGB::onSetup(const QDomNode& node) {
@@ -30,9 +31,12 @@ void WaveformRendererRGB::initializeGL() {
 
 void WaveformRendererRGB::paintGL() {
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
-    if (!pTrack) {
+    if (!pTrack || (m_isSlipRenderer && !m_waveformRenderer->isSlipActive())) {
         return;
     }
+
+    auto positionType = m_isSlipRenderer ? ::WaveformRendererAbstract::Slip
+                                         : ::WaveformRendererAbstract::Play;
 
     ConstWaveformPointer waveform = pTrack->getWaveform();
     if (waveform.isNull()) {
@@ -55,9 +59,9 @@ void WaveformRendererRGB::paintGL() {
     // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
     const int visualFramesSize = dataSize / 2;
     const double firstVisualFrame =
-            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+            m_waveformRenderer->getFirstDisplayedPosition(positionType) * visualFramesSize;
     const double lastVisualFrame =
-            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
+            m_waveformRenderer->getLastDisplayedPosition(positionType) * visualFramesSize;
 
     // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
@@ -99,7 +103,7 @@ void WaveformRendererRGB::paintGL() {
     m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
             static_cast<float>(length),
-            halfBreadth + 0.5f * devicePixelRatio);
+            m_isSlipRenderer ? halfBreadth : halfBreadth + 0.5f * devicePixelRatio);
     m_colors.addForRectangle(
             static_cast<float>(m_axesColor_r),
             static_cast<float>(m_axesColor_g),
@@ -190,7 +194,7 @@ void WaveformRendererRGB::paintGL() {
         m_vertices.addRectangle(fpos - 0.5f,
                 halfBreadth - heightFactor * maxAllChn[0],
                 fpos + 0.5f,
-                halfBreadth + heightFactor * maxAllChn[1]);
+                m_isSlipRenderer ? halfBreadth : halfBreadth + heightFactor * maxAllChn[1]);
         m_colors.addForRectangle(red, green, blue);
 
         xVisualFrame += visualIncrementPerPixel;

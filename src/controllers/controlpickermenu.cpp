@@ -272,7 +272,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust Beatgrid - Match Alignment"),
             tr("Adjust beatgrid to match another playing deck."),
             pBpmMenu);
-    addDeckAndSamplerControl("bpm_toggle_lock",
+    addDeckAndSamplerControl("bpmlock",
             tr("Toggle the BPM/beatgrid lock"),
             tr("Toggle the BPM/beatgrid lock"),
             pBpmMenu);

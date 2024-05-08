@@ -221,12 +221,16 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
                     return QVariant(mapping.options);
                 }
                 return QVariant::fromValue(mapping.options);
-            case MIDI_COLUMN_ACTION:
-                if (role == Qt::UserRole) {
-                    // TODO(rryan): somehow get the delegate display text?
-                    return QVariant(control->group + QStringLiteral(",") + control->item);
+            case MIDI_COLUMN_ACTION: {
+                if (role == Qt::UserRole) { // sort by displaystring
+                    QStyledItemDelegate* del = getDelegateForIndex(index);
+                    VERIFY_OR_DEBUG_ASSERT(del) {
+                    return QString();
+                    }
+                    return del->displayText(QVariant::fromValue(*control), QLocale());
                 }
-                return QVariant::fromValue(control);
+                return QVariant::fromValue(*control);
+            }
             case MIDI_COLUMN_COMMENT:
                 return mapping.description;
             default:

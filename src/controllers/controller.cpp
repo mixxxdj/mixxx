@@ -138,7 +138,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
 
     int length = data.size();
     if (CmdlineArgs::Instance()
-                    .getControllerDebug()) {
+                    .getControllerDebug() &&
+            m_logInput().isDebugEnabled()) {
         // Formatted packet display
         QString message = QString("t:%2, %3 bytes:\n")
                                   .arg(timestamp.formatMillisWithUnit(),
