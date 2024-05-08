@@ -11,6 +11,7 @@
 
 class ControlPushButton;
 class ControlObject;
+class ControlProxy;
 class RateControl;
 class LoopMoveControl;
 class BeatJumpControl;
@@ -287,7 +288,6 @@ class BeatLoopingControl : public QObject {
     Q_OBJECT
   public:
     BeatLoopingControl(const QString& group, double size);
-    virtual ~BeatLoopingControl();
 
     void activate();
     void deactivate();
@@ -299,6 +299,10 @@ class BeatLoopingControl : public QObject {
     void slotActivate(double value);
     void slotActivateRoll(double value);
     void slotToggle(double value);
+  private slots:
+    void slotReverseActivate(double value);
+    void slotReverseActivateRoll(double value);
+    void slotReverseToggle(double value);
 
   signals:
     void activateBeatLoop(BeatLoopingControl*);
@@ -309,9 +313,13 @@ class BeatLoopingControl : public QObject {
   private:
     double m_dBeatLoopSize;
     bool m_bActive;
-    ControlPushButton* m_pLegacy;
-    ControlPushButton* m_pActivate;
-    ControlPushButton* m_pActivateRoll;
-    ControlPushButton* m_pToggle;
-    ControlObject* m_pEnabled;
+    std::unique_ptr<ControlPushButton> m_pLegacy;
+    std::unique_ptr<ControlPushButton> m_pActivate;
+    std::unique_ptr<ControlPushButton> m_pRActivate;
+    std::unique_ptr<ControlPushButton> m_pActivateRoll;
+    std::unique_ptr<ControlPushButton> m_pRActivateRoll;
+    std::unique_ptr<ControlPushButton> m_pToggle;
+    std::unique_ptr<ControlPushButton> m_pRToggle;
+    std::unique_ptr<ControlProxy> m_pCOLoopAnchor;
+    std::unique_ptr<ControlObject> m_pEnabled;
 };

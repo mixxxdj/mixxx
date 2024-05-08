@@ -1920,47 +1920,72 @@ void LoopMoveControl::slotMoveForward(double v) {
 
 BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
         : m_dBeatLoopSize(size),
-          m_bActive(false) {
+          m_bActive(false),
+          m_pCOLoopAnchor(std::make_unique<ControlProxy>(group, "loop_anchor", this)) {
     // This is the original beatloop control which is now deprecated. Its value
     // is the state of the beatloop control (1 for enabled, 0 for disabled).
-    m_pLegacy = new ControlPushButton(
+    m_pLegacy = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1", size));
     m_pLegacy->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pLegacy, &ControlObject::valueChanged,
-            this, &BeatLoopingControl::slotLegacy,
+    connect(m_pLegacy.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotLegacy,
             Qt::DirectConnection);
     // A push-button which activates the beatloop.
-    m_pActivate = new ControlPushButton(
+    m_pActivate = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1_activate", size));
-    connect(m_pActivate, &ControlObject::valueChanged,
-            this, &BeatLoopingControl::slotActivate,
+    connect(m_pActivate.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotActivate,
+            Qt::DirectConnection);
+    // And the same but setting it from the end point instead of starting
+    m_pRActivate = std::make_unique<ControlPushButton>(
+            keyForControl(group, "beatloop_r%1_activate", size));
+    connect(m_pRActivate.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotReverseActivate,
             Qt::DirectConnection);
     // A push-button which toggles the beatloop as active or inactive.
-    m_pToggle = new ControlPushButton(
+    m_pToggle = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1_toggle", size));
-    connect(m_pToggle, &ControlObject::valueChanged,
-            this, &BeatLoopingControl::slotToggle,
+    connect(m_pToggle.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotToggle,
+            Qt::DirectConnection);
+    // And the same but setting it from the end point instead of starting
+    m_pRToggle = std::make_unique<ControlPushButton>(
+            keyForControl(group, "beatloop_r%1_toggle", size));
+    connect(m_pRToggle.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotReverseToggle,
             Qt::DirectConnection);
 
     // A push-button which activates rolling beatloops
-    m_pActivateRoll = new ControlPushButton(
+    m_pActivateRoll = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatlooproll_%1_activate", size));
-    connect(m_pActivateRoll, &ControlObject::valueChanged,
-            this, &BeatLoopingControl::slotActivateRoll,
+    connect(m_pActivateRoll.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotActivateRoll,
+            Qt::DirectConnection);
+    // And the same but setting it from the end point instead of starting
+    m_pRActivateRoll = std::make_unique<ControlPushButton>(
+            keyForControl(group, "beatlooproll_r%1_activate", size));
+    connect(m_pRActivateRoll.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BeatLoopingControl::slotReverseActivateRoll,
             Qt::DirectConnection);
 
     // An indicator control which is 1 if the beatloop is enabled and 0 if not.
-    m_pEnabled = new ControlObject(
+    m_pEnabled = std::make_unique<ControlObject>(
             keyForControl(group, "beatloop_%1_enabled", size));
     m_pEnabled->setReadOnly();
-}
-
-BeatLoopingControl::~BeatLoopingControl() {
-    delete m_pActivate;
-    delete m_pToggle;
-    delete m_pEnabled;
-    delete m_pLegacy;
-    delete m_pActivateRoll;
 }
 
 void BeatLoopingControl::deactivate() {
@@ -2014,5 +2039,44 @@ void BeatLoopingControl::slotToggle(double value) {
         emit deactivateBeatLoop(this);
     } else {
         emit activateBeatLoop(this);
+    }
+}
+
+void BeatLoopingControl::slotReverseActivate(double value) {
+    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
+    if (!isReverseAnchor) {
+        // If the reverse mode is not enabled, we do so temporarily
+        m_pCOLoopAnchor->set(1.0);
+    }
+    slotActivate(value);
+    if (!isReverseAnchor) {
+        // If the reverse mode was enabled temporarily, we disabled it now
+        m_pCOLoopAnchor->set(0.0);
+    }
+}
+
+void BeatLoopingControl::slotReverseActivateRoll(double v) {
+    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
+    if (!isReverseAnchor) {
+        // If the reverse mode is not enabled, we do so temporarily
+        m_pCOLoopAnchor->set(1.0);
+    }
+    slotActivateRoll(v);
+    if (!isReverseAnchor) {
+        // If the reverse mode was enabled temporarily, we disabled it now
+        m_pCOLoopAnchor->set(0.0);
+    }
+}
+
+void BeatLoopingControl::slotReverseToggle(double value) {
+    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
+    if (!isReverseAnchor) {
+        // If the reverse mode is not enabled, we do so temporarily
+        m_pCOLoopAnchor->set(1.0);
+    }
+    slotToggle(value);
+    if (!isReverseAnchor) {
+        // If the reverse mode was enabled temporarily, we disabled it now
+        m_pCOLoopAnchor->set(0.0);
     }
 }
