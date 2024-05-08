@@ -45,6 +45,7 @@ class TrackCollection : public QObject,
 
     QList<mixxx::FileInfo> loadRootDirs(
             bool skipInvalidOrMissing = false) const;
+    QStringList getRootDirStrings() const;
 
     const CrateStorage& crates() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);

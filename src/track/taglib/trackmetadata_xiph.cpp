@@ -9,7 +9,7 @@
 
 #include "track/taglib/trackmetadata_xiph.h"
 
-#include <taglib/flacpicture.h>
+#include <flacpicture.h>
 
 #include <array>
 

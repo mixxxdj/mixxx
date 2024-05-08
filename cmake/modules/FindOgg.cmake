@@ -41,14 +41,14 @@ endif()
 
 find_path(Ogg_INCLUDE_DIR
   NAMES ogg/ogg.h
-  PATHS ${PC_Ogg_INCLUDE_DIRS}
+  HINTS ${PC_Ogg_INCLUDE_DIRS}
   DOC "Ogg include directory"
 )
 mark_as_advanced(Ogg_INCLUDE_DIR)
 
 find_library(Ogg_LIBRARY
   NAMES ogg
-  PATHS ${PC_Ogg_LIBRARY_DIRS}
+  HINTS ${PC_Ogg_LIBRARY_DIRS}
   DOC "Ogg library"
 )
 mark_as_advanced(Ogg_LIBRARY)

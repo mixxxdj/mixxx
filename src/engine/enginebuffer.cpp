@@ -651,12 +651,18 @@ void EngineBuffer::notifyTrackLoaded(
     }
 
     if (pNewTrack) {
-        connect(
-                pNewTrack.get(),
+        connect(pNewTrack.get(),
                 &Track::beatsUpdated,
                 this,
                 &EngineBuffer::slotUpdatedTrackBeats,
                 Qt::DirectConnection);
+        connect(pNewTrack.get(),
+                &Track::bpmLockChanged,
+                m_pBpmControl,
+                &BpmControl::trackBpmLockChanged,
+                Qt::DirectConnection);
+        bool bpmLocked = pNewTrack.get()->isBpmLocked();
+        m_pBpmControl->trackBpmLockChanged(bpmLocked);
     }
 
     // Inform BaseTrackPlayer via a queued connection
@@ -843,9 +849,9 @@ void EngineBuffer::processTrackLocked(
     m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackEndPositionOld = getTrackEndPosition();
 
-    double baserate = 0.0;
+    double baseSampleRate = 0.0;
     if (sampleRate.isValid()) {
-        baserate = m_trackSampleRateOld / sampleRate;
+        baseSampleRate = m_trackSampleRateOld / sampleRate;
     }
 
     // Sync requests can affect rate, so process those first.
@@ -875,7 +881,7 @@ void EngineBuffer::processTrackLocked(
     // pass for every 1 real second). Depending on whether
     // keylock is enabled, this is applied to either the rate or the tempo.
     double speed = m_pRateControl->calculateSpeed(
-            baserate,
+            baseSampleRate,
             tempoRatio,
             paused,
             iBufferSize,
@@ -980,10 +986,10 @@ void EngineBuffer::processTrackLocked(
     // otherwise tempo and pitch are processed individual
 
     double rate = 0;
-    // If the baserate, speed, or pitch has changed, we need to update the
+    // If the base samplerate, speed, or pitch has changed, we need to update the
     // scaler. Also, if we have changed scalers then we need to update the
     // scaler.
-    if (baserate != m_baserate_old || speed != m_speed_old ||
+    if (baseSampleRate != m_baserate_old || speed != m_speed_old ||
             pitchRatio != m_pitch_old || tempoRatio != m_tempo_ratio_old ||
             m_bScalerChanged) {
         // The rate returned by the scale object can be different from the
@@ -1005,7 +1011,7 @@ void EngineBuffer::processTrackLocked(
             m_pScale->clear();
         }
 
-        m_baserate_old = baserate;
+        m_baserate_old = baseSampleRate;
         m_speed_old = speed;
         m_pitch_old = pitchRatio;
         m_tempo_ratio_old = tempoRatio;
@@ -1016,16 +1022,16 @@ void EngineBuffer::processTrackLocked(
         // main samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
 
-        m_pScale->setScaleParameters(baserate,
-                                     &speed,
-                                     &pitchRatio);
+        m_pScale->setScaleParameters(baseSampleRate,
+                &speed,
+                &pitchRatio);
 
         // The way we treat rate inside of EngineBuffer is actually a
         // description of "sample consumption rate" or percentage of samples
         // consumed relative to playing back the track at its native sample
         // rate and normal speed. pitch_adjust does not change the playback
         // rate.
-        rate = baserate * speed;
+        rate = baseSampleRate * speed;
 
         // Scaler is up to date now.
         m_bScalerChanged = false;

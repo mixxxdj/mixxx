@@ -26,12 +26,14 @@ namespace {
 
 const QString kConfigGroup = QStringLiteral("[Config]");
 const QString kControlsGroup = QStringLiteral("[Controls]");
+const QString kPreferencesGroup = QStringLiteral("[Preferences]");
 const QString kScaleFactorKey = QStringLiteral("ScaleFactor");
 const QString kStartInFullscreenKey = QStringLiteral("StartInFullscreen");
 const QString kSchemeKey = QStringLiteral("Scheme");
 const QString kResizableSkinKey = QStringLiteral("ResizableSkin");
 const QString kLocaleKey = QStringLiteral("Locale");
 const QString kTooltipsKey = QStringLiteral("Tooltips");
+const QString kMultiSamplingKey = QStringLiteral("multi_sampling");
 
 } // namespace
 
@@ -126,12 +128,9 @@ DlgPrefInterface::DlgPrefInterface(
 
     if (pSkinLoader) {
         // Skin configurations
-        QString sizeWarningString =
-                "<img src=\":/images/preferences/ic_preferences_warning.svg\") "
-                "width=16 height=16 />   " +
+        warningLabel->setText(kWarningIconHtmlString +
                 tr("The minimum size of the selected skin is bigger than your "
-                   "screen resolution.");
-        warningLabel->setText(sizeWarningString);
+                   "screen resolution."));
 
         ComboBoxSkinconf->clear();
         skinPreviewLabel->setText("");
@@ -181,6 +180,34 @@ DlgPrefInterface::DlgPrefInterface(
 
     int inhibitsettings = static_cast<int>(m_pScreensaverManager->status());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
+
+    // Multi-Sampling
+#ifdef MIXXX_USE_QML
+    if (CmdlineArgs::Instance().isQml()) {
+        multiSamplingComboBox->clear();
+        multiSamplingComboBox->addItem(tr("Disabled"), 0);
+        multiSamplingComboBox->addItem(tr("2x MSAA"), 2);
+        multiSamplingComboBox->addItem(tr("4x MSAA"), 4);
+        multiSamplingComboBox->addItem(tr("8x MSAA"), 8);
+        multiSamplingComboBox->addItem(tr("16x MSAA"), 16);
+
+        m_multiSampling = m_pConfig->getValue(ConfigKey(kPreferencesGroup, kMultiSamplingKey), 4);
+        int multiSamplingIndex = multiSamplingComboBox->findData(m_multiSampling);
+        if (multiSamplingIndex != -1) {
+            multiSamplingComboBox->setCurrentIndex(multiSamplingIndex);
+        } else {
+            multiSamplingComboBox->setCurrentIndex(0);
+            m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(0));
+        }
+    } else
+#endif
+    {
+#ifdef MIXXX_USE_QML
+        m_multiSampling = 0;
+#endif
+        multiSamplingLabel->hide();
+        multiSamplingComboBox->hide();
+    }
 
     // Tooltip configuration
     connect(buttonGroupTooltips,
@@ -303,6 +330,10 @@ void DlgPrefInterface::slotResetToDefaults() {
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(
         static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON)));
 
+#ifdef MIXXX_USE_QML
+    multiSamplingComboBox->setCurrentIndex(4); // 4x MSAA
+#endif
+
 #ifdef Q_OS_IOS
     // Tooltips off everywhere.
     radioButtonTooltipsOff->setChecked(true);
@@ -325,7 +356,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(this,
             tr("Information"),
-            tr("Mixxx must be restarted before the new locale or scaling "
+            tr("Mixxx must be restarted before the new locale, scaling or multi-sampling "
                "settings will take effect."));
 }
 
@@ -424,11 +455,25 @@ void DlgPrefInterface::slotApply() {
                 static_cast<mixxx::ScreenSaverPreference>(screensaverComboBoxState));
     }
 
-    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor) {
+#ifdef MIXXX_USE_QML
+    int multiSampling = multiSamplingComboBox->itemData(
+                                                     multiSamplingComboBox->currentIndex())
+                                .toInt();
+    m_pConfig->set(ConfigKey(kPreferencesGroup, kMultiSamplingKey), ConfigValue(multiSampling));
+#endif
+
+    if (locale != m_localeOnUpdate || scaleFactor != m_dScaleFactor
+#ifdef MIXXX_USE_QML
+            || multiSampling != m_multiSampling
+#endif
+    ) {
         notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
         m_dScaleFactor = scaleFactor;
+#ifdef MIXXX_USE_QML
+        m_multiSampling = multiSampling;
+#endif
     }
 
     // load skin/scheme if necessary

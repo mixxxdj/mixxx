@@ -272,6 +272,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Adjust Beatgrid - Match Alignment"),
             tr("Adjust beatgrid to match another playing deck."),
             pBpmMenu);
+    addDeckAndSamplerControl("bpmlock",
+            tr("Toggle the BPM/beatgrid lock"),
+            tr("Toggle the BPM/beatgrid lock"),
+            pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), pBpmMenu);
 
@@ -838,6 +842,18 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Clears the search query"),
             pLibraryMenu);
 
+    // Color selection
+    addLibraryControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette"
+               " for the first selected track"),
+            pLibraryMenu);
+    addLibraryControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select the previous color in the color palette"
+               " for the first selected track"),
+            pLibraryMenu);
+
     pLibraryMenu->addSeparator();
     addControl("[Recording]",
             "toggle_recording",
@@ -1389,6 +1405,20 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndPreviewDeckControl("stars_down",
             tr("Star Rating Down"),
             tr("Decrease the track rating by one star"),
+            pGuiMenu);
+
+    // Controls to change a deck's loaded track color
+    addDeckAndPreviewDeckControl("track_color_next",
+            tr("Select Next Color Available"),
+            tr("Select the next color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_prev",
+            tr("Select Previous Color Available"),
+            tr("Select previous color in the color palette for the loaded track."),
+            pGuiMenu);
+    addDeckAndPreviewDeckControl("track_color_selector",
+            tr("Navigate Through Track Colors"),
+            tr("Select either next or previous color in the palette for the loaded track."),
             pGuiMenu);
 
     // Misc. controls

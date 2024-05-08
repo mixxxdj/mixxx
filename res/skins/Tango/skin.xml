@@ -186,12 +186,6 @@
 <!--################################################################
      Singleton definitions  #######################################
    ############################################################### -->
-    <SingletonDefinition>
-      <ObjectName>Waveforms_Singleton</ObjectName>
-      <Children>
-        <Template src="skins:Tango/waveforms_container.xml"/>
-      </Children>
-    </SingletonDefinition>
 
     <!-- Overviews are needed in both regular and minimal decks -->
     <SingletonDefinition>
@@ -416,9 +410,9 @@
                         [Library] -->
                     <Splitter>
                       <ObjectName>WaveformSplitter</ObjectName>
-                      <SizePolicy>me,me</SizePolicy>
                       <Orientation>vertical</Orientation>
-                      <SplitSizes>100,10000</SplitSizes>
+                      <SizePolicy>me,me</SizePolicy>
+                      <SplitSizes>100,550</SplitSizes>
                       <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Connection>
@@ -430,14 +424,12 @@
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>
-                          <SizePolicy>me,max</SizePolicy>
+                          <SizePolicy>me,me</SizePolicy>
                           <Children>
-                            <SingletonContainer>
-                              <ObjectName>Waveforms_Singleton</ObjectName>
-                            </SingletonContainer>
+                            <Template src="skins:Tango/waveforms_container.xml"/>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+                            <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>

@@ -172,7 +172,11 @@ PioneerDDJ400.init = function() {
     engine.softTakeover("[EffectRack1_EffectUnit1_Effect3]", "meta", true);
     engine.softTakeover("[EffectRack1_EffectUnit1]", "mix", true);
 
-    for (let i = 1; i <= 16; ++i) {
+    const samplerCount = 16;
+    if (engine.getValue("[App]", "num_samplers") < samplerCount) {
+        engine.setValue("[App]", "num_samplers", samplerCount);
+    }
+    for (let i = 1; i <= samplerCount; ++i) {
         engine.makeConnection("[Sampler" + i + "]", "play", PioneerDDJ400.samplerPlayOutputCallbackFunction);
     }
 

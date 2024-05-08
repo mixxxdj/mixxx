@@ -542,7 +542,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
             seekOnLoad(mixxx::audio::kStartFramePos);
         }
-        break;
+        return;
     case SeekOnLoadMode::FirstSound: {
         CuePointer pN60dBSound =
                 pNewTrack->findCueByType(mixxx::CueType::N60dBSound);
@@ -567,8 +567,19 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pCuePoint->get());
         if (mainCuePosition.isValid()) {
             seekOnLoad(mainCuePosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
+        }
+        break;
+    }
+    case SeekOnLoadMode::FirstHotcue: {
+        mixxx::audio::FramePos firstHotcuePosition;
+        HotcueControl* pControl = m_hotcueControls.value(0, nullptr);
+        if (pControl) {
+            firstHotcuePosition = pControl->getPosition();
+            if (firstHotcuePosition.isValid()) {
+                seekOnLoad(firstHotcuePosition);
+                return;
+            }
         }
         break;
     }
@@ -578,16 +589,15 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
                         m_pIntroStartPosition->get());
         if (introStartPosition.isValid()) {
             seekOnLoad(introStartPosition);
-        } else {
-            seekOnLoad(mixxx::audio::kStartFramePos);
+            return;
         }
         break;
     }
     default:
         DEBUG_ASSERT(!"Unknown enum value");
-        seekOnLoad(mixxx::audio::kStartFramePos);
         break;
     }
+    seekOnLoad(mixxx::audio::kStartFramePos);
 }
 
 void CueControl::seekOnLoad(mixxx::audio::FramePos seekOnLoadPosition) {
@@ -2690,9 +2700,10 @@ mixxx::RgbColor::optional_t HotcueControl::getColor() const {
 void HotcueControl::setColor(mixxx::RgbColor::optional_t newColor) {
     // qDebug() << "HotcueControl::setColor()" << newColor;
     if (newColor) {
-        m_hotcueColor->set(*newColor);
+        m_hotcueColor->setAndConfirm(*newColor);
     }
 }
+
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code

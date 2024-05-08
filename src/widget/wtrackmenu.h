@@ -26,6 +26,7 @@ class WColorPickerAction;
 class WCoverArtMenu;
 class WFindOnWebMenu;
 class WSearchRelatedTracksMenu;
+class WStarRatingAction;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -63,6 +64,24 @@ class WTrackMenu : public QMenu {
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
+    // Make all deck track widgets provide the same features.
+    // Used by WTrackProperty, WTrackText & WTrackWidgetGroup.
+    static constexpr WTrackMenu::Features kDeckTrackMenuFeatures{
+            WTrackMenu::Feature::SearchRelated |
+            WTrackMenu::Feature::Playlist |
+            WTrackMenu::Feature::Crate |
+            WTrackMenu::Feature::Metadata |
+            WTrackMenu::Feature::Reset |
+            WTrackMenu::Feature::Analyze |
+            WTrackMenu::Feature::BPM |
+            WTrackMenu::Feature::Color |
+            WTrackMenu::Feature::RemoveFromDisk |
+            WTrackMenu::Feature::FileBrowser |
+            WTrackMenu::Feature::Properties |
+            WTrackMenu::Feature::UpdateReplayGainFromPregain |
+            WTrackMenu::Feature::FindOnWeb |
+            WTrackMenu::Feature::SelectInLibrary};
+
     WTrackMenu(QWidget* parent,
             UserSettingsPointer pConfig,
             Library* pLibrary,
@@ -92,12 +111,16 @@ class WTrackMenu : public QMenu {
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackMenuVisible(bool visible);
-    void restoreCurrentIndex();
+    void saveCurrentViewState();
+    void restoreCurrentViewStateOrIndex();
 
   private slots:
     // File
     void slotOpenInFileBrowser();
     void slotSelectInLibrary();
+
+    // Track rating
+    void slotSetRating(int rating);
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -204,6 +227,10 @@ class WTrackMenu : public QMenu {
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
 
+    /// Get the common rating of all selected tracks.
+    /// Return 0 if ratings differ.
+    int getCommonTrackRating() const;
+
     /// Get the common track color of all tracks this menu is shown for, or
     /// return `nullopt` if there is no common color. Tracks may have no color
     /// assigned to them. In that case the inner optional is set to `nullopt`.
@@ -285,7 +312,8 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
 
-    // Track color
+    // Track rating and color
+    WStarRatingAction* m_pStarRatingAction{};
     WColorPickerAction* m_pColorPickerAction{};
 
     // Analysis actions

@@ -35,6 +35,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString doubleClick = tr("Double-click");
+    QString selectedClick = tr("Select and click: Show inline value editor");
     QString scrollWheel = tr("Scroll-wheel");
     QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
@@ -324,28 +325,44 @@ void Tooltips::addStandardTooltips() {
             << tr("Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.");
 
     QString changeAmount = tr("Change the step-size in the Preferences -> Decks menu.");
+    QString pitchAffected = tr("If keylock is disabled, pitch is also affected.");
+
     add("rate_perm_up_rate_perm_up_small")
-            << tr("Raise Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch higher."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch higher in small steps."))
+            << tr("Speed Up")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Raises the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Raises playback speed in small steps."))
             << changeAmount;
 
     add("rate_perm_down_rate_perm_down_small")
-            << tr("Lower Pitch")
-            << QString("%1: %2").arg(leftClick, tr("Sets the pitch lower."))
-            << QString("%1: %2").arg(rightClick, tr("Sets the pitch lower in small steps."))
+            << tr("Slow Down")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Lowers the track playback speed (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(
+                       rightClick, tr("Lowers playback speed in small steps."))
             << changeAmount;
 
     add("rate_temp_up_rate_temp_up_small")
-            << tr("Raise Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch higher while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch higher (small amount) while active."))
+            << tr("Speed Up Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed higher while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
-            << tr("Lower Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(leftClick, tr("Holds the pitch lower while active."))
-            << QString("%1: %2").arg(rightClick, tr("Holds the pitch lower (small amount) while active."))
+            << tr("Slow Down Temporarily (Nudge)")
+            << QString("%1: %2").arg(leftClick,
+                       tr("Holds playback speed lower while active (tempo)."))
+            << pitchAffected
+            << QString("%1: %2").arg(rightClick,
+                       tr("Holds playback speed lower (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("filterLow")
@@ -632,9 +649,14 @@ void Tooltips::addStandardTooltips() {
     add("hotcue") << tr("Hotcue")
                   << QString("%1: %2").arg(leftClick,
                              tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is a loop cue, toggles the loop and jumps to "
+                        "if the loop is behind the play position.")
                   << tr("If hotcue is not set, sets the hotcue to the current "
                         "play position.")
                   << quantizeSnap
+                  << tr("If the play position is inside an active loop, "
+                        "stores the loop as loop cue.")
+                  << " " // add linebreak, '\n' would result in two linebreaks
                   << QString("%1: %2").arg(rightClick,
                              tr("Opens a menu to clear hotcues or edit their "
                                 "labels and colors."))
@@ -647,6 +669,10 @@ void Tooltips::addStandardTooltips() {
     add("toggle_recording")
             << tr("Record Mix")
             << tr("Toggle mix recording.");
+
+    add("expand_samplers")
+            << tr("Expand/Collapse Samplers")
+            << tr("Toggle expanded samplers view.");
 
     // Status displays and toggle buttons
     add("recording_duration")
@@ -670,17 +696,28 @@ void Tooltips::addStandardTooltips() {
             << tr("Enable Passthrough")
             << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
 
-    add("vinylcontrol_enabled")
-            << tr("Enable Vinyl Control")
-            << tr("When disabled, the track is controlled by Mixxx playback controls.")
-            << tr("When enabled, the track responds to external vinyl control.");
+    QStringList vcStatus;
+    vcStatus << tr("Provides visual feedback for vinyl control status:")
+             << tr("Green for control enabled.")
+             << tr("Blinking yellow for when the needle reaches the end of the "
+                   "record.")
+             << tr("Red for when needle skip has been detected.");
+    QStringList vcEnabled;
+    vcEnabled << tr("Enable Vinyl Control")
+              << tr("When disabled, the track is controlled by Mixxx playback "
+                    "controls.")
+              << tr("When enabled, the track responds to external vinyl "
+                    "control.");
+
+    add("vinylcontrol_enabled") << vcEnabled;
 
     add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Blue for passthrough enabled.");
+            << tr("Vinyl Status") << vcStatus;
+
+    add("vinylcontrol_enabled_status")
+            << vcEnabled
+            << " " // generates a linebreak. \n would result in two linebrekas.
+            << vcStatus;
 
     add("vinylcontrol_mode")
             << tr("Vinyl Control Mode")
@@ -799,7 +836,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_title")
             << tr("Track Title")
@@ -808,7 +846,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_album")
             << tr("Track Album")
@@ -817,7 +856,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("track_key")
             //: The musical key of a track
@@ -841,7 +881,8 @@ void Tooltips::addStandardTooltips() {
             << dropTracksHere
             << dragItem
             << QString("%1: %2").arg(doubleClick, trackProperties)
-            << QString("%1: %2").arg(rightClick, trackMenu);
+            << QString("%1: %2").arg(rightClick, trackMenu)
+            << selectedClick;
 
     add("time")
             << tr("Clock")

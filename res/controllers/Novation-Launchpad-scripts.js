@@ -3903,6 +3903,10 @@ var NLMK1 = (function () {
 	};
 	const numDecks = 4;
 	const numSamplers = 64;
+  // use 'root.master.num_samplers'?
+  if (engine.getValue("[App]", "num_samplers") < numSamplers) {
+    engine.setValue("[App]", "num_samplers", numSamplers);
+  }
 	const getChannelNameForOrdinal = function (i) {
 	  return i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1];
 	};

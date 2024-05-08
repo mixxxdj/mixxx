@@ -18,21 +18,6 @@
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 
-namespace {
-
-QString createPlaylistLabel(
-        const QString& name,
-        int count,
-        int duration) {
-    return QStringLiteral("%1 (%2) %3")
-            .arg(name,
-                    QString::number(count),
-                    mixxx::Duration::formatTime(
-                            duration, mixxx::Duration::Precision::SECONDS));
-}
-
-} // anonymous namespace
-
 PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
@@ -40,7 +25,8 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
                           pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME"),
-                  QStringLiteral("playlist")) {
+                  QStringLiteral("playlist"),
+                  QStringLiteral("PlaylistsCountsDurations")) {
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_pSidebarModel->setRootItem(std::move(pRootItem));
@@ -138,7 +124,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QStringLiteral(
-            "CREATE TEMPORARY VIEW IF NOT EXISTS PlaylistsCountsDurations "
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 "
             "AS SELECT "
             "  Playlists.id AS id, "
             "  Playlists.name AS name, "
@@ -152,8 +138,11 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
             "  ON PlaylistTracks.playlist_id = Playlists.id "
             "LEFT JOIN library "
             "  ON PlaylistTracks.track_id = library.id "
-            "  WHERE Playlists.hidden = 0 "
-            "  GROUP BY Playlists.id");
+            "  WHERE Playlists.hidden = %2 "
+            "  GROUP BY Playlists.id")
+                                  .arg(m_countsDurationTableName,
+                                          QString::number(
+                                                  PlaylistDAO::PLHT_NOT_HIDDEN));
     queryString.append(
             mixxx::DbConnection::collateLexicographically(
                     " ORDER BY sort_name"));
@@ -198,40 +187,6 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
         playlistLabels.append(idAndLabel);
     }
     return playlistLabels;
-}
-
-QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
-    // Setup the sidebar playlist model
-    QSqlDatabase database =
-            m_pLibrary->trackCollectionManager()->internalCollection()->database();
-    QSqlTableModel playlistTableModel(this, database);
-    playlistTableModel.setTable("PlaylistsCountsDurations");
-    QString filter = "id=" + QString::number(playlistId);
-    playlistTableModel.setFilter(filter);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int countColumn = record.indexOf("count");
-    int durationColumn = record.indexOf("durationSeconds");
-
-    DEBUG_ASSERT(playlistTableModel.rowCount() <= 1);
-    if (playlistTableModel.rowCount() > 0) {
-        QString name =
-                playlistTableModel.data(playlistTableModel.index(0, nameColumn))
-                        .toString();
-        int count = playlistTableModel
-                            .data(playlistTableModel.index(0, countColumn))
-                            .toInt();
-        int duration =
-                playlistTableModel
-                        .data(playlistTableModel.index(0, durationColumn))
-                        .toInt();
-        return createPlaylistLabel(name, count, duration);
-    }
-    return QString();
 }
 
 void PlaylistFeature::slotShufflePlaylist() {
@@ -282,6 +237,7 @@ void PlaylistFeature::slotShufflePlaylist() {
 /// This method queries the database and does dynamic insertion
 /// @param selectedId entry which should be selected
 QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
+    // qDebug() << "PlaylistFeature::constructChildModel() id:" << selectedId;
     std::vector<std::unique_ptr<TreeItem>> childrenToAdd;
     int selectedRow = -1;
 
@@ -324,7 +280,7 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type != PlaylistDAO::PLHT_NOT_HIDDEN &&  // not a regular playlist
             type != PlaylistDAO::PLHT_UNKNOWN) { // not a deleted playlist
@@ -357,7 +313,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 }
 
 void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlistIds) {
-    // qDebug() << "slotPlaylistContentOrLockChanged() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistContentOrLockChanged() playlistId:" << playlistIds;
     QSet<int> idsToBeUpdated;
     for (const auto playlistId : std::as_const(playlistIds)) {
         if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
@@ -367,11 +323,12 @@ void PlaylistFeature::slotPlaylistContentOrLockChanged(const QSet<int>& playlist
     updateChildModel(idsToBeUpdated);
 }
 
-void PlaylistFeature::slotPlaylistTableRenamed(
-        int playlistId, const QString& newName) {
+void PlaylistFeature::slotPlaylistTableRenamed(int playlistId, const QString& newName) {
     Q_UNUSED(newName);
-    // qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
+    // qDebug() << "PlaylistFeature::slotPlaylistTableRenamed() playlistId:" << playlistId;
     if (m_playlistDao.getHiddenType(playlistId) == PlaylistDAO::PLHT_NOT_HIDDEN) {
+        // Maybe we need to re-sort the sidebar items, so call slotPlaylistTableChanged()
+        // in order to rebuild the model, not just updateChildModel()
         slotPlaylistTableChanged(playlistId);
     }
 }
