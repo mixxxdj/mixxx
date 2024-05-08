@@ -60,7 +60,7 @@ Variables:
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_mixer</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -71,7 +71,7 @@ Variables:
             </Connection>
           </WidgetGroup><!-- / Small Cover/Spinny 2 -->
 
-          <Template src="skin:../Tango/controls/button_2state.xml">
+          <Template src="skins:Tango/controls/button_2state.xml">
             <SetVariable name="ObjectName">VinylTogglerLeft</SetVariable>
             <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="Size">15f,50f</SetVariable>
@@ -80,7 +80,7 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
-          <Template src="skin:../Tango/decks/vinyl_controls_right.xml"/>
+          <Template src="skins:Tango/decks/vinyl_controls_right.xml"/>
 
           <SingletonContainer>
             <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>

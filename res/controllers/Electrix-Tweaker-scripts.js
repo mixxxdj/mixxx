@@ -193,8 +193,8 @@ ElectrixTweaker.channelRegEx = /\[Channel(\d+)\]/;
 // ================================================= INITIALIZATION & SHUTDOWN ============================================
 
 ElectrixTweaker.init = function() {
-    if (engine.getValue("[Master]", "num_samplers") < 8) {
-        engine.setValue("[Master]", "num_samplers", 8);
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
     }
     for (const group in ElectrixTweaker.encoders) { // loop over each [Channel]
         //         engine.softTakeover('[QuickEffectRack1_'+group+']', 'super1', true)
@@ -506,7 +506,7 @@ ElectrixTweaker.bigEncoderButton = function(channel, control, value, _status, _g
         if (ElectrixTweaker.topShift) {
             engine.setValue("[Playlist]", "LoadSelectedIntoFirstStopped", 1);
         } else {
-            engine.setValue("[Master]", "maximize_library", ! engine.getValue("[Master]", "maximize_library"));
+            engine.setValue("[Skin]", "show_maximized_library", ! engine.getValue("[Skin]", "show_maximized_library"));
         }
     }
 };
@@ -515,7 +515,7 @@ ElectrixTweaker.arrowSide = function(channel, control, value, status, group) {
     if (value) {
         if (ElectrixTweaker.topShift) {
             engine.setValue(group, "eject", 1);
-            engine.beginTimer(250, "engine.setValue(\""+group+"\", \"eject\", 0)", true);
+            engine.beginTimer(250, () => engine.setValue(group, eject, 0), true);
         } else {
             engine.setValue(group, "LoadSelectedTrack", 1);
         }
@@ -554,7 +554,7 @@ ElectrixTweaker.oneShot = function(channel, control, value, status, group) {
                 engine.setValue(group, "repeat", 0);
                 engine.setValue(group, "play", 0);
                 engine.setValue(group, "eject", 1);
-                engine.beginTimer(250, "engine.setValue(\""+group+"\", \"eject\", 0)", true);
+                engine.beginTimer(250, () => engine.setValue(group, eject, 0), true);
             } else {
                 if (ElectrixTweaker.samplerVelocityAsVolume) {
                     engine.setValue(group, "volume", script.absoluteNonLin(value * ElectrixTweaker.samplerSensitivity, 0, .25, 1));
@@ -696,7 +696,7 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
             engine.setValue(group, "beatjump_32_forward", 1);
             midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 127);
         }
-        ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, "midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[\""+group+"\"][\"Mid\"][\"ring\"], 64)", true);
+        ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, () => midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 64), true);
     } else {
         switch (ElectrixTweaker.mode[group]) {
         case "eq":
@@ -712,7 +712,7 @@ ElectrixTweaker.midEncoder = function(channel, control, value, status, group) {
                 engine.setValue(group, "loop_move_" + ElectrixTweaker.loopMoveSize[group] + "_forward", 1);
                 midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 127);
             }
-            ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, "midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[\""+group+"\"][\"Mid\"][\"ring\"], 64)", true);
+            ElectrixTweaker.midEncoderLEDTimer[group] = engine.beginTimer(1000, () => midi.sendShortMsg(0xB0, ElectrixTweaker.encoders[group].Mid.ring, 64), true);
             break;
         }
     }

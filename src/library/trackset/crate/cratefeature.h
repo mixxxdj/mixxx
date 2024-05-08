@@ -1,17 +1,14 @@
 #pragma once
 
-#include <QAction>
 #include <QList>
 #include <QModelIndex>
-#include <QPoint>
 #include <QPointer>
 #include <QUrl>
 #include <QVariant>
 
 #include "library/trackset/basetracksetfeature.h"
-#include "library/trackset/crate/cratestorage.h"
+#include "library/trackset/crate/crate.h"
 #include "library/trackset/crate/cratetablemodel.h"
-#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 #include "track/trackid.h"
 #include "util/parented_ptr.h"
@@ -19,6 +16,9 @@
 // forward declaration(s)
 class Library;
 class WLibrarySidebar;
+class QAction;
+class QPoint;
+class CrateSummary;
 
 class CrateFeature : public BaseTrackSetFeature {
     Q_OBJECT

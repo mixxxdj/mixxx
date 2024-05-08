@@ -1,12 +1,12 @@
 #include "widget/wcolorpicker.h"
 
 #include <QColorDialog>
-#include <QMapIterator>
+#include <QGridLayout>
 #include <QPushButton>
 #include <QStyle>
+#include <QStyleFactory>
 
 #include "moc_wcolorpicker.cpp"
-#include "util/color/color.h"
 #include "util/parented_ptr.h"
 
 namespace {
@@ -234,7 +234,6 @@ void WColorPicker::setColorButtonChecked(const mixxx::RgbColor::optional_t& colo
         pButton->setIcon(QIcon(checked ? ":/images/ic_checkmark.svg" : ""));
     }
     // This is needed to re-apply skin styles (e.g. to show/hide a checkmark icon)
-    pButton->style()->unpolish(pButton);
     pButton->style()->polish(pButton);
 }
 

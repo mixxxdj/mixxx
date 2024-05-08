@@ -1,13 +1,13 @@
 #pragma once
 
-#include <QObject>
 #include <QDir>
-#include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "track/trackid.h"
 #include "waveform/waveform.h"
+
+class QSqlDatabase;
 
 class AnalysisDao : public DAO {
   public:

@@ -8,13 +8,20 @@
 #include <utility>
 #include <vector>
 
-#include "library/trackset/crate/cratestorage.h"
 #include "proto/keys.pb.h"
 #include "track/track_decl.h"
 #include "util/assert.h"
 #include "util/memory.h"
 
+class CrateStorage;
+class TrackId;
+
 const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
+
+enum class StringMatch {
+    Contains = 0,
+    Equals,
+};
 
 class QueryNode {
   public:
@@ -72,7 +79,8 @@ class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
             const QStringList& sqlColumns,
-            const QString& argument);
+            const QString& argument,
+            const StringMatch matchMode = StringMatch::Contains);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -81,6 +89,7 @@ class TextFilterNode : public QueryNode {
     QSqlDatabase m_database;
     QStringList m_sqlColumns;
     QString m_argument;
+    StringMatch m_matchMode;
 };
 
 class NullOrEmptyTextFilterNode : public QueryNode {
@@ -173,6 +182,54 @@ class DurationFilterNode : public NumericFilterNode {
 
   private:
     double parse(const QString& arg, bool* ok) override;
+};
+
+// BPM filter that supports fuzzy matching via ~ prefix.
+// If no operator is provided (bpm:123) it also finds half & double BPM matches.
+// Half/double values aren't integers, int ranges are used. E.g. bpm:123.1 finds
+// 61-61, 123.1 and 246-247 BPM
+class BpmFilterNode : public QueryNode {
+  public:
+    static constexpr double kRelativeRangeDefault = 0.06;
+    static void setBpmRelativeRange(double range);
+
+    BpmFilterNode(QString& argument, bool fuzzy, bool negate = false);
+
+    enum class MatchMode {
+        Invalid,
+        Null,              // bpm:- | bpm:000.0 | bpm:0,0 | bpm:""
+        Explicit,          // bpm:=120
+        ExplicitStrict,    // bpm:=120.0
+        Fuzzy,             // ~bpm:120
+        Range,             // bpm:120-130
+        HalveDouble,       // bpm:120
+        HalveDoubleStrict, // bpm:120.0
+        Operator,          // bpm:<=120
+    };
+
+    // Allows WSearchRelatedTracksMenu to construct the QAction title
+    std::pair<double, double> getBpmRange() const {
+        return std::pair<double, double>(m_rangeLower, m_rangeUpper);
+    }
+
+    QString toSql() const override;
+
+  private:
+    bool match(const TrackPointer& pTrack) const override;
+
+    MatchMode m_matchMode;
+
+    QString m_operator;
+
+    double m_bpm;
+    double m_rangeLower;
+    double m_rangeUpper;
+    double m_bpmHalfLower;
+    double m_bpmHalfUpper;
+    double m_bpmDoubleLower;
+    double m_bpmDoubleUpper;
+
+    static double s_relativeRange;
 };
 
 class KeyFilterNode : public QueryNode {

@@ -1,11 +1,9 @@
 #pragma once
 
-#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
-#include <QMap>
 #include <QVariant>
 
-#include "effects/backends/effectmanifest.h"
+#include "effects/defs.h"
 
 /// EffectManifestTableModel represents a list of EffectManifests as a table
 /// with a column for the BackendType and a column for the effect name.

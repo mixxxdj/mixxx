@@ -1,6 +1,7 @@
 #include "library/itunes/itunesplaylistmodel.h"
 
 #include "library/baseexternalplaylistmodel.h"
+#include "moc_itunesplaylistmodel.cpp"
 
 ITunesPlaylistModel::ITunesPlaylistModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,

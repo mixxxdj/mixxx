@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QList>
-#include <QPair>
 #include <gsl/pointers>
 #include <list>
 

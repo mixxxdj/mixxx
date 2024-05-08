@@ -4,10 +4,10 @@
 #include <QString>
 
 #include "audio/frame.h"
-#include "control/controlobject.h"
 
-class VelocityController;
+class ControlObject;
 class RateIIFilter;
+class VelocityController;
 
 class PositionScratchController : public QObject {
     Q_OBJECT
@@ -15,8 +15,13 @@ class PositionScratchController : public QObject {
     PositionScratchController(const QString& group);
     virtual ~PositionScratchController();
 
-    void process(double currentSample, double releaseRate,
-                 int iBufferSize, double baserate);
+    void process(double currentSample,
+            double releaseRate,
+            int iBufferSize,
+            double baseSampleRate,
+            int wrappedAround,
+            mixxx::audio::FramePos trigger,
+            mixxx::audio::FramePos target);
     bool isEnabled();
     double getRate();
     void notifySeek(mixxx::audio::FramePos position);
@@ -24,17 +29,17 @@ class PositionScratchController : public QObject {
   private:
     const QString m_group;
     ControlObject* m_pScratchEnable;
-    ControlObject* m_pScratchPosition;
-    ControlObject* m_pMasterSampleRate;
+    ControlObject* m_pScratchPos;
+    ControlObject* m_pMainSampleRate;
     VelocityController* m_pVelocityController;
     RateIIFilter* m_pRateIIFilter;
-    bool m_bScratching;
-    bool m_bEnableInertia;
-    double m_dLastPlaypos;
-    double m_dPositionDeltaSum;
-    double m_dTargetDelta;
-    double m_dStartScratchPosition;
-    double m_dRate;
-    double m_dMoveDelay;
-    double m_dMouseSampeTime;
+    bool m_isScratching;
+    bool m_inertiaEnabled;
+    double m_prevSamplePos;
+    double m_samplePosDeltaSum;
+    double m_scratchTargetDelta;
+    double m_scratchStartPos;
+    double m_rate;
+    double m_moveDelay;
+    double m_mouseSampleTime;
 };

@@ -1,14 +1,13 @@
 #include "waveformrenderersignalbase.h"
 
-#include <QDomNode>
-
-#include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/colorcomponents.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+
+namespace {
+const QString kEffectGroupFormat = QStringLiteral("[EqualizerRack1_%1_Effect1]");
+} // namespace
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -84,18 +83,13 @@ bool WaveformRendererSignalBase::init() {
     //create controls
     m_pEQEnabled = new ControlProxy(
             m_waveformRenderer->getGroup(), "filterWaveformEnable");
-    m_pLowFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLow");
-    m_pMidFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMid");
-    m_pHighFilterControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHigh");
-    m_pLowKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterLowKill");
-    m_pMidKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterMidKill");
-    m_pHighKillControlObject = new ControlProxy(
-            m_waveformRenderer->getGroup(), "filterHighKill");
+    const QString effectGroup = kEffectGroupFormat.arg(m_waveformRenderer->getGroup());
+    m_pLowFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter1"));
+    m_pMidFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter2"));
+    m_pHighFilterControlObject = new ControlProxy(effectGroup, QStringLiteral("parameter3"));
+    m_pLowKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter1"));
+    m_pMidKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
+    m_pHighKillControlObject = new ControlProxy(effectGroup, QStringLiteral("button_parameter2"));
 
     return onInit();
 }
@@ -175,11 +169,14 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     onSetup(node);
 }
 
-void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
-                                          float* pMidGain, float* pHighGain) {
+void WaveformRendererSignalBase::getGains(float* pAllGain,
+        bool applyCompensation,
+        float* pLowGain,
+        float* pMidGain,
+        float* pHighGain) {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     if (pAllGain) {
-        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain()) *
+        *pAllGain = static_cast<CSAMPLE_GAIN>(m_waveformRenderer->getGain(applyCompensation)) *
                 static_cast<CSAMPLE_GAIN>(factory->getVisualGain(WaveformWidgetFactory::All));
         ;
     }
@@ -228,4 +225,14 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             *pHighGain = highGain;
         }
     }
+}
+
+std::span<float, 256> WaveformRendererSignalBase::unscaleTable() {
+    // Table to undo the scaling std::pow(invalue, 2.0f * 0.316f);
+    // done in scaleSignal in analyzerwaveform.h
+    static std::array<float, 256> result;
+    for (int i = 0; i < 256; i++) {
+        result[i] = 255.f * std::pow(static_cast<float>(i) / 255.f, 1.f / 0.632f);
+    }
+    return result;
 }

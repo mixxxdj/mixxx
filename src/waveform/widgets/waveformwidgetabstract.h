@@ -1,14 +1,15 @@
 #pragma once
 
 #include <QString>
-#include <QWidget>
 
 #include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/widgets/waveformwidgetcategory.h"
 #include "waveformwidgettype.h"
-#include "widget/wglwidget.h"
 
 class VSyncThread;
+class QWidget;
+class WGLWidget;
 
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we

@@ -32,11 +32,11 @@ HerculesAir.init = function(id) {
     }
 
     // Set soft-takeover for all Sampler volumes
-    for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
+    for (var i=engine.getValue("[App]", "num_samplers"); i>=1; i--) {
         engine.softTakeover("[Sampler"+i+"]","pregain",true);
     }
     // Set soft-takeover for all applicable Deck controls
-    for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+    for (var i=engine.getValue("[App]", "num_decks"); i>=1; i--) {
         engine.softTakeover("[Channel"+i+"]","volume",true);
         engine.softTakeover("[Channel"+i+"]","filterHigh",true);
         engine.softTakeover("[Channel"+i+"]","filterMid",true);

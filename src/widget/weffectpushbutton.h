@@ -1,15 +1,11 @@
 #pragma once
 
-#include <QAction>
-#include <QDomNode>
-#include <QMenu>
-#include <QMouseEvent>
-#include <QWidget>
-
 #include "effects/defs.h"
-#include "effects/effectsmanager.h"
-#include "skin/legacy/skincontext.h"
 #include "widget/wpushbutton.h"
+
+class QAction;
+class QMenu;
+class EffectsManager;
 
 class WEffectPushButton : public WPushButton {
     Q_OBJECT

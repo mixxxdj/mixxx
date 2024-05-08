@@ -188,7 +188,7 @@ DJTechCDJ101.jogtouch = function(channel, control, value, status, group)
         }
         else {
             DJTechCDJ101.outer2inner = true;
-            DJTechCDJ101.scratch_timer = engine.beginTimer(DJTechCDJ101.scratch_timeout, 'DJTechCDJ101.finishScratch(' + deck + ', true)');
+            DJTechCDJ101.scratch_timer = engine.beginTimer(DJTechCDJ101.scratch_timeout, () => DJTechCDJ101.finishScratch(deck, true));
         }
     }
 }

@@ -3,7 +3,6 @@
 
 #include "effects/defs.h"
 #include "effects/effectchainmixmode.h"
-#include "effects/presets/effectpreset.h"
 
 class EffectChain;
 

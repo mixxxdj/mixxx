@@ -167,6 +167,10 @@
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
 
+#AlignCenterCenter {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+}
+
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
@@ -222,16 +226,22 @@ WLibrarySidebar {
   selection-background-color: #006596;
 }
 
+/* Prevent OS-style checkbox from being rendered underneath the custom style. */
+#LibraryPlayedCheckbox::item,
+#LibraryBPMButton::item {
+  border: 0px;
+}
+
 /* Selected rows in Tree and Tracks table */
 WTrackTableView::item:selected,
 WLibrarySidebar::item:selected,
-#LibraryBPMButton::item:selected {
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
   color: #D6D6D6;
   background-color: #006596;
 }
 WLibrarySidebar::item:selected:focus {
   outline: none;
-  border: 0px;
 }
 WLibrarySidebar::item:!selected:focus {
   outline: none;
@@ -244,11 +254,14 @@ WTrackTableView,
 WTrackTableView QCheckBox:focus {
   outline: 1px solid #D6D6D6;
 }
-/* This uses a custom qproperty to set the focus border
-  for Color and Cover Art cells, 1px solid, sharp corners.
-  See src/library/tableitemdelegate.cpp */
 WTrackTableView {
+  /* This uses a custom qproperty to set the focus border
+     for Color and Cover Art cells, 1px solid, sharp corners.
+     See src/library/tableitemdelegate.cpp */
   qproperty-focusBorderColor: #D6D6D6;
+  /* This is the color used to paint the text of played tracks.
+     BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
+  qproperty-playedInactiveColor: #555;
 }
 
 WTrackTableView:focus,
@@ -263,23 +276,27 @@ WLibraryTextBrowser {
 
 /* Table cell in edit mode */
 WLibrary QLineEdit,
+WLibrary QPlainTextEdit,
 WBeatSpinBox,
+/* Track label inline editor */
+WTrackPropertyEditor,
 #LibraryBPMSpinBox {
+  color: #ddd;
+  background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
 }
 WLibrary QLineEdit,
+WTrackPropertyEditor,
 #LibraryBPMSpinBox {
-  color: #ddd;
-  background-color: #0f0f0f;
   border: 1px solid #006596;
 }
 
 /* checkbox in library "Played" column */
-WTrackTableView::indicator:unchecked {
+#LibraryPlayedCheckbox::indicator:unchecked {
   image: url(skin:/../Deere/icon/ic_library_checkbox.svg);
 }
-WTrackTableView::indicator:checked {
+#LibraryPlayedCheckbox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkbox_checked.svg);
 }
 
@@ -831,8 +848,8 @@ WNumber, WNumberPos,
 WPushButton,
 WKey,
 WTime,
-WTrackText,
 WTrackProperty,
+WTrackPropertyEditor,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
@@ -847,6 +864,7 @@ WTrackTableViewHeader::section,
 WLibraryTextBrowser,
 WLibraryTextBrowser QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCueMenuPopup QLabel,
 WCueMenuPopup QLineEdit,
@@ -1031,7 +1049,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 4;
 }
 
-#MasterControls, #HeadphoneControls {
+#MainControls, #HeadphoneControls {
     qproperty-layoutSpacing: 10;
     margin-bottom: 1px;
     margin-top: 1px;
@@ -1087,15 +1105,21 @@ WBeatSpinBox,
 }
 
 /* Start editable widgets in decks */
+/* emphasize editable widgets on hover */
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
 #PositionGutter:hover,
 #PlayPositionTextSmall:hover,
-#StarratingGutter:hover {
-  /* emphasize editable widgets on hover */
-  border: 1px solid #FF6600;
+#StarratingGutter:hover,
+WTrackProperty:hover {
   background-color: rgba(255, 102, 0, 128);
-}
+  }
+  #BpmKeyEditRowCollapsed:hover,
+  #BpmKeyEditRowExpanded:hover,
+  WTrackProperty[selected="true"] {
+    border: 1px solid #FF6600;
+  }
+
 #BpmKeyEditRowCollapsed {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
@@ -1214,11 +1238,26 @@ WBeatSpinBox,
 }
 
 #EffectUnitToggle[value="0"] {
-  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_more_48px.svg) no-repeat top right;
 }
 
 #EffectUnitToggle[value="1"] {
-  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+  image: url(skin:/../Deere/icon/ic_unfold_less_48px.svg) no-repeat top right;
+}
+
+WEffectChainPresetButton {
+  padding: 0px;
+  border:  none;
+  border-radius: 2px;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
+}
+WEffectChainPresetButton::menu-indicator {
+  subcontrol-position: center center;
+  subcontrol-origin: margin;
+  padding: 0px;
+  border: 0px;
+  outline: none;
+  image: url(skin:/../Deere/icon/ic_settings_22px.svg) no-repeat center center;
 }
 
 #EffectUnitFiller {
@@ -1257,7 +1296,7 @@ WBeatSpinBox,
   border: 1px solid #222222;
   border-width: 0px 0px 0px 1px;
   qproperty-layoutSpacing: 2;
-  padding: 0px 0px 3px 0px;
+  padding: 0px 0px 1px 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #333; /*
   background-color: #664971;  */
@@ -1332,10 +1371,10 @@ WBeatSpinBox,
 }
 
 #Crossfader[highlight="1"] {
-  border-image: url(skin:slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
+  border-image: url(skin:/../Deere/slider-crossfader-AutoDJ.svg) 0 0 0 0 stretch stretch;
 }
 
-#MasterControls {
+#MainControls {
   qproperty-layoutSpacing: 2;
 }
 
@@ -1443,7 +1482,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#master_VuMeter_Group {
+#main_VuMeter_Group {
   qproperty-layoutSpacing: 2;
   qproperty-layoutAlignment: 'AlignHCenter';
   padding-left: 5px;
@@ -1451,7 +1490,7 @@ WNumberRate {
   /* background-color: #828315; */
 }
 
-#MasterVu {
+#MainVu {
   qproperty-layoutAlignment: 'AlignCenter';
   /* background-color: #582831; */
 }
@@ -1567,6 +1606,11 @@ WStarRating {
   font-size: 15px;
 }
 
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
+  font-size: 15px;
+}
+
 #SampleDecksContainer {
 }
 
@@ -1604,7 +1648,8 @@ WWidgetGroup {
  ** Buttons  *******************************************************************
  *******************************************************************************/
 
-WPushButton {
+WPushButton,
+WEffectChainPresetButton {
     color: #D2D2D2;
     background-color: #4B4B4B;
     border: 1px solid #4B4B4B;
@@ -1613,7 +1658,8 @@ WPushButton {
 }
 
 WPushButton:hover,
-#PlayToggle:hover {
+#PlayToggle:hover,
+WEffectChainPresetButton:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 1px solid #5F5F5F;
@@ -1626,6 +1672,17 @@ WPushButton[value="2"],
     color: #FDFDFD;
     background-color: #006596;
     border: 1px solid #006596;
+}
+WPushButton#SyncLeader[value="1"] {
+    background-color: #4B4B4B;
+    border: 1px solid #0092d9;
+}
+WPushButton#SyncLeader[value="0"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_off.svg) no-repeat center center;
+}
+WPushButton#SyncLeader[value="1"],
+WPushButton#SyncLeader[value="2"] {
+  image: url(skin:/../Deere/icon/ic_sync_leader_on.svg) no-repeat center center;
 }
 
 WPushButton[value="1"]:hover,
@@ -1642,6 +1699,12 @@ WPushButton[value="2"]:hover,
 
 #HotcueButton[light="true"] {
     color: #1f1e1e;
+}
+#HotcueButton[light="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_dark_48px.svg) no-repeat center center;
+}
+#HotcueButton[dark="true"][type="loop"] {
+  image: url(skin:/../Deere/icon/ic_hotcue_loop_light_48px.svg) no-repeat center center;
 }
 
 #PlayToggle {
@@ -1951,7 +2014,7 @@ QToolTip,
 WLibrarySidebar QMenu,
 WLibrarySidebar QMenu::item,
 WTrackTableViewHeader QMenu,
-WTrackTableViewHeader QMenu::item,
+WTrackTableViewHeader QMenu QCheckBox,
 WLibraryTextBrowser QMenu,
 WLibraryTextBrowser QMenu::item,
 WTrackMenu,
@@ -1959,8 +2022,11 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
+QPlainTextEdit QMenu,
+QPlainTextEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
 WCueMenuPopup,
@@ -1983,6 +2049,7 @@ WLibraryTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 QLineEdit QMenu,
+QPlainTextEdit QMenu,
 WCueMenuPopup,
 WCoverArtMenu,
 WEffectSelector QAbstractScrollArea,
@@ -2003,8 +2070,9 @@ WSearchLineEdit QAbstractScrollArea,
   #MainMenu QMenu::indicator:unchecked:selected,
   WLibrarySidebar QMenu::item:selected,
   WLibrarySidebar QMenu::indicator:unchecked:selected,
-  WTrackTableViewHeader QMenu::item:selected,
-  WTrackTableViewHeader QMenu::indicator:unchecked:selected,
+  WTrackTableViewHeader QMenu QCheckBox:selected,
+  WTrackTableViewHeader QMenu QCheckBox:focus,
+  WTrackTableViewHeader QMenu QCheckBox:hover,
   WLibraryTextBrowser QMenu::item:selected,
   WTrackMenu::item:selected,
   WTrackMenu QMenu::item:selected,
@@ -2012,6 +2080,7 @@ WSearchLineEdit QAbstractScrollArea,
   WTrackMenu QMenu QCheckBox:focus,
   WTrackMenu QMenu QCheckBox:hover,
   QLineEdit QMenu::item:selected,
+  QPlainTextEdit QMenu::item:selected,
   WCoverArtMenu::item:selected,
   WEffectSelector::item:selected,
   WEffectSelector::indicator:unchecked:selected,
@@ -2025,6 +2094,16 @@ WSearchLineEdit QAbstractScrollArea,
     color: #fff;
     /* remove OS focus indicator */
     outline: none;
+    }
+    /* required on Windows since the QAbstractItemViews don't inherit styles from
+       the respective QComboBoxes */
+    WEffectSelector QAbstractItemView,
+    WEffectChainPresetSelector QAbstractItemView,
+    WSearchLineEdit QAbstractItemView {
+      selection-color: #fff;
+      selection-background-color: #565353;
+      border: 0px;
+      outline: none;
     }
     /* Remove 3D border from unchecked effects checkmark space */
     WEffectSelector::item:selected,
@@ -2196,12 +2275,13 @@ WTrackTableViewHeader QMenu::separator,
 WTrackMenu::separator,
 WTrackMenu QMenu::separator,
 WLibraryTextBrowser QMenu::separator,
-QLineEdit QMenu::separator {
+QLineEdit QMenu::separator,
+QPlainTextEdit QMenu::separator {
   border-top: 1px solid #999;
 }
 
 WLibrarySidebar QMenu::indicator,
-WTrackTableViewHeader QMenu::indicator,
+WTrackTableViewHeader QMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #555;
   border-radius: 1px;
@@ -2211,8 +2291,9 @@ WTrackMenu QMenu QCheckBox::indicator {
 }
 
 QLineEdit QMenu::icon:selected,
+QPlainTextEdit QMenu::icon:selected,
 WLibrarySidebar QMenu::indicator:selected,
-WTrackTableViewHeader QMenu::indicator:selected,
+WTrackTableViewHeader QMenu QCheckBox::indicator:selected,
 WTrackMenu QMenu QCheckBox::indicator:selected {
   border: 1px solid #999;
 }
@@ -2223,7 +2304,8 @@ WLibrarySidebar QMenu::item:disabled,
 WTrackMenu::item:disabled,
 WTrackMenu QMenu::item:disabled,
 WTrackMenu QMenu QCheckBox:disabled,
-QLineEdit QMenu::item:disabled {
+QLineEdit QMenu::item:disabled,
+QPlainTextEdit QMenu::item:disabled {
   color: #555;
 }
 WTrackMenu QMenu QCheckBox::indicator:disabled {
@@ -2231,6 +2313,7 @@ WTrackMenu QMenu QCheckBox::indicator:disabled {
   background-color: #333;
 }
 WLibrarySidebar QMenu::indicator:checked,
+WTrackTableViewHeader QMenu QCheckBox::indicator:checked,
 WTrackMenu QMenu QCheckBox::indicator:checked {
   image: url(skin:/../Deere/icon/ic_library_checkmark_orange.svg);
 }

@@ -75,7 +75,7 @@ BehringerBCD3000.jogWheel = function (channel, control, value, status, group) {
         scratchValue = (value - 0x40);
         engine.scratchEnable(deck + 1, 100, 33+1/3, 1.0/8, (1.0/8)/32);
         engine.scratchTick(deck + 1, scratchValue);
-        BehringerBCD3000.scratchTimer[deck] = engine.beginTimer(20, "BehringerBCD3000.stopScratch(" + deck + ")", true);
+        BehringerBCD3000.scratchTimer[deck] = engine.beginTimer(20, ()=>BehringerBCD3000.stopScratch(deck), true);
 
     } else if (BehringerBCD3000.onKey) {
         if (value > 0x40){

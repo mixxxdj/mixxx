@@ -9,15 +9,18 @@
 
 #include "audio/types.h"
 #include "encoder/encoder.h"
-#include "encoder/encodercallback.h"
 #include "util/fifo.h"
 #include "util/memory.h"
-#include "util/sample.h"
-#include "util/samplebuffer.h"
+
+class EncoderCallback;
+class EncoderSettings;
+namespace mixxx {
+class SampleBuffer;
+} // namespace mixxx
 
 class EncoderOpus: public Encoder {
   public:
-    static mixxx::audio::SampleRate getMasterSamplerate();
+    static mixxx::audio::SampleRate getMainSampleRate();
     static QString getInvalidSamplerateMessage();
 
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);

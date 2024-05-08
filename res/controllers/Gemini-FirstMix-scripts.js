@@ -168,7 +168,7 @@ firstmix.preview = function (channel, control, value, status, group) {
         engine.setValue("[Sampler4]", "volume", 0);
         engine.setValue("[Sampler4]", "pfl", 1);
         engine.setValue("[Sampler4]", "LoadSelectedTrack", 1);
-        engine.beginTimer(250,"engine.setValue(\"[Sampler4]\", \"play\", 1)",true); // I had to add a delay because this wouldn't work otherwise
+        engine.beginTimer(250, () => engine.setValue("[Sampler4]", "play", 1),true); // I had to add a delay because this wouldn't work otherwise
         firstmix.setLED(firstmix.leds[0]["preview"], 0x7f);
         firstmix.previewButton = true;
     }

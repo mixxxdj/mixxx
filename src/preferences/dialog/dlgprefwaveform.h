@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QWidget>
 #include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"
@@ -39,7 +38,10 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);
-
+    void slotSetUntilMarkShowBeats(bool checked);
+    void slotSetUntilMarkShowTime(bool checked);
+    void slotSetUntilMarkAlign(int index);
+    void slotSetUntilMarkTextPointSize(int value);
   signals:
     void reloadUserInterface();
 
@@ -47,6 +49,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
+    void updateEnableUntilMark();
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

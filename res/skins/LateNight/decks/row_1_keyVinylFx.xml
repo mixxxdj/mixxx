@@ -5,7 +5,7 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <Template src="skin:/fx/assign_buttons.xml"/>
+      <Template src="skins:LateNight/fx/assign_buttons.xml"/>
 
       <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
@@ -16,7 +16,7 @@
         <Children/>
       </WidgetGroup>
 
-      <Template src="skin:/decks/vinyl_controls.xml"/>
+      <Template src="skins:LateNight/decks/vinyl_controls.xml"/>
 
       <WidgetGroup>
         <ObjectName>ExpandingBottomBorder</ObjectName>

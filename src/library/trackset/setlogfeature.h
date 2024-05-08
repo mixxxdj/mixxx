@@ -1,13 +1,12 @@
 #pragma once
 
-#include <QAction>
 #include <QPointer>
-#include <QSqlTableModel>
 
 #include "library/trackset/baseplaylistfeature.h"
 #include "preferences/usersettings.h"
 
 class Library;
+class QAction;
 
 class SetlogFeature : public BasePlaylistFeature {
     Q_OBJECT
@@ -27,15 +26,16 @@ class SetlogFeature : public BasePlaylistFeature {
     void onRightClick(const QPoint& globalPos) override;
     void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotJoinWithPrevious();
+    void slotMarkAllTracksPlayed();
     void slotLockAllChildPlaylists();
     void slotUnlockAllChildPlaylists();
     void slotDeletePlaylist() override;
     void slotGetNewPlaylist();
     void activate() override;
+    void activateChild(const QModelIndex& index) override;
 
   protected:
     QModelIndex constructChildModel(int selectedId);
-    QString fetchPlaylistLabel(int playlistId) override;
     void decorateChild(TreeItem* pChild, int playlistId) override;
 
   private slots:
@@ -52,15 +52,14 @@ class SetlogFeature : public BasePlaylistFeature {
 
     std::list<TrackId> m_recentTracks;
     QAction* m_pJoinWithPreviousAction;
+    QAction* m_pMarkTracksPlayedAction;
     QAction* m_pStartNewPlaylist;
     QAction* m_pLockAllChildPlaylists;
     QAction* m_pUnlockAllChildPlaylists;
     QAction* m_pDeleteAllChildPlaylists;
 
-    int m_playlistId;
-    int m_placeholderId;
-
-    QPointer<WLibrary> m_libraryWidget;
+    int m_currentPlaylistId;
+    int m_yearNodeId;
     Library* m_pLibrary;
     UserSettingsPointer m_pConfig;
 };

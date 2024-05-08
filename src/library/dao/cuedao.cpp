@@ -2,16 +2,13 @@
 
 #include <QVariant>
 #include <QtDebug>
-#include <QtSql>
 
 #include "engine/engine.h"
 #include "library/queryutil.h"
-#include "track/track.h"
 #include "util/assert.h"
 #include "util/color/rgbcolor.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/logger.h"
-#include "util/performancetimer.h"
 
 namespace {
 
@@ -85,7 +82,7 @@ QList<CuePointer> CueDAO::getCuesForTrack(TrackId trackId) const {
     DEBUG_ASSERT(
             query.isPrepared() &&
             !query.hasError());
-    query.bindValue(":id", trackId.toVariant());
+    query.bindValue(":id", trackId);
     if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to load cues of track"
@@ -230,7 +227,7 @@ void CueDAO::saveTrackCues(
     DEBUG_ASSERT(
             query.isPrepared() &&
             !query.hasError());
-    query.bindValue(":track_id", trackId.toVariant());
+    query.bindValue(":track_id", trackId);
     if (!query.execPrepared()) {
         kLogger.warning()
                 << "Failed to delete orphaned cues of track"

@@ -112,7 +112,7 @@ SonySixxAxis.init = function(id) {
             return;
         controller.timers[timer_id] = engine.beginTimer(
             interval,
-            "SonySixxAxis.controller.autorepeatTimer()"
+            SonySixxAxis.controller.autorepeatTimer // FIXME: autorepeatTimer is not defined?
         )
     }
     HIDDebug("Sony SixxAxis controller initialized: " + SonySixxAxis.id);

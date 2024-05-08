@@ -1,9 +1,6 @@
 #pragma once
 
 #include <QStyledItemDelegate>
-#include <QTableView>
-
-#include "controllers/midi/midimessage.h"
 
 class MidiOptionsDelegate : public QStyledItemDelegate {
     Q_OBJECT

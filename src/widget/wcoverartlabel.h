@@ -2,9 +2,7 @@
 
 #include <QByteArray>
 #include <QLabel>
-#include <QMouseEvent>
 #include <QPixmap>
-#include <QWidget>
 
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
@@ -23,7 +21,6 @@ class WCoverArtLabel : public QLabel {
 
     void setCoverArt(const CoverInfo& coverInfo, const QPixmap& px);
     void loadTrack(TrackPointer pTrack);
-    void loadData(const QByteArray& data);
 
   protected:
     void mousePressEvent(QMouseEvent* event) override;
@@ -37,11 +34,9 @@ class WCoverArtLabel : public QLabel {
 
     const parented_ptr<DlgCoverArtFullSize> m_pDlgFullSize;
 
-    const QPixmap m_defaultCover;
-
-    QByteArray m_Data;
-
     TrackPointer m_pLoadedTrack;
 
+    const QPixmap m_defaultCover;
     QPixmap m_loadedCover;
+    QPixmap m_fullSizeCover;
 };

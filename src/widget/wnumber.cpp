@@ -1,6 +1,7 @@
 #include "widget/wnumber.h"
 
 #include "moc_wnumber.cpp"
+#include "skin/legacy/skincontext.h"
 
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),

@@ -1,8 +1,12 @@
 var DJ2GO2Touch = {};
-DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
+DJ2GO2Touch.ControllerStatusSysex = [0xF0, 0x00, 0x01, 0x3F, 0x3C, 0x48, 0xF7];
 DJ2GO2Touch.padsPerDeck = 4;
+DJ2GO2Touch.samplerCount = 2 * DJ2GO2Touch.padsPerDeck;
 
 DJ2GO2Touch.init = function() {
+    if (engine.getValue("[App]", "num_samplers") < DJ2GO2Touch.samplerCount) {
+        engine.setValue("[App]", "num_samplers", DJ2GO2Touch.samplerCount);
+    }
     DJ2GO2Touch.leftDeck = new DJ2GO2Touch.Deck([1], 0);
     DJ2GO2Touch.rightDeck = new DJ2GO2Touch.Deck([2], 1);
     midi.sendSysexMsg(DJ2GO2Touch.ControllerStatusSysex, DJ2GO2Touch.ControllerStatusSysex.length);
@@ -45,24 +49,6 @@ DJ2GO2Touch.browseEncoder = new components.Encoder({
             this.onButtonEvent();
         }
     }
-});
-
-DJ2GO2Touch.masterGain = new components.Pot({
-    midi: [0xBF, 0x0A],
-    group: "[Master]",
-    key: "gain"
-});
-
-DJ2GO2Touch.cueGain = new components.Pot({
-    midi: [0xBF, 0x0C],
-    group: "[Master]",
-    key: "headGain"
-});
-
-DJ2GO2Touch.crossfader = new components.Pot({
-    midi: [0xBF, 0x08],
-    group: "[Master]",
-    key: "crossfader"
 });
 
 DJ2GO2Touch.Deck = function(deckNumbers, midiChannel) {

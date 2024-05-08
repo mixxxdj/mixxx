@@ -2,7 +2,7 @@
 
 #include <QSortFilterProxyModel>
 #include <QString>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#ifdef MIXXX_USE_QML
 #include <QtQml>
 #else
 #define QML_ELEMENT

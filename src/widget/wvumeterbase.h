@@ -1,12 +1,13 @@
 #pragma once
 
-#include "skin/legacy/skincontext.h"
 #include "util/duration.h"
+#include "widget/wbasewidget.h"
 #include "widget/wglwidget.h"
 #include "widget/wpixmapstore.h"
-#include "widget/wwidget.h"
 
 class VSyncThread;
+class QDomNode;
+class SkinContext;
 
 class WVuMeterBase : public WGLWidget, public WBaseWidget {
     Q_OBJECT

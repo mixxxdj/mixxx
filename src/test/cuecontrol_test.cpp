@@ -190,7 +190,7 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const double beatLengthFrames = (60.0 * sampleRate / bpm);
 
@@ -370,7 +370,7 @@ TEST_F(CueControlTest, FollowCueOnQuantize) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(1.8 * beatLengthFrames);
@@ -410,7 +410,7 @@ TEST_F(CueControlTest, SeekOnSetCueCDJ) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);
@@ -440,7 +440,7 @@ TEST_F(CueControlTest, SeekOnSetCuePlay) {
     TrackPointer pTrack = createTestTrack();
     pTrack->trySetBpm(120.0);
 
-    const int sampleRate = pTrack->getSampleRate();
+    const mixxx::audio::SampleRate sampleRate = pTrack->getSampleRate();
     const double bpm = pTrack->getBpm();
     const mixxx::audio::FrameDiff_t beatLengthFrames = (60.0 * sampleRate / bpm);
     const auto cuePos = mixxx::audio::FramePos(10 * beatLengthFrames);

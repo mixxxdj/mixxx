@@ -2,8 +2,7 @@
 
 #include <QtDebug>
 
-#include "encoder/encodercallback.h"
-#include "util/sample.h"
+#include "encoder/encoderflacsettings.h"
 
 namespace {
 constexpr SINT kEncBufferSize = 8192; // used inside libsndfile for flac

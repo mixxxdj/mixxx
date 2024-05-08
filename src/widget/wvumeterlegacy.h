@@ -1,9 +1,11 @@
 #pragma once
 
-#include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
+
+class QDomNode;
+class SkinContext;
 
 class WVuMeterLegacy : public WWidget {
     Q_OBJECT
@@ -30,6 +32,7 @@ class WVuMeterLegacy : public WWidget {
 
   private:
     void paintEvent(QPaintEvent* /*unused*/) override;
+    void showEvent(QShowEvent* /*unused*/) override;
     void setPeak(double parameter);
 
     // Current parameter and peak parameter.

@@ -4,13 +4,12 @@
 #include <QString>
 #include <memory>
 
-#include "coreservices.h"
-#include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "soundio/sounddevicestatus.h"
 #include "track/track_decl.h"
 #include "util/parented_ptr.h"
 
+class ControlObject;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
@@ -20,6 +19,8 @@ class VisualsManager;
 class WMainMenuBar;
 
 namespace mixxx {
+
+class CoreServices;
 
 namespace skin {
 class SkinLoader;
@@ -101,6 +102,7 @@ class MixxxMainWindow : public QMainWindow {
 
     /// Load skin to a QWidget that we set as the central widget.
     bool loadConfiguredSkin();
+    void tryParseAndSetDefaultStyleSheet();
 
     bool confirmExit();
     QDialog::DialogCode soundDeviceErrorDlg(
@@ -114,6 +116,9 @@ class MixxxMainWindow : public QMainWindow {
 
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
+#ifndef __APPLE__
+    Qt::WindowStates m_prevState;
+#endif
 
     std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;

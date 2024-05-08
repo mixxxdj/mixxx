@@ -155,7 +155,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Microphone],show_microphone</ConfigKey>
+      <ConfigKey>[Skin],show_microphones</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

@@ -11,11 +11,15 @@ class QtSimpleWaveformWidget : public GLWaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSimpleWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("Simple") + " - Qt"; }
+    static inline QString getWaveformWidgetName() {
+        return tr("Simple") + "- Qt";
+    }
     static inline bool useOpenGl() { return true; }
     static inline bool useOpenGles() { return true; }
     static inline bool useOpenGLShaders() { return false; }
-    static inline bool developerOnly() { return false; }
+    static inline WaveformWidgetCategory category() {
+        return WaveformWidgetCategory::Legacy;
+    }
 
   protected:
     virtual void castToQWidget();

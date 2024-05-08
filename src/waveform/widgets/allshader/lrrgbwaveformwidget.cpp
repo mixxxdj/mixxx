@@ -9,7 +9,7 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_lrrgbwaveformwidget.cpp"
 
-using namespace allshader;
+namespace allshader {
 
 LRRGBWaveformWidget::LRRGBWaveformWidget(const QString& group, QWidget* parent)
         : WaveformWidget(group, parent) {
@@ -24,9 +24,6 @@ LRRGBWaveformWidget::LRRGBWaveformWidget(const QString& group, QWidget* parent)
     m_initSuccess = init();
 }
 
-LRRGBWaveformWidget::~LRRGBWaveformWidget() {
-}
-
 void LRRGBWaveformWidget::castToQWidget() {
     m_widget = this;
 }
@@ -34,3 +31,5 @@ void LRRGBWaveformWidget::castToQWidget() {
 void LRRGBWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
+
+} // namespace allshader

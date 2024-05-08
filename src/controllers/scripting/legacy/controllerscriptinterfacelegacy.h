@@ -22,6 +22,7 @@ class ControllerScriptInterfaceLegacy : public QObject {
 
     virtual ~ControllerScriptInterfaceLegacy();
 
+    Q_INVOKABLE QJSValue getSetting(const QString& name);
     Q_INVOKABLE double getValue(const QString& group, const QString& name);
     Q_INVOKABLE void setValue(const QString& group, const QString& name, double newValue);
     Q_INVOKABLE double getParameter(const QString& group, const QString& name);

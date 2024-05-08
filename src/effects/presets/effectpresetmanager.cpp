@@ -3,12 +3,13 @@
 #include <QDir>
 
 #include "effects/backends/effectsbackendmanager.h"
+#include "effects/presets/effectpreset.h"
 #include "effects/presets/effectxmlelements.h"
 #include "util/filename.h"
 
 namespace {
 const QString kEffectDefaultsDirectory = "/effects/defaults";
-}
+} // namespace
 
 EffectPresetManager::EffectPresetManager(UserSettingsPointer pConfig,
         EffectsBackendManagerPointer pBackendManager)

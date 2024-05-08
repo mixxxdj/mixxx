@@ -9,7 +9,6 @@
 #pragma once
 
 #include <QScopedPointer>
-#include <QString>
 
 #include "library/export/trackexportdlg.h"
 #include "library/export/trackexportworker.h"

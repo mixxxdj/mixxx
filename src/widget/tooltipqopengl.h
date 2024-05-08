@@ -2,7 +2,6 @@
 
 #include <QPoint>
 #include <QTimer>
-#include <QToolTip>
 
 class WGLWidget;
 

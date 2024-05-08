@@ -1,7 +1,10 @@
 #include "effects/chains/quickeffectchain.h"
 
+#include "control/controlobject.h"
 #include "effects/effectslot.h"
+#include "effects/presets/effectchainpreset.h"
 #include "effects/presets/effectchainpresetmanager.h"
+#include "moc_quickeffectchain.cpp"
 
 QuickEffectChain::QuickEffectChain(
         const ChannelHandleAndGroup& handleAndGroup,

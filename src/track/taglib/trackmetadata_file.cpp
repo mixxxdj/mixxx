@@ -1,6 +1,15 @@
+#if defined(_MSC_VER)
+#pragma warning(push)
+// https://github.com/taglib/taglib/issues/1185
+// warning C4251: 'TagLib::FileName::m_wname': class
+// 'std::basic_string<wchar_t,std::char_traits<wchar_t>,std::allocator<wchar_t>>'
+// needs to have dll-interface to be used by clients of class 'TagLib::FileName'
+#pragma warning(disable : 4251)
+#endif
+
 #include "track/taglib/trackmetadata_file.h"
 
-#include <taglib/tfile.h>
+#include <tfile.h>
 
 #include "track/taglib/trackmetadata_common.h"
 #include "util/logger.h"
@@ -120,9 +129,12 @@ bool readAudioPropertiesFromFile(
     // we must pick one explicit,
     // to prevent "use of overloaded operator '<<' is ambiguous" error
     // on clang-cl builds.
-    const auto filename = file.name().wstr();
+    // We need to save the filename here because if it was chained
+    // (`file.name().wstr()`) the wstr() result would be dangling.
+    TagLib::FileName filename_owning = file.name();
+    const std::wstring& filename = filename_owning.wstr();
 #else
-    const auto filename = file.name();
+    const char* filename = file.name();
 #endif
     if (!file.isValid()) {
         kLogger.warning() << "Cannot read audio properties from "
@@ -148,3 +160,7 @@ bool readAudioPropertiesFromFile(
 } // namespace taglib
 
 } // namespace mixxx
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

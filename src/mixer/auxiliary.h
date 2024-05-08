@@ -8,7 +8,7 @@
 
 class ControlProxy;
 class EffectsManager;
-class EngineMaster;
+class EngineMixer;
 class SoundManager;
 
 class Auxiliary : public BasePlayer {
@@ -18,7 +18,7 @@ class Auxiliary : public BasePlayer {
             const QString& group,
             int index,
             SoundManager* pSoundManager,
-            EngineMaster* pMixingEngine,
+            EngineMixer* pMixingEngine,
             EffectsManager* pEffectsManager);
     ~Auxiliary() override;
 
@@ -26,9 +26,9 @@ class Auxiliary : public BasePlayer {
     void noAuxiliaryInputConfigured();
 
   private slots:
-    void slotAuxMasterEnabled(double v);
+    void slotAuxMainMixEnabled(double v);
 
   private:
     parented_ptr<ControlProxy> m_pInputConfigured;
-    parented_ptr<ControlProxy> m_pAuxMasterEnabled;
+    parented_ptr<ControlProxy> m_pAuxMainMixEnabled;
 };

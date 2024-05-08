@@ -87,7 +87,7 @@ QList<BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylistEntrie
     QString queryString;
 
     if (playlistId == 0) {
-        // Create Master Playlist
+        // Create Main Playlist
         queryString = QString(
             "SELECT "
             "CoreTracks.TrackID, "        // 0

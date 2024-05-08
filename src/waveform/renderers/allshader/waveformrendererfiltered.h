@@ -12,7 +12,6 @@ class WaveformRendererFiltered;
 class allshader::WaveformRendererFiltered final : public allshader::WaveformRendererSignalBase {
   public:
     explicit WaveformRendererFiltered(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererFiltered() override;
 
     // override ::WaveformRendererSignalBase
     void onSetup(const QDomNode& node) override;

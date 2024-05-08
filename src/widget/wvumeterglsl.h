@@ -1,22 +1,23 @@
 #pragma once
 
-#include <QOpenGLTexture>
+#include <QOpenGLFunctions>
 #include <memory>
 
 #include "shaders/textureshader.h"
-#include "widget/wpixmapstore.h"
+#include "util/opengltexture2d.h"
 #include "widget/wvumeterbase.h"
-#include "widget/wwidget.h"
 
-class WVuMeterGLSL : public WVuMeterBase {
+class QOpenGLTexture;
+
+class WVuMeterGLSL : public WVuMeterBase, private QOpenGLFunctions {
     Q_OBJECT
   public:
     explicit WVuMeterGLSL(QWidget* pParent = nullptr);
     ~WVuMeterGLSL() override;
 
   private:
-    std::unique_ptr<QOpenGLTexture> m_pTextureBack;
-    std::unique_ptr<QOpenGLTexture> m_pTextureVu;
+    OpenGLTexture2D m_textureBack;
+    OpenGLTexture2D m_textureVu;
     mixxx::TextureShader m_textureShader;
 
     void draw() override;

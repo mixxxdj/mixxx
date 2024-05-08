@@ -4,24 +4,28 @@ using namespace mixxx;
 
 void RGBAShader::init() {
     QString vertexShaderCode = QStringLiteral(R"--(
-uniform mat4 matrix;
-attribute vec4 position;
-attribute vec4 color;
-varying vec4 vcolor;
+uniform highp mat4 matrix;
+attribute highp vec4 position; // use vec4 here (will be padded) for matrix multiplication
+attribute highp vec4 color;
+varying highp vec4 vColor;
 void main()
 {
-    vcolor = color;
+    vColor = color;
     gl_Position = matrix * position;
 }
 )--");
 
     QString fragmentShaderCode = QStringLiteral(R"--(
-varying vec4 vcolor;
+varying highp vec4 vColor;
 void main()
 {
-    gl_FragColor = vcolor;
+    gl_FragColor = vColor;
 }
 )--");
 
     load(vertexShaderCode, fragmentShaderCode);
+
+    m_matrixLocation = uniformLocation("matrix");
+    m_positionLocation = attributeLocation("position");
+    m_colorLocation = attributeLocation("color");
 }

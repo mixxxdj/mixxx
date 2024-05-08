@@ -9,7 +9,7 @@
         <Layout>stacked</Layout>
         <Children>
           <PushButton>
-            <TooltipId>show_samplers</TooltipId>
+            <TooltipId>expand_samplers</TooltipId>
             <ObjectName>SamplerExpandOverlay</ObjectName>
             <Size>16f,36me</Size>
             <NumberStates>2</NumberStates>
@@ -20,7 +20,7 @@
               <Number>1</Number>
             </State>
             <Connection>
-              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>
@@ -35,7 +35,7 @@
               <Number>1</Number>
             </State>
             <Connection>
-              <ConfigKey>[LateNight],expand_samplers_<Variable name="SamCount"/></ConfigKey>
+              <ConfigKey>[LateNight],expand_samplers_<Variable name="Count"/></ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
           </PushButton>

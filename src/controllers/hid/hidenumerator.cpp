@@ -5,6 +5,7 @@
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/hid/hiddenylist.h"
 #include "controllers/hid/hiddevice.h"
+#include "moc_hidenumerator.cpp"
 #include "util/cmdlineargs.h"
 
 namespace {

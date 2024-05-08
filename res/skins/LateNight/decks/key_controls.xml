@@ -10,7 +10,7 @@
         <SizePolicy>me,min</SizePolicy>
         <MaximumSize>111,</MaximumSize>
         <Children>
-          <Template src="skin:/controls/button_2state_right.xml">
+          <Template src="skins:LateNight/controls/button_2state_right.xml">
             <SetVariable name="TooltipId">sync_reset_key</SetVariable>
             <SetVariable name="ObjectName">KeyMatchReset</SetVariable>
             <SetVariable name="Size">26f,20f</SetVariable>
@@ -74,7 +74,7 @@
             <Layout>vertical</Layout>
             <Size>20f,20f</Size>
             <Children>
-              <Template src="skin:/controls/button_2state_right.xml">
+              <Template src="skins:LateNight/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">pitch_up</SetVariable>
                 <SetVariable name="ObjectName">KeyUp</SetVariable>
                 <SetVariable name="Size">20f,10f</SetVariable>
@@ -82,7 +82,7 @@
                 <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,pitch_up_small</SetVariable>
               </Template>
 
-              <Template src="skin:/controls/button_2state_right.xml">
+              <Template src="skins:LateNight/controls/button_2state_right.xml">
                 <SetVariable name="TooltipId">pitch_down</SetVariable>
                 <SetVariable name="ObjectName">KeyDown</SetVariable>
                 <SetVariable name="Size">20f,10f</SetVariable>

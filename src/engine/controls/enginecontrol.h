@@ -2,26 +2,31 @@
 
 #include <gtest/gtest_prod.h>
 
-#include <QList>
 #include <QObject>
 #include <gsl/pointers>
 
 #include "audio/frame.h"
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
-#include "engine/effects/groupfeaturestate.h"
-#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
 
-class EngineMaster;
+class EngineMixer;
 class EngineBuffer;
+struct GroupFeatureState;
 
 constexpr int kNoTrigger = -1;
 static_assert(
         mixxx::audio::FramePos::kLegacyInvalidEnginePosition == kNoTrigger,
         "Invalid engine position value mismatch");
+
+// This value is used to make sure the initial seek after loading a track is
+// not omitted. Therefore this value must be different for 0.0 or any likely
+// value for the main cue
+constexpr auto kInitialPlayPosition =
+        mixxx::audio::FramePos::fromEngineSamplePos(
+                std::numeric_limits<double>::lowest());
 
 /**
  * EngineControl is an abstract base class for objects which implement
@@ -56,7 +61,7 @@ class EngineControl : public QObject {
     // target.
     virtual void hintReader(gsl::not_null<HintVector*> pHintList);
 
-    virtual void setEngineMaster(EngineMaster* pEngineMaster);
+    virtual void setEngineMixer(EngineMixer* pEngineMixer);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setFrameInfo(mixxx::audio::FramePos currentPosition,
             mixxx::audio::FramePos trackEndPosition,
@@ -104,7 +109,7 @@ class EngineControl : public QObject {
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
-    EngineMaster* getEngineMaster();
+    EngineMixer* getEngineMixer();
     EngineBuffer* getEngineBuffer();
 
     const QString m_group;
@@ -112,7 +117,7 @@ class EngineControl : public QObject {
 
   private:
     ControlValueAtomic<FrameInfo> m_frameInfo;
-    EngineMaster* m_pEngineMaster;
+    EngineMixer* m_pEngineMixer;
     EngineBuffer* m_pEngineBuffer;
 
     friend class CueControlTest;

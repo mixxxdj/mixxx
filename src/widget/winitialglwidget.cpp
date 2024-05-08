@@ -2,6 +2,8 @@
 
 #include <QOpenGLFunctions>
 
+#include "moc_winitialglwidget.cpp"
+
 WInitialGLWidget::WInitialGLWidget(QWidget* pParent)
         : WGLWidget(pParent) {
 }

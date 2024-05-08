@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 #include "util/class.h"
 #include "waveform/renderers/allshader/waveformrendererabstract.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
@@ -13,10 +15,13 @@ class WaveformRendererSignalBase;
 class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBase,
                                               public allshader::WaveformRendererAbstract {
   public:
+    static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};
+
     explicit WaveformRendererSignalBase(WaveformWidgetRenderer* waveformWidget);
-    ~WaveformRendererSignalBase() override = default;
 
     void draw(QPainter* painter, QPaintEvent* event) override {
+        Q_UNUSED(painter);
+        Q_UNUSED(event);
     }
 
     allshader::WaveformRendererAbstract* allshaderWaveformRenderer() override {

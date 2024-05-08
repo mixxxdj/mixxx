@@ -1,23 +1,28 @@
 #include "controllers/dlgprefcontroller.h"
 
-#include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
-#include <QStandardPaths>
-#include <QTableWidget>
-#include <QTableWidgetItem>
+#include <QKeyEvent>
 
 #include "controllers/controller.h"
+#include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
+#include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
+#include "controllers/controlpickermenu.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/midicontroller.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
-#include "util/versionstore.h"
+#include "util/desktophelper.h"
+#include "util/parented_ptr.h"
+#include "util/string.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");
@@ -51,7 +56,7 @@ DlgPrefController::DlgPrefController(
     // Create text color for the file and wiki links
     createLinkColor();
 
-    m_pControlPickerMenu = new ControlPickerMenu(this);
+    m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
@@ -109,7 +114,7 @@ DlgPrefController::DlgPrefController(
     connect(m_ui.labelLoadedMappingScriptFileLinks,
             &QLabel::linkActivated,
             [](const QString& path) {
-                QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+                mixxx::DesktopHelper::openUrl(QUrl::fromLocalFile(path));
             });
 
     // Input mappings
@@ -163,6 +168,10 @@ DlgPrefController::DlgPrefController(
 }
 
 DlgPrefController::~DlgPrefController() {
+}
+
+void DlgPrefController::slotRecreateControlPickerMenu() {
+    m_pControlPickerMenu = make_parented<ControlPickerMenu>(this);
 }
 
 void DlgPrefController::showLearningWizard() {
@@ -402,6 +411,7 @@ QString DlgPrefController::mappingFileLinks(
 
 void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     m_ui.comboBoxMapping->blockSignals(true);
+    QString currentMappingFilePath = mappingFilePathFromIndex(m_ui.comboBoxMapping->currentIndex());
     m_ui.comboBoxMapping->clear();
 
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
@@ -453,14 +463,18 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     } else if (match.isValid()) {
         index = m_ui.comboBoxMapping->findText(match.getName());
     }
+    QString newMappingFilePath = mappingFilePathFromIndex(index);
     if (index == -1) {
         m_ui.chkEnabledDevice->setEnabled(false);
+        m_ui.groupBoxSettings->setVisible(false);
     } else {
         m_ui.comboBoxMapping->setCurrentIndex(index);
         m_ui.chkEnabledDevice->setEnabled(true);
     }
     m_ui.comboBoxMapping->blockSignals(false);
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
+    if (newMappingFilePath != currentMappingFilePath) {
+        slotMappingSelected(index);
+    }
 }
 
 MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
@@ -490,6 +504,8 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 void DlgPrefController::slotUpdate() {
     enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
             m_pController->getName()));
+    // Force updating the controller settings
+    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
 
     // enumeratePresets calls slotPresetSelected which will check the m_ui.chkEnabledDevice
     // checkbox if there is a valid mapping saved in the mixxx.cfg file. However, the
@@ -506,9 +522,10 @@ void DlgPrefController::slotUpdate() {
 }
 
 void DlgPrefController::slotResetToDefaults() {
-    m_ui.chkEnabledDevice->setChecked(false);
+    if (m_pMapping) {
+        m_pMapping->resetSettings();
+    }
     enumerateMappings(QString());
-    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
 }
 
 void DlgPrefController::applyMappingChanges() {
@@ -549,9 +566,13 @@ void DlgPrefController::slotApply() {
         return;
     }
 
-    QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
-    m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
-            QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
+    // If there is currently a mapping loaded, we save the new settings for it.
+    // Note that `m_pMapping`, `mappingFileInfo` and the setting on the screen
+    // will always match as the settings displayed are updated depending of the
+    // currently selected mapping in `slotMappingSelected`
+    if (m_pMapping) {
+        m_pMapping->saveSettings(m_pConfig, m_pController->getName());
+    }
 
     // Load the resulting mapping (which has been mutated by the input/output
     // table models). The controller clones the mapping so we aren't touching
@@ -573,7 +594,7 @@ void DlgPrefController::keyPressEvent(QKeyEvent* pEvent) {
             (m_ui.inputControlSearch->hasFocus() || m_ui.inputControlSearch->hasFocus())) {
         return;
     }
-    return QWidget::keyPressEvent(pEvent);
+    QWidget::keyPressEvent(pEvent);
 }
 
 void DlgPrefController::enableWizardAndIOTabs(bool enable) {
@@ -585,7 +606,7 @@ void DlgPrefController::enableWizardAndIOTabs(bool enable) {
     m_ui.outputMappingsTab->setEnabled(enable);
 }
 
-QString DlgPrefController::mappingPathFromIndex(int index) const {
+QString DlgPrefController::mappingFilePathFromIndex(int index) const {
     if (index == 0) {
         // "No Mapping" item
         return QString();
@@ -595,8 +616,8 @@ QString DlgPrefController::mappingPathFromIndex(int index) const {
 }
 
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
-    QString mappingPath = mappingPathFromIndex(chosenIndex);
-    if (mappingPath.isEmpty()) { // User picked "No Mapping" item
+    QString mappingFilePath = mappingFilePathFromIndex(chosenIndex);
+    if (mappingFilePath.isEmpty()) { // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
         if (m_ui.chkEnabledDevice->isChecked()) {
@@ -606,6 +627,8 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             }
             enableWizardAndIOTabs(false);
         }
+
+        m_ui.groupBoxSettings->setVisible(false);
     } else { // User picked a mapping
         m_ui.chkEnabledDevice->setEnabled(true);
 
@@ -620,7 +643,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     // Check if the mapping is different from the configured mapping
     if (m_GuiInitialized &&
             m_pControllerManager->getConfiguredMappingFileForDevice(
-                    m_pController->getName()) != mappingPath) {
+                    m_pController->getName()) != mappingFilePath) {
         setDirty(true);
     }
 
@@ -635,9 +658,10 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
     }
 
+    auto mappingFileInfo = QFileInfo(mappingFilePath);
     std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(
-                    QFileInfo(mappingPath), QDir(resourceMappingsPath(m_pConfig)));
+                    mappingFileInfo, QDir(resourceMappingsPath(m_pConfig)));
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
@@ -646,7 +670,7 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
     if (previousMappingSaved) {
         // We might have saved the previous preset with a new name, so update
         // the preset combobox.
-        enumerateMappings(mappingPath);
+        enumerateMappings(mappingFilePath);
     } else {
         slotShowMapping(pMapping);
     }
@@ -748,7 +772,7 @@ QString DlgPrefController::askForMappingName(const QString& prefilledName) const
                "special characters.");
     QString fileExistsLabel = tr("A mapping file with that name already exists.");
     // Only allow the name to contain letters, numbers, whitespaces and _-+()/
-    const QRegularExpression rxRemove = QRegularExpression(
+    static const QRegularExpression rxRemove = QRegularExpression(
             QStringLiteral("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]"));
 
     // Choose a new file (base) name
@@ -815,10 +839,41 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
     m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(pMapping));
     m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
 
-    // We mutate this mapping so keep a reference to it while we are using it.
-    // TODO(rryan): Clone it? Technically a waste since nothing else uses this
-    // copy but if someone did they might not expect it to change.
-    m_pMapping = pMapping;
+    if (pMapping) {
+        pMapping->loadSettings(m_pConfig, m_pController->getName());
+        auto settings = pMapping->getSettings();
+        auto* pLayout = pMapping->getSettingsLayout();
+
+        QLayoutItem* pItem;
+        while ((pItem = m_ui.groupBoxSettings->layout()->takeAt(0)) != nullptr) {
+            delete pItem->widget();
+            delete pItem;
+        }
+
+        if (pLayout != nullptr && !settings.isEmpty()) {
+            m_ui.groupBoxSettings->layout()->addWidget(pLayout->build(m_ui.groupBoxSettings));
+
+            for (const auto& setting : std::as_const(settings)) {
+                connect(setting.get(),
+                        &AbstractLegacyControllerSetting::changed,
+                        this,
+                        [this] { setDirty(true); });
+            }
+        }
+
+        m_ui.groupBoxSettings->setVisible(!settings.isEmpty());
+    }
+
+    // If there is still settings that may be saved and no new mapping selected
+    // (e.g restored default), we keep the the dirty mapping live so it can be
+    // saved in apply slot. If there is a new mapping, then setting changes are
+    // discarded
+    if (pMapping || (m_pMapping && !m_pMapping->hasDirtySettings())) {
+        // We mutate this mapping so keep a reference to it while we are using it.
+        // TODO(rryan): Clone it? Technically a waste since nothing else uses this
+        // copy but if someone did they might not expect it to change.
+        m_pMapping = pMapping;
+    }
 
     // Inputs tab
     ControllerInputMappingTableModel* pInputModel =

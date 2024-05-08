@@ -6,11 +6,12 @@
 #include <QList>
 
 #include "preferences/usersettings.h"
-#include "engine/sidechain/sidechainworker.h"
 #include "soundio/soundmanagerutil.h"
 #include "util/fifo.h"
 #include "util/mutex.h"
 #include "util/types.h"
+
+class SideChainWorker;
 
 class EngineSideChain : public QThread, public AudioDestination {
     Q_OBJECT

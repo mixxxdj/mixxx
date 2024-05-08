@@ -5,7 +5,6 @@
 #include <QWidget>
 
 #include "util/color/color.h"
-#include "util/string.h"
 
 /// Interface that all preference pages have to implement.
 class DlgPreferencePage : public QWidget {
@@ -18,6 +17,24 @@ class DlgPreferencePage : public QWidget {
     /// Subclasses can provide a path to the appropriate manual page by
     /// overriding this. The default implementation returns an invalid QUrl.
     virtual QUrl helpUrl() const;
+
+    const QString kWarningIconPath =
+            QStringLiteral(":/images/preferences/ic_preferences_warning.svg");
+    const QString kWarningIconHtmlString = QStringLiteral(
+            "<html>"
+            "<img "
+            "src='%1' "
+            "width='20' height='20'>"
+            "</html> ")
+                                                   .arg(kWarningIconPath);
+
+    void setScrollSafeGuardForAllInputWidgets(QObject* obj);
+    /// Avoid undesired value changes when scrolling a preferences page while
+    /// the pointer is above an input widget (QSpinBox, QComboBox, QSlider):
+    /// * set the focus policy to Qt::StrongFocus (focusable by click & tab key)
+    /// * forward wheel events to the top-level layout
+    void setScrollSafeGuard(QWidget* pWidget);
+    bool eventFilter(QObject* obj, QEvent* e);
 
     QColor m_pLinkColor;
 

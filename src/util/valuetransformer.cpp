@@ -1,5 +1,3 @@
-#include <QtDebug>
-
 #include "util/valuetransformer.h"
 
 ValueTransformer::ValueTransformer() {

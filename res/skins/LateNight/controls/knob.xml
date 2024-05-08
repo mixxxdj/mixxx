@@ -13,8 +13,8 @@
       <KnobComposed>
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <Size><Variable name="Size"/></Size>
-        <Knob>skin:/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColor"/>.svg</Knob>
-        <BackPath>skin:/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
+        <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_<Variable name="KnobIndicator"/>_<Variable name="KnobColor"/>.svg</Knob>
+        <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_<Variable name="KnobBg"/>.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <ArcRadius><Variable name="ArcRadius"/></ArcRadius>

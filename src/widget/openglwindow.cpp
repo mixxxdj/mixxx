@@ -3,17 +3,24 @@
 #include <QApplication>
 #include <QResizeEvent>
 
+#include "moc_openglwindow.cpp"
+#include "waveform/waveformwidgetfactory.h"
 #include "widget/tooltipqopengl.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wglwidget.h"
 
 OpenGLWindow::OpenGLWindow(WGLWidget* pWidget)
-        : m_pWidget(pWidget),
-          m_dirty(false) {
-    QSurfaceFormat format;
-    format.setVersion(2, 1);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    setFormat(format);
+        : m_pWidget(pWidget) {
+    setFormat(WaveformWidgetFactory::getSurfaceFormat());
+#ifdef __EMSCRIPTEN__
+    // This is required to ensure that QOpenGLWindows have no minimum size (When
+    // targeting WebAssembly, the widgets will otherwise always have a minimum
+    // width and minimum height of 100 pixels).
+    setFlag(Qt::FramelessWindowHint);
+#endif
+    // Set the tooltip flag to prevent this window/widget from getting
+    // keyboard focus on click.
+    setFlag(Qt::ToolTip);
 }
 
 OpenGLWindow::~OpenGLWindow() {
@@ -27,12 +34,6 @@ void OpenGLWindow::initializeGL() {
 
 void OpenGLWindow::paintGL() {
     if (m_pWidget && isExposed()) {
-        if (m_dirty) {
-            // Extra render and swap to avoid flickering when resizing
-            m_pWidget->paintGL();
-            m_pWidget->swapBuffers();
-            m_dirty = false;
-        }
         m_pWidget->paintGL();
     }
 }
@@ -45,7 +46,10 @@ void OpenGLWindow::resizeGL(int w, int h) {
         // QGLWidget::resizeGL has devicePixelRatio applied, so we mimic the same behaviour
         m_pWidget->resizeGL(static_cast<int>(static_cast<float>(w) * devicePixelRatio()),
                 static_cast<int>(static_cast<float>(h) * devicePixelRatio()));
-        m_dirty = true;
+        // additional paint and swap to avoid flickering
+        m_pWidget->paintGL();
+        m_pWidget->swapBuffers();
+
         m_pWidget->doneCurrent();
     }
 }
@@ -69,8 +73,12 @@ bool OpenGLWindow::event(QEvent* pEv) {
         // Tooltip don't work by forwarding the events. This mimics the
         // tooltip behavior.
         if (t == QEvent::MouseMove) {
-            ToolTipQOpenGL::singleton().start(
-                    m_pWidget, dynamic_cast<QMouseEvent*>(pEv)->globalPos());
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPosition().toPoint();
+#else
+            QPoint eventPosition = dynamic_cast<QMouseEvent*>(pEv)->globalPos();
+#endif
+            ToolTipQOpenGL::singleton().start(m_pWidget, eventPosition);
         }
         if (t == QEvent::Leave) {
             ToolTipQOpenGL::singleton().stop();
@@ -85,7 +93,7 @@ bool OpenGLWindow::event(QEvent* pEv) {
             }
 
             pEv->ignore();
-            return false;
+            return false; // clazy:exclude=base-class-event
         }
 
         if (t == QEvent::Resize || t == QEvent::Move || t == QEvent::Expose) {

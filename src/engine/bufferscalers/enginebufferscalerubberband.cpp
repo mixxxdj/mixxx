@@ -2,7 +2,6 @@
 
 #include <QtDebug>
 
-#include "control/controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "moc_enginebufferscalerubberband.cpp"
 #include "util/counter.h"
@@ -155,23 +154,27 @@ SINT EngineBufferScaleRubberBand::retrieveAndDeinterleave(
 
     DEBUG_ASSERT(received_frames <= frames);
     SampleUtil::interleaveBuffer(pBuffer,
-            m_buffers[0].data() + frame_offset,
-            m_buffers[1].data() + frame_offset,
+            m_buffers[0].data(frame_offset),
+            m_buffers[1].data(frame_offset),
             received_frames);
 
     return received_frames;
 }
 
 void EngineBufferScaleRubberBand::deinterleaveAndProcess(
-        const CSAMPLE* pBuffer, SINT frames, bool flush) {
+        const CSAMPLE* pBuffer,
+        SINT frames) {
     DEBUG_ASSERT(frames <= static_cast<SINT>(m_buffers[0].size()));
 
     SampleUtil::deinterleaveBuffer(
-            m_buffers[0].data(), m_buffers[1].data(), pBuffer, frames);
+            m_buffers[0].data(),
+            m_buffers[1].data(),
+            pBuffer,
+            frames);
 
     m_pRubberBand->process(m_bufferPtrs.data(),
             frames,
-            flush);
+            false);
 }
 
 double EngineBufferScaleRubberBand::scaleBuffer(
@@ -184,12 +187,10 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         return 0.0;
     }
 
-    SINT total_received_frames = 0;
-
+    double readFramesProcessed = 0;
     SINT remaining_frames = getOutputSignal().samples2frames(iOutputBufferSize);
     CSAMPLE* read = pOutputBuffer;
     bool last_read_failed = false;
-    bool break_out_after_retrieve_and_reset_rubberband = false;
     while (remaining_frames > 0) {
         // ReadAheadManager will eventually read the requested frames with
         // enough calls to retrieveAndDeinterleave because CachingReader returns
@@ -201,20 +202,14 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         SINT received_frames = retrieveAndDeinterleave(
                 read, remaining_frames);
         remaining_frames -= received_frames;
-        total_received_frames += received_frames;
+        readFramesProcessed += m_effectiveRate * received_frames;
         read += getOutputSignal().frames2samples(received_frames);
-
-        if (break_out_after_retrieve_and_reset_rubberband) {
-            // qDebug() << "break_out_after_retrieve_and_reset_rubberband";
-            // If we break out early then we have flushed RubberBand and need to
-            // reset it.
-            reset();
-            break;
-        }
 
         const SINT next_block_frames_required =
                 static_cast<SINT>(m_pRubberBand->getSamplesRequired());
         if (remaining_frames > 0 && next_block_frames_required > 0) {
+            // The requested setting becomes effective after all previous frames have been processed
+            m_effectiveRate = m_dBaseRate * m_dTempoRatio;
             const SINT available_samples = m_pReadAheadManager->getNextSamples(
                     // The value doesn't matter here. All that matters is we
                     // are going forward or backward.
@@ -225,14 +220,22 @@ double EngineBufferScaleRubberBand::scaleBuffer(
 
             if (available_frames > 0) {
                 last_read_failed = false;
-                deinterleaveAndProcess(m_interleavedReadBuffer.data(), available_frames, false);
+                deinterleaveAndProcess(m_interleavedReadBuffer.data(), available_frames);
             } else {
+                // We may get 0 samples once if we just hit a loop trigger, e.g.
+                // when reloop_toggle jumps back to loop_in, or when moving a
+                // loop causes the play position to be moved along.
                 if (last_read_failed) {
-                    // Flush and break out after the next retrieval. If we are
-                    // at EOF this serves to get the last samples out of
-                    // RubberBand.
-                    deinterleaveAndProcess(m_interleavedReadBuffer.data(), 0, true);
-                    break_out_after_retrieve_and_reset_rubberband = true;
+                    // If we get 0 samples repeatedly, flush and break out after
+                    // the next retrieval. If we are at EOF this serves to get
+                    // the last samples out of RubberBand.
+                    qDebug() << "ReadAheadManager::getNextSamples() returned "
+                                "zero samples repeatedly. Padding with silence.";
+                    SampleUtil::clear(
+                            m_interleavedReadBuffer.data(),
+                            getOutputSignal().frames2samples(next_block_frames_required));
+                    deinterleaveAndProcess(m_interleavedReadBuffer.data(),
+                            next_block_frames_required);
                 }
                 last_read_failed = true;
             }
@@ -245,17 +248,10 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         counter.increment();
     }
 
-    // framesRead is interpreted as the total number of virtual sample frames
+    // readFramesProcessed is interpreted as the total number of frames
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    // NOTE(rryan): Why no m_dPitchAdjust here? Pitch does not change the time
-    // ratio. m_dSpeedAdjust is the ratio of unstretched time to stretched
-    // time. So, if we used total_received_frames in stretched time, then
-    // multiplying that by the ratio of unstretched time to stretched time
-    // will get us the unstretched sample frames read.
-    double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
-
-    return framesRead;
+    return readFramesProcessed;
 }
 
 // static

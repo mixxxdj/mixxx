@@ -82,7 +82,7 @@ class SoundSourceProviderMp3 : public SoundSourceProvider {
     static const QStringList kSupportedFileTypes;
 
     QString getDisplayName() const override {
-        return kDisplayName;
+        return kDisplayName + QStringLiteral(": ") + getVersionString();
     }
 
     QStringList getSupportedFileTypes() const override {
@@ -92,6 +92,8 @@ class SoundSourceProviderMp3 : public SoundSourceProvider {
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceMp3>(url);
     }
+
+    QString getVersionString() const;
 };
 
 } // namespace mixxx

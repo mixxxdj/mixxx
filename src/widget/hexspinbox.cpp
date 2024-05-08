@@ -4,7 +4,7 @@
 
 namespace {
 const QRegularExpression kValidationRegex(QStringLiteral("^0(x|X)[0-9A-Fa-f]+"));
-}
+} // namespace
 
 HexSpinBox::HexSpinBox(QWidget* pParent)
         : QSpinBox(pParent) {

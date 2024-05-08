@@ -192,6 +192,9 @@ ReloopBeatmix24.connectControls = function() {
 ReloopBeatmix24.init = function(id, _debug) {
     ReloopBeatmix24.id = id;
     ReloopBeatmix24.TurnLEDsOff(); // Turn off all LEDs
+    if (engine.getValue("[App]", "num_samplers") < 8) {
+        engine.setValue("[App]", "num_samplers", 8);
+    }
     ReloopBeatmix24.connectControls(false);
 
     for (let i = 1; i <= 4; i++) {
@@ -329,7 +332,7 @@ ReloopBeatmix24.LoadButton = function(channel, control, value, status, group) {
     if (value === DOWN) {
         loadButtonLongPressed[group] = false;
         loadButtonTimers[group] = engine.beginTimer(1000,
-            "ReloopBeatmix24.LoadButtonEject(\"" + group + "\")", true);
+            () => {RegloopBeatmix24.LoadButtonEject(group); }, true);
     } else { // UP
         if (!loadButtonLongPressed[group]) { // Short press
             engine.stopTimer(loadButtonTimers[group]);
@@ -376,7 +379,7 @@ ReloopBeatmix24.ShiftSamplerPad = function(channel, control, value, status,
 };
 
 ReloopBeatmix24.SamplerVol = function(channel, control, value, _status, _group) {
-    for (let i = 1; i <= engine.getValue("[Master]", "num_samplers"); i++) {
+    for (let i = 1; i <= engine.getValue("[App]", "num_samplers"); i++) {
         engine.setValue("[Sampler" + i + "]", "volume", value / 127.0);
     }
 };
@@ -546,7 +549,7 @@ ReloopBeatmix24.JogLed = function(value, group, _control) {
             jogWheelTimers[group] = engine.beginTimer(
                 timeLeft <= JogFlashCriticalTime ?
                     JogFlashCriticalInterval : JogFlashWarningInterval,
-                "ReloopBeatmix24.jogLedFlash(\"" + group + "\", " + ON + ")",
+                () => {ReloopBeatmix24.jogLedFlash(group, ON); },
                 true);
             JogBlinking[group] = true;
         }
@@ -584,8 +587,8 @@ ReloopBeatmix24.jogLedFlash = function(group, state) {
         const nextTime = (timeleft < JogFlashCriticalTime ?
             JogFlashCriticalInterval : JogFlashWarningInterval);
         jogWheelTimers[group] = engine.beginTimer(nextTime,
-            "ReloopBeatmix24.jogLedFlash(\"" + group + "\", " +
-            (state ? OFF : ON) + ")", true);
+            () => {ReloopBeatmix24.jogLedFlash(group, state ? OFF : ON); },
+             true);
     } else { // Back in time ?
         // shut off all jog leds
         ReloopBeatmix24.AllJogLEDsToggle(0x90 + chan, OFF);
@@ -622,8 +625,7 @@ ReloopBeatmix24.FxModeLedFlash = function(step, mode) {
             midi.sendShortMsg(i, 0x26 - mode, ledValue);
             midi.sendShortMsg(i, 0x26 + SHIFT - mode, ledValue);
         }
-        engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(" + (step + 1) +
-            ", " + mode + ")", true);
+        engine.beginTimer(150, () => { ReloopBeatmix24.FxModeLedFlash(step + 1, mode); }, true);
     }
 };
 
@@ -636,7 +638,7 @@ ReloopBeatmix24.FxModeCallback = function(group, mode) {
         midi.sendShortMsg(i, 0x26 - mode, OFF);
         midi.sendShortMsg(i, 0x26 + SHIFT - mode, OFF);
     }
-    engine.beginTimer(150, "ReloopBeatmix24.FxModeLedFlash(1, " + mode + ")",
+    engine.beginTimer(150, () => { ReloopBeatmix24.FxModeLedFlash(1, mode); },
         true);
 };
 
@@ -653,8 +655,7 @@ ReloopBeatmix24.ActivateFx = function(channel, control, value, status, group) {
         }
         FxModeLongPressed[group] = false;
         FxModeTimers[group] = engine.beginTimer(1000,
-            "ReloopBeatmix24.FxModeCallback(\"" + group + "\", " + FxNum + ")",
-            true);
+            () => {ReloopBeatmix24.FxModeCallback(group, FxNum); }, true);
     } else { // UP
         if (FxModeLongPressed[group]) { // long press
             // Nothing to do, this has already been done in callback function
@@ -726,8 +727,7 @@ ReloopBeatmix24.ShiftFxKnobOnOff = function(channel, control, value, status, gro
         if (value === UP) {
             engine.setValue(group, "clear", 1);
             engine.beginTimer(100,
-                "ReloopBeatmix24.EffectClearTimerCallBack(\"" + group +
-                "\")", true);
+                () => {ReloopBeatmix24.EffectClearTimerCallBack(group); }, true);
         }
     }
     // Nothing in single-effect mode

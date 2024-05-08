@@ -3,13 +3,11 @@
 #include <QtDebug>
 
 #include "library/banshee/bansheedbconnection.h"
-#include "library/previewbuttondelegate.h"
+#include "library/dao/playlistdao.h"
 #include "library/queryutil.h"
-#include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
 #include "moc_bansheeplaylistmodel.cpp"
-#include "track/beats.h"
 #include "track/track.h"
 
 #define BANSHEE_TABLE "banshee"
@@ -86,8 +84,8 @@ void BansheePlaylistModel::dropTempTable() {
     }
 }
 
-void BansheePlaylistModel::setTableModel(int playlistId) {
-    //qDebug() << "BansheePlaylistModel::setTableModel" << this << playlistId;
+void BansheePlaylistModel::selectPlaylist(int playlistId) {
+    // qDebug() << "BansheePlaylistModel::selectPlaylist" << this << playlistId;
     if (m_playlistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;

@@ -28,4 +28,7 @@ enum class ExportTrackMetadataResult {
     Skipped,
 };
 
+// key for control to open/close the decks' track menus
+const QString kShowTrackMenuKey = QStringLiteral("show_track_menu");
+
 Q_DECLARE_METATYPE(TrackPointer);

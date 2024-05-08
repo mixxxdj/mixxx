@@ -1,10 +1,8 @@
 #include "waveform/renderers/glwaveformrenderersimplesignal.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
 #include "util/math.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
 #include "waveformwidgetrenderer.h"
 
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
@@ -45,7 +43,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         return;
     }
 
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
@@ -70,7 +68,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float allGain(1.0);
-    getGains(&allGain, nullptr, nullptr, nullptr);
+    getGains(&allGain, false, nullptr, nullptr, nullptr);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);

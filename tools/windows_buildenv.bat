@@ -21,13 +21,16 @@ IF NOT DEFINED INSTALL_ROOT (
 )
 
 IF DEFINED BUILDENV_RELEASE (
-    SET BUILDENV_BRANCH=2.4-rel
-    SET BUILDENV_NAME=mixxx-deps-rel-2.4-x64-windows-d5a93e2
-    SET BUILDENV_SHA256=34fc0f6c0771b9c2b1a6b79b05dd166df71704ee0b2af3789f613bebeb305099
+    SET BUILDENV_BRANCH=2.5-rel
+    SET VCPKG_TARGET_TRIPLET=x64-windows-release
+    vcpkg_update_main
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-release-9674e6a
+    SET BUILDENV_SHA256=fbe888916751ab3fe0b99b3f01171754bdb6ac1facf7958b4b5b1a2979caff64
 ) ELSE (
-    SET BUILDENV_BRANCH=2.4
-    SET BUILDENV_NAME=mixxx-deps-2.4-x64-windows-55d482c
-    SET BUILDENV_SHA256=a662a483374881a5d7cf9bbde210150d14a3e17e50c974473bfd2cfb8945a67f
+    SET BUILDENV_BRANCH=2.5
+    SET VCPKG_TARGET_TRIPLET=x64-windows
+    SET BUILDENV_NAME=mixxx-deps-2.5-x64-windows-875f13b
+    SET BUILDENV_SHA256=0e17030f8e36ba6e334ce1989357975c5ef8e791d56943a64d18d5197315ca68
 )
 
 IF "%~1"=="" (
@@ -96,7 +99,7 @@ EXIT /B 0
 
     SET "MIXXX_VCPKG_ROOT=!BUILDENV_PATH!"
     SET "CMAKE_GENERATOR=Ninja"
-    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\x64-windows"
+    SET "CMAKE_PREFIX_PATH=!BUILDENV_PATH!\installed\!VCPKG_TARGET_TRIPLET!"
 
     ECHO ^Environment Variables:
     ECHO ^- MIXXX_VCPKG_ROOT='!MIXXX_VCPKG_ROOT!'
@@ -186,6 +189,11 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>"%CMakeSettings%" echo   ]
     >>"%CMakeSettings%" echo }
+
+    echo ^You can now open CMakeSetting.json from Visual Studio
+    echo ^or configure cmake from the command line in an EMPTY build directory via:
+    echo ^cmake -DCMAKE_TOOLCHAIN_FILE=!MIXXX_VCPKG_ROOT!\scripts\buildsystems\vcpkg.cmake %MIXXX_ROOT%
+
     CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 
@@ -221,8 +229,10 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "MODPLUG"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QT6"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING"  "!VCPKG_TARGET_TRIPLET!"
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "WAVPACK"                            "BOOL"   "True"

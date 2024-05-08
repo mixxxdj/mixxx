@@ -23,7 +23,7 @@
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:/fx/slot_parameters.xml">
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
               <WidgetGroup>
@@ -61,7 +61,7 @@
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:/fx/slot_parameters.xml">
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
               <WidgetGroup>
@@ -98,7 +98,7 @@
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:/fx/slot_parameters.xml">
+              <Template src="skins:LateNight/fx/slot_parameters.xml">
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
               <WidgetGroup>
@@ -144,7 +144,7 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_MixmodePfl</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>,1me</Size></WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PresetButton</ObjectName>

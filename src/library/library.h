@@ -1,12 +1,10 @@
 #pragma once
 
-#include <QAbstractItemModel>
 #include <QFont>
 #include <QList>
 #include <QObject>
 #include <QPointer>
 
-#include "analyzer/analyzerscheduledtrack.h"
 #include "analyzer/trackanalysisscheduler.h"
 #include "library/library_decl.h"
 #ifdef __ENGINEPRIME__
@@ -14,14 +12,13 @@
 #endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
-#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
 class AnalysisFeature;
+class BrowseFeature;
 class ControlObject;
 class CrateFeature;
-class ExternalTrackCollection;
 class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
@@ -31,12 +28,11 @@ class PlayerManager;
 class PlaylistFeature;
 class RecordingManager;
 class SidebarModel;
-class TrackCollection;
 class TrackCollectionManager;
-class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+class QAbstractItemModel;
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -90,13 +86,17 @@ class Library: public QObject {
         return m_trackTableFont;
     }
 
+    bool selectedClickEnabled() const {
+        return m_editMetadataSelectedClick;
+    }
+
     //static Library* buildDefaultLibrary();
 
     static const int kDefaultRowHeightPx;
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
-    void setEditMedatataSelectedClick(bool enable);
+    void setEditMetadataSelectedClick(bool enable);
 
     /// Triggers a new search in the internal track collection
     /// and shows the results by switching the view.
@@ -119,6 +119,8 @@ class Library: public QObject {
     void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
+    void slotSaveCurrentViewState() const;
+    void slotRestoreCurrentViewState() const;
 
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
@@ -128,6 +130,7 @@ class Library: public QObject {
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
+    void pasteFromSidebar();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void selectTrack(const TrackId&);
@@ -167,6 +170,7 @@ class Library: public QObject {
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    BrowseFeature* m_pBrowseFeature;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;

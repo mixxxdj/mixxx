@@ -1,27 +1,30 @@
 #include "mixxxmainwindow.h"
 
-#include <QDesktopServices>
+#include <QCloseEvent>
+#include <QDebug>
 #include <QFileDialog>
+#include <QOpenGLContext>
+#include <QUrl>
 
-#include "widget/wglwidget.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#include <QGLFormat>
+#endif
+
+#ifdef __LINUX__
+#include <QtDBus>
+#endif
 
 #ifdef MIXXX_USE_QOPENGL
 #include "widget/tooltipqopengl.h"
 #include "widget/winitialglwidget.h"
-#else
-#include <QGLFormat>
 #endif
 
-#include <QUrl>
-#ifdef __LINUX__
-#include <QtDBus>
-#endif
-#include <QtDebug>
-
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "coreservices.h"
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "dialog/dlgkeywheel.h"
-#include "effects/effectsmanager.h"
 #include "moc_mixxxmainwindow.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -29,19 +32,14 @@
 #include "broadcast/broadcastmanager.h"
 #endif
 #include "control/controlindicatortimer.h"
-#include "controllers/controllermanager.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
-#include "database/mixxxdb.h"
 #include "library/library.h"
 #include "library/library_prefs.h"
 #ifdef __ENGINEPRIME__
 #include "library/export/libraryexporter.h"
 #endif
-#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/legacy/launchimage.h"
 #include "skin/skinloader.h"
@@ -49,36 +47,19 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/debug.h"
-#include "util/experiment.h"
-#include "util/font.h"
-#include "util/logger.h"
-#include "util/math.h"
+#include "util/desktophelper.h"
 #include "util/sandbox.h"
-#include "util/screensaver.h"
-#include "util/time.h"
 #include "util/timer.h"
-#include "util/translations.h"
 #include "util/versionstore.h"
-#include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wglwidget.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
-#endif
-
-#if defined(Q_OS_LINUX)
-#include <X11/Xlib.h>
-#include <X11/Xlibint.h>
-// Xlibint.h predates C++ and defines macros which conflict
-// with references to std::max and std::min
-#undef max
-#undef min
-
-#include <QtX11Extras/QX11Info>
 #endif
 
 namespace {
@@ -93,8 +74,8 @@ namespace {
 inline bool supportsGlobalMenu() {
 #ifndef QT_NO_DBUS
     QDBusConnection conn = QDBusConnection::sessionBus();
-    if (const auto iface = conn.interface()) {
-        return iface->isServiceRegistered("com.canonical.AppMenu.Registrar");
+    if (const auto* pIface = conn.interface()) {
+        return pIface->isServiceRegistered("com.canonical.AppMenu.Registrar");
     }
 #endif
     return false;
@@ -106,6 +87,9 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
         : m_pCoreServices(pCoreServices),
           m_pCentralWidget(nullptr),
           m_pLaunchImage(nullptr),
+#ifndef __APPLE__
+          m_prevState(Qt::WindowNoState),
+#endif
           m_pGuiTick(nullptr),
 #ifdef __LINUX__
           m_supportsGlobalMenuBar(supportsGlobalMenu()),
@@ -149,34 +133,46 @@ MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServi
 
 #ifdef MIXXX_USE_QOPENGL
 void MixxxMainWindow::initializeQOpenGL() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    // Qt 6 will nno longer crash if no GL is available and
+    // QGLFormat::hasOpenGL() has been removed.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+#else
     if (!CmdlineArgs::Instance().getSafeMode()) {
-        // This widget and its QOpenGLWindow will be used to query QOpenGL
-        // information (version, driver, etc) in WaveformWidgetFactory.
-        // The "SharedGLContext" terminology here doesn't really apply,
-        // but allows us to take advantage of the existing classes.
-        WInitialGLWidget* widget = new WInitialGLWidget(this);
-        widget->setGeometry(QRect(0, 0, 3, 3));
-        SharedGLContext::setWidget(widget);
-        // When the widget's QOpenGLWindow has been initialized, we continue
-        // with the actual initialization
-        connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
-        widget->show();
-        // note: the format is set in the WGLWidget's OpenGLWindow constructor
-    } else {
-        initialize();
+#endif
+        QOpenGLContext context;
+        context.setFormat(WaveformWidgetFactory::getSurfaceFormat(m_pCoreServices->getSettings()));
+        if (context.create()) {
+            // This widget and its QOpenGLWindow will be used to query QOpenGL
+            // information (version, driver, etc) in WaveformWidgetFactory.
+            // The "SharedGLContext" terminology here doesn't really apply,
+            // but allows us to take advantage of the existing classes.
+            WInitialGLWidget* widget = new WInitialGLWidget(this);
+            widget->setGeometry(QRect(0, 0, 3, 3));
+            SharedGLContext::setWidget(widget);
+            // When the widget's QOpenGLWindow has been initialized, we continue
+            // with the actual initialization
+            connect(widget, &WInitialGLWidget::onInitialized, this, &MixxxMainWindow::initialize);
+            widget->show();
+            return;
+        }
+        qDebug() << "QOpenGLContext::create() failed";
     }
+    qInfo() << "Initializing without OpenGL";
+    initialize();
 }
 #endif
 
 void MixxxMainWindow::initialize() {
+    qWarning() << "     $ initialize";
     m_pCoreServices->getControlIndicatorTimer()->setLegacyVsyncEnabled(true);
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
     // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-            pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
-                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
+    m_toolTipsCfg = pConfig->getValue(
+            ConfigKey("[Controls]", "Tooltips"),
+            mixxx::TooltipsPreference::TOOLTIPS_ON);
 #ifdef MIXXX_USE_QOPENGL
     ToolTipQOpenGL::singleton().setActive(m_toolTipsCfg == mixxx::TooltipsPreference::TOOLTIPS_ON);
 #endif
@@ -198,10 +194,13 @@ void MixxxMainWindow::initialize() {
     // Turn on fullscreen mode
     // if we were told to start in fullscreen mode on the command-line
     // or if the user chose to always start in fullscreen mode.
-    // Remember to refresh the Fullscreen menu item after connectMenuBar()
+    // The Fullscreen menu item is refreshed in connectMenuBar()
     bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
-    if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
+    if ((CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) &&
+            // could be we're fullscreen already after setGeomtery(previousGeometry)
+            !isFullScreen()) {
+        qWarning() << "     init: go fullscreen";
         showFullScreen();
     }
 
@@ -223,6 +222,15 @@ void MixxxMainWindow::initialize() {
             [this](int decks) {
                 for (int i = 0; i < decks; ++i) {
                     QString group = PlayerManager::groupForDeck(i);
+                    m_pVisualsManager->addDeckIfNotExist(group);
+                }
+            });
+    connect(pPlayerManager.get(),
+            &PlayerManager::numberOfSamplersChanged,
+            this,
+            [this](int decks) {
+                for (int i = 0; i < decks; ++i) {
+                    QString group = PlayerManager::groupForSampler(i);
                     m_pVisualsManager->addDeckIfNotExist(group);
                 }
             });
@@ -300,15 +308,7 @@ void MixxxMainWindow::initialize() {
 
     QWidget* oldWidget = m_pCentralWidget;
 
-    // Load default styles that can be overridden by skins
-    QFile file(":/skins/default.qss");
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray fileBytes = file.readAll();
-        QString style = QString::fromLocal8Bit(fileBytes);
-        setStyleSheet(style);
-    } else {
-        qWarning() << "Failed to load default skin styles!";
-    }
+    tryParseAndSetDefaultStyleSheet();
 
     if (!loadConfiguredSkin()) {
         reportCriticalErrorAndQuit(
@@ -398,6 +398,12 @@ void MixxxMainWindow::initialize() {
             &PlayerInfo::currentPlayingTrackChanged,
             this,
             &MixxxMainWindow::slotUpdateWindowTitle);
+
+    // Start Auto DJ if the cmdline arg is passed.
+    if (CmdlineArgs::Instance().getStartAutoDJ()) {
+        qDebug("Enabling Auto DJ from CLI flag.");
+        ControlObject::set(ConfigKey("[AutoDJ]", "enabled"), 1.0);
+    }
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -417,6 +423,11 @@ MixxxMainWindow::~MixxxMainWindow() {
         // Simply maximize the window so we can store a geometry that fits the screen.
         // Don't call slotViewFullScreen(false) (calls showNormal()) because that
         // can make the main window incl. window decoration too large for the screen.
+#ifndef __APPLE__
+        // Before, store the expected window state so eventFilter() will ignore
+        // the following QWindowChangeEvent and not recreate & re-sync the menu bar.
+        m_prevState = Qt::WindowMaximized;
+#endif
         showMaximized();
     }
     m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
@@ -484,6 +495,7 @@ MixxxMainWindow::~MixxxMainWindow() {
 }
 
 void MixxxMainWindow::initializeWindow() {
+    qWarning() << "     $ initializeWindow";
     // be sure createMenuBar() is called first
     DEBUG_ASSERT(m_pMenuBar);
 
@@ -497,7 +509,11 @@ void MixxxMainWindow::initializeWindow() {
     Pal.setColor(QPalette::Window, MenuBarBackground);
     m_pMenuBar->setPalette(Pal);
 
-    // Restore the current window state (position, maximized, etc)
+    // Restore the current window state (position, maximized, etc).
+    // This will also restore fullscreen and thereby create a seamless
+    // start if we did shut down while in fullscreen mode and with
+    // [Config],StartInFullscreen = 1
+    // (slotViewFullScreen(true) in  initialize() is a no-op then)
     restoreGeometry(QByteArray::fromBase64(
             m_pCoreServices->getSettings()
                     ->getValueString(ConfigKey("[MainWindow]", "geometry"))
@@ -536,7 +552,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
+            mixxx::DesktopHelper::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -666,6 +682,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 
 void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     QString appTitle = VersionStore::applicationName();
+    QString filePath;
 
     // If we have a track, use getInfo() to format a summary string and prepend
     // it to the title.
@@ -675,12 +692,18 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
         if (!trackInfo.isEmpty()) {
             appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
+        filePath = pTrack->getLocation();
     }
-    this->setWindowTitle(appTitle);
+    setWindowTitle(appTitle);
+
+    // Display a draggable proxy icon for the track in the title bar on
+    // platforms that support it, e.g. macOS
+    setWindowFilePath(filePath);
 }
 
 void MixxxMainWindow::createMenuBar() {
-    ScopedTimer t("MixxxMainWindow::createMenuBar");
+    qWarning() << "     $ createMenuBar";
+    ScopedTimer t(u"MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
     m_pMenuBar = make_parented<WMainMenuBar>(
             this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
@@ -693,8 +716,9 @@ void MixxxMainWindow::createMenuBar() {
 void MixxxMainWindow::connectMenuBar() {
     // This function might be invoked multiple times on startup
     // so all connections must be unique!
+    qWarning() << "     $ connectMenuBar";
 
-    ScopedTimer t("MixxxMainWindow::connectMenuBar");
+    ScopedTimer t(u"MixxxMainWindow::connectMenuBar");
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
@@ -721,7 +745,8 @@ void MixxxMainWindow::connectMenuBar() {
     connect(m_pMenuBar,
             &WMainMenuBar::showKeywheel,
             this,
-            &MixxxMainWindow::slotShowKeywheel);
+            &MixxxMainWindow::slotShowKeywheel,
+            Qt::UniqueConnection);
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -933,35 +958,21 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
+    qWarning() << "     $ slotViewFullScreen" << toggle;
     if (isFullScreen() == toggle) {
+        qWarning() << "     (no-op)";
         return;
     }
 
+    // Just switch the window state here. eventFilter() will catch the
+    // QWindowStateChangeEvent and inform the menu bar that fullscreen changed.
     if (toggle) {
+        qWarning() << "     > showFullScreen()";
         showFullScreen();
-#ifdef __LINUX__
-        // Fix for "No menu bar with ubuntu unity in full screen mode" (issues
-        // #6072 and #6689. Before touching anything here, please read
-        // those bugs.
-        // Set this attribute instead of calling setNativeMenuBar(false), see
-        // https://github.com/mixxxdj/mixxx/issues/11320
-        if (m_supportsGlobalMenuBar) {
-            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
-            createMenuBar();
-            connectMenuBar();
-        }
-#endif
     } else {
-#ifdef __LINUX__
-        if (m_supportsGlobalMenuBar) {
-            QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, false);
-            createMenuBar();
-            connectMenuBar();
-        }
-#endif
+        qWarning() << "     > showNormal()";
         showNormal();
     }
-    emit fullScreenChanged(toggle);
 }
 
 void MixxxMainWindow::slotOptionsPreferences() {
@@ -1079,7 +1090,11 @@ void MixxxMainWindow::rebootMixxxView() {
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
     bool wasFullScreen = isFullScreen();
-    slotViewFullScreen(false);
+    if (wasFullScreen) {
+        showMaximized();
+    }
+
+    tryParseAndSetDefaultStyleSheet();
 
     if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
@@ -1100,7 +1115,7 @@ void MixxxMainWindow::rebootMixxxView() {
 #endif
 
     if (wasFullScreen) {
-        slotViewFullScreen(true);
+        showFullScreen();
     } else {
         // Programmatic placement at this point is very problematic.
         // The screen() method returns stale data (primary screen)
@@ -1128,6 +1143,19 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     return m_pCentralWidget != nullptr;
 }
 
+// Try to load default styles that can be overridden by skins
+void MixxxMainWindow::tryParseAndSetDefaultStyleSheet() {
+    const QString resPath = m_pCoreServices->getSettings()->getResourcePath();
+    QFile file(resPath + "/skins/default.qss");
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray fileBytes = file.readAll();
+        QString style = QString::fromUtf8(fileBytes);
+        setStyleSheet(style);
+    } else {
+        qWarning() << "Failed to load default skin styles /skins/default.qss!";
+    }
+}
+
 bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::ToolTip) {
         // always show tooltips in the preferences window
@@ -1149,6 +1177,50 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
             default:
                 DEBUG_ASSERT(!"m_toolTipsCfg value unknown");
                 return true;
+            }
+        }
+    } else if (event->type() == QEvent::WindowStateChange) {
+#ifndef __APPLE__
+        qWarning() << "$ WindowStateChange:" << windowState();
+        if (windowState() == m_prevState) {
+            // Ignore no-op. This happens if another window is raised above
+            // MixxxMianWindow,  e.g. DlgPeferences. In such a case event->oldState()
+            // will be Qt::WindowNoState which is wrong anyway, so there is nothing
+            // to do internally.
+            qWarning() << "$ WindowStateChange IGNORE";
+            return QMainWindow::eventFilter(obj, event);
+        }
+        m_prevState = windowState();
+#endif
+        // Detect if we entered or quit fullscreen mode.
+        QWindowStateChangeEvent* changeEvent =
+                static_cast<QWindowStateChangeEvent*>(event);
+        const bool wasFullScreen = changeEvent->oldState() & Qt::WindowFullScreen;
+        const bool isFullScreenNow = windowState() & Qt::WindowFullScreen;
+        if ((isFullScreenNow && !wasFullScreen) ||
+                (!isFullScreenNow && wasFullScreen)) {
+            qWarning() << "$ fullscreen changed, now"
+                       << (isFullScreenNow ? "fullscreen" : "window");
+#ifdef __LINUX__
+            // Fix for "No menu bar with ubuntu unity in full screen mode"
+            // (issues #6072 and #6689). Before touching anything here, please
+            // read those bugs.
+            // Set this attribute instead of calling setNativeMenuBar(false),
+            // see https://github.com/mixxxdj/mixxx/issues/11320
+            if (m_supportsGlobalMenuBar) {
+                qWarning() << "$ global menu > rebuild";
+                QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
+                createMenuBar();
+                connectMenuBar();
+            }
+#endif
+            // This will toggle the Fullscreen checkbox and hide the menubar if
+            // we go fullscreen.
+            // Skip this during startup or the launchimage will be shifted
+            // up & down when the menu is shown menu and 'hidden'. The menu
+            // will be updated when the skin finished loading.
+            if (centralWidget() != m_pLaunchImage) {
+                emit fullScreenChanged(isFullScreen());
             }
         }
     }

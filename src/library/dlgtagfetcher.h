@@ -2,16 +2,18 @@
 
 #include <QDialog>
 #include <QList>
-#include <QTreeWidget>
+#include <future>
 
-#include "library/trackmodel.h"
+#include "library/export/coverartcopyworker.h"
 #include "library/ui_dlgtagfetcher.h"
 #include "musicbrainz/tagfetcher.h"
 #include "track/track_decl.h"
 #include "track/trackrecord.h"
 #include "util/parented_ptr.h"
 #include "widget/wcoverartlabel.h"
-#include "widget/wcoverartmenu.h"
+
+class QTreeWidget;
+class TrackModel;
 
 /// A dialog box to fetch track metadata from MusicBrainz.
 /// Use TrackPointer to load a track into the dialog or
@@ -48,19 +50,21 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     // Called when apply is pressed.
     void slotTrackChanged(TrackId trackId);
     void apply();
+    void applyTags();
+    void applyCover();
     void retry();
     void quit();
     void reject() override;
     void slotNext();
     void slotPrev();
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
-    void slotStartFetchCoverArt(const QList<QString>& allUrls);
-    void slotLoadBytesToLabel(const QByteArray& data);
+            const QPixmap& pixmap);
+    void slotStartFetchCoverArt(const QUuid& albumReleaseId,
+            const QList<QString>& allUrls);
+    void slotLoadFetchedCoverArt(const QUuid& albumReleaseId,
+            const QByteArray& data);
     void slotCoverArtLinkNotFound();
     void slotWorkerStarted();
     void slotWorkerAskOverwrite(const QString& coverArtAbsolutePath,
@@ -72,9 +76,12 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   private:
     // Called on population or changed via buttons Next&Prev.
     void loadTrackInternal(const TrackPointer& pTrack);
-    void addDivider(const QString& text, QTreeWidget* pParent) const;
-    void getCoverArt(const QString& url);
+    void getCoverArt(const QUuid& albumReleaseId, const QString& url);
     void loadCurrentTrackCover();
+
+    void saveCheckBoxState();
+
+    void loadPixmapToLabel(const QPixmap& pPixmap);
 
     UserSettingsPointer m_pConfig;
 
@@ -105,6 +112,8 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     Data m_data;
 
     QByteArray m_fetchedCoverArtByteArrays;
+
+    QMap<QString, QPixmap> m_coverCache;
 
     QScopedPointer<CoverArtCopyWorker> m_pWorker;
 };

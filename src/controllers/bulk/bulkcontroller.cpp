@@ -52,7 +52,7 @@ void BulkReader::run() {
     qDebug() << "Stopped Reader";
 }
 
-static QString get_string(libusb_device_handle *handle, u_int8_t id) {
+static QString get_string(libusb_device_handle* handle, uint8_t id) {
     unsigned char buf[128] = { 0 };
 
     if (id) {
@@ -172,6 +172,12 @@ int BulkController::open() {
 
     if (m_pReader != nullptr) {
         qCWarning(m_logBase) << "BulkReader already present for" << getName();
+    } else if (m_pMapping &&
+            !(m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Incoming)) {
+        qDebug() << "The mapping for the bulk device" << getName()
+                 << "doesn't require reading the data. Ignoring BulkReader "
+                    "setup.";
     } else {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
         m_pReader->setObjectName(QString("BulkReader %1").arg(getName()));
@@ -195,10 +201,12 @@ int BulkController::close() {
     qCInfo(m_logBase) << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == nullptr) {
+    if (m_pReader == nullptr &&
+            m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Incoming) {
         qCWarning(m_logBase) << "BulkReader not present for" << getName()
                              << "yet the device is open!";
-    } else {
+    } else if (m_pReader) {
         disconnect(m_pReader, &BulkReader::incomingData, this, &BulkController::receive);
         m_pReader->stop();
         qCInfo(m_logBase) << "  Waiting on reader to finish";
@@ -230,6 +238,14 @@ void BulkController::send(const QList<int>& data, unsigned int length) {
 }
 
 void BulkController::sendBytes(const QByteArray& data) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pMapping ||
+            m_pMapping->getDeviceDirection() &
+                    LegacyControllerMapping::DeviceDirection::Outgoing) {
+        qDebug() << "The mapping for the bulk device" << getName()
+                 << "doesn't require sending data. Ignoring sending request.";
+        return;
+    }
+
     int ret;
     int transferred;
 

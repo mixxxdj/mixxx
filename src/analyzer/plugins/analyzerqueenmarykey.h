@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include <QObject>
 
 #include "analyzer/plugins/analyzerplugin.h"

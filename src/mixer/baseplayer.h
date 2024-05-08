@@ -3,7 +3,7 @@
 #include <QObject>
 #include <QString>
 
-#include "mixer/playermanager.h"
+class PlayerManager;
 
 class BasePlayer : public QObject {
     Q_OBJECT

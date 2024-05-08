@@ -1,8 +1,6 @@
 #include "waveformrenderbackground.h"
-#include "waveformwidgetrenderer.h"
 
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
+#include "waveformwidgetrenderer.h"
 #include "widget/wimagestore.h"
 
 WaveformRenderBackground::WaveformRenderBackground(

@@ -1,7 +1,6 @@
 #pragma once
 
-// this also includes vorbis/codec.h
-#include <vorbis/vorbisenc.h>
+#include <vorbis/codec.h>
 
 #include <QFile>
 

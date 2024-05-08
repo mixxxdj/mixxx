@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QAction>
 #include <QList>
 #include <QMenuBar>
 #include <QObject>
@@ -9,6 +8,8 @@
 #include "control/controlproxy.h"
 #include "preferences/configobject.h"
 #include "preferences/usersettings.h"
+
+class QAction;
 
 class VisibilityControlConnection : public QObject {
     Q_OBJECT
@@ -84,7 +85,7 @@ class WMainMenuBar : public QMenuBar {
     void slotDeveloperStatsExperiment(bool enable);
     void slotDeveloperStatsBase(bool enable);
     void slotDeveloperDebugger(bool toggle);
-    void slotVisitUrl(const QString& url);
+    void slotVisitUrl(const QUrl& url);
 
   private:
     void initialize();

@@ -253,7 +253,7 @@ LPD8RK.init = function (id, debug) { // called when the device is opened & set u
     engine.softTakeover("[Sampler2]","rate",true);
 
     //set LED timer
-    LPD8RK.ledTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.setLeds()");
+    LPD8RK.ledTimer = engine.beginTimer(LPD8RK.LEDinterval, LPD8RK.setLeds);
 };
 
 LPD8RK.shutdown = function () {
@@ -263,7 +263,7 @@ LPD8RK.shutdown = function () {
 LPD8RK.resetLEDTimer = function () {
     engine.stopTimer(LPD8RK.ledTimer);
     LPD8RK.setLeds()
-    LPD8RK.ledTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.setLeds()");
+    LPD8RK.ledTimer = engine.beginTimer(LPD8RK.LEDinterval, LPD8RK.setLeds);
 };
 
 LPD8RK.setLeds = function () {
@@ -376,7 +376,7 @@ LPD8RK.reloopButton = function (channel, control, value, status, group) {
         engine.stopTimer(LPD8RK.reloopTimer);
         LPD8RK.loopbuttonDown=true;
         LPD8RK.doreloop=true;
-        LPD8RK.reloopTimer = engine.beginTimer(500, "LPD8RK.disablereloop()", true);
+        LPD8RK.reloopTimer = engine.beginTimer(500, LPD8RK.disablereloop, true);
         } else {//button was released
         LPD8RK.loopbuttonDown=false;
         if (LPD8RK.doreloop===true) {engine.setValue(group, "reloop_exit", 1);};
@@ -437,11 +437,11 @@ LPD8RK.hotcueBankDial = function (channel, control, value, status, group) {
     LPD8RK.oldHotcueBank=LPD8RK.hotcueBank;
     //set timer to clear old bank number after 500 msec, so bank indicator light will light up
     engine.stopTimer(LPD8RK.oldbanktimer);
-    LPD8RK.oldbanktimer = engine.beginTimer(500, "LPD8RK.resetOldBank()", true);
+    LPD8RK.oldbanktimer = engine.beginTimer(500, LPD8RK.resetOldBank, true);
 
     //set timer to restart LED updates in 500 msec
     engine.stopTimer(LPD8RK.LEDPauseTimer);
-    LPD8RK.LEDPauseTimer = engine.beginTimer(LPD8RK.LEDinterval, "LPD8RK.resetLEDTimer()", true);
+    LPD8RK.LEDPauseTimer = engine.beginTimer(LPD8RK.LEDinterval, LPD8RK.resetLEDTimer, true);
     };
 
 LPD8RK.looplenDial = function (channel, control, value, status, group) {
@@ -493,7 +493,7 @@ LPD8RK.beatjump = function (channel, control, value, status, group) {
     var numbeats = LPD8RK.beatjumpstep;
     var backseconds = numbeats*(1/(engine.getValue(group, "bpm")/60));
     var backsamples = backseconds*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
-    var newpos = curpos-(backsamples+engine.getValue("Master", "latency"));
+    var newpos = curpos-(backsamples+engine.getValue("[App]", "output_latency_ms"));
 
     if (LPD8RK.debug){print("backseconds: "+backseconds);}
     if (LPD8RK.debug){print("backsamples: "+backsamples);}

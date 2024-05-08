@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QLabel>
-
 #include "widget/wlabel.h"
 #include "control/controlproxy.h"
 

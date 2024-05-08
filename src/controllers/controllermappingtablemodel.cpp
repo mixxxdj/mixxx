@@ -1,5 +1,6 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "library/searchqueryparser.h"
 #include "moc_controllermappingtablemodel.cpp"
 

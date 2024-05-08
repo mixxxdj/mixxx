@@ -1,19 +1,22 @@
 #include "preferences/dialog/dlgpreferences.h"
 
-#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
 #include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
+#include <QtGlobal>
 
 #include "controllers/dlgprefcontrollers.h"
+#include "library/library.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
+#include "util/color/color.h"
+#include "util/desktophelper.h"
+#include "util/widgethelper.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -25,9 +28,7 @@
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefinterface.h"
 #include "preferences/dialog/dlgprefmixer.h"
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include "preferences/dialog/dlgprefwaveform.h"
-#endif
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
@@ -42,11 +43,9 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif // __MODPLUG__
 
-#include "controllers/controllermanager.h"
-#include "library/library.h"
-#include "library/trackcollectionmanager.h"
-#include "util/color/color.h"
-#include "util/widgethelper.h"
+#ifdef Q_OS_MACOS
+#include "util/darkappearance.h"
+#endif
 
 DlgPreferences::DlgPreferences(
         std::shared_ptr<mixxx::ScreensaverManager> pScreensaverManager,
@@ -61,6 +60,7 @@ DlgPreferences::DlgPreferences(
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
+    fixSliderStyle();
     contentsTreeWidget->setHeaderHidden(true);
 
     // Add '&' to default button labels to always have Alt shortcuts, indpependent
@@ -153,7 +153,6 @@ DlgPreferences::DlgPreferences(
             tr("Interface"),
             "ic_preferences_interface.svg");
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // ugly proxy for determining whether this is being instantiated for QML or legacy QWidgets GUI
     if (pSkinLoader) {
         DlgPrefWaveform* pWaveformPage = new DlgPrefWaveform(this, m_pConfig, pLibrary);
@@ -168,7 +167,6 @@ DlgPreferences::DlgPreferences(
                 &DlgPreferences::reloadUserInterface,
                 Qt::DirectConnection);
     }
-#endif
 
     addPageWidget(PreferencesPage(
                           new DlgPrefColors(this, m_pConfig, pLibrary),
@@ -296,16 +294,16 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
         return;
     }
 
-    for (PreferencesPage page : qAsConst(m_allPages)) {
+    for (PreferencesPage page : std::as_const(m_allPages)) {
         if (pCurrent == page.pTreeItem) {
-            switchToPage(page.pDlg);
+            switchToPage(pCurrent->text(0), page.pDlg);
             break;
         }
     }
 }
 
 void DlgPreferences::showSoundHardwarePage() {
-    switchToPage(m_soundPage.pDlg);
+    switchToPage(m_soundPage.pTreeItem->text(0), m_soundPage.pDlg);
     contentsTreeWidget->setCurrentItem(m_soundPage.pTreeItem);
 }
 
@@ -421,12 +419,10 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         }
         break;
     case QDialogButtonBox::ApplyRole:
-        // Only apply settings on the current page.
-        if (pCurrentPage) {
-            pCurrentPage->slotApply();
-        }
+        emit applyPreferences();
         break;
     case QDialogButtonBox::AcceptRole:
+        // Same as Apply but close the dialog
         emit applyPreferences();
         accept();
         break;
@@ -438,7 +434,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
         if (pCurrentPage) {
             QUrl helpUrl = pCurrentPage->helpUrl();
             DEBUG_ASSERT(helpUrl.isValid());
-            QDesktopServices::openUrl(helpUrl);
+            mixxx::DesktopHelper::openUrl(helpUrl);
         }
         break;
     default:
@@ -502,7 +498,16 @@ void DlgPreferences::expandTreeItem(QTreeWidgetItem* pItem) {
     contentsTreeWidget->expandItem(pItem);
 }
 
-void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
+void DlgPreferences::switchToPage(const QString& pageTitle, DlgPreferencePage* pWidget) {
+#ifdef __APPLE__
+    // According to Apple's Human Interface Guidelines, settings dialogs have to
+    // "Update the window’s title to reflect the currently visible pane."
+    // This also solves the problem of the changed in terminology, Settings instead
+    // of Preferences, since macOS Ventura.
+    setWindowTitle(pageTitle);
+#else
+    Q_UNUSED(pageTitle);
+#endif
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 
     QPushButton* pButton = buttonBox->button(QDialogButtonBox::Help);
@@ -563,4 +568,55 @@ QRect DlgPreferences::getDefaultGeometry() {
     optimumRect.setSize(optimumSize);
 
     return optimumRect;
+}
+
+void DlgPreferences::fixSliderStyle() {
+#ifdef Q_OS_MACOS
+    // Only used on macOS where the default slider style has several issues:
+    // - the handle is semi-transparent
+    // - the slider is higher than the space we give it, which causes that:
+    //   - the groove is not correctly centered vertically
+    //   - the handle is cut off at the top
+    // The style below is based on sliders in the macOS system settings dialogs.
+    if (darkAppearance()) {
+        setStyleSheet(R"--(
+QSlider::handle:horizontal {
+    background-color: #8f8c8b; 
+    border-radius: 4px;
+    width: 8px;
+    margin: -8px;
+} 
+QSlider::handle:horizontal::pressed {
+    background-color: #a9a7a7;
+}
+QSlider::groove:horizontal {
+    background: #1e1e1e; 
+    height: 4px;
+    border-radius: 2px;
+    margin-left: 8px; 
+    margin-right: 8px;
+}
+)--");
+    } else {
+        setStyleSheet(R"--(
+QSlider::handle:horizontal {
+    background-color: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #d4d3d3;
+    width: 7px;
+    margin: -8px;
+}
+QSlider::handle:horizontal::pressed {
+    background-color: #ececec;
+}
+QSlider::groove:horizontal {
+    background: #c6c5c5;
+    height: 4px;
+    border-radius: 2px;
+    margin-left: 8px;
+    margin-right: 8px;
+}
+)--");
+    }
+#endif // __APPLE__
 }

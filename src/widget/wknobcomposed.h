@@ -1,13 +1,7 @@
 #pragma once
 
-#include <QMouseEvent>
-#include <QPaintEvent>
-#include <QWheelEvent>
-#include <QWidget>
-
 #include "skin/legacy/skincontext.h"
 #include "widget/knobeventhandler.h"
-#include "widget/wimagestore.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wwidget.h"
 

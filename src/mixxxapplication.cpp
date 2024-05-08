@@ -3,6 +3,7 @@
 #include <QThreadPool>
 #include <QTouchEvent>
 #include <QtDebug>
+#include <QtGlobal>
 
 #include "audio/frame.h"
 #include "audio/types.h"
@@ -22,17 +23,25 @@
 // https://doc.qt.io/qt-5/plugins-howto.html#details-of-linking-static-plugins
 #ifdef QT_STATIC
 #include <QtPlugin>
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WASM)
+Q_IMPORT_PLUGIN(QWasmIntegrationPlugin)
+#elif defined(Q_OS_WIN)
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+#elif defined(Q_OS_IOS)
+Q_IMPORT_PLUGIN(QIOSIntegrationPlugin)
 #elif defined(Q_OS_MACOS)
 Q_IMPORT_PLUGIN(QCocoaIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMacStylePlugin)
+#elif defined(Q_OS_LINUX)
+Q_IMPORT_PLUGIN(QXcbIntegrationPlugin)
 #else
 #error "Q_IMPORT_PLUGIN() for the current patform is missing"
 #endif
+#if !defined(Q_OS_WASM)
 Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin)
 Q_IMPORT_PLUGIN(QMinimalIntegrationPlugin)
+#endif
 
 Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
@@ -127,7 +136,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
     // events.
     switch (event->type()) {
     case QEvent::MouseButtonPress: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 touchIsRightButton()) {
@@ -154,7 +164,8 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         break;
     }
     case QEvent::MouseButtonRelease: {
-        QMouseEventEditable* mouseEvent = static_cast<QMouseEventEditable*>(event);
+        QMouseEventEditable* mouseEvent =
+                static_cast<QMouseEventEditable*>(event); // clazy:exclude=wrong-qevent-cast
         if (mouseEvent->source() == Qt::MouseEventSynthesizedByQt &&
                 mouseEvent->button() == Qt::LeftButton &&
                 m_rightPressedButtons > 0) {

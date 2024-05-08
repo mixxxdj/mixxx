@@ -562,7 +562,6 @@ class LaunchpadImporter:
         ):
             gh_issue_number = issuedata.get("gh_issue_number")
             if gh_issue_number:
-
                 issue_milestone = issuedata["milestone"]
 
                 if (
@@ -631,7 +630,7 @@ class LaunchpadImporter:
             lp_issues[issuedata["id"]]["gh_status_comment_imported"] = True
             self.logger.info(
                 f"Imported {i}/{num_issues} "
-                f"({'{:.2f}'.format((i/num_issues)*100)}%)"
+                f"({'{:.2f}'.format((i / num_issues) * 100)}%)"
             )
 
         for issuedata in sorted(

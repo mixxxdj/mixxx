@@ -623,8 +623,8 @@ void SampleUtil::addMonoToStereo(CSAMPLE* M_RESTRICT pDest,
 void SampleUtil::stripMultiToStereo(
         CSAMPLE* pBuffer,
         SINT numFrames,
-        int numChannels) {
-    DEBUG_ASSERT(numChannels > 2);
+        mixxx::audio::ChannelCount numChannels) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pBuffer[i * 2] = pBuffer[i * numChannels];
@@ -637,15 +637,14 @@ void SampleUtil::copyMultiToStereo(
         CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc,
         SINT numFrames,
-        int numChannels) {
-    DEBUG_ASSERT(numChannels > 2);
+        mixxx::audio::ChannelCount numChannels) {
+    DEBUG_ASSERT(numChannels > mixxx::audio::ChannelCount::stereo());
     // forward loop
     for (SINT i = 0; i < numFrames; ++i) {
         pDest[i * 2] = pSrc[i * numChannels];
         pDest[i * 2 + 1] = pSrc[i * numChannels + 1];
     }
 }
-
 
 // static
 void SampleUtil::reverse(CSAMPLE* pBuffer, SINT numSamples) {

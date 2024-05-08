@@ -5,7 +5,7 @@
     <SingletonDefinition>
       <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
       <Children>
-        <Template src="skin:/decks/spinny_coverart.xml"/>
+        <Template src="skins:LateNight/decks/spinny_coverart.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -13,7 +13,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview<Variable name="ChanNum"/></ObjectName>
       <Children>
-        <Template src="skin:/decks/overview.xml">
+        <Template src="skins:LateNight/decks/overview.xml">
           <SetVariable name="OverviewFontSize"><Variable name="OverviewFontSizeDeck"/></SetVariable>
         </Template>
       </Children>
@@ -22,14 +22,14 @@
     <SingletonDefinition>
       <ObjectName>DeckSettings<Variable name="ChanNum"/></ObjectName>
       <Children>
-        <Template src="skin:/decks/deck_settings.xml"/>
+        <Template src="skins:LateNight/decks/deck_settings.xml"/>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
       <ObjectName>KeyControls<Variable name="ChanNum"/></ObjectName>
       <Children>
-        <Template src="skin:/decks/key_controls.xml"/>
+        <Template src="skins:LateNight/decks/key_controls.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -96,7 +96,7 @@
     <SingletonDefinition>
       <ObjectName>Deck<Variable name="ChanNum"/>_Mini</ObjectName>
       <Children>
-        <Template src="skin:/decks/deck_mini.xml"/>
+        <Template src="skins:LateNight/decks/deck_mini.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -104,7 +104,7 @@
     <SingletonDefinition>
       <ObjectName>Deck<Variable name="ChanNum"/>_Compact</ObjectName>
       <Children>
-        <Template src="skin:/decks/deck_compact.xml"/>
+        <Template src="skins:LateNight/decks/deck_compact.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -112,7 +112,7 @@
     <SingletonDefinition>
       <ObjectName>Deck<Variable name="ChanNum"/>_Full</ObjectName>
       <Children>
-        <Template src="skin:/decks/deck_full.xml"/>
+        <Template src="skins:LateNight/decks/deck_full.xml"/>
       </Children>
   </SingletonDefinition>
 </Template>

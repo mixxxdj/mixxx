@@ -1,6 +1,6 @@
 #pragma once
 
-#include "effects/presets/effectpreset.h"
+#include "effects/backends/effectsbackendmanager.h"
 #include "preferences/usersettings.h"
 
 /// EffectPresetManager loads and saves default EffectPresets for each type of

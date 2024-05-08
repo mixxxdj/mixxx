@@ -1,0 +1,81 @@
+<!--
+  Description:
+    A stereo meter for the Main VU level
+
+  Variables:
+    Group
+    ChannelType   channel | sampler | microphone | ...
+    StyleScheme
+    VuSize        deck | sampler | small
+    VuColor       dark | light
+            (in PaleMoon theme the Vu meters are different
+             in mixer or 'standalone' in between compact decks)
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VuMeterBoxMain</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <!-- Left -->
+      <WidgetGroup>
+        <ObjectName>VuMeterBoxMainSingle</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <StatusLight>
+            <TooltipId>main_peak_indicator_left</TooltipId>
+            <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
+            <Connection>
+              <ConfigKey>[Main],peak_indicator_left</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId>main_VuMeterL</TooltipId>
+            <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Main],vu_meter_left</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup><!-- VuMeterBoxMainSingle -->
+      <!-- Right -->
+      <WidgetGroup>
+        <ObjectName>VuMeterBoxMainSingle</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <StatusLight>
+            <TooltipId>main_peak_indicator_right</TooltipId>
+            <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathStatusLight>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_clipping_active.png</PathStatusLight>
+            <Connection>
+              <ConfigKey>[Main],peak_indicator_right</ConfigKey>
+            </Connection>
+          </StatusLight>
+          <VuMeter>
+            <TooltipId>main_VuMeterR</TooltipId>
+            <PathBack>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_bg_<Variable name="VuColor"/>.png</PathBack>
+            <PathVu>skins:LateNight/<Variable name="StyleScheme"/>/style/vu_deck_level_active.png</PathVu>
+            <Horizontal>false</Horizontal>
+            <PeakHoldSize>5</PeakHoldSize>
+            <PeakHoldTime>500</PeakHoldTime>
+            <PeakFallTime>50</PeakFallTime>
+            <PeakFallStep>2</PeakFallStep>
+            <Connection>
+              <ConfigKey>[Main],vu_meter_right</ConfigKey>
+            </Connection>
+          </VuMeter>
+        </Children>
+      </WidgetGroup><!-- VuMeterBoxMainSingle -->
+      <!-- Right -->
+    </Children>
+  </WidgetGroup><!-- VuMeterBoxMain -->
+</Template>

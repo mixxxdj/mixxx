@@ -15,21 +15,21 @@ class mixxx::TextureShader final : public mixxx::Shader {
     int matrixLocation() const {
         return m_matrixLocation;
     }
-    int samplerLocation() const {
-        return m_samplerLocation;
-    }
     int positionLocation() const {
         return m_positionLocation;
     }
     int texcoordLocation() const {
         return m_texcoordLocation;
     }
+    int textureLocation() const {
+        return m_textureLocation;
+    }
 
   private:
     int m_matrixLocation;
-    int m_samplerLocation;
     int m_positionLocation;
     int m_texcoordLocation;
+    int m_textureLocation;
 
     DISALLOW_COPY_AND_ASSIGN(TextureShader)
 };

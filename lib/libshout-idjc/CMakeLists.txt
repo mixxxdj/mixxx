@@ -40,15 +40,15 @@ target_compile_definitions(${PROJECT_NAME}
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
 if(MSVC)
   if(WARNINGS_PEDANTIC)
-    target_compile_options(${PROJECT_NAME} PUBLIC /W4)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4)
   else()
-    target_compile_options(${PROJECT_NAME} PUBLIC /W3)
-    target_compile_definitions(${PROJECT_NAME} PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W3)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS _WINSOCK_DEPRECATED_NO_WARNINGS)
   endif()
 else()
-  target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Wextra $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual> -Wfloat-conversion -Werror=return-type -Wno-unused-parameter)
+  target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra $<$<COMPILE_LANGUAGE:CXX>:-Woverloaded-virtual> -Wfloat-conversion -Werror=return-type -Wno-unused-parameter)
   if(WARNINGS_PEDANTIC)
-    target_compile_options(${PROJECT_NAME} PUBLIC -pedantic)
+    target_compile_options(${PROJECT_NAME} PRIVATE -pedantic)
   endif()
 endif()
 
@@ -72,7 +72,7 @@ else()
     if (NOT CMAKE_USE_PTHREADS_INIT)
         message (FATAL_ERROR "Building ${PROJECT_NAME} requires the pthread library and its development heraders")
     endif ()
-    target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads)
+    target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 endif()
 
 # Configure shout.h
@@ -83,10 +83,10 @@ configure_file(include/shoutidjc/shout.h.in "${CMAKE_CURRENT_BINARY_DIR}/include
 # Required system dependencies
 # Ogg Vorbis
 find_package(Ogg REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC Ogg::ogg)
+target_link_libraries(${PROJECT_NAME} PRIVATE Ogg::ogg)
 
 find_package(Vorbis REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC Vorbis::vorbis Vorbis::vorbisenc)
+target_link_libraries(${PROJECT_NAME} PRIVATE Vorbis::vorbis Vorbis::vorbisenc)
 
 # OpenSSL
 find_package(OpenSSL REQUIRED)
@@ -201,8 +201,7 @@ endif()
 
 check_include_file(unistd.h HAVE_UNISTD_H)
 if(HAVE_UNISTD_H)
-    # PUBLIC because it is also used in the header file
-    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_UNISTD_H)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_UNISTD_H)
 endif()
 
 check_include_file(poll "poll.h" HAVE_POLL)
@@ -212,8 +211,7 @@ endif()
 
 check_include_file(winsock2.h HAVE_WINSOCK2_H)
 if(HAVE_WINSOCK2_H)
-    # PUBLIC because it is also used in the header file
-    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_WINSOCK2_H)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_WINSOCK2_H)
 
     check_symbol_exists(endhostent "winsock2.h;ws2tcpip.h" HAVE_ENDHOSTENT)
     check_symbol_exists(getaddrinfo "winsock2.h;ws2tcpip.h" HAVE_GETADDRINFO)
@@ -237,12 +235,10 @@ if(HAVE_GETNAMEINFO)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_GETNAMEINFO)
 endif()
 if(HAVE_INET_ATON)
-    # PUBLIC because it is also used in the header file
-    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_INET_ATON)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_INET_ATON)
 endif()
 if(HAVE_INET_PTON)
-    # PUBLIC because it is also used in the header file
-    target_compile_definitions(${PROJECT_NAME} PUBLIC HAVE_INET_PTON)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_INET_PTON)
 endif()
 if(HAVE_SETHOSTENT)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_SETHOSTENT)

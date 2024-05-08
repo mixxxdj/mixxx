@@ -4,7 +4,7 @@
     A VU meter.
   Variables:
     group: The group for the controls.
-    side: The stereo channel to monitor: L or R
+    side: The stereo channel to monitor: left or right
     tooltip_meter: The tooltip id for the vu-meter.
     tooltip_clip: The tooltip id for the clip indicator.
 -->
@@ -20,7 +20,7 @@
             <Size>8f,8f</Size>
             <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
             <Connection>
-                <ConfigKey><Variable name="group"/>,PeakIndicator<Variable name="side"/></ConfigKey>
+                <ConfigKey><Variable name="group"/>,peak_indicator<Variable name="side"/></ConfigKey>
             </Connection>
           </StatusLight>
 
@@ -44,7 +44,7 @@
                     <PeakFallTime>20</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeter<Variable name="side"/></ConfigKey>
+                      <ConfigKey><Variable name="group"/>,vu_meter<Variable name="side"/></ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>
@@ -73,7 +73,7 @@
                     <PeakFallTime>20</PeakFallTime>
                     <PeakFallStep>1</PeakFallStep>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,VuMeter<Variable name="side"/></ConfigKey>
+                      <ConfigKey><Variable name="group"/>,vu_meter<Variable name="side"/></ConfigKey>
                     </Connection>
                   </VuMeter>
                 </Children>

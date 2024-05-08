@@ -1,10 +1,9 @@
 #include "widget/tooltipqopengl.h"
 
 #include <QStyle>
-#include <QTimer>
 #include <QToolTip>
-#include <memory>
 
+#include "moc_tooltipqopengl.cpp"
 #include "widget/wglwidget.h"
 
 ToolTipQOpenGL::ToolTipQOpenGL()

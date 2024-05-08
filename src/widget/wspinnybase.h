@@ -1,26 +1,22 @@
 #pragma once
 
-#include <QEvent>
-#include <QHideEvent>
-#include <QShowEvent>
-
-#include "library/dlgcoverartfullsize.h"
-#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
-#include "skin/legacy/skincontext.h"
 #include "track/track_decl.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wglwidget.h"
-#include "widget/wwidget.h"
 
 class ConfigKey;
 class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
+class QDomNode;
+class SkinContext;
+class BaseTrackPlayer;
+class DlgCoverArtFullSize;
 
 class WSpinnyBase : public WGLWidget,
                     public WBaseWidget,
@@ -36,6 +32,10 @@ class WSpinnyBase : public WGLWidget,
     ~WSpinnyBase() override;
 
     void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) override;
+
+    virtual void setupVinylSignalQuality() = 0;
+    virtual void updateVinylSignalQualityImage(
+            const QColor& qual_color, const unsigned char* data) = 0;
 
     void setup(const QDomNode& node,
             const SkinContext& context,
@@ -55,11 +55,9 @@ class WSpinnyBase : public WGLWidget,
 
   protected slots:
     void slotCoverFound(
-            const QObject* pRequestor,
+            const QObject* pRequester,
             const CoverInfo& coverInfo,
-            const QPixmap& pixmap,
-            mixxx::cache_key_t requestedCacheKey,
-            bool coverInfoUpdated);
+            const QPixmap& pixmap);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
@@ -87,6 +85,8 @@ class WSpinnyBase : public WGLWidget,
     double calculatePositionFromAngle(double angle);
 
     void setLoadedCover(const QPixmap& pixmap);
+
+    bool shouldDrawVinylQuality() const;
 
   private:
     virtual void draw() = 0;
@@ -130,7 +130,7 @@ class WSpinnyBase : public WGLWidget,
     int m_iVinylInput;
     bool m_bVinylActive;
     bool m_bSignalActive;
-    QImage m_qImage;
+    bool m_bDrawVinylSignalQuality;
     int m_iVinylScopeSize;
 
     float m_fAngle; // Degrees

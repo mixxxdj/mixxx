@@ -1,8 +1,11 @@
 #include "util/battery/batterywindows.h"
 
 #include <windows.h>
+
 #include <QDebug>
 #include <QString>
+
+#include "moc_batterywindows.cpp"
 
 BatteryWindows::BatteryWindows(QObject* pParent)
         : Battery(pParent) {

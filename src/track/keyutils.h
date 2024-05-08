@@ -1,13 +1,15 @@
 #pragma once
 
+#include <QList>
 #include <QMutex>
 #include <QString>
-#include <QList>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "proto/keys.pb.h"
 #include "track/keys.h"
 #include "util/math.h"
+#include "util/types.h"
 
 class KeyUtils {
   public:
@@ -20,6 +22,17 @@ class KeyUtils {
         OpenKeyAndTraditional = 5,
         LancelotAndTraditional = 6,
         NumKeyNotations = 7
+    };
+
+    enum class ScaleMode {
+        Ionian = 0,     // standard major
+        Aeolian = 1,    // natural minor
+        Lydian = 2,     // major with raised 4th
+        Mixolydian = 3, // major with lowered 7th
+        Dorian = 4,     // minor with raised 6th
+        Phrygian = 5,   // minor with lowered 2nd
+        Locrian = 6,    // minor with lowered 2nd and 7th
+        Unknown = 7
     };
 
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
@@ -79,7 +92,9 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(
-        const KeyChangeList& key_changes, int iTotalSamples, int iSampleRate);
+            const KeyChangeList& key_changes,
+            SINT totalFrames,
+            mixxx::audio::SampleRate sampleRate);
 
     static void setNotation(
         const QMap<mixxx::track::io::key::ChromaticKey, QString>& notation);

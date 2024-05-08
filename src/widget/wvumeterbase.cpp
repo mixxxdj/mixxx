@@ -1,5 +1,6 @@
 #include "widget/wvumeterbase.h"
 
+#include "skin/legacy/skincontext.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/widgethelper.h"
@@ -75,6 +76,15 @@ void WVuMeterBase::setup(const QDomNode& node, const SkinContext& context) {
     m_iPeakFallTime = context.selectInt(node, "PeakFallTime");
     if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
+    }
+
+    if (height() < 2 || width() < 2) {
+        // This triggers a QT bug and displays a white widget instead.
+        // We warn here, because the skin designer may not use the affected mode.
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("VuMeterBase needs to have 2 pixel in all "
+                               "extents to be visible on all targets."));
     }
 
     setFocusPolicy(Qt::NoFocus);
@@ -171,7 +181,7 @@ void WVuMeterBase::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    ScopedTimer t("WVuMeterBase::render");
+    ScopedTimer t(u"WVuMeterBase::render");
 
     updateState(vSyncThread->sinceLastSwap());
 

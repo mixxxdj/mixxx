@@ -3,13 +3,10 @@
 #include "track/track.h"
 #include "util/math.h"
 #include "waveform/renderers/allshader/matrixforwidgetgeometry.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/widgets/allshader/waveformwidget.h"
-#include "widget/wskincolor.h"
-#include "widget/wwidget.h"
 
-using namespace allshader;
+namespace allshader {
 
 namespace {
 inline float math_pow2(float x) {
@@ -20,9 +17,6 @@ inline float math_pow2(float x) {
 WaveformRendererLRRGB::WaveformRendererLRRGB(
         WaveformWidgetRenderer* waveformWidget)
         : WaveformRendererSignalBase(waveformWidget) {
-}
-
-WaveformRendererLRRGB::~WaveformRendererLRRGB() {
 }
 
 void WaveformRendererLRRGB::onSetup(const QDomNode& node) {
@@ -58,26 +52,26 @@ void WaveformRendererLRRGB::paintGL() {
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     const int length = static_cast<int>(m_waveformRenderer->getLength() * devicePixelRatio);
 
-    // Not multiplying with devicePixelRatio will also work. In that case, on
-    // High-DPI-Display the lines will be devicePixelRatio pixels wide (which is
-    // also what is used for the beat grid and the markers), or in other words
-    // each block of samples is represented by devicePixelRatio pixels (width).
+    // See waveformrenderersimple.cpp for a detailed explanation of the frame and index calculation
+    const int visualFramesSize = dataSize / 2;
+    const double firstVisualFrame =
+            m_waveformRenderer->getFirstDisplayedPosition() * visualFramesSize;
+    const double lastVisualFrame =
+            m_waveformRenderer->getLastDisplayedPosition() * visualFramesSize;
 
-    const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
-    const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-
-    // Represents the # of waveform data points per horizontal pixel.
+    // Represents the # of visual frames per horizontal pixel.
     const double visualIncrementPerPixel =
-            (lastVisualIndex - firstVisualIndex) / static_cast<double>(length);
+            (lastVisualFrame - firstVisualFrame) / static_cast<double>(length);
 
     // Per-band gain from the EQ knobs.
     float allGain(1.0), lowGain(1.0), midGain(1.0), highGain(1.0);
-    getGains(&allGain, &lowGain, &midGain, &highGain);
+    // applyCompensation = false, as we scale to match filtered.all
+    getGains(&allGain, false, &lowGain, &midGain, &highGain);
 
     const float breadth = static_cast<float>(m_waveformRenderer->getBreadth()) * devicePixelRatio;
     const float halfBreadth = breadth / 2.0f;
 
-    const float heightFactorAbs = allGain * halfBreadth / std::sqrt(3.f * 256.f * 256.f);
+    const float heightFactorAbs = allGain * halfBreadth / m_maxValue;
     const float heightFactor[2] = {-heightFactorAbs, heightFactorAbs};
 
     const float low_r = static_cast<float>(m_rgbLowColor_r);
@@ -90,18 +84,18 @@ void WaveformRendererLRRGB::paintGL() {
     const float mid_b = static_cast<float>(m_rgbMidColor_b);
     const float high_b = static_cast<float>(m_rgbHighColor_b);
 
-    // Effective visual index of x
-    double xVisualSampleIndex = firstVisualIndex;
+    // Effective visual frame for x
+    double xVisualFrame = qRound(firstVisualFrame / visualIncrementPerPixel) *
+            visualIncrementPerPixel;
 
     const int numVerticesPerLine = 6; // 2 triangles
 
-    const int linesReserved = numVerticesPerLine * (length * 2 + 1);
-    const int colorsReserved = numVerticesPerLine * (length * 2 + 1);
+    const int reserved = numVerticesPerLine * (length * 2 + 1);
 
     m_vertices.clear();
-    m_vertices.reserve(linesReserved);
+    m_vertices.reserve(reserved);
     m_colors.clear();
-    m_colors.reserve(colorsReserved);
+    m_colors.reserve(reserved);
 
     m_vertices.addRectangle(0.f,
             halfBreadth - 0.5f * devicePixelRatio,
@@ -112,79 +106,78 @@ void WaveformRendererLRRGB::paintGL() {
             static_cast<float>(m_axesColor_g),
             static_cast<float>(m_axesColor_b));
 
+    const double maxSamplingRange = visualIncrementPerPixel / 2.0;
+
     for (int pos = 0; pos < length; ++pos) {
-        // Our current pixel (x) corresponds to a number of visual samples
-        // (visualSamplerPerPixel) in our waveform object. We take the max of
-        // all the data points on either side of xVisualSampleIndex within a
-        // window of 'maxSamplingRange' visual samples to measure the maximum
-        // data point contained by this pixel.
-        double maxSamplingRange = visualIncrementPerPixel / 2.0;
+        const int visualFrameStart = std::lround(xVisualFrame - maxSamplingRange);
+        const int visualFrameStop = std::lround(xVisualFrame + maxSamplingRange);
 
-        // Since xVisualSampleIndex is in visual-samples (e.g. R,L,R,L) we want
-        // to check +/- maxSamplingRange frames, not samples. To do this, divide
-        // xVisualSampleIndex by 2. Since frames indices are integers, we round
-        // to the nearest integer by adding 0.5 before casting to int.
-        int visualFrameStart = int(xVisualSampleIndex / 2.0 - maxSamplingRange + 0.5);
-        int visualFrameStop = int(xVisualSampleIndex / 2.0 + maxSamplingRange + 0.5);
-        const int lastVisualFrame = dataSize / 2 - 1;
-
-        // We now know that some subset of [visualFrameStart, visualFrameStop]
-        // lies within the valid range of visual frames. Clamp
-        // visualFrameStart/Stop to within [0, lastVisualFrame].
-        visualFrameStart = math_clamp(visualFrameStart, 0, lastVisualFrame);
-        visualFrameStop = math_clamp(visualFrameStop, 0, lastVisualFrame);
-
-        int visualIndexStart = visualFrameStart * 2;
-        int visualIndexStop = visualFrameStop * 2;
-
-        visualIndexStart = std::max(visualIndexStart, 0);
-        visualIndexStop = std::min(visualIndexStop, dataSize);
+        const int visualIndexStart = std::max(visualFrameStart * 2, 0);
+        const int visualIndexStop =
+                std::min(std::max(visualFrameStop, visualFrameStart + 1) * 2, dataSize - 1);
 
         const float fpos = static_cast<float>(pos);
 
         for (int chn = 0; chn < 2; chn++) {
-            float maxLow{};
-            float maxMid{};
-            float maxHigh{};
-            float maxAll{};
-
+            // Find the max values for low, mid, high and all in the waveform data
+            uchar u8maxLow{};
+            uchar u8maxMid{};
+            uchar u8maxHigh{};
+            uchar u8maxAll{};
             // data is interleaved left / right
             for (int i = visualIndexStart + chn; i < visualIndexStop + chn; i += 2) {
                 const WaveformData& waveformData = data[i];
 
-                const float filteredLow = static_cast<float>(waveformData.filtered.low);
-                const float filteredMid = static_cast<float>(waveformData.filtered.mid);
-                const float filteredHigh = static_cast<float>(waveformData.filtered.high);
-
-                maxLow = math_max(maxLow, filteredLow);
-                maxMid = math_max(maxMid, filteredMid);
-                maxHigh = math_max(maxHigh, filteredHigh);
-
-                const float all = math_pow2(filteredLow) * lowGain +
-                        math_pow2(filteredMid) * midGain +
-                        math_pow2(filteredHigh) * highGain;
-                maxAll = math_max(maxAll, all);
+                u8maxLow = math_max(u8maxLow, waveformData.filtered.low);
+                u8maxMid = math_max(u8maxMid, waveformData.filtered.mid);
+                u8maxHigh = math_max(u8maxHigh, waveformData.filtered.high);
+                u8maxAll = math_max(u8maxAll, waveformData.filtered.all);
             }
 
+            // Cast to float
+            float maxLow = static_cast<float>(u8maxLow);
+            float maxMid = static_cast<float>(u8maxMid);
+            float maxHigh = static_cast<float>(u8maxHigh);
+            float maxAll = static_cast<float>(u8maxAll);
+            // Uncomment to undo scaling with pow(value, 2.0f * 0.316f) done in analyzerwaveform.h
+            // float maxAll = unscale(u8maxAll);
+
+            // Calculate the squared magnitude of the maxLow, maxMid and maxHigh values.
+            // We take the square root to get the magnitude below.
+            const float sum = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
+
+            // Apply the gains
             maxLow *= lowGain;
             maxMid *= midGain;
             maxHigh *= highGain;
 
+            // Calculate the squared magnitude of the gained maxLow, maxMid and maxHigh values
+            // We take the square root to get the magnitude below.
+            const float sumGained = math_pow2(maxLow) + math_pow2(maxMid) + math_pow2(maxHigh);
+
+            // The maxAll value will be used to draw the amplitude. We scale them according to
+            // magnitude of the gained maxLow, maxMid and maxHigh values
+            if (sum != 0.f) {
+                // magnitude = sqrt(sum) and magnitudeGained = sqrt(sumGained), and
+                // factor = magnitudeGained / magnitude, but we can do with a single sqrt:
+                const float factor = std::sqrt(sumGained / sum);
+                maxAll *= factor;
+            }
+
+            // Use the gained maxLow, maxMid and maxHigh values to calculate the color components
             float red = maxLow * low_r + maxMid * mid_r + maxHigh * high_r;
             float green = maxLow * low_g + maxMid * mid_g + maxHigh * high_g;
             float blue = maxLow * low_b + maxMid * mid_b + maxHigh * high_b;
 
-            const float max = math_max3(red, green, blue);
-
-            // Normalize red, green, blue, using the maximum of the three
-
-            if (max == 0.f) {
-                // avoid division by 0
+            // Normalize the color components using the maximum of the three
+            const float maxComponent = math_max3(red, green, blue);
+            if (maxComponent == 0.f) {
+                // Avoid division by 0
                 red = 0.f;
                 green = 0.f;
                 blue = 0.f;
             } else {
-                const float normFactor = 1.f / max;
+                const float normFactor = 1.f / maxComponent;
                 red *= normFactor;
                 green *= normFactor;
                 blue *= normFactor;
@@ -196,21 +189,21 @@ void WaveformRendererLRRGB::paintGL() {
             m_vertices.addRectangle(fpos - 0.5f,
                     halfBreadth,
                     fpos + 0.5f,
-                    halfBreadth + heightFactor[chn] * std::sqrt(maxAll));
+                    halfBreadth + heightFactor[chn] * maxAll);
             m_colors.addForRectangle(red, green, blue);
         }
 
-        xVisualSampleIndex += visualIncrementPerPixel;
+        xVisualFrame += visualIncrementPerPixel;
     }
 
-    DEBUG_ASSERT(linesReserved == m_vertices.size());
-    DEBUG_ASSERT(colorsReserved == m_colors.size());
+    DEBUG_ASSERT(reserved == m_vertices.size());
+    DEBUG_ASSERT(reserved == m_colors.size());
 
     const QMatrix4x4 matrix = matrixForWidgetGeometry(m_waveformRenderer, true);
 
-    const int matrixLocation = m_shader.uniformLocation("matrix");
-    const int positionLocation = m_shader.attributeLocation("position");
-    const int colorLocation = m_shader.attributeLocation("color");
+    const int matrixLocation = m_shader.matrixLocation();
+    const int positionLocation = m_shader.positionLocation();
+    const int colorLocation = m_shader.colorLocation();
 
     m_shader.bind();
     m_shader.enableAttributeArray(positionLocation);
@@ -229,3 +222,5 @@ void WaveformRendererLRRGB::paintGL() {
     m_shader.disableAttributeArray(colorLocation);
     m_shader.release();
 }
+
+} // namespace allshader

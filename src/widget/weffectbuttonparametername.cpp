@@ -1,8 +1,6 @@
 #include "widget/weffectbuttonparametername.h"
 
-#include <QtDebug>
-
-#include "effects/effectsmanager.h"
+#include "moc_weffectbuttonparametername.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectButtonParameterName::WEffectButtonParameterName(
@@ -21,8 +19,10 @@ void WEffectButtonParameterName::setup(const QDomNode& node, const SkinContext& 
             EffectWidgetUtils::getButtonParameterSlotFromNode(
                     node, context, m_pEffectSlot);
     VERIFY_OR_DEBUG_ASSERT(m_pParameterSlot) {
-        SKIN_WARNING(node, context)
-                << "EffectButtonParameter node could not attach to effect parameter";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectButtonParameter node could not attach to "
+                               "effect parameter"));
     }
     setEffectParameterSlot(m_pParameterSlot);
 }

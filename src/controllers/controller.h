@@ -1,17 +1,13 @@
 #pragma once
 
 #include <QElapsedTimer>
-#include <QLoggingCategory>
-#include <QTimerEvent>
 
 #include "controllers/controllermappinginfo.h"
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
-#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 #include "util/runtimeloggingcategory.h"
 
 class ControllerJSProxy;
+class ControllerScriptEngineLegacy;
 
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
@@ -75,6 +71,7 @@ class Controller : public QObject {
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     virtual bool applyMapping();
+    virtual void slotBeforeEngineShutdown();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -173,6 +170,7 @@ class Controller : public QObject {
     friend class ControllerManager;
     // For testing
     friend class LegacyControllerMappingValidationTest;
+    friend class MidiControllerTest;
 };
 
 // An object of this class gets exposed to the JS engine, so the methods of this class

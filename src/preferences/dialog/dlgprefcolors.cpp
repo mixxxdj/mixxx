@@ -1,18 +1,16 @@
 #include "preferences/dialog/dlgprefcolors.h"
 
-#include <QColorDialog>
+#include <QLineEdit>
 #include <QPainter>
-#include <QStandardItemModel>
-#include <QtDebug>
+#include <QTableView>
 
-#include "control/controlobject.h"
 #include "dialog/dlgreplacecuecolor.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "moc_dlgprefcolors.cpp"
+#include "preferences/colorpaletteeditor.h"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/math.h"
-#include "util/memory.h"
 
 namespace {
 
@@ -68,20 +66,18 @@ DlgPrefColors::DlgPrefColors(
             this,
             &DlgPrefColors::slotReplaceCueColorClicked);
 
-    loadSettings();
+    setScrollSafeGuardForAllInputWidgets(this);
+
+    slotUpdate();
 }
 
 DlgPrefColors::~DlgPrefColors() {
 }
 
 void DlgPrefColors::slotUpdate() {
-    loadSettings();
-}
-
-void DlgPrefColors::loadSettings() {
     comboBoxHotcueColors->clear();
     comboBoxTrackColors->clear();
-    for (const auto& palette : qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
+    for (const auto& palette : std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         QString paletteName = palette.getName();
         QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
@@ -176,7 +172,7 @@ void DlgPrefColors::slotApply() {
     bool bTrackColorPaletteFound = false;
 
     for (const auto& palette :
-            qAsConst(mixxx::PredefinedColorPalettes::kPalettes)) {
+            std::as_const(mixxx::PredefinedColorPalettes::kPalettes)) {
         if (!bHotcueColorPaletteFound &&
                 hotcueColorPaletteName == palette.getName()) {
             m_colorPaletteSettings.setHotcueColorPalette(palette);

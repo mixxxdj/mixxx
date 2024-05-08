@@ -1,28 +1,19 @@
 #include "waveform/widgets/glwaveformwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
-#include <QtDebug>
 
 #include "moc_glwaveformwidget.cpp"
 #include "util/performancetimer.h"
 #include "waveform/renderers/glwaveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrendererfilteredsignal.h"
-#include "waveform/renderers/qtwaveformrendererfilteredsignal.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
-
     addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

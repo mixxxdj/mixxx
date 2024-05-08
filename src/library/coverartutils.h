@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFileInfo>
 #include <QFuture>
 #include <QImage>
 #include <QList>
@@ -8,15 +9,12 @@
 #include <QStringList>
 
 #include "track/track_decl.h"
-#include "util/cache.h"
-#include "util/fileinfo.h"
-#include "util/imageutils.h"
 
-class CoverInfo;
 class CoverInfoRelative;
 
 namespace mixxx {
 
+class FileInfo;
 class FileAccess;
 
 } // namespace mixxx
@@ -30,6 +28,8 @@ class CoverArtUtils {
     // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
             mixxx::FileAccess trackFileAccess);
+    static QImage extractEmbeddedCover(
+            TrackPointer pTrack);
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -78,11 +78,10 @@ class CoverInfoGuesser {
 
     // Extracts an embedded cover image if available and guesses
     // the cover art for the provided track.
-    CoverInfoRelative guessCoverInfoForTrack(
-            const Track& track);
+    CoverInfoRelative guessCoverInfoForTrack(TrackPointer pTrack);
 
     void guessAndSetCoverInfoForTrack(
-            Track& track);
+            TrackPointer pTrack);
     void guessAndSetCoverInfoForTracks(
             const TrackPointerList& tracks);
 

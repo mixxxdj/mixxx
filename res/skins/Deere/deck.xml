@@ -36,7 +36,7 @@
                       <Transform><Not/></Transform>
                     </Connection>
                     <Children>
-                      <Template src="skin:../Deere/deck_spinny.xml">
+                      <Template src="skins:Deere/deck_spinny.xml">
                         <SetVariable name="cover">true</SetVariable>
                         <SetVariable name="Size">55f,55f</SetVariable>
                       </Template>
@@ -49,7 +49,7 @@
                       <BindProperty>visible</BindProperty>
                     </Connection>
                     <Children>
-                      <Template src="skin:../Deere/deck_spinny.xml">
+                      <Template src="skins:Deere/deck_spinny.xml">
                         <SetVariable name="cover">false</SetVariable>
                         <SetVariable name="Size">55f,55f</SetVariable>
                       </Template>

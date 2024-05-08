@@ -43,7 +43,7 @@ const QByteArray kSeratoMarkersBase64EncodedPrefix = QByteArray::fromRawData(
 //     serato32 value   | 06 32 10 00  00000110001100100001000000000000
 //
 // See this for details:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md#custom-serato32-binary-format
+// https://github.com/Holzhaus/serato-tags/blob/main/docs/serato_markers_.md#custom-serato32-binary-format
 
 /// Decode value from Serato's 32-bit custom format to 24-bit plaintext.
 quint32 serato32toUint24(quint8 w, quint8 x, quint8 y, quint8 z) {
@@ -640,7 +640,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
     QList<CueInfo> cueInfos;
     int cueIndex = 0;
     int loopIndex = 0;
-    for (const auto& pEntry : qAsConst(m_entries)) {
+    for (const auto& pEntry : std::as_const(m_entries)) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }

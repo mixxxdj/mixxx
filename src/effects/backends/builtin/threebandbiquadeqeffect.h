@@ -1,14 +1,9 @@
 #pragma once
 
-#include "control/controlproxy.h"
+#include "control/pollingcontrolproxy.h"
 #include "effects/backends/effectprocessor.h"
-#include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectparameter.h"
 #include "engine/filters/enginefilterbiquad1.h"
-#include "util/class.h"
-#include "util/defs.h"
 #include "util/memory.h"
-#include "util/sample.h"
 #include "util/samplebuffer.h"
 #include "util/types.h"
 
@@ -18,7 +13,7 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
     ~ThreeBandBiquadEQEffectGroupState() override = default;
 
     void setFilters(
-            int sampleRate, double lowFreqCorner, double highFreqCorner);
+            mixxx::audio::SampleRate sampleRate, double lowFreqCorner, double highFreqCorner);
 
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midBoost;
@@ -59,7 +54,9 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;
 
-    void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
+    void setFilters(mixxx::audio::SampleRate sampleRate,
+            double lowFreqCorner,
+            double highFreqCorner);
 
   private:
     ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;
@@ -77,6 +74,6 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     EngineEffectParameterPointer m_pKillMid;
     EngineEffectParameterPointer m_pKillHigh;
 
-    std::unique_ptr<ControlProxy> m_pLoFreqCorner;
-    std::unique_ptr<ControlProxy> m_pHiFreqCorner;
+    PollingControlProxy m_pLoFreqCorner;
+    PollingControlProxy m_pHiFreqCorner;
 };

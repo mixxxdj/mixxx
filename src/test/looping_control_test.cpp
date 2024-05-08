@@ -81,6 +81,8 @@ class LoopingControlTest : public MockedEngineBackendTest {
                 m_sGroup1, "beatlooproll_2_activate");
         m_pButtonBeatLoopRoll4Activate = std::make_unique<PollingControlProxy>(
                 m_sGroup1, "beatlooproll_4_activate");
+
+        ProcessBuffer();
     }
 
     mixxx::audio::FramePos currentFramePos() {
@@ -178,6 +180,28 @@ TEST_F(LoopingControlTest, LoopInSetAfterLoopOutStops) {
     m_pLoopStartPoint->set(mixxx::audio::FramePos{110}.toEngineSamplePos());
     EXPECT_FALSE(isLoopEnabled());
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{110}, m_pLoopStartPoint);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+}
+
+TEST_F(LoopingControlTest, LoopInSetAtLoopOutClearsLoopOut) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopStartPoint->set(100);
+    EXPECT_EQ(100, m_pLoopStartPoint->get());
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    EXPECT_FALSE(isLoopEnabled());
+}
+
+TEST_F(LoopingControlTest, LoopOutSetAtLoopInIgnored) {
+    m_pLoopStartPoint->set(0);
+    m_pLoopEndPoint->set(100);
+    m_pLoopEndPoint->set(0);
+    EXPECT_EQ(0, m_pLoopStartPoint->get());
+    EXPECT_EQ(100, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(-1);
+    EXPECT_EQ(-1, m_pLoopEndPoint->get());
+    m_pLoopEndPoint->set(0);
+    EXPECT_FALSE(isLoopEnabled());
     EXPECT_EQ(-1, m_pLoopEndPoint->get());
 }
 
@@ -302,25 +326,42 @@ TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
     const auto bpm = mixxx::Bpm{60};
     m_pTrack1->trySetBpm(bpm);
     m_pQuantizeEnabled->set(1);
+    // Move short after the first beat
     setCurrentPosition(mixxx::audio::FramePos{250});
     m_pButtonLoopIn->set(1);
     m_pButtonLoopIn->set(0);
     EXPECT_EQ(m_pClosestBeat->get(), m_pLoopStartPoint->get());
 
+    // Move short after the 5th beat
     m_pBeatJumpSize->set(4);
     m_pButtonBeatJumpForward->set(1);
     m_pButtonBeatJumpForward->set(0);
     ProcessBuffer();
-    EXPECT_FRAMEPOS_EQ(kTrackEndPosition * m_pPlayPosition->get(),
-            mixxx::audio::FramePos{(44100 * 4) + 250});
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{(44100 * 4) + 250});
+    // This should make loop_out snap to 5th beat and queue
+    // a seek to first beat + initial offset.
     m_pButtonLoopOut->set(1);
     m_pButtonLoopOut->set(0);
-    ProcessBuffer();
+    ProcessBuffer(); // first process to schedule seek in a stopped deck
+    ProcessBuffer(); // them seek
     EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
-    EXPECT_FRAMEPOS_EQ(kTrackEndPosition * m_pPlayPosition->get(),
-            mixxx::audio::FramePos{(44100 * 4) + 250});
-
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
+    // Should adopt the loop size and enable the correct loop control
     EXPECT_EQ(4, m_pBeatLoopSize->get());
+    EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
+
+    // Repeat the procedure and verify a seek is triggered even though
+    // the loop is identical.
+    m_pLoopEnabled->set(0);
+    m_pButtonBeatJumpForward->set(1);
+    m_pButtonBeatJumpForward->set(0);
+    ProcessBuffer();
+    m_pButtonLoopOut->set(1);
+    m_pButtonLoopOut->set(0);
+    ProcessBuffer(); // first process to schedule seek in a stopped deck
+    ProcessBuffer(); // them seek
+    EXPECT_FRAMEPOS_EQ(currentFramePos(), mixxx::audio::FramePos{250});
+    EXPECT_EQ(m_pLoopEndPoint->get(), 44100 * 2 * 4);
     EXPECT_TRUE(m_pBeatLoop4Enabled->toBool());
 
     // Check that beatloop_4_enabled is reset to 0 when changing the loop size.
@@ -454,8 +495,10 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
     m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
+    EXPECT_EQ(16.0, m_pBeatLoopSize->get());
     m_pButtonLoopDouble->set(1.0);
     m_pButtonLoopDouble->set(0.0);
     EXPECT_EQ(32.0, m_pBeatLoopSize->get());
@@ -650,6 +693,14 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{250}, m_pLoopStartPoint);
     EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::FramePos{475}, m_pLoopEndPoint);
     EXPECT_FRAMEPOS_EQ(mixxx::audio::FramePos{250}, currentFramePos());
+}
+
+TEST_F(LoopingControlTest, EjectResetsLoopInOutPositions) {
+    m_pLoopStartPoint->set(mixxx::audio::kStartFramePos.toEngineSamplePos());
+    m_pLoopEndPoint->set(mixxx::audio::FramePos{300}.toEngineSamplePos());
+    m_pChannel1->getEngineBuffer()->ejectTrack();
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopStartPoint);
+    EXPECT_FRAMEPOS_EQ_CONTROL(mixxx::audio::kInvalidFramePos, m_pLoopEndPoint);
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {

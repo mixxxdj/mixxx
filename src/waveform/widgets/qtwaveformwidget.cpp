@@ -1,6 +1,5 @@
 #include "waveform/widgets/qtwaveformwidget.h"
 
-#include <QGLContext>
 #include <QPainter>
 #include <QtDebug>
 
@@ -17,10 +16,6 @@
 
 QtWaveformWidget::QtWaveformWidget(const QString& group, QWidget* parent)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created WGLWidget. Context"
-             << "Valid:" << isContextValid()
-             << "Sharing:" << isContextSharing();
-
     addRenderer<GLWaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

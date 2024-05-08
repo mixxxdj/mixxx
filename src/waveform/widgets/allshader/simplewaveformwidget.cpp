@@ -9,7 +9,7 @@
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_simplewaveformwidget.cpp"
 
-using namespace allshader;
+namespace allshader {
 
 SimpleWaveformWidget::SimpleWaveformWidget(const QString& group, QWidget* parent)
         : WaveformWidget(group, parent) {
@@ -24,9 +24,6 @@ SimpleWaveformWidget::SimpleWaveformWidget(const QString& group, QWidget* parent
     m_initSuccess = init();
 }
 
-SimpleWaveformWidget::~SimpleWaveformWidget() {
-}
-
 void SimpleWaveformWidget::castToQWidget() {
     m_widget = this;
 }
@@ -34,3 +31,5 @@ void SimpleWaveformWidget::castToQWidget() {
 void SimpleWaveformWidget::paintEvent(QPaintEvent* event) {
     Q_UNUSED(event);
 }
+
+} // namespace allshader

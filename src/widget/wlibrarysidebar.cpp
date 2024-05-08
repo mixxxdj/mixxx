@@ -1,8 +1,6 @@
 #include "widget/wlibrarysidebar.h"
 
-#include <QFileInfo>
 #include <QHeaderView>
-#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
 
@@ -241,9 +239,24 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     // TODO(XXX) Should first keyEvent ensure previous item has focus? I.e. if the selected
     // item is not focused, require second press to perform the desired action.
 
+    SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
+    QModelIndexList selectedIndices = selectionModel()->selectedRows();
+    if (sidebarModel && !selectedIndices.isEmpty()) {
+        QModelIndex index = selectedIndices.at(0);
+        if (event->matches(QKeySequence::Delete) || event->key() == Qt::Key_Backspace) {
+            sidebarModel->clear(index);
+            return;
+        }
+        if (event->matches(QKeySequence::Paste)) {
+            sidebarModel->paste(index);
+            return;
+        }
+    }
+
+    focusSelectedIndex();
+
     switch (event->key()) {
     case Qt::Key_Return:
-        focusSelectedIndex();
         toggleSelectedItem();
         return;
     case Qt::Key_Down:
@@ -252,8 +265,6 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case Qt::Key_PageUp:
     case Qt::Key_End:
     case Qt::Key_Home: {
-        // make the selected item the navigation starting point
-        focusSelectedIndex();
         // Let the tree view move up and down for us.
         QTreeView::keyPressEvent(event);
         // After the selection changed force-activate (click) the newly selected
@@ -269,15 +280,18 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
         emit pressed(selIndex);
         return;
     }
-    case Qt::Key_Left: {
-        QModelIndexList selectedIndices = selectionModel()->selectedRows();
-        if (selectedIndices.isEmpty()) {
-            return;
+    case Qt::Key_Right: {
+        if (event->modifiers() & Qt::ControlModifier) {
+            emit setLibraryFocus(FocusWidget::TracksTable);
+        } else {
+            QTreeView::keyPressEvent(event);
         }
+        return;
+    }
+    case Qt::Key_Left: {
         // If an expanded item is selected let QTreeView collapse it
         QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        if (!selIndex.isValid()) {
             return;
         }
         // collapse knot
@@ -300,8 +314,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     case kRenameSidebarItemShortcutKey: { // F2
         // Rename crate or playlist (internal, external, history)
         QModelIndex selIndex = selectedIndex();
-        VERIFY_OR_DEBUG_ASSERT(selIndex.isValid()) {
-            qDebug() << "invalid sidebar index";
+        if (!selIndex.isValid()) {
             return;
         }
         if (isExpanded(selIndex)) {
