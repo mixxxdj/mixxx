@@ -928,8 +928,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
             setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
 #else
             setWaveformVarsByType.operator()<QtSimpleWaveformWidget>();
-            break;
 #endif
+            break;
         case WaveformWidgetType::Filtered:
 #ifndef __APPLE__
             // Don't offer the simple renderers on macOS, they do not work with skins
@@ -982,6 +982,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
 #else
             setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
 #endif
+            break;
         case WaveformWidgetType::Stacked:
             setWaveformVarsByType.operator()<GLSLRGBStackedWaveformWidget>();
             break;

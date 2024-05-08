@@ -45,6 +45,7 @@ void upgradeToAllShaders(WaveformWidgetType::Type* waveformType,
         // Not supported by AllShader
         return;
     default:
+        *waveformType = WaveformWidgetType::RGB;
         *waveformBackend = WaveformWidgetBackend::AllShader;
     }
 }
