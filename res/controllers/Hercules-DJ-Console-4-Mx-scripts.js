@@ -343,7 +343,7 @@ Hercules4Mx.init = function(id, debugging) {
         Hercules4Mx.setupFXButtonsCustomMixx21();
     }
 
-    engine.beginTimer(3000, "Hercules4Mx.doDelayedSetup", true);
+    engine.beginTimer(3000, Hercules4Mx.doDelayedSetup, true);
 };
 //timer-called (delayed) setup.
 Hercules4Mx.doDelayedSetup = function() {
@@ -569,7 +569,7 @@ Hercules4Mx.onAutoDJFade = function(value, group, control) {
     //After 5 seconds, restore non-flashing led. It would be perfect if autoDJFade was triggered also
     //when the fading ends, but right now it seems this is not possible. Also, it doesn't seem to be
     //an option to get the duration of the fading, that's why i simply put there 5 seconds.
-    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, "Hercules4Mx.doEndAutoDJFadeOffAction", true);
+    Hercules4Mx.autoDJfadingId = engine.beginTimer(5000, Hercules4Mx.doEndAutoDJFadeOffAction, true);
 };
 Hercules4Mx.doEndAutoDJFadeOffAction = function() {
     midi.sendShortMsg(Hercules4Mx.NOnC1, 0x7C, 0x00);

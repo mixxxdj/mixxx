@@ -8,6 +8,7 @@
 #include "engine/channels/enginedeck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemixer.h"
+#include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/basetrackplayer.h"
@@ -61,6 +62,9 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pSoundManager = std::make_shared<SoundManager>(m_pConfig, m_pEngine.get());
         m_pControlIndicatorTimer = std::make_shared<mixxx::ControlIndicatorTimer>(nullptr);
         m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
+
+        CoverArtCache::createInstance();
+
         m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
                 m_pSoundManager.get(),
                 m_pEffectsManager.get(),

@@ -145,6 +145,10 @@ QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) 
     return m_directoryDao.loadAllDirectories(skipInvalidOrMissing);
 }
 
+QStringList TrackCollection::getRootDirStrings() const {
+    return m_directoryDao.getRootDirStrings();
+}
+
 bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
@@ -369,7 +373,7 @@ bool TrackCollection::purgeTracks(
     }
     // TODO(XXX): Move reversible actions inside transaction
     m_cueDao.deleteCuesForTracks(trackIds);
-    m_playlistDao.removeTracksFromPlaylists(trackIds);
+    m_playlistDao.removeTracksFromPlaylists(trackIds, true);
     m_analysisDao.deleteAnalyses(trackIds);
 
     // Post-processing

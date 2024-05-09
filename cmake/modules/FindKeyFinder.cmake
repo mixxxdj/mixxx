@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -52,13 +52,13 @@ endif()
 
 find_path(KeyFinder_INCLUDE_DIR
   NAMES keyfinder/keyfinder.h
-  PATHS ${PC_KeyFinder_INCLUDE_DIRS}
+  HINTS ${PC_KeyFinder_INCLUDE_DIRS}
   DOC "KeyFinder include directory")
 mark_as_advanced(KeyFinder_INCLUDE_DIR)
 
 find_library(KeyFinder_LIBRARY
   NAMES keyfinder
-  PATHS ${PC_KeyFinder_LIBRARY_DIRS}
+  HINTS ${PC_KeyFinder_LIBRARY_DIRS}
   DOC "KeyFinder library"
 )
 mark_as_advanced(KeyFinder_LIBRARY)

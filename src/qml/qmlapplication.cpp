@@ -1,6 +1,6 @@
 #include "qmlapplication.h"
 
-#include <QtQml/qqmlextensionplugin.h>
+#include <QQmlEngineExtensionPlugin>
 
 #include "control/controlsortfiltermodel.h"
 #include "controllers/controllermanager.h"
@@ -45,7 +45,7 @@ QmlApplication::QmlApplication(
         : m_pCoreServices(pCoreServices),
           m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
-          m_fileWatcher({m_mainFilePath}) {
+          m_autoReload() {
     m_pCoreServices->initialize(app);
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
@@ -83,10 +83,12 @@ QmlApplication::QmlApplication(
 
     pCoreServices->getControllerManager()->setUpDevices();
 
-    connect(&m_fileWatcher,
-            &QFileSystemWatcher::fileChanged,
+    connect(&m_autoReload,
+            &QmlAutoReload::triggered,
             this,
-            &QmlApplication::loadQml);
+            [this]() {
+                loadQml(m_mainFilePath);
+            });
 }
 
 QmlApplication::~QmlApplication() {
@@ -103,6 +105,8 @@ void QmlApplication::loadQml(const QString& path) {
     // so it is necessary to destroy the old QQmlApplicationEngine and create a new one.
     m_pAppEngine = std::make_unique<QQmlApplicationEngine>();
 
+    m_autoReload.clear();
+    m_pAppEngine->addUrlInterceptor(&m_autoReload);
     m_pAppEngine->addImportPath(QStringLiteral(":/mixxx.org/imports"));
 
     // No memory leak here, the QQmlEngine takes ownership of the provider

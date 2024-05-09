@@ -1,0 +1,105 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,max</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[Skin],sampler_rows">
+        <NextControl>[Deere],sampler_bank_next</NextControl>
+        <PrevControl>[Deere],sampler_bank_prev</PrevControl>
+        <Children>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">1</SetVariable>
+                <SetVariable name="next">2</SetVariable>
+                <SetVariable name="prev">8</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">2</SetVariable>
+                <SetVariable name="next">3</SetVariable>
+                <SetVariable name="prev">1</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">3</SetVariable>
+                <SetVariable name="next">4</SetVariable>
+                <SetVariable name="prev">2</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">4</SetVariable>
+                <SetVariable name="next">5</SetVariable>
+                <SetVariable name="prev">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">5</SetVariable>
+                <SetVariable name="next">6</SetVariable>
+                <SetVariable name="prev">4</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">6</SetVariable>
+                <SetVariable name="next">7</SetVariable>
+                <SetVariable name="prev">5</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">7</SetVariable>
+                <SetVariable name="next">8</SetVariable>
+                <SetVariable name="prev">6</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skins:Deere/sampler_rows_selection_button.xml">
+                <SetVariable name="current">8</SetVariable>
+                <SetVariable name="next">1</SetVariable>
+                <SetVariable name="prev">7</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
+  </WidgetGroup>
+</Template>

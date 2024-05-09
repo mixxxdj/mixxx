@@ -84,10 +84,10 @@ mixxx::Duration GLSLWaveformWidget::render() {
     return t1; // return timer for painter setup
 }
 
-void GLSLWaveformWidget::resize(int width, int height) {
+void GLSLWaveformWidget::resizeRenderer(int width, int height, float devicePixelRatio) {
     // NOTE: (vrince) this is needed since we allocation buffer on resize
     // and the Gl Context should be properly set
     makeCurrentIfNeeded();
-    WaveformWidgetAbstract::resize(width, height);
+    WaveformWidgetRenderer::resizeRenderer(width, height, devicePixelRatio);
     doneCurrent();
 }

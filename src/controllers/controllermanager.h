@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <memory>
 
+#include "controllers/controllerenumerator.h"
 #include "preferences/usersettings.h"
 #include "util/duration.h"
 

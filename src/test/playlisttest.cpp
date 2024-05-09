@@ -32,7 +32,7 @@ TEST_F(PlaylistTest, Normalize) {
             parser.playlistEntryToFilePath("file:///foo/bar.mp3"));
     EXPECT_EQ(QString("foo/bar.mp3"),
             parser.playlistEntryToFilePath("file:foo/bar.mp3"));
-#ifdef Q_OS_WIN
+#ifdef _WIN32
     EXPECT_EQ(QString("c:/foo/bar.mp3"),
             parser.playlistEntryToFilePath("file:///c:/foo/bar.mp3"));
 #else

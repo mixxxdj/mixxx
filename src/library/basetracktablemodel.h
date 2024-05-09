@@ -81,6 +81,10 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
         return m_columnCache.fieldIndex(fieldName);
     }
 
+    void cutTracks(const QModelIndexList& indices) override;
+    void copyTracks(const QModelIndexList& indices) const override;
+    QList<int> pasteTracks(const QModelIndex& index) override;
+
     bool isColumnHiddenByDefault(
             int column) override;
 
@@ -100,6 +104,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     static constexpr int kBpmColumnPrecisionMinimum = 0;
     static constexpr int kBpmColumnPrecisionMaximum = 10;
     static void setBpmColumnPrecision(int precision);
+
+    static constexpr bool kApplyPlayedTrackColorDefault = true;
+    static void setApplyPlayedTrackColor(bool apply);
 
   protected:
     static constexpr int defaultColumnWidth() {
@@ -244,6 +251,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     void slotRefreshAllRows();
 
+    void slotCoverFound(
+            const QObject* pRequester,
+            const CoverInfo& coverInfo,
+            const QPixmap& pixmap);
+
   private:
     // Track models may reference tracks by an external id
     // TODO: TrackId should only be used for tracks from
@@ -263,6 +275,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     const QString m_previewDeckGroup;
 
     double m_backgroundColorOpacity;
+    QColor m_playedInactiveColor;
 
     ColumnCache m_columnCache;
 
@@ -276,5 +289,9 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
     TrackId m_previewDeckTrackId;
 
+    mutable QModelIndex m_toolTipIndex;
+
     static int s_bpmColumnPrecision;
+
+    static bool s_bApplyPlayedTrackColor;
 };

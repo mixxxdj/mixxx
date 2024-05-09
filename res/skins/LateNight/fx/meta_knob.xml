@@ -14,8 +14,8 @@
       <KnobComposed>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>35f,30f</Size>
-        <Knob>skin:../LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_small_<Variable name="KnobColor"/>.svg</Knob>
-        <BackPath>skin:../LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_small.svg</BackPath>
+        <Knob>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_indicator_small_<Variable name="KnobColor"/>.svg</Knob>
+        <BackPath>skins:LateNight/<Variable name="KnobScheme"/>/knobs/knob_bg_small.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <KnobCenterYOffset>1.883</KnobCenterYOffset>

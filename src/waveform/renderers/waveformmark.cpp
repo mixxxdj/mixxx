@@ -10,6 +10,11 @@
 #include "widget/wskincolor.h"
 
 namespace {
+
+// Without some padding, the user would only have a single pixel width that
+// would count as hovering over the WaveformMark.
+constexpr float lineHoverPadding = 5.0;
+
 Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
                                       .split('|',
@@ -51,21 +56,64 @@ Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment def
 
     return hflags | vflags;
 }
+
+float overlappingMarkerIncrement(const float labelRectHeight, const float breadth) {
+    // gradually "compact" the markers if the waveform height is
+    // reduced, to avoid multiple markers obscuring the waveform.
+    const float threshold = 90.f; // above this, the full increment is used
+    const float fullIncrement = labelRectHeight + 2.f;
+    const float minIncrement = 2.f; // increment when most compacted
+
+    return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
+}
+
+#define FOO
+
+bool isShowUntilNextPositionControl(const QString& positionControl) {
+    // To identify which markers are included in the beat/time until next marker
+    // display, in addition to the hotcues
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    using namespace Qt::Literals::StringLiterals;
+    constexpr std::array list = {"cue_point"_L1,
+            "intro_start_position"_L1,
+            "intro_end_position"_L1,
+            "outro_start_position"_L1,
+            "outro_end_position"_L1};
+#else
+    const std::array list = {QLatin1String{"cue_point"},
+            QLatin1String{"intro_start_position"},
+            QLatin1String{"intro_end_position"},
+            QLatin1String{"outro_start_position"},
+            QLatin1String{"outro_end_position"}};
+#endif
+    return std::any_of(list.cbegin(), list.cend(), [positionControl](auto& view) {
+        return view == positionControl;
+    });
+}
+
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
         const QDomNode& node,
         const SkinContext& context,
+        int priority,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_linePosition{}, m_breadth{}, m_iHotCue{hotCue} {
+        : m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
     QString positionControl;
     QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
     if (!positionControl.isEmpty()) {
@@ -121,40 +169,50 @@ WaveformMark::WaveformMark(const QString& group,
 WaveformMark::~WaveformMark() = default;
 
 void WaveformMark::setBaseColor(QColor baseColor, int dimBrightThreshold) {
-    if (m_pGraphics) {
-        m_pGraphics->m_obsolete = true;
+    if (m_fillColor == baseColor) {
+        return;
     }
+
     m_fillColor = baseColor;
     m_borderColor = Color::chooseContrastColor(baseColor, dimBrightThreshold);
     m_labelColor = Color::chooseColorByBrightness(baseColor,
             QColor(255, 255, 255, 255),
             QColor(0, 0, 0, 255),
             dimBrightThreshold);
-};
+
+    setNeedsImageUpdate();
+}
+
+bool WaveformMark::lineHovered(QPoint point, Qt::Orientation orientation) const {
+    if (orientation == Qt::Vertical) {
+        // Note that for vertical orientation, breadth is set to the width.
+        point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
+    }
+    return m_linePosition >= point.x() - lineHoverPadding &&
+            m_linePosition <= point.x() + lineHoverPadding;
+}
 
 bool WaveformMark::contains(QPoint point, Qt::Orientation orientation) const {
-    // Without some padding, the user would only have a single pixel width that
-    // would count as hovering over the WaveformMark.
-    float lineHoverPadding = 5.0;
     if (orientation == Qt::Vertical) {
-        point = QPoint(point.y(), m_breadth - point.x());
+        point = QPoint(point.y(), static_cast<int>(m_breadth) - point.x());
     }
-    bool lineHovered = m_linePosition >= point.x() - lineHoverPadding &&
-            m_linePosition <= point.x() + lineHoverPadding;
-
-    return m_label.area().contains(point) || lineHovered;
+    return m_label.area().contains(point);
 }
 
 // Helper struct to calculate the geometry and fontsize needed by generateImage
 // to draw the label and text
 struct MarkerGeometry {
-    bool m_isSymbol; // it the label normal text or a single symbol (e.g. open circle arrow)
+    bool m_isSymbol; // is the label normal text or a single symbol (e.g. open circle arrow)
     QFont m_font;
     QRectF m_contentRect;
     QRectF m_labelRect;
     QSizeF m_imageSize;
 
-    MarkerGeometry(const QString& label, bool useIcon, Qt::Alignment align, float breadth) {
+    MarkerGeometry(const QString& label,
+            bool useIcon,
+            Qt::Alignment align,
+            float breadth,
+            int level) {
         // If the label is 1 character long, and this character isn't a letter or a number,
         // we can assume it's a special symbol
         m_isSymbol = !useIcon && label.length() == 1 && !label[0].isLetterOrNumber();
@@ -237,12 +295,16 @@ struct MarkerGeometry {
             m_labelRect.moveLeft(0.5f);
         }
 
+        const float increment = overlappingMarkerIncrement(
+                static_cast<float>(m_labelRect.height()), breadth);
+
         if (alignV == Qt::AlignVCenter) {
             m_labelRect.moveTop((m_imageSize.height() - m_labelRect.height()) / 2.f);
         } else if (alignV == Qt::AlignBottom) {
-            m_labelRect.moveBottom(m_imageSize.height() - 0.5f);
+            m_labelRect.moveBottom(m_imageSize.height() - 0.5f -
+                    level * increment);
         } else {
-            m_labelRect.moveTop(0.5f);
+            m_labelRect.moveTop(0.5f + level * increment);
         }
     }
     QSize getImageSize(float devicePixelRatio) const {
@@ -251,11 +313,11 @@ struct MarkerGeometry {
     }
 };
 
-QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
+QImage WaveformMark::generateImage(float devicePixelRatio) {
+    assert(needsImageUpdate());
+
     // Load the pixmap from file.
     // If that succeeds loading the text and stroke is skipped.
-
-    m_breadth = static_cast<int>(breadth);
 
     if (!m_pixmapPath.isEmpty()) {
         QString path = m_pixmapPath;
@@ -279,20 +341,16 @@ QImage WaveformMark::generateImage(float breadth, float devicePixelRatio) {
 
     // Determine mark text.
     if (getHotCue() >= 0) {
-        constexpr int kMaxCueLabelLength = 23;
         if (!label.isEmpty()) {
             label.prepend(": ");
         }
         label.prepend(QString::number(getHotCue() + 1));
-        if (label.size() > kMaxCueLabelLength) {
-            label = label.left(kMaxCueLabelLength - 3) + "...";
-        }
     }
 
     const bool useIcon = m_iconPath != "";
 
     // Determine drawing geometries
-    const MarkerGeometry markerGeometry(label, useIcon, m_align, breadth);
+    const MarkerGeometry markerGeometry{label, useIcon, m_align, m_breadth, m_level};
 
     m_label.setAreaRect(markerGeometry.m_labelRect);
 

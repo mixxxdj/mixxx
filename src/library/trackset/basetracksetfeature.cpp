@@ -13,6 +13,10 @@ BaseTrackSetFeature::BaseTrackSetFeature(
           m_pSidebarModel(make_parented<TreeItemModel>(this)) {
 }
 
+void BaseTrackSetFeature::pasteChild(const QModelIndex&) {
+    emit pasteFromSidebar();
+}
+
 void BaseTrackSetFeature::activate() {
     emit switchToView(m_rootViewName);
     emit disableSearch();

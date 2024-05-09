@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QCoreApplication>
-#include <QDesktopServices>
 #include <QDir>
 #include <QList>
 #include <QString>
@@ -31,6 +30,9 @@ class CmdlineArgs final {
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
+    bool getStartAutoDJ() const {
+        return m_startAutoDJ;
+    }
     bool getControllerDebug() const {
         return m_controllerDebug;
     }
@@ -83,6 +85,7 @@ class CmdlineArgs final {
 
     QList<QString> m_musicFiles;    // List of files to load into players at startup
     bool m_startInFullscreen;       // Start in fullscreen mode
+    bool m_startAutoDJ;
     bool m_controllerDebug;
     bool m_controllerAbortOnWarning; // Controller Engine will be stricter
     bool m_developer; // Developer Mode

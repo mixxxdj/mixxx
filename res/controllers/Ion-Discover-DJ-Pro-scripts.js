@@ -181,7 +181,7 @@ IonDiscoverDjPro.jogWheel = function(channel, control, value, status, group) {
             engine.stopTimer(IonDiscoverDjPro.scratchTimer[deck]);
         }
         engine.scratchTick(deck, adjustedJog);
-        IonDiscoverDjPro.scratchTimer[deck] = engine.beginTimer(20, "IonDiscoverDjPro.jogWheelStopScratch(" + deck + ")", true);
+        IonDiscoverDjPro.scratchTimer[deck] = engine.beginTimer(20, () => IonDiscoverDjPro.jogWheelStopScratch(deck), true);
     } else {
         var gammaInputRange = 23;	// Max jog speed
         var maxOutFraction = 0.5;	// Where on the curve it should peak; 0.5 is half-way

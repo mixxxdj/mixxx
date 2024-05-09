@@ -46,14 +46,12 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
   protected:
+    void showEvent(QShowEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
   private slots:
     void onZoomChange(double zoom);
-    void slotWidgetDead() {
-        m_waveformWidget = nullptr;
-    }
 
   private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);

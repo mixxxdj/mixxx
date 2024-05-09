@@ -14,7 +14,7 @@ void WEffectParameterKnobComposed::setup(const QDomNode& node, const SkinContext
     m_pEffectParameterSlot = EffectWidgetUtils::getParameterSlotFromNode(
             node, context, pEffectSlot);
     VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
-        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
+        SKIN_WARNING(node, context, QStringLiteral("Could not find effect parameter slot"));
         return;
     }
     connect(m_pEffectParameterSlot.data(),

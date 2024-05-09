@@ -67,12 +67,12 @@ Jockey3ME.LedMeterShow = function() {
   if (Jockey3ME.LedMeterShowValueTwo && Jockey3ME.LedMeterShowValue < 0) {
     engine.stopTimer(Jockey3ME.LedMeterShowTimer);
     Jockey3ME.LedMeterShowTimer = 0;
-    Jockey3ME.EffectLedMeter = engine.beginTimer(20,"Jockey3ME.EffectLedMeterShow()");
+    Jockey3ME.EffectLedMeter = engine.beginTimer(20,Jockey3ME.EffectLedMeterShow);
   };
 }
 
 Jockey3ME.LedShowBegin = function () {
-  Jockey3ME.LedMeterShowTimer = engine.beginTimer(40,"Jockey3ME.LedMeterShow()");
+  Jockey3ME.LedMeterShowTimer = engine.beginTimer(40,Jockey3ME.LedMeterShow);
 }
 
 // Init Script at Program start
@@ -89,7 +89,7 @@ Jockey3ME.init = function () {
     midi.sendShortMsg(0x92,j,0x00);
     midi.sendShortMsg(0x93,j,0x00);
   };
-  Jockey3ME.LedShowBeginTimer = engine.beginTimer(2000,"Jockey3ME.LedShowBegin()",1); // LedShow Script Starts Here after 500ms
+  Jockey3ME.LedShowBeginTimer = engine.beginTimer(2000,Jockey3ME.LedShowBegin,true); // LedShow Script Starts Here after 500ms
 	for (var i = 1; i <= 4; i++) {
 		for (var j = 1; j <= 3; j++) {
 			engine.connectControl("[EffectRack1_EffectUnit" + i + "_Effect1]","parameter" + j,"Jockey3ME.FX_Param_Led");
@@ -239,7 +239,7 @@ Jockey3ME.effectSelect = function (channel, control, value, status, group) {
 	if (fxChainSelectKnob) {
 		engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "]", "chain_selector", (value-64));
 		// Set Leds
-		// Jockey3ME.effectSelectTimer = engine.beginTimer(100, "Jockey3ME.effectSelectLedSet(" + status + "," + currentDeck + ")",1);
+		// Jockey3ME.effectSelectTimer = engine.beginTimer(100, () => { Jockey3ME.effectSelectLedSet(status, currentDeck); },true);
 		var num_parameters = engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect1]", "num_parameters");
 		if (num_parameters > 3) {
 			num_parameters = 3;
@@ -332,8 +332,8 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 						continue;
 					}
 					if (Jockey3ME.fxSelectKnobPushIterator[r]) {
-						engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-						engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+						engine.beginTimer(400,() => { midi.sendShortMsg(status, control, 0x7F); }, true);
+						engine.beginTimer(600,() => { midi.sendShortMsg(status, control, 0x00); }, true);
 						break fxSelectKnobPushBreak;
 					}
 				}
@@ -355,21 +355,21 @@ Jockey3ME.effectSelectPush = function (channel, control, value, status, group) {
 					if (engine.getValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_loaded")) {
 						engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_type",Jockey3ME.fxSelectKnobParamLinkChose);
 						engine.setValue("[EffectRack1_EffectUnit" + currentDeck + "_Effect" + Jockey3ME.fxSelectKnobPush[currentDeck-1] + "]","parameter" + Jockey3ME.fxSelectKnobParamChose + "_link_inverse",Jockey3ME.fxSelectKnobParamLinkInverseChose);
-						engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-						engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
-						engine.beginTimer(800,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-						engine.beginTimer(1000,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+						engine.beginTimer(400, () => { midi.sendShortMsg(status, control, 0x7F); }, true);
+						engine.beginTimer(600, () => { midi.sendShortMsg(status, control, 0x00); }, true);
+						engine.beginTimer(800, () => { midi.sendShortMsg(status, control, 0x7F); }, true);
+						engine.beginTimer(1000, () => { midi.sendShortMsg(status, control, 0x00); }, true);
 					}
 				}
 			}
 			Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
 		} else {
 			Jockey3ME.fxSelectKnobPush[currentDeck-1] = 0;
-			engine.beginTimer(400,"midi.sendShortMsg(" + status + "," + control + ",0x7F)",1);
-			engine.beginTimer(600,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+			engine.beginTimer(400,() => { midi.sendShortMsg(status, control, 0x7F); }, true);
+			engine.beginTimer(600,() => { midi.sendShortMsg(status, control, 0x00); }, true);
 		}
 		midi.sendShortMsg(status,control,0x7F);
-		engine.beginTimer(200,"midi.sendShortMsg(" + status + "," + control + ",0x00)",1);
+		engine.beginTimer(200, () => {midi.sendShortMsg(status, control, 0x00); }, true);
 	}
 }
 

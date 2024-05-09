@@ -14,18 +14,14 @@ class SoundManager;
 class PlayerManager;
 class ControlObject;
 class SoundDevice;
+class SoundDeviceId;
 class DlgPrefSoundItem;
 class ControlProxy;
 
-/*
- * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
- * on EngineMixer that emits every time a channel is added, and a slot here
- * that updates the dialog accordingly.
- */
+// TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
+// on EngineMaster that emits every time a channel is added, and a slot here
+// that updates the dialog accordingly.
 
-/**
- * Class representing a preferences pane to configure sound devices for Mixxx.
- */
 class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
@@ -72,7 +68,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void engineClockChanged(int index);
     void refreshDevices();
     void settingChanged();
-    void deviceSettingChanged();
+    void deviceChanged();
+    void deviceChannelsChanged();
     void queryClicked();
 
   private:
@@ -97,6 +94,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     ControlProxy* m_pMicMonitorMode;
     QList<SoundDevicePointer> m_inputDevices;
     QList<SoundDevicePointer> m_outputDevices;
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedOutputChannelIndices;
+    QHash<DlgPrefSoundItem*, QPair<SoundDeviceId, int>> m_selectedInputChannelIndices;
     bool m_settingsModified;
     bool m_bLatencyChanged;
     bool m_bSkipConfigClear;

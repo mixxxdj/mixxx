@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef Q_OS_WIN
+#ifdef _WIN32
 //Enable unicode in libsndfile on Windows
 //(sf_open uses UTF-8 otherwise)
 #include <windows.h>

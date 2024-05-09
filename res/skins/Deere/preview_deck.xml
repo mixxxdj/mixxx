@@ -29,12 +29,13 @@
                 <ObjectName>PreviewDeckTextRow</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Text>
+                  <TrackProperty>
                     <TooltipId>text</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
                     <Group><Variable name="group"/></Group>
+                    <Property>info</Property>
                     <Elide>right</Elide>
-                  </Text>
+                  </TrackProperty>
 
                   <Template src="skin:left_1state_button.xml">
                     <SetVariable name="TooltipId">eject</SetVariable>

@@ -77,7 +77,9 @@ class Beats : private std::enable_shared_from_this<Beats> {
         ConstIterator(const Beats* beats,
                 std::vector<BeatMarker>::const_iterator it,
                 int beatOffset)
-                : m_beats(beats), m_it(it), m_beatOffset(beatOffset) {
+                : m_beats(beats),
+                  m_it(it),
+                  m_beatOffset(beatOffset) {
             updateValue();
         }
 
@@ -133,7 +135,8 @@ class Beats : private std::enable_shared_from_this<Beats> {
         difference_type operator-(const ConstIterator& other) const;
 
         friend bool operator==(const ConstIterator& lhs, const ConstIterator& rhs) {
-            return lhs.m_beats == rhs.m_beats && lhs.m_it == rhs.m_it &&
+            return lhs.m_beats == rhs.m_beats &&
+                    lhs.m_it == rhs.m_it &&
                     lhs.m_beatOffset == rhs.m_beatOffset;
         }
 

@@ -1,5 +1,5 @@
 # This file is part of Mixxx, Digital DJ'ing software.
-# Copyright (C) 2001-2023 Mixxx Development Team
+# Copyright (C) 2001-2024 Mixxx Development Team
 # Distributed under the GNU General Public Licence (GPL) version 2 or any later
 # later version. See the LICENSE file for details.
 
@@ -52,19 +52,19 @@ endif()
 
 find_path(PortAudio_INCLUDE_DIR
   NAMES portaudio.h
-  PATHS ${PC_PortAudio_INCLUDE_DIRS}
+  HINTS ${PC_PortAudio_INCLUDE_DIRS}
   DOC "PortAudio include directory")
 mark_as_advanced(PortAudio_INCLUDE_DIR)
 
 # Temporary hack until https://github.com/PortAudio/portaudio/pull/635 is released.
 find_path(PortAudio_ALSA_H
   NAMES pa_linux_alsa.h
-  PATHS ${PC_PortAudio_INCLUDE_DIRS})
+  HINTS ${PC_PortAudio_INCLUDE_DIRS})
 mark_as_advanced(PortAudio_ALSA_H)
 
 find_library(PortAudio_LIBRARY
   NAMES portaudio
-  PATHS ${PC_PortAudio_LIBRARY_DIRS}
+  HINTS ${PC_PortAudio_LIBRARY_DIRS}
   DOC "PortAudio library"
 )
 mark_as_advanced(PortAudio_LIBRARY)

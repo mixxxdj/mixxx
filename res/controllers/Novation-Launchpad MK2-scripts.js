@@ -3903,6 +3903,10 @@ var NLMK2 = (function () {
 	};
 	const numDecks = 4;
 	const numSamplers = 64;
+  // use 'root.master.num_samplers'?
+  if (engine.getValue("[App]", "num_samplers") < numSamplers) {
+    engine.setValue("[App]", "num_samplers", numSamplers);
+  }
 	const getChannelNameForOrdinal = function (i) {
 	  return i < numDecks ? ['Channel', i + 1] : ['Sampler', i - 4 + 1];
 	};
@@ -4410,7 +4414,7 @@ var NLMK2 = (function () {
 	    waveform_zoom: {
 	      group: `[${type}${i}]`,
 	      name: 'waveform_zoom',
-	      type: '1.0 - 6.0'
+	      type: '1.0 - 10.0'
 	    },
 	    waveform_zoom_up: {
 	      group: `[${type}${i}]`,
@@ -4903,7 +4907,7 @@ var NLMK2 = (function () {
 	  start(interval) {
 	    if (this._state == null) {
 	      const started = Date.now();
-	      const handle = engine.beginTimer(interval, this.task);
+	      const handle = engine.beginTimer(interval, this.task.bind(this));
 	      this._state = {
 	        handle,
 	        started

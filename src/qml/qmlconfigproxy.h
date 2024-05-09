@@ -18,8 +18,11 @@ class QmlConfigProxy : public QObject {
             UserSettingsPointer pConfig,
             QObject* parent = nullptr);
 
+    // We use method here instead of properties as there is no way to achieve property binding
+    // with UserSettings, since there is no synchronisation upon mutations.
     Q_INVOKABLE QVariantList getHotcueColorPalette();
     Q_INVOKABLE QVariantList getTrackColorPalette();
+    Q_INVOKABLE int getMultiSamplingLevel();
 
     static QmlConfigProxy* create(QQmlEngine* pQmlEngine, QJSEngine* pJsEngine);
     static inline void registerUserSettings(UserSettingsPointer pConfig) {

@@ -84,7 +84,7 @@ DJTechiMixReload.init = function(ID)
     DJTechiMixReload.setbutton["[Channel2]"] = false;
 
     DJTechiMixReload.allleadson();
-    engine.beginTimer(4000,"DJTechiMixReload.allleadsoff()",true);
+    engine.beginTimer(4000, DJTechiMixReload.allleadsoff ,true);
     for(var deck = 1; deck <= 2; deck++){
     engine.connectControl("[Channel" + deck + "]","play","DJTechiMixReload.deck" + deck + "play");
     engine.connectControl("[Channel" + deck + "]","cue_default","DJTechiMixReload.deck" + deck + "cue");

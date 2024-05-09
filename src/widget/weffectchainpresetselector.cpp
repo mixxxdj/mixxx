@@ -32,8 +32,10 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             node, context, m_pEffectsManager);
 
     VERIFY_OR_DEBUG_ASSERT(m_pChain != nullptr) {
-        SKIN_WARNING(node, context)
-                << "EffectChainPresetSelector node could not attach to EffectChain";
+        SKIN_WARNING(node,
+                context,
+                QStringLiteral("EffectChainPresetSelector node could not "
+                               "attach to EffectChain"));
         return;
     }
 
@@ -75,7 +77,7 @@ void WEffectChainPresetSelector::populate() {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
 
-    const EffectsBackendManagerPointer bem = m_pEffectsManager->getBackendManager();
+    const EffectsBackendManagerPointer pBackendManager = m_pEffectsManager->getBackendManager();
     QStringList effectNames;
     for (int i = 0; i < presetList.size(); i++) {
         auto pChainPreset = presetList.at(i);
@@ -87,7 +89,10 @@ void WEffectChainPresetSelector::populate() {
                 QStringLiteral("<b>") + pChainPreset->name() + QStringLiteral("</b>");
         for (const auto& pEffectPreset : pChainPreset->effectPresets()) {
             if (!pEffectPreset->isEmpty()) {
-                effectNames.append(bem->getDisplayNameForEffectPreset(pEffectPreset));
+                EffectManifestPointer pManifest = pBackendManager->getManifest(pEffectPreset);
+                if (pManifest) {
+                    effectNames.append(pManifest->name());
+                }
             }
         }
         if (effectNames.size() > 1) {
