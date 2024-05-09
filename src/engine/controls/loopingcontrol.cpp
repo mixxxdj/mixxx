@@ -579,6 +579,23 @@ void LoopingControl::hintReader(gsl::not_null<HintVector*> pHintList) {
             loop_hint.frameCount = Hint::kFrameCountForward;
             pHintList->append(loop_hint);
         }
+        // We anticipate a potential loop being set from its end point
+        mixxx::BeatsPointer pBeats = m_pBeats;
+        if (!pBeats) {
+            return;
+        }
+        double beats = m_pCOBeatLoopSize->get();
+        bool quantize = m_pQuantizeEnabled->toBool();
+        auto currentPosition = !quantize
+                ? m_currentPosition.getValue()
+                : findQuantizedBeatloopStart(
+                          pBeats, m_currentPosition.getValue(), beats);
+        loop_hint.type = Hint::Type::LoopStart;
+        loop_hint.frame = static_cast<SINT>(
+                pBeats->findNBeatsFromPosition(currentPosition, -beats)
+                        .toLowerFrameBoundary()
+                        .value());
+        loop_hint.frameCount = Hint::kFrameCountForward;
     }
 }
 
