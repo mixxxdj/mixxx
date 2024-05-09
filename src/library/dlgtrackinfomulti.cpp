@@ -21,7 +21,7 @@
 
 namespace {
 
-const QString kVarioustext = char('<') + QObject::tr("various") + char('>');
+const QString kVariousText = char('<') + QObject::tr("various") + char('>');
 
 /// If value differs from the current value, add it to the list.
 /// If new and current are identical, keep only one. Later on we can use the
@@ -29,27 +29,27 @@ const QString kVarioustext = char('<') + QObject::tr("various") + char('>');
 /// List can be a QStringList or a QList<double>
 template<typename T>
 void appendToTagList(QList<T>* pList, const T& value) {
-    if (pList->isEmpty() || pList->at(0) != value) {
+    if (pList->isEmpty() || !pList->contains(value)) {
         pList->append(value);
     }
 }
 
-void setItalic(QWidget* editor, bool italic) {
-    auto font = editor->font();
+void setItalic(QWidget* pEditor, bool italic) {
+    auto font = pEditor->font();
     if (font.italic() == italic) {
         return;
     }
     font.setItalic(italic);
-    editor->setFont(font);
+    pEditor->setFont(font);
 }
 
-void setBold(QWidget* editor, bool bold) {
-    auto font = editor->font();
+void setBold(QWidget* pEditor, bool bold) {
+    auto font = pEditor->font();
     if (font.bold() == bold) {
         return;
     }
     font.setBold(bold);
-    editor->setFont(font);
+    pEditor->setFont(font);
 }
 
 /// Returns either the only value or a joint list of values.
@@ -98,7 +98,7 @@ QString getCommonValueOrVariousStringAndFormatFont(QWidget* pWidget,
         if (toggleBold) {
             setBold(pWidget, false);
         }
-        return kVarioustext;
+        return kVariousText;
     }
 }
 
@@ -648,7 +648,7 @@ void DlgTrackInfoMulti::trackColorDialogSetColorStyleButton(
                 "           stop: 0.6 #00FFFF,"
                 "           stop: 0.8 #0000FF,"
                 "           stop: 1 #FF00FF)}");
-        btnColorPicker->setText(kVarioustext);
+        btnColorPicker->setText(kVariousText);
         m_pColorPicker->resetSelectedColor();
     } else { // no color
         btnColorPicker->setText(tr("(no color)"));
