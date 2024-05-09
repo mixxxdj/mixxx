@@ -45,8 +45,8 @@ const QString kBuiltinFileSuffix =
 /// @return The formatted string
 QString formatFilePath(UserSettingsPointer pConfig,
         QColor linkColor,
-        QString name,
-        QFileInfo file) {
+        const QString& name,
+        const QFileInfo& file) {
     QString systemMappingPath = resourceMappingsPath(pConfig);
     QString scriptFileLink = coloredLinkString(
             linkColor,
