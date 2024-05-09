@@ -67,6 +67,10 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     void replaceTrackRecords(const QList<mixxx::TrackRecord>& trackRecords);
 
     void updateTrackMetadataFields();
+    void addValuesToComboBox(
+            QComboBox* pBox,
+            QStringList& values,
+            bool sort = false);
     void updateCoverArtFromTracks();
     void trackColorDialogSetColorStyleButton(const mixxx::RgbColor::optional_t& color,
             bool variousColors = false);

@@ -1,5 +1,6 @@
 #include "library/dlgtrackinfomulti.h"
 
+#include <QLineEdit>
 #include <QStyleFactory>
 #include <QtDebug>
 
@@ -15,6 +16,7 @@
 #include "util/color/color.h"
 #include "util/datetime.h"
 #include "util/duration.h"
+#include "util/optional.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -22,6 +24,8 @@
 namespace {
 
 const QString kVariousText = char('<') + QObject::tr("various") + char('>');
+const char* kOrigValProp = "origVal";
+const QString kClearItem = QStringLiteral("clearItem");
 
 /// If value differs from the current value, add it to the list.
 /// If new and current are identical, keep only one. Later on we can use the
@@ -52,25 +56,18 @@ void setBold(QWidget* pEditor, bool bold) {
     pEditor->setFont(font);
 }
 
-/// Returns either the only value or a joint list of values.
-/// If there's more than one value make the text italic to indicate multiple
-/// values, also if only one is not empty.
-/// pWidget can be a QLineEdit or a QPlainTextEdit (comment)
-QString maybeJoinValuesAndFormatFont(QWidget* pWidget, QStringList& values) {
-    if (values.size() == 1) {
-        setItalic(pWidget, false);
-        return values[0];
-    } else {
-        setItalic(pWidget, true);
-        // remove empty strings to avoid redundant separators when joining
-        values.removeAll("");
-        if (qobject_cast<QPlainTextEdit*>(pWidget)) {
-            // insert a separator line between comment values
-            return values.join("\n---\n");
-        } else {
-            return values.join(';');
-        }
+/// Check if the text has been edited, i.e. is not <various>
+std::optional<QString> validEditText(QComboBox* pBox) {
+    QString origVal = pBox->property(kOrigValProp).toString();
+    if (pBox->currentIndex() == -1 &&
+            (pBox->lineEdit()->text() == origVal ||
+                    pBox->lineEdit()->placeholderText() == kVariousText)) {
+        // This is either a single-value box and the value changed, or this is a
+        // multi-value box and the placeholder text was removed when clearing it.
+        return std::nullopt;
     }
+    // We have a new text
+    return pBox->currentText().trimmed();
 }
 
 /// Returns either the only value or the 'various' string.
@@ -155,34 +152,26 @@ void DlgTrackInfoMulti::init() {
             this,
             &DlgTrackInfoMulti::slotImportMetadataFromFiles);
 
-    QList<QWidget*> lineEdits;
-    lineEdits.append(txtArtist);
-    lineEdits.append(txtTitle);
-    lineEdits.append(txtTitle);
-    lineEdits.append(txtAlbum);
-    lineEdits.append(txtAlbumArtist);
-    lineEdits.append(txtComposer);
-    lineEdits.append(txtGenre);
-    lineEdits.append(txtYear);
-    lineEdits.append(txtTrackNumber);
-    lineEdits.append(txtGrouping);
+    QList<QComboBox*> valueComboBoxes;
+    valueComboBoxes.append(txtArtist);
+    valueComboBoxes.append(txtTitle);
+    valueComboBoxes.append(txtTitle);
+    valueComboBoxes.append(txtAlbum);
+    valueComboBoxes.append(txtAlbumArtist);
+    valueComboBoxes.append(txtComposer);
+    valueComboBoxes.append(txtGenre);
+    valueComboBoxes.append(txtYear);
+    valueComboBoxes.append(txtKey);
+    valueComboBoxes.append(txtTrackNumber);
+    valueComboBoxes.append(txtGrouping);
 
-    // Restore default font as soon as mulit-value fields are edited.
-    // Make font italic when multiple tag values are restored from file.
-    // Single-line QLineEdits:
-    for (auto* pEditor : lineEdits) {
-        // just to be safe
-        QLineEdit* pLine = qobject_cast<QLineEdit*>(pEditor);
-        if (!pLine) {
-            continue;
-        }
-        connect(pLine,
-                &QLineEdit::textEdited,
-                this,
-                [pLine]() {
-                    setItalic(pLine, !pLine->isModified());
-                });
+    for (QComboBox* pBox : valueComboBoxes) {
+        // This will be displayed if there are multiple values
+        pBox->setEditable(true);
+        // We allow editing the value but we don't want to add each edit to the item list
+        pBox->setInsertPolicy(QComboBox::NoInsert);
     }
+
     // Same for the comment editor, emits a different signal
     connect(txtComment,
             &QPlainTextEdit::modificationChanged,
@@ -358,6 +347,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     QStringList composers;
     QStringList grouping;
     QStringList years;
+    QStringList keys;
     QStringList nums;
     QStringList comments;
     QList<double> bpms;
@@ -375,6 +365,7 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         appendToTagList(&composers, rec.getMetadata().getTrackInfo().getComposer());
         appendToTagList(&grouping, rec.getMetadata().getTrackInfo().getGrouping());
         appendToTagList(&years, rec.getMetadata().getTrackInfo().getYear());
+        appendToTagList(&keys, rec.getMetadata().getTrackInfo().getKeyText());
         appendToTagList(&nums, rec.getMetadata().getTrackInfo().getTrackNumber());
         appendToTagList(&comments, rec.getMetadata().getTrackInfo().getComment());
 
@@ -396,18 +387,23 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
         appendToTagList(&filetypes, rec.getFileType());
     }
 
-    // Since Qt6 QLineEdit->setText() also calls setModified(false). When saving
-    // tracks we can use this flag to only write tags the user modified.
-    txtTitle->setText(maybeJoinValuesAndFormatFont(txtTitle, titles));
-    txtArtist->setText(maybeJoinValuesAndFormatFont(txtArtist, artists));
-    txtAlbum->setText(maybeJoinValuesAndFormatFont(txtAlbum, aTitles));
-    txtAlbumArtist->setText(maybeJoinValuesAndFormatFont(txtAlbumArtist, aArtists));
-    txtGenre->setText(maybeJoinValuesAndFormatFont(txtGenre, genres));
-    txtComposer->setText(maybeJoinValuesAndFormatFont(txtComposer, composers));
-    txtGrouping->setText(maybeJoinValuesAndFormatFont(txtGrouping, grouping));
-    txtComment->setPlainText(maybeJoinValuesAndFormatFont(txtComment, comments));
-    txtYear->setText(getCommonValueOrVariousStringAndFormatFont(txtYear, years));
-    txtTrackNumber->setText(getCommonValueOrVariousStringAndFormatFont(txtTrackNumber, nums));
+    addValuesToComboBox(txtTitle, titles);
+    addValuesToComboBox(txtArtist, artists);
+    addValuesToComboBox(txtAlbum, aTitles);
+    addValuesToComboBox(txtAlbumArtist, aArtists);
+    addValuesToComboBox(txtGenre, genres);
+    addValuesToComboBox(txtComposer, composers);
+    addValuesToComboBox(txtGrouping, grouping);
+    addValuesToComboBox(txtYear, years, true);
+    addValuesToComboBox(txtKey, keys, true);
+    addValuesToComboBox(txtTrackNumber, nums, true);
+
+    // The comment tag is special: it's the only one that may have multiple lines,
+    // but we can't have a multi-line editor and a combobox at the same time.
+    // TODO(ronso0) Maybe we can, but for now we display all comments in the editor,
+    // separated by dashed lines.
+    comments.removeAll(""); // avoid redundant separators when joining
+    txtComment->setPlainText(comments.join("\n---\n"));
 
     // Non-editable fields
     if (bpms.size() > 1) {
@@ -444,47 +440,95 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     }
 }
 
+void DlgTrackInfoMulti::addValuesToComboBox(QComboBox* pBox, QStringList& values, bool sort) {
+    pBox->clear();
+    pBox->lineEdit()->setPlaceholderText(QString());
+    if (values.isEmpty()) {
+        pBox->setProperty(kOrigValProp, QString());
+        return;
+    }
+    if (values.size() == 1) {
+        pBox->setCurrentText(values.first());
+        pBox->setProperty(kOrigValProp, values.first());
+    } else { // items > 1
+        if (sort) {
+            values.sort();
+        }
+        // The empty item allows to clear the text for all tracks.
+        // TODO Maybe add "(Clear for all tracks)" display text?
+        pBox->addItem(tr("clear tag for all tracks"), kClearItem);
+        pBox->addItems(values);
+        pBox->setCurrentIndex(-1);
+        // Show '<various>' placeholder.
+        // The QComboBox::lineEdit() placeholder actually providex a nice UX:
+        // it's displayed with a dim color and it persists until new text is
+        // entered. However, this prevents clearing the text.
+        pBox->lineEdit()->setPlaceholderText(kVariousText);
+        pBox->setProperty(kOrigValProp, kVariousText);
+
+        connect(pBox,
+                &QComboBox::currentIndexChanged,
+                [pBox]() {
+                    // Check if the Clear item has been selected.
+                    // If yes, remove the placeholder in order to have a safe
+                    // indicator whether the box was edited in validEditText().
+                    auto data = pBox->currentData(Qt::UserRole);
+                    if (data.isValid() && data.toString() == kClearItem) {
+                        pBox->lineEdit()->setPlaceholderText(QString());
+                        pBox->setCurrentIndex(-1); // This clears the edit text
+                        pBox->removeItem(0);
+                    }
+                });
+    }
+}
+
 void DlgTrackInfoMulti::saveTracks() {
     if (m_pLoadedTracks.isEmpty()) {
         return;
     }
 
+    // Check the values so we don't have to do it for every track record
+    std::optional<QString> title = validEditText(txtTitle);
+    std::optional<QString> artist = validEditText(txtArtist);
+    std::optional<QString> album = validEditText(txtAlbum);
+    std::optional<QString> albumArtist = validEditText(txtAlbumArtist);
+    std::optional<QString> genre = validEditText(txtGenre);
+    std::optional<QString> composer = validEditText(txtComposer);
+    std::optional<QString> grouping = validEditText(txtGrouping);
+    std::optional<QString> year = validEditText(txtYear);
+    std::optional<QString> key = validEditText(txtKey);
+    std::optional<QString> num = validEditText(txtTrackNumber);
+
     for (auto& rec : m_trackRecords) {
-        if (txtTitle->isModified()) {
-            rec.refMetadata().refTrackInfo().setTitle(
-                    txtTitle->text().trimmed());
+        if (title.has_value()) {
+            rec.refMetadata().refTrackInfo().setTitle(title.value());
         }
-        if (txtArtist->isModified()) {
-            rec.refMetadata().refTrackInfo().setArtist(
-                    txtArtist->text().trimmed());
+        if (artist.has_value()) {
+            rec.refMetadata().refTrackInfo().setArtist(artist.value());
         }
-        if (txtAlbum->isModified()) {
-            rec.refMetadata().refAlbumInfo().setTitle(
-                    txtAlbum->text().trimmed());
+        if (album.has_value()) {
+            rec.refMetadata().refAlbumInfo().setTitle(album.value());
         }
-        if (txtAlbumArtist->isModified()) {
-            rec.refMetadata().refAlbumInfo().setArtist(
-                    txtAlbumArtist->text().trimmed());
+        if (albumArtist.has_value()) {
+            rec.refMetadata().refAlbumInfo().setArtist(albumArtist.value());
         }
-        if (txtGenre->isModified()) {
-            rec.refMetadata().refTrackInfo().setGenre(
-                    txtGenre->text().trimmed());
+        if (genre.has_value()) {
+            rec.refMetadata().refTrackInfo().setGenre(genre.value());
         }
-        if (txtComposer->isModified()) {
-            rec.refMetadata().refTrackInfo().setComposer(
-                    txtComposer->text().trimmed());
+        if (composer.has_value()) {
+            rec.refMetadata().refTrackInfo().setComposer(composer.value());
         }
-        if (txtGrouping->isModified()) {
-            rec.refMetadata().refTrackInfo().setGrouping(
-                    txtGrouping->text().trimmed());
+        if (grouping.has_value()) {
+            rec.refMetadata().refTrackInfo().setGrouping(grouping.value());
         }
-        if (txtYear->isModified()) {
-            rec.refMetadata().refTrackInfo().setYear(
-                    txtYear->text().trimmed());
+        if (year.has_value()) {
+            rec.refMetadata().refTrackInfo().setYear(year.value());
         }
-        if (txtTrackNumber->isModified()) {
-            rec.refMetadata().refTrackInfo().setTrackNumber(
-                    txtTrackNumber->text().trimmed());
+        if (key.has_value()) {
+            rec.refMetadata().refTrackInfo().setKeyText(key.value());
+        }
+        if (num.has_value()) {
+            rec.refMetadata().refTrackInfo().setTrackNumber(num.value());
         }
         if (txtComment->document()->isModified()) {
             rec.refMetadata().refTrackInfo().setComment(
