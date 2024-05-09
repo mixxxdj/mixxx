@@ -52,7 +52,14 @@ class ControllerRenderingEngine : public QObject {
     }
 
   public slots:
+    // Request sending frame data to the device. The task will be run in the
+    // rendering event loop. This method should only be called once received the
+    // `frameRendered` signal
     virtual void requestSendingFrameData(Controller* controller, const QByteArray& frame);
+    // Request setting up the rendering context for QML engine and wait till it
+    // is completed. The task will be run in the rendering event loop to ensure
+    // thread affinity of engine components. `isValid` can be used to ensure
+    // that the setup was successful
     void requestEngineSetup(std::shared_ptr<QQmlEngine> qmlEngine);
     void start();
     virtual bool stop();

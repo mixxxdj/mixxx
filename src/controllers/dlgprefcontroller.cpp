@@ -38,6 +38,29 @@ QString mappingNameToPath(const QString& directory, const QString& mappingName) 
     return directory + fileName + kMappingExt;
 }
 
+const QString kBuiltinFileSuffix =
+        QStringLiteral(" (") + QObject::tr("built-in") + QStringLiteral(")");
+
+/// @brief  Format a controller file to display attributes (system, missing) in the UI
+/// @return The formatted string
+QString formatFilePath(UserSettingsPointer pConfig,
+        QColor linkColor,
+        QString name,
+        QFileInfo file) {
+    QString systemMappingPath = resourceMappingsPath(pConfig);
+    QString scriptFileLink = coloredLinkString(
+            linkColor,
+            name,
+            file.absoluteFilePath());
+    if (!file.exists()) {
+        scriptFileLink +=
+                QStringLiteral(" (") + QObject::tr("missing") + QStringLiteral(")");
+    } else if (file.absoluteFilePath().startsWith(systemMappingPath)) {
+        scriptFileLink += kBuiltinFileSuffix;
+    }
+    return scriptFileLink;
+}
+
 } // namespace
 
 DlgPrefController::DlgPrefController(
@@ -397,49 +420,21 @@ QString DlgPrefController::mappingFileLinks(
         return QString();
     }
 
-    const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
-    QString systemMappingPath = resourceMappingsPath(m_pConfig);
     QStringList linkList;
-    QString xmlFileLink = coloredLinkString(
+    linkList.append(formatFilePath(m_pConfig,
             m_pLinkColor,
             QFileInfo(pMapping->filePath()).fileName(),
-            pMapping->filePath());
-    if (pMapping->filePath().startsWith(systemMappingPath)) {
-        xmlFileLink += builtinFileSuffix;
-    }
-    linkList << xmlFileLink;
-
+            QFileInfo(pMapping->filePath())));
     for (const auto& script : pMapping->getScriptFiles()) {
-        QString scriptFileLink = coloredLinkString(
+        linkList.append(formatFilePath(m_pConfig,
                 m_pLinkColor,
                 script.name,
-                script.file.absoluteFilePath());
-        if (!script.file.exists()) {
-            scriptFileLink +=
-                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
-        } else if (script.file.absoluteFilePath().startsWith(
-                           systemMappingPath)) {
-            scriptFileLink += builtinFileSuffix;
-        }
-
-        linkList << scriptFileLink;
+                QFileInfo(script.file.absoluteFilePath())));
     }
-
 #ifdef MIXXX_USE_QML
     for (const auto& qmlLibrary : pMapping->getModules()) {
-        QString scriptFileLink = coloredLinkString(
-                m_pLinkColor,
-                qmlLibrary.dirinfo.fileName(),
-                qmlLibrary.dirinfo.absoluteFilePath());
-        if (!qmlLibrary.dirinfo.exists()) {
-            scriptFileLink +=
-                    QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
-        } else if (qmlLibrary.dirinfo.absoluteFilePath().startsWith(
-                           systemMappingPath)) {
-            scriptFileLink += builtinFileSuffix;
-        }
-
-        linkList << scriptFileLink;
+        auto fileInfo = QFileInfo(qmlLibrary.dirinfo.absoluteFilePath());
+        linkList.append(formatFilePath(m_pConfig, m_pLinkColor, fileInfo.fileName(), fileInfo));
     }
 #endif
     return linkList.join("<br/>");

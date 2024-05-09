@@ -351,11 +351,11 @@ void ControllerRenderingEngine::send(Controller* controller, const QByteArray& f
 
     if (CmdlineArgs::Instance()
                     .getControllerDebug()) {
-        auto endOfRender = Clock::now();
+        auto endOfFrameCycle = Clock::now();
         kLogger.debug()
                 << "Frame took "
                 << std::chrono::duration_cast<std::chrono::milliseconds>(
-                           endOfRender - m_nextFrameStart)
+                           endOfFrameCycle - m_nextFrameStart)
                            .count()
                 << "milliseconds and frame has" << frame.size() << "bytes";
     }

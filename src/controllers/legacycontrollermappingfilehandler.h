@@ -97,11 +97,11 @@ class LegacyControllerMappingFileHandler {
     static QMap<QString, QImage::Format> kSupportedPixelFormat;
     static QMap<QString, LegacyControllerMapping::ScreenInfo::ColorEndian> kEndianFormat;
     // Maximum target frame per request for a screen controller
-    static const int s_maxTargetFps = 240;
+    static constexpr int kMaxTargetFps = 240;
     // Maximum MSAA value that can be used
-    static const int s_maxMsaa = 16;
+    static constexpr int kMaxMsaa = 16;
     // Maximum time allowed for a screen to run a splash off animation
-    static const int s_maxSplashOffDuration = 3000;
+    static constexpr int kMaxSplashOffDuration = 3000;
 
     friend class ControllerRenderingEngineTest;
 #endif

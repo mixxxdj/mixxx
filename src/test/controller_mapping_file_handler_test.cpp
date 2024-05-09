@@ -209,7 +209,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
     EXPECT_CALL(*mapping, addScreenInfo(_, _, _, _, _, _, _, _, _)).Times(0);
     EXPECT_LOG_MSG(QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
-                    .arg(s_maxTargetFps));
+                    .arg(kMaxTargetFps));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -242,7 +242,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
-                    .arg(s_maxTargetFps));
+                    .arg(kMaxTargetFps));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -272,7 +272,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
-                    .arg(s_maxTargetFps));
+                    .arg(kMaxTargetFps));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -305,7 +305,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingTargetFPS) {
     EXPECT_LOG_MSG(
             QtWarningMsg,
             QString("Invalid target FPS. Target FPS must be between 1 and %0")
-                    .arg(s_maxTargetFps));
+                    .arg(kMaxTargetFps));
 
     addScriptFilesToMapping(
             doc.documentElement(),
@@ -875,7 +875,7 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
                     _,
                     _,
                     _,
-                    std::chrono::milliseconds(s_maxSplashOffDuration),
+                    std::chrono::milliseconds(kMaxSplashOffDuration),
                     _,
                     _,
                     _,
@@ -884,8 +884,8 @@ TEST_F(LegacyControllerMappingFileHandlerTest, screenMappingExtraIntPropertiesDe
             QtWarningMsg,
             QString("Invalid splashoff duration. Splashoff duration must "
                     "be between 0 and %0. Clamping to %1")
-                    .arg(s_maxSplashOffDuration)
-                    .arg(s_maxSplashOffDuration));
+                    .arg(kMaxSplashOffDuration)
+                    .arg(kMaxSplashOffDuration));
 
     addScriptFilesToMapping(
             doc.documentElement(),

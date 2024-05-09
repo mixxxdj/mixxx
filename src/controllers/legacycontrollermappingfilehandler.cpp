@@ -111,31 +111,31 @@ bool parseAndAddScreenDefinition(const QDomElement& screen, LegacyControllerMapp
     uint splashOff = screen.attribute("splashoff", "0").toUInt(&ok);
     LOG_OF_NOT_OK("splashoff", "an unsigned integer");
 
-    if (!targetFps || targetFps > LegacyControllerMappingFileHandler::s_maxTargetFps) {
+    if (!targetFps || targetFps > LegacyControllerMappingFileHandler::kMaxTargetFps) {
         kLogger.warning()
                 << "Invalid target FPS. Target FPS must be between 1 and"
-                << LegacyControllerMappingFileHandler::s_maxTargetFps;
+                << LegacyControllerMappingFileHandler::kMaxTargetFps;
         return false;
     }
-    if (!msaa || msaa > LegacyControllerMappingFileHandler::s_maxMsaa) {
+    if (!msaa || msaa > LegacyControllerMappingFileHandler::kMaxMsaa) {
         kLogger.warning()
                 << "Invalid MSAA value. MSAA value must be between 1 and"
-                << LegacyControllerMappingFileHandler::s_maxMsaa;
+                << LegacyControllerMappingFileHandler::kMaxMsaa;
         return false;
     }
 
-    if (splashOff > LegacyControllerMappingFileHandler::s_maxSplashOffDuration) {
+    if (splashOff > LegacyControllerMappingFileHandler::kMaxSplashOffDuration) {
         kLogger.warning()
                 << QString("Invalid splashoff duration. Splashoff duration "
                            "must be "
                            "between 0 and %1. Clamping to %2")
                            .arg(QString::number(
                                         LegacyControllerMappingFileHandler::
-                                                s_maxSplashOffDuration),
+                                                kMaxSplashOffDuration),
                                    QString::number(
                                            LegacyControllerMappingFileHandler::
-                                                   s_maxSplashOffDuration));
-        splashOff = LegacyControllerMappingFileHandler::s_maxSplashOffDuration;
+                                                   kMaxSplashOffDuration));
+        splashOff = LegacyControllerMappingFileHandler::kMaxSplashOffDuration;
     }
 
     if (!LegacyControllerMappingFileHandler::kSupportedPixelFormat.contains(pixelFormatName)) {
