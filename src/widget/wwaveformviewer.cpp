@@ -81,7 +81,7 @@ WWaveformViewer::WWaveformViewer(
 }
 
 #ifdef __STEM__
-bool WWaveformViewer::eventFilter(QObject*, QEvent* event) {
+bool WWaveformViewer::eventFilter(QObject* obj, QEvent* event) {
     switch (event->type()) {
     case QEvent::Move:
     case QEvent::WindowStateChange:
@@ -92,7 +92,7 @@ bool WWaveformViewer::eventFilter(QObject*, QEvent* event) {
     default:
         break;
     }
-    return false;
+    return WWidget::eventFilter(obj, event);
 }
 #endif
 

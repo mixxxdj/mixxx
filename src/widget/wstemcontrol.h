@@ -58,5 +58,8 @@ class WStemControl : public WWidget {
 
   private:
     QWidget* m_widget;
+    QColor m_stemColor;
     std::unique_ptr<ControlProxy> m_mutedCo;
+
+    void updateStyle();
 };

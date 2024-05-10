@@ -3220,5 +3220,6 @@ WStemControl WLabel {
   font-size: 14px;
 }
 WStemControl {
-  margin: 10px 15px 10px 15px;
+  border-radius: 7px;
+  opacity: 0.2;
 }

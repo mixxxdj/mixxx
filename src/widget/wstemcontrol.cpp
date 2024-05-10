@@ -126,31 +126,26 @@ WStemControl::WStemControl(QWidget* widgetGroup, QWidget* parent, const QString&
     layout()->addWidget(m_widget);
 
     m_mutedCo->connectValueChanged(this, [this](double value) {
-        QPalette pal = palette(); // we have to copy out the palette to edit it
-                                  // since it's const (probably for threadsafety)
-        QColor backgroundColor = pal.color(backgroundRole());
-        backgroundColor.setAlphaF(value == 1 ? 0.5 : 1.0);
-        pal.setColor(backgroundRole(), backgroundColor);
-        setAutoFillBackground(true);
-        setPalette(pal);
+        m_stemColor.setAlphaF(value == 1 ? 0.5 : 1.0);
+        updateStyle();
     });
 }
 
 void WStemControl::setStem(const StemInfo& stemInfo) {
-    QPalette pal = palette(); // we have to copy out the palette to edit it
-                              // since it's const (probably for threadsafety)
-    QColor backgroundColor = stemInfo.getColor();
-    backgroundColor.setAlphaF(m_mutedCo->get() == 1 ? 0.5 : 1.0);
-    pal.setColor(backgroundRole(), backgroundColor);
-    setAutoFillBackground(true);
-    setPalette(pal);
-
+    m_stemColor = stemInfo.getColor();
+    m_stemColor.setAlphaF(m_mutedCo->get() == 1 ? 0.5 : 1.0);
+    updateStyle();
     WLabel* label = findChild<WLabel*>("stem_label");
     VERIFY_OR_DEBUG_ASSERT(label) {
         qWarning() << "Cannot find the Label \"stem_label\" in the Stem control";
         return;
     }
     label->setText(stemInfo.getLabel());
+}
+
+void WStemControl::updateStyle() {
+    setStyleSheet(QString("WStemControl { background-color: %1; }")
+                          .arg(m_stemColor.name(QColor::HexArgb)));
 }
 
 void WStemControl::resizeEvent(QResizeEvent* e) {
