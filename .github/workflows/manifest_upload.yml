@@ -21,7 +21,10 @@ jobs:
           ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
           echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
-      - name: Delete obsolete files
+      - name: "Check out repository"
+        uses: actions/checkout@v4.1.1
+
+      - name: Upload Manifest
         if: env.SSH_AUTH_SOCK != null
         run: |
           rsync --verbose --archive --times --recursive "manifest/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
