@@ -1,0 +1,38 @@
+{
+  "macos-macosarm": {
+    "build_log_url": "https://github.com/mixxxdj/mixxx/actions/runs/9008574362",
+    "file_date": "2024-05-08T21:47:31.476530",
+    "file_sha256": "c9ad0bd7c02ac02a70d1d36a30f197945bdde2073b5dbf1e67badb310e3abd95",
+    "file_sha256_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-macosarm.dmg.sha256sum",
+    "file_size": 44841689,
+    "file_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-macosarm.dmg",
+    "git_branch": "HEAD",
+    "git_commit": "da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_commit_url": "https://github.com/mixxxdj/mixxx/commit/da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_describe": "2.4.1"
+  },
+  "macos-macosintel": {
+    "build_log_url": "https://github.com/mixxxdj/mixxx/actions/runs/9008574362",
+    "file_date": "2024-05-08T21:52:41.333432",
+    "file_sha256": "b4d43050b9462b510218c75a730e8c46f059ed9d723caf7fedae469e519d1c7e",
+    "file_sha256_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-macosintel.dmg.sha256sum",
+    "file_size": 48253380,
+    "file_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-macosintel.dmg",
+    "git_branch": "HEAD",
+    "git_commit": "da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_commit_url": "https://github.com/mixxxdj/mixxx/commit/da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_describe": "2.4.1"
+  },
+  "windows-win64": {
+    "build_log_url": "https://github.com/mixxxdj/mixxx/actions/runs/9008574362",
+    "file_date": "2024-05-08T21:26:48.138912",
+    "file_sha256": "1a63376d3f6e40a79072f2c32d9c9f821c2ec7f67b6082d14f8e1e78ac4f5a98",
+    "file_sha256_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-win64.msi.sha256sum",
+    "file_size": 67592192,
+    "file_url": "https://downloads.mixxx.org/releases/2.4.1/mixxx-2.4.1-win64.msi",
+    "git_branch": "HEAD",
+    "git_commit": "da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_commit_url": "https://github.com/mixxxdj/mixxx/commit/da261b6f006141fbca8b10490e73ad2211703d20",
+    "git_describe": "2.4.1"
+  }
+}
