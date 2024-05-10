@@ -29,6 +29,6 @@ jobs:
         run: |
           rsync --verbose --archive --times --recursive "manifest/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
         env:
-          DESTDIR: public_html/releases/2.4.1/
+          DESTDIR: public_html/downloads/releases/2.4.1/
           SSH_HOST: downloads-hostgator.mixxx.org
           SSH_USER: mixxx
