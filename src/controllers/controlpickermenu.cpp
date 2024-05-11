@@ -262,6 +262,30 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("BPM Tap"),
             tr("BPM tap button"),
             pBpmMenu);
+    addDeckAndSamplerControl("beats_set_halve",
+            tr("Halve BPM"),
+            tr("Multiply current BPM by 0.5"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_twothirds",
+            tr("2/3 BPM"),
+            tr("Multiply current BPM by 0.666"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_threefourths",
+            tr("3/4 BPM"),
+            tr("Multiply current BPM by 0.75"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_fourthirds",
+            tr("4/3 BPM"),
+            tr("Multiply current BPM by 1.333"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_threehalves",
+            tr("3/2 BPM"),
+            tr("Multiply current BPM by 1.5"),
+            pBpmMenu);
+    addDeckAndSamplerControl("beats_set_double",
+            tr("Double BPM"),
+            tr("Multiply current BPM by 2"),
+            pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("beats_adjust_faster",
             tr("Adjust Beatgrid Faster +.01"),

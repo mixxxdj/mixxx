@@ -108,6 +108,66 @@ BpmControl::BpmControl(const QString& group,
             &BpmControl::slotTranslateBeatsMove,
             Qt::DirectConnection);
 
+    m_pBeatsHalve = std::make_unique<ControlPushButton>(ConfigKey(group, "beats_set_halve"), false);
+    connect(m_pBeatsHalve.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Halve);
+                }
+            });
+    m_pBeatsTwoThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_twothirds"), false);
+    connect(m_pBeatsTwoThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::TwoThirds);
+                }
+            });
+    m_pBeatsThreeFourths = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threefourths"), false);
+    connect(m_pBeatsThreeFourths.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeFourths);
+                }
+            });
+    m_pBeatsFourThirds = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_fourthirds"), false);
+    connect(m_pBeatsFourThirds.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::FourThirds);
+                }
+            });
+    m_pBeatsThreeHalves = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_threehalves"), false);
+    connect(m_pBeatsThreeHalves.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::ThreeHalves);
+                }
+            });
+    m_pBeatsDouble = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_set_double"), false);
+    connect(m_pBeatsDouble.get(),
+            &ControlObject::valueChanged,
+            this,
+            [this](int value) {
+                if (value > 0) {
+                    slotScaleBpm(mixxx::Beats::BpmScale::Double);
+                }
+            });
+
     // Pick a wide range (kBpmRangeMin to kBpmRangeMax) and allow out of bounds sets. This lets you
     // map a soft-takeover MIDI knob to the BPM. This also creates bpm_up and
     // bpm_down controls.
@@ -276,6 +336,22 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
             averageBpm,
             averageBpm + kBpmTabRounding);
     const auto newBeats = pBeats->trySetBpm(averageBpm);
+    if (!newBeats) {
+        return;
+    }
+    pTrack->trySetBeats(*newBeats);
+}
+
+void BpmControl::slotScaleBpm(mixxx::Beats::BpmScale bpmScale) {
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (!pBeats) {
+        return;
+    }
+    const auto newBeats = pBeats->tryScale(bpmScale);
     if (!newBeats) {
         return;
     }
