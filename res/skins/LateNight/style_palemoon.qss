@@ -2504,34 +2504,32 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /* AutoDJ button icons */
 
 /* widgets in cue popup menu */
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-}
+WCueMenuPopup #CueDeleteButton,
 WCueMenuPopup #CueSavedLoopButton {
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
   width: 24px;
   height: 42px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
 }
+WCueMenuPopup #CueDeleteButton {
+  /* Note: we can't use qproperty-icon here because it's evauated only once
+     and therefore won't style the checked state */
+  image: url(skins:LateNight/palemoon/buttons/btn__delete.svg);
+}
+  WCueMenuPopup #CueDeleteButton:pressed {
+    background-color: #b24c12;
+    outline: none;
+    image: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  }
 
-WCueMenuPopup #CueDeleteButton:pressed {
+WCueMenuPopup #CueSavedLoopButton {
+  image: url(skins:LateNight/palemoon/buttons/btn__loop.svg);
+}
+WCueMenuPopup #CueSavedLoopButton:pressed,
+WCueMenuPopup #CueSavedLoopButton:checked {
   background-color: #b24c12;
   outline: none;
-  /* not applied: */
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__delete_active.svg);
+  image: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
 }
 
-WCueMenuPopup #CueSavedLoopButton:pressed, WCueMenuPopup #CueSavedLoopButton:checked {
-  background-color: #b24c12;
-  outline: none;
-  /* not applied: */
-  qproperty-icon: url(skins:LateNight/palemoon/buttons/btn__loop_active.svg);
-}
 WCueMenuPopup #CueLabelEdit {
   /*border: 1px solid #c2b3a5;*/
   border-radius: 0px;

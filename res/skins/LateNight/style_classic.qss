@@ -1424,7 +1424,8 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 WPushButton#GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 WPushButton#BroadcastButton[displayValue="0"],
-WPushButton#SkinSettingsToggle[displayValue="0"] {
+WPushButton#SkinSettingsToggle[displayValue="0"],
+WCueMenuPopup QPushButton {
   background-color: #262626;
 }
 
@@ -2042,9 +2043,8 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 
 /* widgets in cue popup menu */
-#CueDeleteButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skins:LateNight/classic/buttons/btn__delete.svg);
+#CueDeleteButton,
+#CueSavedLoopButton {
   /* color buttons are 42x24 px.
   To get the final size for the Delete button consider border width.
   It's a tall button, about the same height as cue number + label edit box */
@@ -2052,31 +2052,17 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   height: 42px;
   border-width: 2px;
   border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
 }
-#CueSavedLoopButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop.svg);
-  /* color buttons are 42x24 px.
-  To get the final size for the Delete button consider border width.
-  It's a tall button, about the same height as cue number + label edit box */
-  width: 24px;
-  height: 42px;
-  border-width: 2px;
-  border-image: url(skins:LateNight/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
+#CueDeleteButton {
+  image: url(skins:LateNight/classic/buttons/btn__delete.svg);
 }
-#CueSavedLoopButton:pressed, WCueMenuPopup #CueSavedLoopButton:checked {
+#CueSavedLoopButton {
+  image: url(skins:LateNight/classic/buttons/btn__loop.svg);
+}
+#CueSavedLoopButton:pressed,
+#CueSavedLoopButton:checked {
   background-color: #db0000;
   outline: none;
-  /* not applied: */
-  qproperty-icon: url(skins:LateNight/classic/buttons/btn__loop_active.svg);
 }
 
 #CueLabelEdit {
