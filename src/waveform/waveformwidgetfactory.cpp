@@ -1325,7 +1325,7 @@ QString WaveformWidgetFactory::buildWidgetDisplayName() const {
         }
     }
     if (WaveformT::useTextureForWaveform()) {
-        extras.push_back(QStringLiteral("Waveform data texture"));
+        extras.push_back(QStringLiteral("high detail"));
     }
     QString name = WaveformT::getWaveformWidgetName();
     if (extras.isEmpty()) {
