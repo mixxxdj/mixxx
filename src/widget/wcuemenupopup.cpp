@@ -58,11 +58,12 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
             tr("Toggle this cue type between normal cue and saved loop, using "
                "the current beatloop size or the current play position") +
             "\n\n" +
-            tr("Left-click: Toggle between normal cue and saved loop, using "
+            tr("Left-click: Toggle between normal cue and saved loop, using"
                "the current beatloop size as the loop size") +
             "\n" +
-            tr("Right-click: Set the current play position as the loop end and "
-               "make the cue a saved loop if not"));
+            tr("Right-click: If the current play position is after the cue,"
+               "set that position as loop end and make the cue a saved loop "
+               "if not"));
     m_pSavedLoopCue->setObjectName("CueSavedLoopButton");
     m_pSavedLoopCue->setCheckable(true);
     connect(m_pSavedLoopCue, &CueTypePushButton::clicked, this, &WCueMenuPopup::slotSavedLoopCue);
@@ -200,7 +201,6 @@ void WCueMenuPopup::slotSavedLoopCue() {
     if (m_pCue->getType() == mixxx::CueType::Loop) {
         m_pCue->setType(mixxx::CueType::HotCue);
     } else {
-        m_pCue->setType(mixxx::CueType::Loop);
         auto cueStartEnd = m_pCue->getStartAndEndPosition();
         if (!cueStartEnd.endPosition.isValid() ||
                 cueStartEnd.endPosition <= cueStartEnd.startPosition) {
@@ -209,9 +209,14 @@ void WCueMenuPopup::slotSavedLoopCue() {
             if (beatloopSize <= 0 || !pBeats) {
                 return;
             }
-            m_pCue->setEndPosition(pBeats->findNBeatsFromPosition(
-                    cueStartEnd.startPosition, beatloopSize));
+            auto position = pBeats->findNBeatsFromPosition(
+                    cueStartEnd.startPosition, beatloopSize);
+            if (position <= m_pCue->getPosition()) {
+                return;
+            }
+            m_pCue->setEndPosition(position);
         }
+        m_pCue->setType(mixxx::CueType::Loop);
     }
     slotUpdate();
 }
@@ -229,20 +234,19 @@ void WCueMenuPopup::slotAdjustSavedLoopCue() {
     const mixxx::BeatsPointer pBeats = m_pTrack->getBeats();
     auto position = mixxx::audio::FramePos::fromEngineSamplePos(
             m_pPlayPos.get() * m_pTrackSample.get());
-    m_pCue->setType(mixxx::CueType::Loop);
-    if (!m_pQuantizeEnabled.toBool() || !pBeats) {
-        m_pCue->setEndPosition(position);
-    } else {
+    if (m_pQuantizeEnabled.toBool() && pBeats) {
         mixxx::audio::FramePos nextBeatPosition, prevBeatPosition;
         pBeats->findPrevNextBeats(position, &prevBeatPosition, &nextBeatPosition, false);
         position = (nextBeatPosition - position > position - prevBeatPosition)
                 ? prevBeatPosition
                 : nextBeatPosition;
-        if (position <= m_pCue->getPosition()) {
-            return;
-        }
         m_pCue->setEndPosition(position);
     }
+    if (position <= m_pCue->getPosition()) {
+        return;
+    }
+    m_pCue->setEndPosition(position);
+    m_pCue->setType(mixxx::CueType::Loop);
     slotUpdate();
 }
 
