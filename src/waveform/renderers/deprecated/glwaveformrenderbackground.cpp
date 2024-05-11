@@ -1,4 +1,4 @@
-#include "waveform/renderers/glwaveformrenderbackground.h"
+#include "waveform/renderers/deprecated/glwaveformrenderbackground.h"
 
 GLWaveformRenderBackground::GLWaveformRenderBackground(
         WaveformWidgetRenderer* waveformWidgetRenderer)

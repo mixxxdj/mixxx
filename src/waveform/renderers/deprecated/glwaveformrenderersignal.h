@@ -1,6 +1,6 @@
 #pragma once
 
-#include "waveform/renderers/glwaveformrenderer.h"
+#include "waveform/renderers/deprecated/glwaveformrenderer.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
