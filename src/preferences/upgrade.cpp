@@ -44,6 +44,7 @@ WaveformWidgetType::Type upgradeToAllShaders(WaveformWidgetType::Type waveformTy
     case WWT::AllShaderRGBWaveform:
     case WWT::AllShaderLRRGBWaveform:
     case WWT::AllShaderFilteredWaveform:
+    case WWT::AllShaderRGBStackedWaveform:
     case WWT::AllShaderSimpleWaveform:
     case WWT::AllShaderHSVWaveform:
     case WWT::AllShaderTexturedFiltered:
