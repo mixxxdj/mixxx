@@ -67,25 +67,39 @@ BpmControl::BpmControl(const QString& group,
     m_pLoopEndPosition = new ControlProxy(group, "loop_end_position", this);
 
     m_pLocalBpm = new ControlObject(ConfigKey(group, "local_bpm"));
-    m_pAdjustBeatsFaster = new ControlPushButton(ConfigKey(group, "beats_adjust_faster"), false);
+
+    m_pAdjustBeatsFaster = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_faster"), false);
     m_pAdjustBeatsFaster->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsFaster, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsFaster,
+    connect(m_pAdjustBeatsFaster.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsFaster,
             Qt::DirectConnection);
-    m_pAdjustBeatsSlower = new ControlPushButton(ConfigKey(group, "beats_adjust_slower"), false);
+    m_pAdjustBeatsSlower = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_adjust_slower"), false);
     m_pAdjustBeatsSlower->setKbdRepeatable(true);
-    connect(m_pAdjustBeatsSlower, &ControlObject::valueChanged,
-            this, &BpmControl::slotAdjustBeatsSlower,
+    connect(m_pAdjustBeatsSlower.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotAdjustBeatsSlower,
             Qt::DirectConnection);
-    m_pTranslateBeatsEarlier = new ControlPushButton(ConfigKey(group, "beats_translate_earlier"), false);
+
+    m_pTranslateBeatsEarlier = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_earlier"), false);
     m_pTranslateBeatsEarlier->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsEarlier, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsEarlier,
+    connect(m_pTranslateBeatsEarlier.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsEarlier,
             Qt::DirectConnection);
-    m_pTranslateBeatsLater = new ControlPushButton(ConfigKey(group, "beats_translate_later"), false);
+    m_pTranslateBeatsLater = std::make_unique<ControlPushButton>(
+            ConfigKey(group, "beats_translate_later"), false);
     m_pTranslateBeatsLater->setKbdRepeatable(true);
-    connect(m_pTranslateBeatsLater, &ControlObject::valueChanged,
-            this, &BpmControl::slotTranslateBeatsLater,
+    connect(m_pTranslateBeatsLater.get(),
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotTranslateBeatsLater,
             Qt::DirectConnection);
     m_pTranslateBeatsMove = new ControlEncoder(ConfigKey(group, "beats_translate_move"), false);
     connect(m_pTranslateBeatsMove,
@@ -149,11 +163,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonTap;
     delete m_pTranslateBeats;
     delete m_pBeatsTranslateMatchAlignment;
-    delete m_pTranslateBeatsEarlier;
-    delete m_pTranslateBeatsLater;
     delete m_pTranslateBeatsMove;
-    delete m_pAdjustBeatsFaster;
-    delete m_pAdjustBeatsSlower;
 }
 
 mixxx::Bpm BpmControl::getBpm() const {

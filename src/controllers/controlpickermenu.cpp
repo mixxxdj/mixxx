@@ -237,12 +237,31 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // BPM / Beatgrid
     QMenu* pBpmMenu = addSubmenu(tr("BPM / Beatgrid"));
-    addDeckAndSamplerControl("bpm", tr("BPM"), tr("BPM"), pBpmMenu, true);
-    addDeckAndSamplerControl("bpm_up", tr("BPM +1"), tr("Increase BPM by 1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_down", tr("BPM -1"), tr("Decrease BPM by 1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_up_small", tr("BPM +0.1"), tr("Increase BPM by 0.1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_down_small", tr("BPM -0.1"), tr("Decrease BPM by 0.1"), pBpmMenu);
-    addDeckAndSamplerControl("bpm_tap", tr("BPM Tap"), tr("BPM tap button"), pBpmMenu);
+    addDeckAndSamplerControl("bpm",
+            tr("BPM"),
+            tr("BPM"),
+            pBpmMenu,
+            true);
+    addDeckAndSamplerControl("bpm_up",
+            tr("BPM +1"),
+            tr("Increase BPM by 1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_down",
+            tr("BPM -1"),
+            tr("Decrease BPM by 1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_up_small",
+            tr("BPM +0.1"),
+            tr("Increase BPM by 0.1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_down_small",
+            tr("BPM -0.1"),
+            tr("Decrease BPM by 0.1"),
+            pBpmMenu);
+    addDeckAndSamplerControl("bpm_tap",
+            tr("BPM Tap"),
+            tr("BPM tap button"),
+            pBpmMenu);
     pBpmMenu->addSeparator();
     addDeckAndSamplerControl("beats_adjust_faster",
             tr("Adjust Beatgrid Faster +.01"),

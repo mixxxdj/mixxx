@@ -141,10 +141,10 @@ class BpmControl : public EngineControl {
 
     // The average bpm around the current playposition;
     ControlObject* m_pLocalBpm;
-    ControlPushButton* m_pAdjustBeatsFaster;
-    ControlPushButton* m_pAdjustBeatsSlower;
-    ControlPushButton* m_pTranslateBeatsEarlier;
-    ControlPushButton* m_pTranslateBeatsLater;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsFaster;
+    std::unique_ptr<ControlPushButton> m_pAdjustBeatsSlower;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsEarlier;
+    std::unique_ptr<ControlPushButton> m_pTranslateBeatsLater;
     ControlEncoder* m_pTranslateBeatsMove;
 
     std::unique_ptr<ControlPushButton> m_pBpmLock;
