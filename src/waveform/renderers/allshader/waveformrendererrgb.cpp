@@ -150,11 +150,11 @@ void WaveformRendererRGB::paintGL() {
         }
         float maxAllChn[2]{static_cast<float>(u8maxAllChn[0]), static_cast<float>(u8maxAllChn[1])};
 
+        // In case we don't render individual color per channel, all the
+        // signal information is in the first field of each array. If
+        // this is the split render, we only render the left channel
+        // anyway.
         for (int chn = 0;
-                // In case we don't render individual color per channel, all the
-                // signal information is in the first field of each array. If
-                // this is the split render, we only render the left channel
-                // anyway.
                 chn < (splitLeftRight && !m_isSlipRenderer ? 2 : 1);
                 chn++) {
             // Cast to float

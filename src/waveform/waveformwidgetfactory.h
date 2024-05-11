@@ -23,13 +23,47 @@ class WaveformWidgetAbstractHandle {
   public:
     WaveformWidgetAbstractHandle();
     WaveformWidgetAbstractHandle(WaveformWidgetType::Type type,
-            QList<WaveformWidgetBackend::Backend> backends)
-            : m_type(type), m_backends(std::move(backends)) {
+            QList<WaveformWidgetBackend::Backend> backends
+#ifdef MIXXX_USE_QOPENGL
+            ,
+            int supportedOptions
+#endif
+            )
+            : m_type(type), m_backends(std::move(backends))
+#ifdef MIXXX_USE_QOPENGL
+              ,
+              m_supportedOption(supportedOptions)
+#endif
+    {
     }
 
     WaveformWidgetType::Type getType() const { return m_type;}
     const QList<WaveformWidgetBackend::Backend>& getBackend() const {
         return m_backends;
+    }
+    bool supportAcceleration() const {
+        for (auto backend : m_backends) {
+            if (backend == WaveformWidgetBackend::GL ||
+                    backend == WaveformWidgetBackend::GLSL
+#ifdef MIXXX_USE_QOPENGL
+                    || backend == WaveformWidgetBackend::AllShader
+#endif
+            ) {
+                return true;
+            }
+        }
+        return false;
+    }
+    bool supportSoftware() const {
+        return m_backends.contains(WaveformWidgetBackend::None);
+    }
+
+    int supportedOptions(WaveformWidgetBackend::Backend backend) const {
+#ifdef MIXXX_USE_QOPENGL
+        return backend == WaveformWidgetBackend::AllShader ? m_supportedOption : 0;
+#else
+        return 0;
+#endif
     }
 
     QString getDisplayName() const;
@@ -37,6 +71,10 @@ class WaveformWidgetAbstractHandle {
   private:
     WaveformWidgetType::Type m_type;
     QList<WaveformWidgetBackend::Backend> m_backends;
+#ifdef MIXXX_USE_QOPENGL
+    // Only relevant for Allshader (accelerated) backend. Other backends don't implement options
+    int m_supportedOption;
+#endif
 
     friend class WaveformWidgetFactory;
 };
@@ -90,6 +128,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
+
+    WaveformWidgetBackend::Backend preferredBackend() const;
 
     /// Sets the widget type and saves it to configuration.
     /// Returns false and sets EmtpyWaveform if type is invalid

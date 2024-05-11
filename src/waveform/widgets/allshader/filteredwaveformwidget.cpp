@@ -5,6 +5,7 @@
 #include "waveform/renderers/allshader/waveformrendererendoftrack.h"
 #include "waveform/renderers/allshader/waveformrendererfiltered.h"
 #include "waveform/renderers/allshader/waveformrendererpreroll.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/renderers/allshader/waveformrendermark.h"
 #include "waveform/renderers/allshader/waveformrendermarkrange.h"
 #include "waveform/widgets/allshader/moc_filteredwaveformwidget.cpp"

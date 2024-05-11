@@ -18,6 +18,7 @@ class allshader::WaveformRendererSignalBase : public ::WaveformRendererSignalBas
     enum Options {
         None = 0,
         SplitStereoSignal = 0x1,
+        HighDetails = 0x2,
     };
 
     static constexpr float m_maxValue{static_cast<float>(std::numeric_limits<uint8_t>::max())};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/class.h"
+#include "waveform/renderers/allshader/waveformrenderersignalbase.h"
 #include "waveform/widgets/allshader/waveformwidget.h"
 
 class WaveformWidgetFactory;
@@ -27,6 +28,9 @@ class allshader::FilteredWaveformWidget final : public allshader::WaveformWidget
     }
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
+    }
+    static constexpr int supportedOptions() {
+        return WaveformRendererSignalBase::None;
     }
 
   protected:

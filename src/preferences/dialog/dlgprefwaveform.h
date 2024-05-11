@@ -5,6 +5,9 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
+#ifdef MIXXX_USE_QOPENGL
+#define DECL_SLOT_WAVEFORM_OPTION(opt) void slotSetWaveformOption##opt(bool checked)
+#endif
 
 class Library;
 
@@ -26,8 +29,12 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
   private slots:
     void slotSetFrameRate(int frameRate);
     void slotSetWaveformType(int index);
+    void slotSetWaveformEnabled(bool checked);
     void slotSetWaveformAcceleration(bool checked);
-    void slotSetWaveformSplitSignal(bool checked);
+#ifdef MIXXX_USE_QOPENGL
+    DECL_SLOT_WAVEFORM_OPTION(SplitStereoSignal);
+    DECL_SLOT_WAVEFORM_OPTION(HighDetails);
+#endif
     void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
@@ -52,6 +59,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
+    void updateWaveformOption();
+    void updateWaveformAcceleration();
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

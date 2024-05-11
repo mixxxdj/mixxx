@@ -555,6 +555,7 @@ bool WaveformWidgetFactory::setWidgetType(
     *pCurrentType = isAcceptable ? type : WaveformWidgetType::Empty;
     if (m_config) {
         m_configType = *pCurrentType;
+        // TODO do not set "Empty"?
         m_config->setValue(
                 ConfigKey("[Waveform]", "WaveformType"), *pCurrentType);
     }
@@ -864,6 +865,7 @@ void WaveformWidgetFactory::slotFrameSwapped() {
 void WaveformWidgetFactory::evaluateWidgets() {
     m_waveformWidgetHandles.clear();
     QHash<WaveformWidgetType::Type, QList<WaveformWidgetBackend::Backend>> collectedHandles;
+    QHash<WaveformWidgetType::Type, int> supportedOptions;
     for (int type = WaveformWidgetType::Empty;
             type < WaveformWidgetType::Count_WaveformWidgetType;
             type++) {
@@ -926,6 +928,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
             setWaveformVarsByType.operator()<GLSimpleWaveformWidget>();
 #ifdef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<allshader::SimpleWaveformWidget>();
+            supportedOptions[static_cast<WaveformWidgetType::Type>(type)] =
+                    allshader::SimpleWaveformWidget::supportedOptions();
 #else
             setWaveformVarsByType.operator()<QtSimpleWaveformWidget>();
 #endif
@@ -942,6 +946,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
             setWaveformVarsByType.operator()<GLSLFilteredWaveformWidget>();
 #ifdef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
+            supportedOptions[static_cast<WaveformWidgetType::Type>(type)] =
+                    allshader::FilteredWaveformWidget::supportedOptions();
 #else
             setWaveformVarsByType.operator()<QtWaveformWidget>();
 #endif
@@ -965,6 +971,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
 #endif
 #ifdef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<allshader::RGBWaveformWidget>();
+            supportedOptions[static_cast<WaveformWidgetType::Type>(type)] =
+                    allshader::RGBWaveformWidget::supportedOptions();
 #else
             setWaveformVarsByType.operator()<QtRGBWaveformWidget>();
 #endif
@@ -979,6 +987,8 @@ void WaveformWidgetFactory::evaluateWidgets() {
 #endif
 #ifdef MIXXX_USE_QOPENGL
             setWaveformVarsByType.operator()<allshader::HSVWaveformWidget>();
+            supportedOptions[static_cast<WaveformWidgetType::Type>(type)] =
+                    allshader::HSVWaveformWidget::supportedOptions();
 #else
             setWaveformVarsByType.operator()<QtHSVWaveformWidget>();
 #endif
@@ -1002,7 +1012,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
         auto& type = handleIter.key();
         auto& backends = handleIter.value();
 #endif
-        m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends));
+        m_waveformWidgetHandles.push_back(WaveformWidgetAbstractHandle(type, backends
+#ifdef MIXXX_USE_QOPENGL
+                ,
+                supportedOptions.value(type, allshader::WaveformRendererSignalBase::None)
+#endif
+                        ));
     }
 }
 
@@ -1015,14 +1030,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createFilteredWaveformWidget(
     // complains come back, we can convert this safely to a backend eventually.
     int backend = m_config->getValue(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            isOpenGlAvailable() || isOpenGlesAvailable()
-                    ?
-#ifdef MIXXX_USE_QOPENGL
-                    WaveformWidgetBackend::AllShader
-#else
-                    WaveformWidgetBackend::GL
-#endif
-                    : WaveformWidgetBackend::None);
+            preferredBackend());
 
     switch (backend) {
     case WaveformWidgetBackend::GL:
@@ -1049,14 +1057,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createHSVWaveformWidget(WWaveform
     // complains come back, we can convert this safely to a backend eventually.
     int backend = m_config->getValue(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            isOpenGlAvailable() || isOpenGlesAvailable()
-                    ?
-#ifdef MIXXX_USE_QOPENGL
-                    WaveformWidgetBackend::AllShader
-#else
-                    WaveformWidgetBackend::GL
-#endif
-                    : WaveformWidgetBackend::None);
+            preferredBackend());
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1076,14 +1077,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
     // complains come back, we can convert this safely to a backend eventually.
     int backend = m_config->getValue(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            isOpenGlAvailable() || isOpenGlesAvailable()
-                    ?
-#ifdef MIXXX_USE_QOPENGL
-                    WaveformWidgetBackend::AllShader
-#else
-                    WaveformWidgetBackend::GL
-#endif
-                    : WaveformWidgetBackend::None);
+            preferredBackend());
 
     switch (backend) {
     case WaveformWidgetBackend::GL:
@@ -1092,11 +1086,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createRGBWaveformWidget(WWaveform
         return new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
 #ifdef MIXXX_USE_QOPENGL
     case WaveformWidgetBackend::AllShader: {
-        int options = allshader::WaveformRendererSignalBase::None;
-        if (m_config->getValue(
-                    ConfigKey("[Waveform]", "split_stereo_signal"), false)) {
-            options |= allshader::WaveformRendererSignalBase::SplitStereoSignal;
-        }
+        int options =
+                m_config->getValue(ConfigKey("[Waveform]", "waveform_options"),
+                        allshader::WaveformRendererSignalBase::None);
         return new allshader::RGBWaveformWidget(viewer->getGroup(), viewer, options);
     }
 #else
@@ -1121,14 +1113,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createSimpleWaveformWidget(WWavef
     // complains come back, we can convert this safely to a backend eventually.
     int backend = m_config->getValue(
             ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            isOpenGlAvailable() || isOpenGlesAvailable()
-                    ?
-#ifdef MIXXX_USE_QOPENGL
-                    WaveformWidgetBackend::AllShader
-#else
-                    WaveformWidgetBackend::GL
-#endif
-                    : WaveformWidgetBackend::None);
+            preferredBackend());
 
     switch (backend) {
 #ifdef MIXXX_USE_QOPENGL
@@ -1262,14 +1247,27 @@ WaveformWidgetType::Type WaveformWidgetFactory::findTypeFromHandleIndex(int inde
 }
 
 int WaveformWidgetFactory::findHandleIndexFromType(WaveformWidgetType::Type type) {
-    int index = -1;
     for (int i = 0; i < m_waveformWidgetHandles.size(); i++) {
         const WaveformWidgetAbstractHandle& handle = m_waveformWidgetHandles[i];
         if (handle.m_type == type) {
-            index = i;
+            return i;
         }
     }
-    return index;
+    return -1;
+}
+
+WaveformWidgetBackend::Backend WaveformWidgetFactory::preferredBackend() const {
+#ifdef MIXXX_USE_QOPENGL
+    if (m_openGlAvailable || m_openGlesAvailable) {
+        return WaveformWidgetBackend::AllShader;
+    }
+#endif
+    if (m_openGlAvailable && m_openGLShaderAvailable) {
+        return WaveformWidgetBackend::GLSL;
+    } else if (m_openGlAvailable) {
+        return WaveformWidgetBackend::GL;
+    }
+    return WaveformWidgetBackend::None;
 }
 
 // Static

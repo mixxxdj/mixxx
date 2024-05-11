@@ -29,6 +29,9 @@ class allshader::RGBWaveformWidget final : public allshader::WaveformWidget {
     static constexpr WaveformWidgetCategory category() {
         return WaveformWidgetCategory::AllShader;
     }
+    static constexpr int supportedOptions() {
+        return WaveformRendererSignalBase::SplitStereoSignal;
+    }
 
   protected:
     void castToQWidget() override;
