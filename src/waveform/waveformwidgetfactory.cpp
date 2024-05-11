@@ -27,6 +27,7 @@
 #include "waveform/widgets/allshader/filteredwaveformwidget.h"
 #include "waveform/widgets/allshader/hsvwaveformwidget.h"
 #include "waveform/widgets/allshader/lrrgbwaveformwidget.h"
+#include "waveform/widgets/allshader/rgbstackedwaveformwidget.h"
 #include "waveform/widgets/allshader/rgbwaveformwidget.h"
 #include "waveform/widgets/allshader/simplewaveformwidget.h"
 #include "waveform/widgets/allshader/waveformwidgettexturedfiltered.h"
@@ -576,6 +577,14 @@ bool WaveformWidgetFactory::widgetTypeSupportsUntilMark() const {
         return true;
     case WaveformWidgetType::AllShaderHSVWaveform:
         return true;
+    case WaveformWidgetType::AllShaderRGBStackedWaveform:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedFiltered:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedRGB:
+        return true;
+    case WaveformWidgetType::AllShaderTexturedStacked:
+        return true;
     default:
         break;
     }
@@ -1007,6 +1016,13 @@ void WaveformWidgetFactory::evaluateWidgets() {
             setWaveformVarsByType.operator()<allshader::FilteredWaveformWidget>();
             break;
 #endif
+        case WaveformWidgetType::AllShaderRGBStackedWaveform:
+#ifndef MIXXX_USE_QOPENGL
+            continue;
+#else
+            setWaveformVarsByType.operator()<allshader::RGBStackedWaveformWidget>();
+            break;
+#endif
         case WaveformWidgetType::AllShaderSimpleWaveform:
 #ifndef MIXXX_USE_QOPENGL
             continue;
@@ -1131,6 +1147,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::AllShaderFilteredWaveform:
             widget = new allshader::FilteredWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::AllShaderRGBStackedWaveform:
+            widget = new allshader::RGBStackedWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::AllShaderSimpleWaveform:
             widget = new allshader::SimpleWaveformWidget(viewer->getGroup(), viewer);
