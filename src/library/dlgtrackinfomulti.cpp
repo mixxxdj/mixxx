@@ -172,6 +172,12 @@ void DlgTrackInfoMulti::init() {
         pBox->setInsertPolicy(QComboBox::NoInsert);
     }
 
+    // Set up key validation, i.e. check manually entered key texts
+    connect(txtKey->lineEdit(),
+            &QLineEdit::editingFinished,
+            this,
+            &DlgTrackInfoMulti::slotKeyTextChanged);
+
     // Same for the comment editor, emits a different signal
     connect(txtComment,
             &QPlainTextEdit::modificationChanged,
@@ -395,7 +401,10 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     addValuesToComboBox(txtComposer, composers);
     addValuesToComboBox(txtGrouping, grouping);
     addValuesToComboBox(txtYear, years, true);
+    // temporarily disable key validation
+    txtKey->blockSignals(true);
     addValuesToComboBox(txtKey, keys, true);
+    txtKey->blockSignals(false);
     addValuesToComboBox(txtTrackNumber, nums, true);
 
     // The comment tag is special: it's the only one that may have multiple lines,
@@ -496,6 +505,15 @@ void DlgTrackInfoMulti::saveTracks() {
     std::optional<QString> composer = validEditText(txtComposer);
     std::optional<QString> grouping = validEditText(txtGrouping);
     std::optional<QString> year = validEditText(txtYear);
+    // In case Apply is triggered by hotkey AND a Key box with pending changes
+    // is focused AND the user did not hit Enter to finish editing, the key text
+    // needs to be validated.
+    // This hack makes a focused txtKey's QLineEdit emits editingFinished()
+    // (clearFocus() implicitly emits a focusOutEvent()).
+    if (txtKey->hasFocus()) {
+        txtKey->clearFocus();
+        txtKey->setFocus();
+    }
     std::optional<QString> key = validEditText(txtKey);
     std::optional<QString> num = validEditText(txtTrackNumber);
 
@@ -525,7 +543,9 @@ void DlgTrackInfoMulti::saveTracks() {
             rec.refMetadata().refTrackInfo().setYear(year.value());
         }
         if (key.has_value()) {
-            rec.refMetadata().refTrackInfo().setKeyText(key.value());
+            static_cast<void>(rec.updateGlobalKeyNormalizeText(
+                    key.value(),
+                    mixxx::track::io::key::USER));
         }
         if (num.has_value()) {
             rec.refMetadata().refTrackInfo().setTrackNumber(num.value());
@@ -651,6 +671,33 @@ void DlgTrackInfoMulti::slotTrackChanged(TrackId trackId) {
     if (it != m_pLoadedTracks.constEnd()) {
         updateFromTracks();
     }
+}
+
+void DlgTrackInfoMulti::slotKeyTextChanged() {
+    std::optional<QString> newKeyText = std::nullopt;
+    mixxx::track::io::key::ChromaticKey newKey =
+            KeyUtils::guessKeyFromText(txtKey->currentText().trimmed());
+    if (newKey != mixxx::track::io::key::INVALID) {
+        newKeyText = KeyUtils::keyToString(newKey);
+    }
+
+    txtKey->blockSignals(true);
+    if (newKeyText.has_value()) {
+        txtKey->setCurrentText(newKeyText.value());
+        txtKey->lineEdit()->setPlaceholderText(QString());
+    } else {
+        // Revert if we can't guess a valid key from it.
+        if (txtKey->lineEdit()->placeholderText() == kVariousText) {
+            // This is a multi-value box and the key has not been cleared manually.
+            // Just clear the text to restore <various>.
+            txtKey->clearEditText();
+        } else {
+            // This is a single-value box.Restore the original key text.
+            const QString origKeyStr = txtKey->property(kOrigValProp).toString();
+            txtKey->setCurrentText(origKeyStr);
+        }
+    }
+    txtKey->blockSignals(false);
 }
 
 void DlgTrackInfoMulti::slotColorButtonClicked() {

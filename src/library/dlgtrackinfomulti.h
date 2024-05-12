@@ -41,6 +41,8 @@ class DlgTrackInfoMulti : public QDialog, public Ui::DlgTrackInfoMulti {
     /// the dialog from all tracks. This discards pending changes.
     void slotTrackChanged(TrackId trackId);
 
+    void slotKeyTextChanged();
+
     void slotColorButtonClicked();
     void slotColorPicked(const mixxx::RgbColor::optional_t& newColor);
 
