@@ -66,11 +66,14 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
                "if not"));
     m_pSavedLoopCue->setObjectName("CueSavedLoopButton");
     m_pSavedLoopCue->setCheckable(true);
-    connect(m_pSavedLoopCue, &CueTypePushButton::clicked, this, &WCueMenuPopup::slotSavedLoopCue);
+    connect(m_pSavedLoopCue,
+            &CueTypePushButton::clicked,
+            this,
+            &WCueMenuPopup::slotSavedLoopCueAuto);
     connect(m_pSavedLoopCue,
             &CueTypePushButton::rightClicked,
             this,
-            &WCueMenuPopup::slotAdjustSavedLoopCue);
+            &WCueMenuPopup::slotSavedLoopCueManual);
 
     QHBoxLayout* pLabelLayout = new QHBoxLayout();
     pLabelLayout->addWidget(m_pCueNumber);
@@ -192,7 +195,7 @@ void WCueMenuPopup::slotDeleteCue() {
     hide();
 }
 
-void WCueMenuPopup::slotSavedLoopCue() {
+void WCueMenuPopup::slotSavedLoopCueAuto() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }
@@ -225,7 +228,7 @@ void WCueMenuPopup::slotSavedLoopCue() {
     slotUpdate();
 }
 
-void WCueMenuPopup::slotAdjustSavedLoopCue() {
+void WCueMenuPopup::slotSavedLoopCueManual() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
     }

@@ -78,11 +78,11 @@ class WCueMenuPopup : public QWidget {
     /// loop. If the cue was never a saved loop, it will use the current
     /// beatloop size to define the saved loop size. If it was previously a
     /// saved loop, it will use the previously known loop size.
-    void slotSavedLoopCue();
+    void slotSavedLoopCueAuto();
     /// This slot is called when the saved loop button is being left pressed,
     /// which effectively makes the cue a saved loop and use the current play
     /// position as loop end
-    void slotAdjustSavedLoopCue();
+    void slotSavedLoopCueManual();
     void slotChangeCueColor(mixxx::RgbColor::optional_t color);
 
   private:
