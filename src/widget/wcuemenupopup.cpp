@@ -100,6 +100,10 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
 
 void WCueMenuPopup::setTrackCueGroup(
         TrackPointer pTrack, const CuePointer& pCue, const QString& group) {
+    if (!pTrack || !pCue) {
+        return;
+    }
+
     m_pTrack = pTrack;
     m_pCue = pCue;
 
