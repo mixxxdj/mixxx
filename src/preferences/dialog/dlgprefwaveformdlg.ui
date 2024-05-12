@@ -561,7 +561,7 @@ Select from different types of displays for the waveform overview, which differ 
         <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
        </property>
        <property name="text">
-        <string>Waveform type</string>
+        <string>Waveform</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

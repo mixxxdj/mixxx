@@ -5,6 +5,7 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
+#include "waveform/widgets/waveformwidgettype.h"
 #ifdef MIXXX_USE_QOPENGL
 #define DECL_SLOT_WAVEFORM_OPTION(opt) void slotSetWaveformOption##opt(bool checked)
 #endif
@@ -59,8 +60,10 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
     void updateEnableUntilMark();
-    void updateWaveformOption();
-    void updateWaveformAcceleration();
+    void updateWaveformOption(
+            bool useWaveform, WaveformWidgetBackend::Backend backend, int currentOptions);
+    void updateWaveformAcceleration(
+            WaveformWidgetType::Type type, WaveformWidgetBackend::Backend backend);
 
     UserSettingsPointer m_pConfig;
     std::shared_ptr<Library> m_pLibrary;

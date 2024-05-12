@@ -227,15 +227,18 @@ void DlgPrefWaveform::slotUpdate() {
     if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
     }
-    splitLeftRightCheckBox->setChecked(
-            m_pConfig->getValue(
-                    ConfigKey("[Waveform]", "split_stereo_signal"),
-                    false));
 
-    bool useWaveform = m_pConfig->getValue(ConfigKey("[Waveform]", "enabled"), true);
+    bool useWaveform = factory->getType() != WaveformWidgetType::Empty;
     useWaveformCheckBox->setChecked(useWaveform);
-    updateWaveformAcceleration();
-    updateWaveformOption();
+
+    int currentOptions = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::None);
+    WaveformWidgetBackend::Backend backend = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            factory->preferredBackend());
+    updateWaveformAcceleration(factory->getType(), backend);
+    updateWaveformOption(useWaveform, backend, currentOptions);
     waveformTypeComboBox->setEnabled(useWaveform);
     updateEnableUntilMark();
 
@@ -290,13 +293,23 @@ void DlgPrefWaveform::slotApply() {
 void DlgPrefWaveform::slotResetToDefaults() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    // Get the default we ought to use based on whether the user has OpenGL or not.
-    // Select the combobox index that holds the default handle's index in data column.
     int defaultIndex = waveformTypeComboBox->findData(
-            factory->findHandleIndexFromType(kDefaultWaveform));
+            kDefaultWaveform);
     if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
         waveformTypeComboBox->setCurrentIndex(defaultIndex);
     }
+    auto defaultBackend = factory->preferredBackend();
+    useWaveformCheckBox->setChecked(true);
+    waveformTypeComboBox->setEnabled(true);
+    updateWaveformAcceleration(kDefaultWaveform, defaultBackend);
+    updateWaveformOption(true, defaultBackend, allshader::WaveformRendererSignalBase::None);
+
+    // Restore waveform backend and option setting instantly
+    m_pConfig->setValue(ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::None);
+    m_pConfig->setValue(ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            defaultBackend);
+    factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(kDefaultWaveform), true);
 
     allVisualGain->setValue(1.0);
     lowVisualGain->setValue(1.0);
@@ -348,18 +361,21 @@ void DlgPrefWaveform::slotSetWaveformType(int index) {
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type));
 
-    updateWaveformAcceleration();
-    bool isAccelerationEnabled = m_pConfig->getValue(
-                                         ConfigKey("[Waveform]", "use_hardware_acceleration"),
-                                         factory->preferredBackend()) !=
-            WaveformWidgetBackend::None;
-    useAccelerationCheckBox->setChecked(isAccelerationEnabled);
-    updateWaveformOption();
+    auto backend = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            factory->preferredBackend());
+    useAccelerationCheckBox->setChecked(backend !=
+            WaveformWidgetBackend::None);
+
+    int currentOptions = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::None);
+    updateWaveformAcceleration(type, backend);
+    updateWaveformOption(true, backend, currentOptions);
     updateEnableUntilMark();
 }
 
 void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
-    m_pConfig->setValue(ConfigKey("[Waveform]", "enabled"), checked);
     auto* factory = WaveformWidgetFactory::instance();
     if (!checked) {
         factory->setWidgetTypeFromHandle(
@@ -374,23 +390,26 @@ void DlgPrefWaveform::slotSetWaveformEnabled(bool checked) {
 }
 
 void DlgPrefWaveform::slotSetWaveformAcceleration(bool checked) {
+    WaveformWidgetBackend::Backend backend = WaveformWidgetBackend::None;
     if (checked) {
-        m_pConfig->setValue(ConfigKey("[Waveform]", "use_hardware_acceleration"),
+        backend =
 #ifdef MIXXX_USE_QOPENGL
                 WaveformWidgetBackend::AllShader
 #else
                 WaveformWidgetBackend::GL
 #endif
-        );
-    } else {
-        m_pConfig->setValue(
-                ConfigKey("[Waveform]", "use_hardware_acceleration"),
-                WaveformWidgetBackend::None);
+                ;
     }
+    m_pConfig->setValue(
+            ConfigKey("[Waveform]", "use_hardware_acceleration"),
+            backend);
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     auto* factory = WaveformWidgetFactory::instance();
     factory->setWidgetTypeFromHandle(factory->findHandleIndexFromType(type), true);
-    updateWaveformOption();
+    int currentOptions = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "waveform_options"),
+            allshader::WaveformRendererSignalBase::None);
+    updateWaveformOption(true, backend, currentOptions);
     updateEnableUntilMark();
 }
 
@@ -399,45 +418,40 @@ IMPL_SLOT_WAVEFORM_OPTION(SplitStereoSignal)
 IMPL_SLOT_WAVEFORM_OPTION(HighDetails)
 #endif
 
-void DlgPrefWaveform::updateWaveformAcceleration() {
-    auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
+void DlgPrefWaveform::updateWaveformAcceleration(
+        WaveformWidgetType::Type type, WaveformWidgetBackend::Backend backend) {
     auto* factory = WaveformWidgetFactory::instance();
     int handleIdx = factory->findHandleIndexFromType(type);
 
-    bool supportAcceleration = false, supportSoftware = true,
-         useWaveform =
-                 m_pConfig->getValue(ConfigKey("[Waveform]", "enabled"), true);
+    bool supportAcceleration = false, supportSoftware = true;
     if (handleIdx != -1) {
         const auto& handle = factory->getAvailableTypes()[handleIdx];
         supportAcceleration = handle.supportAcceleration();
         supportSoftware = handle.supportSoftware();
     }
-    WaveformWidgetBackend::Backend backend = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            factory->preferredBackend());
-
     useAccelerationCheckBox->blockSignals(true);
 
-    if (supportSoftware ^ supportAcceleration) {
+    if (type == WaveformWidgetType::Empty) {
+        useAccelerationCheckBox->setChecked(false);
+    } else if (supportSoftware ^ supportAcceleration) {
         useAccelerationCheckBox->setChecked(!supportSoftware || supportAcceleration);
     } else {
         useAccelerationCheckBox->setChecked(backend != WaveformWidgetBackend::None);
     }
 
-    useAccelerationCheckBox->setEnabled(supportAcceleration && supportSoftware && useWaveform);
+    useAccelerationCheckBox->setEnabled(supportAcceleration &&
+            supportSoftware && type != WaveformWidgetType::Empty);
 
     useAccelerationCheckBox->blockSignals(false);
 }
-void DlgPrefWaveform::updateWaveformOption() {
+void DlgPrefWaveform::updateWaveformOption(
+        bool useWaveform, WaveformWidgetBackend::Backend backend, int currentOption) {
+    splitLeftRightCheckBox->blockSignals(true);
+    highDetailsCheckBox->blockSignals(true);
+
+#ifdef MIXXX_USE_QOPENGL
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     int supportedOption = allshader::WaveformRendererSignalBase::None;
-    int currentOption = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "waveform_options"),
-            allshader::WaveformRendererSignalBase::None);
-    WaveformWidgetBackend::Backend backend = m_pConfig->getValue(
-            ConfigKey("[Waveform]", "use_hardware_acceleration"),
-            factory->preferredBackend());
-    bool useWaveform = m_pConfig->getValue(ConfigKey("[Waveform]", "enabled"), true);
 
     auto type = static_cast<WaveformWidgetType::Type>(waveformTypeComboBox->currentData().toInt());
     int handleIdx = factory->findHandleIndexFromType(type);
@@ -445,9 +459,6 @@ void DlgPrefWaveform::updateWaveformOption() {
     if (handleIdx != -1) {
         supportedOption = factory->getAvailableTypes()[handleIdx].supportedOptions(backend);
     }
-
-    splitLeftRightCheckBox->blockSignals(true);
-    highDetailsCheckBox->blockSignals(true);
 
     splitLeftRightCheckBox->setEnabled(useWaveform &&
             supportedOption &
@@ -460,6 +471,10 @@ void DlgPrefWaveform::updateWaveformOption() {
                     allshader::WaveformRendererSignalBase::SplitStereoSignal);
     highDetailsCheckBox->setChecked(highDetailsCheckBox->isEnabled() &&
             currentOption & allshader::WaveformRendererSignalBase::HighDetails);
+#else
+    splitLeftRightCheckBox->setVisible(false);
+    highDetailsCheckBox->setVisible(false);
+#endif
 
     splitLeftRightCheckBox->blockSignals(false);
     highDetailsCheckBox->blockSignals(false);
