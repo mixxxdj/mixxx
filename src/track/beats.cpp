@@ -432,6 +432,20 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
     DEBUG_ASSERT(isValid());
     auto it = cfirstmarker();
 
+    auto previousIfNeeded = [](Beats::ConstIterator it, audio::FramePos position) {
+        // In positive direction the minimum step width of a double increases.
+        // This may lead to tiny floating point errors that make `std::ceil`
+        // round up and makes us end up one beat too late.
+        //
+        // Likewise, in negative direction, we can also end up one beat to
+        // late if position is very close to a beat.
+        //
+        // This works around that issue by going back to the previous
+        // beat if necessary.
+        auto previousBeatIt = it - 1;
+        return (*previousBeatIt >= position) ? previousBeatIt : it;
+    };
+
     audio::FrameDiff_t diff = position - m_lastMarkerPosition;
     if (diff > 0) {
         DEBUG_ASSERT(*clastmarker() == m_lastMarkerPosition);
@@ -441,16 +455,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
             return cend();
         }
         it = clastmarker() + static_cast<int>(n);
-
-        // In positive direction the minimum step width of a double increases.
-        // This may lead to tiny floating point errors that make `std::ceil`
-        // round up and makes us end up one beat too
-        // late. This works around that issue by going back to the previous
-        // beat if necessary.
-        auto previousBeatIt = it - 1;
-        if (*previousBeatIt >= position) {
-            it = previousBeatIt;
-        }
+        it = previousIfNeeded(it, position);
     } else if (position < *it) {
         // Lookup position is before the first marker position
         const double n = std::floor((*it - position) / firstBeatLengthFrames());
@@ -458,6 +463,7 @@ Beats::ConstIterator Beats::iteratorFrom(audio::FramePos position) const {
             return cbegin();
         }
         it -= static_cast<int>(n);
+        it = previousIfNeeded(it, position);
     } else {
         it = std::lower_bound(cfirstmarker(), clastmarker() + 1, position);
     }

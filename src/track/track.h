@@ -425,6 +425,7 @@ class Track : public QObject {
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
     void bpmChanged();
+    void bpmLockChanged(bool locked);
     void keyChanged();
     void timesPlayedChanged();
     void durationChanged();

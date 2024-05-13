@@ -359,6 +359,10 @@ class LegacyControllerEnumSetting
         return QJSValue(stringify());
     }
 
+    const QList<std::tuple<QString, QString>>& options() const {
+        return m_options;
+    }
+
     QString stringify() const override {
         return std::get<0>(m_options.value(static_cast<int>(m_savedValue)));
     }
@@ -416,6 +420,7 @@ class LegacyControllerEnumSetting
     size_t m_editedValue;
 
     friend class LegacyControllerMappingSettingsTest_enumSettingEditing_Test;
+    friend class ControllerS4MK3SettingTest_ensureLibrarySettingValueAndEnumEquals;
 };
 
 template<>

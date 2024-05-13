@@ -657,7 +657,7 @@ int ControllerScriptInterfaceLegacy::beginTimer(
 void ControllerScriptInterfaceLegacy::stopTimer(int timerId) {
     if (!m_timers.contains(timerId)) {
         m_pScriptEngineLegacy->logOrThrowError(QStringLiteral(
-                "Tried to kill Timer \"%1\" that does not exists")
+                "Tried to kill Timer \"%1\" that does not exist")
                                                        .arg(timerId));
         return;
     }

@@ -3,6 +3,7 @@
 #include <QString>
 #include <QTimer>
 #include <QVector>
+#include <memory>
 
 #include "control/controlpushbutton.h"
 #include "util/fpclassify.h"
@@ -61,6 +62,9 @@ class WPushButton : public WWidget {
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
 
+  private slots:
+    void updateSlot();
+
   protected:
     bool event(QEvent* e) override;
     void paintEvent(QPaintEvent* e) override;
@@ -86,6 +90,8 @@ class WPushButton : public WWidget {
             Paintable::DrawMode mode,
             double scaleFactor);
 
+    void paintOnDevice(QPaintDevice* pd);
+
     // True, if the button is currently pressed
     bool m_bPressed;
     // True, if the button is pointer is above button
@@ -106,4 +112,25 @@ class WPushButton : public WWidget {
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
     QVector<int> m_align;
+
+    // Animates long press latching by storing the off state of the
+    // WPushButton in a pixmap and gradually (from left to right)
+    // drawing less of the off state on top of the on state, to
+    // give a visual indication that the long press latching is in
+    // progress.
+    class LongPressLatching {
+      public:
+        LongPressLatching(WPushButton* pButton);
+        void paint(QPainter* p, int remainingTime);
+        void start();
+        void stop();
+
+      private:
+        WPushButton* m_pButton;
+        QPixmap m_preLongPressPixmap;
+        QTimer m_animTimer;
+    };
+
+    // Only assigned for WPushButtons that use long press latching
+    std::unique_ptr<LongPressLatching> m_pLongPressLatching;
 };

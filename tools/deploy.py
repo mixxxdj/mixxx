@@ -196,13 +196,14 @@ def prepare_deployment(args):
     if os.getenv("CI") == "true":
         # Set GitHub Actions job output
         print(
-            "::set-output name=artifact-{}-{}::{}".format(
-                download_slug,
-                package_slug,
-                json.dumps(metadata),
-            )
+            'echo "{artifact-'
+            + download_slug
+            + "-"
+            + package_slug
+            + "}={"
+            + json.dumps(metadata)
+            + '}" >> $GITHUB_OUTPUT'
         )
-
     return 0
 
 

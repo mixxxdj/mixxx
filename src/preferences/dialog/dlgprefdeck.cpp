@@ -148,6 +148,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
+    comboBoxLoadPoint->addItem(tr("First hotcue"), static_cast<int>(SeekOnLoadMode::FirstHotcue));
     comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
     comboBoxLoadPoint->addItem(tr("Beginning of track"), static_cast<int>(SeekOnLoadMode::Beginning));
     bool seekModeExisted = m_pConfig->exists(ConfigKey("[Controls]", "CueRecall"));
@@ -259,6 +260,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent, UserSettingsPointer pConfig)
         m_iRateRangePercent = kDefaultRateRangePercent;
     }
     setRateRangeForAllDecks(m_iRateRangePercent);
+    // Write verified value back to config so DlgPrefLibrary can use it to
+    // calculate the 'fuzzy' BPM search range
+    m_pConfig->set(ConfigKey("[Controls]", "RateRangePercent"),
+            ConfigValue{m_iRateRangePercent});
 
     // Key lock mode
     connect(buttonGroupKeyLockMode,
@@ -698,13 +703,16 @@ void DlgPrefDeck::slotApply() {
             m_bCloneDeckOnLoadDoubleTap);
 
     // Set rate range
-    setRateRangeForAllDecks(m_iRateRangePercent);
+    // Set the config value before setting the CO values in setRateRangeForAllDecks()
+    // because a proxy in DlgPrefLibrary listens to [Channe1],rate_range changes
+    // in order to update the fuzzy BPM range with the new value of "RateRangePercent".
     m_pConfig->setValue(ConfigKey("[Controls]", "RateRangePercent"),
                         m_iRateRangePercent);
+    setRateRangeForAllDecks(m_iRateRangePercent);
 
-    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     m_pConfig->setValue(ConfigKey("[Controls]", "RateDir"),
             m_bRateDownIncreasesSpeed);
+    setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
 
     BaseTrackPlayer::TrackLoadReset configSPAutoReset = BaseTrackPlayer::RESET_NONE;
 

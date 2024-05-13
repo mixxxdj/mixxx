@@ -102,27 +102,29 @@ LibraryView* WLibrary::getActiveView() const {
     return dynamic_cast<LibraryView*>(currentWidget());
 }
 
-bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
-    //qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
-    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-        return false;
-    }
+WTrackTableView* WLibrary::getCurrentTrackTableView() const {
     QWidget* pCurrent = currentWidget();
     WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
     if (!pTracksView) {
         // This view is no tracks view, but maybe a special tracks view with a
-        // controls row (AutoDJ, Recording)?
-        //qDebug() << "   view is no tracks view. look for tracks view child";
+        // controls row (DlgAutoDJ, DlgRecording)?
+        // qDebug() << "   view is no tracks view. look for tracks view child";
         pTracksView = pCurrent->findChild<WTrackTableView*>();
     }
-    if (pTracksView) {
-        //qDebug() << "   tracks view found";
-        return pTracksView->isTrackInCurrentView(trackId);
-    } else {
-        // No tracks view, this is probably a root view WLibraryTextBrowser
-        //qDebug() << "   no tracks view found";
+    return pTracksView; // might be nullptr
+}
+
+bool WLibrary::isTrackInCurrentView(const TrackId& trackId) {
+    // qDebug() << "WLibrary::isTrackInCurrentView" << trackId;
+    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         return false;
     }
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return false;
+    }
+
+    return pTracksView->isTrackInCurrentView(trackId);
 }
 
 void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
@@ -130,19 +132,27 @@ void WLibrary::slotSelectTrackInActiveTrackView(const TrackId& trackId) {
     if (!trackId.isValid()) {
         return;
     }
-
-    QWidget* pCurrent = currentWidget();
-    WTrackTableView* pTracksView = qobject_cast<WTrackTableView*>(pCurrent);
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
     if (!pTracksView) {
-        //qDebug() << "   view is no tracks view. look for tracks view child";
-        pTracksView = pCurrent->findChild<WTrackTableView*>();
+        return;
     }
-    if (pTracksView) {
-        //qDebug() << "   tracks view found";
-        pTracksView->slotSelectTrack(trackId);
-    } else {
-        //qDebug() << "   no tracks view found";
+    pTracksView->slotSelectTrack(trackId);
+}
+
+void WLibrary::saveCurrentViewState() const {
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return;
     }
+    pTracksView->slotSaveCurrentViewState();
+}
+
+void WLibrary::restoreCurrentViewState() const {
+    WTrackTableView* pTracksView = getCurrentTrackTableView();
+    if (!pTracksView) {
+        return;
+    }
+    pTracksView->slotRestoreCurrentViewState();
 }
 
 bool WLibrary::event(QEvent* pEvent) {

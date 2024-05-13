@@ -67,6 +67,30 @@ float overlappingMarkerIncrement(const float labelRectHeight, const float breadt
     return std::max(minIncrement, fullIncrement - std::max(0.f, threshold - breadth));
 }
 
+#define FOO
+
+bool isShowUntilNextPositionControl(const QString& positionControl) {
+    // To identify which markers are included in the beat/time until next marker
+    // display, in addition to the hotcues
+#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
+    using namespace Qt::Literals::StringLiterals;
+    constexpr std::array list = {"cue_point"_L1,
+            "intro_start_position"_L1,
+            "intro_end_position"_L1,
+            "outro_start_position"_L1,
+            "outro_end_position"_L1};
+#else
+    const std::array list = {QLatin1String{"cue_point"},
+            QLatin1String{"intro_start_position"},
+            QLatin1String{"intro_end_position"},
+            QLatin1String{"outro_start_position"},
+            QLatin1String{"outro_end_position"}};
+#endif
+    return std::any_of(list.cbegin(), list.cend(), [positionControl](auto& view) {
+        return view == positionControl;
+    });
+}
+
 } // anonymous namespace
 
 WaveformMark::WaveformMark(const QString& group,
@@ -75,14 +99,21 @@ WaveformMark::WaveformMark(const QString& group,
         int priority,
         const WaveformSignalColors& signalColors,
         int hotCue)
-        : m_linePosition{}, m_breadth{}, m_level{}, m_iPriority(priority), m_iHotCue(hotCue) {
+        : m_linePosition{},
+          m_breadth{},
+          m_level{},
+          m_iPriority(priority),
+          m_iHotCue(hotCue),
+          m_showUntilNext{} {
     QString positionControl;
     QString endPositionControl;
     if (hotCue != Cue::kNoHotCue) {
         positionControl = "hotcue_" + QString::number(hotCue + 1) + "_position";
         endPositionControl = "hotcue_" + QString::number(hotCue + 1) + "_endposition";
+        m_showUntilNext = true;
     } else {
         positionControl = context.selectString(node, "Control");
+        m_showUntilNext = isShowUntilNextPositionControl(positionControl);
     }
 
     if (!positionControl.isEmpty()) {
@@ -310,14 +341,10 @@ QImage WaveformMark::generateImage(float devicePixelRatio) {
 
     // Determine mark text.
     if (getHotCue() >= 0) {
-        constexpr int kMaxCueLabelLength = 23;
         if (!label.isEmpty()) {
             label.prepend(": ");
         }
         label.prepend(QString::number(getHotCue() + 1));
-        if (label.size() > kMaxCueLabelLength) {
-            label = label.left(kMaxCueLabelLength - 3) + "...";
-        }
     }
 
     const bool useIcon = m_iconPath != "";

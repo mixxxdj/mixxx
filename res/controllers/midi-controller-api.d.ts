@@ -1,5 +1,6 @@
-
-/** MidiControllerJSProxy */
+declare interface MidiInputHandlerController {
+    disconnect(): boolean;
+}
 
 declare namespace midi {
 
@@ -29,4 +30,16 @@ declare namespace midi {
      */
     function sendSysexMsg(dataList: number[], length?: number): void;
 
+    type InputCallback = (channel: string, control: string, value: number, status: number) => void
+
+    /**
+     * Calls the provided callback whenever Mixxx receives a MIDI signal with the first two bytes matching the
+     * provided status and midino argument.
+     * @param status
+     * @param midino
+     * @param callback
+     * @see https://github.com/mixxxdj/mixxx/wiki/midi%20scripting
+     * @see https://github.com/mixxxdj/mixxx/wiki/Midi-Crash-Course
+     */
+    function makeInputHandler(status: number, midino: number, callback: InputCallback): MidiInputHandlerController
 }

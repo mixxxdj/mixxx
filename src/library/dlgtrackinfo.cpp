@@ -267,12 +267,9 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotReloadCoverArt);
 
     connect(m_pWStarRating,
-            &WStarRating::ratingChanged,
+            &WStarRating::ratingChangeRequest,
             this,
-            [this](int rating) {
-                m_pWStarRating->slotSetRating(rating);
-                m_trackRecord.setRating(rating);
-            });
+            &DlgTrackInfo::slotRatingChanged);
 
     btnColorPicker->setStyle(QStyleFactory::create(QStringLiteral("fusion")));
     QMenu* pColorPickerMenu = new QMenu(this);
@@ -452,8 +449,8 @@ void DlgTrackInfo::reloadTrackBeats(const Track& track) {
     updateSpinBpmFromBeats();
     m_trackHasBeatMap = m_pBeatsClone && !m_pBeatsClone->hasConstantTempo();
     bpmConst->setChecked(!m_trackHasBeatMap);
-    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
-    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
+    bpmConst->setEnabled(m_trackHasBeatMap); // We cannot turn a BeatGrid to a BeatMap
+    spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tap them
     bpmTap->setEnabled(!m_trackHasBeatMap);  // when we have a beatmap
 
     if (track.isBpmLocked()) {
@@ -614,8 +611,13 @@ void DlgTrackInfo::saveTrack() {
     static_cast<void>(updateKeyText()); // discard result
 
     // Update the cached track
-    // The dialog is updated and repopulated by the Track::changed() signal.
-    m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
+    //
+    // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
+    // will be updated by the subsequent Track::changed() signal to keep them
+    // synchronized with the track. Otherwise the track has not been modified and
+    // both members must remain valid. Do not use std::move() for passing arguments!
+    // Else triggering apply twice in quick succession might clear the metadata.
+    m_pLoadedTrack->replaceRecord(m_trackRecord, m_pBeatsClone);
 }
 
 void DlgTrackInfo::clear() {
@@ -693,28 +695,28 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
         return;
     }
 
-    if (!m_pBeatsClone) {
-        mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
-        // This should never happen, but we cannot be sure
-        VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
-            cuePosition = mixxx::audio::kStartFramePos;
+    if (m_pLoadedTrack) {
+        if (m_pBeatsClone) {
+            const auto trackEndPosition = mixxx::audio::FramePos{
+                    m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
+            const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
+                    mixxx::audio::kStartFramePos, trackEndPosition);
+            if (oldBpm == bpm) {
+                return;
+            }
+            m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
+        } else {
+            mixxx::audio::FramePos cuePosition = m_pLoadedTrack->getMainCuePosition();
+            // This should never happen, but we cannot be sure
+            VERIFY_OR_DEBUG_ASSERT(cuePosition.isValid()) {
+                cuePosition = mixxx::audio::kStartFramePos;
+            }
+            m_pBeatsClone = mixxx::Beats::fromConstTempo(
+                    m_pLoadedTrack->getSampleRate(),
+                    // Cue positions might be fractional, i.e. not on frame boundaries!
+                    cuePosition.toNearestFrameBoundary(),
+                    bpm);
         }
-        m_pBeatsClone = mixxx::Beats::fromConstTempo(
-                m_pLoadedTrack->getSampleRate(),
-                // Cue positions might be fractional, i.e. not on frame boundaries!
-                cuePosition.toNearestFrameBoundary(),
-                bpm);
-    }
-
-    if (m_pLoadedTrack && m_pBeatsClone) {
-        const auto trackEndPosition = mixxx::audio::FramePos{
-                m_pLoadedTrack->getDuration() * m_pBeatsClone->getSampleRate()};
-        const mixxx::Bpm oldBpm = m_pBeatsClone->getBpmInRange(
-                mixxx::audio::kStartFramePos, trackEndPosition);
-        if (oldBpm == bpm) {
-            return;
-        }
-        m_pBeatsClone = m_pBeatsClone->trySetBpm(bpm).value_or(m_pBeatsClone);
     }
 
     updateSpinBpmFromBeats();
@@ -742,6 +744,17 @@ void DlgTrackInfo::slotKeyTextChanged() {
     if (updateKeyText() != mixxx::UpdateResult::Unchanged) {
         // Ensure that the text field always reflects the actual value
         displayKeyText();
+    }
+}
+
+void DlgTrackInfo::slotRatingChanged(int rating) {
+    if (!m_pLoadedTrack) {
+        return;
+    }
+    if (m_trackRecord.isValidRating(rating) &&
+            rating != m_trackRecord.getRating()) {
+        m_pWStarRating->slotSetRating(rating);
+        m_trackRecord.setRating(rating);
     }
 }
 

@@ -11,6 +11,32 @@
 
 #include "moc_legacycontrollersettings.cpp"
 
+namespace {
+
+// Regex that allows to use :hwbtn:`LABELSTRING` in xml controller settings xml
+const QRegularExpression kHwbtnRe(QStringLiteral(":hwbtn:`([^`]*)`"));
+
+const QString kHwbtnStyleWrapper = QStringLiteral(
+        "<span style='"
+        "background: #343131;"
+        "color: #d9d9d9;"
+        "font-size: 70%;"
+        "font-weight: 600;"
+        "line-height: 120%;"
+        "text-transform: uppercase;"
+        // Padding does only work with block and table-cell elements, not
+        // inline span. Hence, wrapping the string in `&nbsp;` is the only way
+        // to get the desired look here. See the Qt documentation for details:
+        // https://doc.qt.io/qt-6/richtext-html-subset.html#css-properties
+        // \\1 is the RegEx match group 1.
+        "'>&nbsp;\\1&nbsp;</span>");
+
+QString replaceMarkupStyleStr(QString str) {
+    return str.replace(kHwbtnRe, kHwbtnStyleWrapper);
+}
+
+} // namespace
+
 LegacyControllerSettingBuilder* LegacyControllerSettingBuilder::instance() {
     static LegacyControllerSettingBuilder* s_self = nullptr;
 
@@ -32,11 +58,11 @@ LegacyControllerSettingBuilder::LegacyControllerSettingBuilder() {
 
 AbstractLegacyControllerSetting::AbstractLegacyControllerSetting(const QDomElement& element) {
     m_variableName = element.attribute("variable").trimmed();
-    m_label = element.attribute("label", m_variableName).trimmed();
+    m_label = replaceMarkupStyleStr(element.attribute("label", m_variableName).trimmed());
 
     QDomElement description = element.firstChildElement("description");
     if (!description.isNull()) {
-        m_description = description.text().trimmed();
+        m_description = replaceMarkupStyleStr(description.text().trimmed());
     }
 }
 
@@ -99,7 +125,9 @@ QWidget* LegacyControllerBooleanSetting::buildWidget(
 }
 
 QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
-    auto* pCheckBox = new QCheckBox(label(), pParent);
+    auto pWidget = make_parented<QWidget>(pParent);
+
+    auto* pCheckBox = new QCheckBox(pWidget);
     pCheckBox->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
     if (m_editedValue) {
         pCheckBox->setCheckState(Qt::Checked);
@@ -109,7 +137,7 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         pCheckBox->setToolTip(QString("<p>%1</p>").arg(description()));
     }
 
-    connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, &pCheckBox]() {
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pCheckBox, [this, pCheckBox]() {
         pCheckBox->setCheckState(m_editedValue ? Qt::Checked : Qt::Unchecked);
     });
 
@@ -118,7 +146,21 @@ QWidget* LegacyControllerBooleanSetting::buildInputWidget(QWidget* pParent) {
         emit changed();
     });
 
-    return pCheckBox;
+    auto pLabelWidget = make_parented<QLabel>(pWidget);
+    pLabelWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+    pLabelWidget->setText(label());
+
+    QBoxLayout* pLayout = new QHBoxLayout();
+
+    pLayout->addWidget(pCheckBox);
+    pLayout->addWidget(pLabelWidget);
+
+    pLayout->setStretch(0, 3);
+    pLayout->setStretch(1, 1);
+
+    pWidget->setLayout(pLayout);
+
+    return pWidget;
 }
 
 bool LegacyControllerBooleanSetting::match(const QDomElement& element) {
@@ -197,7 +239,7 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
     save();
 
     size_t pos = 0;
-    for (const auto& value : qAsConst(m_options)) {
+    for (const auto& value : std::as_const(m_options)) {
         if (std::get<0>(value) == in) {
             if (ok != nullptr) {
                 *ok = true;
@@ -213,12 +255,12 @@ void LegacyControllerEnumSetting::parse(const QString& in, bool* ok) {
 QWidget* LegacyControllerEnumSetting::buildInputWidget(QWidget* pParent) {
     auto* pComboBox = new QComboBox(pParent);
 
-    for (const auto& value : qAsConst(m_options)) {
+    for (const auto& value : std::as_const(m_options)) {
         pComboBox->addItem(std::get<1>(value));
     }
     pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
 
-    connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, &pComboBox]() {
+    connect(this, &AbstractLegacyControllerSetting::valueReset, pComboBox, [this, pComboBox]() {
         pComboBox->setCurrentIndex(static_cast<int>(m_editedValue));
     });
 

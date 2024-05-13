@@ -26,6 +26,7 @@ class WColorPickerAction;
 class WCoverArtMenu;
 class WFindOnWebMenu;
 class WSearchRelatedTracksMenu;
+class WStarRatingAction;
 
 /// A context menu for track(s).
 /// Can be used with individual track type widgets based on TrackPointer
@@ -110,12 +111,16 @@ class WTrackMenu : public QMenu {
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackMenuVisible(bool visible);
-    void restoreCurrentIndex();
+    void saveCurrentViewState();
+    void restoreCurrentViewStateOrIndex();
 
   private slots:
     // File
     void slotOpenInFileBrowser();
     void slotSelectInLibrary();
+
+    // Track rating
+    void slotSetRating(int rating);
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -183,6 +188,7 @@ class WTrackMenu : public QMenu {
     QList<TrackRef> getTrackRefs() const;
 
     TrackPointer getFirstTrackPointer() const;
+    TrackPointerList getTrackPointers() const;
 
     std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
 
@@ -221,6 +227,10 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
+
+    /// Get the common rating of all selected tracks.
+    /// Return 0 if ratings differ.
+    int getCommonTrackRating() const;
 
     /// Get the common track color of all tracks this menu is shown for, or
     /// return `nullopt` if there is no common color. Tracks may have no color
@@ -303,7 +313,8 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
 
-    // Track color
+    // Track rating and color
+    WStarRatingAction* m_pStarRatingAction{};
     WColorPickerAction* m_pColorPickerAction{};
 
     // Analysis actions

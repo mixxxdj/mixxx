@@ -278,11 +278,17 @@ WLibraryTextBrowser {
 WLibrary QLineEdit,
 WLibrary QPlainTextEdit,
 WBeatSpinBox,
+/* Track label inline editor */
+WTrackPropertyEditor,
 #LibraryBPMSpinBox {
   color: #ddd;
   background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
+}
+WLibrary QLineEdit,
+WTrackPropertyEditor,
+#LibraryBPMSpinBox {
   border: 1px solid #006596;
 }
 
@@ -843,6 +849,7 @@ WPushButton,
 WKey,
 WTime,
 WTrackProperty,
+WTrackPropertyEditor,
 WRecordingDuration,
 QSpinBox,
 WBeatSpinBox,
@@ -1098,15 +1105,21 @@ WBeatSpinBox,
 }
 
 /* Start editable widgets in decks */
+/* emphasize editable widgets on hover */
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
 #PositionGutter:hover,
 #PlayPositionTextSmall:hover,
-#StarratingGutter:hover {
-  /* emphasize editable widgets on hover */
-  border: 1px solid #FF6600;
+#StarratingGutter:hover,
+WTrackProperty:hover {
   background-color: rgba(255, 102, 0, 128);
-}
+  }
+  #BpmKeyEditRowCollapsed:hover,
+  #BpmKeyEditRowExpanded:hover,
+  WTrackProperty[selected="true"] {
+    border: 1px solid #FF6600;
+  }
+
 #BpmKeyEditRowCollapsed {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
@@ -1593,6 +1606,11 @@ WStarRating {
   font-size: 15px;
 }
 
+/* Track label inline editor in decks and samplers */
+WTrackPropertyEditor {
+  font-size: 15px;
+}
+
 #SampleDecksContainer {
 }
 
@@ -2004,6 +2022,7 @@ WTrackMenu::item,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+WTrackMenu WStarRating,
 QLineEdit QMenu,
 QLineEdit QMenu::item,
 QPlainTextEdit QMenu,

@@ -161,7 +161,7 @@ void CoverArtArchiveLinksTask::emitSucceeded(
         deleteLater();
         return;
     }
-    emit succeeded(allUrls);
+    emit succeeded(m_albumReleaseId, allUrls);
 }
 
 } // namespace mixxx

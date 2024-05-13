@@ -853,7 +853,7 @@ void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping>
         if (pLayout != nullptr && !settings.isEmpty()) {
             m_ui.groupBoxSettings->layout()->addWidget(pLayout->build(m_ui.groupBoxSettings));
 
-            for (const auto& setting : qAsConst(settings)) {
+            for (const auto& setting : std::as_const(settings)) {
                 connect(setting.get(),
                         &AbstractLegacyControllerSetting::changed,
                         this,

@@ -1109,6 +1109,20 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
         }
     }
 
+    // Relay for the label's WTrackMenu (which is created only on demand):
+    // Emitted before/after deleting a track file via that menu
+    // IF that track is in the current view.
+    connect(pTrackProperty,
+            &WTrackProperty::saveCurrentViewState,
+            m_pLibrary,
+            &Library::slotSaveCurrentViewState,
+            Qt::DirectConnection);
+    connect(pTrackProperty,
+            &WTrackProperty::restoreCurrentViewState,
+            m_pLibrary,
+            &Library::slotRestoreCurrentViewState,
+            Qt::DirectConnection);
+
     connect(pPlayer,
             &BaseTrackPlayer::newTrackLoaded,
             pTrackProperty,
@@ -1185,11 +1199,6 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
         return nullptr;
     }
 
-    // Ensure stars_up/down controls are created and slots available.
-    // If they have already been created, existing connections were
-    // removed when the previous star widget was destroyed.
-    pPlayer->ensureStarControlsArePrepared();
-
     WStarRating* pStarRating = new WStarRating(m_pParent);
     commonWidgetSetup(node, pStarRating, false);
     pStarRating->setup(node, *m_pContext);
@@ -1198,14 +1207,10 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
             &BaseTrackPlayer::trackRatingChanged,
             pStarRating,
             &WStarRating::slotSetRating);
-    connect(pPlayer,
-            &BaseTrackPlayer::trackRatingChangeRequest,
-            pStarRating,
-            &WStarRating::slotRatingUpDownRequest);
     connect(pStarRating,
-            &WStarRating::ratingChanged,
+            &WStarRating::ratingChangeRequest,
             pPlayer,
-            &BaseTrackPlayer::slotSetTrackRating);
+            &BaseTrackPlayer::slotTrackRatingChangeRequest);
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -2417,12 +2422,13 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                     subkey.item += "_toggle";
                     shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                     addShortcutToToolTip(pWidget, shortcut, tr("toggle"));
-                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget()))) {
+                } else if ((pSlider = qobject_cast<const WSliderComposed*>(pWidget->toQWidget())) ||
+                        qobject_cast<const WKnobComposed*>(pWidget->toQWidget())) {
                     // check for "_up", "_down", "_up_small", "_down_small"
                     ConfigKey subkey;
                     QString shortcut;
 
-                    if (pSlider->isHorizontal()) {
+                    if (pSlider && pSlider->tryParseHorizontal(node)) {
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
@@ -2442,7 +2448,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
                         subkey.item += "_down_small";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);
                         addShortcutToToolTip(pWidget, shortcut, tr("left small"));
-                    } else {
+                    } else { // vertical slider of knob
                         subkey = configKey;
                         subkey.item += "_up";
                         shortcut = m_pKeyboard->getKeyboardConfig()->getValueString(subkey);

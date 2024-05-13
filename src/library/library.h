@@ -86,6 +86,10 @@ class Library: public QObject {
         return m_trackTableFont;
     }
 
+    bool selectedClickEnabled() const {
+        return m_editMetadataSelectedClick;
+    }
+
     //static Library* buildDefaultLibrary();
 
     static const int kDefaultRowHeightPx;
@@ -115,6 +119,8 @@ class Library: public QObject {
     void slotRequestRemoveDir(const QString& directory, LibraryRemovalType removalType);
     void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
+    void slotSaveCurrentViewState() const;
+    void slotRestoreCurrentViewState() const;
 
   signals:
     void showTrackModel(QAbstractItemModel* model, bool restoreState = true);

@@ -48,6 +48,8 @@ class ControllerScriptEngineBase : public QObject {
     std::shared_ptr<ControllerSharedData> getSharedData() const {
         return m_pRuntimeData;
     }
+  signals:
+    void beforeShutdown();
 
   protected:
     virtual void shutdown();
@@ -74,4 +76,5 @@ class ControllerScriptEngineBase : public QObject {
 
     friend class ColorMapperJSProxy;
     friend class ControllerSharedDataTest;
+    friend class MidiControllerTest;
 };
