@@ -44,6 +44,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
 
   signals:
     void reloadUserInterface();
+    void menuBarAutoHideChanged();
     void tooltipModeChanged(mixxx::TooltipsPreference tooltipMode);
 
   private:

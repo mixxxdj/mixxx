@@ -1,5 +1,6 @@
 #include "mixxxmainwindow.h"
 
+#include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
 #include <QFileDialog>
@@ -81,6 +82,9 @@ inline bool supportsGlobalMenu() {
     return false;
 }
 #endif
+
+const ConfigKey kHideMenuBarConfigKey = ConfigKey("[Config]", "hide_menubar");
+const ConfigKey kMenuBarHintConfigKey = ConfigKey("[Config]", "show_menubar_hint");
 } // namespace
 
 MixxxMainWindow::MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices)
@@ -302,8 +306,15 @@ void MixxxMainWindow::initialize() {
             this,
             &MixxxMainWindow::rebootMixxxView,
             Qt::DirectConnection);
+#ifndef __APPLE__
+    connect(m_pPrefDlg,
+            &DlgPreferences::menuBarAutoHideChanged,
+            this,
+            &MixxxMainWindow::slotUpdateMenuBarAltKeyConnection,
+            Qt::DirectConnection);
+#endif
 
-    // Connect signals to the menubar. Should be done before emit newSkinLoaded.
+    // Connect signals to the menubar. Should be done before emit skinLoaded.
     connectMenuBar();
 
     QWidget* oldWidget = m_pCentralWidget;
@@ -368,6 +379,21 @@ void MixxxMainWindow::initialize() {
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pCentralWidget);
+
+#ifndef __APPLE__
+    // Ask for permission to auto-hide the menu bar if applicable.
+#ifdef __LINUX__
+    // This makes no sense when starting in windowed mode with a global menu,
+    // we'll ask when going fullscreen.
+    if (!m_supportsGlobalMenuBar || isFullScreen()) {
+        alwaysHideMenuBarDlg();
+        slotUpdateMenuBarAltKeyConnection();
+    }
+#else
+    alwaysHideMenuBarDlg();
+    slotUpdateMenuBarAltKeyConnection();
+#endif
+#endif
 
     // Show the menubar after the launch image is replaced by the skin widget,
     // otherwise it would shift the launch image shortly before the skin is visible.
@@ -526,6 +552,51 @@ void MixxxMainWindow::initializeWindow() {
     setWindowIcon(QIcon(MIXXX_ICON_PATH));
     slotUpdateWindowTitle(TrackPointer());
 }
+
+#ifndef __APPLE__
+void MixxxMainWindow::alwaysHideMenuBarDlg() {
+    if (!m_pCoreServices->getSettings()->getValue<bool>(
+                kMenuBarHintConfigKey, true)) {
+        return;
+    }
+    QString title = tr("Allow Mixxx to hide the menu bar?");
+    //: Always show the menu bar?
+    QString hideBtnLabel = tr("Hide");
+    QString showBtnLabel = tr("Always show");
+    //: Keep formatting tags <b> (bold text) and <br> (linebreak).
+    //: %1 is the placeholder for the 'Always show' button label
+    QString desc = tr(
+            "The Mixxx menu bar is hidden and can be toggled with a single press "
+            "of the <b>Alt</b> key.<br><br>"
+            "Click <b>%1</b> to agree.<br><br>"
+            "Click <b>%2</b> to disable that, for example if you don't use Mixxx "
+            "with a keyboard.<br><br>"
+            "You can change this setting any time in Preferences -> Interface."
+            "<br>") // line break for some extra margin to the checkbox
+                           .arg(hideBtnLabel, showBtnLabel);
+
+    QMessageBox msg;
+    msg.setIcon(QMessageBox::Question);
+    msg.setWindowTitle(title);
+    msg.setText(desc);
+    QCheckBox askAgainCheckBox;
+    askAgainCheckBox.setText(tr("Ask me again"));
+    askAgainCheckBox.setCheckState(Qt::Checked);
+    msg.setCheckBox(&askAgainCheckBox);
+    QPushButton* pHideBtn = msg.addButton(hideBtnLabel, QMessageBox::AcceptRole);
+    QPushButton* pShowBtn = msg.addButton(showBtnLabel, QMessageBox::RejectRole);
+    msg.setDefaultButton(pShowBtn);
+    msg.exec();
+
+    m_pCoreServices->getSettings()->setValue(
+            kMenuBarHintConfigKey,
+            askAgainCheckBox.checkState() == Qt::Checked ? 1 : 0);
+
+    m_pCoreServices->getSettings()->setValue(
+            kHideMenuBarConfigKey,
+            msg.clickedButton() == pHideBtn ? 1 : 0);
+}
+#endif
 
 QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
         const QString &title, const QString &text, bool* retryClicked) {
@@ -885,6 +956,29 @@ void MixxxMainWindow::connectMenuBar() {
 #endif
 }
 
+#ifndef __APPLE__
+void MixxxMainWindow::slotUpdateMenuBarAltKeyConnection() {
+    if (!m_pCoreServices->getKeyboardEventFilter() || !m_pMenuBar) {
+        return;
+    }
+
+    if (m_pCoreServices->getSettings()->getValue<bool>(kHideMenuBarConfigKey, false)) {
+        connect(m_pCoreServices->getKeyboardEventFilter().get(),
+                &KeyboardEventFilter::altPressedWithoutKeys,
+                m_pMenuBar,
+                &WMainMenuBar::slotToggleMenuBar,
+                Qt::UniqueConnection);
+        m_pMenuBar->hideMenuBar();
+    } else {
+        disconnect(m_pCoreServices->getKeyboardEventFilter().get(),
+                &KeyboardEventFilter::altPressedWithoutKeys,
+                m_pMenuBar,
+                &WMainMenuBar::slotToggleMenuBar);
+        m_pMenuBar->showMenuBar();
+    }
+}
+#endif
+
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     QString group = PlayerManager::groupForDeck(deck - 1);
 
@@ -1212,6 +1306,10 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
                 QApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, isFullScreenNow);
                 createMenuBar();
                 connectMenuBar();
+                // With a global menu we didn't show the menubar auto-hide dialog
+                // during (windowed) startup, so ask now.
+                alwaysHideMenuBarDlg();
+                slotUpdateMenuBarAltKeyConnection();
             }
 #endif
             // This will toggle the Fullscreen checkbox and hide the menubar if
