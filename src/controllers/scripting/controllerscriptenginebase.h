@@ -41,6 +41,7 @@ class ControllerScriptEngineBase : public QObject {
         return m_bTesting;
     }
 
+    /// Takes ownership of `runtimeData`
     void setSharedData(ControllerNamespacedSharedData* runtimeData);
 
     ControllerNamespacedSharedData* getSharedData() {

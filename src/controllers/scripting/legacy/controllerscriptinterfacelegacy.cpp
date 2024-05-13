@@ -240,9 +240,8 @@ void ControllerScriptInterfaceLegacy::onRuntimeDataUpdated(const QVariant& value
             pJsEngine->toScriptValue(value),
     };
 
-    for (const auto& connection : m_runtimeDataConnections) {
-        QJSValue func = connection.callback; // copy function because QJSValue::call is not const
-        QJSValue result = func.call(args);
+    for (auto& connection : m_runtimeDataConnections) {
+        QJSValue result = connection.callback.call(args);
         if (result.isError()) {
             if (m_pScriptEngineLegacy != nullptr) {
                 m_pScriptEngineLegacy->showScriptExceptionDialog(result);
@@ -428,14 +427,10 @@ void ControllerScriptInterfaceLegacy::triggerScriptConnection(
 
 bool ControllerScriptInterfaceLegacy::removeRuntimeDataConnection(
         const ScriptConnection& connection) {
-    if (m_pScriptEngineLegacy->jsEngine() == nullptr ||
-            !m_runtimeDataConnections.contains(connection)) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngineLegacy->jsEngine()) {
         return false;
     }
-
-    m_runtimeDataConnections.removeAll(connection);
-
-    return true;
+    return m_runtimeDataConnections.removeAll(connection) > 0;
 }
 
 void ControllerScriptInterfaceLegacy::triggerRuntimeDataConnection(
