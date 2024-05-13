@@ -167,6 +167,7 @@ void WCueMenuPopup::slotUpdate() {
         m_pColorPicker->setSelectedColor(std::nullopt);
     }
 }
+
 void WCueMenuPopup::slotEditLabel() {
     VERIFY_OR_DEBUG_ASSERT(m_pCue != nullptr) {
         return;
@@ -259,6 +260,14 @@ void WCueMenuPopup::slotSavedLoopCueManual() {
 }
 
 void WCueMenuPopup::closeEvent(QCloseEvent* event) {
+    if (m_pTrack && m_pCue) {
+        // Check if this is a hotcue, and -if yes- if it has an end position
+        // from previous loop cue or temporary state.
+        // If yes, remove it.
+        if (m_pCue->getType() == mixxx::CueType::HotCue && m_pCue->getEndPosition().isValid()) {
+            m_pCue->setEndPosition(mixxx::audio::FramePos());
+        }
+    }
     emit aboutToHide();
     QWidget::closeEvent(event);
 }
