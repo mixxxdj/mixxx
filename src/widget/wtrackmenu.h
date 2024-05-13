@@ -188,6 +188,7 @@ class WTrackMenu : public QMenu {
     QList<TrackRef> getTrackRefs() const;
 
     TrackPointer getFirstTrackPointer() const;
+    TrackPointerList getTrackPointers() const;
 
     std::unique_ptr<mixxx::TrackPointerIterator> newTrackPointerIterator() const;
 
