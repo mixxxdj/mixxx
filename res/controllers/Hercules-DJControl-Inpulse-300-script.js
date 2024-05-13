@@ -29,7 +29,7 @@
 //
 // TO DO: Functions that could be implemented to the script:
 //
-// * ROLL: Keep SLIP active (if already enabled) when exiting from rolls 
+// * ROLL: Keep SLIP active (if already enabled) when exiting from rolls
 //
 // * FX: See how to preselect effects for a rack
 //
@@ -71,6 +71,14 @@ DJCi300.padModeFX = 5;
 DJCi300.padModeSlicerloop = 6;
 DJCi300.padModeBeatjump = 7;
 
+// Slicer connections
+var slicerSizeConnection1;
+var slicerTrackConnection1;
+var slicerBeatConnection1;
+var slicerTrackConnection2;
+var slicerSizeConnection2;
+var slicerBeatConnection2;
+
 DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
     value = (value * 125);
     midi.sendShortMsg(0xB0, 0x40, value);
@@ -79,7 +87,7 @@ DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
 
 DJCi300.vuMeterUpdateDeck = function(value, group, _control, _status) {
     value = (value * 125);
-    var status = (group === "[Channel1]") ? 0xB1 : 0xB2;
+    const status = (group === "[Channel1]") ? 0xB1 : 0xB2;
     midi.sendShortMsg(status, 0x40, value);
 };
 
@@ -117,13 +125,13 @@ DJCi300.init = function() {
     // Slicer variables
     // Slicer storage (stores slicer button positions)
     DJCi300.slicerPoints = {
-        1: [-1,-1,-1,-1,-1,-1,-1,-1,-1],
-        2: [-1,-1,-1,-1,-1,-1,-1,-1,-1]
+        1: [-1, -1, -1, -1, -1, -1, -1, -1, -1],
+        2: [-1, -1, -1, -1, -1, -1, -1, -1, -1]
     };
     // Slicer buttons (stores whether or not slicer button is pressed)
     DJCi300.slicerButtonEnabled = {
-        1: [0,0,0,0,0,0,0,0],
-        2: [0,0,0,0,0,0,0,0]
+        1: [0, 0, 0, 0, 0, 0, 0, 0],
+        2: [0, 0, 0, 0, 0, 0, 0, 0]
     };
     // Slicer beat (stores what beat slicer is on)
     DJCi300.slicerBeat = {
@@ -138,7 +146,7 @@ DJCi300.init = function() {
         1: 0,
         2: 0
     };
-    
+
     // Turn On Vinyl buttons LED(one for each deck).
     midi.sendShortMsg(0x91, 0x03, 0x7F);
     midi.sendShortMsg(0x92, 0x03, 0x7F);
@@ -192,9 +200,9 @@ DJCi300.init = function() {
 
 // Update beatmatch tempo LEDs
 DJCi300.updateBeatmatchTempoLED = function(_value, _group, _control) {
-    deck1tempo = engine.getValue("[Channel1]", "bpm");
-    deck2tempo = engine.getValue("[Channel2]", "bpm");
-    
+    const deck1tempo = engine.getValue("[Channel1]", "bpm");
+    const deck2tempo = engine.getValue("[Channel2]", "bpm");
+
     // If successfully synced, or if one of the songs are paused, turn all lights off
     if ((Math.abs(deck1tempo - deck2tempo) < DJCi300.beatmatchTempoTolerance) ||
         (engine.getValue("[Channel1]", "play") === 0) ||
@@ -220,8 +228,8 @@ DJCi300.updateBeatmatchTempoLED = function(_value, _group, _control) {
 
 // Update beatmatch align LEDs
 DJCi300.updateBeatmatchAlignLED = function(_value, _group, _control) {
-    deck1Align = engine.getValue("[Channel1]", "beat_distance");
-    deck2Align = engine.getValue("[Channel2]", "beat_distance");
+    let deck1Align = engine.getValue("[Channel1]", "beat_distance");
+    let deck2Align = engine.getValue("[Channel2]", "beat_distance");
 
     // Because beat_distance resets to 0 every new beat, it's possible for the two decks to have
     // very different beat values and still be almost aligned. So we must adjust for this
@@ -259,7 +267,7 @@ DJCi300.updateBeatmatchAlignLED = function(_value, _group, _control) {
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (One per deck).
 DJCi300.vinylButton = function(channel, control, value, status, _group) {
-    var deck = channel;
+    const deck = channel;
 
     if (value) {
         if (DJCi300.scratchButtonState[deck]) {
@@ -273,8 +281,8 @@ DJCi300.vinylButton = function(channel, control, value, status, _group) {
 };
 
 DJCi300._scratchEnable = function(deck) {
-    var alpha = 1.0/8;
-    var beta = alpha/32;
+    const alpha = 1.0/8;
+    const beta = alpha/32;
     engine.scratchEnable(deck, 248, 33 + 1/3, alpha, beta);
 };
 
@@ -288,7 +296,7 @@ DJCi300._convertWheelRotation = function(value) {
 // This is called immediately after the wheel is released and we want to switch between scratching and jogging gracefully.
 // It is also connected to controls and called regularly to see if the wheel has slowed down enough. Once it does, then we switch from scratching to jogging
 DJCi300.updateScratchAction = function(value, group, _control) {
-    var deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = (group === "[Channel1]") ? 1 : 2;
 
     // Stop scratching only if the jogwheel is slow enough and the wheels are not being touched
     if (((Math.abs(value) < DJCi300.slipThreshold)) && (engine.isScratching(deck))
@@ -296,11 +304,11 @@ DJCi300.updateScratchAction = function(value, group, _control) {
         engine.scratchDisable(deck);
         DJCi300.scratchAction[deck] = DJCi300.kScratchActionBend;
     }
-}
+};
 
 // The touch action on the jog wheel's top surface
 DJCi300.wheelTouch = function(channel, _control, value, _status, group) {
-    var deck = channel;
+    const deck = channel;
     if (value > 0) {
         // Enable scratching in vinyl mode OR if the deck is not playing
         if ((engine.getValue(group, "play") !== 1) || (DJCi300.scratchButtonState[deck])) {
@@ -320,7 +328,7 @@ DJCi300.wheelTouch = function(channel, _control, value, _status, group) {
 
 // The touch action on the jog wheel's top surface while holding shift
 DJCi300.wheelTouchShift = function(channel, _control, value, _status, group) {
-    var deck = channel - 3;
+    const deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
         DJCi300._scratchEnable(deck);
@@ -339,7 +347,7 @@ DJCi300.jogWheel = function(_channel, _control, value, status, _group) {
     var deck;
     switch (status) {
     case 0xB1:
-    case 0xB4: 
+    case 0xB4:
         deck  = 1;
         break;
     case 0xB2:
@@ -365,40 +373,40 @@ DJCi300.jogWheel = function(_channel, _control, value, status, _group) {
 
 // Helper function that calculates samples per beat
 DJCi300._samplesPerBeat = function(deck) {
-    var sampleRate = engine.getValue("[Channel" + deck + "]", "track_samplerate");
-    var bpm = engine.getValue("[Channel" + deck + "]", "local_bpm");
+    const sampleRate = engine.getValue(`[Channel${  deck  }]`, "track_samplerate");
+    const bpm = engine.getValue(`[Channel${  deck  }]`, "local_bpm");
     // For some reason, multiplying by 60 makes the size 1/2 as large as it's supposed to be
     // Hence, we multiply by 120 instead
     secondsPerBeat = 120/bpm;
     samplesPerBeat = secondsPerBeat * sampleRate;
     return samplesPerBeat;
-}
+};
 
 // Helper function that calculates current position of play indicator in samples
 DJCi300._currentPosition = function(deck) {
-    var beatClosest = engine.getValue("[Channel" + deck + "]", "beat_closest");
-    var beatDistance = engine.getValue("[Channel" + deck + "]", "beat_distance");
+    const beatClosest = engine.getValue(`[Channel${  deck  }]`, "beat_closest");
+    let beatDistance = engine.getValue(`[Channel${  deck  }]`, "beat_distance");
 
     // Map beatDistance so that it scales from 0 to .5, then -.5 to 0
     beatDistance = (beatDistance > .5) ? (beatDistance - 1) : beatDistance;
     // Adjust beatClosest and return
     return (DJCi300._samplesPerBeat(deck) * beatDistance) + beatClosest;
-}
+};
 
 // Mode buttons
 DJCi300.changeMode = function(channel, control, value, _status, _group) {
-    var deck = channel;
+    const deck = channel;
     oldPadMode = DJCi300.padMode[deck];
     DJCi300.padMode[deck] = control - 15;
 
     // Connect slicer functions when entering slicer or slicerloop mode
     if ((DJCi300.padMode[deck] === DJCi300.padModeSlicer) ||
         (DJCi300.padMode[deck] === DJCi300.padModeSlicerloop)) {
-        
+
         if (value) {
             // Initialize slicer if it is not already initialized
             if (DJCi300.slicerPoints[deck][0] === -1) {
-                DJCi300.slicerInit(deck, engine.getValue("[Channel" + deck + "]", "beat_closest"));
+                DJCi300.slicerInit(deck, engine.getValue(`[Channel${  deck  }]`, "beat_closest"));
                 DJCi300.connectSlicerFunctions(deck);
                 // Turn off loop mode
                 DJCi300.loopMode[deck] = 0;
@@ -415,7 +423,7 @@ DJCi300.changeMode = function(channel, control, value, _status, _group) {
 
         // In loop mode, only clear slicer points (preserve the loop)
         if (DJCi300.loopMode[deck] === 1) {
-            for (var i = 0; i <= 8; i++) {
+            for (let i = 0; i <= 8; i++) {
                 DJCi300.slicerPoints[deck][i] = -1;
             }
         // Otherwise call slicerClear
@@ -434,38 +442,38 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
 
     if (value) {
         // Jump to the most recently used hotcue
-        const recentHotcue = engine.getValue("[Channel" + deck + "]", "hotcue_focus");
-        if ((recentHotcue !== -1) && (engine.getValue("[Channel" + deck + "]",
-            "hotcue_" + recentHotcue + "_enabled"))) {
+        const recentHotcue = engine.getValue(`[Channel${  deck  }]`, "hotcue_focus");
+        if ((recentHotcue !== -1) && (engine.getValue(`[Channel${  deck  }]`,
+            `hotcue_${  recentHotcue  }_enabled`))) {
 
-            engine.setValue("[Channel" + deck + "]", "hotcue_" + recentHotcue + "_goto", 1);
+            engine.setValue(`[Channel${  deck  }]`, `hotcue_${  recentHotcue  }_goto`, 1);
         } else {
             // If that hotcue doesn't exist or was deleted, jump to cue
-            engine.setValue("[Channel" + deck + "]",
+            engine.setValue(`[Channel${  deck  }]`,
                 "cue_goto", 1);
         }
 
         // Adjust pitch
-        engine.setValue("[Channel" + deck + "]", "reset_key", 1);
+        engine.setValue(`[Channel${  deck  }]`, "reset_key", 1);
         // Apply offset
         if (DJCi300.toneplayOffset[deck] >= 0) {
             for (var i = 0; i < DJCi300.toneplayOffset[deck]; i++) {
-                engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
+                engine.setValue(`[Channel${  deck  }]`, "pitch_up", 1);
             }
         } else {
             for (i = 0; i > DJCi300.toneplayOffset[deck]; i--) {
-                engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
+                engine.setValue(`[Channel${  deck  }]`, "pitch_down", 1);
             }
         }
         if (button <= 4) {
             // Buttons 1-4 are +0 to +3 semitones
             for (var i = 1; i < button; i++) {
-                engine.setValue("[Channel" + deck + "]", "pitch_up", 1);
+                engine.setValue(`[Channel${  deck  }]`, "pitch_up", 1);
             }
             // Buttons 5-8 are -4 to -1 semitones
         } else {
             for (i = 8; i >= button; i--) {
-                engine.setValue("[Channel" + deck + "]", "pitch_down", 1);
+                engine.setValue(`[Channel${  deck  }]`, "pitch_down", 1);
             }
         }
     }
@@ -492,12 +500,12 @@ DJCi300.toneplayShift = function(channel, control, value, _status, group) {
 
 // Update toneplay LEDs (LEDS will change depending on pitch, even if not caused by toneplay)
 DJCi300.updateToneplayLED = function(value, group, _control) {
-    var status = (group === "[Channel1]") ? 0x96 : 0x97;
-    var deck = status - 0x95;
-    var control = 0x40
+    const status = (group === "[Channel1]") ? 0x96 : 0x97;
+    const deck = status - 0x95;
+    let control = 0x40;
 
     // Apply offset
-    value -= DJCi300.toneplayOffset[deck]
+    value -= DJCi300.toneplayOffset[deck];
 
     // Cut off the value at -4 and 3 semitones, then round
     value = Math.min(value, 3);
@@ -514,7 +522,7 @@ DJCi300.updateToneplayLED = function(value, group, _control) {
 
     // Do the following for normal LEDs and the shifted LEDs
     // Turn off all LEDs
-    for (var i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
         midi.sendShortMsg(status, 0x40 + i, 0x00);
         midi.sendShortMsg(status, 0x40 + i + 8, 0x00);
     }
@@ -538,13 +546,13 @@ DJCi300.connectSlicerFunctions = function(deck) {
 
 DJCi300.disconnectSlicerFunctions = function(deck) {
     if (deck === 1) {
-        if (slicerSizeConnection1.isConnected) slicerSizeConnection1.disconnect();
-        if (slicerTrackConnection1.isConnected) slicerTrackConnection1.disconnect();
-        if (slicerBeatConnection1.isConnected) slicerBeatConnection1.disconnect();
+        if (slicerSizeConnection1.isConnected) { slicerSizeConnection1.disconnect(); }
+        if (slicerTrackConnection1.isConnected) { slicerTrackConnection1.disconnect(); }
+        if (slicerBeatConnection1.isConnected) { slicerBeatConnection1.disconnect(); }
     } else {
-        if (slicerSizeConnection2.isConnected) slicerSizeConnection2.disconnect();
-        if (slicerTrackConnection2.isConnected) slicerTrackConnection2.disconnect();
-        if (slicerBeatConnection2.isConnected) slicerBeatConnection2.disconnect();
+        if (slicerSizeConnection2.isConnected) { slicerSizeConnection2.disconnect(); }
+        if (slicerTrackConnection2.isConnected) { slicerTrackConnection2.disconnect(); }
+        if (slicerBeatConnection2.isConnected) { slicerBeatConnection2.disconnect(); }
     }
 };
 
@@ -553,28 +561,28 @@ DJCi300.disconnectSlicerFunctions = function(deck) {
 // also calculates the 8 slicer points and stores them in an array
 // The startPos is the starting position of the loop (in samples)
 DJCi300.slicerInit = function(deck, startPos) {
-    var samplesBetweenPts = DJCi300._samplesPerBeat(deck) * engine.getValue("[Channel" + deck + "]", "beatloop_size") / 8; 
-    for (var i = 0; i <= 8; i++) {
+    const samplesBetweenPts = DJCi300._samplesPerBeat(deck) * engine.getValue(`[Channel${  deck  }]`, "beatloop_size") / 8;
+    for (let i = 0; i <= 8; i++) {
         DJCi300.slicerPoints[deck][i] = startPos + (samplesBetweenPts * i);
     }
 
     // Disable the old loop (if it exists)
-    if (engine.getValue("[Channel" + deck + "]", "loop_enabled") === 1) {
-        engine.setValue("[Channel" + deck + "]", "reloop_toggle", 1);
+    if (engine.getValue(`[Channel${  deck  }]`, "loop_enabled") === 1) {
+        engine.setValue(`[Channel${  deck  }]`, "reloop_toggle", 1);
     }
     // Set a new loop at startPos
-    engine.setValue("[Channel" + deck + "]", "loop_start_position", DJCi300.slicerPoints[deck][0]);
-    engine.setValue("[Channel" + deck + "]", "loop_end_position", DJCi300.slicerPoints[deck][8]);
+    engine.setValue(`[Channel${  deck  }]`, "loop_start_position", DJCi300.slicerPoints[deck][0]);
+    engine.setValue(`[Channel${  deck  }]`, "loop_end_position", DJCi300.slicerPoints[deck][8]);
 
     // Enable the loop if in slicer loop mode and loop is currently disabled
     if (DJCi300.padMode[deck] === DJCi300.padModeSlicerloop) {
-        if (engine.getValue("[Channel" + deck + "]", "loop_enabled") === 0) {
-            engine.setValue("[Channel" + deck + "]", "reloop_toggle", 1);
+        if (engine.getValue(`[Channel${  deck  }]`, "loop_enabled") === 0) {
+            engine.setValue(`[Channel${  deck  }]`, "reloop_toggle", 1);
         }
     // If in normal slicer mode, disable the loop if it is currently enabled
     } else {
-        if (engine.getValue("[Channel" + deck + "]", "loop_enabled") === 1) {
-            engine.setValue("[Channel" + deck + "]", "reloop_toggle", 1);
+        if (engine.getValue(`[Channel${  deck  }]`, "loop_enabled") === 1) {
+            engine.setValue(`[Channel${  deck  }]`, "reloop_toggle", 1);
         }
     }
 };
@@ -582,17 +590,17 @@ DJCi300.slicerInit = function(deck, startPos) {
 // This function clears all set slicer points and loop points
 DJCi300.slicerClear = function(deck) {
     // Clear slicer points
-    for (var i = 0; i <= 8; i++) {
+    for (let i = 0; i <= 8; i++) {
         DJCi300.slicerPoints[deck][i] = -1;
     }
     // Remove all loop points
-    engine.setValue("[Channel" + deck + "]", "loop_start_position", -1);
-    engine.setValue("[Channel" + deck + "]", "loop_end_position", -1);
+    engine.setValue(`[Channel${  deck  }]`, "loop_start_position", -1);
+    engine.setValue(`[Channel${  deck  }]`, "loop_end_position", -1);
 };
 
 // This function calls slicerClear when a new track is loaded
 DJCi300.slicerLoadTrack = function(_value, group, _control) {
-    var deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = (group === "[Channel1]") ? 1 : 2;
     DJCi300.disconnectSlicerFunctions(deck);
     DJCi300.slicerClear(deck);
     DJCi300.updateSlicerLED(deck);
@@ -600,22 +608,22 @@ DJCi300.slicerLoadTrack = function(_value, group, _control) {
 
 // This function calls slicerInit when the length of the slicer section is adjusted
 DJCi300.slicerChangeSize = function(_value, group, _control) {
-    var deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = (group === "[Channel1]") ? 1 : 2;
     DJCi300.slicerInit(deck, DJCi300.slicerPoints[deck][0]);
 };
 
 // This function counts the beat that the slicer is on
 // This is useful for moving the loop forward or lighting the LEDs
 DJCi300.slicerCountBeat = function(_value, group, _control) {
-    var deck = (group === "[Channel1]") ? 1 : 2;
+    const deck = (group === "[Channel1]") ? 1 : 2;
 
     // Calculate current position in samples
-    var currentPos = DJCi300._currentPosition(deck);
+    const currentPos = DJCi300._currentPosition(deck);
 
     // Calculate beat
     DJCi300.slicerBeat[deck] = -1;
-    for (var i = 0; i <= 8; i++) {
-        DJCi300.slicerBeat[deck] = (currentPos >= DJCi300.slicerPoints[deck][i]) ? 
+    for (let i = 0; i <= 8; i++) {
+        DJCi300.slicerBeat[deck] = (currentPos >= DJCi300.slicerPoints[deck][i]) ?
             (DJCi300.slicerBeat[deck] + 1) : DJCi300.slicerBeat[deck];
     }
 
@@ -633,8 +641,8 @@ DJCi300.slicerCountBeat = function(_value, group, _control) {
 
 // Slicer pad buttons
 DJCi300.slicerButton = function(channel, control, value, _status, group) {
-    var deck = channel - 5;
-    var button = control % 0x20;
+    const deck = channel - 5;
+    const button = control % 0x20;
 
     // Update array. 1 for on, 0 for off
     if (value) {
@@ -643,8 +651,8 @@ DJCi300.slicerButton = function(channel, control, value, _status, group) {
         DJCi300.slicerButtonEnabled[deck][button] = 0;
     }
 
-    var start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
-    var end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
+    const start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
+    const end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
 
     // If the slicer points are uninitialized, then do nothing. Otherwise:
     if (DJCi300.slicerPoints[deck][0] !== -1) {
@@ -661,7 +669,7 @@ DJCi300.slicerButton = function(channel, control, value, _status, group) {
         } else {
             engine.setValue(group, "loop_start_position", DJCi300.slicerPoints[deck][0]);
             engine.setValue(group, "loop_end_position", DJCi300.slicerPoints[deck][8]);
-            
+
             // Disable the loop (unless we're in slicer loop mode)
             if (DJCi300.padMode[deck] !== DJCi300.padModeSlicerloop) {
                 engine.setValue(group, "reloop_toggle", 1);
@@ -674,11 +682,11 @@ DJCi300.slicerButton = function(channel, control, value, _status, group) {
 
 // Slicer LED update
 DJCi300.updateSlicerLED = function(deck) {
-    var control = (DJCi300.padMode[deck] === DJCi300.padModeSlicer) ? 0x20 : 0x60;
-    var status = (deck === 1) ? 0x96 : 0x97;
+    const control = (DJCi300.padMode[deck] === DJCi300.padModeSlicer) ? 0x20 : 0x60;
+    const status = (deck === 1) ? 0x96 : 0x97;
 
-    var start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
-    var end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
+    const start = DJCi300.slicerButtonEnabled[deck].indexOf(1);
+    const end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
 
     // Turn off all LEDs
     for (var i = 0; i < 8; i++) {
@@ -701,14 +709,14 @@ DJCi300.updateSlicerLED = function(deck) {
 
 // Loop in button
 DJCi300.loopInButton = function(channel, _control, value, _status, group) {
-    var deck = channel;
+    const deck = channel;
 
     if (value) {
         // Override the active slicer if it exists
         DJCi300.slicerClear(deck);
         DJCi300.disconnectSlicerFunctions(deck);
         DJCi300.updateSlicerLED(deck);
-        
+
         // Turn on loop mode
         DJCi300.loopMode[deck] = 1;
 
@@ -719,19 +727,19 @@ DJCi300.loopInButton = function(channel, _control, value, _status, group) {
 
 // Loop out button
 DJCi300.loopOutButton = function(channel, _control, value, _status, group) {
-    var deck = channel;
+    const deck = channel;
 
     if (value) {
         // Override the active slicer if it exists
         DJCi300.slicerClear(deck);
         DJCi300.disconnectSlicerFunctions(deck);
         DJCi300.updateSlicerLED(deck);
-        
+
         // Turn off loop mode
         DJCi300.loopMode[deck] = 0;
 
         // Disable the current loop if it exists
-        if (engine.getValue(group, "loop_enabled") === 1) engine.setValue(group, "reloop_toggle", 1);
+        if (engine.getValue(group, "loop_enabled") === 1) { engine.setValue(group, "reloop_toggle", 1); }
     }
 };
 

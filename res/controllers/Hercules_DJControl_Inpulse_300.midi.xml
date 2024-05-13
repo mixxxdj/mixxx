@@ -370,7 +370,7 @@
 					<script-binding />
 				</options>
 			</control>
-			
+
 			<!--Jog Touch B -->
 			<control>
 				<group>[Channel2]</group>
@@ -382,7 +382,7 @@
 					<script-binding />
 				</options>
 			</control>
-			
+
 			<!--Loop In/Out-->
 			<control>
 				<group>[Channel2]</group>
@@ -404,7 +404,7 @@
 					<script-binding />
 				</options>
 			</control>
-			
+
 			<!--FX Section Button-->
 			<control>
 				<group>[EffectRack1_EffectUnit2_Effect3]</group>
@@ -416,7 +416,7 @@
 					<normal />
 				</options>
 			</control>
-			
+
 			<!--Mode buttons-->
 			<control>
 				<group>[Channel2]</group>
