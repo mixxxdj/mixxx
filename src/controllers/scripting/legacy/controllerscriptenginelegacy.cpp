@@ -804,19 +804,19 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
             qmlScript.type !=
-                    LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
-        return std::shared_ptr<QQuickItem>(nullptr);
-    }
+                    LegacyControllerMapping::ScriptFileInfo::Type::Qml){
+            return nullptr}
 
-    std::unique_ptr<QQmlComponent> qmlComponent =
-            std::make_unique<QQmlComponent>(
-                    std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
+    std::unique_ptr<QQmlComponent>
+            qmlComponent =
+                    std::make_unique<QQmlComponent>(
+                            std::dynamic_pointer_cast<QQmlEngine>(m_pJSEngine).get());
 
     QFile scene = QFile(qmlScript.file.absoluteFilePath());
     if (!scene.exists()) {
         qCWarning(m_logger) << "Unable to load the QML scene:" << qmlScript.file.absoluteFilePath()
                             << "does not exist.";
-        return std::shared_ptr<QQuickItem>(nullptr);
+        return nullptr
     }
 
     QDir dir(m_resourcePath + "/qml/");
@@ -843,12 +843,12 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
                                 << "at line" << error.line() << ", error: " << error;
             showQMLExceptionDialog(error, true);
         }
-        return std::shared_ptr<QQuickItem>(nullptr);
+        return nullptr
     }
 
     VERIFY_OR_DEBUG_ASSERT(qmlComponent->isReady()) {
         qCWarning(m_logger) << "QMLComponent isn't ready although synchronous load was requested.";
-        return std::shared_ptr<QQuickItem>(nullptr);
+        return nullptr
     }
 
     QObject* pRootObject = qmlComponent->createWithInitialProperties(
@@ -858,7 +858,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         for (const QQmlError& error : errorList) {
             qCWarning(m_logger) << error.url() << error.line() << error;
         }
-        return std::shared_ptr<QQuickItem>(nullptr);
+        return nullptr
     }
 
     std::shared_ptr<QQuickItem> rootItem =
@@ -866,7 +866,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     if (!rootItem) {
         qWarning("run: Not a QQuickItem");
         delete pRootObject;
-        return std::shared_ptr<QQuickItem>(nullptr);
+        return nullptr
     }
 
     watchFilePath(qmlScript.file.absoluteFilePath());

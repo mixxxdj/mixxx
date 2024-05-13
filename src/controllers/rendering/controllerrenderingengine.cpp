@@ -167,6 +167,7 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_offscreenSurface = std::make_unique<QOffscreenSurface>();
     m_offscreenSurface->setFormat(m_context->format());
 
+    // offscreen surface needs to be created from application main thread
     VERIFY_OR_DEBUG_ASSERT(QMetaObject::invokeMethod(
                                    qApp,
                                    [this] {
@@ -275,13 +276,7 @@ void ControllerRenderingEngine::renderFrame() {
     {
         ScopedTimer t(u"ControllerRenderingEngine::renderFrame::sync");
         VERIFY_OR_DEBUG_ASSERT(m_renderControl->sync()) {
-            kLogger.warning() << "Couldn't sync the render control.";
-            finish();
-            if (m_pControllerEngine) {
-                m_pControllerEngine->resume();
-            }
-
-            return;
+            kLogger.warning() << "Couldn't sync the render control. Scene may be stuck";
         };
     }
 

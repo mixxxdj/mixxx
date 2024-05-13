@@ -11,6 +11,9 @@
 #include <bit>
 #include <chrono>
 #include <memory>
+#ifdef MIXXX_USE_QML
+#include <bits>
+#endif
 
 #include "controllers/legacycontrollersettings.h"
 #include "controllers/legacycontrollersettingslayout.h"
@@ -104,8 +107,8 @@ class LegacyControllerMapping {
         // confusing and will have unpredictable behaviour depending of the
         // platform.
         enum class ColorEndian {
-            Big = __ORDER_BIG_ENDIAN__,
-            Little = __ORDER_LITTLE_ENDIAN__,
+            Big = std::endian::big,
+            Little = std::endian::little,
         };
 
         QString identifier; // The screen identifier
