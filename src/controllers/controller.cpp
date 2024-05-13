@@ -3,6 +3,7 @@
 #include <QJSEngine>
 #include <algorithm>
 
+#include "controllers/controllershareddata.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "moc_controller.cpp"
 #include "util/cmdlineargs.h"
@@ -62,7 +63,7 @@ void Controller::stopEngine() {
     m_pScriptEngineLegacy = nullptr;
 }
 
-bool Controller::applyMapping() {
+bool Controller::applyMapping(std::shared_ptr<ControllerSharedData> runtimeData) {
     qCInfo(m_logBase) << "Applying controller mapping...";
 
     const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
@@ -84,6 +85,11 @@ bool Controller::applyMapping() {
     m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
 
     m_pScriptEngineLegacy->setSettings(pMapping->getSettings());
+
+    const auto& ns = pMapping->sharedDataNamespace();
+    if (!ns.isEmpty() && runtimeData != nullptr) {
+        m_pScriptEngineLegacy->setSharedData(runtimeData->namespaced(ns));
+    }
     return m_pScriptEngineLegacy->initialize();
 }
 

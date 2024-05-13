@@ -76,9 +76,9 @@ bool MidiController::matchMapping(const MappingInfo& mapping) {
     return false;
 }
 
-bool MidiController::applyMapping() {
+bool MidiController::applyMapping(std::shared_ptr<ControllerSharedData> runtimeData) {
     // Handles the engine
-    bool result = Controller::applyMapping();
+    bool result = Controller::applyMapping(std::move(runtimeData));
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {

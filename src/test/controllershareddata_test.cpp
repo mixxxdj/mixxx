@@ -23,10 +23,10 @@ class ControllerSharedDataTest : public MixxxTest {
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         pRuntimeData = std::make_shared<ControllerSharedData>(nullptr);
         cEngineA = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngineA->setSharedData(pRuntimeData);
+        cEngineA->setSharedData(pRuntimeData->namespaced("testNS"));
         cEngineA->initialize();
         cEngineB = new ControllerScriptEngineLegacy(nullptr, logger);
-        cEngineA->setSharedData(pRuntimeData);
+        cEngineB->setSharedData(pRuntimeData->namespaced("testNS"));
         cEngineB->initialize();
     }
 
@@ -71,14 +71,14 @@ class ControllerSharedDataTest : public MixxxTest {
 };
 
 TEST_F(ControllerSharedDataTest, getSetRuntimeData) {
-    pRuntimeData->set(QVariant("foobar"));
+    pRuntimeData->set("testNS", QVariant("foobar"));
     EXPECT_TRUE(!evaluateA(R"--(
 let data = engine.getSharedData();
 if (data !== "foobar") throw "Something is wrong";
 engine.setSharedData("barfoo");
 )--")
                          .isError());
-    auto data = pRuntimeData->get();
+    auto data = pRuntimeData->get("testNS");
     EXPECT_TRUE(data.canConvert<QString>());
     EXPECT_EQ(data.toString(), "barfoo");
 
@@ -88,7 +88,7 @@ if (data !== "barfoo") throw "Something is wrong";
 engine.setSharedData("bazfuu");
 )--")
                          .isError());
-    data = pRuntimeData->get();
+    data = pRuntimeData->get("testNS");
     EXPECT_TRUE(data.canConvert<QString>());
     EXPECT_EQ(data.toString(), "bazfuu");
 }
@@ -101,10 +101,10 @@ engine.makeSharedDataConnection((data) => {
 });
 )--")
                          .isError());
-    pRuntimeData->set(QVariant("foobar"));
+    pRuntimeData->set("testNS", QVariant("foobar"));
     application()->processEvents();
 
-    auto data = pRuntimeData->get();
+    auto data = pRuntimeData->get("testNS");
     EXPECT_TRUE(data.canConvert<QString>());
     EXPECT_EQ(data.toString(), "bazfuu");
 }
@@ -119,7 +119,7 @@ engine.makeSharedDataConnection((data) => {
                          .isError());
     application()->processEvents();
 
-    auto data = pRuntimeData->get();
+    auto data = pRuntimeData->get("testNS");
     EXPECT_TRUE(data.canConvert<QString>());
     EXPECT_EQ(data.toString(), "bazfuu");
 }
@@ -134,8 +134,35 @@ con.disconnect()
 if (con.isConnected) throw "Something is wrong";
 )--")
                          .isError());
-    pRuntimeData->set(QVariant("foobar"));
+    pRuntimeData->set("testNS", QVariant("foobar"));
     application()->processEvents();
 
     EXPECT_TRUE(runtimeDataConnectionsEngineA().isEmpty());
 }
+
+TEST_F(ControllerSharedDataTest, namespacePreventClash) {
+    pRuntimeData->set("testNS", QVariant("foobar"));
+    EXPECT_TRUE(!evaluateA(R"--(
+let data = engine.getSharedData();
+if (data !== "foobar") throw "Something is wrong";
+engine.setSharedData("barfoo");
+)--")
+                         .isError());
+    auto data = pRuntimeData->get("testNS");
+    EXPECT_TRUE(data.canConvert<QString>());
+    EXPECT_EQ(data.toString(), "barfoo");
+
+    pRuntimeData->set("otherTestNS", QVariant("foobar"));
+    cEngineA->setSharedData(pRuntimeData->namespaced("otherTestNS"));
+    EXPECT_TRUE(!evaluateA(R"--(
+let data = engine.getSharedData();
+if (data !== "foobar") throw "Something is wrong";
+engine.setSharedData("barfoo");
+)--")
+                         .isError());
+    data = pRuntimeData->get("otherTestNS");
+    EXPECT_TRUE(data.canConvert<QString>());
+    EXPECT_EQ(data.toString(), "barfoo");
+}
+
+// TODO test namespace

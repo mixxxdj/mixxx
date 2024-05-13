@@ -308,8 +308,7 @@ void ControllerManager::slotSetUpDevices() {
                           "controller open successfully?";
             continue;
         }
-        pController->getScriptEngine()->setSharedData(m_pRuntimeData);
-        pController->applyMapping();
+        pController->applyMapping(m_pRuntimeData);
     }
 
     pollIfAnyControllersOpen();
@@ -406,9 +405,8 @@ void ControllerManager::openController(Controller* pController) {
                           "controller open successfully?";
             return;
         }
-        pController->getScriptEngine()->setSharedData(m_pRuntimeData);
 
-        pController->applyMapping();
+        pController->applyMapping(m_pRuntimeData);
 
         // Update configuration to reflect controller is enabled.
         m_pConfig->setValue(

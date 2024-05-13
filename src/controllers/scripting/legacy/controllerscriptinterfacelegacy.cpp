@@ -49,10 +49,12 @@ ControllerScriptInterfaceLegacy::ControllerScriptInterfaceLegacy(
         m_softStartActive[i] = false;
     }
 
-    connect(m_pEngine->getSharedData().get(),
-            &ControllerSharedData::updated,
-            this,
-            &ControllerScriptInterfaceLegacy::onRuntimeDataUpdated);
+    if (m_pEngine->getSharedData()) {
+        connect(m_pEngine->getSharedData(),
+                &ControllerNamespacedSharedData::updated,
+                this,
+                &ControllerScriptInterfaceLegacy::onRuntimeDataUpdated);
+    }
 }
 
 ControllerScriptInterfaceLegacy::~ControllerScriptInterfaceLegacy() {
@@ -178,7 +180,7 @@ QJSValue ControllerScriptInterfaceLegacy::getSharedData() {
     auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
-        qWarning() << "Unable to fetch the runtime data";
+        qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
         return QJSValue();
     }
 
@@ -193,7 +195,7 @@ void ControllerScriptInterfaceLegacy::setSharedData(const QJSValue& value) {
     auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
-        qWarning() << "Unable to fetch the runtime data";
+        qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
         return;
     }
 
@@ -216,7 +218,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeSharedDataConnection(const QJSValu
     auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
-        qWarning() << "Unable to fetch the runtime data";
+        qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
         return QJSValue();
     }
 
