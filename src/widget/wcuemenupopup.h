@@ -9,7 +9,6 @@
 #include "preferences/colorpalettesettings.h"
 #include "track/cue.h"
 #include "track/track_decl.h"
-#include "util/parented_ptr.h"
 #include "util/widgethelper.h"
 #include "widget/wcolorpicker.h"
 
@@ -34,14 +33,6 @@ class WCueMenuPopup : public QWidget {
     Q_OBJECT
   public:
     WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent = nullptr);
-
-    ~WCueMenuPopup() {
-        delete m_pCueNumber;
-        delete m_pCuePosition;
-        delete m_pEditLabel;
-        delete m_pColorPicker;
-        delete m_pDeleteCue;
-    }
 
     void setTrackCueGroup(TrackPointer pTrack, const CuePointer& pCue, const QString& group);
 
@@ -94,12 +85,12 @@ class WCueMenuPopup : public QWidget {
     CuePointer m_pCue;
     TrackPointer m_pTrack;
 
-    QLabel* m_pCueNumber;
-    QLabel* m_pCuePosition;
-    QLineEdit* m_pEditLabel;
-    WColorPicker* m_pColorPicker;
-    QPushButton* m_pDeleteCue;
-    CueTypePushButton* m_pSavedLoopCue;
+    std::unique_ptr<QLabel> m_pCueNumber;
+    std::unique_ptr<QLabel> m_pCuePosition;
+    std::unique_ptr<QLineEdit> m_pEditLabel;
+    std::unique_ptr<WColorPicker> m_pColorPicker;
+    std::unique_ptr<QPushButton> m_pDeleteCue;
+    std::unique_ptr<CueTypePushButton> m_pSavedLoopCue;
 
   protected:
     void closeEvent(QCloseEvent* event) override;
