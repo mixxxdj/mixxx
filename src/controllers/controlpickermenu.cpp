@@ -591,16 +591,16 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString beatloopRollActivateTitle = tr("Loop Roll Selected Beats");
     QString beatloopRollActivateDescription = tr("Create a rolling beat loop of selected beat size");
     QString beatLoopTitle = tr("Loop %1 Beats");
-    QString reverseBeatLoopTitle = tr("Loop %1 Beats set from its exit point");
+    QString reverseBeatLoopTitle = tr("Loop %1 Beats set from its end point");
     QString beatLoopRollTitle = tr("Loop Roll %1 Beats");
-    QString reverseBeatLoopRollTitle = tr("Loop Roll %1 Beats set from its exit point");
+    QString reverseBeatLoopRollTitle = tr("Loop Roll %1 Beats set from its end point");
     QString beatLoopDescription = tr("Create %1-beat loop");
     QString reverseBeatLoopDescription = tr(
-            "Create %1-beat loop with the current play position as loop exit");
+            "Create %1-beat loop with the current play position as loop end");
     QString beatLoopRollDescription = tr("Create temporary %1-beat loop roll");
     QString reverseBeatLoopRollDescription =
             tr("Create temporary %1-beat loop roll with the current play "
-               "position as loop exit");
+               "position as loop end");
 
     QList<double> beatSizes = LoopingControl::getBeatSizes();
 

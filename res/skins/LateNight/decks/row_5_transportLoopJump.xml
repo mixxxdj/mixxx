@@ -251,7 +251,7 @@
                     <ObjectName>Spinbox_<Variable name="BtnType"/></ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <MinimumSize>46,26</MinimumSize>
-                    <MaximumSize>77,26</MaximumSize>
+                    <MaximumSize>78,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatloop_size</Value>
                     <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
                     <Connection>
