@@ -23,7 +23,9 @@ class SoundSourceSingleSTEM : public SoundSourceFFmpeg {
 };
 
 /// @brief Handle a stem file, composed of multiple audio channel. Can open in
-/// stereo or in stem (4 x stereo)
+/// stereo or in stem (4 x stereo). Use OpenParams to request a maximum number of channels.
+/// This allows decks which must not use STEM for performance or usability reason to use the
+/// same soundsource.
 class SoundSourceSTEM : public SoundSource {
   public:
     explicit SoundSourceSTEM(const QUrl& url);
