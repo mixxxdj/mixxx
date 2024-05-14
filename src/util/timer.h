@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QString>
 #include <optional>
+#include <utility>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
@@ -54,43 +55,39 @@ class SuspendableTimer : public Timer {
 
 class ScopedTimer {
   public:
-    ScopedTimer(const char* key, int i, Stat::ComputeFlags compute = kDefaultComputeFlags)
+    // Allows the timer to contain a format string which is only assembled
+    // when we're not in `--developer` mode.
+    /// @param compute Flags to use for the Stat::ComputeFlags (can be omitted)
+    /// @param key The format string for the key
+    /// @param args The arguments to pass to the format string
+    template<typename... Ts>
+    ScopedTimer(Stat::ComputeFlags compute, const QString& key, Ts&&... args)
             : m_timer(std::nullopt) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), QString::number(i), compute);
+            QString assembledKey = key;
+            if constexpr (sizeof...(args) > 0) {
+                // only try to call QString::arg when we've been given parameters
+                assembledKey = key.arg(std::forward<Ts>(args)...);
+            }
+            m_timer = std::make_optional<Timer>(assembledKey, compute);
+            m_timer->start();
         }
     }
-
-    ScopedTimer(const char* key,
-            const char* arg = nullptr,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_timer(std::nullopt) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg != nullptr ? QString(arg) : QString(), compute);
-        }
+    template<typename... Ts>
+    ScopedTimer(const QString& key, Ts&&... args)
+            : ScopedTimer(kDefaultComputeFlags, key, std::forward<Ts>(args)...) {
     }
-
-    ScopedTimer(const char* key,
-            const QString& arg,
-            Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_timer(std::nullopt) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg, compute);
-        }
+    // for lazy users that don't wrap the key in a QStringLiteral(...)
+    template<typename... Ts>
+    ScopedTimer(const char* key, Ts&&... args)
+            : ScopedTimer(CmdlineArgs::Instance().getDeveloper() ? QString(key) : QString(),
+                      std::forward<Ts>(args)...) {
     }
 
     ~ScopedTimer() {
         if (m_timer.has_value()) {
             m_timer->elapsed(true);
         }
-    }
-
-    void initialize(const QString& key,
-            const QString& arg,
-            Stat::ComputeFlags compute = kDefaultComputeFlags) {
-        QString strKey = arg.isEmpty() ? key : key.arg(arg);
-        m_timer = std::make_optional<Timer>(strKey, compute);
-        m_timer->start();
     }
 
     void cancel() {
