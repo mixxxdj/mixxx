@@ -46,10 +46,6 @@ BrowseFeature::BrowseFeature(
           m_proxyModel(&m_browseModel, true),
           m_pSidebarModel(new FolderTreeModel(this)),
           m_pLastRightClickedItem(nullptr) {
-    connect(this,
-            &BrowseFeature::requestAddDir,
-            pLibrary,
-            &Library::slotRequestAddDir);
     connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             this,
@@ -184,7 +180,9 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit requestAddDir(spath);
+    if (!m_pLibrary->requestAddDir(spath)) {
+        return;
+    }
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
