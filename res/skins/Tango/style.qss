@@ -2594,6 +2594,11 @@ WLibrarySidebar,
 #LibraryPlayedCheckbox::item {
   color: #9e9e9e;
 }
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #9e9e9e;
+}
 
 /* Prevent OS-style checkbox from being rendered underneath the custom style. */
 #LibraryPlayedCheckbox::item,
@@ -2630,7 +2635,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
   /* Table cell in edit mode */

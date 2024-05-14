@@ -1133,7 +1133,12 @@ WCueMenuPopup QLabel,
 #CueLabelEdit,
 #LatencyLabel, WTime {
   color: #f0bb2b;
-  }
+}
+/* Override the 'missing' color in Tracks > Missing,
+   it's not useful there */
+#DlgMissing WTrackTableView {
+  qproperty-trackMissingColor: #f0bb2b;
+}
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -2145,7 +2150,7 @@ WTrackTableView {
   qproperty-focusBorderColor: #fff;
   /* This is the color used to paint the text of played tracks.
      BaseTrackTableModel::data() uses this to override Qt::ForegroundRole (QBrush). */
-  qproperty-playedInactiveColor: #555;
+  qproperty-trackPlayedColor: #555;
 }
 
 WLibrarySidebar {
