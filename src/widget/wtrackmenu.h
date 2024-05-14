@@ -150,6 +150,7 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(mixxx::Beats::BpmScale scale);
+    void slotUndoBeatsChange();
 
     // Info and metadata
     void slotUpdateReplayGainFromPregain();
@@ -227,6 +228,7 @@ class WTrackMenu : public QMenu {
     void clearTrackSelection();
 
     std::pair<bool, bool> getTrackBpmLockStates() const;
+    bool canUndoBeatsChange() const;
 
     /// Get the common rating of all selected tracks.
     /// Return 0 if ratings differ.
@@ -312,6 +314,7 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
     QAction* m_pBpmResetAction{};
+    QAction* m_pBpmUndoAction{};
 
     // Track rating and color
     WStarRatingAction* m_pStarRatingAction{};
