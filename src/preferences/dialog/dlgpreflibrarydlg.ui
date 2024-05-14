@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>661</width>
-    <height>1203</height>
+    <height>1522</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -279,7 +279,7 @@
        <widget class="QSpinBox" name="spinbox_bpm_precision"/>
       </item>
 
-      <item row="8" column="0" colspan="3">
+      <item row="10" column="0" colspan="3">
        <widget class="QCheckBox" name="checkbox_played_track_color">
         <property name="text">
          <string>Grey out played tracks</string>
