@@ -1,6 +1,8 @@
 #pragma once
 
 #include <QObject>
+#include <QString>
+#include <optional>
 
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
@@ -52,61 +54,51 @@ class SuspendableTimer : public Timer {
 
 class ScopedTimer {
   public:
-    ScopedTimer(const char* key, int i,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+    ScopedTimer(const char* key, int i, Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : m_timer(std::nullopt) {
         if (CmdlineArgs::Instance().getDeveloper()) {
             initialize(QString(key), QString::number(i), compute);
         }
     }
 
-    ScopedTimer(const char* key, const char *arg = NULL,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+    ScopedTimer(const char* key,
+            const char* arg = nullptr,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : m_timer(std::nullopt) {
         if (CmdlineArgs::Instance().getDeveloper()) {
-            initialize(QString(key), arg ? QString(arg) : QString(), compute);
+            initialize(QString(key), arg != nullptr ? QString(arg) : QString(), compute);
         }
     }
 
-    ScopedTimer(const char* key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags)
-            : m_pTimer(NULL),
-              m_cancel(false) {
+    ScopedTimer(const char* key,
+            const QString& arg,
+            Stat::ComputeFlags compute = kDefaultComputeFlags)
+            : m_timer(std::nullopt) {
         if (CmdlineArgs::Instance().getDeveloper()) {
             initialize(QString(key), arg, compute);
         }
     }
 
-    virtual ~ScopedTimer() {
-        if (m_pTimer) {
-            if (!m_cancel) {
-                m_pTimer->elapsed(true);
-            }
-            m_pTimer->~Timer();
+    ~ScopedTimer() {
+        if (m_timer.has_value()) {
+            m_timer->elapsed(true);
         }
     }
 
-    inline void initialize(const QString& key, const QString& arg,
-                Stat::ComputeFlags compute = kDefaultComputeFlags) {
-        QString strKey;
-        if (arg.isEmpty()) {
-            strKey = key;
-        } else {
-            strKey = key.arg(arg);
-        }
-        m_pTimer = new(m_timerMem) Timer(strKey, compute);
-        m_pTimer->start();
+    void initialize(const QString& key,
+            const QString& arg,
+            Stat::ComputeFlags compute = kDefaultComputeFlags) {
+        QString strKey = arg.isEmpty() ? key : key.arg(arg);
+        m_timer = std::make_optional<Timer>(strKey, compute);
+        m_timer->start();
     }
 
     void cancel() {
-        m_cancel = true;
+        m_timer.reset();
     }
   private:
-    Timer* m_pTimer;
-    char m_timerMem[sizeof(Timer)];
-    bool m_cancel;
+    // nullopt also counts as cancelled
+    std::optional<Timer> m_timer;
 };
 
 // A timer that provides a similar API to QTimer but uses render events from the
