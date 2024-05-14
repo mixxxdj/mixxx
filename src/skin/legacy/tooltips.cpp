@@ -779,8 +779,8 @@ void Tooltips::addStandardTooltips() {
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
     add("loop_anchor")
-            << tr("Beatloop")
-            << tr("Define whether the loop is defined and adjusted from its "
+            << tr("Beatloop Anchor")
+            << tr("Define whether the loop is created and adjusted from its "
                   "staring point or ending point.");
 
     add("beatjump_size")

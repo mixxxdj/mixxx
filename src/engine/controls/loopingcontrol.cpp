@@ -1264,7 +1264,8 @@ void LoopingControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     }
 }
 
-void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) {
+void LoopingControl::slotBeatLoopActivate(
+        BeatLoopingControl* pBeatLoopControl, LoopAnchorPoint forcedAnchor) {
     if (!m_pTrack) {
         return;
     }
@@ -1273,17 +1274,18 @@ void LoopingControl::slotBeatLoopActivate(BeatLoopingControl* pBeatLoopControl) 
     // looping. slotBeatLoop will update m_pActiveBeatLoop if applicable. Note,
     // this used to only maintain the current start point if a beatloop was
     // enabled. See Issue #6957.
-    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled, true);
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopingEnabled, true, forcedAnchor);
 }
 
-void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopControl) {
-     if (!m_pTrack) {
-         return;
-     }
+void LoopingControl::slotBeatLoopActivateRoll(
+        BeatLoopingControl* pBeatLoopControl, LoopAnchorPoint forcedAnchor) {
+    if (!m_pTrack) {
+        return;
+    }
 
     // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
-    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopRollActive, true);
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopRollActive, true, forcedAnchor);
     m_bLoopRollActive = true;
     m_activeLoopRolls.push(pBeatLoopControl->getSize());
 }
@@ -1430,7 +1432,10 @@ mixxx::audio::FramePos LoopingControl::findQuantizedBeatloopStart(
     return previousFractionBeatPosition + loopLength;
 }
 
-void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) {
+void LoopingControl::slotBeatLoop(double beats,
+        bool keepSetPoint,
+        bool enable,
+        LoopAnchorPoint forcedAnchor) {
     // If this is a "new" loop, stop tracking saved loop changes
     if (!keepSetPoint) {
         emit loopReset();
@@ -1464,7 +1469,9 @@ void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) 
         return;
     }
 
-    const LoopAnchorPoint loopAnchor = static_cast<LoopAnchorPoint>(m_pCOLoopAnchor->get());
+    const LoopAnchorPoint loopAnchor = forcedAnchor == LoopAnchorPoint::None
+            ? static_cast<LoopAnchorPoint>(m_pCOLoopAnchor->get())
+            : forcedAnchor;
     // Calculate the new loop start and end positions
     // give start and end defaults so we can detect problems
     LoopInfo newloopInfo = {mixxx::audio::kInvalidFramePos,
@@ -1476,6 +1483,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) 
     // create the loop around X beats from there.
     if (keepSetPoint) {
         switch (loopAnchor) {
+        case LoopAnchorPoint::None:
         case LoopAnchorPoint::Start:
             newloopInfo.startPosition = loopInfo.startPosition.isValid()
                     ? loopInfo.startPosition
@@ -1503,6 +1511,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) 
         // loop_in is set to the closest beat if quantize is on and the loop size is >= 1 beat.
         // The closest beat might be ahead of play position and will cause a catching loop.
         switch (loopAnchor) {
+        case LoopAnchorPoint::None:
         case LoopAnchorPoint::Start:
             newloopInfo.startPosition = !quantize
                     ? currentPosition
@@ -1519,6 +1528,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) 
     }
 
     switch (loopAnchor) {
+    case LoopAnchorPoint::None:
     case LoopAnchorPoint::Start:
         newloopInfo.endPosition = pBeats->findNBeatsFromPosition(newloopInfo.startPosition, beats);
         break;
@@ -1572,6 +1582,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepSetPoint, bool enable) 
     }
 
     switch (loopAnchor) {
+    case LoopAnchorPoint::None:
     case LoopAnchorPoint::Start:
         // If the start point has changed, or the loop is not enabled,
         // or if the endpoints are nearly the same, do not seek forward into the adjusted loop.
@@ -1937,8 +1948,7 @@ void LoopMoveControl::slotMoveForward(double v) {
 
 BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
         : m_dBeatLoopSize(size),
-          m_bActive(false),
-          m_pCOLoopAnchor(std::make_unique<ControlProxy>(group, "loop_anchor", this)) {
+          m_bActive(false) {
     // This is the original beatloop control which is now deprecated. Its value
     // is the state of the beatloop control (1 for enabled, 0 for disabled).
     m_pLegacy = std::make_unique<ControlPushButton>(
@@ -1952,10 +1962,13 @@ BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
     // A push-button which activates the beatloop.
     m_pActivate = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1_activate", size));
-    connect(m_pActivate.get(),
+    connect(
+            m_pActivate.get(),
             &ControlObject::valueChanged,
             this,
-            &BeatLoopingControl::slotActivate,
+            [this](double value) {
+                slotActivate(value, LoopingControl::LoopAnchorPoint::None);
+            },
             Qt::DirectConnection);
     // And the same but setting it from the end point instead of starting
     m_pRActivate = std::make_unique<ControlPushButton>(
@@ -1968,10 +1981,13 @@ BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
     // A push-button which toggles the beatloop as active or inactive.
     m_pToggle = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatloop_%1_toggle", size));
-    connect(m_pToggle.get(),
+    connect(
+            m_pToggle.get(),
             &ControlObject::valueChanged,
             this,
-            &BeatLoopingControl::slotToggle,
+            [this](double value) {
+                slotToggle(value, LoopingControl::LoopAnchorPoint::None);
+            },
             Qt::DirectConnection);
     // And the same but setting it from the end point instead of starting
     m_pRToggle = std::make_unique<ControlPushButton>(
@@ -1985,10 +2001,13 @@ BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
     // A push-button which activates rolling beatloops
     m_pActivateRoll = std::make_unique<ControlPushButton>(
             keyForControl(group, "beatlooproll_%1_activate", size));
-    connect(m_pActivateRoll.get(),
+    connect(
+            m_pActivateRoll.get(),
             &ControlObject::valueChanged,
             this,
-            &BeatLoopingControl::slotActivateRoll,
+            [this](double value) {
+                slotActivateRoll(value, LoopingControl::LoopAnchorPoint::None);
+            },
             Qt::DirectConnection);
     // And the same but setting it from the end point instead of starting
     m_pRActivateRoll = std::make_unique<ControlPushButton>(
@@ -2024,30 +2043,30 @@ void BeatLoopingControl::activate() {
 void BeatLoopingControl::slotLegacy(double v) {
     //qDebug() << "slotLegacy" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit activateBeatLoop(this);
+        emit activateBeatLoop(this, LoopingControl::LoopAnchorPoint::None);
     } else {
         emit deactivateBeatLoop(this);
     }
 }
 
-void BeatLoopingControl::slotActivate(double value) {
+void BeatLoopingControl::slotActivate(double value, LoopingControl::LoopAnchorPoint anchor) {
     //qDebug() << "slotActivate" << m_dBeatLoopSize << "value" << value;
     if (value == 0) {
         return;
     }
-    emit activateBeatLoop(this);
+    emit activateBeatLoop(this, anchor);
 }
 
-void BeatLoopingControl::slotActivateRoll(double v) {
+void BeatLoopingControl::slotActivateRoll(double v, LoopingControl::LoopAnchorPoint anchor) {
     //qDebug() << "slotActivateRoll" << m_dBeatLoopSize << "v" << v;
     if (v > 0) {
-        emit activateBeatLoopRoll(this);
+        emit activateBeatLoopRoll(this, anchor);
     } else {
         emit deactivateBeatLoopRoll(this);
     }
 }
 
-void BeatLoopingControl::slotToggle(double value) {
+void BeatLoopingControl::slotToggle(double value, LoopingControl::LoopAnchorPoint anchor) {
     //qDebug() << "slotToggle" << m_dBeatLoopSize << "value" << value;
     if (value == 0) {
         return;
@@ -2055,45 +2074,18 @@ void BeatLoopingControl::slotToggle(double value) {
     if (m_bActive) {
         emit deactivateBeatLoop(this);
     } else {
-        emit activateBeatLoop(this);
+        emit activateBeatLoop(this, anchor);
     }
 }
 
 void BeatLoopingControl::slotReverseActivate(double value) {
-    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
-    if (!isReverseAnchor) {
-        // If the reverse mode is not enabled, we do so temporarily
-        m_pCOLoopAnchor->set(1.0);
-    }
-    slotActivate(value);
-    if (!isReverseAnchor) {
-        // If the reverse mode was enabled temporarily, we disabled it now
-        m_pCOLoopAnchor->set(0.0);
-    }
+    slotActivate(value, LoopingControl::LoopAnchorPoint::End);
 }
 
 void BeatLoopingControl::slotReverseActivateRoll(double v) {
-    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
-    if (!isReverseAnchor) {
-        // If the reverse mode is not enabled, we do so temporarily
-        m_pCOLoopAnchor->set(1.0);
-    }
-    slotActivateRoll(v);
-    if (!isReverseAnchor) {
-        // If the reverse mode was enabled temporarily, we disabled it now
-        m_pCOLoopAnchor->set(0.0);
-    }
+    slotActivateRoll(v, LoopingControl::LoopAnchorPoint::End);
 }
 
 void BeatLoopingControl::slotReverseToggle(double value) {
-    bool isReverseAnchor = m_pCOLoopAnchor->toBool();
-    if (!isReverseAnchor) {
-        // If the reverse mode is not enabled, we do so temporarily
-        m_pCOLoopAnchor->set(1.0);
-    }
-    slotToggle(value);
-    if (!isReverseAnchor) {
-        // If the reverse mode was enabled temporarily, we disabled it now
-        m_pCOLoopAnchor->set(0.0);
-    }
+    slotToggle(value, LoopingControl::LoopAnchorPoint::End);
 }
