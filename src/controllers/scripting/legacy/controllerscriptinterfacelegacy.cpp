@@ -177,7 +177,7 @@ QJSValue ControllerScriptInterfaceLegacy::getSharedData() {
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
+    auto* pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
@@ -192,7 +192,7 @@ void ControllerScriptInterfaceLegacy::setSharedData(const QJSValue& value) {
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return;
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
+    auto* pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
@@ -215,7 +215,7 @@ QJSValue ControllerScriptInterfaceLegacy::makeSharedDataConnection(const QJSValu
     VERIFY_OR_DEBUG_ASSERT(pJsEngine) {
         return QJSValue();
     }
-    auto pRuntimeData = m_pScriptEngineLegacy->getSharedData();
+    auto* pRuntimeData = m_pScriptEngineLegacy->getSharedData();
 
     if (!pRuntimeData) {
         qWarning() << "No runtime data available. Make sure a valid namespace is defined.";
