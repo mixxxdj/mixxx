@@ -53,6 +53,10 @@ class MixxxMainWindow : public QMainWindow, public Singleton<MixxxMainWindow> {
 
     inline GuiTick* getGuiTick() { return m_pGuiTick; };
 
+    static void destroy() {
+        Singleton<MixxxMainWindow>::destroy();
+    };
+
   protected:
     MixxxMainWindow(std::shared_ptr<mixxx::CoreServices> pCoreServices);
     ~MixxxMainWindow() override;

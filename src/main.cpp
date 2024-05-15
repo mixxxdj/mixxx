@@ -107,6 +107,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
             qDebug() << "Running Mixxx";
             exitCode = pApp->exec();
         }
+        MixxxMainWindow::destroy();
     }
     return exitCode;
 }
