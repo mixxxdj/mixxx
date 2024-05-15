@@ -23,7 +23,7 @@
 
 namespace {
 
-const QString kVariousText = char('<') + QObject::tr("various") + char('>');
+const QString kVariousText = QChar('<') + QObject::tr("various") + QChar('>');
 const char* kOrigValProp = "origVal";
 const QString kClearItem = QStringLiteral("clearItem");
 
@@ -57,14 +57,14 @@ void setBold(QWidget* pEditor, bool bold) {
 }
 
 /// Check if the text has been edited, i.e. is not <various>
-std::optional<QString> validEditText(QComboBox* pBox) {
+QString validEditText(QComboBox* pBox) {
     QString origVal = pBox->property(kOrigValProp).toString();
     if (pBox->currentIndex() == -1 &&
             (pBox->lineEdit()->text() == origVal ||
                     pBox->lineEdit()->placeholderText() == kVariousText)) {
         // This is either a single-value box and the value changed, or this is a
         // multi-value box and the placeholder text was removed when clearing it.
-        return std::nullopt;
+        return QString();
     }
     // We have a new text
     return pBox->currentText().trimmed();
@@ -497,14 +497,14 @@ void DlgTrackInfoMulti::saveTracks() {
     }
 
     // Check the values so we don't have to do it for every track record
-    std::optional<QString> title = validEditText(txtTitle);
-    std::optional<QString> artist = validEditText(txtArtist);
-    std::optional<QString> album = validEditText(txtAlbum);
-    std::optional<QString> albumArtist = validEditText(txtAlbumArtist);
-    std::optional<QString> genre = validEditText(txtGenre);
-    std::optional<QString> composer = validEditText(txtComposer);
-    std::optional<QString> grouping = validEditText(txtGrouping);
-    std::optional<QString> year = validEditText(txtYear);
+    QString title = validEditText(txtTitle);
+    QString artist = validEditText(txtArtist);
+    QString album = validEditText(txtAlbum);
+    QString albumArtist = validEditText(txtAlbumArtist);
+    QString genre = validEditText(txtGenre);
+    QString composer = validEditText(txtComposer);
+    QString grouping = validEditText(txtGrouping);
+    QString year = validEditText(txtYear);
     // In case Apply is triggered by hotkey AND a Key box with pending changes
     // is focused AND the user did not hit Enter to finish editing, the key text
     // needs to be validated.
@@ -514,41 +514,41 @@ void DlgTrackInfoMulti::saveTracks() {
         txtKey->clearFocus();
         txtKey->setFocus();
     }
-    std::optional<QString> key = validEditText(txtKey);
-    std::optional<QString> num = validEditText(txtTrackNumber);
+    QString key = validEditText(txtKey);
+    QString num = validEditText(txtTrackNumber);
 
     for (auto& rec : m_trackRecords) {
-        if (title.has_value()) {
-            rec.refMetadata().refTrackInfo().setTitle(title.value());
+        if (!title.isNull()) {
+            rec.refMetadata().refTrackInfo().setTitle(title);
         }
-        if (artist.has_value()) {
-            rec.refMetadata().refTrackInfo().setArtist(artist.value());
+        if (!artist.isNull()) {
+            rec.refMetadata().refTrackInfo().setArtist(artist);
         }
-        if (album.has_value()) {
-            rec.refMetadata().refAlbumInfo().setTitle(album.value());
+        if (!album.isNull()) {
+            rec.refMetadata().refAlbumInfo().setTitle(album);
         }
-        if (albumArtist.has_value()) {
-            rec.refMetadata().refAlbumInfo().setArtist(albumArtist.value());
+        if (!albumArtist.isNull()) {
+            rec.refMetadata().refAlbumInfo().setArtist(albumArtist);
         }
-        if (genre.has_value()) {
-            rec.refMetadata().refTrackInfo().setGenre(genre.value());
+        if (!genre.isNull()) {
+            rec.refMetadata().refTrackInfo().setGenre(genre);
         }
-        if (composer.has_value()) {
-            rec.refMetadata().refTrackInfo().setComposer(composer.value());
+        if (!composer.isNull()) {
+            rec.refMetadata().refTrackInfo().setComposer(composer);
         }
-        if (grouping.has_value()) {
-            rec.refMetadata().refTrackInfo().setGrouping(grouping.value());
+        if (!grouping.isNull()) {
+            rec.refMetadata().refTrackInfo().setGrouping(grouping);
         }
-        if (year.has_value()) {
-            rec.refMetadata().refTrackInfo().setYear(year.value());
+        if (!year.isNull()) {
+            rec.refMetadata().refTrackInfo().setYear(year);
         }
-        if (key.has_value()) {
+        if (!key.isNull()) {
             static_cast<void>(rec.updateGlobalKeyNormalizeText(
-                    key.value(),
+                    key,
                     mixxx::track::io::key::USER));
         }
-        if (num.has_value()) {
-            rec.refMetadata().refTrackInfo().setTrackNumber(num.value());
+        if (!num.isNull()) {
+            rec.refMetadata().refTrackInfo().setTrackNumber(num);
         }
         if (txtComment->document()->isModified()) {
             rec.refMetadata().refTrackInfo().setComment(
@@ -674,7 +674,7 @@ void DlgTrackInfoMulti::slotTrackChanged(TrackId trackId) {
 }
 
 void DlgTrackInfoMulti::slotKeyTextChanged() {
-    std::optional<QString> newKeyText = std::nullopt;
+    QString newKeyText;
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::guessKeyFromText(txtKey->currentText().trimmed());
     if (newKey != mixxx::track::io::key::INVALID) {
@@ -682,8 +682,8 @@ void DlgTrackInfoMulti::slotKeyTextChanged() {
     }
 
     txtKey->blockSignals(true);
-    if (newKeyText.has_value()) {
-        txtKey->setCurrentText(newKeyText.value());
+    if (!newKeyText.isNull()) {
+        txtKey->setCurrentText(newKeyText);
         txtKey->lineEdit()->setPlaceholderText(QString());
     } else {
         // Revert if we can't guess a valid key from it.
