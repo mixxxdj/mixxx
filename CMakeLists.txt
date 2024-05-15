@@ -1522,6 +1522,7 @@ if(QOPENGL)
     src/waveform/renderers/allshader/waveformrendererfiltered.cpp
     src/waveform/renderers/allshader/waveformrendererhsv.cpp
     src/waveform/renderers/allshader/waveformrendererlrrgb.cpp
+    src/waveform/renderers/allshader/waveformrenderer3band.cpp
     src/waveform/renderers/allshader/waveformrendererpreroll.cpp
     src/waveform/renderers/allshader/waveformrendererrgb.cpp
     src/waveform/renderers/allshader/waveformrenderersignalbase.cpp
@@ -1531,6 +1532,7 @@ if(QOPENGL)
     src/waveform/widgets/allshader/filteredwaveformwidget.cpp
     src/waveform/widgets/allshader/hsvwaveformwidget.cpp
     src/waveform/widgets/allshader/lrrgbwaveformwidget.cpp
+    src/waveform/widgets/allshader/3bandwaveformwidget.cpp
     src/waveform/widgets/allshader/rgbwaveformwidget.cpp
     src/waveform/widgets/allshader/simplewaveformwidget.cpp
     src/waveform/widgets/allshader/waveformwidget.cpp

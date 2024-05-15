@@ -51,9 +51,9 @@ public:
     const WaveformSignalColors* m_pColors;
     float m_axesColor_r, m_axesColor_g, m_axesColor_b, m_axesColor_a;
     float m_signalColor_r, m_signalColor_g, m_signalColor_b;
-    float m_lowColor_r, m_lowColor_g, m_lowColor_b;
-    float m_midColor_r, m_midColor_g, m_midColor_b;
-    float m_highColor_r, m_highColor_g, m_highColor_b;
+    float m_lowColor_r, m_lowColor_g, m_lowColor_b, m_lowColor_a;
+    float m_midColor_r, m_midColor_g, m_midColor_b, m_midColor_a;
+    float m_highColor_r, m_highColor_g, m_highColor_b, m_highColor_a;
     float m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b;
     float m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b;
     float m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b;

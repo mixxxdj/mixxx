@@ -125,13 +125,13 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     m_pColors = m_waveformRenderer->getWaveformSignalColors();
 
     const QColor& l = m_pColors->getLowColor();
-    getRgbF(l, &m_lowColor_r, &m_lowColor_g, &m_lowColor_b);
+    getRgbF(l, &m_lowColor_r, &m_lowColor_g, &m_lowColor_b, &m_lowColor_a);
 
     const QColor& m = m_pColors->getMidColor();
-    getRgbF(m, &m_midColor_r, &m_midColor_g, &m_midColor_b);
+    getRgbF(m, &m_midColor_r, &m_midColor_g, &m_midColor_b, &m_midColor_a);
 
     const QColor& h = m_pColors->getHighColor();
-    getRgbF(h, &m_highColor_r, &m_highColor_g, &m_highColor_b);
+    getRgbF(h, &m_highColor_r, &m_highColor_g, &m_highColor_b, &m_highColor_a);
 
     const QColor& rgbLow = m_pColors->getRgbLowColor();
     getRgbF(rgbLow, &m_rgbLowColor_r, &m_rgbLowColor_g, &m_rgbLowColor_b);
