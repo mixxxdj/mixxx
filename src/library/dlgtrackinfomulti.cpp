@@ -155,7 +155,6 @@ void DlgTrackInfoMulti::init() {
     QList<QComboBox*> valueComboBoxes;
     valueComboBoxes.append(txtArtist);
     valueComboBoxes.append(txtTitle);
-    valueComboBoxes.append(txtTitle);
     valueComboBoxes.append(txtAlbum);
     valueComboBoxes.append(txtAlbumArtist);
     valueComboBoxes.append(txtComposer);
@@ -275,10 +274,7 @@ void DlgTrackInfoMulti::updateFromTracks() {
 
     QList<mixxx::TrackRecord> trackRecords;
     trackRecords.reserve(m_pLoadedTracks.size());
-    for (auto recIt = m_pLoadedTracks.constBegin();
-            recIt != m_pLoadedTracks.constEnd();
-            recIt++) {
-        const auto pTrack = recIt.value();
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         const auto rec = pTrack.get()->getRecord();
         trackRecords.append(rec);
     }
@@ -288,7 +284,7 @@ void DlgTrackInfoMulti::updateFromTracks() {
     // If track value differs from the current value, add it to the list.
     // If new and current are identical, keep only one.
     int commonRating = m_trackRecords.first().getRating();
-    for (auto& rec : m_trackRecords) {
+    for (const auto& rec : m_trackRecords) {
         if (commonRating != rec.getRating()) {
             commonRating = 0;
             break;
@@ -304,7 +300,7 @@ void DlgTrackInfoMulti::updateFromTracks() {
     // Same procedure for the track color
     mixxx::RgbColor::optional_t commonColor = m_trackRecords.first().getColor();
     bool multipleColors = false;
-    for (auto& rec : m_trackRecords) {
+    for (const auto& rec : m_trackRecords) {
         if (commonColor != rec.getColor()) {
             commonColor = mixxx::RgbColor::nullopt();
             multipleColors = true;
@@ -566,7 +562,7 @@ void DlgTrackInfoMulti::saveTracks() {
     // and repopulate all these fields.
     disconnectTracksChanged();
     // Update the cached tracks
-    for (auto& rec : m_trackRecords) {
+    for (const auto& rec : m_trackRecords) {
         auto pTrack = m_pLoadedTracks.value(rec.getId());
         // If replaceRecord() returns true then both m_trackRecord and m_pBeatsClone
         // will be updated by the subsequent Track::changed() signal to keep them
@@ -596,10 +592,7 @@ void DlgTrackInfoMulti::clear() {
 }
 
 void DlgTrackInfoMulti::connectTracksChanged() {
-    for (auto it = m_pLoadedTracks.constBegin();
-            it != m_pLoadedTracks.constEnd();
-            it++) {
-        const auto pTrack = it.value();
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         connect(pTrack.get(),
                 &Track::changed,
                 this,
@@ -608,10 +601,7 @@ void DlgTrackInfoMulti::connectTracksChanged() {
 }
 
 void DlgTrackInfoMulti::disconnectTracksChanged() {
-    for (auto it = m_pLoadedTracks.constBegin();
-            it != m_pLoadedTracks.constEnd();
-            it++) {
-        const auto pTrack = it.value();
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         disconnect(pTrack.get(),
                 &Track::changed,
                 this,
@@ -632,10 +622,7 @@ void DlgTrackInfoMulti::slotImportMetadataFromFiles() {
     // model for this dialog.
     QList<mixxx::TrackRecord> trackRecords;
     trackRecords.reserve(m_pLoadedTracks.size());
-    for (auto it = m_pLoadedTracks.constBegin();
-            it != m_pLoadedTracks.constEnd();
-            it++) {
-        const auto pTrack = it.value();
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
         auto trackRecord = pTrack->getRecord();
         auto trackMetadata = trackRecord.getMetadata();
         QImage coverImage;
@@ -649,7 +636,7 @@ void DlgTrackInfoMulti::slotImportMetadataFromFiles() {
             // One track failed, abort. User feedback would be good.
             qWarning() << "DlgTrackInfoMulti::slotImportMetadataFromFiles: "
                           "failed to load metadata from file for track"
-                       << it.key() << pTrack->getLocation();
+                       << pTrack->getId() << pTrack->getLocation();
             return;
         }
         auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
@@ -761,7 +748,7 @@ void DlgTrackInfoMulti::updateCoverArtFromTracks() {
         return;
     }
     CoverInfoRelative refCover = m_trackRecords.first().getCoverInfo();
-    for (auto& rec : m_trackRecords) {
+    for (const auto& rec : m_trackRecords) {
         if (rec.getCoverInfo() != refCover) {
             refCover.reset();
             break;
