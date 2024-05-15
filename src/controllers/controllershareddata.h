@@ -42,7 +42,7 @@ class ControllerSharedData : public QObject {
 };
 
 /// ControllerNamespacedSharedData is a wrapper that restrict access to a given
-/// namespace. It doesn't held any data and can safely be deleted at all time,
+/// namespace. It doesn't hold any data and can safely be deleted at all time,
 /// but only provide the namespace abstraction for controller to interact with
 /// via a the JavaScript interface
 class ControllerNamespacedSharedData : public QObject {

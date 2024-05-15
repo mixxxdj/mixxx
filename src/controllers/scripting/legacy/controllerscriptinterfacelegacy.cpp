@@ -243,12 +243,10 @@ void ControllerScriptInterfaceLegacy::onRuntimeDataUpdated(const QVariant& value
     for (auto& connection : m_runtimeDataConnections) {
         QJSValue result = connection.callback.call(args);
         if (result.isError()) {
-            if (m_pScriptEngineLegacy != nullptr) {
-                m_pScriptEngineLegacy->showScriptExceptionDialog(result);
-            }
-            qWarning() << "ControllerEngine: Invocation of connection " << connection.id.toString()
-                       << "connected to runtime data failed:"
-                       << result.toString();
+            m_pScriptEngineLegacy->logOrThrowError(
+                    QStringLiteral("Invocation of runtime data connection %1 "
+                                   "failed: %2")
+                            .arg(connection.id.toString(), result.toString()));
         }
     }
 }
@@ -447,12 +445,10 @@ void ControllerScriptInterfaceLegacy::triggerRuntimeDataConnection(
     };
     QJSValue result = func.call(args);
     if (result.isError()) {
-        if (m_pScriptEngineLegacy != nullptr) {
-            m_pScriptEngineLegacy->showScriptExceptionDialog(result);
-        }
-        qWarning() << "ControllerEngine: Invocation of runtime data connection "
-                   << connection.id.toString()
-                   << "connected to runtime data failed:" << result.toString();
+        m_pScriptEngineLegacy->logOrThrowError(
+                QStringLiteral(
+                        "Invocation of runtime data connection %1 failed: %2")
+                        .arg(connection.id.toString(), result.toString()));
     }
 }
 
