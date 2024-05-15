@@ -813,7 +813,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         std::shared_ptr<ControllerRenderingEngine> pScreen) {
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
             qmlScript.type !=
-                    LegacyControllerMapping::ScriptFileInfo::Type::Qml){
+                    LegacyControllerMapping::ScriptFileInfo::Type::Qml) {
         return nullptr;
     }
 
