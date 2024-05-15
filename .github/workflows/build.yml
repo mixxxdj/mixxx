@@ -95,7 +95,7 @@ jobs:
             #            also adjust the for the local Windows build setup in
             #            ./tools/windows_buildenv.bat
             cmake_args: >-
-              -DBULK=OFF
+              -DBULK=ON
               -DFFMPEG=OFF
               -DHSS1394=ON
               -DLOCALECOMPARE=ON

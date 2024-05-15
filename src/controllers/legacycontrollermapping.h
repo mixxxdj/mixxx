@@ -47,12 +47,11 @@ class LegacyControllerMapping {
                               ? other.m_settingsLayout->clone()
                               : nullptr),
 #ifdef MIXXX_USE_QML
-              m_scripts(other.m_scripts),
               m_modules(other.m_modules),
-              m_screens(other.m_screens) {
-#else
-              m_scripts(other.m_scripts) {
+              m_screens(other.m_screens),
 #endif
+              m_scripts(other.m_scripts),
+              m_deviceDirection(other.m_deviceDirection) {
     }
     virtual ~LegacyControllerMapping() = default;
 
@@ -405,10 +404,10 @@ class LegacyControllerMapping {
 
     QList<std::shared_ptr<AbstractLegacyControllerSetting>> m_settings;
     std::unique_ptr<LegacyControllerSettingsLayoutElement> m_settingsLayout;
-    QList<ScriptFileInfo> m_scripts;
-    DeviceDirections m_deviceDirection;
 #ifdef MIXXX_USE_QML
     QList<QMLModuleInfo> m_modules;
     QList<ScreenInfo> m_screens;
 #endif
+    QList<ScriptFileInfo> m_scripts;
+    DeviceDirections m_deviceDirection;
 };

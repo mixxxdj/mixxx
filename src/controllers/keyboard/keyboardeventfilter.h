@@ -28,6 +28,11 @@ class KeyboardEventFilter : public QObject {
     // Returns a valid QString with modifier keys from a QKeyEvent
     static QKeySequence getKeySeq(QKeyEvent* e);
 
+#ifndef __APPLE__
+  signals:
+    void altPressedWithoutKeys();
+#endif
+
   private:
     struct KeyDownInformation {
         KeyDownInformation(int keyId, int modifiers, ControlObject* pControl)
@@ -40,6 +45,10 @@ class KeyboardEventFilter : public QObject {
         int modifiers;
         ControlObject* pControl;
     };
+
+#ifndef __APPLE__
+    bool m_altPressedWithoutKey;
+#endif
 
     // Run through list of active keys to see if the pressed key is already active
     // and is not a control that repeats when held.

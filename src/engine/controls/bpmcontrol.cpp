@@ -138,6 +138,13 @@ BpmControl::BpmControl(const QString& group,
             &BpmControl::slotToggleBpmLock,
             Qt::DirectConnection);
 
+    m_pBeatsUndo = new ControlPushButton(ConfigKey(group, "beats_undo_adjustment"));
+    connect(m_pBeatsUndo,
+            &ControlObject::valueChanged,
+            this,
+            &BpmControl::slotBeatsUndoAdjustment,
+            Qt::DirectConnection);
+
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
     m_pSyncMode = new ControlProxy(group, "sync_mode", this);
@@ -154,6 +161,7 @@ BpmControl::~BpmControl() {
     delete m_pTranslateBeatsMove;
     delete m_pAdjustBeatsFaster;
     delete m_pAdjustBeatsSlower;
+    delete m_pBeatsUndo;
 }
 
 mixxx::Bpm BpmControl::getBpm() const {
@@ -230,6 +238,17 @@ void BpmControl::slotTranslateBeatsMove(double v) {
             pTrack->trySetBeats(*translatedBeats);
         }
     }
+}
+
+void BpmControl::slotBeatsUndoAdjustment(double v) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    pTrack->undoBeatsChange();
 }
 
 void BpmControl::slotBpmTap(double v) {
