@@ -689,7 +689,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 
 void WaveformWidgetFactory::renderSelf() {
     ScopedTimer t("WaveformWidgetFactory::render() %1 waveforms",
-            QString::number(m_waveformWidgetHolders.size()));
+            m_waveformWidgetHolders.size());
 
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform

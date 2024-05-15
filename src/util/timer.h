@@ -10,6 +10,7 @@
 #include "util/duration.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
+#include "util/qstringformat.h"
 #include "util/stat.h"
 
 const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
@@ -60,28 +61,25 @@ class ScopedTimer {
     /// @param compute Flags to use for the Stat::ComputeFlags (can be omitted)
     /// @param key The format string for the key
     /// @param args The arguments to pass to the format string
-    template<typename... Ts>
-    ScopedTimer(Stat::ComputeFlags compute, const QString& key, Ts&&... args)
+    template<typename T, typename... Ts>
+    ScopedTimer(Stat::ComputeFlags compute, T&& key, Ts&&... args)
             : m_timer(std::nullopt) {
-        if (CmdlineArgs::Instance().getDeveloper()) {
-            QString assembledKey = key;
-            if constexpr (sizeof...(args) > 0) {
-                // only try to call QString::arg when we've been given parameters
-                assembledKey = key.arg(std::forward<Ts>(args)...);
-            }
-            m_timer = std::make_optional<Timer>(assembledKey, compute);
-            m_timer->start();
+        if (!CmdlineArgs::Instance().getDeveloper()) {
+            return; // leave timer in cancelled state
         }
+        // key is explicitly `auto` to allow passing non-QString types such as `const char*`
+        // its conversion is delayed until after we've checked if we're in developer mode
+        auto assembledKey = QString(std::forward<T>(key));
+        if constexpr (sizeof...(args) > 0) {
+            // only try to call QString::arg when we've been given parameters
+            assembledKey = assembledKey.arg(convertToQStringConvertible(std::forward<Ts>(args))...);
+        }
+        m_timer = std::make_optional<Timer>(assembledKey, compute);
+        m_timer->start();
     }
-    template<typename... Ts>
-    ScopedTimer(const QString& key, Ts&&... args)
-            : ScopedTimer(kDefaultComputeFlags, key, std::forward<Ts>(args)...) {
-    }
-    // for lazy users that don't wrap the key in a QStringLiteral(...)
-    template<typename... Ts>
-    ScopedTimer(const char* key, Ts&&... args)
-            : ScopedTimer(CmdlineArgs::Instance().getDeveloper() ? QString(key) : QString(),
-                      std::forward<Ts>(args)...) {
+    template<typename T, typename... Ts>
+    ScopedTimer(T&& key, Ts&&... args)
+            : ScopedTimer(kDefaultComputeFlags, std::forward<T>(key), std::forward<Ts>(args)...) {
     }
 
     ~ScopedTimer() {
