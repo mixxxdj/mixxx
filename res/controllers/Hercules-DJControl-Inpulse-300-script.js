@@ -72,12 +72,12 @@ DJCi300.padModeSlicerloop = 6;
 DJCi300.padModeBeatjump = 7;
 
 // Slicer connections
-var slicerSizeConnection1;
-var slicerTrackConnection1;
-var slicerBeatConnection1;
-var slicerTrackConnection2;
-var slicerSizeConnection2;
-var slicerBeatConnection2;
+let slicerSizeConnection1;
+let slicerTrackConnection1;
+let slicerBeatConnection1;
+let slicerTrackConnection2;
+let slicerSizeConnection2;
+let slicerBeatConnection2;
 
 DJCi300.vuMeterUpdateMaster = function(value, _group, _control) {
     value = (value * 125);
@@ -321,7 +321,7 @@ DJCi300.wheelTouch = function(channel, _control, value, _status, group) {
     } else {
         // Released the wheel.
         DJCi300.wheelTouchState[deck] = false;
-        scratchValue = engine.getValue(group, "scratch2");
+        const scratchValue = engine.getValue(group, "scratch2");
         DJCi300.updateScratchAction(scratchValue, group);
     }
 };
@@ -337,7 +337,7 @@ DJCi300.wheelTouchShift = function(channel, _control, value, _status, group) {
     // Released the wheel.
     } else {
         DJCi300.wheelTouchState[deck] = false;
-        scratchValue = engine.getValue(group, "scratch2");
+        const scratchValue = engine.getValue(group, "scratch2");
         DJCi300.updateScratchAction(scratchValue, group);
     }
 };
@@ -377,8 +377,8 @@ DJCi300._samplesPerBeat = function(deck) {
     const bpm = engine.getValue(`[Channel${  deck  }]`, "local_bpm");
     // For some reason, multiplying by 60 makes the size 1/2 as large as it's supposed to be
     // Hence, we multiply by 120 instead
-    secondsPerBeat = 120/bpm;
-    samplesPerBeat = secondsPerBeat * sampleRate;
+    const secondsPerBeat = 120/bpm;
+    const samplesPerBeat = secondsPerBeat * sampleRate;
     return samplesPerBeat;
 };
 
@@ -396,7 +396,7 @@ DJCi300._currentPosition = function(deck) {
 // Mode buttons
 DJCi300.changeMode = function(channel, control, value, _status, _group) {
     const deck = channel;
-    oldPadMode = DJCi300.padMode[deck];
+    const oldPadMode = DJCi300.padMode[deck];
     DJCi300.padMode[deck] = control - 15;
 
     // Connect slicer functions when entering slicer or slicerloop mode
@@ -457,7 +457,7 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
         engine.setValue(`[Channel${  deck  }]`, "reset_key", 1);
         // Apply offset
         if (DJCi300.toneplayOffset[deck] >= 0) {
-            for (var i = 0; i < DJCi300.toneplayOffset[deck]; i++) {
+            for (let i = 0; i < DJCi300.toneplayOffset[deck]; i++) {
                 engine.setValue(`[Channel${  deck  }]`, "pitch_up", 1);
             }
         } else {
@@ -467,7 +467,7 @@ DJCi300.toneplay = function(channel, control, value, _status, _group) {
         }
         if (button <= 4) {
             // Buttons 1-4 are +0 to +3 semitones
-            for (var i = 1; i < button; i++) {
+            for (let i = 1; i < button; i++) {
                 engine.setValue(`[Channel${  deck  }]`, "pitch_up", 1);
             }
             // Buttons 5-8 are -4 to -1 semitones
@@ -493,7 +493,7 @@ DJCi300.toneplayShift = function(channel, control, value, _status, group) {
             DJCi300.toneplayOffset[deck] = Math.max(DJCi300.toneplayOffset[deck] - 1, -2);
         }
         // Update LEDs (because the keyboard has changed)
-        newValue = engine.getValue(group, "pitch");
+        const newValue = engine.getValue(group, "pitch");
         DJCi300.updateToneplayLED(newValue, group);
     }
 };
@@ -689,7 +689,7 @@ DJCi300.updateSlicerLED = function(deck) {
     const end = DJCi300.slicerButtonEnabled[deck].lastIndexOf(1) + 1;
 
     // Turn off all LEDs
-    for (var i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
         midi.sendShortMsg(status, control + i, 0x00);
     }
     // If the slicer points are uninitialized, then do nothing. Otherwise:
