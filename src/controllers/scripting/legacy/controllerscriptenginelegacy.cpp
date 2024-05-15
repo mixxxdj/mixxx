@@ -491,7 +491,7 @@ void ControllerScriptEngineLegacy::extractTransformFunction(
     VERIFY_OR_DEBUG_ASSERT(metaObject) {
         qCWarning(m_logger)
                 << "Invalid meta object for screen" << screenIdentifier
-                << "It may be that an unhandled issue occurred when imnporting "
+                << "It may be that an unhandled issue occurred when importing "
                    "the scene.";
         return;
     }
@@ -550,6 +550,11 @@ bool ControllerScriptEngineLegacy::bindSceneToScreen(
             &ControllerScriptEngineLegacy::handleScreenFrame);
     m_renderingScreens.insert(screenIdentifier, pScreen);
     m_rootItems.insert(screenIdentifier, pScene);
+    // In case a rendering issue occurs, we need to shutdown the controller
+    connect(pScreen.get(),
+            &ControllerRenderingEngine::stopping,
+            this,
+            &ControllerScriptEngineLegacy::shutdown);
     return true;
 }
 
@@ -700,6 +705,10 @@ void ControllerScriptEngineLegacy::shutdown() {
 
     m_rootItems.clear();
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
+        // When stopping, the rendering engine emits an event which triggers the
+        // shutdown in case it was initiated following a rendering issue. We
+        // need to disconnect first before stopping
+        pScreen->disconnect(this);
         VERIFY_OR_DEBUG_ASSERT(!pScreen->isValid() ||
                 !pScreen->isRunning() || pScreen->stop()) {
             qCWarning(m_logger) << "Unable to stop the screen";
@@ -805,7 +814,8 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     VERIFY_OR_DEBUG_ASSERT(m_pJSEngine ||
             qmlScript.type !=
                     LegacyControllerMapping::ScriptFileInfo::Type::Qml){
-            return nullptr}
+        return nullptr;
+    }
 
     std::unique_ptr<QQmlComponent>
             qmlComponent =
@@ -816,7 +826,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     if (!scene.exists()) {
         qCWarning(m_logger) << "Unable to load the QML scene:" << qmlScript.file.absoluteFilePath()
                             << "does not exist.";
-        return nullptr
+        return nullptr;
     }
 
     QDir dir(m_resourcePath + "/qml/");
@@ -843,12 +853,12 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
                                 << "at line" << error.line() << ", error: " << error;
             showQMLExceptionDialog(error, true);
         }
-        return nullptr
+        return nullptr;
     }
 
     VERIFY_OR_DEBUG_ASSERT(qmlComponent->isReady()) {
         qCWarning(m_logger) << "QMLComponent isn't ready although synchronous load was requested.";
-        return nullptr
+        return nullptr;
     }
 
     QObject* pRootObject = qmlComponent->createWithInitialProperties(
@@ -858,7 +868,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
         for (const QQmlError& error : errorList) {
             qCWarning(m_logger) << error.url() << error.line() << error;
         }
-        return nullptr
+        return nullptr;
     }
 
     std::shared_ptr<QQuickItem> rootItem =
@@ -866,7 +876,7 @@ std::shared_ptr<QQuickItem> ControllerScriptEngineLegacy::loadQMLFile(
     if (!rootItem) {
         qWarning("run: Not a QQuickItem");
         delete pRootObject;
-        return nullptr
+        return nullptr;
     }
 
     watchFilePath(qmlScript.file.absoluteFilePath());

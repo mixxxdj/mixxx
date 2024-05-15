@@ -25,7 +25,7 @@
 #define VERIFY_OR_TERMINATE(cond, msg) \
     VERIFY_OR_DEBUG_ASSERT(cond) {     \
         kLogger.warning() << msg;      \
-        finish();                      \
+        m_pThread->quit();             \
         return;                        \
     }
 
@@ -91,8 +91,8 @@ void ControllerRenderingEngine::prepare() {
             &ControllerRenderingEngine::sendFrameDataRequested,
             this,
             &ControllerRenderingEngine::send);
-    connect(this,
-            &ControllerRenderingEngine::stopRequested,
+    connect(m_pThread.get(),
+            &QThread::finished,
             this,
             &ControllerRenderingEngine::finish);
 
@@ -100,6 +100,8 @@ void ControllerRenderingEngine::prepare() {
 }
 
 ControllerRenderingEngine::~ControllerRenderingEngine() {
+    DEBUG_ASSERT(QThread::currentThread() != thread());
+    m_pThread->wait();
     VERIFY_OR_DEBUG_ASSERT(!m_fbo) {
         kLogger.critical() << "The ControllerEngine is being deleted but hasn't been "
                               "cleaned up. Brace for impact";
@@ -197,7 +199,9 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
 }
 
 void ControllerRenderingEngine::finish() {
-    disconnect(this);
+    DEBUG_ASSERT(QThread::currentThread() == thread());
+    emit stopping();
+
     m_isValid = false;
 
     if (m_context && m_context->isValid()) {
@@ -222,7 +226,6 @@ void ControllerRenderingEngine::finish() {
         m_context->doneCurrent();
     }
     m_context.reset();
-    m_pThread->quit();
 }
 
 void ControllerRenderingEngine::renderFrame() {
@@ -333,7 +336,7 @@ void ControllerRenderingEngine::renderFrame() {
 }
 
 bool ControllerRenderingEngine::stop() {
-    emit stopRequested();
+    m_pThread->quit();
     return m_pThread->wait();
 }
 
