@@ -17,6 +17,7 @@
 #include "util/datetime.h"
 #include "util/duration.h"
 #include "util/optional.h"
+#include "util/stringformat.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wstarrating.h"
@@ -30,11 +31,10 @@ const QString kClearItem = QStringLiteral("clearItem");
 /// If value differs from the current value, add it to the list.
 /// If new and current are identical, keep only one. Later on we can use the
 /// item count to maybe join the list and format the font accordingly.
-/// List can be a QStringList or a QList<double>
 template<typename T>
-void appendToTagList(QList<T>* pList, const T& value) {
+void addToTagSet(QSet<T>* pList, const T& value) {
     if (pList->isEmpty() || !pList->contains(value)) {
-        pList->append(value);
+        pList->insert(value);
     }
 }
 
@@ -70,32 +70,35 @@ QString validEditText(QComboBox* pBox) {
     return pBox->currentText().trimmed();
 }
 
-/// Returns either the only value or the 'various' string.
-/// In the latter case make the text italic to indicate multiple values,
-/// also if only one is not empty.
-/// This is used for the Year and Track# fields as well as the sample rate and
-/// file ytpe labels. Optionally toggle bold (non-editable fields).
-/// pWidget can be a QLineEdit or a QPlainTextEdit (comment)
-QString getCommonValueOrVariousStringAndFormatFont(QWidget* pWidget,
-        QStringList& values,
+/// Sets the text of a QLabel, either the only value or the 'various' string.
+/// In case of `various`, the text is also set italic.
+/// This is used for bitrate, sample rate and file directories.
+/// Optionally toggle bold (bitrate and sample rate).
+template<typename T>
+void setCommonValueOrVariousStringAndFormatFont(QLabel* pLabel,
+        QSet<T>& values,
         bool toggleBold = false,
         const QString& unit = QString()) {
     if (values.size() == 1) {
-        setItalic(pWidget, false);
-        if (toggleBold) {
-            setBold(pWidget, true);
+        QString text = convertToQStringConvertible(*values.constBegin());
+        if (text.isNull()) {
+            pLabel->clear();
+            return;
         }
-        if (unit.isEmpty()) {
-            return values[0];
-        } else {
-            return values[0] + QChar(' ') + unit;
+        if (!unit.isEmpty()) {
+            text.append(QChar(' ') + unit);
+        }
+        pLabel->setText(text);
+        setItalic(pLabel, false);
+        if (toggleBold) {
+            setBold(pLabel, true);
         }
     } else {
-        setItalic(pWidget, true);
+        pLabel->setText(kVariousText);
+        setItalic(pLabel, true);
         if (toggleBold) {
-            setBold(pWidget, false);
+            setBold(pLabel, false);
         }
-        return kVariousText;
     }
 }
 
@@ -314,19 +317,17 @@ void DlgTrackInfoMulti::updateFromTracks() {
     m_newColor = mixxx::RgbColor::nullopt();
 
     // And the track directory
-    QString commonDir = m_pLoadedTracks.constBegin().value()->getFileInfo().canonicalLocationPath();
-    QStringList dirs;
-    dirs.append(commonDir);
-    for (auto dirIt = m_pLoadedTracks.constBegin();
-            dirIt != m_pLoadedTracks.constEnd();
-            dirIt++) {
-        const auto dir = dirIt.value()->getFileInfo().canonicalLocationPath();
-        if (dir != commonDir) {
-            dirs.append(dir);
+    QSet<QString> dirs;
+    QString firstDir = m_pLoadedTracks.constBegin().value()->getFileInfo().canonicalLocationPath();
+    dirs.insert(firstDir);
+    for (const auto& pTrack : std::as_const(m_pLoadedTracks)) {
+        const auto dir = pTrack->getFileInfo().canonicalLocationPath();
+        if (dir != firstDir) {
+            dirs.insert(dir);
             break;
         }
     }
-    txtLocation->setText(getCommonValueOrVariousStringAndFormatFont(txtLocation, dirs));
+    setCommonValueOrVariousStringAndFormatFont(txtLocation, dirs);
 
     // And the cover label
     updateCoverArtFromTracks();
@@ -341,52 +342,48 @@ void DlgTrackInfoMulti::replaceTrackRecords(const QList<mixxx::TrackRecord>& tra
 
 void DlgTrackInfoMulti::updateTrackMetadataFields() {
     // Editable fields
-    QStringList titles;
-    QStringList artists;
-    QStringList aTitles;
-    QStringList aArtists;
-    QStringList genres;
-    QStringList composers;
-    QStringList grouping;
-    QStringList years;
-    QStringList keys;
-    QStringList nums;
-    QStringList comments;
-    QList<double> bpms;
-    QList<uint32_t> bitrates;
-    QList<double> durations;
-    QStringList samplerates;
-    QStringList filetypes;
+    QSet<QString> titles;
+    QSet<QString> artists;
+    QSet<QString> aTitles;
+    QSet<QString> aArtists;
+    QSet<QString> genres;
+    QSet<QString> composers;
+    QSet<QString> grouping;
+    QSet<QString> years;
+    QSet<QString> keys;
+    QSet<QString> nums;
+    QSet<QString> comments;
+    QSet<double> bpms;
+    QSet<uint32_t> bitrates;
+    QSet<double> durations;
+    QSet<uint32_t> samplerates;
+    QSet<QString> filetypes;
 
-    for (auto& rec : m_trackRecords) {
-        appendToTagList(&titles, rec.getMetadata().getTrackInfo().getTitle());
-        appendToTagList(&artists, rec.getMetadata().getTrackInfo().getArtist());
-        appendToTagList(&aTitles, rec.getMetadata().getAlbumInfo().getTitle());
-        appendToTagList(&aArtists, rec.getMetadata().getAlbumInfo().getArtist());
-        appendToTagList(&genres, rec.getMetadata().getTrackInfo().getGenre());
-        appendToTagList(&composers, rec.getMetadata().getTrackInfo().getComposer());
-        appendToTagList(&grouping, rec.getMetadata().getTrackInfo().getGrouping());
-        appendToTagList(&years, rec.getMetadata().getTrackInfo().getYear());
-        appendToTagList(&keys, rec.getMetadata().getTrackInfo().getKeyText());
-        appendToTagList(&nums, rec.getMetadata().getTrackInfo().getTrackNumber());
-        appendToTagList(&comments, rec.getMetadata().getTrackInfo().getComment());
+    for (const auto& rec : m_trackRecords) {
+        addToTagSet(&titles, rec.getMetadata().getTrackInfo().getTitle());
+        addToTagSet(&artists, rec.getMetadata().getTrackInfo().getArtist());
+        addToTagSet(&aTitles, rec.getMetadata().getAlbumInfo().getTitle());
+        addToTagSet(&aArtists, rec.getMetadata().getAlbumInfo().getArtist());
+        addToTagSet(&genres, rec.getMetadata().getTrackInfo().getGenre());
+        addToTagSet(&composers, rec.getMetadata().getTrackInfo().getComposer());
+        addToTagSet(&grouping, rec.getMetadata().getTrackInfo().getGrouping());
+        addToTagSet(&years, rec.getMetadata().getTrackInfo().getYear());
+        addToTagSet(&keys, rec.getMetadata().getTrackInfo().getKeyText());
+        addToTagSet(&nums, rec.getMetadata().getTrackInfo().getTrackNumber());
+        addToTagSet(&comments, rec.getMetadata().getTrackInfo().getComment());
 
         auto bpm = rec.getMetadata().getTrackInfo().getBpm();
-        appendToTagList(&bpms, bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueMin);
+        addToTagSet(&bpms, bpm.isValid() ? bpm.value() : mixxx::Bpm::kValueMin);
 
         auto bitrate = rec.getMetadata().getStreamInfo().getBitrate();
-        appendToTagList(&bitrates, bitrate.isValid() ? bitrate.value() : 0);
+        addToTagSet(&bitrates, bitrate.isValid() ? bitrate.value() : 0);
 
-        appendToTagList(&durations, rec.getMetadata().getDurationSecondsRounded());
+        addToTagSet(&durations, rec.getMetadata().getDurationSecondsRounded());
 
         auto samplerate = rec.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
-        if (samplerate.isValid()) {
-            appendToTagList(&samplerates, QString::number(samplerate.value()));
-        } else {
-            appendToTagList(&samplerates, QStringLiteral("--"));
-        }
+        addToTagSet(&samplerates, samplerate.isValid() ? samplerate.value() : 0);
 
-        appendToTagList(&filetypes, rec.getFileType());
+        addToTagSet(&filetypes, rec.getFileType());
     }
 
     addValuesToComboBox(txtTitle, titles);
@@ -407,62 +404,80 @@ void DlgTrackInfoMulti::updateTrackMetadataFields() {
     // but we can't have a multi-line editor and a combobox at the same time.
     // TODO(ronso0) Maybe we can, but for now we display all comments in the editor,
     // separated by dashed lines.
-    comments.removeAll(""); // avoid redundant separators when joining
-    txtComment->setPlainText(comments.join("\n---\n"));
+    QStringList commList = comments.values();
+    commList.removeAll(""); // avoid redundant separators when joining
+    txtComment->setPlainText(commList.join("\n---\n"));
 
-    // Non-editable fields
+    // Non-editable fields: BPM, bitrate, samplerate, type and directory
+    // For BPM, bitrate and samplerate we show a span if we have multiple values.
     if (bpms.size() > 1) {
-        std::sort(bpms.begin(), bpms.end());
-        txtBpm->setText(QString("%1").arg(bpms.first(), 3, 'f', 1) +
+        QList<double> bpmList = bpms.values();
+        std::sort(bpmList.begin(), bpmList.end());
+        txtBpm->setText(QString("%1").arg(bpmList.first(), 3, 'f', 1) +
                 QChar('-') +
-                QString("%1").arg(bpms.last(), 3, 'f', 1));
-    } else {
-        txtBpm->setText(QString::number(bpms.first()));
+                QString("%1").arg(bpmList.last(), 3, 'f', 1));
+    } else { // we have at least one value, might be invalid (0)
+        double bpm = *bpms.constBegin();
+        if (bpm == mixxx::Bpm::kValueMin) {
+            txtBpm->clear();
+        } else {
+            txtBpm->setText(QString::number(bpm));
+        }
     }
 
     QString bitrate;
     if (bitrates.size() > 1) {
-        std::sort(bitrates.begin(), bitrates.end());
-        bitrate = QString::number(bitrates.first()) + QChar('-') + QString::number(bitrates.last());
-    } else {
-        bitrate = QString::number(bitrates.first());
+        QList<uint32_t> brList = bitrates.values();
+        std::sort(brList.begin(), brList.end());
+        bitrate = QString::number(brList.first()) +
+                QChar('-') +
+                QString::number(brList.last());
+    } else { // we have at least one value, though 0 is not necessarily invalid
+        bitrate = QString::number(*bitrates.constBegin());
     }
     txtBitrate->setText(bitrate + QChar(' ') + mixxx::audio::Bitrate::unit());
 
-    txtSamplerate->setText(getCommonValueOrVariousStringAndFormatFont(txtSamplerate,
+    setCommonValueOrVariousStringAndFormatFont(txtSamplerate,
             samplerates,
             true, // bold if common value
-            QStringLiteral("Hz")));
-    txtType->setText(getCommonValueOrVariousStringAndFormatFont(txtType, filetypes, true));
+            QStringLiteral("Hz"));
+
+    setCommonValueOrVariousStringAndFormatFont(txtType, filetypes, true);
 
     if (durations.size() > 1) {
-        std::sort(durations.begin(), durations.end());
-        txtDuration->setText(mixxx::Duration::formatTime(durations.first()) +
+        QList<double> durList = durations.values();
+        std::sort(durList.begin(), durList.end());
+        txtDuration->setText(mixxx::Duration::formatTime(durList.first()) +
                 QChar('-') +
-                mixxx::Duration::formatTime(durations.last()));
+                mixxx::Duration::formatTime(durList.last()));
     } else {
-        txtDuration->setText(mixxx::Duration::formatTime(durations.first()));
+        txtDuration->setText(mixxx::Duration::formatTime(*durations.constBegin()));
     }
 }
 
-void DlgTrackInfoMulti::addValuesToComboBox(QComboBox* pBox, QStringList& values, bool sort) {
+template<typename T>
+void DlgTrackInfoMulti::addValuesToComboBox(QComboBox* pBox, QSet<T>& values, bool sort) {
+    // Verify that T can be used for pBox->addItem()
+    DEBUG_ASSERT(isOrCanConvertToQString(*values.constBegin()));
+
     pBox->clear();
     pBox->lineEdit()->setPlaceholderText(QString());
-    if (values.isEmpty()) {
+
+    VERIFY_OR_DEBUG_ASSERT(!values.isEmpty()) {
         pBox->setProperty(kOrigValProp, QString());
         return;
     }
+
     if (values.size() == 1) {
-        pBox->setCurrentText(values.first());
-        pBox->setProperty(kOrigValProp, values.first());
-    } else { // items > 1
-        if (sort) {
-            values.sort();
-        }
+        pBox->setCurrentText(*values.constBegin());
+        pBox->setProperty(kOrigValProp, *values.constBegin());
+    } else {
         // The empty item allows to clear the text for all tracks.
-        // TODO Maybe add "(Clear for all tracks)" display text?
         pBox->addItem(tr("clear tag for all tracks"), kClearItem);
-        pBox->addItems(values);
+        pBox->addItems(values.values());
+        if (sort) {
+            pBox->model()->sort(0);
+        }
         pBox->setCurrentIndex(-1);
         // Show '<various>' placeholder.
         // The QComboBox::lineEdit() placeholder actually providex a nice UX:
@@ -493,14 +508,14 @@ void DlgTrackInfoMulti::saveTracks() {
     }
 
     // Check the values so we don't have to do it for every track record
-    QString title = validEditText(txtTitle);
-    QString artist = validEditText(txtArtist);
-    QString album = validEditText(txtAlbum);
-    QString albumArtist = validEditText(txtAlbumArtist);
-    QString genre = validEditText(txtGenre);
-    QString composer = validEditText(txtComposer);
-    QString grouping = validEditText(txtGrouping);
-    QString year = validEditText(txtYear);
+    const QString title = validEditText(txtTitle);
+    const QString artist = validEditText(txtArtist);
+    const QString album = validEditText(txtAlbum);
+    const QString albumArtist = validEditText(txtAlbumArtist);
+    const QString genre = validEditText(txtGenre);
+    const QString composer = validEditText(txtComposer);
+    const QString grouping = validEditText(txtGrouping);
+    const QString year = validEditText(txtYear);
     // In case Apply is triggered by hotkey AND a Key box with pending changes
     // is focused AND the user did not hit Enter to finish editing, the key text
     // needs to be validated.
@@ -510,8 +525,8 @@ void DlgTrackInfoMulti::saveTracks() {
         txtKey->clearFocus();
         txtKey->setFocus();
     }
-    QString key = validEditText(txtKey);
-    QString num = validEditText(txtTrackNumber);
+    const QString key = validEditText(txtKey);
+    const QString num = validEditText(txtTrackNumber);
 
     for (auto& rec : m_trackRecords) {
         if (!title.isNull()) {

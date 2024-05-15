@@ -37,3 +37,16 @@ auto convertToQStringConvertible(T&& arg) {
         return QString();
     }
 }
+
+// Check if T is QString or can be converted T to a type that would be accepted
+// by QString::args(Args&&...)
+template<typename T>
+bool isOrCanConvertToQString(T&& /* arg */) {
+    if constexpr (is_convertible_to_view_or_qstring_v<T>) {
+        return true;
+    } else if constexpr (is_number_compatible_v<T>) {
+        return true;
+    } else {
+        return false;
+    }
+}
