@@ -329,7 +329,7 @@ void ControllerRenderingEngine::renderFrame() {
 
     fboImage.mirror(false, true);
 
-    emit frameRendered(m_screenInfo, fboImage, timestamp);
+    emit frameRendered(m_screenInfo, fboImage.copy(), timestamp);
 
     m_context->doneCurrent();
 }
