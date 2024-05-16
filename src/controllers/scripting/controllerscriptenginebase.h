@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "util/runtimeloggingcategory.h"
+#ifdef MIXXX_USE_QML
+#include "controllers/controllerenginethreadcontrol.h"
+#endif
 
 class Controller;
 class QJSEngine;
@@ -92,6 +95,7 @@ class ControllerScriptEngineBase : public QObject {
   private:
     static inline std::shared_ptr<TrackCollectionManager> s_pTrackCollectionManager;
 
+  protected:
     /// Pause the GUI main thread. Pause is required by rendering
     /// thread (https://doc.qt.io/qt-6/qquickrendercontrol.html#sync). This
     /// offscreen render thread to pause the main "GUI thread" for onboard
@@ -100,21 +104,7 @@ class ControllerScriptEngineBase : public QObject {
     /// testing, it appears that the "GUI main thread" is the thread where the QML
     /// engine leaves in (also the main thread if we were using a
     /// QMLApplication, which isn't the case here)
-    QWaitCondition m_isPausedCondition;
-    QMutex m_pauseMutex;
-    int m_pauseCount{0};
-    bool m_isPaused{false};
-    bool m_canPause{false};
-
-  public slots:
-    bool pause();
-    void resume();
-    void setCanPause(bool canPause);
-  private slots:
-    void doPause();
-
-  signals:
-    void pauseRequested();
+    ControllerEngineThreadControl m_engineThreadControl;
 #endif
 
   protected slots:

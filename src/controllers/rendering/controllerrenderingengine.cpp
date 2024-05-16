@@ -12,12 +12,14 @@
 #include <QThread>
 
 #include "controllers/controller.h"
+#include "controllers/controllerenginethreadcontrol.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "moc_controllerrenderingengine.cpp"
 #include "qml/qmlwaveformoverview.h"
 #include "util/cmdlineargs.h"
 #include "util/logger.h"
+#include "util/thread_affinity.h"
 #include "util/time.h"
 #include "util/timer.h"
 
@@ -37,13 +39,13 @@ using Clock = std::chrono::steady_clock;
 
 ControllerRenderingEngine::ControllerRenderingEngine(
         const LegacyControllerMapping::ScreenInfo& info,
-        ControllerScriptEngineBase* parent)
+        ControllerEngineThreadControl* engineThreadControl)
         : QObject(),
           m_screenInfo(info),
           m_GLDataFormat(GL_RGBA),
           m_GLDataType(GL_UNSIGNED_BYTE),
           m_isValid(true),
-          m_pControllerEngine(parent) {
+          m_pEngineThreadControl(engineThreadControl) {
     switch (m_screenInfo.pixelFormat) {
     case QImage::Format_RGB16:
         m_GLDataFormat = GL_RGB;
@@ -84,10 +86,6 @@ void ControllerRenderingEngine::prepare() {
 
     // these at first sight weird-looking connections facilitate thread-safe communication.
     connect(this,
-            &ControllerRenderingEngine::engineSetupRequested,
-            this,
-            &ControllerRenderingEngine::setup);
-    connect(this,
             &ControllerRenderingEngine::sendFrameDataRequested,
             this,
             &ControllerRenderingEngine::send);
@@ -100,7 +98,7 @@ void ControllerRenderingEngine::prepare() {
 }
 
 ControllerRenderingEngine::~ControllerRenderingEngine() {
-    DEBUG_ASSERT(QThread::currentThread() != thread());
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_ANTI_AFFINITY();
     m_pThread->wait();
     VERIFY_OR_DEBUG_ASSERT(!m_fbo) {
         kLogger.critical() << "The ControllerEngine is being deleted but hasn't been "
@@ -121,23 +119,26 @@ bool ControllerRenderingEngine::isRunning() const {
 }
 
 void ControllerRenderingEngine::requestEngineSetup(std::shared_ptr<QQmlEngine> qmlEngine) {
-    m_isValid = false;
+    DEBUG_ASSERT(!m_quickWindow);
     VERIFY_OR_DEBUG_ASSERT(qmlEngine) {
         kLogger.critical() << "No QML engine was passed!";
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(QThread::currentThread() != thread()) {
+    VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_ANTI_AFFINITY() {
         kLogger.warning() << "Unable to setup OpenGL rendering context from the same "
                              "thread as the render object";
         return;
     }
-    emit engineSetupRequested(qmlEngine);
 
-    const auto lock = lockMutex(&m_mutex);
-    if (!m_quickWindow) {
-        m_waitCondition.wait(&m_mutex);
-    }
-    if (m_isValid) {
+    QMetaObject::invokeMethod(
+            this,
+            [this, qmlEngine]() {
+                setup(qmlEngine);
+            },
+            // This invocation will block the current thread!
+            Qt::BlockingQueuedConnection);
+
+    if (m_quickWindow) {
         m_renderControl->prepareThread(m_pThread.get());
     }
 }
@@ -148,7 +149,10 @@ void ControllerRenderingEngine::requestSendingFrameData(
 }
 
 void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
-    DEBUG_ASSERT(QThread::currentThread() == thread());
+    VERIFY_OR_DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY() {
+        kLogger.warning() << "The ControllerRenderingEngine setup must be done by its own thread!";
+        return;
+    }
     QSurfaceFormat format;
     format.setSamples(m_screenInfo.msaa);
     format.setDepthBufferSize(16);
@@ -158,7 +162,6 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     m_context->setFormat(format);
     VERIFY_OR_DEBUG_ASSERT(m_context->create()) {
         kLogger.warning() << "Unable to initialize controller screen rendering. Giving up";
-        m_waitCondition.wakeAll();
         return;
     }
     connect(m_context.get(),
@@ -181,7 +184,6 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
         kLogger.warning() << "Unable to create the OffscreenSurface for controller "
                              "screen rendering. Giving up";
         m_offscreenSurface.reset();
-        m_waitCondition.wakeAll();
         return;
     }
 
@@ -193,13 +195,10 @@ void ControllerRenderingEngine::setup(std::shared_ptr<QQmlEngine> qmlEngine) {
     }
 
     m_quickWindow->setGeometry(0, 0, m_screenInfo.size.width(), m_screenInfo.size.height());
-
-    m_isValid = true;
-    m_waitCondition.wakeAll();
 }
 
 void ControllerRenderingEngine::finish() {
-    DEBUG_ASSERT(QThread::currentThread() == thread());
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     emit stopping();
 
     m_isValid = false;
@@ -270,8 +269,8 @@ void ControllerRenderingEngine::renderFrame() {
 
     m_renderControl->beginFrame();
 
-    if (m_pControllerEngine) {
-        m_pControllerEngine->pause();
+    if (m_pEngineThreadControl) {
+        m_pEngineThreadControl->pause();
     }
 
     m_renderControl->polishItems();
@@ -283,8 +282,8 @@ void ControllerRenderingEngine::renderFrame() {
         };
     }
 
-    if (m_pControllerEngine) {
-        m_pControllerEngine->resume();
+    if (m_pEngineThreadControl) {
+        m_pEngineThreadControl->resume();
     }
     QImage fboImage(m_screenInfo.size, m_screenInfo.pixelFormat);
 
@@ -341,7 +340,7 @@ bool ControllerRenderingEngine::stop() {
 }
 
 void ControllerRenderingEngine::send(Controller* controller, const QByteArray& frame) {
-    DEBUG_ASSERT(QThread::currentThread() == thread());
+    DEBUG_ASSERT_THIS_QOBJECT_THREAD_AFFINITY();
     ScopedTimer t(u"ControllerRenderingEngine::send");
     if (!frame.isEmpty()) {
         controller->sendBytes(frame);

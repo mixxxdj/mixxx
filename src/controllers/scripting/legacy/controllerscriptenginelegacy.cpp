@@ -297,7 +297,7 @@ bool ControllerScriptEngineLegacy::initialize() {
                 return false;
             }
             availableScreens.insert(screen.identifier,
-                    std::make_shared<ControllerRenderingEngine>(screen, this));
+                    std::make_shared<ControllerRenderingEngine>(screen, &m_engineThreadControl));
 
             if (!availableScreens.value(screen.identifier)->isValid()) {
                 qCWarning(m_logger) << QString(
@@ -466,7 +466,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     };
 
 #ifdef MIXXX_USE_QML
-    setCanPause(true);
+    m_engineThreadControl.setCanPause(true);
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {
         pScreen->start();
     }
@@ -685,7 +685,7 @@ void ControllerScriptEngineLegacy::shutdown() {
     }
 
 #ifdef MIXXX_USE_QML
-    setCanPause(false);
+    m_engineThreadControl.setCanPause(false);
     // Wait till the splash off animation has finished rendering
     std::chrono::milliseconds maxSplashOffDuration{};
     for (const auto& pScreen : std::as_const(m_renderingScreens)) {

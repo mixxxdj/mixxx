@@ -1503,6 +1503,7 @@ else()
   target_sources(mixxx-lib PRIVATE
     # The following source depends of QML being available but aren't part of the new QML UI
     src/controllers/rendering/controllerrenderingengine.cpp
+    src/controllers/controllerenginethreadcontrol.cpp
     src/controllers/controllerscreenpreview.cpp
   )
 endif()

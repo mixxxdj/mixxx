@@ -2,17 +2,15 @@
 
 #include <GL/gl.h>
 
-#include <QMutex>
 #include <QObject>
-#include <QWaitCondition>
 #include <chrono>
 
 #include "controllers/legacycontrollermapping.h"
-#include "controllers/scripting/controllerscriptenginebase.h"
 #include "preferences/configobject.h"
 #include "util/time.h"
 
 class Controller;
+class ControllerEngineThreadControl;
 class QOffscreenSurface;
 class QOpenGLContext;
 class QOpenGLFramebufferObject;
@@ -27,7 +25,7 @@ class ControllerRenderingEngine : public QObject {
     Q_OBJECT
   public:
     ControllerRenderingEngine(const LegacyControllerMapping::ScreenInfo& info,
-            ControllerScriptEngineBase* parent);
+            ControllerEngineThreadControl* parent);
     ~ControllerRenderingEngine();
 
     bool event(QEvent* event) override;
@@ -74,7 +72,6 @@ class ControllerRenderingEngine : public QObject {
     void frameRendered(const LegacyControllerMapping::ScreenInfo& screeninfo,
             QImage frame,
             const QDateTime& timestamp);
-    void engineSetupRequested(std::shared_ptr<QQmlEngine> engine);
     void stopping();
     /// @brief Request the screen thread to send a frame to the device
     /// @param controller the controller to send the frame to
@@ -101,10 +98,9 @@ class ControllerRenderingEngine : public QObject {
     GLenum m_GLDataType;
 
     bool m_isValid;
-
-    // These mutexes components are used to ensure internal object synchronicity
-    QWaitCondition m_waitCondition;
-    QMutex m_mutex;
-
-    ControllerScriptEngineBase* m_pControllerEngine;
+    // Engine control is owned by ControllerScriptEngineBase. The assumption is
+    // made that ControllerScriptEngineBase always outlive
+    // ControllerRenderingEngine as it is in charge of stopping and joining the
+    // thread
+    ControllerEngineThreadControl* m_pEngineThreadControl;
 };
