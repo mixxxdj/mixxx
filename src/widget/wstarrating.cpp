@@ -52,6 +52,48 @@ void WStarRating::paintEvent(QPaintEvent * /*unused*/) {
     m_visualStarRating.paint(&painter, m_contentRect);
 }
 
+void WStarRating::keyPressEvent(QKeyEvent* event) {
+    // Change rating when certain keys are pressed
+    QKeyEvent* ke = static_cast<QKeyEvent*>(event);
+    int newRating = m_visualStarRating.starCount();
+    switch (ke->key()) {
+    case Qt::Key_0:
+    case Qt::Key_1:
+    case Qt::Key_2:
+    case Qt::Key_3:
+    case Qt::Key_4:
+    case Qt::Key_5:
+    case Qt::Key_6:
+    case Qt::Key_7:
+    case Qt::Key_8:
+    case Qt::Key_9: {
+        bool ok = false;
+        int keyInt = ke->text().toInt(&ok);
+        if (ok) {
+            newRating = keyInt;
+        }
+        break;
+    }
+    case Qt::Key_Right:
+    case Qt::Key_Plus: {
+        newRating++;
+        break;
+    }
+    case Qt::Key_Left:
+    case Qt::Key_Minus: {
+        newRating--;
+        break;
+    }
+    default: {
+        event->ignore();
+        return;
+    }
+    }
+    newRating = math_clamp(newRating, StarRating::kMinStarCount, m_visualStarRating.maxStarCount());
+    updateVisualRating(newRating);
+    m_starCount = newRating;
+}
+
 void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     const int pos = event->position().toPoint().x();
     int star = m_visualStarRating.starAtPosition(pos, rect());
