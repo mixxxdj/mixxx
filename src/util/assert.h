@@ -24,6 +24,10 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
     qFatal("ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
 }
 
+inline void mixxx_assert(const char* assertion, const char* file, int line, const char* function) {
+    qWarning("ASSERT: \"%s\" in function %s at %s:%d", assertion, function, file, line);
+}
+
 // These macros provide the demangled function name (including helpful template
 // type information) and are supported on every version of GCC, Clang, and MSVC
 // that Mixxx supports.
@@ -42,6 +46,26 @@ inline void mixxx_release_assert(const char* assertion, const char* file, int li
         if (Q_UNLIKELY(!static_cast<bool>(cond))) {                           \
             mixxx_release_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
         }                                                                     \
+    while (0)
+
+/// Checks that cond is true. If cond is false then prints a warning message
+/// but does not quit.
+/// Its purpose is used to check the value of conditions whose sideeffects are
+/// critical to the program.
+// this makes it possible to avoid code such as
+// ```cpp
+// [[maybe_unused]] bool successful = moveToThread(m_pThread.get());
+// DEBUG_ASSERT(successful);
+// ```
+// and instead write
+// ```cpp
+// ASSERT(moveToThread(m_pThread.get()));
+// ```
+#define ASSERT(cond)                                                  \
+    do                                                                \
+        if (!static_cast<bool>(cond)) [[unlikely]] {                  \
+            mixxx_assert(#cond, __FILE__, __LINE__, ASSERT_FUNCTION); \
+        }                                                             \
     while (0)
 
 /// Checks that cond is true in debug builds. If cond is false then prints a
