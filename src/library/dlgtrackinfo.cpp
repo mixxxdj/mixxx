@@ -444,6 +444,18 @@ void DlgTrackInfo::updateTrackMetadataFields() {
     txtBpm->setText(trackInfo.getBpmText());
     displayKeyText();
 
+    // Set cursor / scroll position of editable fields (only relevant
+    // when the content's width is larger than the width of the QLineEdit)
+    txtTrackName->setCursorPosition(0);
+    txtArtist->setCursorPosition(0);
+    txtAlbum->setCursorPosition(0);
+    txtAlbumArtist->setCursorPosition(0);
+    txtGenre->setCursorPosition(0);
+    txtComposer->setCursorPosition(0);
+    txtGrouping->setCursorPosition(0);
+    txtYear->setCursorPosition(0);
+    txtTrackNumber->setCursorPosition(0);
+
     // Non-editable fields
     txtDuration->setText(
             metadata.getDurationText(mixxx::Duration::Precision::SECONDS));
