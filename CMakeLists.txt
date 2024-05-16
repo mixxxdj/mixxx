@@ -1790,6 +1790,7 @@ add_library(
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
   src/widget/wmenucheckbox.cpp
+  src/widget/wmultilinetextedit.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp
